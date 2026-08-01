@@ -317,7 +317,7 @@ export class Resizing<Shape extends TLShape = TLShape> extends TransformState<
     }
     this.editor.snaps?.clearIndicators?.()
     if (this.markId) this.editor.bailToMark?.(this.markId)
-    this.finish()
+    this.finish(true)
   }
 
   private createSnapshots(): ResizeSnapshot<Shape>[] {
@@ -446,13 +446,13 @@ export class Resizing<Shape extends TLShape = TLShape> extends TransformState<
     if (updates.length) this.editor.updateShapes(updates)
   }
 
-  private finish(): void {
+  private finish(cancelled = false): void {
     const end = this.info.onInteractionEnd
     if (typeof end === 'function') {
       end()
       return
     }
-    if (typeof end === 'string' && this.editor.getInstanceState?.().isToolLocked) {
+    if (typeof end === 'string' && (cancelled || this.editor.getInstanceState?.().isToolLocked)) {
       this.editor.setCurrentTool?.(end, {})
       return
     }

@@ -1355,17 +1355,43 @@ export class Editor {
     return getShapesAtPoint(this, Vec.From(point), options)
   }
 
-  getShapeMask(shape: TLShape): Vec[] | undefined {
-    const clip = this.getShapeUtil(shape).getClipPath?.(shape as never)
-    return clip?.map(point => this.getShapePageTransform(shape).applyToPoint(point))
+  getShapeMask(shapeOrId: TLShape | TLShapeId): Vec[] | undefined {
+    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    if (!shape || shape.parentId.startsWith('page:')) return undefined
+    const clipPaths: Vec[][] = []
+    for (const ancestor of this.getShapeAncestors(shape)) {
+      const util = this.getShapeUtil(ancestor)
+      const clip = util.getClipPath?.(ancestor as never)
+      if (!clip) continue
+      clipPaths.push(this.getShapePageTransform(ancestor).applyToPoints(clip))
+    }
+    if (clipPaths.length === 0) return undefined
+    return clipPaths.reduce((accumulated, next) => {
+      const intersection = intersectPolygonPolygon(accumulated, next)
+      return intersection ? intersection.map(point => Vec.From(point)) : []
+    })
   }
 
   getShapeClipPath(shapeOrId: TLShape | TLShapeId): string | undefined {
     const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
     if (!shape) return undefined
-    const clip = this.getShapeUtil(shape).getClipPath?.(shape as never)
-    if (!clip || clip.length === 0) return undefined
-    return `polygon(${clip.map(point => `${point.x}px ${point.y}px`).join(',')})`
+    const mask = this.getShapeMask(shape)
+    if (!mask) return undefined
+    if (mask.length === 0) return 'polygon(0px 0px, 0px 0px, 0px 0px)'
+    const local = this.getShapePageTransform(shape).clone().invert().applyToPoints(mask)
+    return `polygon(${local.map(point => `${point.x}px ${point.y}px`).join(',')})`
+  }
+
+  getShapeMaskedPageBounds(shapeOrId: TLShape | TLShapeId): Box | undefined {
+    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    if (!shape) return undefined
+    const bounds = this.getShapePageBounds(shape)
+    if (!bounds) return undefined
+    const mask = this.getShapeMask(shape)
+    if (!mask) return bounds
+    if (mask.length === 0) return undefined
+    const intersection = intersectPolygonPolygon(mask, bounds.corners)
+    return intersection ? Box.FromPoints(intersection.map(point => Vec.From(point))) : undefined
   }
 
   getShapeText(shape: TLShape): string | undefined {
