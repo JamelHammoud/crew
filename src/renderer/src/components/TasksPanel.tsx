@@ -139,16 +139,17 @@ function TodoEditor({
 }
 
 export default function TasksPanel({
-  open,
-  onClose,
   onOpenThread,
   onOpenThreadBeside
 }: {
-  open: boolean
-  onClose: () => void
   onOpenThread: (threadId: string) => void
   onOpenThreadBeside: (threadId: string) => void
 }) {
+  const open = useTasks(tasksShowing)
+  const pinned = useTasks(s => s.pinned)
+  const peek = useTasks(s => s.peek)
+  const keep = useTasks(s => s.keep)
+  const close = useTasks(s => s.close)
   const events = useCrew(s => s.events)
   const threads = useCrew(s => s.threads)
   const threadPrompts = useCrew(s => s.threadPrompts)

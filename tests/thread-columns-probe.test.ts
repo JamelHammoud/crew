@@ -135,18 +135,38 @@ afterEach(cleanup)
 
 describe('several threads open side by side', () => {
   it('replaces the row when a system notification is opened', () => {
-    let openNotification: ((threadId: string) => void) | undefined
+    let openNotification: ((threadId: string, place: string | null) => void) | undefined
     window.crew.onNotificationOpen = listener => {
       openNotification = listener
       return () => undefined
     }
     open(['thread-1'], 'thread-1')
 
-    act(() => openNotification?.('thread-2'))
+    act(() => openNotification?.('thread-2', null))
 
     expect(useCrew.getState().openThreadIds).toEqual(['thread-2'])
     expect(useCrew.getState().openThreadId).toBe('thread-2')
     expect(columns()).toHaveLength(1)
+  })
+
+  it('goes back to the project a notification was raised in before opening it', async () => {
+    let openNotification: ((threadId: string, place: string | null) => void) | undefined
+    window.crew.onNotificationOpen = listener => {
+      openNotification = listener
+      return () => undefined
+    }
+    const asked: string[] = []
+    window.crew.switchTo = async key => {
+      asked.push(key)
+      return null
+    }
+    useCrew.setState({ place: 'project:here' })
+    open(['thread-1'], 'thread-1')
+
+    await act(async () => openNotification?.('thread-2', 'project:there'))
+
+    expect(asked).toEqual(['project:there'])
+    expect(useCrew.getState().openThreadIds).toEqual(['thread-1'])
   })
 
   it('replaces the row when a task is opened from the task list', () => {
