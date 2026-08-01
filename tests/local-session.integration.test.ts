@@ -5,6 +5,7 @@ import { AppSession } from '../src/main/session'
 import { projectKey } from '../src/shared/project'
 import { runGit } from '../src/shared/git'
 import type { ServerMessage } from '../src/shared/protocol'
+import { crewsAt } from './helpers/crews'
 import { initRepo } from './helpers/git'
 import { linkOf, TestUi, tmpDir, waitUntil } from './helpers/session'
 
@@ -116,7 +117,7 @@ describe('a crew kept on this machine', () => {
     const paths = statePaths('local-plan')
 
     const app = new AppSession(paths)
-    expect(await app.projectPlan(repo)).toEqual({
+    expect(await crewsAt(paths).projectPlan(repo)).toEqual({
       home: 'folder',
       tracked: true,
       known: false,
@@ -128,7 +129,7 @@ describe('a crew kept on this machine', () => {
     await app.shutdown()
 
     const back = new AppSession(paths)
-    expect(await back.projectPlan(repo)).toEqual({
+    expect(await crewsAt(paths).projectPlan(repo)).toEqual({
       home: 'private',
       tracked: true,
       known: true,

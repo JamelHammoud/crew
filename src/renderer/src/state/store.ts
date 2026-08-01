@@ -936,20 +936,23 @@ export const useCrew = create<CrewState>((set, get) => {
         toast.fail('That project is not open any more.', { key: 'switch' })
         return
       }
-      useHuddleLeave()
+      const { useHuddle } = await import('./huddle')
+      useHuddle.getState().leave()
       socket.close()
       threadWanted = memory?.openThreadId ?? null
-      set({ joinLink: null, hosting: false, shared: false, selfId: '', code: '', ...EMPTY })
+      set({ connection: 'connecting', ...BLANK })
       get().connect(info)
       panel.restore(memory?.panel ?? null)
     },
     closePlace: async key => {
       const others = usePlaces.getState().live.filter(place => place.key !== key)
-      if (key === get().place) {
-        if (others[0]) await get().switchTo(others[0].key)
-        else get().leave()
-      }
+      const leaving = key === get().place
       forgetProject(key)
+      if (leaving && !others[0]) {
+        get().leave()
+        return
+      }
+      if (leaving) await get().switchTo(others[0].key)
       await window.crew.closeProject(key).catch(() => {})
       void usePlaces.getState().load()
     },
@@ -973,10 +976,21 @@ export const useCrew = create<CrewState>((set, get) => {
       set({ joinLink: info.link, shared: info.shared })
       return info.link
     },
+    // Leaving is done with this crew rather than done with the app, so with
+    // another one still running the window lands there instead of on the list.
     leave: () => {
+      const from = get().place
+      const others = usePlaces.getState().live.filter(place => place.key !== from)
+      if (from) forgetProject(from)
+      useBrowser.getState().stash()
       socket.close()
-      void window.crew.leave()
-      set({ connection: 'home', joinLink: null, hosting: false, shared: false, selfId: '', code: '', ...EMPTY })
+      void window.crew.leave().then(() => usePlaces.getState().load())
+      if (others[0]) {
+        set({ connection: 'connecting', ...BLANK })
+        void get().switchTo(others[0].key)
+        return
+      }
+      set({ connection: 'home', ...BLANK })
     },
     setChatDraft: text => {
       sayTyping(undefined, text.trim().length > 0)
