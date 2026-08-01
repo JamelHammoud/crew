@@ -174,9 +174,9 @@ export function endPreview(end: Extract<SessionEvent, { kind: 'agent.end' }> | u
 }
 
 export function thoughtPreview(text: string): string {
-  const first = text.split(/\n\s*\n/)[0] ?? ''
+  const first = text.split('\n').find(line => line.trim()) ?? ''
   return first
-    .replace(/^\s*(?:#{1,6}|>|[-+])\s+/gm, '')
+    .replace(/^\s*(?:#{1,6}|>|[-+])\s+/, '')
     .replace(/[*`]/g, '')
     .replace(/\s+/g, ' ')
     .trim()
