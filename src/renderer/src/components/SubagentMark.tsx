@@ -1,7 +1,5 @@
-import { useEffect, useId, useMemo, useRef, useState } from 'react'
-import { paletteFor } from '../../../shared/art'
-import { coverFor } from './art/coverArt'
-import { GRAIN, meshOf } from './art/mesh'
+import { useId, useMemo } from 'react'
+import GeneratedField from './art/GeneratedField'
 import { shapePath, subagentShape } from './art/subagentShape'
 
 // A helper's mark: the same field the covers are photographed in, seen through a
@@ -25,11 +23,6 @@ const DOTS = {
   md: 'w-2.5 h-2.5 ring-2',
   lg: 'w-3 h-3 ring-[2.5px]'
 } as const
-
-// Under this the shader is not worth what it buys. A row of chips is a dozen
-// marks, the picture is drawn at 512 and cached per id, and a wall of them on
-// the first paint of a panel costs more than the difference can be seen.
-const WORTH_DRAWING = 40
 
 export default function SubagentMark({
   seed,
