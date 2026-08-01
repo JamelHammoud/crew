@@ -150,11 +150,15 @@ describe('the shortcuts the menu names', () => {
   })
 
   it('answers every shortcut it names', () => {
-    const { ctx } = board([node('shape:a'), node('shape:b')], 'shape:a', 'shape:b')
+    const made = board([node('shape:a'), node('shape:b')], 'shape:a', 'shape:b')
+    made.step()
+    runCommand('copy', made.ctx)
+    runCommand('copy-style', { ...made.ctx, editor: made.editor })
+    made.select('shape:a', 'shape:b')
     const named = new Map(
       DESIGN_COMMANDS.filter(command => command.keys).map(command => [command.hint!, command.keys!])
     )
-    for (const [hint, keys] of named) expect(commandForKey(press(chord(keys)), ctx), hint).toBeTruthy()
+    for (const [hint, keys] of named) expect(commandForKey(press(chord(keys)), made.ctx), hint).toBeTruthy()
   })
 
   it('reaches the command the selection can actually do', () => {
