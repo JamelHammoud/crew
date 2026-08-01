@@ -5,5 +5,5 @@ import { Runner, type RunnerOptions } from '../../src/runner'
 export function testRunner(opts: RunnerOptions): Runner {
   const agents =
     opts.agents ?? opts.providers.map(p => ({ instanceId: p.name, provider: p.name, name: p.label, settings: {} }))
-  return new Runner({ ...opts, agents })
+  return new Runner({ crewBase: opts.repoPath, ...opts, agents })
 }

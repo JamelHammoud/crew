@@ -506,6 +506,7 @@ export class AppSession {
       name,
       code: target.code,
       repoPath,
+      crewBase: crewHere(repoPath) ? repoPath : null,
       providers: builtinProviders,
       agents: this.agentDefs(detected, name),
       onBeforeRun: () => git.syncNow(),
