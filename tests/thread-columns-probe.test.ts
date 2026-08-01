@@ -115,8 +115,7 @@ const open = (ids: string[], focused: string | null): void => {
   render(createElement(App))
 }
 
-const columns = (): HTMLElement[] =>
-  Array.from(document.querySelectorAll<HTMLElement>('.overflow-x-auto.overflow-y-hidden > div'))
+const columns = (): HTMLElement[] => Array.from(document.querySelectorAll<HTMLElement>('[data-column]'))
 
 beforeEach(() => {
   popOutThread.mockClear()
