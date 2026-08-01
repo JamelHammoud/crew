@@ -101,7 +101,7 @@ type BrowserState = {
   openAside(threadId: string, title: string): void
   openSubagent(threadId: string, parentThreadId: string): void
   showSubagents(parentThreadId: string): void
-  leaveThread(threadId: string | null): void
+  leaveThreads(open: string[]): void
   showPlan(threadId: string): void
   hidePlan(): void
   showWork(threadId: string): void
@@ -458,8 +458,8 @@ export const useBrowser = create<BrowserState>((write, get) => {
     // plan and a board are taken down by the same rule that brings them up,
     // since both come with the thread; a helper is opened by hand and never
     // opens itself, so leaving is the only thing that can take one down.
-    leaveThread: threadId => {
-      set(s => without(s, t => t.kind === 'agent' && t.parentThreadId !== threadId) ?? {})
+    leaveThreads: open => {
+      set(s => without(s, t => t.kind === 'agent' && !open.includes(t.parentThreadId)) ?? {})
       settle()
     },
     // The plan for the thread you are in. It stands at the head of the row, and
