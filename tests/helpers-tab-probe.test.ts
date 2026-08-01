@@ -16,11 +16,13 @@ global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
 const { useBrowser } = await import('../src/renderer/src/state/browser')
 const { useCrew } = await import('../src/renderer/src/state/store')
 const BrowserPanel = (await import('../src/renderer/src/components/BrowserPanel')).default
+const SubagentRun = (await import('../src/renderer/src/components/subagents/SubagentRun')).default
 const ThreadView = (await import('../src/renderer/src/views/ThreadView')).default
 
 const PARENT = 'parent-thread'
 const CHILD = 'child-thread'
 const OTHER = 'other-child'
+const GRAND = 'grandchild-thread'
 
 const thread = (id: string, parentThreadId?: string): ThreadMeta => ({
   id,

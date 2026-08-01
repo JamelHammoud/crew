@@ -52,6 +52,7 @@ const mentioned = (threadId: string): SessionEvent => ({
   text: '@Bubbles have a look at this',
   authorId: 'jamel',
   authorName: 'Jamel',
+  mentions: [],
   threadId,
   memberMentionRefs: [{ id: 'me', name: 'Bubbles' }]
 })
