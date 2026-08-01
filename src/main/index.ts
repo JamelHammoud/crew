@@ -606,24 +606,26 @@ app.whenReady().then(() => {
     if (/^(https?|mailto):/i.test(url)) void shell.openExternal(url)
   })
   ipcMain.handle('clipboard:image', (_event, src: string) => copyImage(src))
-  ipcMain.handle('file:read', (_event, target: string) => session.readFile(target))
-  ipcMain.handle('file:list', () => session.listFiles())
-  ipcMain.handle('file:write', (_event, target: string, text: string) => session.writeFile(target, text))
-  ipcMain.handle('file:locate', (_event, target: string) => session.locatePath(target))
+  ipcMain.handle('file:read', (event, target: string) => crews.inView(event.sender.id).readFile(target))
+  ipcMain.handle('file:list', event => crews.inView(event.sender.id).listFiles())
+  ipcMain.handle('file:write', (event, target: string, text: string) =>
+    crews.inView(event.sender.id).writeFile(target, text)
+  )
+  ipcMain.handle('file:locate', (event, target: string) => crews.inView(event.sender.id).locatePath(target))
   ipcMain.handle('preview:html', (event, id: string, target: string, text: string) => {
     // A page somebody attached names no file, since it never landed in the
     // project, so there is nothing to resolve and nothing beside it to reach.
-    const absolute = target ? session.resolveFile(target) : ''
+    const absolute = target ? crews.inView(event.sender.id).resolveFile(target) : ''
     return absolute === null ? null : previewsFor(event.sender).show(id, absolute, text)
   })
   ipcMain.handle('preview:drop', (event, id: string) => previews.get(event.sender.id)?.drop(id))
-  ipcMain.handle('file:reveal', (_event, target: string) => {
-    const absolute = session.resolveFile(target)
+  ipcMain.handle('file:reveal', (event, target: string) => {
+    const absolute = crews.inView(event.sender.id).resolveFile(target)
     if (absolute) shell.showItemInFolder(absolute)
   })
   ipcMain.on('terminal:open', (event, id: string, wanted: TerminalSize) => {
     const sender = event.sender
-    terminalsFor(sender).open(id, session.projectFolder(), wanted, {
+    terminalsFor(sender).open(id, crews.folderInView(sender.id), wanted, {
       data: (opened, chunk) => {
         if (!sender.isDestroyed()) sender.send('terminal:data', opened, chunk)
       },
@@ -652,7 +654,7 @@ app.whenReady().then(() => {
 // keep using this machine's agents. Quitting still shuts everything down.
 app.on('window-all-closed', () => {
   if (process.platform === 'darwin') return
-  if (!session.current()) {
+  if (!crews.any()) {
     app.quit()
     return
   }

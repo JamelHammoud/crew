@@ -244,6 +244,91 @@ describe.skipIf(!unix)('a terminal tab', () => {
     rmSync(out, { force: true })
   })
 
+  it('hands each folder the shell that was kept ready for it', async () => {
+    const here = den('here')
+    const there = den('there')
+    const heardHere = listener()
+    const heardThere = listener()
+    const made = terminals()
+    made.warm(here)
+    made.warm(there)
+    await until(() => made.ready(here) && made.ready(there), 'both shells to stand by')
+
+    made.open('tab-12', here, { cols: 80, rows: 24 }, heardHere.sink)
+    expect(heardHere.text().length).toBeGreaterThan(0)
+    made.open('tab-13', there, { cols: 80, rows: 24 }, heardThere.sink)
+    expect(heardThere.text().length).toBeGreaterThan(0)
+
+    made.write('tab-12', `pwd -P > ${path.join(here, 'where')}\r`)
+    made.write('tab-13', `pwd -P > ${path.join(there, 'where')}\r`)
+    await until(
+      () => existsSync(path.join(here, 'where')) && existsSync(path.join(there, 'where')),
+      'both shells to report'
+    )
+    await until(
+      () =>
+        readFileSync(path.join(here, 'where'), 'utf8').trim().length > 0 &&
+        readFileSync(path.join(there, 'where'), 'utf8').trim().length > 0,
+      'both folders'
+    )
+    expect(readFileSync(path.join(here, 'where'), 'utf8').trim()).toBe(here)
+    expect(readFileSync(path.join(there, 'where'), 'utf8').trim()).toBe(there)
+  })
+
+  it('lets the shell warmed longest ago go when a third folder is warmed', async () => {
+    const first = den('first')
+    const second = den('second')
+    const third = den('third')
+    const heard = listener()
+    const made = terminals()
+    made.warm(first)
+    await until(() => made.ready(first), 'the first shell to stand by')
+    made.warm(second)
+    await until(() => made.ready(second), 'the second shell to stand by')
+    made.warm(third)
+    await until(() => made.ready(third), 'the third shell to stand by')
+
+    expect(made.ready(first)).toBe(false)
+    expect(made.ready(second)).toBe(true)
+
+    made.open('tab-14', first, { cols: 80, rows: 24 }, heard.sink)
+    expect(heard.text()).toBe('')
+  })
+
+  it('keeps a shell asked for again and lets the one before it go instead', async () => {
+    const first = den('again-first')
+    const second = den('again-second')
+    const third = den('again-third')
+    const made = terminals()
+    made.warm(first)
+    await until(() => made.ready(first), 'the first shell to stand by')
+    made.warm(second)
+    await until(() => made.ready(second), 'the second shell to stand by')
+    made.warm(first)
+    made.warm(third)
+    await until(() => made.ready(third), 'the third shell to stand by')
+
+    expect(made.ready(first)).toBe(true)
+    expect(made.ready(second)).toBe(false)
+  })
+
+  it('leaves no shell running anywhere when the window goes', async () => {
+    const here = den('leaves-here')
+    const there = den('leaves-there')
+    const before = shells()
+    const made = terminals()
+    made.warm(here)
+    made.warm(there)
+    await until(() => made.ready(here) && made.ready(there), 'both shells to stand by')
+    made.open('tab-15', here, { cols: 80, rows: 24 }, listener().sink)
+    await until(() => shells().length >= before.length + 3, 'three shells to be running')
+
+    made.closeAll()
+    await until(() => shells().length === before.length, 'every shell to go')
+    expect(made.count()).toBe(0)
+    expect(made.ready()).toBe(false)
+  })
+
   it('takes the shell it was keeping ready with it when the window goes', async () => {
     const made = terminals()
     made.warm(process.cwd())
