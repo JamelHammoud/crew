@@ -58,4 +58,3 @@ describe('who made it', () => {
     expect(openExternal).toHaveBeenCalledWith('https://github.com/alihammoud21')
   })
 })
-</content>
