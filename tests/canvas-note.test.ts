@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest'
+import { createRequire } from 'node:module'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { Group2d } from '../src/renderer/src/canvas/geometry'
 import type { TLShape, TLShapeId } from '../src/renderer/src/canvas/schema'
 import { NoteShapeUtil, type ShapeEditor } from '../src/renderer/src/canvas/shapes'
@@ -35,6 +36,27 @@ function measuringEditor(lines: number, width = 120): ShapeEditor {
     }
   } as ShapeEditor
 }
+
+const JSDOM = createRequire(import.meta.url)('jsdom').JSDOM as new (
+  html: string
+) => { window: Window & typeof globalThis }
+const originalWindow = Object.getOwnPropertyDescriptor(globalThis, 'window')
+const originalDocument = Object.getOwnPropertyDescriptor(globalThis, 'document')
+let dom: { window: Window & typeof globalThis }
+
+beforeAll(() => {
+  dom = new JSDOM('<!doctype html><html><body></body></html>')
+  Object.defineProperty(globalThis, 'window', { configurable: true, value: dom.window })
+  Object.defineProperty(globalThis, 'document', { configurable: true, value: dom.window.document })
+})
+
+afterAll(() => {
+  dom.window.close()
+  if (originalWindow) Object.defineProperty(globalThis, 'window', originalWindow)
+  else Reflect.deleteProperty(globalThis, 'window')
+  if (originalDocument) Object.defineProperty(globalThis, 'document', originalDocument)
+  else Reflect.deleteProperty(globalThis, 'document')
+})
 
 function note(props: Record<string, unknown> = {}, id = 'shape:note'): TLShape<'note'> {
   return {
@@ -141,7 +163,8 @@ describe('the handles that add a note beside one', () => {
     const handles = util.getHandles(note())
     expect(handles.map(handle => handle.id)).toEqual(['top', 'right', 'bottom', 'left'])
     expect(handles.every(handle => handle.type === 'clone')).toBe(true)
-    expect(handles[0]).toMatchObject({ x: 100, y: 0 })
+    expect(handles[0]).toMatchObject({ x: 100 })
+    expect(Math.abs(handles[0].y)).toBe(0)
     expect(handles[2]).toMatchObject({ x: 100, y: 200 })
   })
 
