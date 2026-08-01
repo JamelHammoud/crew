@@ -872,6 +872,8 @@ export const useCrew = create<CrewState>((set, get) => {
           activePrompts,
           threads,
           threadPrompts,
+          readEvents: [],
+          readSteps: {},
           openThreadIds: wanted,
           openThreadId: wanted.at(-1) ?? null
         })
