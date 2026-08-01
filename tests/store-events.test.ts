@@ -174,6 +174,25 @@ describe('an event landing', () => {
     expect((events[events.length - 1] as { text: string }).text).toBe('line 39')
   })
 
+  it('orders a run the way writing every step out again would', () => {
+    const stream = [
+      step('b1', 1),
+      step('b1', 1),
+      step('b2', 2),
+      step('b2', 5),
+      step('b3', 3),
+      step('b1', 1),
+      step('b4', 9),
+      step('b3', 3)
+    ]
+    land(started('p1'))
+    for (const one of stream) land(stepped('p1', one))
+
+    let want: AgentStep[] | undefined
+    for (const one of stream) want = upsert(want, one)
+    expect(useCrew.getState().steps.p1).toEqual(want)
+  })
+
   it('takes a run’s steps out of the window with its start', () => {
     useCrew.setState({ eventLimit: 3 })
     land(started('p1'))
