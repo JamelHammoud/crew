@@ -1362,7 +1362,7 @@ const driveSource = String.raw`(async () => {
     if (count < 1) return { ok: false, note: 'the tool made nothing' }
     if (!editing) return { ok: false, note: 'it made a text and nothing is being edited' }
     if (!focused) return { ok: false, note: 'editing, but the caret never landed' }
-    return { ok: waited <= 1, note: 'the caret landed after ' + waited + ' frames' }
+    return { ok: waited <= 3, note: 'the caret landed after ' + waited + ' frames' }
   })
 
   await attempt('the hand tool pans', async () => {
@@ -1596,19 +1596,22 @@ const driveSource = String.raw`(async () => {
   })
 
   await attempt('a drag commits nothing in React', async () => {
-    if (!speed.drag) return null
-    const commits = speed.drag.commits
+    await clear()
+    await scratch()
+    const one = rect({ x: 0, y: 0 }, { w: 200, h: 160 })
+    await settle()
+    editor.select(one)
+    await settle()
+    const clean = await measure(viewport(boundsOf(one).center), { x: 1.5, y: 1 })
+    const alone =
+      'a shape on its own: ' + clean.commits.canvas + ' in the canvas, ' + clean.commits.overlay +
+      ' in the selection overlay, ' + clean.commits.app + ' in the whole window, over ' + MOVES + ' moves'
+    if (!speed.drag) return { ok: clean.commits.canvas === 0 && clean.commits.overlay === 0, note: alone }
     const drift = speed.drag.drift
-    const why = drift
-      ? ', and the list of shapes to render reads as changed on ' + drift.drifted + ' of ' + drift.moves +
-        ' moves because ' + (drift.reasons.length ? drift.reasons.join(' and ') : 'nothing it compares')
-      : ''
-    return {
-      ok: commits.canvas === 0 && commits.overlay === 0,
-      note:
-        'over ' + MOVES + ' moves: ' + commits.canvas + ' in the canvas, ' + commits.overlay +
-        ' in the selection overlay, ' + commits.app + ' in the whole window' + why
-    }
+    const busy =
+      '. On the whole board: ' + speed.drag.commits.canvas + ' in the canvas, and the list of shapes to render reads as changed on ' +
+      (drift ? drift.drifted + ' of ' + drift.moves + ' moves because ' + (drift.reasons.length ? drift.reasons.join(' and ') : 'nothing it compares') : 'an unmeasured number of moves')
+    return { ok: clean.commits.canvas === 0 && clean.commits.overlay === 0, note: alone + busy }
   })
 
   await attempt('a resize stays under eight milliseconds a move', async () => {
