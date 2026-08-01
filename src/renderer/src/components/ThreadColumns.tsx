@@ -50,7 +50,7 @@ export default function ThreadColumns({ ids }: { ids: string[] }) {
       {room && near && (
         <Tooltip
           label="The chat"
-          className="absolute right-3 top-1/2 -translate-y-1/2 z-30 animate-edge"
+          className="absolute right-3 top-1/2 z-30 animate-edge"
         >
           <button
             onClick={() => setChatColumn(!chatColumn)}
