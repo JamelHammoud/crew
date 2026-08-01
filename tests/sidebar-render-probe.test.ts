@@ -132,7 +132,7 @@ describe('what the rail draws again', () => {
     expect(drawn.rows).toBe(0)
   })
 
-  it('draws only the place whose thread started working', async () => {
+  it('draws only the thread that started working, in only its own place', async () => {
     await openRail()
 
     act(() => {
@@ -140,6 +140,34 @@ describe('what the rail draws again', () => {
     })
 
     expect(drawn.groups).toBe(1)
-    expect(drawn.rows).toBe(PER_PLACE)
+    expect(drawn.rows).toBe(1)
+  })
+
+  it('draws nothing again when the same threads are pushed a second time', async () => {
+    await openRail()
+
+    act(() => {
+      usePlaces.setState({ live: liveOf(null) })
+    })
+
+    expect(drawn.groups).toBe(0)
+    expect(drawn.rows).toBe(0)
+  })
+
+  it('draws the rows of a place that gained a thread and leaves the others alone', async () => {
+    await openRail()
+
+    act(() => {
+      usePlaces.setState({
+        live: liveOf(null).map(place =>
+          place.key === keyOf(2)
+            ? { ...place, threads: [{ id: `${keyOf(2)}/fresh`, title: 'something new', working: false }, ...place.threads] }
+            : place
+        )
+      })
+    })
+
+    expect(drawn.groups).toBe(1)
+    expect(drawn.rows).toBe(PER_PLACE + 1)
   })
 })
