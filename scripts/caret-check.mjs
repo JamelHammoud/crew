@@ -64,7 +64,8 @@ window.aimCaret = (where, side) => {
     const line = host.querySelector('.bn-inline-content')
     line.closest('[contenteditable]').focus()
     const range = document.createRange()
-    if (side === 'plain') range.setStart(line.firstChild, 1)
+    const run = mark.previousSibling
+    if (side === 'plain') range.setStart(run && run.nodeType === 3 ? run : line.firstChild, 1)
     else if (side === 'before') range.setStartBefore(mark)
     else range.setStartAfter(mark)
     range.collapse(true)

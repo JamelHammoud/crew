@@ -16,7 +16,7 @@ export function previewSrc(attachment: PendingAttachment): string {
 }
 
 export function keepPreviews(ids: Set<string>): void {
-  for (const id of [...previews.keys()]) if (!ids.has(id)) previews.delete(id)
+  for (const id of previews.keys()) if (!ids.has(id)) previews.delete(id)
 }
 
 const readAsBase64 = (file: File): Promise<string> =>
