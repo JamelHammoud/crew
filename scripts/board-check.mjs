@@ -291,6 +291,32 @@ const driveSource = String.raw`(async () => {
     })
   }
 
+  await attempt('the text tool leaves the caret in what it made', async () => {
+    editor.selectNone()
+    editor.setCurrentTool('text')
+    await settle()
+    const start = editor.getCurrentPageShapes().length
+    const centre = viewport(editor.getViewportPageBounds().center)
+    const at = { x: centre.x + 170, y: centre.y + 130 }
+    pointer('pointerdown', at.x, at.y, 1)
+    await frame()
+    pointer('pointerup', at.x, at.y, 0)
+    await settle(6)
+    const made = editor.getCurrentPageShapes().length - start
+    const editing = editor.getEditingShapeId()
+    const caret = document.querySelector('[contenteditable="true"], textarea')
+    const focused = Boolean(caret) && (document.activeElement === caret || caret.contains(document.activeElement))
+    editor.setCurrentTool('select')
+    await settle()
+    if (made > 0) {
+      editor.deleteShapes(editor.getCurrentPageShapes().slice(-made).map(shape => shape.id))
+      await settle()
+    }
+    if (made < 1) return { ok: false, note: 'the tool made nothing' }
+    if (!editing) return { ok: false, note: 'it made a text and nothing is being edited' }
+    return { ok: focused, note: focused ? 'the caret is in the new text' : 'editing, but the caret never landed' }
+  })
+
   await attempt('the hand tool pans', async () => {
     editor.setCurrentTool('hand')
     await settle()
