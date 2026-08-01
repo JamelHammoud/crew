@@ -64,7 +64,8 @@ export interface RichTextToolbarProps {
   disabled?: boolean
 }
 
-export function RichTextToolbar({ editor, disabled = false }: RichTextToolbarProps) {
+export function RichTextToolbar({ editor: given, disabled = false }: RichTextToolbarProps) {
+  const editor = given && !given.isDestroyed ? given : null
   const [version, setVersion] = useState(0)
   const [link, setLink] = useState<string | null>(null)
   const [position, setPosition] = useState<ToolbarPosition | null>(null)

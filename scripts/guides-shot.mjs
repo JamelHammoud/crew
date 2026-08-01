@@ -85,7 +85,7 @@ const driveSource = String.raw`(async (stage, zoom, look) => {
     )
   const nodeOf = id => document.querySelector('[data-shape-id="' + id + '"][data-canvas-shape="true"]')
   const dragged = 'shape:d'
-  const held = { x: 801, y: 61 }
+  const held = { x: 800.5, y: 60.5 }
 
   if (stage === 'start') {
     editor.selectNone()

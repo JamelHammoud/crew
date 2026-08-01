@@ -43,7 +43,6 @@ import {
   CloseGlyph,
   EyeGlyph,
   PanelRightGlyph,
-  PopOutGlyph,
   StopGlyph,
   WarningGlyph
 } from '../icons'
