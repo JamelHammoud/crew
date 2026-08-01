@@ -248,7 +248,6 @@ export default function Chat() {
         <div className="bg-ink-900 px-6 pb-6">
           <div className="relative max-w-[660px] mx-auto pointer-events-auto">
             {scrolledUp && <JumpToBottom onClick={jumpToBottom} />}
-            <TypingLine />
             <Composer
               attachmentKey={CHAT_KEY}
               value={text}
@@ -284,6 +283,7 @@ export default function Chat() {
                 onHover={slash.setActive}
               />
             </Composer>
+            <TypingLine />
           </div>
         </div>
       </div>
