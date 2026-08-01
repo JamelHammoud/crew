@@ -30,6 +30,7 @@ export class Store<R extends UnknownRecord> {
   readonly scopedTypes: { readonly [K in RecordScope]: ReadonlySet<string> }
 
   private readonly atoms = new Map<IdOf<R>, Atom<R | undefined>>()
+  private readonly revision = atom('store.revision', 0)
   private readonly version = atom('store.version', 0)
   private readonly queries = new Map<string, Computed<R[]>>()
   private readonly listeners = new Set<{
@@ -70,6 +71,10 @@ export class Store<R extends UnknownRecord> {
 
   has(id: IdOf<R>): boolean {
     return this.get(id) !== undefined
+  }
+
+  getRevision(): number {
+    return this.revision.get()
   }
 
   ids(): IdOf<R>[] {
@@ -339,10 +344,12 @@ export class Store<R extends UnknownRecord> {
     const existing = this.atoms.get(record.id as IdOf<R>)
     if (existing) {
       existing.set(record)
+      this.revision.update(value => value + 1)
       return
     }
     this.atoms.set(record.id as IdOf<R>, atom(`store.record:${record.id}`, record))
     this.version.update(v => v + 1)
+    this.revision.update(value => value + 1)
   }
 
   private deleteRecord(id: IdOf<R>): R | undefined {
@@ -352,6 +359,7 @@ export class Store<R extends UnknownRecord> {
     this.atoms.delete(id)
     existing.set(undefined)
     this.version.update(v => v + 1)
+    this.revision.update(value => value + 1)
     return record
   }
 

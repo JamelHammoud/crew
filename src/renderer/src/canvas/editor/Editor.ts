@@ -1,7 +1,7 @@
 import { Group2d, Rectangle2d, intersectPolygonPolygon, type Geometry2d } from '../geometry'
 import { snapshotToSvgResult, svgDataUrl, type ImageExportOptions } from '../export'
 import { Box, Mat, Vec, pointInPolygon } from '../math'
-import { computed, type Computed } from '../signals'
+import { computed, unsafe__withoutCapture, type Computed } from '../signals'
 import {
   DocumentRecordType,
   BindingRecordType,
@@ -449,7 +449,11 @@ export class Editor {
 
   getCulledShapes(): ReadonlySet<TLShapeId> {
     if (this.inputs.getIsPointing()) return this.culled
-    this.baseCulledCache ??= computed('editor.baseCulledShapes', () => this.computeBaseCulledShapes())
+    this.baseCulledCache ??= computed('editor.baseCulledShapes', () => {
+      const viewport = this.getViewportPageBounds()
+      this.store.getRevision()
+      return unsafe__withoutCapture(() => this.computeBaseCulledShapes(viewport))
+    })
     const next = new Set(this.baseCulledCache.get())
     this.getSelectedShapeIds().forEach(id => next.delete(id))
     const editing = this.getEditingShapeId()
@@ -457,8 +461,8 @@ export class Editor {
     return sameIds(this.culled, next) ? this.culled : (this.culled = next)
   }
 
-  private computeBaseCulledShapes(): ReadonlySet<TLShapeId> {
-    const visible = this.getShapeIdsInsideBounds(this.getViewportPageBounds())
+  private computeBaseCulledShapes(viewport: Box): ReadonlySet<TLShapeId> {
+    const visible = this.getShapeIdsInsideBounds(viewport)
     const result = new Set<TLShapeId>()
     for (const shape of this.getCurrentPageShapesSorted()) {
       if (visible.has(shape.id)) continue
