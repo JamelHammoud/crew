@@ -185,18 +185,26 @@ describe('several threads open side by side', () => {
     expect(within(second!).queryByLabelText('Show panel')).toBeNull()
   })
 
-  it('carries the pop out in every column, each naming its own thread', () => {
+  it('pops a column out from a right click on the thread itself', () => {
     open(['thread-1', 'thread-2'], 'thread-1')
+    expect(screen.queryByLabelText('Open in window')).toBeNull()
 
-    const outs = screen.getAllByLabelText('Open in its own window')
-    expect(outs).toHaveLength(2)
+    fireEvent.contextMenu(background(columns()[1]!))
+    fireEvent.click(screen.getByText('Open in window'))
+    expect(popOutThread).toHaveBeenLastCalledWith('thread-2', undefined)
+    expect(useCrew.getState().openThreadIds).toEqual(['thread-1'])
 
-    fireEvent.click(outs[1]!)
-    expect(popOutThread).toHaveBeenLastCalledWith('thread-2')
-
-    fireEvent.click(outs[0]!)
-    expect(popOutThread).toHaveBeenLastCalledWith('thread-1')
+    fireEvent.contextMenu(background(columns()[0]!))
+    fireEvent.click(screen.getByText('Open in window'))
+    expect(popOutThread).toHaveBeenLastCalledWith('thread-1', undefined)
     expect(popOutThread).toHaveBeenCalledTimes(2)
+  })
+
+  it('leaves a right click on a message to the words in it', () => {
+    open(['thread-1'], 'thread-1')
+
+    fireEvent.contextMenu(screen.getByRole('link', { name: LINK }))
+    expect(screen.queryByText('Open in window')).toBeNull()
   })
 
   it('opens the tenth and refuses the eleventh', () => {
