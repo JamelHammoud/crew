@@ -49,31 +49,37 @@ export default function Sidebar({ overlay, strong }: { overlay?: boolean; strong
     void load()
   }, [load])
 
+  const busyRef = useRef<string | null>(null)
+  const setBusy = useCallback((key: string | null) => {
+    busyRef.current = key
+    setBusyKey(key)
+  }, [])
+
   const open = useCallback(
     async (folder: string, key: string, home?: CrewHome) => {
-      setBusyKey(key)
+      setBusy(key)
       try {
         useCrew.getState().connect(await window.crew.start(folder, name, home ? { home } : undefined))
       } catch (err) {
         toast.fail(said(err), { key: 'open-place' })
       } finally {
-        setBusyKey(null)
+        setBusy(null)
       }
     },
-    [name]
+    [name, setBusy]
   )
 
   const go = useCallback(
     async (place: Place): Promise<boolean> => {
-      if (busyKey) return false
+      if (busyRef.current) return false
       peek(false)
-      if (liveKeys.has(place.key)) {
+      if (usePlaces.getState().live.some(one => one.key === place.key)) {
         await switchTo(place.key)
         return true
       }
       if (place.key === here) return true
       if (place.join) {
-        setBusyKey(place.key)
+        setBusy(place.key)
         try {
           useCrew.getState().connect(await window.crew.join(place.join.link, place.join.folder, place.join.name))
           return true
@@ -81,14 +87,14 @@ export default function Sidebar({ overlay, strong }: { overlay?: boolean; strong
           toast.fail(said(err), { key: 'open-place' })
           return false
         } finally {
-          setBusyKey(null)
+          setBusy(null)
         }
       }
       if (!place.project) return false
       await open(place.project.folder, place.key)
       return true
     },
-    [busyKey, here, liveKeys, open, peek, switchTo]
+    [here, open, peek, setBusy, switchTo]
   )
 
   const goToPlace = useCallback(
