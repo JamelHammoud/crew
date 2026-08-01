@@ -356,3 +356,38 @@ describe('the sidebar', () => {
     expect(back.map(tab => tab.kind)).toEqual(['web', 'terminal'])
   })
 })
+
+describe('the way the hovered rail arrives and leaves', () => {
+  const styles = readFileSync(
+    path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'src/renderer/src/styles.css'),
+    'utf8'
+  )
+
+  const rule = (selector: string): string => {
+    const at = styles.indexOf(selector)
+    expect(at).toBeGreaterThan(-1)
+    return styles.slice(at, styles.indexOf('\n}', at))
+  }
+
+  const seconds = (css: string): number => Number(/transform\s+(\d*\.?\d+)s/.exec(css)?.[1])
+
+  it('is a transition rather than a keyframe, so a rail caught halfway can turn around', () => {
+    expect(styles).not.toContain('@keyframes rail')
+    expect(rule('.rail {')).toMatch(/transition:/)
+    expect(rule('.rail[data-open] {')).toMatch(/transition:/)
+  })
+
+  it('comes from its own edge, so the rows inside it never move', () => {
+    expect(rule('.rail {')).toContain('translateX(-100%)')
+    expect(rule('.rail[data-open] {')).toContain('translateX(0)')
+  })
+
+  it('goes quicker than it arrives', () => {
+    expect(seconds(rule('.rail {'))).toBeLessThan(seconds(rule('.rail[data-open] {')))
+  })
+
+  it('is out of reach and casts no shadow of its own while it is shut', () => {
+    expect(rule('.rail {')).toMatch(/visibility:\s*hidden/)
+    expect(rule('.rail {')).toMatch(/visibility\s+0s\s+linear/)
+  })
+})
