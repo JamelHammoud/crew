@@ -5,7 +5,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest
 import { CrewCanvas } from '../src/renderer/src/canvas/CrewCanvas'
 import type { Editor } from '../src/renderer/src/canvas/editor'
 import { createShapeId, createTLStore } from '../src/renderer/src/canvas/schema'
-import { GeoShapeUtil, TextShapeUtil } from '../src/renderer/src/canvas/shapes'
+import { GeoShapeUtil, NoteShapeUtil, TextShapeUtil } from '../src/renderer/src/canvas/shapes'
 import { shapeCssTransform } from '../src/renderer/src/canvas/render'
 import { richTextToPlainText, type RichTextDocument } from '../src/renderer/src/canvas/text'
 
@@ -97,6 +97,7 @@ function drawingContext(): CanvasRenderingContext2D {
 
 const textId = createShapeId('probe-text')
 const geoId = createShapeId('probe-geo')
+const noteId = createShapeId('probe-note')
 
 const hello: RichTextDocument = {
   type: 'doc',
@@ -139,6 +140,19 @@ function mountBoard(): { view: ReturnType<typeof render>; editor: () => Editor }
   const view = render(
     createElement(CrewCanvas, { store, shapeUtils: [TextShapeUtil, GeoShapeUtil], onMount })
   )
+  return { view, editor: () => made! }
+}
+
+function mountNoteBoard(): { view: ReturnType<typeof render>; editor: () => Editor } {
+  vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(drawingContext())
+  const store = createTLStore({ id: 'canvas-note-caret-probe' })
+  let made: Editor | undefined
+  const onMount = (subject: Editor) => {
+    made = subject
+    subject.createShapes([{ id: noteId, type: 'note', x: 40, y: 40 }])
+    return undefined
+  }
+  const view = render(createElement(CrewCanvas, { store, shapeUtils: [NoteShapeUtil], onMount }))
   return { view, editor: () => made! }
 }
 
@@ -287,5 +301,23 @@ describe('canvas text editing', () => {
     await waitFor(() => expect(editor().getEditingShapeId()).toBe(null))
     expect(view.container.querySelector('[contenteditable="true"]')).toBeNull()
     expect(view.container.querySelector(`[data-canvas-text-editor="${textId}"]`)).toBeNull()
+  })
+})
+
+describe('empty note editing', () => {
+  it('gives the live editable the full note text width so its caret can paint', async () => {
+    const { view, editor } = mountNoteBoard()
+    await waitFor(() => expect(view.container.querySelector(`[data-shape-id="${noteId}"]`)).toBeTruthy())
+
+    act(() => {
+      editor().setEditingShape(noteId)
+    })
+
+    await waitFor(() => expect(view.container.querySelector('[contenteditable="true"]')).toBeTruthy())
+    const wrapper = view.container.querySelector('.crew-note-text-editor') as HTMLElement
+    const mount = wrapper.querySelector('.crew-text') as HTMLElement
+    expect(wrapper.style.width).toBe('100%')
+    expect(mount.style.width).toBe('100%')
+    expect(mount.contains(dom.window.document.activeElement)).toBe(true)
   })
 })
