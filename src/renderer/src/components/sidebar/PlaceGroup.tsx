@@ -52,8 +52,7 @@ function PlaceGroup({
           here ? 'text-fg' : 'text-fg/70'
         }`}
       >
-        <span className={here ? 'text-fg/70' : 'text-fg/45'}>{markOf(place)}</span>
-        <span className="min-w-0 flex-1 truncate text-sm font-medium">{place.title}</span>
+        <PlaceFace place={place} lit={here} />
         {busy && <Spinner size={13} className="text-fg/45" />}
       </button>
       {threads.map(thread => (
