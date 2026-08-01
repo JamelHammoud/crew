@@ -12,6 +12,17 @@ const FIELD =
 const GLASS =
   'w-full bg-fg/[0.07] rounded-full px-3.5 h-9 text-sm text-fg placeholder:text-fg/30 outline-none transition-colors duration-150 hover:bg-fg/[0.1] focus:bg-fg/[0.14]'
 
+// The same field with room for more than a line. A pill is what a field wears
+// wherever it holds one, and a box that holds a paragraph cannot: the curve that
+// reads as a pill on a 36 high row reads as a lozenge on a 70 high one, and the
+// first line of type sits inside the bend. So it takes the radius a box wears,
+// squarer than the pills around it and softer than the card it stands on.
+const AREA =
+  'w-full resize-none bg-ink-800 rounded-xl px-4 py-3 text-base leading-6 text-fg placeholder:text-fg-muted outline-none transition-shadow duration-200 focus:shadow-[0_0_0_1px_rgb(255_255_255/0.12)] light:focus:shadow-[0_0_0_1px_rgb(0_0_0/0.14)]'
+
+const GLASS_AREA =
+  'w-full resize-none bg-fg/[0.07] rounded-xl px-3.5 py-2.5 text-sm leading-5 text-fg placeholder:text-fg/30 outline-none transition-colors duration-150 hover:bg-fg/[0.1] focus:bg-fg/[0.14]'
+
 const TextField = forwardRef<
   HTMLInputElement,
   InputHTMLAttributes<HTMLInputElement> & { glass?: boolean }
@@ -20,6 +31,15 @@ const TextField = forwardRef<
 ))
 
 TextField.displayName = 'TextField'
+
+export const TextArea = forwardRef<
+  HTMLTextAreaElement,
+  TextareaHTMLAttributes<HTMLTextAreaElement> & { glass?: boolean }
+>(({ className = '', glass, ...rest }, ref) => (
+  <textarea ref={ref} className={`${glass ? GLASS_AREA : AREA} ${className}`} {...rest} />
+))
+
+TextArea.displayName = 'TextArea'
 
 export default TextField
 export { FIELD }
