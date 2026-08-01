@@ -1,6 +1,7 @@
 import type { KeyboardEvent } from 'react'
 import Modal from '../Modal'
 import Spinner from '../Spinner'
+import { TextArea } from '../TextField'
 import { useAutoResize } from '../useAutoResize'
 
 export default function CommitDialog({
