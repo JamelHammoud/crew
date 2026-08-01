@@ -79,9 +79,9 @@ function CanvasShapeView<Shape extends CanvasShapeRecord>({ host, renderer, resu
   useLayoutEffect(() => {
     const foreground = foregroundRef.current
     if (!foreground) return
-    culling.register(result.id, foreground, backgroundRef.current, host.getCulledShapes().has(result.id))
+    culling.register(result.id, foreground, backgroundRef.current)
     return () => culling.unregister(result.id)
-  }, [culling, host, result.id])
+  }, [culling, result.id])
 
   return (
     <>
