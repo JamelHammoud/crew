@@ -117,6 +117,7 @@ export class Editor {
   private readonly pageBoundsCache = new Map<TLShapeId, Computed<Box | undefined>>()
   private readonly pageShapesCache = new Map<TLPageId, Computed<TLShape[]>>()
   private readonly pageTransformCache = new Map<TLShapeId, Computed<Mat>>()
+  private baseCulledCache: Computed<ReadonlySet<TLShapeId>> | null = null
   private readonly getContainerFn: () => HTMLElement
   private readonly opacityForNextShape = { value: 1 }
   private readonly stylesForNextShape = new Map<string, unknown>()
@@ -448,17 +449,23 @@ export class Editor {
 
   getCulledShapes(): ReadonlySet<TLShapeId> {
     if (this.inputs.getIsPointing()) return this.culled
-    const visible = this.getShapeIdsInsideBounds(this.getViewportPageBounds())
-    const next = new Set<TLShapeId>()
-    for (const shape of this.getCurrentPageShapesSorted()) {
-      if (visible.has(shape.id)) continue
-      if (!this.getShapeUtil(shape).canCull(shape as never)) continue
-      next.add(shape.id)
-    }
+    this.baseCulledCache ??= computed('editor.baseCulledShapes', () => this.computeBaseCulledShapes())
+    const next = new Set(this.baseCulledCache.get())
     this.getSelectedShapeIds().forEach(id => next.delete(id))
     const editing = this.getEditingShapeId()
     if (editing) next.delete(editing)
     return sameIds(this.culled, next) ? this.culled : (this.culled = next)
+  }
+
+  private computeBaseCulledShapes(): ReadonlySet<TLShapeId> {
+    const visible = this.getShapeIdsInsideBounds(this.getViewportPageBounds())
+    const result = new Set<TLShapeId>()
+    for (const shape of this.getCurrentPageShapesSorted()) {
+      if (visible.has(shape.id)) continue
+      if (!this.getShapeUtil(shape).canCull(shape as never)) continue
+      result.add(shape.id)
+    }
+    return result
   }
 
   getSortedChildIdsForParent(parentId: TLParentId): TLShapeId[] {
