@@ -15,6 +15,8 @@ import { makeLink, parseLink, wsUrl } from '../shared/link'
 import { agentId, type AgentDef, type AgentSettings } from '../shared/llm'
 import { joinPlace, projectPlace } from '../shared/places'
 import { projectKey, readCrewRemote, writeCrewRemote, type CrewHome } from '../shared/project'
+import type { SessionEvent } from '../shared/events'
+import type { LiveThread } from '../shared/threads'
 import type { CurrentSession, OpenOptions } from '../shared/session'
 import type {
   RepoActionResult,
@@ -122,6 +124,10 @@ export class AppSession {
 
   key(): string | null {
     return this.place
+  }
+
+  liveThreads(): LiveThread[] {
+    return this.hosted?.session.liveThreads() ?? []
   }
 
   saved(): SavedSession | null {
@@ -279,6 +285,7 @@ export class AppSession {
     const crewUrl = home === 'private' ? await crewRepoUrl(base) : null
     const crew = crewUrl ? this.crewLoop(base) : null
     session.onSyncNeeded = () => this.scheduleSync()
+    session.onEvent = event => this.onEvent?.(event)
     const server = await this.listen(session, shared, PREFERRED_PORT)
     this.server = server
     this.git = git
