@@ -2,13 +2,30 @@ import { createElement, type CSSProperties, type ReactNode } from 'react'
 import { Rectangle2d } from '../geometry'
 import { Vec } from '../math/Vec'
 import { textShapeProps, type TLShape as CrewShape } from '../schema'
+import {
+  compensateTextGrowth,
+  measureTextLayout,
+  textGrowthMatters,
+  type TextGrowthState,
+  type TextLayoutSize,
+  type TextMeasurer
+} from '../text/autosize'
 import { richTextToHtml, type RichTextDocument } from '../text/richText'
-import { withResolvedLineHeight } from '../text/typeStyle'
+import { TEXT_LINE_HEIGHT, withResolvedLineHeight } from '../text/typeStyle'
 import { ShapeUtil, type ShapeEditor, type ShapeResizeInfo } from './ShapeUtil'
-import { FONT_FAMILIES, TEXT_FONT_SIZES, plainText, richText } from './shared'
+import { FONT_FAMILIES, TEXT_FONT_SIZES, richText } from './shared'
 import { shapeColor } from './theme'
 
 export type TextShape = CrewShape<'text'>
+
+const ESTIMATE: TextMeasurer = {
+  measureHtml: (html, options) => {
+    const text = html.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '')
+    const lines = text.split('\n')
+    const width = Math.max(0, ...lines.map(line => line.length * options.fontSize * 0.58))
+    return { w: width, h: lines.length * options.fontSize * options.lineHeight }
+  }
+}
 
 function scaleDelta(info: ShapeResizeInfo<TextShape>): number {
   if (info.handle === 'left' || info.handle === 'right') return Math.max(0.01, Math.abs(info.scaleX))

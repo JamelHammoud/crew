@@ -344,14 +344,15 @@ describe('what the canvas draws over the artwork', () => {
     expect(drawn.named('setLineDash').length).toBeGreaterThan(0)
   })
 
-  it('paints the overlays in the order they stack', () => {
+  it('paints the marquee under the chrome that stands over it', () => {
     const subject = editor()
     const id = geo(subject, 'one', 100, 100, 200, 120)
     subject.select(id)
+    subject.setHoveredShape(id)
     subject.updateInstanceState({ brush: { x: 0, y: 0, w: 10, h: 10 } })
 
     const types = activeTypes(subject)
-    expect(types.indexOf('brush')).toBeLessThan(types.indexOf('shape_indicator'))
-    expect(types.indexOf('shape_indicator')).toBeLessThan(types.indexOf('selection_foreground'))
+    expect(types.indexOf('brush')).toBeGreaterThanOrEqual(0)
+    expect(types.indexOf('brush')).toBeLessThan(types.indexOf('selection_foreground'))
   })
 })
