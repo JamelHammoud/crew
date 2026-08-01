@@ -206,6 +206,84 @@ describe('what a Design text shape is measured with', () => {
   })
 })
 
+function bareBoard(id: string): Editor {
+  return new Editor({
+    store: createTLStore({ id }),
+    shapeUtils: [DesignTextUtil],
+    getContainer: () => dom.window.document.body
+  })
+}
+
+function spacingAwareRects(): void {
+  vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+    const characters = this.textContent?.length ?? 0
+    const spacing = Number.parseFloat(this.style.letterSpacing) || 0
+    const width = characters * 10 + Math.max(0, characters - 1) * spacing
+    return { x: 0, y: 0, left: 0, top: 0, right: width, bottom: 24, width, height: 24, toJSON: () => ({}) } as DOMRect
+  })
+}
+
+describe('letter spacing on a Design text shape', () => {
+  it('widens the bounding box the selection is drawn from', () => {
+    spacingAwareRects()
+    const editor = bareBoard('design-typography-probe-spacing')
+    const id = createShapeId('spaced')
+    editor.createShape({
+      id,
+      type: 'text',
+      x: 0,
+      y: 0,
+      props: { autoSize: true, scale: 1, richText: fromPlainText('Hello') }
+    })
+
+    const tight = editor.getShapeGeometry(editor.getShape(id)!).bounds.w
+    setTextShapeType(editor, editor.getShape(id) as TLTextShape, { spacing: 12 })
+    const loose = editor.getShapeGeometry(editor.getShape(id)!).bounds.w
+
+    expect(loose).toBeGreaterThan(tight)
+  })
+})
+
+describe('dragging the edge of a Design text shape', () => {
+  it('switches to a fixed width and keeps the scale', () => {
+    const editor = bareBoard('design-typography-probe-resize')
+    const id = createShapeId('draggable')
+    editor.createShape({
+      id,
+      type: 'text',
+      x: 0,
+      y: 0,
+      props: { autoSize: true, scale: 2, w: 100, richText: fromPlainText('Hello') }
+    })
+    const before = editor.getShapeGeometry(editor.getShape(id)!).bounds.w
+
+    editor.resizeShape(id, { x: 2, y: 1 }, { dragHandle: 'right' })
+
+    const after = editor.getShape(id) as TLTextShape
+    expect(after.props.autoSize).toBe(false)
+    expect(after.props.scale).toBe(2)
+    expect(after.props.w).toBeCloseTo((before * 2) / 2, 5)
+  })
+
+  it('scales the shape from a corner instead of widening it', () => {
+    const editor = bareBoard('design-typography-probe-corner')
+    const id = createShapeId('corner')
+    editor.createShape({
+      id,
+      type: 'text',
+      x: 0,
+      y: 0,
+      props: { autoSize: true, scale: 1, richText: fromPlainText('Hello') }
+    })
+
+    editor.resizeShape(id, { x: 3, y: 3 }, { dragHandle: 'bottom_right' })
+
+    const after = editor.getShape(id) as TLTextShape
+    expect(after.props.autoSize).toBe(true)
+    expect(after.props.scale).toBe(3)
+  })
+})
+
 describe('typography settings on a Design text shape', () => {
   it('keeps every typography prop on the record after the edit session ends', async () => {
     const { editor } = mountBoard()

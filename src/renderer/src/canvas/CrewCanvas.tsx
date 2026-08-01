@@ -97,12 +97,37 @@ export function CrewCanvas({
   useEffect(() => {
     const element = container.current
     if (!element || !editor) return
+    const ownerDocument = element.ownerDocument
     const handlers = editor.getCanvasEventHandlers()
+    let lastX = NaN
+    let lastY = NaN
     const pointerDown = (event: PointerEvent) => {
+      if (taken(event)) return
+      take(event)
       element.focus({ preventScroll: true })
       handlers.onPointerDown(event)
     }
+    const pointerMove = (event: PointerEvent) => {
+      if (taken(event)) return
+      take(event)
+      if (event.clientX === lastX && event.clientY === lastY) return
+      lastX = event.clientX
+      lastY = event.clientY
+      handlers.onPointerMove(event)
+    }
+    const keyDown = (event: KeyboardEvent) => {
+      if (taken(event) || capturesKeys(ownerDocument.activeElement)) return
+      take(event)
+      handlers.onKeyDown(event)
+    }
+    const keyUp = (event: KeyboardEvent) => {
+      if (taken(event) || capturesKeys(ownerDocument.activeElement)) return
+      take(event)
+      handlers.onKeyUp(event)
+    }
     const pointerUp = (event: PointerEvent) => {
+      if (taken(event)) return
+      take(event)
       flushSync(() => handlers.onPointerUp(event))
     }
     const contextMenu = (event: MouseEvent) => {
