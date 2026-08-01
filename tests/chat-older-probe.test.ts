@@ -74,6 +74,7 @@ Object.defineProperty(HTMLElement.prototype, 'scrollTop', {
 })
 
 const { default: Chat } = await import('../src/renderer/src/views/Chat')
+const { default: TasksPanel } = await import('../src/renderer/src/components/TasksPanel')
 const { useCrew } = await import('../src/renderer/src/state/store')
 
 const said = (n: number): SessionEvent => ({
@@ -105,11 +106,18 @@ const archived = (n: number): SessionEvent => ({
   byName: 'Jamel'
 })
 
-const snapshot = (events: SessionEvent[], moreEvents: boolean): SessionSnapshot => ({
+const snapshot = (
+  events: SessionEvent[],
+  moreEvents: boolean,
+  threadEvents: SessionEvent[] = [],
+  threadPrompts: Record<string, string> = {}
+): SessionSnapshot => ({
   code: 'abc123',
   members: [{ id: 'jamel', name: 'Jamel', connected: true }],
   agents: [],
   events,
+  threadEvents,
+  threadPrompts,
   docs: {},
   queues: {},
   todos: [],
@@ -122,7 +130,12 @@ const asked = (): ClientMessage[] => (FakeSocket.last?.sent ?? []).filter(m => m
 
 const held = (): string[] => useCrew.getState().events.map(e => e.id)
 
-function join(events: SessionEvent[], moreEvents = true) {
+function join(
+  events: SessionEvent[],
+  moreEvents = true,
+  threadEvents: SessionEvent[] = [],
+  threadPrompts: Record<string, string> = {}
+) {
   useCrew.getState().connect({
     wsUrl: 'ws://127.0.0.1:7777/ws',
     place: 'project:/tmp/crew',
@@ -140,7 +153,7 @@ function join(events: SessionEvent[], moreEvents = true) {
   })
   act(() => FakeSocket.last?.onopen?.())
   FakeSocket.last!.sent = []
-  deliver({ type: 'welcome', selfId: 'jamel', snapshot: snapshot(events, moreEvents) })
+  deliver({ type: 'welcome', selfId: 'jamel', snapshot: snapshot(events, moreEvents, threadEvents, threadPrompts) })
 }
 
 function open(events: SessionEvent[], moreEvents = true) {
@@ -152,6 +165,25 @@ function open(events: SessionEvent[], moreEvents = true) {
 }
 
 const recent = Array.from({ length: 8 }, (_, i) => said(100 + i))
+
+describe('tasks outside the first page of chat', () => {
+  it('keeps old open and working threads in the Tasks drawer', () => {
+    join(recent, true, [started(1), started(2)], { 'thread-2': 'prompt-2' })
+    const view = render(
+      createElement(TasksPanel, {
+        open: true,
+        onClose: () => {},
+        onOpenThread: () => {},
+        onOpenThreadBeside: () => {}
+      })
+    )
+
+    expect(view.container.textContent).toContain('Needs review 1')
+    expect(view.container.textContent).toContain('In progress 1')
+    expect(view.container.textContent).toContain('thread 1')
+    expect(view.container.textContent).toContain('thread 2')
+  })
+})
 
 describe('reaching back through the chat', () => {
   beforeEach(() => {

@@ -24,6 +24,17 @@ const drafted = (n: number): SessionEvent => ({
   byName: 'alice'
 })
 
+const opened = (n: number): SessionEvent => ({
+  id: `t${n}`,
+  ts: 1_700_000_000_000 + n,
+  kind: 'thread.started',
+  threadId: `thread-${n}`,
+  agentId: 'agent-1',
+  agentLabel: 'Bubbles',
+  title: `thread ${n}`,
+  byName: 'alice'
+})
+
 // A doc is written where it stands rather than scrolled past, so the log holds
 // far more than the chat ever draws. Seeding both is what keeps a page of
 // history honest about which of the two comes back.
@@ -70,6 +81,21 @@ describe('reading back into the chat history', () => {
     expect(snapshot.moreEvents).toBe(true)
     expect(snapshot.events.filter(e => e.kind === 'message')).toHaveLength(500)
     expect(snapshot.events[0].id).toBe(written[700].id)
+  })
+
+  it('hands over thread records and current runs outside the recent chat window', async () => {
+    await host.close()
+    const repoPath = tmpDir('thread-history')
+    const events = [opened(1), ...Array.from({ length: 600 }, (_, i) => said(i))]
+    const dir = path.join(repoPath, '.crew', 'chat')
+    fs.mkdirSync(dir, { recursive: true })
+    fs.writeFileSync(path.join(dir, '0001.jsonl'), events.map(event => JSON.stringify(event) + '\n').join(''))
+    host = await startHost(repoPath)
+
+    const snapshot = host.session.snapshot()
+    expect(snapshot.events.some(event => event.kind === 'thread.started')).toBe(false)
+    expect(snapshot.threadEvents).toEqual([opened(1)])
+    expect(snapshot.threadPrompts).toEqual({})
   })
 
   it('walks back a page at a time and stops at the beginning', async () => {
