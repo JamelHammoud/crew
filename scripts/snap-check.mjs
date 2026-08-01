@@ -672,7 +672,7 @@ app.whenReady().then(async () => {
       fs.writeFileSync(whole, (await win.webContents.capturePage()).toPNG())
       const close = path.join(shots, name + '-close.png')
       fs.writeFileSync(close, (await win.webContents.capturePage(posed.crop)).toPNG())
-      pictures.push({ zoom: posed.zoom, indicators: posed.indicators, pixels: posed.pixels, whole, close })
+      pictures.push({ ...posed, whole, close })
       await js('window.snapProbe.release()')
     }
     result.pictures = pictures

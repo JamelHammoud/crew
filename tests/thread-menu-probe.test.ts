@@ -3,6 +3,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import ThreadRow from '../src/renderer/src/components/sidebar/ThreadRow'
+import { ownsMenu } from '../src/renderer/src/components/threadMenu'
 import { useCrew } from '../src/renderer/src/state/store'
 import type { LiveThread } from '../src/shared/threads'
 
@@ -67,5 +68,26 @@ describe('the right click on a thread in the rail', () => {
     fireEvent.click(screen.getByText('Open in window'))
     expect(popOutThread).toHaveBeenCalledWith('thread-2', AWAY)
     expect(useCrew.getState().openThreadIds).toEqual(['thread-1'])
+  })
+})
+
+describe('a right click on the thread itself', () => {
+  const under = (html: string): Element => {
+    const box = document.createElement('div')
+    box.innerHTML = html
+    return box.firstElementChild!
+  }
+
+  it('leaves what already answers a right click to answer it', () => {
+    expect(ownsMenu(under('<a href="https://crew.dev">crew</a>'))).toBe(true)
+    expect(ownsMenu(under('<img alt="a shot" />'))).toBe(true)
+    expect(ownsMenu(under('<textarea></textarea>'))).toBe(true)
+    expect(ownsMenu(under('<div contenteditable="true">a doc</div>'))).toBe(true)
+  })
+
+  it('reads what the press really landed on rather than the box it was in', () => {
+    expect(ownsMenu(under('<a href="https://crew.dev"><span>crew</span></a>').firstElementChild)).toBe(true)
+    expect(ownsMenu(under('<p>what an agent said</p>'))).toBe(false)
+    expect(ownsMenu(null)).toBe(false)
   })
 })
