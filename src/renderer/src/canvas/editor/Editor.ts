@@ -166,6 +166,7 @@ export class Editor {
       isLocked: options.options?.camera?.isLocked
     })
     this.scribbles = new ScribbleManager(this)
+    this.edgeScrollManager = new EdgeScrollManager(this)
     this.bindings = new BindingManager(this, options.bindingUtils)
     this.ticks = new TickManager(elapsed => this.tick(elapsed))
     this.user = new UserPreferencesManager({
