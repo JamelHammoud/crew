@@ -1,4 +1,4 @@
-import { textInkAt } from '../../../../design/textContrast'
+import { textInkAt, type ContrastEditor } from '../../../../design/textContrast'
 import { Vec } from '../../../math'
 import { createShapeId, fromPlainText, type TLShape, type TLShapeId } from '../../../schema'
 import { BoxStateNode, maybeSnapToGrid, type BoxPointerInfo } from '../../box'
@@ -104,7 +104,7 @@ export class Pointing extends BoxStateNode {
           autoSize,
           w: width,
           scale: this.editor.getResizeScaleFactor(),
-          color: textInkAt(this.editor, point)
+          color: textInkAt(this.editor as ContrastEditor, point)
         }
       }
     ])
