@@ -38,53 +38,15 @@ export default function SubagentMark({
   className?: string
 }) {
   const box = typeof size === 'number' ? size : SIZES[size]
-  const tile = useRef<HTMLCanvasElement>(null)
-  const [drawn, setDrawn] = useState(box >= WORTH_DRAWING)
   const clip = useId()
-  const subject = useMemo(() => ({ id: seed, colors: paletteFor(seed) }), [seed])
   const path = useMemo(() => shapePath(subagentShape(seed), box), [seed, box])
-
-  useEffect(() => {
-    if (box < WORTH_DRAWING) {
-      setDrawn(false)
-      return
-    }
-    const canvas = tile.current
-    if (!canvas) return
-    const art = coverFor(subject)
-    if (!art) {
-      setDrawn(false)
-      return
-    }
-    const grid = Math.round(box * Math.min(3, window.devicePixelRatio || 1))
-    canvas.width = grid
-    canvas.height = grid
-    const flat = canvas.getContext('2d')
-    if (!flat) return
-    flat.drawImage(art, 0, 0, grid, grid)
-    setDrawn(true)
-  }, [subject, box])
 
   return (
     <span
       className={`relative inline-block align-middle shrink-0 ${className}`}
       style={{ width: box, height: box }}
     >
-      {drawn ? (
-        <canvas
-          ref={tile}
-          aria-hidden
-          style={{ clipPath: `path('${path}')` }}
-          className="absolute inset-0 w-full h-full"
-        />
-      ) : (
-        <span aria-hidden style={{ ...meshOf(subject, box), clipPath: `path('${path}')` }} className="absolute inset-0" />
-      )}
-      <span
-        aria-hidden
-        style={{ backgroundImage: GRAIN, backgroundSize: '160px 160px', clipPath: `path('${path}')` }}
-        className="absolute inset-0 opacity-[0.12] mix-blend-overlay"
-      />
+      <GeneratedField seed={seed} box={box} clip={`path('${path}')`} />
       {/* Nothing is drawn around the outside: an edge painted there is cropped
           the moment the mark lands in a scroller or a card that clips. The ring
           follows the silhouette rather than a box around it, so a rosette holds
