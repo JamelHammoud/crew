@@ -91,10 +91,6 @@ export default function Chat() {
     follow(feed.length > 0)
   }, [feed, steps, threadPrompts, follow])
 
-  // Reading a thread's last run out of the log is a walk over every event there
-  // has ever been, and a card does it twice. Done in the render it is that walk
-  // per card per keystroke, so what a resting card says is worked out once,
-  // beside the feed, and handed back by the same reference until the log moves.
   const resting = useMemo(() => {
     const ends = lastEnds(events)
     const held = new Map<string, ThreadStatus>()
