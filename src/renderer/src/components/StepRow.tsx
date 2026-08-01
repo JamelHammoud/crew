@@ -19,7 +19,7 @@ import Markdown from './Markdown'
 import { selecting } from './selecting'
 import StepCode from './StepCode'
 import StepDiff from './StepDiff'
-import type { ThreadItem } from './thread'
+import { thoughtPreview, type ThreadItem } from './thread'
 import ThinkingMark from './ThinkingMark'
 import { THINKING, toolAction, type ToolAction, type ToolIcon } from './toolActions'
 
@@ -170,7 +170,7 @@ export default function StepRow({ item, linked, inGroup }: { item: ThreadItem; l
           </>
         )}
         {subject && (
-          <span className={action.prose ? SUBJECT : SUBJECT_MONO}>
+          <span className={thinking ? `${SUBJECT} italic` : action.prose ? SUBJECT : SUBJECT_MONO}>
             <TextWithFileLinks text={subject} inline again={!item.streaming} />
           </span>
         )}

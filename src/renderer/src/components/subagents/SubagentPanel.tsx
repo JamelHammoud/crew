@@ -16,11 +16,12 @@ const roundButton =
 export default function SubagentPanel({ tab }: { tab: BrowserTab }) {
   const updateTab = useBrowser(state => state.updateTab)
   const child = useCrew(state => (tab.threadId ? state.threads[tab.threadId] : undefined))
+  const under = useCrew(state => (tab.threadId ? rootThread(tab.threadId, state.threads) : ''))
 
   // Where the list is: the tab's own parent, or the parent of whatever it was
   // opened on. A chip hands over the helper alone, so the way back out of one
   // is worked out here rather than being carried around.
-  const parentThreadId = tab.parentThreadId || child?.parentThreadId || ''
+  const parentThreadId = tab.parentThreadId || under
   const inside = Boolean(tab.threadId)
 
   const open = (threadId: string) => updateTab(tab.id, { threadId, parentThreadId })
