@@ -121,6 +121,19 @@ describe('the right click on a thread in the rail', () => {
     expect(said()).not.toContain('Mark done')
     expect(said()).not.toContain('Archive thread')
   })
+
+  it('puts the id on the clipboard', async () => {
+    row(false)
+
+    fireEvent.click(screen.getByText('Copy thread ID'))
+    await vi.waitFor(() => expect(written).toHaveBeenCalledWith('thread-2'))
+  })
+
+  it('offers the id for a thread of another project too', () => {
+    row(false, false, AWAY)
+
+    expect(said()).toContain('Copy thread ID')
+  })
 })
 
 describe('a right click on the thread itself', () => {

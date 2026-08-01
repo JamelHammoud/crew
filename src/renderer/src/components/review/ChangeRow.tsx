@@ -138,7 +138,7 @@ export default function ChangeRow({
             <span className={`w-4 shrink-0 text-center font-mono text-xs ${mark.tone}`}>{mark.letter}</span>
           </Tooltip>
         </div>
-        <Popover open={menu !== null} onClose={shut} at={menu === 'row' ? undefined : (menu ?? undefined)}>
+        <Popover open={menu !== null} onClose={shut} at={menu ?? undefined}>
           <MenuItem
             icon={<ColumnsGlyph className="w-4 h-4" />}
             label="Open changes"

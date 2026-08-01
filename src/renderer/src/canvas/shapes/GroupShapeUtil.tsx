@@ -1,6 +1,7 @@
 import { createElement, type ReactNode } from 'react'
 import { Group2d, Rectangle2d, type Geometry2d } from '../geometry'
 import { groupShapeProps, type TLShape as CrewShape } from '../schema'
+import { dashedBoxPath } from './dash'
 import { ShapeUtil } from './ShapeUtil'
 
 export type GroupShape = CrewShape<'group'>
@@ -37,6 +38,11 @@ export class GroupShapeUtil extends ShapeUtil<GroupShape> {
   }
   override hideSelectionBoundsFg(): boolean {
     return true
+  }
+  override getIndicatorPath(shape: GroupShape): Path2D | undefined {
+    const geometry = this.editor.getShapeGeometry?.(shape)
+    if (!geometry) return undefined
+    return dashedBoxPath(geometry.bounds.sides, 1 / Math.max(0.0001, this.editor.getZoomLevel?.() ?? 1))
   }
   override canResizeChildren(): boolean {
     return true
