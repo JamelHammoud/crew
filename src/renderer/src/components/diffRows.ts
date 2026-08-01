@@ -8,6 +8,8 @@ export interface Row {
   line: number | null
   changed: boolean
   inner: Span[]
+  at?: number
+  gap?: boolean
 }
 
 type Kind = 'same' | 'gone' | 'new'
