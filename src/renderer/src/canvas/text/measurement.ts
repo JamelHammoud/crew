@@ -270,6 +270,7 @@ export class TextMeasurement {
   }
 
   private ensurePool(size: number): void {
+    if (this.pool.length >= size) return
     const fragment = this.document.createDocumentFragment()
     while (this.pool.length < size) {
       const element = this.createElement()
