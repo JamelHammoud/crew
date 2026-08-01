@@ -437,12 +437,6 @@ interface ThreadIndex {
   returned: Map<string, Extract<SessionEvent, { kind: 'subagent.ended' }>>
 }
 
-// Six of the seven walks a thread is built from read the events and nothing
-// else, and a step landing replaces the steps rather than the events. Held
-// against the array they were read off, they are walked once for a thread
-// rather than once a frame for the whole of a run. Nothing here may be handed
-// an array that is written to in place: every event list in the store is made
-// again rather than pushed onto, which is what makes the identity honest.
 const indexes = new WeakMap<SessionEvent[], Map<string, ThreadIndex>>()
 
 function readIndex(events: SessionEvent[], selfId: string): ThreadIndex {
