@@ -203,21 +203,21 @@ export async function loadLanguage(lang: string): Promise<void> {
   }
 }
 
-export async function highlightLines(
-  path: string,
-  text: string,
-  theme: Theme
-): Promise<ThemedToken[][] | null> {
+export function highlightedNow(path: string, text: string, theme: Theme): Highlighted | null {
+  const lang = languageFor(path)
+  if (!lang || text.length > MAX_CHARS) return null
+  return shelf(lang, theme).get(text) ?? null
+}
+
+export async function highlightLines(path: string, text: string, theme: Theme): Promise<Highlighted | null> {
   const lang = languageFor(path)
   if (!lang || text.length > MAX_CHARS) return null
   const shelved = shelf(lang, theme)
-  const known = recall(shelved, text)
+  const known = shelved.get(text)
   if (known) return known
   try {
     const highlighter = await withLanguage(lang)
-    const tokens = highlighter.codeToTokensBase(text, { lang, theme: THEME_NAMES[theme] })
-    keep(shelved, text, tokens)
-    return tokens
+    return keep(shelved, text, highlighter.codeToTokensBase(text, { lang, theme: THEME_NAMES[theme] }))
   } catch {
     return null
   }
