@@ -3,7 +3,8 @@ import Counts from './Counts'
 import { carries, stepText, useFindQuery } from './find'
 import StepRow, { Chevron, Label, Mark, rowClass, stepFiles, stepTotals } from './StepRow'
 import type { ThreadItem } from './thread'
-import { toolAction } from './toolActions'
+import ThinkingMark from './ThinkingMark'
+import { THINKING, toolAction } from './toolActions'
 
 export default function StepGroup({ items, linked }: { items: ThreadItem[]; linked?: boolean }) {
   const [open, setOpen] = useState<boolean | null>(null)

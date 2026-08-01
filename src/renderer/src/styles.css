@@ -1741,7 +1741,7 @@ textarea:placeholder-shown {
 }
 
 .md-quiet strong {
-  @apply text-fg-secondary font-semibold;
+  @apply text-fg-secondary font-normal;
 }
 
 .md-quiet p,
