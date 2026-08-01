@@ -61,6 +61,7 @@ const ASK_MIN_WIDTH = 180
 // of the row leave the name nothing at all, so the word goes and its mark stands
 // in for it.
 const TIGHT_ROW = 460
+const THREAD_PAGE = 400
 const EMPTY_COMMANDS: CommandName[] = []
 
 export default function ThreadView({
