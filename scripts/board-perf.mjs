@@ -32,7 +32,7 @@ import './probe.css'
 const store = createTLStore({ id: 'board-perf' })
 loadSnapshot(store, ${JSON.stringify(snapshot)})
 
-window.__perf = { commits: 0, duration: 0, counts: {} }
+window.__perf = { commits: 0, duration: 0, counts: {}, start: performance.now(), ready: 0 }
 
 function Board() {
   const [editor, setEditor] = React.useState(null)
