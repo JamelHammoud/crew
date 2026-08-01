@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { CheckCircleGlyph, MoreGlyph } from '../icons'
+import { CheckCircleGlyph, MoreGlyph, PanelLeftGlyph } from '../icons'
 import { playSound } from '../media/sounds'
 import { reviewCount } from '../state/alerts'
 import { openSettings, useSettings } from '../state/settings'
+import { useSidebar } from '../state/sidebar'
 import { useCrew } from '../state/store'
 import { useFullScreen } from '../state/windowShape'
 import Avatar from './Avatar'
@@ -46,6 +47,9 @@ export default function TopBar({
   const selfName = useCrew(s => s.selfName)
   const waiting = useCrew(reviewCount)
   const settingsOpen = useSettings() !== null
+  const pinned = useSidebar(s => s.pinned)
+  const peek = useSidebar(s => s.peek)
+  const toggleSidebar = useSidebar(s => s.toggle)
   const [moreOpen, setMoreOpen] = useState(false)
   const [toolboxOpen, setToolboxOpen] = useState(false)
   const full = useFullScreen()
