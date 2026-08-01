@@ -43,8 +43,8 @@ export function getArrowTerminals(editor: ShapeEditor, arrow: ArrowShape): Arrow
   return straightArrowTerminals(editor, arrow, getArrowBindings(editor, arrow))
 }
 
-function arcFrom(start: Vec, end: Vec, bend: number): Arc2d | Edge2d {
-  if (Math.abs(bend) < 0.0001 || start.equals(end)) return new Edge2d({ start, end })
+function arcFrom(start: Vec, end: Vec, bend: number, scale: number): Arc2d | Edge2d {
+  if (Math.abs(bend) < MIN_ARROW_BEND * scale || start.equals(end)) return new Edge2d({ start, end })
   const midpoint = Vec.Med(start, end)
   const chord = Vec.Dist(start, end)
   const perpendicular = new Vec(-(end.y - start.y) / chord, (end.x - start.x) / chord)
