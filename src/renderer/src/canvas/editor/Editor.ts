@@ -1654,6 +1654,12 @@ export class Editor {
     return page.id
   }
 
+  private liveShape(shapeOrId: TLShape | TLShapeId | undefined | null): TLShape | undefined {
+    if (!shapeOrId) return undefined
+    if (typeof shapeOrId === 'string') return this.getShape(shapeOrId)
+    return this.getShape(shapeOrId.id) ?? shapeOrId
+  }
+
   private allShapes(): TLShape[] {
     return this.store.query('shape').get()
   }
