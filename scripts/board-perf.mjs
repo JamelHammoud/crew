@@ -231,6 +231,12 @@ const driveSource = String.raw`(async () => {
 
   editor.selectNone()
   await settle()
+  const viewportBounds = editor.getViewportScreenBounds()
+  const marqueeStart = { x: viewportBounds.minX + 8, y: viewportBounds.minY + 8 }
+  results.push(await measure('marquee', marqueeStart, { x: 6, y: 4 }, surface))
+
+  editor.selectNone()
+  await settle()
   const grabAt = viewport(editor.getShapePageBounds(near).center)
   const grabbed = editor.getShapeAtPoint(editor.getShapePageBounds(near).center, {
     margin: editor.options.hitTestMargin / editor.getZoomLevel(),
