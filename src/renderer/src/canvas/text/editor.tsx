@@ -80,6 +80,7 @@ export function RichTextEditor({
           if (position !== undefined) next.chain().focus().setTextSelection(position).run()
           else next.chain().focus('end').run()
         } else next.chain().focus('end').run()
+        next.view.dom.focus({ preventScroll: true })
       },
       editorProps: {
         handleKeyDown: (_view, event) => {
