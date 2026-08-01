@@ -30,7 +30,6 @@ export default function Sidebar({ overlay }: { overlay?: boolean }) {
   const switchTo = useCrew(s => s.switchTo)
   const closePlace = useCrew(s => s.closePlace)
   const peek = useSidebar(s => s.peek)
-  const pinned = useSidebar(s => s.pinned)
   const [busyKey, setBusyKey] = useState<string | null>(null)
   const [asking, setAsking] = useState<string | null>(null)
 
