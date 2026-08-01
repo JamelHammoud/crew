@@ -153,12 +153,12 @@ const driveSource = String.raw`(async () => {
     if (alive.length) editor.deleteShapes(alive)
     editor.selectNone()
     editor.setEditingShape(null)
-    editor.setCurrentTool('select')
+    editor.setCurrentTool('select.idle')
     await settle()
   }
   const scratch = async () => {
-    editor.setCurrentTool('select')
     editor.setEditingShape(null)
+    editor.setCurrentTool('select.idle')
     editor.selectNone()
     look(home, { x: 220, y: 200 }, 1)
     await settle()
