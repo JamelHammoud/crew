@@ -4,7 +4,7 @@ import type { Crews } from '../src/main/crews'
 import { projectPlace } from '../src/shared/places'
 import { crewsAt } from './helpers/crews'
 import { initRepo } from './helpers/git'
-import { TestUi, tmpDir, waitUntil } from './helpers/session'
+import { TestUi, tmpDir } from './helpers/session'
 
 function statePaths(prefix: string): { agents: string; session: string; projects: string } {
   const dir = tmpDir(prefix)
@@ -32,7 +32,7 @@ describe('several crews in one app', () => {
   }
 
   afterEach(async () => {
-    await Promise.all(uis.splice(0).map(ui => ui.close()))
+    for (const ui of uis.splice(0)) ui.close()
     await Promise.all(standing.splice(0).map(made => made.shutdownAll()))
   })
 
@@ -111,10 +111,7 @@ describe('several crews in one app', () => {
     expect(app.places().map(place => place.key)).toEqual([projectPlace(two)])
     expect(app.keyInView(1)).toBeNull()
     expect(app.current(2)?.wsUrl).toBe(second.wsUrl)
-    const ui = new TestUi(second.wsUrl, 'Ali')
-    uis.push(ui)
-    await ui.connect()
-    await waitUntil(() => ui.snapshot !== null)
+    uis.push(await TestUi.connect(second.wsUrl, 'Ali', second.code))
   })
 
   it('goes on running for the window that opened it once that window has gone', async () => {
@@ -126,10 +123,7 @@ describe('several crews in one app', () => {
 
     expect(app.places()).toHaveLength(1)
     expect(app.any()).toBe(true)
-    const ui = new TestUi(started.wsUrl, 'Ali')
-    uis.push(ui)
-    await ui.connect()
-    await waitUntil(() => ui.snapshot !== null)
+    uis.push(await TestUi.connect(started.wsUrl, 'Ali', started.code))
   })
 
   it('hands a window with no project of its own whatever is running', async () => {
