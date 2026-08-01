@@ -264,9 +264,12 @@ describe('what a long chat draws again', () => {
     openChat(steps)
 
     act(() => {
-      useCrew.setState({ steps: { [PROMPT]: [...steps, stepAt(STEPS)] } })
+      useCrew.setState({
+        steps: { [PROMPT]: [...steps, { ...stepAt(STEPS), status: 'running' as const, name: 'Grep' }] }
+      })
     })
 
+    expect(screen.getByText(/Searching/)).toBeTruthy()
     expect(drawn.cards).toBe(1)
     expect(drawn.messages).toBe(0)
     expect(drawn.huddles).toBe(0)
