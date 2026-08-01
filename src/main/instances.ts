@@ -1,6 +1,7 @@
 import fs from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
-import { instancesIn, pidFileName, type Alive } from '../shared/instances'
+import { instancesIn, outlivedBoot, pidFileName, type Alive } from '../shared/instances'
 
 // The doing half of counting the other Crew processes. The rule is in shared,
 // where a suite drives it without a folder anywhere near it, and this is the
