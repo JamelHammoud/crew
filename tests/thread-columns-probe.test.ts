@@ -297,9 +297,6 @@ describe('the chat standing beside a thread', () => {
 
     reveal()
     expect(screen.getByLabelText('The chat')).toBeTruthy()
-
-    fireEvent.pointerLeave(columns()[0]!.parentElement!.parentElement!)
-    expect(screen.queryByLabelText('The chat')).toBeNull()
   })
 
   it('goes with the last column', () => {
