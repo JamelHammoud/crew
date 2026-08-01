@@ -30,6 +30,7 @@ type SidebarState = {
 }
 
 let closing: ReturnType<typeof setTimeout> | null = null
+let settling: ReturnType<typeof setTimeout> | null = null
 
 const hold = (): void => {
   if (closing === null) return
@@ -37,13 +38,28 @@ const hold = (): void => {
   closing = null
 }
 
+const landed = (): void => {
+  if (settling === null) return
+  clearTimeout(settling)
+  settling = null
+}
+
 export const useSidebar = create<SidebarState>((set, get) => ({
   pinned: held(),
   peeking: false,
   toggle: () => {
     hold()
+    landed()
     const pinned = !get().pinned
     keep(pinned)
+    if (pinned && get().peeking) {
+      set({ pinned })
+      settling = setTimeout(() => {
+        settling = null
+        set({ peeking: false })
+      }, PIN_MS)
+      return
+    }
     set({ pinned, peeking: false })
   },
   peek: on => {
@@ -52,6 +68,7 @@ export const useSidebar = create<SidebarState>((set, get) => ({
       if (!get().pinned) set({ peeking: true })
       return
     }
+    if (get().pinned) return
     closing = setTimeout(() => {
       closing = null
       set({ peeking: false })
