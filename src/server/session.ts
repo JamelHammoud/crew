@@ -104,7 +104,7 @@ import {
 import { pageName } from '../shared/urls'
 import { PAGE_LIMIT, pagesNamed, pageTitle } from '../shared/showPage'
 import { RESHAPES_THREADS } from '../shared/places'
-import { activeThreads, type LiveThread } from '../shared/threads'
+import { activeThreads, eventsOfThread, type LiveThread } from '../shared/threads'
 import { VOICE_INSTRUCTIONS } from '../shared/voice'
 import {
   agentId,
