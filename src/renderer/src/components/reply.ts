@@ -37,10 +37,9 @@ export function jumpToMessage(targetId: string): boolean {
 }
 
 // The flash belongs at the end of the journey, not the start, so it is held
-// until the row is on the screen and has stopped moving under the smooth
-// scroll. Stillness alone is not arrival: a smooth scroll takes a frame or two
-// to set off, and the row is nowhere near the view for those, so the whole
-// flash was spent before anybody was looking at it.
+// until the row is in view and has stopped moving under the smooth scroll.
+// Stillness alone is not arrival: a smooth scroll takes a frame or two to set
+// off, and the row is nowhere near the view for those.
 function whenArrived(row: HTMLElement, done: () => void): void {
   if (typeof window.requestAnimationFrame !== 'function') {
     done()
