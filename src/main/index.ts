@@ -302,9 +302,9 @@ function previewsFor(sender: WebContents): Previews {
 // started for every window as soon as the folder a terminal would open in is
 // known, rather than when somebody asks for a tab and watches it blink.
 function warmTerminals(): void {
-  const folder = session.projectFolder()
   for (const win of appWindows()) {
-    if (!win.webContents.isDestroyed()) terminalsFor(win.webContents).warm(folder)
+    const contents = win.webContents
+    if (!contents.isDestroyed()) terminalsFor(contents).warm(crews.folderInView(contents.id))
   }
 }
 

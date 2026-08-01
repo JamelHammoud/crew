@@ -1060,6 +1060,30 @@ export const useCrew = create<CrewState>((set, get) => {
     removeTool: toolId => {
       socket.send({ type: 'tool.remove', toolId })
     },
+    addMemory: text => {
+      const clean = cleanMemoryLine(text)
+      if (!clean) return 'Write it as a sentence'
+      const held = get().memories
+      if (held.some(memory => memoryKey(memory.text) === memoryKey(clean))) return 'The crew already knows that one'
+      if (held.length >= MEMORY_LIMIT) return MEMORY_FULL
+      socket.send({ type: 'memory.add', text: clean })
+      return null
+    },
+    editMemory: (memoryId, text) => {
+      const clean = cleanMemoryLine(text)
+      if (!clean) return 'Write it as a sentence'
+      const held = get().memories
+      if (held.some(memory => memory.id !== memoryId && memoryKey(memory.text) === memoryKey(clean))) {
+        return 'The crew already knows that one'
+      }
+      if (clean !== held.find(memory => memory.id === memoryId)?.text) {
+        socket.send({ type: 'memory.edit', memoryId, text: clean })
+      }
+      return null
+    },
+    removeMemory: memoryId => {
+      socket.send({ type: 'memory.remove', memoryId })
+    },
     // A picture the whole crew will have. The host keeps it beside the session
     // and says so to everyone, so nothing is written down here on the way out.
     // What comes back is the one line to say where it did not go: the name is
