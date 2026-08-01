@@ -162,7 +162,6 @@ export default function ReviewView() {
   }
 
   const nothing = work.changes.length === 0 && stashes.length === 0
-  const bar = groups.staged.length > 0
 
   return (
     <div className="flex h-full flex-col">

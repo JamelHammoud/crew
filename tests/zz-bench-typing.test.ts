@@ -19,6 +19,38 @@ class TestResizeObserver {
 global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
 landed()
 
+const drawn = vi.hoisted(() => ({ composer: 0, rows: 0 }))
+
+vi.mock('../src/renderer/src/components/Composer', async () => {
+  const { createElement } = await import('react')
+  const actual = await vi.importActual<typeof import('../src/renderer/src/components/Composer')>(
+    '../src/renderer/src/components/Composer'
+  )
+  const real = actual.default
+  return {
+    ...actual,
+    default: (props: Parameters<typeof real>[0]) => {
+      drawn.composer += 1
+      return createElement(real, props)
+    }
+  }
+})
+
+vi.mock('../src/renderer/src/components/StepRow', async () => {
+  const { createElement } = await import('react')
+  const actual = await vi.importActual<typeof import('../src/renderer/src/components/StepRow')>(
+    '../src/renderer/src/components/StepRow'
+  )
+  const real = actual.default
+  return {
+    ...actual,
+    default: (props: Parameters<typeof real>[0]) => {
+      drawn.rows += 1
+      return createElement(real, props)
+    }
+  }
+})
+
 const AGENT: PooledAgent = {
   id: 'ali/claude',
   label: 'Claude',
