@@ -147,9 +147,10 @@ export function CrewCanvas({
       element.removeEventListener('touchend', handlers.onTouchEnd)
       element.removeEventListener('touchcancel', handlers.onTouchCancel)
       stopMount?.()
-      editor.dispose()
     }
   }, [editor, onMount])
+
+  if (!editor || !renderer) return null
 
   return (
     <EditorContext.Provider value={editor}>
