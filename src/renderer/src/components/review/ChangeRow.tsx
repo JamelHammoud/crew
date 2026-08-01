@@ -95,7 +95,9 @@ export default function ChangeRow({
           </span>
         </Tooltip>
         <span className="min-w-0 flex-1 truncate text-[13px]">
-          <span className={change.kind === 'deleted' ? 'text-fg-secondary line-through' : 'text-fg-secondary'}>
+          <span
+            className={`${reading ? 'text-fg' : 'text-fg-secondary'} ${change.kind === 'deleted' ? 'line-through' : ''}`}
+          >
             {name}
           </span>
           {folder && <span className="ml-1.5 text-xs text-fg-faint">{folder}</span>}
