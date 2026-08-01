@@ -1,6 +1,8 @@
 import { isValidElement, type CSSProperties, type ReactNode } from 'react'
 import { resolveLineHeight } from './measurement'
 
+export const TEXT_LINE_HEIGHT = 1.35
+
 const TYPE_PROPERTIES = [
   'color',
   'fontFamily',
