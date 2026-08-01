@@ -49,12 +49,12 @@ export default function ThreadColumns({ ids }: { ids: string[] }) {
       </div>
       {room && near && (
         <Tooltip
-          label="The chat"
+          label="Chat"
           className="absolute right-3 top-1/2 z-30 animate-edge"
         >
           <button
             onClick={() => setChatColumn(!chatColumn)}
-            aria-label="The chat"
+            aria-label="Chat"
             aria-pressed={chatColumn}
             className={`glass w-9 h-9 rounded-full flex items-center justify-center transition-colors duration-150 hover:bg-fg/[0.08] active:scale-95 ${
               chatColumn ? 'text-fg' : 'text-fg/70'
