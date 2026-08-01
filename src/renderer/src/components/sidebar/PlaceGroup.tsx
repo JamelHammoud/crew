@@ -1,16 +1,10 @@
 import { memo, useCallback, useState } from 'react'
-import { DesktopGlyph, FolderGlyph, GlobeGlyph, TrashGlyph } from '../../icons'
+import { TrashGlyph } from '../../icons'
 import Spinner from '../Spinner'
 import { MenuItem, Popover } from '../Popover'
-import type { Place } from '../../views/home/place'
+import PlaceFace from './PlaceFace'
 import ThreadRow from './ThreadRow'
 import { samePlaceGroup, type PlaceGroupProps } from './placeItems'
-
-function markOf(place: Place) {
-  if (place.join) return <GlobeGlyph className="w-4 h-4" />
-  if (place.project?.home === 'private') return <DesktopGlyph className="w-4 h-4" />
-  return <FolderGlyph className="w-4 h-4" />
-}
 
 function PlaceGroup({
   place,
