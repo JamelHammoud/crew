@@ -221,7 +221,6 @@ export class HandTool {
       dragging: new HandDragging(this, editor),
       one_finger_zooming: new HandOneFingerZooming(this, editor)
     }
-    this.children.idle.onEnter()
   }
 
   get state(): HandState {
@@ -234,6 +233,15 @@ export class HandTool {
     previous.onExit(info, id)
     this.stateId = id
     this.state.onEnter(info)
+  }
+
+  enter(info?: HandPointerEvent): void {
+    this.stateId = HandTool.initial
+    this.state.onEnter(info)
+  }
+
+  exit(info?: HandPointerEvent, to?: HandStateId): void {
+    this.state.onExit(info, to)
   }
 
   onPointerDown(info?: HandPointerEvent): void {
