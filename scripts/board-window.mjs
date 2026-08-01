@@ -123,7 +123,7 @@ export async function stage(file, mainSource) {
   await writeFile(path.join(directory, 'probe.tsx'), probeSource(saved.document))
   await writeFile(
     path.join(directory, 'probe.css'),
-    `@import "${path.join(root, 'src/renderer/src/styles.css')}";\n@import "${path.join(root, 'src/renderer/src/canvas/canvas.css')}";\n@source "${path.join(root, 'src/renderer/src')}";\nhtml, body, #root { width: 100%; height: 100%; margin: 0; }\n`
+    `@import "${path.join(root, 'src/renderer/src/styles.css')}";\n@import "${path.join(root, 'src/renderer/src/canvas/canvas.css')}";\n@source "${path.join(root, 'src/renderer/src')}";\nhtml, body, #root { width: 100%; height: 100%; margin: 0; }\n#root { position: relative; }\n`
   )
   await writeFile(path.join(directory, 'main.cjs'), mainSource)
   return directory
