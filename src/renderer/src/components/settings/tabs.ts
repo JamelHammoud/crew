@@ -34,6 +34,7 @@ export const SETTINGS_TABS: TabDef[] = [
   { id: 'machine', label: 'This computer', group: 'You', mark: DesktopGlyph },
   { id: 'people', label: 'People', group: 'Crew', mark: PeopleGlyph },
   { id: 'agents', label: 'Agents', group: 'Crew', mark: SparkGlyph },
+  { id: 'memory', label: 'Memory', group: 'Crew', mark: MemoryGlyph },
   { id: 'emoji', label: 'Emoji', group: 'Crew', mark: PhotoGlyph },
   { id: 'files', label: 'Files', group: 'Crew', mark: FileGlyph },
   { id: 'about', label: 'About', group: 'App', mark: InfoGlyph }
