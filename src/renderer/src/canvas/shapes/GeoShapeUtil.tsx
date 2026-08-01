@@ -378,13 +378,12 @@ export class GeoShapeUtil extends BaseBoxShapeUtil<GeoShape> {
       Math.ceil(dv.labelMinWidth + dv.labelExtraPadding),
       Math.ceil(shape.props.w / shape.props.scale - LABEL_PADDING * 2)
     )
-    const size = measureLabel(this.editor, richTextToHtml(shape.props.richText as RichTextDocument), {
+    const size = measureLabel(this.editor, plainText(shape.props.richText), {
       fontFamily: dv.labelFontFamily,
       fontSize: dv.labelFontSize,
       lineHeight: LINE_HEIGHT,
       maxWidth,
-      minWidth: dv.labelMinWidth,
-      text: plainText(shape.props.richText)
+      minWidth: dv.labelMinWidth
     })
     return { w: size.w + LABEL_PADDING * 2, h: size.h + LABEL_PADDING * 2 }
   }
