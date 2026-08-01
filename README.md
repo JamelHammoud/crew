@@ -76,8 +76,6 @@ crew --join crew://host:port/code    join someone's Crew
 
 You can install the CLI through the app, in Settings under "This computer"
 
-## Usage analytics
+## Let us know how you use Crew!
 
-FYI, we're kinda curious how people will end up using Crew. We've added PostHog usage analytics to help us capture aggregate information about usage. This can be 100% turned off via your settings.
-
-Also feel free to email me at devjamel@gmail.com to share how you're using Crew!
+We're kinda curious how people will end up using Crew, feel free to email me at devjamel@gmail.com!
