@@ -242,12 +242,42 @@ describe('the sidebar', () => {
   })
 
   it('holds the rail open while the pointer is anywhere in the corner', () => {
+    vi.useFakeTimers()
+    try {
+      const { container } = corner()
+      const box = container.firstElementChild as HTMLElement
+      fireEvent.mouseEnter(toggleIn(container))
+      fireEvent.mouseLeave(box)
+      fireEvent.mouseEnter(box)
+      act(() => {
+        vi.advanceTimersByTime(1000)
+      })
+      expect(useSidebar.getState().peeking).toBe(true)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('lets the rail go once the pointer has left the corner for good', () => {
+    vi.useFakeTimers()
+    try {
+      const { container } = corner()
+      const box = container.firstElementChild as HTMLElement
+      fireEvent.mouseEnter(toggleIn(container))
+      fireEvent.mouseLeave(box)
+      act(() => {
+        vi.advanceTimersByTime(1000)
+      })
+      expect(useSidebar.getState().peeking).toBe(false)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('does not open the rail for a pointer resting on the mark beside it', () => {
     const { container } = corner()
-    const box = container.firstElementChild as HTMLElement
-    fireEvent.mouseEnter(toggleIn(container))
-    fireEvent.mouseLeave(box)
-    fireEvent.mouseEnter(box)
-    expect(useSidebar.getState().peeking).toBe(true)
+    fireEvent.mouseEnter(container.firstElementChild as HTMLElement)
+    expect(useSidebar.getState().peeking).toBe(false)
   })
 
   it('switches to a place that is already running rather than opening it again', async () => {
