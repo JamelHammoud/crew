@@ -1,10 +1,11 @@
-import { useState, type PointerEvent as Press } from 'react'
+import { memo, useCallback, useState, type PointerEvent as Press } from 'react'
 import type { LiveThread } from '../../../../shared/threads'
 import { DesktopGlyph, FolderGlyph, GlobeGlyph, TrashGlyph } from '../../icons'
 import Spinner from '../Spinner'
 import { MenuItem, Popover } from '../Popover'
 import type { Place } from '../../views/home/place'
 import ThreadRow from './ThreadRow'
+import { samePlace, sameLiveThreads } from './placeItems'
 
 function markOf(place: Place) {
   if (place.join) return <GlobeGlyph className="w-4 h-4" />
@@ -12,34 +13,45 @@ function markOf(place: Place) {
   return <FolderGlyph className="w-4 h-4" />
 }
 
-export default function PlaceGroup({
+interface PlaceGroupProps {
+  place: Place
+  here: boolean
+  busy: boolean
+  stoppable: boolean
+  threads: LiveThread[]
+  openThreadIds: string[]
+  onOpen: (place: Place) => void
+  onOpenThread: (place: Place, threadId: string, toRight: boolean) => void
+  onStop: (place: Place) => void
+  onForget: (place: Place) => void
+  take: (id: string) => (event: Press) => void
+  dragged: () => boolean
+}
+
+function PlaceGroup({
   place,
   here,
   busy,
+  stoppable,
   threads,
   openThreadIds,
   onOpen,
   onOpenThread,
-  onOpenThreadToRight,
   onStop,
   onForget,
-  onTake,
+  take,
   dragged
-}: {
-  place: Place
-  here: boolean
-  busy: boolean
-  threads: LiveThread[]
-  openThreadIds: string[]
-  onOpen: () => void
-  onOpenThread: (threadId: string) => void
-  onOpenThreadToRight: (threadId: string) => void
-  onStop?: () => void
-  onForget: () => void
-  onTake: (event: Press) => void
-  dragged: () => boolean
-}) {
+}: PlaceGroupProps) {
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
+
+  const openThread = useCallback(
+    (threadId: string) => onOpenThread(place, threadId, false),
+    [onOpenThread, place]
+  )
+  const openThreadToRight = useCallback(
+    (threadId: string) => onOpenThread(place, threadId, true),
+    [onOpenThread, place]
+  )
 
   return (
     <div
@@ -49,9 +61,9 @@ export default function PlaceGroup({
       }`}
     >
       <button
-        onPointerDown={onTake}
+        onPointerDown={take(place.key)}
         onClick={() => {
-          if (!dragged()) onOpen()
+          if (!dragged()) onOpen(place)
         }}
         onContextMenu={event => {
           event.preventDefault()
@@ -73,17 +85,17 @@ export default function PlaceGroup({
           open={openThreadIds.includes(thread.id)}
           here={here}
           placeKey={place.key}
-          onOpen={() => onOpenThread(thread.id)}
-          onOpenToRight={() => onOpenThreadToRight(thread.id)}
+          onOpen={openThread}
+          onOpenToRight={openThreadToRight}
         />
       ))}
       <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined} className="min-w-44">
-        {onStop && (
+        {stoppable && (
           <MenuItem
             label="Stop this crew"
             onClick={() => {
               setMenuAt(null)
-              onStop()
+              onStop(place)
             }}
           />
         )}
@@ -93,10 +105,27 @@ export default function PlaceGroup({
           danger
           onClick={() => {
             setMenuAt(null)
-            onForget()
+            onForget(place)
           }}
         />
       </Popover>
     </div>
   )
 }
+
+export default memo(
+  PlaceGroup,
+  (a, b) =>
+    a.here === b.here &&
+    a.busy === b.busy &&
+    a.stoppable === b.stoppable &&
+    a.openThreadIds === b.openThreadIds &&
+    a.onOpen === b.onOpen &&
+    a.onOpenThread === b.onOpenThread &&
+    a.onStop === b.onStop &&
+    a.onForget === b.onForget &&
+    a.take === b.take &&
+    a.dragged === b.dragged &&
+    samePlace(a.place, b.place) &&
+    sameLiveThreads(a.threads, b.threads)
+)

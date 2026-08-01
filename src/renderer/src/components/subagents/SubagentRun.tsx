@@ -60,6 +60,13 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
     () => buildThread(threadEvents, steps, selfId, agents, as),
     [threadEvents, steps, selfId, agents, as]
   )
+  const tail = useDrawnTail(items.length, HELPER_PAGE, scrollRef)
+  const drawn = useMemo(() => (tail.from === 0 ? items : items.slice(tail.from)), [items, tail.from])
+  const tailScroll = tail.onScroll
+  const scrolled = useCallback(() => {
+    onScroll()
+    tailScroll()
+  }, [onScroll, tailScroll])
   const threadSteps = useFamilySteps(threadId)
   const start = threadEvents.find(event => event.kind === 'agent.start' && event.promptId === promptId)
   const ended = lastEnd(threadId, threadEvents)
