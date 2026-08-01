@@ -46,15 +46,36 @@ const scratch = (name: string): string => path.join(os.tmpdir(), `crew-pty-${pro
 
 const open = new Set<Terminals>()
 
+const dens: string[] = []
+
 function terminals(): Terminals {
   const made = new Terminals()
   open.add(made)
   return made
 }
 
+// A folder of its own to warm a shell in, resolved through its links because
+// that is the path the shell itself reports standing in it.
+function den(name: string): string {
+  const made = realpathSync(mkdtempSync(path.join(os.tmpdir(), `crew-pty-${name}-`)))
+  dens.push(made)
+  return made
+}
+
+function shells(): string[] {
+  try {
+    const found = execFileSync('pgrep', ['-P', String(process.pid)], { encoding: 'utf8' })
+    return found.trim().split('\n').filter(Boolean)
+  } catch {
+    return []
+  }
+}
+
 afterEach(() => {
   for (const made of open) made.closeAll()
   open.clear()
+  for (const where of dens) rmSync(where, { recursive: true, force: true })
+  dens.length = 0
 })
 
 describe('the shell a terminal opens', () => {
