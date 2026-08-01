@@ -53,6 +53,10 @@ export class DrawTool {
     return this.children[this.stateId]
   }
 
+  getPath(): string {
+    return `${this.id}.${this.stateId}`
+  }
+
   transition(id: DrawStateId, info?: FreehandPointerEvent): void {
     if (id === this.stateId) return
     this.state.onExit()

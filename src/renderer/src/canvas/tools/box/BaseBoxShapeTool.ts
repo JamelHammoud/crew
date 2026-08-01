@@ -41,8 +41,12 @@ export abstract class BaseBoxShapeTool implements BoxStateParent {
     this.current.onExit()
   }
 
-  getCurrentStateId(): string {
+  getPath(): string {
     return `${this.id}.${this.current.id}`
+  }
+
+  getCurrentStateId(): string {
+    return this.getPath()
   }
 
   onPointerDown(info: BoxPointerInfo = {}): void {

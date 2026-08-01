@@ -401,7 +401,7 @@ const driveSource = String.raw`(async () => {
     await clear()
     await scratch()
     const anchor = rect({ x: 0, y: 0 }, { w: 140, h: 100 })
-    const mover = rect({ x: 0, y: 220 }, { w: 120, h: 90 })
+    const mover = rect({ x: 0, y: 220 }, { w: 140, h: 100 })
     await settle()
     editor.select(mover)
     await settle()
@@ -412,7 +412,7 @@ const driveSource = String.raw`(async () => {
     const after = boundsOf(mover)
     return {
       ok: near(after.minX, anchorLeft, 1.5),
-      note: 'left edge landed at ' + round(after.minX - anchorLeft) + ' from the one above'
+      note: 'dragged 6 across, left edge landed ' + round(after.minX - anchorLeft) + ' from the one above it'
     }
   })
 

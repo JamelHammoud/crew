@@ -37,8 +37,12 @@ export class ArrowShapeTool implements ArrowStateParent {
     this.current.onExit()
   }
 
-  getCurrentStateId(): string {
+  getPath(): string {
     return `${this.id}.${this.current.id}`
+  }
+
+  getCurrentStateId(): string {
+    return this.getPath()
   }
 
   onPointerDown(info: ArrowPointerInfo = {}): void {
