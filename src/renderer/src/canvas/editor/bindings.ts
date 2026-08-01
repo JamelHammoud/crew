@@ -36,7 +36,10 @@ export class BindingManager {
         type: partial.type,
         fromId: partial.fromId,
         toId: partial.toId,
-        props: { ...this.utils.get(partial.type)?.getDefaultProps?.(), ...partial.props },
+        props: {
+          ...this.utils.get(partial.type)?.getDefaultProps?.(),
+          ...partial.props
+        } as TLBinding['props'],
         meta: partial.meta
       })
     )

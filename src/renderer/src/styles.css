@@ -282,11 +282,6 @@ body {
   box-shadow: none;
 }
 
-/* The rail standing in its own column is a hole in the window rather than a
-   surface in the page: what shows through it is the macOS material behind the
-   glass, which only reaches the screen where nothing in front of it is painted.
-   So the app stops painting its own floor and the columns beside the rail paint
-   theirs. The window is transparent already, so nothing else about it moves. */
 #root.railed {
   background: transparent;
 }

@@ -11,7 +11,14 @@ export {
   useSelectionOverlayActive,
   useSnapOverlayActive
 } from './overlayHooks'
-export { cameraCssTransform, cameraOffset, shapeCssTransform } from './style'
+export {
+  CANVAS_SCALE_VARIABLE,
+  CANVAS_ZOOM_VARIABLE,
+  cameraCssTransform,
+  cameraOffset,
+  cameraZoomVariables,
+  shapeCssTransform
+} from './style'
 export type {
   CanvasBounds,
   CanvasCamera,
