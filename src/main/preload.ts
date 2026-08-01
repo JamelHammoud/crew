@@ -97,7 +97,8 @@ const bridge = {
   resizeTray: (height: number): void => ipcRenderer.send('tray:size', height),
   openWindow: (): void => ipcRenderer.send('tray:open'),
   closeTray: (): void => ipcRenderer.send('tray:hide'),
-  popOutThread: (threadId: string): Promise<void> => ipcRenderer.invoke('window:pop-thread', threadId),
+  popOutThread: (threadId: string, key?: string): Promise<void> =>
+    ipcRenderer.invoke('window:pop-thread', threadId, key),
   appVersion: (): Promise<string> => ipcRenderer.invoke('app:version'),
   setTheme: (theme: 'dark' | 'light'): Promise<void> => ipcRenderer.invoke('app:theme', theme),
   setAppIcon: (icon: AppIconId): Promise<void> => ipcRenderer.invoke('app:icon', icon),
