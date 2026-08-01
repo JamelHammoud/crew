@@ -214,9 +214,11 @@ describe('canvas rich text rendering', () => {
     expect(html).toContain('<mark')
     expect(html).toContain('lit</mark>')
     expect(html).toContain('href="https://crew.test"')
-    expect(html).toContain('<ul>')
-    expect(html).toContain('<ol>')
-    expect(html.match(/<li>/g)).toHaveLength(2)
+    expect(html).toMatch(/<ul[^>]*>/)
+    expect(html).toMatch(/<ol[^>]*>/)
+    expect(html.match(/<li[^>]*>/g)).toHaveLength(2)
+    expect(html).toContain('one</p></li>')
+    expect(html).toContain('two</p></li>')
   })
 
   it('keeps an empty paragraph standing and wraps measurement html in the painted class', () => {
