@@ -86,6 +86,16 @@
   padding-left: 3.625ch;
 }
 
+.crew-rich-text h1,
+.crew-rich-text h2,
+.crew-rich-text h3,
+.crew-rich-text h4,
+.crew-rich-text h5,
+.crew-rich-text h6 {
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
 .crew-rich-text a {
   color: inherit;
   text-decoration: underline;

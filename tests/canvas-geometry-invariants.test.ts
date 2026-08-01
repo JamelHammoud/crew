@@ -137,9 +137,17 @@ describe('the signed distance every geometry measures', () => {
 
   it.each(named)('never goes negative on something open or hollow for %s', (_name, geometry) => {
     if (geometry.isClosed && geometry.isFilled) return
+    if (geometry instanceof Group2d) return
     for (const point of probePoints(geometry.bounds)) {
       expect(geometry.distanceToPoint(point, false)).toBeGreaterThanOrEqual(0)
     }
+  })
+
+  it('lets a group report the inside of a filled child even though the group holds no fill of its own', () => {
+    const body = new Rectangle2d({ width: 100, height: 60, isFilled: true })
+    const group = new Group2d({ children: [body] })
+    expect(group.isFilled).toBe(false)
+    expect(group.distanceToPoint(new Vec(50, 30), false)).toBeLessThan(0)
   })
 
   it.each(named)('agrees with its own hit test for %s', (_name, geometry) => {

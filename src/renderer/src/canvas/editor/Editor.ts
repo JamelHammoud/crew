@@ -1,6 +1,6 @@
-import { Rectangle2d, type Geometry2d } from '../geometry'
+import { Group2d, Rectangle2d, intersectPolygonPolygon, type Geometry2d } from '../geometry'
 import { snapshotToSvgResult, svgDataUrl, type ImageExportOptions } from '../export'
-import { Box, Mat, Vec } from '../math'
+import { Box, Mat, Vec, pointInPolygon } from '../math'
 import {
   DocumentRecordType,
   BindingRecordType,
