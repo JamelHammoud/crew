@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { projectPlace } from '../../../shared/places'
 import type { CrewHome } from '../../../shared/project'
 import { DesktopGlyph, FolderGlyph, GlobeGlyph, PlusGlyph } from '../icons'
 import { isLive, usePlaces } from '../state/places'
@@ -81,7 +82,7 @@ export default function Sidebar() {
     if (!folder) return
     peek(false)
     const plan = await window.crew.projectPlan(folder).catch(() => null)
-    if (plan?.known) return open(folder, `project:${folder}`)
+    if (plan?.known) return open(folder, projectPlace(folder))
     setAsking(folder)
   }
 
@@ -121,7 +122,7 @@ export default function Sidebar() {
             onPick={home => {
               const folder = asking
               setAsking(null)
-              if (folder) void open(folder, `project:${folder}`, home)
+              if (folder) void open(folder, projectPlace(folder), home)
             }}
           />
         </div>
