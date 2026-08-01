@@ -582,50 +582,57 @@ const probeSource = String.raw`(() => {
     },
 
     async pose(zoom) {
-      const view0 = await room(zoom)
-      const centre = view0.center
-      const anchor = box(Math.round(centre.x - 160 / zoom), Math.round(centre.y - 120 / zoom), Math.round(120 / zoom), Math.round(90 / zoom))
-      const mover = box(Math.round(centre.x + 100 / zoom), Math.round(centre.y + 60 / zoom), Math.round(80 / zoom), Math.round(60 / zoom))
-      await settle(4)
-      const anchorAt = boundsOf(anchor)
-      const moverAt = boundsOf(mover)
-      const want = anchorAt.minX - moverAt.minX
-      const off = Math.max(1, Math.min(4, 4 / zoom))
-      editor.select(mover)
-      await settle(3)
-      const from = view(moverAt.center)
-      const to = view({ x: moverAt.center.x + want - off, y: moverAt.center.y })
-      this.at = to
-      await hold(from, to, { target: nodeOf(mover) })
-      const live = indicators()
-      const pixels = redPixels()
-      const frame0 = editor.getViewportPageBounds()
-      const near = {
-        minX: Math.min(anchorAt.minX, moverAt.minX + want),
-        minY: Math.min(anchorAt.minY, moverAt.minY),
-        maxX: Math.max(anchorAt.maxX, moverAt.maxX + want),
-        maxY: Math.max(anchorAt.maxY, moverAt.maxY)
-      }
-      const topLeft = view({ x: near.minX, y: near.minY })
-      const bottomRight = view({ x: near.maxX, y: near.maxY })
-      return {
-        zoom: editor.getZoomLevel(),
-        indicators: live.length,
-        pixels,
-        viewport: { w: round(frame0.width), h: round(frame0.height) },
-        crop: {
-          x: Math.max(0, Math.round(topLeft.x) - 40),
-          y: Math.max(0, Math.round(topLeft.y) - 40),
-          width: Math.round(bottomRight.x - topLeft.x) + 80,
-          height: Math.round(bottomRight.y - topLeft.y) + 80
+      for (let go = 1; go <= 3; go++) {
+        const centre = (await room(zoom)).center
+        const anchor = box(Math.round(centre.x - 260), Math.round(centre.y - 160), 200, 140)
+        const mover = box(Math.round(centre.x + 60), Math.round(centre.y + 40), 140, 100)
+        await settle(5)
+        const anchorAt = boundsOf(anchor)
+        const moverAt = boundsOf(mover)
+        const want = anchorAt.minX - moverAt.minX
+        const off = zoom >= 1 ? 2 : 4
+        editor.select(mover)
+        await settle(3)
+        const from = view(moverAt.center)
+        const to = view({ x: moverAt.center.x + want - off, y: moverAt.center.y })
+        this.at = to
+        await hold(from, to, { target: nodeOf(mover) })
+        const live = indicators()
+        const pixels = redPixels()
+        const landed = boundsOf(mover)
+        const aligned = landed ? Math.abs(landed.minX - anchorAt.minX) < 0.01 : false
+        if ((live.length === 0 || pixels.count === 0 || !aligned) && go < 3) {
+          await letGo(to)
+          await clear()
+          continue
+        }
+        const held = editor.getViewportPageBounds()
+        const topLeft = view({ x: Math.min(anchorAt.minX, landed.minX), y: Math.min(anchorAt.minY, landed.minY) })
+        const bottomRight = view({ x: Math.max(anchorAt.maxX, landed.maxX), y: Math.max(anchorAt.maxY, landed.maxY) })
+        return {
+          zoom: editor.getZoomLevel(),
+          indicators: live.length,
+          aligned,
+          tries: go,
+          where: statePath(),
+          pixels,
+          viewport: { w: round(held.width), h: round(held.height) },
+          crop: {
+            x: Math.max(0, Math.round(topLeft.x) - 50),
+            y: Math.max(0, Math.round(topLeft.y) - 50),
+            width: Math.round(bottomRight.x - topLeft.x) + 100,
+            height: Math.round(bottomRight.y - topLeft.y) + 100
+          }
         }
       }
+      return { zoom, indicators: 0, aligned: false, tries: 3, where: statePath(), pixels: redPixels(), crop: { x: 0, y: 0, width: 400, height: 400 } }
     },
 
     async release() {
       await letGo(this.at || { x: 0, y: 0 })
+      editor.setCurrentTool('select')
       await clear()
-      return true
+      return statePath()
     }
   }
   return 'ready'
