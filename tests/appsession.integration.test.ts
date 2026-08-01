@@ -105,11 +105,13 @@ describe('app session', () => {
     await initRepo(repoHost)
     await initRepo(repoGuest)
     const host = new AppSession()
-    const guest = new AppSession({ session: path.join(guestData, 'session.json') })
+    const guestState = path.join(guestData, 'session.json')
+    const guest = new AppSession({ session: guestState })
+    const crews = crewsAt({ session: guestState })
     const info = await host.startHost(repoHost, 'sam')
 
     const joinInfo = await guest.startJoin(linkOf(info), repoGuest, 'jamel')
-    expect(guest.recentJoins()).toEqual([
+    expect(crews.recentJoins()).toEqual([
       expect.objectContaining({ folder: repoGuest, name: 'jamel', link: linkOf(info) })
     ])
     const target = parseLink(linkOf(info))
