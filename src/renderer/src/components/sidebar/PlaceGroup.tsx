@@ -38,33 +38,52 @@ export default function PlaceGroup({
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
 
   return (
-    <div className="pb-4">
+    <div className="pb-3">
       <button
         onClick={onOpen}
         onContextMenu={event => {
           event.preventDefault()
           setMenuAt({ x: event.clientX, y: event.clientY })
         }}
-        title={place.line}
-        className={`w-full rounded-xl px-2 py-1.5 flex items-center gap-2 text-left transition-colors duration-150 hover:bg-fg/[0.06] ${
-          here ? 'text-fg' : 'text-fg/70'
+        aria-current={here ? 'page' : undefined}
+        className={`group relative w-full min-h-11 rounded-xl px-2 py-1.5 flex items-center gap-2.5 text-left transition-colors duration-150 hover:bg-fg/[0.06] ${
+          here
+            ? 'bg-fg/[0.07] text-fg shadow-[inset_0_0_0_1px_rgb(255_255_255/0.035)]'
+            : 'text-fg/70'
         }`}
       >
-        <span className={here ? 'text-fg/70' : 'text-fg/45'}>{markOf(place)}</span>
-        <span className="min-w-0 flex-1 truncate text-sm font-medium">{place.title}</span>
+        <span
+          className={`w-7 h-7 shrink-0 rounded-[9px] grid place-items-center transition-colors duration-150 ${
+            here
+              ? 'bg-fg/[0.08] text-fg/80'
+              : 'bg-fg/[0.03] text-fg/45 group-hover:bg-fg/[0.05] group-hover:text-fg/65'
+          }`}
+        >
+          {markOf(place)}
+        </span>
+        <span className="min-w-0 flex-1 flex flex-col">
+          <span className="truncate text-sm font-medium leading-[17px]">{place.title}</span>
+          <span className={`truncate text-xs leading-4 ${here ? 'text-fg/45' : 'text-fg/30 group-hover:text-fg/40'}`}>
+            {place.line}
+          </span>
+        </span>
         {busy && <Spinner size={13} className="text-fg/45" />}
       </button>
-      {threads.map(thread => (
-        <ThreadRow
-          key={thread.id}
-          thread={thread}
-          open={openThreadIds.includes(thread.id)}
-          here={here}
-          placeKey={place.key}
-          onOpen={() => onOpenThread(thread.id)}
-          onOpenToRight={() => onOpenThreadToRight(thread.id)}
-        />
-      ))}
+      {threads.length > 0 && (
+        <div className="relative ml-4 mt-1 space-y-0.5 border-l border-fg/[0.07] pl-3">
+          {threads.map(thread => (
+            <ThreadRow
+              key={thread.id}
+              thread={thread}
+              open={openThreadIds.includes(thread.id)}
+              here={here}
+              placeKey={place.key}
+              onOpen={() => onOpenThread(thread.id)}
+              onOpenToRight={() => onOpenThreadToRight(thread.id)}
+            />
+          ))}
+        </div>
+      )}
       <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined} className="min-w-44">
         {onStop && (
           <MenuItem

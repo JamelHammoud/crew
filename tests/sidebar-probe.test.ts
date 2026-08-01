@@ -126,7 +126,14 @@ describe('the sidebar', () => {
     const { container } = render(createElement(Sidebar))
     await waitFor(() => expect(container.querySelectorAll('button[aria-current], button').length).toBeGreaterThan(1))
     const titles = [...container.querySelectorAll('span.font-medium')].map(el => el.textContent)
-    expect(titles.slice(0, 2)).toEqual(['one', 'two'])
+    expect(titles.slice(0, 3)).toEqual(['Projects', 'one', 'two'])
+  })
+
+  it('shows where a project lives and marks the current one', async () => {
+    const { container } = render(createElement(Sidebar))
+    const current = container.querySelector('button[aria-current="page"]')
+    expect(current?.textContent).toBe('one~')
+    expect(current?.querySelectorAll('span')).toHaveLength(4)
   })
 
   it('holds the threads running in a place under it', async () => {
