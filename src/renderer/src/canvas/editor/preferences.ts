@@ -155,8 +155,12 @@ export class UserPreferencesManager {
     if (typeof matchMedia === 'undefined') return
     const query = matchMedia('(prefers-color-scheme: dark)')
     if (query.matches) this.systemColorScheme.set('dark')
-    const change = (event: MediaQueryListEvent): void => this.systemColorScheme.set(event.matches ? 'dark' : 'light')
+    const change = (event: MediaQueryListEvent): void => {
+      this.systemColorScheme.set(event.matches ? 'dark' : 'light')
+    }
     query.addEventListener?.('change', change)
-    this.stopWatchingSystem = () => query.removeEventListener?.('change', change)
+    this.stopWatchingSystem = () => {
+      query.removeEventListener?.('change', change)
+    }
   }
 }

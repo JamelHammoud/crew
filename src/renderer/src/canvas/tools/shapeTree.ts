@@ -1,13 +1,17 @@
-import type { SelectEditor } from './types'
+import type { StateNodeEditor } from './state'
 
-export function getShapeParent(editor: SelectEditor, shape: any): any {
+export interface TreeEditor extends StateNodeEditor {
+  [key: string]: any
+}
+
+export function getShapeParent(editor: TreeEditor, shape: any): any {
   if (editor.getShapeParent) return editor.getShapeParent(shape)
   if (!shape || typeof shape.parentId !== 'string' || !shape.parentId.startsWith('shape:')) return undefined
   return editor.getShape(shape.parentId)
 }
 
 export function findShapeAncestor(
-  editor: SelectEditor,
+  editor: TreeEditor,
   shape: any,
   predicate: (ancestor: any) => boolean
 ): any {
@@ -20,13 +24,13 @@ export function findShapeAncestor(
   return undefined
 }
 
-export function hasAncestor(editor: SelectEditor, shape: any, ancestorId: string): boolean {
+export function hasAncestor(editor: TreeEditor, shape: any, ancestorId: string): boolean {
   if (editor.hasAncestor) return editor.hasAncestor(shape, ancestorId)
   return (editor.getShapeAncestors?.(shape) ?? []).some((ancestor: any) => ancestor.id === ancestorId)
 }
 
 export function visitDescendants(
-  editor: SelectEditor,
+  editor: TreeEditor,
   id: string,
   visitor: (id: string) => false | undefined
 ): void {
@@ -36,12 +40,12 @@ export function visitDescendants(
   }
 }
 
-export function hidesSelectionBoundsBg(editor: SelectEditor, shape: any): boolean {
+export function hidesSelectionBoundsBg(editor: TreeEditor, shape: any): boolean {
   if (!shape) return false
   return Boolean(editor.getShapeUtil(shape).hideSelectionBoundsBg?.(shape))
 }
 
-export function selectionHasBoundsBg(editor: SelectEditor): boolean {
+export function selectionHasBoundsBg(editor: TreeEditor): boolean {
   if (editor.getSelectedShapeIds().length > 1) return true
   const only = editor.getOnlySelectedShape()
   return Boolean(only) && !hidesSelectionBoundsBg(editor, only)

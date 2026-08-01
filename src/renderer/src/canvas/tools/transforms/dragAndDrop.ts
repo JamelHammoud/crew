@@ -1,6 +1,5 @@
 import { Vec } from '../../math'
-import { getShapeParent, hasAncestor } from './shapeTree'
-import type { SelectEditor } from './types'
+import { getShapeParent, hasAncestor, type TreeEditor } from '../shapeTree'
 
 const SLOW_POINTER_LAG_DURATION = 320
 const FAST_POINTER_LAG_DURATION = 60
@@ -22,7 +21,7 @@ export class DragAndDropManager {
   private prevPagePoint = new Vec()
   private intervalId: ReturnType<typeof setInterval> | null = null
 
-  constructor(private readonly editor: SelectEditor) {}
+  constructor(private readonly editor: TreeEditor) {}
 
   startDraggingShapes(movingShapes: any[], point: Vec, onReparent?: () => void): void {
     if (this.intervalId !== null) return
