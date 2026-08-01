@@ -1,4 +1,5 @@
 import { isValidElement, type CSSProperties, type ReactNode } from 'react'
+import { resolveLineHeight } from './measurement'
 
 const TYPE_PROPERTIES = [
   'color',

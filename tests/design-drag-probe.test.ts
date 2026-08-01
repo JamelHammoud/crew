@@ -175,11 +175,20 @@ describe('scribble brushing matches tldraw', () => {
   it('leaves out a frame the scribble started inside', () => {
     const subject = editor()
     frame(subject, 'f', 0, 0)
-    down(subject, 100, 100, { altKey: true })
-    move(subject, 140, 140, { altKey: true })
-    move(subject, 200, 200, { altKey: true })
+    down(subject, 200, 200, { altKey: true })
+    move(subject, 240, 200, { altKey: true })
+    move(subject, 500, 200, { altKey: true })
     expect(subject.getCurrentToolPath()).toBe('select.scribble_brushing')
     expect(subject.getSelectedShapeIds()).toEqual([])
+  })
+
+  it('takes a frame the scribble crossed from outside', () => {
+    const subject = editor()
+    const f = frame(subject, 'f', 0, 0)
+    down(subject, 600, 200, { altKey: true })
+    move(subject, 560, 200, { altKey: true })
+    move(subject, 300, 200, { altKey: true })
+    expect(subject.getSelectedShapeIds()).toEqual([f])
   })
 
   it('still takes a shape the scribble crosses inside that frame', () => {
