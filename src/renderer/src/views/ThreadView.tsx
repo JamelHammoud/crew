@@ -112,9 +112,9 @@ export default function ThreadView({
   )
 
   const threadEvents = useMemo(() => eventsOfThread(events, threadId), [events, threadId])
-  const runningStart = threadEvents.find(e => e.kind === 'agent.start' && e.promptId === activePromptId)
-  const ended = lastEnd(threadId, threadEvents)
-  const runningAgentId = runningStart?.kind === 'agent.start' ? runningStart.agentId : undefined
+  const runningStart = useMemo(() => lastStart(threadEvents, activePromptId), [activePromptId, threadEvents])
+  const ended = useMemo(() => lastEnd(threadId, threadEvents), [threadEvents, threadId])
+  const runningAgentId = runningStart?.agentId
   const steerable = useCrew(s => s.agents.find(a => a.id === runningAgentId)?.steerable === true)
   const draftMentions = useMemo(() => mentionsIn(text, agents), [text, agents])
   const targets = draftMentions.length > 0 ? draftMentions : thread ? [thread.agentId] : []
