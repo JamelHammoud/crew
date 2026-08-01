@@ -123,7 +123,7 @@ describe('step rows', () => {
     expect(screen.getByText('Ran')).not.toBeNull()
     expect(screen.getByText('yarn test')).not.toBeNull()
     expect(mark(container)?.getAttribute('viewBox')).toBe('0 0 24 24')
-    expect(mark(container)?.getAttribute('stroke-width')).toBe('1.5')
+    expect(mark(container)?.getAttribute('stroke-width')).toBe(String(STROKE))
     expect(mark(container)?.getAttribute('fill')).toBe('none')
   })
 
