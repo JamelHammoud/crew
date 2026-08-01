@@ -1128,7 +1128,8 @@ const driveSource = String.raw`(async () => {
       await step.act(one)
       const acted = step.read(one)
       for (const shape of editor.getCurrentPageShapes()) if (!made.includes(shape.id) && !shapes.some(other => other.id === shape.id)) made.push(shape.id)
-      if (String(acted) === String(start)) return { ok: false, note: step.name + ' changed nothing to undo' }
+      if (String(acted) === String(start))
+        return { ok: false, note: step.name + ' changed nothing to undo, with the board in ' + editor.getCurrentToolPath() }
       editor.undo()
       await settle(4)
       const undone = step.read(one)
