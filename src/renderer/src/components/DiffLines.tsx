@@ -41,10 +41,14 @@ function Line({
 // What stands between one stretch of a file and the next. It is a rule rather
 // than a count of the lines nobody is being shown: the numbers either side
 // already say how far it is, and a row of type saying it again is a row spent
-// on nothing.
-function Gap() {
+// on nothing. What it does carry is what the lines under it sit inside, where
+// git worked one out, since landing partway down a file is the one place that
+// cannot be read off the lines themselves.
+function Gap({ says }: { says: string }) {
   return (
-    <div className="flex h-5 select-none items-center px-3">
+    <div className="flex h-6 select-none items-center gap-2 px-3">
+      <span className="h-px w-6 shrink-0 bg-fg/[0.07]" />
+      {says && <span className="truncate text-fg-faint/70">{says}</span>}
       <span className="h-px flex-1 bg-fg/[0.07]" />
     </div>
   )
@@ -72,7 +76,7 @@ export default function DiffLines({
       <div className="w-max min-w-full">
         {rows.map((row, index) =>
           row.gap ? (
-            <Gap key={index} />
+            <Gap key={index} says={row.text} />
           ) : (
             <Line key={index} row={row} tokens={tokensFor(row)} numbers={numbers} width={width} />
           )
