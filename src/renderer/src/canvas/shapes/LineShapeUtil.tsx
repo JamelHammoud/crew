@@ -85,25 +85,32 @@ export class LineShapeUtil extends ShapeUtil<LineShape> {
       points[key] = { ...point, x: point.x * info.scaleX, y: point.y * info.scaleY }
     return { ...shape, x: info.newPoint.x, y: info.newPoint.y, props: { ...shape.props, points } }
   }
+  override getIndicatorPath(shape: LineShape): Path2D | undefined {
+    if (typeof Path2D === 'undefined') return undefined
+    return linePath(shape).toPath2D({
+      style: shape.props.dash === 'draw' ? 'draw' : 'solid',
+      strokeWidth: 1,
+      passes: 1,
+      randomSeed: shape.id,
+      offset: 0,
+      roundness: STROKES[shape.props.size] * shape.props.scale * 2
+    })
+  }
   component(shape: LineShape): ReactNode {
     const width = STROKES[shape.props.size] * shape.props.scale
-    const dash =
-      shape.props.dash === 'dashed'
-        ? `${width * 2} ${width * 2}`
-        : shape.props.dash === 'dotted'
-          ? `0 ${width * 2}`
-          : undefined
     return createElement(
       'svg',
       { width: '100%', height: '100%', style: { overflow: 'visible', pointerEvents: 'all' } },
-      createElement('path', {
-        d: this.getGeometry(shape).toSimpleSvgPath(),
-        fill: 'none',
-        stroke: shapeColor(this.editor, shape.props.color),
+      linePath(shape).toSvg({
+        style: shape.props.dash,
         strokeWidth: width,
-        strokeDasharray: dash,
-        strokeLinecap: 'round',
-        strokeLinejoin: 'round'
+        randomSeed: shape.id,
+        props: {
+          fill: 'none',
+          stroke: shapeColor(this.editor, shape.props.color),
+          strokeLinecap: 'round',
+          strokeLinejoin: 'round'
+        }
       })
     )
   }

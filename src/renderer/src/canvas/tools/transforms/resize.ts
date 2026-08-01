@@ -347,34 +347,55 @@ export class Resizing<Shape extends TLShape = TLShape> extends TransformState<
   }
 
   private update(): void {
-    const locked = this.editor.inputs.getShiftKey() || this.snapshots.some(snapshot => snapshot.isAspectRatioLocked)
-    const originPagePoint = this.editor.inputs.getOriginPagePoint()
-    const currentPagePoint = this.editor.inputs.getCurrentPagePoint().clone()
-    const snapMode = this.editor.getIsSnapMode?.() ?? true
+    const altKey = this.editor.inputs.getAltKey?.() ?? false
+    const shiftKey = this.editor.inputs.getShiftKey()
+    let locked = shiftKey || !this.canShapesDeform
+
+    if (this.snapshots.length === 1 && this.editor.isShapeOfType?.(this.snapshots[0].shape, 'text')) {
+      locked = !(this.info.handle === 'left' || this.info.handle === 'right')
+    }
+
     const accelKey = this.editor.inputs.getAccelKey?.() ?? false
+    const currentPagePoint = this.editor.inputs
+      .getCurrentPagePoint()
+      .clone()
+      .sub(this.cursorHandleOffset)
+      .sub(this.creationCursorOffset)
+    const originPagePoint = this.editor.inputs.getOriginPagePoint().clone().sub(this.cursorHandleOffset)
+
+    const gridSize = this.editor.getInstanceState?.().isGridMode
+      ? this.editor.getDocumentSettings?.().gridSize
+      : undefined
+    if (gridSize && !accelKey) currentPagePoint.snapToGrid(gridSize)
+
+    const snapMode = this.editor.getIsSnapMode?.() ?? true
     const snap =
       (snapMode ? !accelKey : accelKey) && this.selectionRotation % HALF_PI === 0
         ? this.editor.snaps?.snapResizeBounds?.({
-            initialSelectionPageBounds: this.selectionBounds,
+            initialSelectionPageBounds: this.info.selectionBounds ?? this.selectionBounds,
             dragDelta: Vec.Sub(currentPagePoint, originPagePoint),
-            handle: this.info.handle,
+            handle: rotateSelectionHandle(this.info.handle, this.selectionRotation),
             isAspectRatioLocked: locked,
-            isResizingFromCenter: this.editor.inputs.getAltKey?.(),
+            isResizingFromCenter: altKey,
             snappableShapes: this.info.snappableShapes ?? this.editor.getSnappableShapes?.() ?? [],
             zoom: this.info.zoom ?? this.editor.getZoomLevel?.() ?? 1
           })
         : undefined
     if (snap) currentPagePoint.add(snap.nudge)
     this.editor.snaps?.setIndicators?.(snap?.indicators ?? [])
+
     const calculation = calculateResize({
       selectionBounds: this.selectionBounds,
       selectionRotation: this.selectionRotation,
       handle: this.info.handle,
       originPagePoint,
       currentPagePoint,
-      fromCenter: this.editor.inputs.getAltKey?.(),
+      fromCenter: altKey,
       isAspectRatioLocked: locked
     })
+
+    if (!this.info.isCreating) this.updateCursor(calculation.scale.x < 0, calculation.scale.y < 0)
+
     this.editor.updateShapes(
       resizeShapes(this.snapshots, calculation.scale, {
         scaleOrigin: calculation.scaleOrigin,
@@ -387,6 +408,19 @@ export class Resizing<Shape extends TLShape = TLShape> extends TransformState<
           (supportsBoxResize(shape) ? resizeBox(shape, resizeInfo as ResizeInfo<typeof shape>) : undefined)
       })
     )
+  }
+
+  private updateCursor(isFlippedX: boolean, isFlippedY: boolean): void {
+    const previous = this.editor.getInstanceState?.().cursor
+    let type = previous?.type
+    if (this.info.handle === 'top_left' || this.info.handle === 'bottom_right') {
+      type = isFlippedX === isFlippedY ? 'nwse-resize' : 'nesw-resize'
+    } else if (this.info.handle === 'top_right' || this.info.handle === 'bottom_left') {
+      type = isFlippedX === isFlippedY ? 'nesw-resize' : 'nwse-resize'
+    }
+    if (!type) return
+    if (type === previous?.type && this.selectionRotation === previous?.rotation) return
+    this.editor.setCursor?.({ type, rotation: this.selectionRotation })
   }
 
   private complete(): void {

@@ -797,12 +797,26 @@ export class Editor {
   cancelDoubleClick(): void {}
 
   getSelectedShapeAtPoint(point: VecLike): TLShape | undefined {
-    const selected = new Set(this.getSelectedShapeIds())
-    return this.getShapesAtPoint(point, { hitInside: true }).find(shape => selected.has(shape.id))
+    const selected = this.getSelectedShapeIds()
+    return this.getCurrentPageShapesSorted()
+      .filter(shape => shape.type !== 'group' && selected.includes(shape.id))
+      .reverse()
+      .find(shape => this.isPointInShape(shape, point, { hitInside: true, margin: 0 }))
+  }
+
+  getHoveredShapeId(): TLShapeId | null {
+    return this.instance.hoveredShapeId
   }
 
   getHoveredShape(): TLShape | undefined {
-    return this.instance.hoveredShapeId ? this.getShape(this.instance.hoveredShapeId) : undefined
+    const id = this.getHoveredShapeId()
+    return id ? this.getShape(id) : undefined
+  }
+
+  setHoveredShape(shapeOrId: TLShape | TLShapeId | null): this {
+    const id = typeof shapeOrId === 'string' ? shapeOrId : (shapeOrId?.id ?? null)
+    this.instance.hoveredShapeId = id && this.getShape(id) ? id : null
+    return this
   }
 
   updateHoveredOverlayId(): boolean {
