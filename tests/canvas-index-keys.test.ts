@@ -107,7 +107,7 @@ describe('the order those keys put shapes in', () => {
     const keys: string[] = []
     let below: string | null = null
     for (let round = 0; round < 300; round++) {
-      const next = jittered(below, null, 1)[0]
+      const next: string = jittered(below, null, 1)[0]
       expect(isIndexKey(next)).toBe(true)
       if (below) expect(below < next).toBe(true)
       keys.push(next)
