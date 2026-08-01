@@ -1,0 +1,32 @@
+import { useEffect, useMemo } from 'react'
+import { mergeEvents, type SessionEvent } from '../../../shared/events'
+import type { AgentStep } from '../../../shared/llm'
+import { useCrew } from '../state/store'
+
+// Everything a thread is drawn from: what the window still holds and what it
+// read back out of the log for one that has scrolled past. Asking for it is
+// part of reading it, so anything that shows a thread gets both halves by
+// naming the thread, and the ask is refused where there is nothing to fetch.
+// A thread with nothing read back is handed the window's own events and steps
+// as they stand, so the one that just ran is drawn again for nothing.
+export function useThreadRead(threadId: string): {
+  events: SessionEvent[]
+  steps: Record<string, AgentStep[]>
+} {
+  const events = useCrew(state => state.events)
+  const steps = useCrew(state => state.steps)
+  const readEvents = useCrew(state => state.readEvents)
+  const readSteps = useCrew(state => state.readSteps)
+  const online = useCrew(state => state.connection === 'online')
+  const readThread = useCrew(state => state.readThread)
+  useEffect(() => {
+    if (online) readThread(threadId)
+  }, [online, readThread, threadId])
+  return useMemo(
+    () =>
+      readEvents.length === 0
+        ? { events, steps }
+        : { events: mergeEvents(readEvents, events), steps: { ...readSteps, ...steps } },
+    [events, readEvents, readSteps, steps]
+  )
+}
