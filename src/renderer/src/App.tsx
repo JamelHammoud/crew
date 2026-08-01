@@ -151,6 +151,17 @@ function Session() {
         <TasksPanel onOpenThread={openFromTasks} onOpenThreadBeside={openFromTasksBeside} />
       </div>
       <SidePanel visible={tab === 'chat'} />
+      {(!pinned || peeking) && (
+        <div
+          onMouseEnter={() => peek(true)}
+          onMouseLeave={() => peek(false)}
+          data-open={peeking || undefined}
+          style={{ width: SIDEBAR_W }}
+          className="rail absolute inset-y-0 left-0 z-50"
+        >
+          <Sidebar overlay strong={tab === 'design'} />
+        </div>
+      )}
       <WindowCorner />
       <HuddlePanel />
       <VoiceScreen />
