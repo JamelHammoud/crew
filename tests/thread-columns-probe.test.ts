@@ -117,6 +117,8 @@ const open = (ids: string[], focused: string | null): void => {
 
 const columns = (): HTMLElement[] => Array.from(document.querySelectorAll<HTMLElement>('[data-column]'))
 
+const background = (box: ParentNode): HTMLElement => box.querySelector<HTMLElement>('.overflow-y-auto')!
+
 beforeEach(() => {
   popOutThread.mockClear()
   window.crew = {
