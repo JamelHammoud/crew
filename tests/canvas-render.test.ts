@@ -335,6 +335,12 @@ describe('canvas rendering', () => {
   })
 
   it('lets the paint loop own the size of the overlay canvas', () => {
+    let queued: FrameRequestCallback | null = null
+    vi.spyOn(globalThis, 'requestAnimationFrame').mockImplementation(callback => {
+      queued = callback
+      return 1
+    })
+    vi.spyOn(globalThis, 'cancelAnimationFrame').mockImplementation(() => undefined)
     const context = canvasContext()
     vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(context as unknown as CanvasRenderingContext2D)
     const state = setup()
@@ -342,10 +348,16 @@ describe('canvas rendering', () => {
     const view = render(createElement(Canvas<Shape>, { host: state.host, shapeRenderer: renderer }))
     const canvas = view.container.querySelector('canvas') as HTMLCanvasElement
 
+    expect(canvas.getAttribute('style')).toBeNull()
     expect(canvas.style.width).toBe('300px')
     expect(canvas.style.height).toBe('200px')
 
     act(() => state.instance.set({ devicePixelRatio: 1, screenBounds: { x: 0, y: 0, w: 640, h: 480 } }))
+    act(() => {
+      const callback = queued as FrameRequestCallback | null
+      queued = null
+      callback?.(16)
+    })
     expect(canvas.style.width).toBe('640px')
     expect(canvas.style.height).toBe('480px')
     expect(canvas.width).toBe(640)

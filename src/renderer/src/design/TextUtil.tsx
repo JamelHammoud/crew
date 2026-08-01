@@ -36,8 +36,9 @@ const customDisplayValues = (editor: ShapeUtil['editor'], shape: TLTextShape, _g
 
 function measure(editor: Editor, shape: TLTextShape): { width: number; height: number } {
   const type = textShapeType(editor, shape)
+  editor.fonts.trackFontsForShape({ props: { font: shape.props.font } })
   editor.fonts.trackFontsForShape({ props: { font: type.family } })
-  const { maxWidth: _ignored, ...options } = typeMeasure(type, null)
+  const { maxWidth: _width, fontSize: _size, ...options } = typeMeasure(type, null)
   return measureTextLayout(editor.textMeasure, {
     richText: shape.props.richText,
     autoSize: shape.props.autoSize,

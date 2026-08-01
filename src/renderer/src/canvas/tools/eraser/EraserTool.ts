@@ -317,6 +317,10 @@ export class EraserTool {
     return this.children[this.stateId]
   }
 
+  getPath(): string {
+    return `${EraserTool.id}.${this.stateId}`
+  }
+
   onEnter(info: EraserPointerEvent & { onInteractionEnd?: string } = {}): void {
     this.info = info
     if (info.onInteractionEnd) this.editor.setCurrentToolIdMask?.(info.onInteractionEnd)
