@@ -86,46 +86,9 @@ describe('the outline around a selected group', () => {
     expect(Math.max(...points.map(point => point.y))).toBeCloseTo(100, 1)
   })
 
-  it('breaks the outline into dashes rather than four straight sides', () => {
+  it('closes the outline as one box rather than many', () => {
     const subject = board()
     const group = grouped(subject)
-    expect(pathOf(subject, group).length).toBeGreaterThan(8)
-  })
-})
-
-function painted(subject: Editor, id: TLShapeId): { name: unknown; sides: number } {
-  const shape = subject.getShape(id)!
-  const drawing = subject.getShapeUtil(shape).component(shape) as {
-    type: string
-    props: { className?: string; children?: unknown }
-  }
-  const children = drawing?.props?.children
-  return {
-    name: drawing?.props?.className ?? drawing?.type,
-    sides: Array.isArray(children) ? children.length : 0
-  }
-}
-
-describe('the outline drawn on the canvas for a group', () => {
-  it('draws nothing while the group is simply sitting there', () => {
-    const subject = board()
-    const group = grouped(subject)
-    expect(painted(subject, group).sides).toBe(0)
-  })
-
-  it('outlines the group once you have gone inside it', () => {
-    const subject = board()
-    const group = grouped(subject)
-    subject.setFocusedGroup(group)
-    const shown = painted(subject, group)
-    expect(shown.name).toBe('crew-group-outline')
-    expect(shown.sides).toBe(4)
-  })
-
-  it('outlines the group while it is being rubbed out', () => {
-    const subject = board()
-    const group = grouped(subject)
-    subject.setErasingShapes([group])
-    expect(painted(subject, group).sides).toBe(4)
+    expect(pathOf(subject, group).length).toBe(1)
   })
 })
