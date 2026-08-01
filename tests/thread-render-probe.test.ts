@@ -2,7 +2,6 @@
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { CrewBridge } from '../src/renderer/src/env'
 import ThreadView from '../src/renderer/src/views/ThreadView'
 import { useBrowser } from '../src/renderer/src/state/browser'
 import { useCrew } from '../src/renderer/src/state/store'
@@ -97,7 +96,9 @@ const events: SessionEvent[] = [
     threadId: THREAD,
     promptId: PROMPT,
     agentId: AGENT.id,
-    agentLabel: AGENT.label
+    agentLabel: AGENT.label,
+    promptText: ASK,
+    byName: 'ALI'
   }
 ]
 
@@ -155,7 +156,7 @@ beforeEach(() => {
     warmTerminal: () => undefined,
     onUpdate: () => () => {},
     updateState: async () => NO_UPDATE
-  } as unknown as CrewBridge
+  } as unknown as typeof window.crew
   useBrowser.setState({ open: false })
 })
 
