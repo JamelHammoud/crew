@@ -14,13 +14,11 @@ export type TextInk = 'white' | 'black'
 
 export type Palette = Record<string, unknown>
 
-interface Behind {
-  getShapesAtPoint(point: { x: number; y: number }, options?: { hitInside?: boolean; margin?: number }): TLShape[]
-  getCurrentTheme(): unknown
-  getColorMode(): string
+export interface ContrastEditor {
+  getShapesAtPoint?(point: { x: number; y: number }, options?: { hitInside?: boolean; margin?: number }): TLShape[]
+  getCurrentTheme?(): unknown
+  getColorMode?(): string
 }
-
-export type ContrastEditor = BoxToolEditor & Partial<Behind>
 
 const SURFACE: Ink = { r: 13, g: 13, b: 13, a: 1 }
 
