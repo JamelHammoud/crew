@@ -206,14 +206,14 @@ describe('the sidebar', () => {
   })
 
   it('peeks on a hover without pushing the page over', () => {
-    const { container } = topBar()
+    const { container } = corner()
     fireEvent.mouseEnter(toggleIn(container))
     expect(useSidebar.getState().peeking).toBe(true)
     expect(useSidebar.getState().pinned).toBe(false)
   })
 
   it('pins on a press, and the page is pushed over by exactly the rail', () => {
-    const { container } = topBar()
+    const { container } = corner()
     fireEvent.click(toggleIn(container))
     expect(useSidebar.getState().pinned).toBe(true)
     expect(useSidebar.getState().peeking).toBe(false)
@@ -221,11 +221,33 @@ describe('the sidebar', () => {
   })
 
   it('is written down, so a window that opens after it is pinned too', () => {
-    const { container } = topBar()
+    const { container } = corner()
     fireEvent.click(toggleIn(container))
     expect(localStorage.getItem('crew.sidebar')).toBe('open')
     fireEvent.click(toggleIn(container))
     expect(localStorage.getItem('crew.sidebar')).toBe('shut')
+  })
+
+  it('keeps the button out of the top bar, so the rail never stands over it', () => {
+    const { container } = topBar()
+    expect(toggleIn(container)).toBeNull()
+  })
+
+  it('is still there to press while the rail is standing over its own head', () => {
+    const { container } = corner()
+    fireEvent.mouseEnter(toggleIn(container))
+    expect(useSidebar.getState().peeking).toBe(true)
+    fireEvent.click(toggleIn(container))
+    expect(useSidebar.getState().pinned).toBe(true)
+  })
+
+  it('holds the rail open while the pointer is anywhere in the corner', () => {
+    const { container } = corner()
+    const box = container.firstElementChild as HTMLElement
+    fireEvent.mouseEnter(toggleIn(container))
+    fireEvent.mouseLeave(box)
+    fireEvent.mouseEnter(box)
+    expect(useSidebar.getState().peeking).toBe(true)
   })
 
   it('switches to a place that is already running rather than opening it again', async () => {

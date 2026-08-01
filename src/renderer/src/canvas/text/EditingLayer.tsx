@@ -16,6 +16,11 @@ function isEditableTextShape(shape: TLShape): shape is EditableTextShape {
   return shape.type === 'text' || shape.type === 'geo' || shape.type === 'note' || shape.type === 'arrow'
 }
 
+function editingBounds(editor: Editor, id: TLShape['id']): { w: number; h: number } {
+  const shape = editor.getShape(id)
+  return shape ? editor.getShapeGeometry(shape).bounds : { w: 1, h: 1 }
+}
+
 export function EditingLayer({ editor }: { editor: Editor }) {
   const shape = useValue('canvas editing shape', () => editor.getEditingShape(), [editor])
   if (!shape || !isEditableTextShape(shape)) return null
