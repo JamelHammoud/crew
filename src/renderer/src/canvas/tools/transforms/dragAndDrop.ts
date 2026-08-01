@@ -71,6 +71,7 @@ export class DragAndDropManager {
   }
 
   dropShapes(shapes: any[]): void {
+    if (typeof this.editor.getShapesAtPoint !== 'function') return
     const point = this.editor.inputs.getCurrentPagePoint()
     this.update(point)
     const target = this.draggingOverShape(point, shapes)
