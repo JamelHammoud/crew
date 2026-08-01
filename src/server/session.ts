@@ -33,6 +33,7 @@ import {
   huddleRecordId,
   markDeletedReplies,
   olderEvents,
+  trimEvents,
   SYSTEM_AUTHOR_ID,
   SYSTEM_AUTHOR_NAME,
   type MessageReply,
