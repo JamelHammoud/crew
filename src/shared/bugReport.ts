@@ -35,9 +35,9 @@ export function reportSubject(details: SystemDetails): string {
 // What is written and what it was written on, in that order. The report is the
 // thing being read, so the details stand under it rather than in front of it.
 export function reportBody(text: string, details: SystemDetails): string {
-  const said = text.trim()
   const version = details.version ? `Crew ${details.version}` : 'Crew'
-  return `${said}\n\n${version}\n${systemLine(details)}`
+  const under = [version, systemLine(details)].filter(Boolean).join('\n')
+  return `${text.trim()}\n\n${under}`
 }
 
 export function bugMailto(text: string, details: SystemDetails): string {
