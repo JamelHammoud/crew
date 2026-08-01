@@ -474,7 +474,8 @@ export class AppSession {
       projectSync: true
     }
     this.folder = repoPath
-    this.savedStore()?.save({
+    this.place = joinPlace(linkRaw)
+    this.keep({
       mode: 'join',
       folder: repoPath,
       name,
