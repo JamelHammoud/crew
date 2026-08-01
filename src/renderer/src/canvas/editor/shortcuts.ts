@@ -9,6 +9,7 @@ export interface ShortcutEditor {
   getCurrentToolId(): string
   isTextInputFocused(): boolean
   markHistoryStoppingPoint(name?: string): string
+  selectAll(): unknown
   deleteShapes(ids: readonly TLShapeId[]): unknown
   duplicateShapes(ids: readonly TLShapeId[], offset: { x: number; y: number }): unknown
   groupShapes(ids: readonly TLShapeId[]): unknown
