@@ -657,11 +657,15 @@ app.whenReady().then(() => {
   ipcMain.on('scribe:drag', (_event, x: number, y: number, settled: boolean) =>
     scribe.drag({ x, y }, settled)
   )
-  ipcMain.handle('app:notify', (_event, alert: AgentAlert) => {
+  ipcMain.handle('app:notify', (event, alert: AgentAlert) => {
+    // Which crew this is about is read as the banner is raised rather than as it
+    // is clicked, since the window that raised it may have moved on to another
+    // project by then and that is the whole case this exists for.
+    const place = crews.keyInView(event.sender.id)
     showAlert(alert, () => {
-      const win = openWindow()
+      const win = openWindow(place)
       app.focus({ steal: true })
-      if (alert.threadId) openThreadIn(win, alert.threadId)
+      if (alert.threadId) openThreadIn(win, alert.threadId, place)
     })
   })
   ipcMain.handle('update:state', () => updates.now())
