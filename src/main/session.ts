@@ -462,6 +462,7 @@ export class AppSession {
     this.runner.connect(url)
     this.live = {
       wsUrl: url,
+      place: joinPlace(makeLink(target.host, target.port, target.code)),
       name,
       code: target.code,
       link: null,
