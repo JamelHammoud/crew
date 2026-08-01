@@ -138,7 +138,7 @@ window.marks = () => {
   return { png: canvas.toDataURL('image/png'), kinds }
 }
 window.faces = () => {
-  const { coverFor, paletteFor, petOf, eyeGapAt, BODY, EYE_RADIUS, PET_GRID } = window.CrewCovers
+  const { coverFor, paletteFor, petOf, eyeGapAt, BODY, EYE_RADIUS, FIELD_LIGHT, PET_GRID } = window.CrewCovers
   const SIZES = [20, 28, 40, 48]
   const COLS = 8
   const ids = Array.from({ length: 48 }, (_, i) => 'every-' + i)
