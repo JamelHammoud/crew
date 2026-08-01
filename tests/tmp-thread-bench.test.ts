@@ -2,9 +2,12 @@ import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { homedir } from 'node:os'
 import { describe, it } from 'vitest'
+import { buildThread, eventsOfThread } from '../src/renderer/src/components/thread'
 import { trimEvents, type SessionEvent } from '../src/shared/events'
+import type { AgentStep } from '../src/shared/llm'
 
 const CHAT = join(homedir(), 'Library/Application Support/crew/projects/8fe5a6ed2108672a/.crew/chat')
+const THREAD = 'd1b34c9c-bd2f-47fd-bbd6-aaee4288bdfe'
 
 const load = (): SessionEvent[] => {
   const out: SessionEvent[] = []
@@ -22,22 +25,17 @@ const load = (): SessionEvent[] => {
   return out
 }
 
-const time = (label: string, runs: number, fn: () => unknown): void => {
-  fn()
-  const at = performance.now()
-  for (let i = 0; i < runs; i++) fn()
-  console.log(`${label}: ${((performance.now() - at) / runs).toFixed(2)}ms`)
-}
-
 describe('bench', () => {
-  it('measures one event landing in the store', () => {
+  it('says how many rows a fresh window draws', () => {
     const all = load()
-    const step = all.find(e => e.kind === 'agent.step') as SessionEvent
-    for (const limit of [500, 2000, 8000]) {
-      const held = trimEvents(all, limit)
-      const lasting = held.filter(e => e.kind !== 'agent.step').length
-      console.log(`limit ${limit}: holds ${held.length} events (${lasting} not steps)`)
-      time(`  copy + trim at limit ${limit}`, 20, () => trimEvents([...held, step], limit))
+    const held = trimEvents(all, 500)
+    const steps: Record<string, AgentStep[]> = {}
+    for (const e of held) {
+      if (e.kind === 'agent.step') (steps[e.promptId] ??= []).push(e.step)
     }
+    const mine = eventsOfThread(held, THREAD)
+    const items = buildThread(mine, steps, 'x', [])
+    console.log(`window holds ${held.length} events, ${mine.length} of them this thread`)
+    console.log(`the thread builds ${items.length} items, and now draws 400 of them`)
   }, 120000)
 })

@@ -60,7 +60,7 @@ export default function Markdown({
   const drawn = useRef(false)
   const sheet = useCustomEmoji()
   const [resolved, setResolved] = useState(0)
-  const { html, unknown } = useMemo(() => {
+  const { page, unknown } = useMemo(() => {
     const container = document.createElement('div')
     container.innerHTML = DOMPurify.sanitize(marked.parse(text, { async: false, breaks }) as string)
     markTasks(container)
@@ -68,7 +68,7 @@ export default function Markdown({
     if (images) swapImages(container, images)
     const unknown = linkifyFiles(container)
     emojifyHtml(container)
-    return { html: container.innerHTML, unknown }
+    return { page: container, unknown }
     // The sheet of the crew's own is read while this is drawn, so a name written
     // before they had that emoji is a picture the moment it arrives.
   }, [text, resolved, images, breaks, sheet])
@@ -76,12 +76,12 @@ export default function Markdown({
   useLayoutEffect(() => {
     const el = host.current
     if (!el) return
-    if (drawn.current) morph(el, html, stream)
+    if (drawn.current) morph(el, page, stream)
     else {
-      el.innerHTML = html
+      el.replaceChildren(...[...page.cloneNode(true).childNodes])
       drawn.current = true
     }
-  }, [html, stream])
+  }, [page, stream])
 
   useEffect(() => {
     if (unknown.length === 0) return
