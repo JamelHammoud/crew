@@ -1,3 +1,4 @@
+import { textInkAt, type ContrastEditor } from '../../../../design/textContrast'
 import { Vec } from '../../../math'
 import { createShapeId, fromPlainText } from '../../../schema'
 import { StateNode } from '../../state'
