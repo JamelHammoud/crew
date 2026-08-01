@@ -82,10 +82,6 @@ export class Crews {
     return this.open.get(first)?.current() ?? null
   }
 
-  // Two projects opened in the same breath, from two windows or from a window
-  // and the way in, would both find the preferred address free and both take
-  // it, and a crew is only reachable while that address is its own. Opening is
-  // one at a time, so whoever asks second is answered by whoever went first.
   async start(id: number, folder: string, name: string, opts: OpenOptions = {}): Promise<CurrentSession> {
     return this.inTurn(async () => {
       const standing = this.standing(projectPlace(folder))
