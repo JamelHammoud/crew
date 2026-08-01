@@ -30,21 +30,14 @@ const TABS: Array<{ id: NavTab; label: string }> = [
   { id: 'design', label: 'Design' }
 ]
 
-export default function TopBar({
-  tab,
-  onTab,
-  tasksOpen,
-  onToggleTasks
-}: {
-  tab: Tab
-  onTab: (tab: Tab) => void
-  tasksOpen: boolean
-  onToggleTasks: () => void
-}) {
+export default function TopBar({ tab, onTab }: { tab: Tab; onTab: (tab: Tab) => void }) {
   const connection = useCrew(s => s.connection)
   const selfName = useCrew(s => s.selfName)
   const waiting = useCrew(reviewCount)
   const settingsOpen = useSettings() !== null
+  const tasksOpen = useTasks(tasksShowing)
+  const toggleTasks = useTasks(s => s.toggle)
+  const peekTasks = useTasks(s => s.peek)
   const [moreOpen, setMoreOpen] = useState(false)
   const [toolboxOpen, setToolboxOpen] = useState(false)
   const headerRef = useRef<HTMLElement>(null)
