@@ -1505,6 +1505,54 @@ const driveSource = String.raw`(async () => {
     return { handler: summarise(handler), painted: summarise(painted), commits }
   }
 
+  const listNow = () =>
+    editor.getRenderingShapes().map(item => ({
+      id: item.id,
+      index: item.index,
+      backgroundIndex: item.backgroundIndex,
+      opacity: item.opacity,
+      isEditing: item.isEditing,
+      type: item.shape.type,
+      props: item.shape.props,
+      meta: item.shape.meta
+    }))
+  const driftBetween = (before, after) => {
+    if (before.length !== after.length) return ['the list changed length']
+    const reasons = new Set()
+    for (let at = 0; at < before.length; at++) {
+      const one = before[at]
+      const other = after[at]
+      if (one.id !== other.id) reasons.add('the order moved')
+      if (one.index !== other.index || one.backgroundIndex !== other.backgroundIndex) reasons.add('a shape changed layer')
+      if (one.opacity !== other.opacity) reasons.add('an opacity changed')
+      if (one.isEditing !== other.isEditing) reasons.add('an editing flag changed')
+      if (one.props !== other.props) reasons.add('a shape was handed new props')
+      if (one.meta !== other.meta) reasons.add('a shape was handed new meta')
+    }
+    return [...reasons]
+  }
+  const driftOverDrag = async (from, step, moves) => {
+    pointer('pointerdown', from.x, from.y, 1)
+    await frame()
+    let held = listNow()
+    let drifted = 0
+    const reasons = new Set()
+    for (let at = 1; at <= moves; at++) {
+      pointer('pointermove', from.x + step.x * at, from.y + step.y * at, 1)
+      await frame()
+      const now = listNow()
+      const why = driftBetween(held, now)
+      if (why.length) {
+        drifted++
+        for (const reason of why) reasons.add(reason)
+      }
+      held = now
+    }
+    pointer('pointerup', from.x + step.x * moves, from.y + step.y * moves, 0)
+    await settle()
+    return { drifted, moves, reasons: [...reasons] }
+  }
+
   const speed = {}
   await attempt('a marquee stays under eight milliseconds a move', async () => {
     await clear()
@@ -1540,25 +1588,26 @@ const driveSource = String.raw`(async () => {
     await settle()
     editor.select(target.id)
     await settle()
-    const propsBefore = editor.getShape(target.id).props
     speed.drag = await measure(viewport(boundsOf(target).center), { x: 1.5, y: 1 })
-    const propsAfter = editor.getShape(target.id).props
-    speed.drag.propsHeld = propsBefore === propsAfter
-    speed.drag.sizeHeld = propsBefore.w === propsAfter.w && propsBefore.h === propsAfter.h
+    editor.select(target.id)
+    await settle()
+    speed.drag.drift = await driftOverDrag(viewport(boundsOf(target).center), { x: 1.5, y: 1 }, 10)
     return { ok: speed.drag.handler.p95 <= 8, note: 'p95 ' + speed.drag.handler.p95 + 'ms, worst ' + speed.drag.handler.worst + 'ms, painted p95 ' + speed.drag.painted.p95 + 'ms' }
   })
 
   await attempt('a drag commits nothing in React', async () => {
     if (!speed.drag) return null
     const commits = speed.drag.commits
-    const kept = speed.drag.sizeHeld
-      ? ', the size held and the props object ' + (speed.drag.propsHeld ? 'held with it' : 'was replaced anyway')
+    const drift = speed.drag.drift
+    const why = drift
+      ? ', and the list of shapes to render reads as changed on ' + drift.drifted + ' of ' + drift.moves +
+        ' moves because ' + (drift.reasons.length ? drift.reasons.join(' and ') : 'nothing it compares')
       : ''
     return {
       ok: commits.canvas === 0 && commits.overlay === 0,
       note:
         'over ' + MOVES + ' moves: ' + commits.canvas + ' in the canvas, ' + commits.overlay +
-        ' in the selection overlay, ' + commits.app + ' in the whole window' + kept
+        ' in the selection overlay, ' + commits.app + ' in the whole window' + why
     }
   })
 
