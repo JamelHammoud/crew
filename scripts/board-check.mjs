@@ -387,6 +387,114 @@ const driveSource = String.raw`(async () => {
     return { ok: same(got, [target.id]), note: 'at zoom ' + round(zoom) + ', ' + got.length + ' selected' }
   })
 
+  section = 'Groups'
+
+  const grouped = async () => {
+    await clear()
+    await scratch()
+    const one = rect({ x: 0, y: 0 }, { w: 120, h: 90 })
+    const two = rect({ x: 200, y: 0 }, { w: 120, h: 90 })
+    await settle()
+    editor.groupShapes([one, two])
+    const group = editor.getSelectedShapeIds()[0]
+    made.push(group)
+    editor.selectNone()
+    editor.setFocusedGroup(null)
+    await settle()
+    return { one, two, group }
+  }
+
+  await attempt('a click on a shape in a group selects the group', async () => {
+    const { one, group } = await grouped()
+    await click(viewport(boundsOf(one).center))
+    const got = editor.getSelectedShapeIds()
+    return { ok: same(got, [group]), note: got.length === 1 && got[0] === group ? 'the group' : got.join(',') || 'nothing' }
+  })
+
+  await attempt('a second click leaves the group selected', async () => {
+    const { one, group } = await grouped()
+    await click(viewport(boundsOf(one).center))
+    await click(viewport(boundsOf(one).center))
+    const got = editor.getSelectedShapeIds()
+    return {
+      ok: same(got, [group]) && editor.getFocusedGroupId() !== group,
+      note: (same(got, [group]) ? 'still the group' : 'it drilled to ' + got.join(',')) + ', focused ' + editor.getFocusedGroupId()
+    }
+  })
+
+  await attempt('a double click drills into the shape', async () => {
+    const { one, group } = await grouped()
+    await doubleClick(viewport(boundsOf(one).center))
+    const got = editor.getSelectedShapeIds()
+    return {
+      ok: same(got, [one]) && editor.getFocusedGroupId() === group,
+      note: (same(got, [one]) ? 'the shape' : got.join(',') || 'nothing') + ', focused ' + (editor.getFocusedGroupId() === group ? 'the group' : 'the page')
+    }
+  })
+
+  await attempt('the group draws no box once it is drilled into', async () => {
+    const { one } = await grouped()
+    await doubleClick(viewport(boundsOf(one).center))
+    const util = editor.overlays.getOverlayUtil('shape_indicator')
+    const marks = util.isActive() ? util.getOverlays() : []
+    const outlined = marks.reduce((all, mark) => all.concat(mark.props.indicated || []), [])
+    const bounds = editor.getSelectionRotatedPageBounds()
+    const own = boundsOf(one)
+    return {
+      ok: outlined.includes(one) && bounds && near(bounds.w, own.w, 2) && near(bounds.h, own.h, 2),
+      note: 'the box reads ' + (bounds ? round(bounds.w) + ' by ' + round(bounds.h) : 'nothing') + ' where the shape is ' + round(own.w) + ' by ' + round(own.h)
+    }
+  })
+
+  await attempt('a drilled shape moves on its own', async () => {
+    const { one, two } = await grouped()
+    await doubleClick(viewport(boundsOf(one).center))
+    const from = boundsOf(one)
+    const held = boundsOf(two)
+    await drag(viewport(from.center), inCanvas({ x: viewport(from.center).x - box().left + 100, y: viewport(from.center).y - box().top }))
+    const moved = boundsOf(one)
+    const other = boundsOf(two)
+    return {
+      ok: near(moved.x - from.x, 100, 4) && near(other.x - held.x, 0, 1),
+      note: 'it travelled ' + round(moved.x - from.x) + ' and the one beside it ' + round(other.x - held.x)
+    }
+  })
+
+  await attempt('a click on a sibling selects it while drilled in', async () => {
+    const { one, two, group } = await grouped()
+    await doubleClick(viewport(boundsOf(one).center))
+    await click(viewport(boundsOf(two).center))
+    const got = editor.getSelectedShapeIds()
+    return {
+      ok: same(got, [two]) && editor.getFocusedGroupId() === group,
+      note: same(got, [two]) ? 'the sibling, still inside the group' : got.join(',') || 'nothing'
+    }
+  })
+
+  await attempt('escape steps back out to the group', async () => {
+    const { one, group } = await grouped()
+    await doubleClick(viewport(boundsOf(one).center))
+    press('Escape')
+    await settle()
+    const got = editor.getSelectedShapeIds()
+    return {
+      ok: same(got, [group]) && editor.getFocusedGroupId() !== group,
+      note: same(got, [group]) ? 'the group again' : got.join(',') || 'nothing'
+    }
+  })
+
+  await attempt('a click on the canvas leaves the group', async () => {
+    const { one, group } = await grouped()
+    await doubleClick(viewport(boundsOf(one).center))
+    await click(empty())
+    const got = editor.getSelectedShapeIds()
+    await clear()
+    return {
+      ok: got.length === 0 && editor.getFocusedGroupId() !== group,
+      note: got.length === 0 ? 'nothing selected, standing outside the group' : got.join(',')
+    }
+  })
+
   section = 'Dragging'
 
   await attempt('a drag moves a shape by what the pointer travelled', async () => {
