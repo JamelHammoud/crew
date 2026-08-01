@@ -414,7 +414,7 @@ export class Store<R extends UnknownRecord> {
       depth++
       if (depth > 100) throw new Error('Maximum store update depth exceeded, bailing out')
       for (const { before, after } of events.values()) {
-        if (before && after && before !== after && !sameRecordValue(before, after)) {
+        if (before && after && before !== after) {
           this.sideEffects.handleAfterChange(before, after, source)
         } else if (before && !after) {
           this.sideEffects.handleAfterDelete(before, source)
