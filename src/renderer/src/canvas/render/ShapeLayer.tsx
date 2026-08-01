@@ -114,12 +114,19 @@ interface ShapeContentProps<Shape extends CanvasShapeRecord> {
   behind: boolean
 }
 
+const tally = (key: string) => {
+  const counts = (globalThis as unknown as { __renders?: Record<string, number> }).__renders
+  if (counts) counts[key] = (counts[key] ?? 0) + 1
+}
+
 function ShapeContentView<Shape extends CanvasShapeRecord>({
   host,
   renderer,
   shape,
   behind
 }: ShapeContentProps<Shape>): ReactNode {
+  tally(`content:${shape.type}:${shape.id}`)
+  tally('content:*')
   return useStateTracking(
     `canvas shape content ${shape.type}`,
     () => {
