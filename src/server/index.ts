@@ -312,9 +312,6 @@ function serveTickets(session: CrewSession, raw: string, req: http.IncomingMessa
   return false
 }
 
-// What the crew has learned: writing one down, rewriting one, taking one out and
-// reading the list again. Every one names the promptId of the run asking, the
-// same credential the board and the helpers are reached on.
 function serveMemory(session: CrewSession, raw: string, req: http.IncomingMessage, res: http.ServerResponse): boolean {
   const [url, query = ''] = raw.split('?')
   if (req.method === 'GET' && url === '/memory') {
