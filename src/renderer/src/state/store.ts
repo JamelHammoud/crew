@@ -20,6 +20,7 @@ import {
 import { boardCode, type DesignBoardMeta, type DesignDocument } from '../../../shared/design'
 import { fallbackTitle, slugify, type DocPage } from '../../../shared/docs'
 import {
+  appendEvent,
   huddleRecordId,
   markDeletedReplies,
   trimEvents,
