@@ -12,7 +12,7 @@ interface OverlayEditor {
   getSelectedShapeIds(): TLShapeId[]
   getOnlySelectedShape(): TLShape | null
   getShapeUtil(shape: TLShape): ShapeUtil
-  getShapePageTransform(shape: TLShape): { applyToPoint(point: VecLike): VecLike }
+  getShapePageTransform(shape: TLShape): Mat
   getShapeGeometry(shape: TLShape): { vertices: VecLike[]; isClosed: boolean }
   getHoveredShape(): TLShape | undefined
   getShape(id: TLShapeId): TLShape | undefined
