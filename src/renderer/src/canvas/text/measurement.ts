@@ -27,6 +27,35 @@ export interface TextMeasurementRequest {
   options: TextMeasureOptions
 }
 
+export type TextSpanAlign = 'start' | 'start-legacy' | 'middle' | 'middle-legacy' | 'end' | 'end-legacy'
+
+export interface TextSpanMeasureOptions {
+  overflow: 'wrap' | 'truncate-ellipsis' | 'truncate-clip'
+  width: number
+  height: number
+  padding: number
+  fontSize: number
+  fontWeight: string
+  fontFamily: string
+  fontStyle: string
+  lineHeight: number
+  textAlign: TextSpanAlign
+  otherStyles?: Record<string, string>
+  measureScrollWidth?: boolean
+}
+
+export interface MeasuredTextBox {
+  x: number
+  y: number
+  w: number
+  h: number
+}
+
+export interface MeasuredTextSpan {
+  text: string
+  box: MeasuredTextBox
+}
+
 interface PoolItem {
   element: HTMLDivElement
   html: string
