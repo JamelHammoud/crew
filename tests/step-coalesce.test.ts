@@ -79,7 +79,8 @@ const started = (promptId: string): SessionEvent => ({
   promptId,
   agentId: 'a1',
   agentLabel: 'Bubbles',
-  text: 'go',
+  promptText: 'go',
+  byName: 'Jamel',
   threadId: 't1'
 })
 
