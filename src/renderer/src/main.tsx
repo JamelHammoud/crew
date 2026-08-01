@@ -39,20 +39,24 @@ if (Aside === null) applyTheme(storedTheme())
 else showTheme(storedTheme())
 if (hash === '#scribe') root.classList.add('bare')
 
-if (Aside === null) {
+if (joins) {
   void useCrew.getState().boot()
-  publishPresence()
-  publishScribe()
-  publishAwake()
-  // Which icon the dock wears is said again on every start, the way the awake
-  // switch is, and only from the window that picked it: the windows beside the app
-  // wear its theme without choosing one, and neither of them has a dock to set.
-  applyAppIcon(storedAppIcon())
   window.crew.onWindowShape(shape => {
     root.classList.toggle('square', shape.square)
     setFullScreen(shape.full)
   })
   window.crew.onOpenUrl(url => useBrowser.getState().openUrl(url))
+}
+
+// What this machine says about itself is said by the app's own window and not by
+// a thread standing beside it. Two windows saying the same thing is one of them
+// spending a message on nothing, and the dock has one icon however many windows
+// are open.
+if (Aside === null) {
+  publishPresence()
+  publishScribe()
+  publishAwake()
+  applyAppIcon(storedAppIcon())
 }
 
 createRoot(root).render(
