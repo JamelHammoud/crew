@@ -235,21 +235,24 @@ function collectPointSnaps(
   }
 }
 
-function addCenterSnap(nearest: NearestSnap[], snap: Extract<NearestSnap, { type: 'gap_center' }>) {
+type BreadthTest = (a: [number, number], b: [number, number]) => boolean
+
+const breadthsIntersect: BreadthTest = (a, b) => rangeIntersection(a[0], a[1], b[0], b[1]) !== null
+
+const breadthsOverlap: BreadthTest = (a, b) => rangesOverlap(a[0], a[1], b[0], b[1])
+
+function addCenterSnap(
+  nearest: NearestSnap[],
+  snap: Extract<NearestSnap, { type: 'gap_center' }>,
+  breadthsMeet: BreadthTest
+) {
   const other = nearest.find(
     (candidate): candidate is Extract<NearestSnap, { type: 'gap_center' }> => candidate.type === 'gap_center'
   )
-  const overlap =
-    other &&
-    rangeIntersection(
-      snap.gap.breadthIntersection[0],
-      snap.gap.breadthIntersection[1],
-      other.gap.breadthIntersection[0],
-      other.gap.breadthIntersection[1]
-    )
-  if (other && other.gap.length > snap.gap.length && overlap) {
+  const meet = other ? breadthsMeet(snap.gap.breadthIntersection, other.gap.breadthIntersection) : false
+  if (other && other.gap.length > snap.gap.length && meet) {
     nearest[nearest.indexOf(other)] = snap
-  } else if (!other || !overlap) {
+  } else if (!other || !meet) {
     nearest.push(snap)
   }
 }

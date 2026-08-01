@@ -59,6 +59,16 @@ export class DrawTool {
     this.state.onEnter(info)
   }
 
+  enter(info?: FreehandPointerEvent): void {
+    this.stateId = DrawTool.initial
+    this.state.onEnter(info)
+  }
+
+  exit(): void {
+    this.onExit()
+    this.state.onExit()
+  }
+
   onPointerDown(info: FreehandPointerEvent): void {
     this.state.onPointerDown(info)
   }
