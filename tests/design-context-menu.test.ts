@@ -100,6 +100,30 @@ describe('right clicking a board', () => {
     expect(subject.getSelectedShapeIds()).toEqual([one])
   })
 
+  it('reaches the group from a gap between the shapes inside it', () => {
+    const subject = editor()
+    const { group } = grouped(subject)
+    rightClick(subject, 150, 50)
+    expect(subject.getSelectedShapeIds()).toEqual([group])
+    expect(commands(subject, { x: 150, y: 50 })).toContain('ungroup')
+  })
+
+  it('keeps the group when the gap is right clicked twice', () => {
+    const subject = editor()
+    const { group } = grouped(subject)
+    rightClick(subject, 150, 50)
+    rightClick(subject, 150, 50)
+    expect(subject.getSelectedShapeIds()).toEqual([group])
+  })
+
+  it('leaves a locked group alone', () => {
+    const subject = editor()
+    const { group } = grouped(subject)
+    subject.toggleLock([group])
+    rightClick(subject, 150, 50)
+    expect(subject.getSelectedShapeIds()).toEqual([])
+  })
+
   it('clears the selection on empty canvas', () => {
     const subject = editor()
     const one = geo(subject, 'one', 0)
