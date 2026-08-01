@@ -15,7 +15,7 @@ export interface TextLayoutRequest {
   width: number
   fontSize: number
   options: Omit<TextMeasureOptions, 'fontSize' | 'maxWidth'>
-  trim?: TrimEdges | null
+  trim?: TextTrim | null
 }
 
 export interface TextLayoutSize {

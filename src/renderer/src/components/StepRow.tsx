@@ -125,7 +125,7 @@ export const stepTotals = (files: FileChange[]): { added: number; removed: numbe
     removed: 0
   })
 
-export default function StepRow({ item, linked, inGroup }: { item: ThreadItem; linked?: boolean; inGroup?: boolean }) {
+function StepRow({ item, linked, inGroup }: { item: ThreadItem; linked?: boolean; inGroup?: boolean }) {
   const [open, setOpen] = useState<boolean | null>(null)
   const thinking = item.kind === 'thinking'
   const action = thinking ? THINKING : toolAction(item.name, item.subagent)
