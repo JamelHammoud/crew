@@ -6,11 +6,12 @@ export class TextMeasure implements TLTextMeasure {
 
   constructor(private readonly getContainer?: () => HTMLElement) {}
 
-  measureHtml(html: string, options: TLTextMeasureOptions = {}): { w: number; h: number } {
+  measureHtml(html: string, options: TLTextMeasureOptions = {}): { w: number; h: number; scrollWidth?: number } {
     const measurement = this.measurer()
     if (!measurement) return estimate(stripHtml(html), options)
-    const { w, h } = measurement.measureHtml(html, resolve(options))
-    return { w: Math.ceil(w), h: Math.ceil(h) }
+    const { w, h, scrollWidth } = measurement.measureHtml(html, resolve(options))
+    const measured = { w: Math.ceil(w), h: Math.ceil(h) }
+    return typeof scrollWidth === 'number' ? { ...measured, scrollWidth: Math.ceil(scrollWidth) } : measured
   }
 
   measureText(text: string, options: TLTextMeasureOptions = {}): { w: number; h: number } {

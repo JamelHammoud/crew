@@ -237,7 +237,7 @@ export class InputsManager {
   pointerMove(screenPoint: VecLike, pagePoint: VecLike, modifiers: InputModifiers, dragDistanceSquared = 16): void {
     this.updateModifiers(modifiers)
     this.update(screenPoint, pagePoint)
-    if (this.pointing.get() && Vec.Dist2(this.originScreenPoint, screenPoint) >= dragDistanceSquared) this.dragging = true
+    if (this.pointing.get() && Vec.Dist2(this.originScreenPoint, screenPoint) > dragDistanceSquared) this.dragging = true
   }
 
   pointerUp(screenPoint: VecLike, pagePoint: VecLike, modifiers: InputModifiers): void {

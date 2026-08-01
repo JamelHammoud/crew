@@ -155,7 +155,7 @@ export class Editor {
       selectLockedShapes: false,
       dragDistanceSquared: 16,
       coarseDragDistanceSquared: 36,
-      adjacentShapeMargin: 20,
+      adjacentShapeMargin: 10,
       animationMediumMs: 180,
       ...options.options,
       camera: { ...options.options?.camera }
@@ -1402,7 +1402,9 @@ export class Editor {
     this.inputs.updateFromEvent(info, {
       camera: this.getCamera(),
       screenBounds: this.getViewportScreenBounds(),
-      dragDistanceSquared: this.options.dragDistanceSquared as number
+      dragDistanceSquared: (this.instance.isCoarsePointer
+        ? this.options.coarseDragDistanceSquared
+        : this.options.dragDistanceSquared) as number
     })
     this.tools.dispatch(info)
     return this
