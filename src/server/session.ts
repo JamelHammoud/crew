@@ -453,6 +453,7 @@ export class CrewSession {
   private stepFlushMs: number
   private stepFlushes = new Map<string, { timer: NodeJS.Timeout; dirty: boolean }>()
   onSyncNeeded: (() => void) | null = null
+  onEvent: ((event: SessionEvent) => void) | null = null
 
   constructor(
     private store: Store,
