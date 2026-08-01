@@ -67,18 +67,16 @@ export class CanvasEventBridge {
     this.pointers.set(event.pointerId, screen)
     this.editor.inputs.pointerDown(screen, page, event, event.pointerType)
     this.editor.inputs.setButton(event.button, true)
-    const currentTarget = event.currentTarget as (EventTarget & { setPointerCapture?: (id: number) => void }) | null
-    currentTarget?.setPointerCapture?.(event.pointerId)
-    this.dispatch({
-      ...pointerInfo(
+    capture(this.editor.getContainer(), event, true)
+    this.dispatch(
+      pointerInfo(
         event.button === 1 ? 'middle_click' : event.button === 2 ? 'right_click' : 'pointer_down',
         event,
         screen,
         page,
         'down'
-      ),
-      ...resolveTarget(event, page, this.editor)
-    })
+      )
+    )
   }
 
   private pointerMove(event: PointerEvent): void {
@@ -86,10 +84,7 @@ export class CanvasEventBridge {
     const page = this.editor.screenToPage(screen)
     this.pointers.set(event.pointerId, screen)
     this.editor.inputs.pointerMove(screen, page, event, this.editor.options.dragDistanceSquared as number)
-    this.dispatch({
-      ...pointerInfo('pointer_move', event, screen, page, 'move'),
-      ...resolveTarget(event, page, this.editor, null)
-    })
+    this.dispatch(pointerInfo('pointer_move', event, screen, page, 'move'))
   }
 
   private pointerUp(event: PointerEvent): void {
@@ -97,10 +92,8 @@ export class CanvasEventBridge {
     const page = this.editor.screenToPage(screen)
     this.editor.inputs.pointerUp(screen, page, event)
     this.pointers.delete(event.pointerId)
-    this.dispatch({
-      ...pointerInfo('pointer_up', event, screen, page, 'up'),
-      ...resolveTarget(event, page, this.editor)
-    })
+    capture(this.editor.getContainer(), event, false)
+    this.dispatch(pointerInfo('pointer_up', event, screen, page, 'up'))
   }
 
   private pointerCancel(event: PointerEvent): void {
