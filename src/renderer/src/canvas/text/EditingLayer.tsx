@@ -114,12 +114,12 @@ function ShapeTextEditor({
   onComplete(): void
 }) {
   const common = { richText, editing: true, onChange, onReady, onComplete, selectAll: false }
-  const util = editor.getShapeUtil(shape) as {
-    component(shape: EditableTextShape): ReactNode
-    options?: { getCustomDisplayValues?: (...args: unknown[]) => CSSProperties }
-  }
-  const custom = { ...util.options?.getCustomDisplayValues?.(editor, shape), ...paintedTypeStyle(util, shape) }
   if (shape.type === 'text') {
+    const util = editor.getShapeUtil(shape) as {
+      component(shape: EditableTextShape): ReactNode
+      options?: { getCustomDisplayValues?: (...args: unknown[]) => CSSProperties }
+    }
+    const custom = { ...util.options?.getCustomDisplayValues?.(editor, shape), ...paintedTypeStyle(util, shape) }
     return (
       <RichTextEditor
         {...common}
