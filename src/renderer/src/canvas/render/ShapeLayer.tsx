@@ -1,5 +1,5 @@
-import { memo, useLayoutEffect, useMemo, useRef } from 'react'
-import { computed, useValue } from '../signals'
+import { memo, useLayoutEffect, useMemo, useRef, type ReactNode } from 'react'
+import { computed, unsafe__withoutCapture, useStateTracking, useValue } from '../signals'
 import { MountedShapeCullingProvider, useCanvasLayoutReactor, useMountedShapeCulling } from './Culling'
 import { setStyle, shapeCssTransform, shapeStyle } from './style'
 import type { CanvasRenderHost, CanvasRenderingShape, CanvasShapeRecord, CanvasShapeRenderer } from './types'
