@@ -37,6 +37,7 @@ const box = (id, x, y, w, h) => ({
 })
 const mounted = editor => {
   window.canvasEditor = editor
+  editor.user.updateUserPreferences({ isSnapMode: true, colorScheme: 'light' })
   applyDesignDefaults(editor)
   editor.createShapes([
     box('a', 0, 0, 160, 120),
