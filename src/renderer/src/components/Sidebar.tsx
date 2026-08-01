@@ -73,9 +73,12 @@ export default function Sidebar({ overlay, strong }: { overlay?: boolean; strong
     return true
   }
 
-  const goToThread = async (place: Place, threadId: string) => {
+  const goToThread = async (place: Place, threadId: string, toRight = false) => {
     useCrew.getState().wantThread(threadId)
-    if (place.key === here) useCrew.getState().openThread(threadId)
+    if (place.key === here) {
+      if (toRight) useCrew.getState().openThread(threadId)
+      else useCrew.getState().openThreadAlone(threadId)
+    }
     else await go(place)
   }
 
@@ -118,6 +121,7 @@ export default function Sidebar({ overlay, strong }: { overlay?: boolean; strong
               void go(place)
             }}
             onOpenThread={threadId => void goToThread(place, threadId)}
+            onOpenThreadToRight={threadId => void goToThread(place, threadId, true)}
             onStop={isLive(live, place.key) ? () => void closePlace(place.key) : undefined}
             onForget={() => void forget(place)}
           />

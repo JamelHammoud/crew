@@ -9,6 +9,7 @@ import type { LiveThread } from '../src/shared/threads'
 
 const popOutThread = vi.fn()
 const onOpen = vi.fn()
+const onOpenToRight = vi.fn()
 
 const HERE = 'project:/work/crew'
 const AWAY = 'project:/work/site'
@@ -16,7 +17,7 @@ const AWAY = 'project:/work/site'
 const thread: LiveThread = { id: 'thread-2', title: 'Draw the footer', working: false }
 
 const row = (open: boolean, here = true, placeKey = HERE): void => {
-  render(createElement(ThreadRow, { thread, open, here, placeKey, onOpen }))
+  render(createElement(ThreadRow, { thread, open, here, placeKey, onOpen, onOpenToRight }))
   fireEvent.contextMenu(screen.getByText('Draw the footer'))
 }
 
@@ -28,6 +29,7 @@ const rows = (): string[] =>
 beforeEach(() => {
   popOutThread.mockClear()
   onOpen.mockClear()
+  onOpenToRight.mockClear()
   window.crew = { popOutThread } as unknown as CrewBridge
   useCrew.setState({ openThreadIds: ['thread-1'], openThreadId: 'thread-1' })
 })
@@ -35,19 +37,20 @@ beforeEach(() => {
 afterEach(cleanup)
 
 describe('the right click on a thread in the rail', () => {
-  it('opens one beside the row rather than in place of it', () => {
+  it('opens one to the right rather than in place of it', () => {
     row(false)
 
-    expect(rows()).toContain('Open beside')
-    fireEvent.click(screen.getByText('Open beside'))
-    expect(onOpen).toHaveBeenCalledTimes(1)
+    expect(rows()).toContain('Open to right')
+    fireEvent.click(screen.getByText('Open to right'))
+    expect(onOpenToRight).toHaveBeenCalledTimes(1)
+    expect(onOpen).not.toHaveBeenCalled()
   })
 
   it('is a window of its own or the way out for one already in the row', () => {
     useCrew.setState({ openThreadIds: ['thread-1', 'thread-2'], openThreadId: 'thread-1' })
     row(true)
 
-    expect(rows()).not.toContain('Open beside')
+    expect(rows()).not.toContain('Open to right')
     fireEvent.click(screen.getByText('Close'))
     expect(useCrew.getState().openThreadIds).toEqual(['thread-1'])
   })

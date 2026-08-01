@@ -20,6 +20,7 @@ export default function PlaceGroup({
   openThreadIds,
   onOpen,
   onOpenThread,
+  onOpenThreadToRight,
   onStop,
   onForget
 }: {
@@ -30,6 +31,7 @@ export default function PlaceGroup({
   openThreadIds: string[]
   onOpen: () => void
   onOpenThread: (threadId: string) => void
+  onOpenThreadToRight: (threadId: string) => void
   onStop?: () => void
   onForget: () => void
 }) {
@@ -60,6 +62,7 @@ export default function PlaceGroup({
           here={here}
           placeKey={place.key}
           onOpen={() => onOpenThread(thread.id)}
+          onOpenToRight={() => onOpenThreadToRight(thread.id)}
         />
       ))}
       <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined} className="min-w-44">

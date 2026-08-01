@@ -6,15 +6,22 @@ export default function ThreadRow({
   open,
   here,
   placeKey,
-  onOpen
+  onOpen,
+  onOpenToRight
 }: {
   thread: LiveThread
   open: boolean
   here: boolean
   placeKey: string
   onOpen: () => void
+  onOpenToRight: () => void
 }) {
-  const { onContextMenu, menu } = useThreadMenu({ threadId: thread.id, here, placeKey, onOpen })
+  const { onContextMenu, menu } = useThreadMenu({
+    threadId: thread.id,
+    here,
+    placeKey,
+    onOpen: onOpenToRight
+  })
 
   return (
     <>

@@ -146,15 +146,15 @@ describe('several threads open side by side', () => {
     expect(columns()).toHaveLength(1)
   })
 
-  it('opens a task beside the row from its right-click menu', () => {
+  it('opens a task to the right from its right-click menu', () => {
     open(['thread-1'], 'thread-1')
 
     fireEvent.click(screen.getByRole('button', { name: 'Tasks' }))
     const task = screen.getAllByRole('button').find(button => button.textContent?.includes('look at the footer'))!
     fireEvent.contextMenu(task)
 
-    expect(screen.getByText('Open beside')).toBeTruthy()
-    fireEvent.click(screen.getByText('Open beside'))
+    expect(screen.getByText('Open to right')).toBeTruthy()
+    fireEvent.click(screen.getByText('Open to right'))
 
     expect(useCrew.getState().openThreadIds).toEqual(['thread-1', 'thread-2'])
     expect(useCrew.getState().openThreadId).toBe('thread-2')
@@ -307,7 +307,7 @@ describe('the chat standing beside a thread', () => {
       .find(one => one.textContent?.includes('look at the footer'))!
     fireEvent.contextMenu(card)
 
-    expect(screen.getByText('Open beside')).toBeTruthy()
+    expect(screen.getByText('Open to right')).toBeTruthy()
     expect(screen.queryByText('Open')).toBeNull()
   })
 
@@ -349,7 +349,7 @@ describe('the right click on a card in the feed', () => {
     fireEvent.contextMenu(card('look at the header'))
 
     expect(screen.getByText('Open')).toBeTruthy()
-    expect(screen.queryByText('Open beside')).toBeNull()
+    expect(screen.queryByText('Open to right')).toBeNull()
 
     fireEvent.click(screen.getByText('Open'))
     expect(useCrew.getState().openThreadIds).toEqual(['thread-1'])

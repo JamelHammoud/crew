@@ -227,9 +227,9 @@ describe('the task menu', () => {
     panel()
 
     fireEvent.contextMenu(screen.getByText('water the plants'))
-    expect(screen.queryByText('Open beside')).toBeNull()
+    expect(screen.queryByText('Open to right')).toBeNull()
 
     fireEvent.contextMenu(screen.getByText('fix the sync loop'))
-    expect(screen.getByText('Open beside')).toBeTruthy()
+    expect(screen.getByText('Open to right')).toBeTruthy()
   })
 })
