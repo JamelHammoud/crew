@@ -27,8 +27,8 @@ import { coverFor } from '${where}/src/renderer/src/components/art/coverArt'
 import { coverArt } from '${where}/src/renderer/src/components/art/coverSeed'
 import { shapePath, subagentShape } from '${where}/src/renderer/src/components/art/subagentShape'
 import { paletteFor } from '${where}/src/shared/art'
-import { petOf, eyeGapAt, BODY, EYE_RADIUS, PET_GRID } from '${where}/src/renderer/src/components/art/pet'
-window.CrewCovers = { musicItems, coverFor, coverArt, shapePath, subagentShape, paletteFor, petOf, eyeGapAt, BODY, EYE_RADIUS, PET_GRID }
+import { petOf, eyeGapAt, BODY, EYE_RADIUS, FIELD_LIGHT, PET_GRID } from '${where}/src/renderer/src/components/art/pet'
+window.CrewCovers = { musicItems, coverFor, coverArt, shapePath, subagentShape, paletteFor, petOf, eyeGapAt, BODY, EYE_RADIUS, FIELD_LIGHT, PET_GRID }
 `
 
 const PAGE = `<!doctype html><html><body style="margin:0"><script src="covers.js"></script><script>
