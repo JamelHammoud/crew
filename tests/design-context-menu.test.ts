@@ -51,7 +51,7 @@ describe('right clicking a board', () => {
   it('aims at the shape once you have gone into the group', () => {
     const subject = editor()
     const { group, child } = grouped(subject)
-    subject.setFocusedGroupId(group)
+    subject.setFocusedGroup(group)
     const under = subject.getShape(child)!
     expect(menuTarget(subject, under).id).toBe(child)
   })
