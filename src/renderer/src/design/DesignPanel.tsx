@@ -10,7 +10,7 @@ import { useNodeView } from './useNodeView'
 
 export default function DesignPanel() {
   const editor = useEditor()
-  const shapes = useValue('design selected shapes', () => editor.getSelectedShapes(), [editor])
+  const shapes = useSelectedLayerShapes(editor)
   const view = useNodeView()
 
   return (

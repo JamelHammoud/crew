@@ -61,6 +61,34 @@ describe('the threads a place is showing', () => {
     expect(list.map(thread => thread.title)).toEqual(['Second', 'First'])
   })
 
+  it('puts the one something last happened in at the top', () => {
+    const events = [started('a', 'Older'), started('b', 'Newer'), ran('a')]
+    expect(activeThreads(events, none).map(thread => thread.title)).toEqual(['Older', 'Newer'])
+  })
+
+  it('counts a message landing in a thread as something happening in it', () => {
+    const events = [started('a', 'Older'), started('b', 'Newer'), said('a')]
+    expect(activeThreads(events, none).map(thread => thread.title)).toEqual(['Older', 'Newer'])
+  })
+
+  it('leaves the order alone while a run goes on saying what it is doing', () => {
+    const events = [started('a', 'Older'), ran('a'), started('b', 'Newer'), stepped('a')]
+    expect(activeThreads(events, none).map(thread => thread.title)).toEqual(['Newer', 'Older'])
+  })
+
+  it('keeps the one worked on last above the ones it was started before', () => {
+    const events = [started('a', 'First'), started('b', 'Second'), started('c', 'Third'), ran('b'), ran('a')]
+    expect(activeThreads(events, none).map(thread => thread.title)).toEqual(['First', 'Second', 'Third'])
+  })
+
+  it('holds the handful that were worked on last rather than the ones started last', () => {
+    const events = [
+      ...Array.from({ length: THREAD_LIMIT + 1 }, (_, i) => started(`t${i}`, `Thread ${i}`)),
+      ran('t0')
+    ]
+    expect(activeThreads(events, none).map(thread => thread.id)).toContain('t0')
+  })
+
   it('leaves the agent name out and capitalizes the first letter', () => {
     const list = activeThreads(
       [started('a', '@Bubbles draw the rail'), started('b', 'check the sync @Bubbles')],

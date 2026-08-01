@@ -60,7 +60,7 @@ function Loading() {
 
 function Session() {
   const [tab, setTab] = useState<Tab>('chat')
-  const [tasksOpen, setTasksOpen] = useState(false)
+  const closeTasks = useTasks(s => s.close)
   const pinned = useSidebar(s => s.pinned)
   const peeking = useSidebar(s => s.peeking)
   const peek = useSidebar(s => s.peek)
