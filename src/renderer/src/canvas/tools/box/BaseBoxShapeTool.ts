@@ -17,6 +17,7 @@ export abstract class BaseBoxShapeTool implements BoxStateParent {
       pointing: new Pointing(editor, this)
     }
     this.current = this.states.idle
+    this.current.onEnter({})
   }
 
   get id(): string {
