@@ -433,65 +433,6 @@ function colorOf(editor: OverlayEditor, name: string): string {
   return typeof solid === 'string' ? solid : 'hsl(214, 84%, 56%)'
 }
 
-function drawPointIndicator(context: CanvasRenderingContext2D, points: VecLike[], zoom: number): void {
-  if (points.length < 2) return
-  const sameX = points.every(point => Math.abs(point.x - points[0].x) < 1e-8)
-  const sorted = [...points].sort((a, b) => (sameX ? a.y - b.y : a.x - b.x))
-  context.beginPath()
-  context.moveTo(sorted[0].x, sorted[0].y)
-  context.lineTo(sorted[sorted.length - 1].x, sorted[sorted.length - 1].y)
-  context.stroke()
-  context.setLineDash([])
-  for (const point of sorted) {
-    context.beginPath()
-    context.arc(point.x, point.y, 2 / zoom, 0, Math.PI * 2)
-    context.fill()
-  }
-  context.setLineDash([4 / zoom, 4 / zoom])
-}
-
-function drawGapIndicator(
-  context: CanvasRenderingContext2D,
-  indicator: Extract<BoundsSnapIndicator, { type: 'gaps' }>,
-  zoom: number
-): void {
-  const tick = 4 / zoom
-  for (const gap of indicator.gaps) {
-    if (indicator.direction === 'horizontal') {
-      const y = sharedRangeCenter(gap.startEdge[0].y, gap.startEdge[1].y, gap.endEdge[0].y, gap.endEdge[1].y)
-      const start = gap.startEdge[0].x
-      const end = gap.endEdge[0].x
-      context.beginPath()
-      context.moveTo(start, y)
-      context.lineTo(end, y)
-      context.moveTo(start, y - tick)
-      context.lineTo(start, y + tick)
-      context.moveTo(end, y - tick)
-      context.lineTo(end, y + tick)
-      context.stroke()
-    } else {
-      const x = sharedRangeCenter(gap.startEdge[0].x, gap.startEdge[1].x, gap.endEdge[0].x, gap.endEdge[1].x)
-      const start = gap.startEdge[0].y
-      const end = gap.endEdge[0].y
-      context.beginPath()
-      context.moveTo(x, start)
-      context.lineTo(x, end)
-      context.moveTo(x - tick, start)
-      context.lineTo(x + tick, start)
-      context.moveTo(x - tick, end)
-      context.lineTo(x + tick, end)
-      context.stroke()
-    }
-  }
-}
-
-function sharedRangeCenter(a0: number, a1: number, b0: number, b1: number): number {
-  const start = Math.max(Math.min(a0, a1), Math.min(b0, b1))
-  const end = Math.min(Math.max(a0, a1), Math.max(b0, b1))
-  if (start <= end) return (start + end) / 2
-  return (a0 + a1 + b0 + b1) / 4
-}
-
 function overlayId(value: unknown): string | null {
   if (!value || typeof value !== 'object') return null
   const id =
