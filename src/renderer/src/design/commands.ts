@@ -156,6 +156,28 @@ function rotate(editor: Editor): void {
 
 export const DESIGN_COMMANDS: DesignCommand[] = [
   {
+    id: 'undo',
+    label: 'Undo',
+    hint: chordHint(UNDO),
+    group: 'history',
+    Icon: UndoGlyph,
+    terms: 'back step',
+    keys: UNDO,
+    when: ctx => ctx.editor.getCanUndo(),
+    run: ctx => ctx.editor.undo()
+  },
+  {
+    id: 'redo',
+    label: 'Redo',
+    hint: chordHint(REDO),
+    group: 'history',
+    Icon: RedoGlyph,
+    terms: 'forward again',
+    keys: REDO,
+    when: ctx => ctx.editor.getCanRedo(),
+    run: ctx => ctx.editor.redo()
+  },
+  {
     id: 'ask',
     label: 'Ask an agent',
     hint: chordHint(ASK),
