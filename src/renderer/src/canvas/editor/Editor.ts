@@ -431,7 +431,17 @@ export class Editor {
   }
 
   getCulledShapes(): ReadonlySet<TLShapeId> {
-    return new Set()
+    const visible = this.getShapeIdsInsideBounds(this.getViewportPageBounds())
+    const next = new Set<TLShapeId>()
+    for (const shape of this.getCurrentPageShapesSorted()) {
+      if (visible.has(shape.id)) continue
+      if (!this.getShapeUtil(shape).canCull(shape as never)) continue
+      next.add(shape.id)
+    }
+    this.getSelectedShapeIds().forEach(id => next.delete(id))
+    const editing = this.getEditingShapeId()
+    if (editing) next.delete(editing)
+    return sameIds(this.culled, next) ? this.culled : (this.culled = next)
   }
 
   getSortedChildIdsForParent(parentId: TLParentId): TLShapeId[] {
