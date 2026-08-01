@@ -121,20 +121,20 @@ export class Editor {
   private readonly getContainerFn: () => HTMLElement
   private readonly opacityForNextShape = { value: 1 }
   private readonly stylesForNextShape = new Map<string, unknown>()
-  private readonly instance = {
-    brush: null as ViewportBounds | null,
-    duplicateProps: null as { shapeIds: TLShapeId[]; offset: { x: number; y: number } } | null,
+  private readonly instanceState: Atom<EditorInstanceState> = atom('editor.instanceState', {
+    brush: null,
+    duplicateProps: null,
     isGridMode: false,
     isChangingStyle: false,
     isCoarsePointer: false,
     isToolLocked: false,
     cursor: { type: 'default', rotation: 0 },
     isReadonly: false,
-    erasingShapeIds: [] as TLShapeId[],
-    hintingShapeIds: [] as TLShapeId[],
-    hoveredShapeId: null as TLShapeId | null,
-    scribbles: [] as TLScribble[]
-  }
+    erasingShapeIds: [],
+    hintingShapeIds: [],
+    hoveredShapeId: null,
+    scribbles: []
+  })
   private currentPageId: TLPageId
   private disposed = false
   private stopSideEffects: () => void = () => undefined
