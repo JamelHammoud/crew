@@ -29,7 +29,7 @@ describe('what a move hands the rendering list', () => {
     const stop = keepWholePixels(subject)
     const id = geo(subject, 'moved', 100, 100)
     const before = subject.getShape(id)!.props
-    subject.updateShape({ id, type: 'geo', x: 180, y: 140 })
+    subject.updateShape({ id, type: 'geo', x: 180.4, y: 140.6 })
     const after = subject.getShape(id)!.props
     stop()
     expect(after.w).toBe(before.w)
@@ -42,7 +42,7 @@ describe('what a move hands the rendering list', () => {
     const stop = keepWholePixels(subject)
     const id = geo(subject, 'rendered', 100, 100)
     const before = subject.getRenderingShapes()
-    subject.updateShape({ id, type: 'geo', x: 180, y: 140 })
+    subject.updateShape({ id, type: 'geo', x: 180.4, y: 140.6 })
     const after = subject.getRenderingShapes()
     stop()
     expect(sameRenderingShapes(before, after)).toBe(true)
