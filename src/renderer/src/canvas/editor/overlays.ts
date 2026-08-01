@@ -390,7 +390,8 @@ class ShapeIndicatorOverlayUtil implements ToolOverlayUtil {
   constructor(private readonly editor: OverlayEditor) {}
 
   isActive(): boolean {
-    return this.indicated().length > 0
+    const { indicated, hinted } = this.marked()
+    return indicated.length > 0 || hinted.length > 0
   }
 
   getOverlays(): CanvasOverlay[] {

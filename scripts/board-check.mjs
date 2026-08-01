@@ -823,17 +823,14 @@ const driveSource = String.raw`(async () => {
     await pressButton('Align center')
     let family = null
     if (await pressButton('Font')) {
-      const rows = [...document.querySelectorAll('button')].filter(button => {
-        const inside = button.querySelector('span')
-        return inside && button.closest('[aria-label="Font"]') === null && button.parentElement && button.parentElement.className.includes('overflow-y-auto')
-      })
-      if (rows.length > 1) {
-        rows[1].click()
+      const rows = [...document.querySelectorAll('div[class*="max-h-72"] button')]
+      const wanted = rows.find(row => (row.textContent || '').trim() && row.textContent.trim() !== (typeOf(id) || {}).family)
+      if (wanted) {
+        wanted.click()
         await settle(4)
         family = typeOf(id) && typeOf(id).family
       } else {
-        document.body.click()
-        await settle(2)
+        await pressButton('Font')
       }
     }
     const set = typeOf(id)
