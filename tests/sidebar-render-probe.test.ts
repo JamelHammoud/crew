@@ -20,32 +20,34 @@ Element.prototype.getAnimations ??= () => []
 const drawn = vi.hoisted(() => ({ groups: 0, rows: 0 }))
 
 vi.mock('../src/renderer/src/components/sidebar/PlaceGroup', async () => {
-  const { createElement } = await import('react')
+  const { createElement, memo } = await import('react')
   const actual = await vi.importActual<typeof import('../src/renderer/src/components/sidebar/PlaceGroup')>(
     '../src/renderer/src/components/sidebar/PlaceGroup'
   )
+  const { samePlaceGroup } = await import('../src/renderer/src/components/sidebar/placeItems')
   const real = actual.default
   return {
     ...actual,
-    default: (props: Parameters<typeof real>[0]) => {
+    default: memo((props: Parameters<typeof real>[0]) => {
       drawn.groups += 1
       return createElement(real, props)
-    }
+    }, samePlaceGroup)
   }
 })
 
 vi.mock('../src/renderer/src/components/sidebar/ThreadRow', async () => {
-  const { createElement } = await import('react')
+  const { createElement, memo } = await import('react')
   const actual = await vi.importActual<typeof import('../src/renderer/src/components/sidebar/ThreadRow')>(
     '../src/renderer/src/components/sidebar/ThreadRow'
   )
+  const { sameThreadRow } = await import('../src/renderer/src/components/sidebar/placeItems')
   const real = actual.default
   return {
     ...actual,
-    default: (props: Parameters<typeof real>[0]) => {
+    default: memo((props: Parameters<typeof real>[0]) => {
       drawn.rows += 1
       return createElement(real, props)
-    }
+    }, sameThreadRow)
   }
 })
 
