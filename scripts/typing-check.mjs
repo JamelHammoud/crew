@@ -252,6 +252,16 @@ const driveSource = `(async () => {
     twice: Number(middle(held.twice).toFixed(4))
   })
 
+  const own = Object.getOwnPropertyDescriptor(Element.prototype, 'scrollHeight')
+  const tally = { reads: 0 }
+  Object.defineProperty(HTMLTextAreaElement.prototype, 'scrollHeight', {
+    configurable: true,
+    get() {
+      tally.reads += 1
+      return own.get.call(this)
+    }
+  })
+
   if (!composer()) return { failed: 'the composer never drew' }
   if (!scroller()) return { failed: 'the thread scroller never drew' }
 
@@ -267,6 +277,34 @@ const driveSource = `(async () => {
   for (const one of [...held].reverse()) await measure(one, one.rows, one.contained)
   const results = held.map(fold)
 
+  window.seedThread(400)
+  await settle(8)
+  const box2 = scroller()
+  const content = box2.firstElementChild
+  const ways = {}
+  const gauge = () => ({ one: forced(1), two: forced(2) })
+  ways.plain = gauge()
+  box2.style.contain = 'layout'
+  await settle(3)
+  ways.layout = gauge()
+  box2.style.contain = 'strict'
+  box2.style.height = '100%'
+  await settle(3)
+  ways.strict = gauge()
+  box2.style.contain = ''
+  box2.style.height = ''
+  content.style.display = 'none'
+  await settle(3)
+  ways.hidden = gauge()
+  content.style.display = ''
+  await settle(3)
+  ways.again = gauge()
+  tally.reads = 0
+  const before = performance.now()
+  const line = await typeLine()
+  const perKey = tally.reads / (line.flat.length + line.grew.length)
+  void before
+
   const box = scroller()
   box.style.contain = 'layout'
   await settle(4)
@@ -280,7 +318,7 @@ const driveSource = `(async () => {
   }
   box.style.contain = ''
 
-  return { results, layers, height: composer().getBoundingClientRect().height }
+  return { results, ways, perKey, layers, height: composer().getBoundingClientRect().height }
 })()`
 
 const mainSource = `const { app, BrowserWindow } = require('electron')
@@ -397,6 +435,8 @@ try {
   const cost = Number((long.sync.median - short.sync.median).toFixed(3))
   const left = Number((contained.sync.median - short.sync.median).toFixed(3))
   console.log(`\n  the rows cost ${cost}ms a keystroke, and ${left}ms of that is left with the scroller contained`)
+  console.log(`  reads a keystroke ${seen.perKey}`)
+  console.log(`  ${JSON.stringify(seen.ways)}`)
   console.log(`  the day divider ${seen.layers.dividerDrawn ? 'draws' : 'does not draw'} inside a contained scroller and is still ${seen.layers.dividerSticky ? 'sticky' : 'not sticky'}`)
   for (const error of seen.errors ?? []) console.log(`  window error: ${error}`)
 
