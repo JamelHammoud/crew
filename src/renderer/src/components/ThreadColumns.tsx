@@ -22,6 +22,7 @@ export default function ThreadColumns({ ids }: { ids: string[] }) {
       {ids.map(id => (
         <div
           key={id}
+          data-column={id}
           onPointerDownCapture={() => focusThread(id)}
           onFocusCapture={() => focusThread(id)}
           style={{ minWidth: COLUMN_MIN }}
