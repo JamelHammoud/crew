@@ -370,6 +370,43 @@ export function trimEvents(events: SessionEvent[], limit: number): SessionEvent[
   return kept.filter(e => e.kind !== 'agent.step' || prompts.has(e.promptId))
 }
 
+// The same window with one more event on the end of it, worked out from the one
+// handed in rather than from the whole list again. A window is already what
+// trimEvents makes of itself, so at most one lasting event comes off the front
+// for the one arriving, and the only subtle part is the step rule: a run whose
+// start falls out of the window takes its steps with it wherever they stand, and
+// a step landing for a run that has already gone is not kept at all.
+export function appendEvent(events: SessionEvent[], event: SessionEvent, limit: number): SessionEvent[] {
+  if (EPHEMERAL_KINDS.has(event.kind)) return events
+  if (event.kind === 'agent.step') return startedIn(events, event.promptId) ? [...events, event] : events
+  const cut = events.findIndex(e => e.kind !== 'agent.step')
+  if (cut < 0 || countedEvents(events) < limit) return [...events, event]
+  const gone = events[cut]
+  const rest = events.slice(cut + 1)
+  const kept =
+    gone.kind === 'agent.start' && !startedIn(rest, gone.promptId)
+      ? rest.filter(e => e.kind !== 'agent.step' || e.promptId !== gone.promptId)
+      : rest
+  kept.push(event)
+  return kept
+}
+
+function startedIn(events: SessionEvent[], promptId: string): boolean {
+  for (let i = events.length - 1; i >= 0; i--) {
+    const event = events[i]
+    if (event.kind === 'agent.start' && event.promptId === promptId) return true
+  }
+  return false
+}
+
+function countedEvents(events: SessionEvent[]): number {
+  let count = 0
+  for (const event of events) {
+    if (event.kind !== 'agent.step') count++
+  }
+  return count
+}
+
 // The page before the one somebody is holding, and whether anything stands
 // behind it. Named with no `before` it is the tail, which is what the snapshot
 // carries, so the same rule decides both what arrives first and what arrives
