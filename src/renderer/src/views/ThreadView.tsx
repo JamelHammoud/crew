@@ -416,6 +416,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                     onHover={slash.setActive}
                   />
                 </Composer>
+                <TypingLine where={threadId} />
               </div>
             </div>
           </div>
