@@ -54,7 +54,6 @@ export default function DiffPane({
 
   // A file arrived at by walking the list is read from the top of itself, or
   // the second file lands wherever the first one was left standing.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: the path is what says a different file arrived
   useEffect(() => {
     if (scroller.current) scroller.current.scrollTop = 0
   }, [change.path, change.staged])
