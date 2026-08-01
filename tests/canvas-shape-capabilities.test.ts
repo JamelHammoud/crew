@@ -37,7 +37,7 @@ function strokeShape(type: 'draw' | 'highlight', points: number[][]) {
   const util = type === 'draw' ? new DrawShapeUtil(editor) : new HighlightShapeUtil(editor)
   const encoded = points.map(([x, y]) => ({ x, y, z: 0.5 }))
   return shape(type, {
-    ...(util.getDefaultProps() as Record<string, unknown>),
+    ...(util.getDefaultProps() as unknown as Record<string, unknown>),
     segments: [{ type: 'free', path: encodePoints(encoded), dim: 3 }]
   } as never)
 }
@@ -47,23 +47,22 @@ describe('what each shape lets you do to it', () => {
     const arrow = new ArrowShapeUtil(editor)
     const line = new LineShapeUtil(editor)
     const group = new GroupShapeUtil(editor)
-    const any = null as never
-    expect([arrow.hideResizeHandles(any), arrow.hideRotateHandle(any)]).toEqual([true, true])
-    expect([arrow.hideSelectionBoundsBg(any), arrow.hideSelectionBoundsFg(any)]).toEqual([true, true])
-    expect([line.hideResizeHandles(any), line.hideRotateHandle(any)]).toEqual([true, true])
-    expect([line.hideSelectionBoundsBg(any), line.hideSelectionBoundsFg(any)]).toEqual([true, true])
-    expect(group.hideSelectionBoundsFg(any)).toBe(true)
+    expect([arrow.hideResizeHandles(), arrow.hideRotateHandle()]).toEqual([true, true])
+    expect([arrow.hideSelectionBoundsBg(), arrow.hideSelectionBoundsFg()]).toEqual([true, true])
+    expect([line.hideResizeHandles(), line.hideRotateHandle()]).toEqual([true, true])
+    expect([line.hideSelectionBoundsBg(), line.hideSelectionBoundsFg()]).toEqual([true, true])
+    expect(group.hideSelectionBoundsFg()).toBe(true)
   })
 
   it('will not bind an arrow to another arrow or to a group', () => {
-    expect(new ArrowShapeUtil(editor).canBind(null as never)).toBe(false)
-    expect(new GroupShapeUtil(editor).canBind(null as never)).toBe(false)
+    expect(new ArrowShapeUtil(editor).canBind()).toBe(false)
+    expect(new GroupShapeUtil(editor).canBind()).toBe(false)
     expect(new GeoShapeUtil(editor).canBind(null as never)).toBe(true)
     expect(new NoteShapeUtil(editor).canBind(null as never)).toBe(true)
   })
 
   it('never snaps to an arrow', () => {
-    expect(new ArrowShapeUtil(editor).canSnap(null as never)).toBe(false)
+    expect(new ArrowShapeUtil(editor).canSnap()).toBe(false)
     expect(new GeoShapeUtil(editor).canSnap(null as never)).toBe(true)
   })
 
@@ -124,7 +123,7 @@ describe('what each shape lets you do to it', () => {
     const frame = new FrameShapeUtil(editor)
     expect(frame.canResizeChildren()).toBe(false)
     const Resizing = FrameShapeUtil.configure({ resizeChildren: true })
-    expect(new Resizing(editor).canResizeChildren(null as never)).toBe(true)
+    expect(new Resizing(editor).canResizeChildren()).toBe(true)
     expect(new GroupShapeUtil(editor).canResizeChildren()).toBe(true)
   })
 
