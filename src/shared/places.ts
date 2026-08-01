@@ -8,14 +8,16 @@ export interface LivePlace {
   threads: LiveThread[]
 }
 
-// The events that change which threads a place is showing. Everything else a
-// run emits, a step above all, would push the whole list again for nothing.
+// The events that change which threads a place is showing and the order they
+// stand in. Everything else a run emits, a step above all, would push the whole
+// list again for nothing.
 export const RESHAPES_THREADS = new Set([
   'thread.started',
   'thread.status',
   'thread.archived',
   'agent.start',
-  'agent.end'
+  'agent.end',
+  'message.route'
 ])
 
 export const projectPlace = (folder: string): string => `project:${folder}`

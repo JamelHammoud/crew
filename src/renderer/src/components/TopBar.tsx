@@ -153,13 +153,13 @@ export default function TopBar({ tab, onTab }: { tab: Tab; onTab: (tab: Tab) => 
               }}
             />
           </div>
-          <Tooltip label="Tasks">
+          <Tooltip label="Tasks" disabled={tasksOpen}>
             <button
-              onClick={() => {
-                if (!tasksOpen) playSound('tasks.open')
-                onToggleTasks()
-              }}
+              onClick={toggleTasks}
+              onMouseEnter={() => peekTasks(true)}
+              onMouseLeave={() => peekTasks(false)}
               aria-label="Tasks"
+              aria-expanded={tasksOpen}
               className={`relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
                 tasksOpen ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
               }`}
