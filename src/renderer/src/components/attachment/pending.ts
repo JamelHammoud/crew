@@ -65,7 +65,7 @@ export function pendingUrl(item: PendingAttachment): string {
 }
 
 export function previewSrc(item: PendingAttachment): string {
-  return `data:${item.mime};base64,${item.data}`
+  return held.get(item.id)?.thumb ?? pendingUrl(item)
 }
 
 export function keepPreviews(ids: Set<string>): void {
