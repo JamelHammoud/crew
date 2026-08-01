@@ -44,12 +44,8 @@ export default function TopBar({
   const selfName = useCrew(s => s.selfName)
   const waiting = useCrew(reviewCount)
   const settingsOpen = useSettings() !== null
-  const pinned = useSidebar(s => s.pinned)
-  const peek = useSidebar(s => s.peek)
-  const toggleSidebar = useSidebar(s => s.toggle)
   const [moreOpen, setMoreOpen] = useState(false)
   const [toolboxOpen, setToolboxOpen] = useState(false)
-  const full = useFullScreen()
   const headerRef = useRef<HTMLElement>(null)
   const [compact, setCompact] = useState(false)
   const [collapsedNav, setCollapsedNav] = useState(false)
