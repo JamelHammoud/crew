@@ -1,10 +1,10 @@
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { filePathOf, pageName } from '../../../shared/urls'
 import { useBrowser } from '../state/browser'
 import { isPrivate, PrivateChip, useLocated } from './fileLinks'
 import { openShown, shownPaths } from './openShown'
 import { Chevron, FilePathLink, Label, rowClass, SUBJECT, SUBJECT_MONO } from './StepRow'
-import type { Shown } from './thread'
+import { sameShown, type Shown } from './thread'
 import type { ToolAction } from './toolActions'
 import { ShowGlyph } from './toolGlyphs'
 
@@ -29,7 +29,7 @@ function ShownLink({ page }: { page: string }) {
 // A run showing its work, as the row it leaves behind. It reads the way every
 // other step in the thread reads, because it is one: what the agent did, what
 // it did it to, and the rest of it a press away.
-export default function PageRow({ shown, linked }: { shown: Shown; linked?: boolean }) {
+function PageRow({ shown, linked }: { shown: Shown; linked?: boolean }) {
   const [open, setOpen] = useState(false)
   const { pages, title } = shown
   useLocated(shownPaths(pages))
@@ -60,3 +60,8 @@ export default function PageRow({ shown, linked }: { shown: Shown; linked?: bool
     </div>
   )
 }
+
+export default memo(
+  PageRow,
+  (before, after) => before.linked === after.linked && sameShown(before.shown, after.shown)
+)

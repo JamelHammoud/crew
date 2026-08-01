@@ -1,8 +1,9 @@
+import { memo } from 'react'
 import { WarningGlyph } from '../icons'
 import { useBrowser } from '../state/browser'
 import { useCrew } from '../state/store'
 import SubagentMark from './SubagentMark'
-import { describeStep, rootThread, type SubagentRun } from './thread'
+import { describeStep, rootThread, sameSubagentRuns, type SubagentRun } from './thread'
 import { formatSpan } from './time'
 
 // The helpers a thread sent out, as a row of ways in. A chip reads its own
@@ -42,7 +43,7 @@ function Chip({ run, parentThreadId }: { run: SubagentRun; parentThreadId: strin
   )
 }
 
-export default function SubagentChips({ runs, threadId }: { runs: SubagentRun[]; threadId: string }) {
+function SubagentChips({ runs, threadId }: { runs: SubagentRun[]; threadId: string }) {
   const showSubagents = useBrowser(state => state.showSubagents)
   const parentThreadId = useCrew(state => rootThread(threadId, state.threads))
   const rest = runs.length - SHOWN
@@ -66,3 +67,8 @@ export default function SubagentChips({ runs, threadId }: { runs: SubagentRun[];
     </div>
   )
 }
+
+export default memo(
+  SubagentChips,
+  (before, after) => before.threadId === after.threadId && sameSubagentRuns(before.runs, after.runs)
+)

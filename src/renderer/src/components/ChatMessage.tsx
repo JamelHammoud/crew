@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { memo, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { PencilGlyph, TrashGlyph } from '../icons'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
@@ -16,13 +16,13 @@ import ReplyQuote from './ReplyQuote'
 import SubagentMark from './SubagentMark'
 import Tooltip from './Tooltip'
 import MessageAttachments from './MessageAttachments'
-import type { ThreadItem } from './thread'
+import { sameItem, type ThreadItem } from './thread'
 import { formatFullTime, formatTime } from './time'
 
 const QUOTE_ROW =
   'mt-1.5 flex w-fit max-w-full min-w-0 items-center rounded-full bg-fg/[0.05] py-1 pl-2.5 pr-3.5 select-none'
 
-export default function ChatMessage({
+function ChatMessage({
   item,
   editable = false,
   linked = false,
@@ -251,3 +251,12 @@ export default function ChatMessage({
     </div>
   )
 }
+
+export default memo(
+  ChatMessage,
+  (before, after) =>
+    before.editable === after.editable &&
+    before.linked === after.linked &&
+    before.onReply === after.onReply &&
+    sameItem(before.item, after.item)
+)
