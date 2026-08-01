@@ -175,6 +175,7 @@ export function useReorder(onMove: (id: string, to: number) => void, options: Op
       })
       strip.style.pointerEvents = ''
       document.body.style.cursor = ''
+      put.current = null
       setCarried(null)
       if (keep && to !== from) onMove(id, to)
     }
