@@ -11,7 +11,13 @@ import type {
 } from '../schema'
 import type { PropsConfig } from '../schema/shapeProps'
 
+export interface ShapeTextMeasure {
+  measureHtml(html: string, options?: Record<string, unknown>): { w: number; h: number }
+  measureText?(text: string, options?: Record<string, unknown>): { w: number; h: number }
+}
+
 export interface ShapeEditor {
+  textMeasure?: ShapeTextMeasure
   getColorMode?(): 'light' | 'dark'
   getCurrentThemeId?(): string
   getCurrentTheme?(): { colors?: Partial<Record<'light' | 'dark', Record<string, unknown>>> }
