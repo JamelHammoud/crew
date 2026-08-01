@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { Editor } from '../src/renderer/src/canvas/editor'
+import { Vec } from '../src/renderer/src/canvas/math'
 import { createShapeId, createTLStore, type TLShapeId } from '../src/renderer/src/canvas/schema'
 import {
   FrameShapeUtil,
