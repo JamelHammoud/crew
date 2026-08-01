@@ -193,7 +193,7 @@ describe('doc pages', () => {
     await waitUntil(() => store.loadDocs()['meeting-notes']?.text === 'notes')
 
     const docs = store.loadDocs()
-    expect(docs['main']?.title).toBe('Genesis')
+    expect(docs['main']?.title).toBe('Welcome')
     expect(docs['main/main']?.title).toBe('Main')
     expect(docs['meeting-notes']?.title).toBe('Meeting notes')
 
