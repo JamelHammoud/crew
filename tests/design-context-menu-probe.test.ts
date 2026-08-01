@@ -163,3 +163,83 @@ describe('design right click menu', () => {
     expect(container.textContent).toBe('')
   })
 })
+
+function board(): { subject: Editor; container: HTMLDivElement } {
+  const container = document.createElement('div')
+  document.body.appendChild(container)
+  const subject = new Editor({
+    store: createTLStore({ id: 'context-menu-probe' }),
+    shapeUtils: [GeoShapeUtil, GroupShapeUtil],
+    bindingUtils: defaultBindingUtils,
+    tools: [SelectTool],
+    getContainer: () => container
+  })
+  subject.setViewportScreenBounds({ x: 0, y: 0, w: 1000, h: 800 })
+  return { subject, container }
+}
+
+function grouped(subject: Editor): TLShapeId {
+  for (const [name, x] of [
+    ['one', 0],
+    ['two', 200]
+  ] as const) {
+    subject.createShape({ id: createShapeId(name), type: 'geo', x, y: 0, props: { w: 100, h: 100, fill: 'solid' } })
+  }
+  subject.groupShapes([createShapeId('one'), createShapeId('two')])
+  const group = subject.getSelectedShapeIds()[0]
+  subject.selectNone()
+  return group
+}
+
+function rightClick(subject: Editor, container: HTMLElement, x: number, y: number): void {
+  const point = { x, y }
+  subject.dispatch({
+    name: 'right_click',
+    target: 'canvas',
+    point,
+    screenPoint: point,
+    phase: 'down',
+    button: 2,
+    buttons: 2,
+    pointerId: 1,
+    pointerType: 'mouse',
+    shiftKey: false,
+    altKey: false,
+    ctrlKey: false,
+    metaKey: false,
+    accelKey: false
+  } as never)
+  container.dispatchEvent(
+    new MouseEvent('contextmenu', { bubbles: true, cancelable: true, button: 2, clientX: x, clientY: y })
+  )
+}
+
+function listen(subject: Editor): void {
+  function Probe() {
+    useContextMenu(subject)
+    return null
+  }
+  render(createElement(Probe))
+}
+
+describe('right clicking over the real container', () => {
+  afterEach(cleanup)
+
+  it('leaves the group the select tool settled on selected', () => {
+    const { subject, container } = board()
+    const group = grouped(subject)
+    subject.select(group)
+    listen(subject)
+    rightClick(subject, container, 50, 50)
+    expect(subject.getSelectedShapeIds()).toEqual([group])
+    expect(subject.getSelectedShapes()[0].type).toBe('group')
+  })
+
+  it('reaches the group from nothing selected', () => {
+    const { subject, container } = board()
+    const group = grouped(subject)
+    listen(subject)
+    rightClick(subject, container, 50, 50)
+    expect(subject.getSelectedShapeIds()).toEqual([group])
+  })
+})
