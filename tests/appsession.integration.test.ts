@@ -7,6 +7,7 @@ import { Store } from '../src/server/store'
 import { parseLink } from '../src/shared/link'
 import { writeCrewRemote } from '../src/shared/project'
 import type { ServerMessage } from '../src/shared/protocol'
+import { SavedSessionStore } from '../src/main/saved-session'
 import { crewsAt } from './helpers/crews'
 import { initBare, initRepo } from './helpers/git'
 import { linkOf, TestUi, tmpDir, waitUntil } from './helpers/session'
@@ -18,6 +19,19 @@ function welcomeOf(ui: TestUi): Extract<ServerMessage, { type: 'welcome' }> {
 }
 
 describe('app session', () => {
+  it('keeps a new name for the open and saved session', async () => {
+    const sessionFile = path.join(tmpDir('rename-session-state'), 'session.json')
+    const app = new AppSession({ session: sessionFile, projects: tmpDir('rename-project-state') })
+    const project = tmpDir('rename-project')
+    await app.startHost(project, 'Jamel (dev)')
+
+    expect(app.rename('  Jamel   High  ')?.name).toBe('Jamel High')
+    expect(app.current()?.name).toBe('Jamel High')
+    expect(new SavedSessionStore(sessionFile).load()?.name).toBe('Jamel High')
+
+    await app.shutdown()
+  })
+
   // A folder with no git in it is somewhere to work, so it opens on this
   // machine with nothing to sync rather than being turned away at the door.
   it('opens a folder that is not a git repository, kept on this machine', async () => {

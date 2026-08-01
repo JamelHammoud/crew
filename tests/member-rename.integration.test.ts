@@ -32,6 +32,12 @@ describe('your name', () => {
     expect(host.session.snapshot().members.some(member => member.name === 'Jamel (dev)')).toBe(false)
     expect(host.store.loadSession()?.members.find(member => member.id === id)?.name).toBe('Jamel High')
 
+    ui.close()
+    other.close()
+    uis = []
+    const repoPath = host.repoPath
+    await host.close()
+    host = await startHost(repoPath)
     const again = await TestUi.connect(host.url, 'Jamel High', host.code)
     uis.push(again)
     expect(again.selfId).toBe(id)
