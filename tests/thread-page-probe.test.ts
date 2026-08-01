@@ -139,8 +139,6 @@ const scroller = (): HTMLElement => {
   return el
 }
 
-const rows = (): number => document.querySelectorAll('[data-step]').length
-
 const openThread = (held: AgentStep[] = steps): void => {
   useCrew.setState(seed(held))
   render(createElement(ThreadView, { threadId: THREAD }))
