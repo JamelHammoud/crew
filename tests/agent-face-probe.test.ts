@@ -4,7 +4,7 @@ import { cleanup, render } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import AgentIcon from '../src/renderer/src/components/AgentIcon'
-import { EYE_RADIUS, MIN_BRIDGE, PET_GRID, eyeGapAt, petOf } from '../src/renderer/src/components/art/pet'
+import { BODY, EYE_RADIUS, MIN_BRIDGE, PET_GRID, eyeGapAt, petOf } from '../src/renderer/src/components/art/pet'
 import { paletteFor } from '../src/shared/art'
 import { useCrew } from '../src/renderer/src/state/store'
 
