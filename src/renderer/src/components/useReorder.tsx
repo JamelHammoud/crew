@@ -95,6 +95,7 @@ export function useReorder(onMove: (id: string, to: number) => void, options: Op
       held.style.opacity = LIFTED
       strip.style.pointerEvents = 'none'
       document.body.style.cursor = 'grabbing'
+      put.current = draw
       setCarried(id)
     }
 
