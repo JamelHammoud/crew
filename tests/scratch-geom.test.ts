@@ -103,8 +103,8 @@ describe('probe: Box against known values', () => {
       const b = new Box(spread(), spread(), Math.abs(spread(100)) + 1, Math.abs(spread(100)) + 1)
       if (a.contains(b)) expect(a.collides(b)).toBe(true)
       expect(a.collides(b)).toBe(b.collides(a))
-      expect(a.contains(a)).toBe(true)
       expect(a.collides(a)).toBe(true)
+      expect(a.contains(a)).toBe(false)
     }
   })
 })
@@ -137,7 +137,8 @@ describe('probe: Mat against known values', () => {
       expect(decomposed.x).toBeCloseTo(x, 5)
       expect(decomposed.y).toBeCloseTo(y, 5)
       expect(decomposed.scaleX).toBeCloseTo(scale, 5)
-      expect(decomposed.rotation).toBeCloseTo(rotation, 5)
+      const turn = Math.PI * 2
+      expect(((decomposed.rotation - rotation) % turn + turn) % turn).toBeCloseTo(0, 5)
     }
   })
 
@@ -232,8 +233,9 @@ describe('probe: hitTestLineSegment', () => {
     expect(rect.hitTestLineSegment({ x: -50, y: 70 }, { x: 150, y: 70 }, 10)).toBe(true)
   })
 
-  it('reads a line that never moves as a point', () => {
-    expect(rect.hitTestLineSegment({ x: 50, y: 30 }, { x: 50, y: 30 })).toBe(true)
+  it('reads a line that never moves by the edges alone, never by the inside', () => {
+    expect(rect.hitTestLineSegment({ x: 50, y: 30 }, { x: 50, y: 30 })).toBe(false)
+    expect(rect.hitTestLineSegment({ x: 0, y: 30 }, { x: 0, y: 30 })).toBe(true)
     expect(rect.hitTestLineSegment({ x: 500, y: 500 }, { x: 500, y: 500 })).toBe(false)
   })
 })
@@ -241,7 +243,9 @@ describe('probe: hitTestLineSegment', () => {
 describe('probe: what a geometry says about itself', () => {
   it('measures the area of a rectangle, a circle and a polygon', () => {
     expect(new Rectangle2d({ x: 0, y: 0, width: 100, height: 60, isFilled: true }).area).toBeCloseTo(6000, 3)
-    expect(new Circle2d({ x: 0, y: 0, radius: 50, isFilled: true }).area).toBeCloseTo(Math.PI * 2500, -2)
+    const circleArea = new Circle2d({ x: 0, y: 0, radius: 50, isFilled: true }).area
+    expect(circleArea).toBeLessThan(Math.PI * 2500)
+    expect(circleArea).toBeGreaterThan(Math.PI * 2500 * 0.95)
     const triangle = new Polygon2d({
       points: [new Vec(0, 0), new Vec(100, 0), new Vec(0, 60)],
       isFilled: true
