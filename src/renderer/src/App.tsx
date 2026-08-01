@@ -7,7 +7,8 @@ import ThreadColumns from './components/ThreadColumns'
 import Spinner from './components/Spinner'
 import TasksPanel from './components/TasksPanel'
 import Toaster from './components/Toaster'
-import TopBar, { type Tab } from './components/TopBar'
+import TopBar from './components/TopBar'
+import type { Tab } from './components/navTabs'
 import VoiceScreen from './components/voice/VoiceScreen'
 import WindowCorner from './components/WindowCorner'
 import { lazy, Suspense } from 'react'
@@ -129,7 +130,7 @@ function Session() {
         style={{ width: pinned ? SIDEBAR_W : 0, transitionDuration: `${PIN_MS}ms` }}
       >
         <div className="h-full" style={{ width: SIDEBAR_W }}>
-          <Sidebar />
+          <Sidebar tab={tab} onTab={switchTab} />
         </div>
       </div>
       <div className="flex-1 min-w-0 relative isolate bg-ink-900">
@@ -159,7 +160,7 @@ function Session() {
           style={{ width: SIDEBAR_W }}
           className="rail absolute inset-y-0 left-0 z-50"
         >
-          <Sidebar overlay strong={tab === 'design'} />
+          <Sidebar overlay strong={tab === 'design'} tab={tab} onTab={switchTab} />
         </div>
       )}
       <WindowCorner />
