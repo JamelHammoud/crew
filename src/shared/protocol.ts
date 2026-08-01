@@ -202,6 +202,10 @@ export type ServerMessage =
   | { type: 'welcome'; selfId: string; snapshot: SessionSnapshot }
   | { type: 'event'; event: SessionEvent }
   | { type: 'history'; events: SessionEvent[]; more: boolean }
+  // One thread read back out of the log, for the one window that asked. It is
+  // kept beside the window's own events rather than folded into them, or a
+  // thread from months ago would stand at the head of today's chat.
+  | { type: 'thread.history'; threadId: string; events: SessionEvent[] }
   | { type: 'member.renamed'; fromId: string; member: MemberInfo }
   | { type: 'member.avatar'; memberId: string; file: string | null }
   | { type: 'queue.state'; threadId: string; items: QueuedItem[] }
