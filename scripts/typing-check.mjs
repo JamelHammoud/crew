@@ -220,23 +220,24 @@ const driveSource = `(async () => {
     const box = scroller()
     box.style.contain = contained ? 'layout' : ''
     await settle(4)
-    const sync = []
+    const flat = []
+    const grew = []
     const framed = []
-    let wrapped = false
     for (let pass = 0; pass < ${PASSES}; pass++) {
       const run = await typeLine()
-      sync.push(...run.sync)
+      flat.push(...run.flat)
+      grew.push(...run.grew)
       framed.push(...run.framed)
-      wrapped = wrapped || run.wrapped
     }
     return {
       rows,
       contained,
       drawn: box.querySelectorAll('.space-y-5 > *').length,
       tall: box.scrollHeight,
-      keystrokes: sync.length,
-      wrapped,
-      sync: summarise(sync),
+      keystrokes: flat.length + grew.length,
+      lines: grew.length / ${PASSES},
+      sync: summarise(flat),
+      growing: grew.length > 0 ? summarise(grew) : null,
       frame: summarise(framed),
       once: forced(1),
       twice: forced(2)
