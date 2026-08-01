@@ -44,17 +44,32 @@ export default function SplitGrip({
     onSettle(last.current)
   }
 
+  const keys = (event: KeyboardEvent<HTMLDivElement>) => {
+    const by = event.key === 'ArrowDown' ? STEP : event.key === 'ArrowUp' ? -STEP : 0
+    if (by === 0) return
+    event.preventDefault()
+    const next = clampSplit(height + by, total)
+    onHeight(next)
+    onSettle(next)
+  }
+
   return (
     <div
       role="separator"
+      tabIndex={0}
       aria-label="Drag to resize"
+      aria-orientation="horizontal"
+      aria-valuenow={height}
+      aria-valuemin={LIST_MIN}
+      aria-valuemax={Math.max(LIST_MIN, total - DIFF_MIN)}
       onPointerDown={down}
       onPointerMove={move}
       onPointerUp={up}
       onPointerCancel={up}
-      className="group/grip relative h-2 shrink-0 cursor-row-resize select-none"
+      onKeyDown={keys}
+      className="group/grip relative h-2 shrink-0 cursor-row-resize select-none focus:outline-none"
     >
-      <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-ink-700 transition-colors group-hover/grip:bg-fg/25" />
+      <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-ink-700 transition-colors group-hover/grip:bg-fg/25 group-focus/grip:bg-fg/25" />
     </div>
   )
 }
