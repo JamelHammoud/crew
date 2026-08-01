@@ -32,8 +32,7 @@ export default function DiffPane({
   onClose,
   onStage,
   onUnstage,
-  onDiscard,
-  room
+  onDiscard
 }: {
   change: RepoChange
   viewed: boolean
@@ -42,9 +41,6 @@ export default function DiffPane({
   onStage: () => void
   onUnstage: () => void
   onDiscard: () => void
-  // What the bar floating at the foot of the panel covers, so the last line of
-  // a diff can still be scrolled out from under it.
-  room: boolean
 }) {
   const [menu, setMenu] = useState(false)
   const scroller = useRef<HTMLDivElement>(null)
