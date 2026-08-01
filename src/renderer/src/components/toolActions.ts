@@ -88,7 +88,7 @@ const TABLE: Array<[string, ToolAction]> = [
   ],
   [
     'exitplanmode enterplanmode planmode plan',
-    { icon: ClipboardGlyph, run: 'Writing a plan', done: 'Wrote a plan', prose: true }
+    { icon: ChecklistGlyph, run: 'Writing a plan', done: 'Wrote a plan', prose: true }
   ],
   ['task agent subagent delegate dispatchagent launchagent', AGENT],
   [

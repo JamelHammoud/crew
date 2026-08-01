@@ -85,14 +85,6 @@ export const ChecklistGlyph = glyph(
   </>
 )
 
-export const ClipboardGlyph = glyph(
-  <>
-    <path d="M9 5.2H7.6A1.6 1.6 0 0 0 6 6.8v12.1a1.6 1.6 0 0 0 1.6 1.6h8.8a1.6 1.6 0 0 0 1.6-1.6V6.8a1.6 1.6 0 0 0-1.6-1.6H15" />
-    <rect x="9" y="3.2" width="6" height="4" rx="1.5" />
-  </>
-)
-
-
 export const QuestionGlyph = glyph(
   <>
     <circle cx="12" cy="12" r="8.5" />
