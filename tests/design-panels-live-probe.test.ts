@@ -100,6 +100,41 @@ describe('the design panels on a real board', () => {
     expect(editor.getShape(card)!.isLocked).toBe(true)
   })
 
+  it('scrolls the layers rather than growing past the panel', () => {
+    const editor = board()
+    for (let at = 0; at < 60; at += 1) node(editor, `Layer ${at}`, at * 4)
+    const view = inside(editor, createElement(DesignLeftPanel))
+    const scroller = view.container.querySelector('[data-design-layers] .overflow-y-auto') as HTMLElement
+    expect(scroller).toBeTruthy()
+    expect(scroller.className).toContain('min-h-0')
+    let box = scroller.parentElement
+    const panel = view.container.querySelector('aside') as HTMLElement
+    while (box && box !== panel) {
+      expect(box.className, box.className).toContain('flex')
+      expect(box.className, box.className).toContain('min-h-0')
+      box = box.parentElement
+    }
+    expect(box).toBe(panel)
+    expect(panel.className).toContain('overflow-hidden')
+  })
+
+  it('scrolls the inspector the same way', () => {
+    const editor = board()
+    const card = node(editor, 'Card', 0)
+    editor.setSelectedShapes([card])
+    const view = inside(editor, createElement(DesignLeftPanel))
+    const scroller = view.container.querySelector('[data-design-inspector] .overflow-y-auto') as HTMLElement
+    expect(scroller).toBeTruthy()
+    expect(scroller.className).toContain('min-h-0')
+    let box = scroller.parentElement
+    const panel = view.container.querySelector('aside') as HTMLElement
+    while (box && box !== panel) {
+      expect(box.className, box.className).toContain('min-h-0')
+      box = box.parentElement
+    }
+    expect(box).toBe(panel)
+  })
+
   it('turns the layers over for the inspector once something is picked', () => {
     const editor = board()
     const card = node(editor, 'Card', 0)
