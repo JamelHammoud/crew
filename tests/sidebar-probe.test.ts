@@ -141,6 +141,68 @@ describe('the sidebar', () => {
     expect(container.querySelector('aside')?.className).toContain('sidebar-pinned')
   })
 
+  it('holds the three pages at its head, in the order the header holds them', () => {
+    const { container } = render(Sidebar())
+    const nav = container.querySelector('nav[aria-label="Main navigation"]') as HTMLElement
+    expect([...nav.querySelectorAll('button')].map(one => one.textContent)).toEqual(['Chat', 'Docs', 'Design'])
+    expect(nav.querySelector('button[aria-current="page"]')?.textContent).toBe('Chat')
+  })
+
+  it('goes to the page a row names and puts a hovered sidebar away with it', () => {
+    const went: string[] = []
+    useSidebar.setState({ pinned: false, peeking: true })
+    render(Sidebar({ onTab: tab => went.push(tab) }))
+    fireEvent.click(screen.getByRole('button', { name: 'Docs' }))
+    expect(went).toEqual(['docs'])
+    expect(useSidebar.getState().peeking).toBe(false)
+  })
+
+  it('scrolls its projects on their own, under a heading and over the folder action', () => {
+    const { container } = render(Sidebar())
+    const scroller = container.querySelector('.overflow-y-auto') as HTMLElement
+    expect(scroller.className).toContain('scroll-fade')
+    expect(scroller.previousElementSibling?.textContent).toBe('Projects')
+    expect(container.querySelector('nav[aria-label="Main navigation"]')?.className).toContain('shrink-0')
+    expect(screen.getByRole('button', { name: 'Open a folder' }).parentElement?.className).toContain('shrink-0')
+  })
+
+  it('fades only the end of the list that is really hiding something', async () => {
+    const { container } = render(Sidebar())
+    const scroller = container.querySelector('.scroll-fade') as HTMLElement
+    await waitFor(() => expect(scroller.hasAttribute('data-fade-top')).toBe(false))
+    expect(scroller.hasAttribute('data-fade-bottom')).toBe(false)
+
+    Object.defineProperty(scroller, 'clientHeight', { value: 100, configurable: true })
+    Object.defineProperty(scroller, 'scrollHeight', { value: 400, configurable: true })
+    fireEvent.scroll(scroller)
+    await waitFor(() => expect(scroller.hasAttribute('data-fade-bottom')).toBe(true))
+    expect(scroller.hasAttribute('data-fade-top')).toBe(false)
+
+    scroller.scrollTop = 300
+    fireEvent.scroll(scroller)
+    await waitFor(() => expect(scroller.hasAttribute('data-fade-top')).toBe(true))
+    expect(scroller.hasAttribute('data-fade-bottom')).toBe(false)
+  })
+
+  it('stands the pages in the header down while it is pinned, and only while pinned', () => {
+    const { container, rerender } = topBar()
+    const nav = () => container.querySelector('nav[aria-label="Main navigation"]') as HTMLElement
+    expect(nav().className).toContain('top-bar-nav')
+    expect(nav().hasAttribute('data-away')).toBe(false)
+
+    act(() => {
+      useSidebar.setState({ pinned: false, peeking: true })
+    })
+    rerender(createElement(TopBar, { tab: 'chat' as const, onTab: () => {} }))
+    expect(nav().hasAttribute('data-away')).toBe(false)
+
+    act(() => {
+      useSidebar.setState({ pinned: true, peeking: false })
+    })
+    rerender(createElement(TopBar, { tab: 'chat' as const, onTab: () => {} }))
+    expect(nav().hasAttribute('data-away')).toBe(true)
+  })
+
   it('stands the folder action off the bottom edge by what it stands off the sides', () => {
     render(Sidebar())
     const action = screen.getByRole('button', { name: 'Open a folder' })
