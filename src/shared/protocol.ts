@@ -66,6 +66,7 @@ export interface SessionSnapshot {
   tickets?: TicketEvent[]
   // Absent from a host running an older build, which has no toolbox to send.
   tools?: CrewTool[]
+  memories?: CrewMemory[]
   // How big a file the crew may send, in megabytes. Absent from a host running
   // an older build, whose limit is the one this shipped with.
   attachmentMb?: number
