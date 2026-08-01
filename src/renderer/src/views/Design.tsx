@@ -40,6 +40,14 @@ export default function Design() {
   }, [])
 
   useEffect(() => {
+    const next = firstBoard(connection, boards.length, asked.current)
+    if (next === 'have') asked.current = false
+    if (next !== 'make') return
+    asked.current = true
+    setSelected(createBoard('Untitled'))
+  }, [connection, boards.length, createBoard])
+
+  useEffect(() => {
     if (current) rememberBoard(current)
   }, [current])
 
