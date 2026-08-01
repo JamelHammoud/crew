@@ -114,6 +114,7 @@ export class OverlayManager {
   }
 
   getActiveOverlayEntries(): CanvasOverlayEntry[] {
+    this.pass.begin()
     const entries: Array<CanvasOverlayEntry & { zIndex: number }> = []
     for (const value of this.values.values()) {
       if (!value.isActive()) continue
