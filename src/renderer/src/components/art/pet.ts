@@ -118,6 +118,13 @@ export function petOf(seed: string): Pet {
 // standing on a photograph.
 export const BODY = 0.78
 
+// How much light the picture under a pet carries. It is the same scene the
+// covers are photographed in, stood a little further back from the light, so the
+// white shape on it is the brightest thing in the tile. A cover is looked at on
+// its own and a face is worn in a row of them at 20 across, where the white is
+// the whole of what has to be read.
+export const FIELD_LIGHT = 0.78
+
 // The least that may stand between the two eye holes, in real pixels at the size
 // the pet is drawn. Two holes that close up are one slot, and a slot across the
 // middle of a white shape is not a face: at 20 across, which is what a pet is
