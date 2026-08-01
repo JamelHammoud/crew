@@ -76,9 +76,20 @@ export class ScribbleBrushing extends StateNode<SelectEditor> {
       const geometry = this.editor.getShapeGeometry(shape)
       const transform = this.editor.getShapePageTransform(shape)
       if (!geometry || !transform) continue
+      if (
+        this.editor.isShapeFrameLike(shape) &&
+        geometry.bounds.containsPoint(this.editor.getPointInShapeSpace(shape, origin))
+      ) {
+        continue
+      }
       const inverse = transform.clone().invert()
       if (geometry.hitTestLineSegment(inverse.applyToPoint(previous), inverse.applyToPoint(current), 0)) {
-        this.newlySelectedShapeIds.add(this.editor.getOutermostSelectableShape(shape).id)
+        const outermost = this.editor.getOutermostSelectableShape(shape)
+        const mask = this.editor.getShapeMask(outermost.id)
+        if (mask && intersectLineSegmentPolygon(previous, current, mask) !== null && !pointInPolygon(current, mask)) {
+          continue
+        }
+        this.newlySelectedShapeIds.add(outermost.id)
       }
     }
     const next = new Set(
