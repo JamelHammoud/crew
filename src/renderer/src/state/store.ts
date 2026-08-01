@@ -1099,6 +1099,7 @@ export const useCrew = create<CrewState>((set, get) => {
       if (from) forgetProject(from)
       useBrowser.getState().stash()
       socket.close()
+      stepBuffer.drop()
       void window.crew.leave().then(() => usePlaces.getState().load())
       if (others[0]) {
         set({ connection: 'connecting', ...BLANK })

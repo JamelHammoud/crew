@@ -17,6 +17,8 @@ import {
   pageCodeOf,
   resolveDocRef,
   ROOT_PAGE,
+  ROOT_TEXT,
+  ROOT_TITLE,
   type DocMentionRef,
   type DocPage
 } from '../shared/docs'

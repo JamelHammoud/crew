@@ -1,5 +1,14 @@
 export const ROOT_PAGE = 'main'
-export const ROOT_TITLE = 'Genesis'
+export const ROOT_TITLE = 'Welcome'
+
+export const ROOT_TEXT = `This is Docs, where you and your Crew jot things down.
+
+A few things you can do:
+
+- / for headings, lists, to-dos, tables, code and images
+- : to pick emoji
+- @ a doc in chat to give your agent context
+`
 
 export interface DocPage {
   title: string
