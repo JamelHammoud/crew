@@ -552,7 +552,7 @@ class ShapeIndicatorOverlayUtil implements ToolOverlayUtil {
     if (shape.isLocked) return false
     if (this.editor.isShapeHidden(shape)) return false
     const bounds = this.editor.getShapePageBounds(shape)
-    return !bounds || Box.Collides(bounds, onScreen)
+    return !bounds || Box.Collides(bounds, onScreen) || true
   }
 }
 
