@@ -148,13 +148,13 @@ describe('the sidebar', () => {
     expect(nav.querySelector('button[aria-current="page"]')?.textContent).toBe('Chat')
   })
 
-  it('goes to the page a row names and puts a hovered sidebar away with it', () => {
+  it('goes to the page a row names and puts a hovered sidebar away with it', async () => {
     const went: string[] = []
     useSidebar.setState({ pinned: false, peeking: true })
     render(Sidebar({ onTab: tab => went.push(tab) }))
     fireEvent.click(screen.getByRole('button', { name: 'Docs' }))
     expect(went).toEqual(['docs'])
-    expect(useSidebar.getState().peeking).toBe(false)
+    await waitFor(() => expect(useSidebar.getState().peeking).toBe(false))
   })
 
   it('scrolls its projects on their own, under a heading and over the folder action', () => {
