@@ -771,14 +771,27 @@ export class Editor {
     return Boolean(shape && this.getShapeUtil(shape).canCrop(shape as never))
   }
 
-  getOutermostSelectableShape(shape: TLShape): TLShape {
-    let current = shape
-    while (current.parentId.startsWith('shape:')) {
-      const parent = this.getShape(current.parentId as TLShapeId)
-      if (!parent || parent.id === this.getFocusedGroupId()) break
-      current = parent
+  getOutermostSelectableShape(shape: TLShape | TLShapeId, filter?: (shape: TLShape) => boolean): TLShape {
+    const start = typeof shape === 'string' ? this.getShape(shape) : shape
+    if (!start) return shape as TLShape
+    const focusedGroupId = this.getFocusedGroupId()
+    const focusedGroup = focusedGroupId.startsWith('shape:') ? this.getShape(focusedGroupId as TLShapeId) : undefined
+    let match = start
+    let node: TLShape | undefined = start
+    while (node) {
+      if (
+        this.isShapeOfType(node, 'group') &&
+        focusedGroup?.id !== node.id &&
+        !this.hasAncestor(focusedGroup, node.id) &&
+        (filter?.(node) ?? true)
+      ) {
+        match = node
+      } else if (focusedGroup?.id === node.id) {
+        break
+      }
+      node = this.getShapeParent(node)
     }
-    return current
+    return match
   }
 
   isShapeOrAncestorLocked(shapeOrId: TLShape | TLShapeId): boolean {
