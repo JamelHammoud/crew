@@ -95,6 +95,7 @@ type ReviewedState = {
   read: Read
   markRead(place: string, key: string, digest: string): void
   markUnread(place: string, key: string): void
+  forget(place: string): void
 }
 
 export const useReviewed = create<ReviewedState>(set => ({
@@ -110,5 +111,13 @@ export const useReviewed = create<ReviewedState>(set => ({
       const read = drop(state.read, place, key)
       save(read)
       return { read }
+    }),
+  forget: place =>
+    set(state => {
+      if (!state.read[place]) return state
+      const { [place]: gone, ...rest } = state.read
+      void gone
+      save(rest)
+      return { read: rest }
     })
 }))
