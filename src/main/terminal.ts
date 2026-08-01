@@ -130,19 +130,35 @@ export class Terminals {
     })
   }
 
-  // A shell warmed for one project folder is no use to another, and one that
-  // has already ended is no use to anybody.
   private claim(folder: string): Spare | null {
-    const spare = this.spare
-    if (!spare || spare.ended || spare.folder !== folder) return null
-    this.spare = null
+    const spare = this.spares.get(folder)
+    if (!spare || spare.ended) return null
+    this.spares.delete(folder)
     return spare
   }
 
+  private touch(folder: string, spare: Spare): void {
+    this.spares.delete(folder)
+    this.spares.set(folder, spare)
+  }
+
+  private evict(): void {
+    while (this.spares.size > SPARE_LIMIT) {
+      const oldest = this.spares.keys().next()
+      if (oldest.done) return
+      this.drop(oldest.value)
+    }
+  }
+
+  private drop(folder: string): void {
+    const spare = this.spares.get(folder)
+    if (!spare) return
+    this.spares.delete(folder)
+    spare.pty.kill()
+  }
+
   private cool(): void {
-    const spare = this.spare
-    this.spare = null
-    spare?.pty.kill()
+    for (const folder of [...this.spares.keys()]) this.drop(folder)
   }
 
   private hold(id: string, pty: IPty, sink: TerminalSink): void {

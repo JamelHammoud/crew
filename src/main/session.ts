@@ -77,6 +77,8 @@ export class AppSession {
   private projectsPath: string | null = null
   private live: CurrentSession | null = null
   private folder: string | null = null
+  private place: string | null = null
+  private written: SavedSession | null = null
   // What is being hosted here, kept so the listener can be moved between
   // loopback and the network without the session it is serving being remade.
   private hosted: {
@@ -117,20 +119,12 @@ export class AppSession {
     return this.folder
   }
 
-  recentJoins(): RecentJoin[] {
-    return this.savedStore()?.recentJoins() ?? []
+  key(): string | null {
+    return this.place
   }
 
-  recentProjects(): RecentProject[] {
-    return this.savedStore()?.projects() ?? []
-  }
-
-  forgetProject(folder: string): void {
-    this.savedStore()?.forget(folder)
-  }
-
-  forgetJoin(link: string): void {
-    this.savedStore()?.forgetJoin(link)
+  saved(): SavedSession | null {
+    return this.written
   }
 
   async repoStatus(): Promise<RepoStatus> {
