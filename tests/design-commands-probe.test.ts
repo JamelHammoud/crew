@@ -150,15 +150,59 @@ describe('the shortcuts the menu names', () => {
   })
 
   it('answers every shortcut it names', () => {
-    const made = board([node('shape:a'), node('shape:b')], 'shape:a', 'shape:b')
+    for (const command of DESIGN_COMMANDS) {
+      if (!command.keys) continue
+      expect(matchesChord(press(chord(command.keys)), command.keys), command.hint).toBe(true)
+    }
+  })
+
+  it('reads a shifted digit off the key the finger really pressed', () => {
+    const zoom = DESIGN_COMMANDS.find(command => command.id === 'zoom-fit')!
+    expect(matchesChord(press({ key: '!', code: 'Digit1', shiftKey: true }), zoom.keys!)).toBe(true)
+  })
+
+  it('takes ⌘Z once there is something to undo and not before', () => {
+    const made = board([node('shape:a')], 'shape:a')
+    expect(commandForKey(press(chord({ key: 'z', meta: true })), made.ctx)).toBe(null)
     made.step()
-    runCommand('copy', made.ctx)
-    runCommand('copy-style', { ...made.ctx, editor: made.editor })
-    made.select('shape:a', 'shape:b')
-    const named = new Map(
-      DESIGN_COMMANDS.filter(command => command.keys).map(command => [command.hint!, command.keys!])
-    )
-    for (const [hint, keys] of named) expect(commandForKey(press(chord(keys)), made.ctx), hint).toBeTruthy()
+    expect(commandForKey(press(chord({ key: 'z', meta: true })), made.ctx)?.id).toBe('undo')
+    runCommand('undo', made.ctx)
+    expect(made.calls).toContain('undo()')
+    expect(commandForKey(press(chord({ key: 'z', meta: true, shift: true })), made.ctx)?.id).toBe('redo')
+  })
+
+  it('takes the keys that used to belong to the library', () => {
+    const made = board([node('shape:a'), node('shape:b')], 'shape:a', 'shape:b')
+    const reached = (init: Partial<KeyboardEventInit> & { key: string }) =>
+      commandForKey(press(init), made.ctx)?.id ?? null
+    expect(reached({ key: 'Backspace' })).toBe('delete')
+    expect(reached({ key: 'Delete' })).toBe('delete')
+    expect(reached({ key: 'a', metaKey: true })).toBe('select-all')
+    expect(reached({ key: 'd', metaKey: true })).toBe('duplicate')
+    expect(reached({ key: 'g', metaKey: true })).toBe('group')
+    expect(reached({ key: 'c', metaKey: true })).toBe('copy')
+    expect(reached({ key: ']' })).toBe('to-front')
+    expect(reached({ key: '[' })).toBe('to-back')
+    expect(reached({ key: ']', metaKey: true })).toBe('forward')
+    expect(reached({ key: '1', shiftKey: true })).toBe('zoom-fit')
+  })
+
+  it('takes the same keys with control where there is no command key', () => {
+    const made = board([node('shape:a')], 'shape:a')
+    expect(commandForKey(press({ key: 'd', ctrlKey: true }), made.ctx)?.id).toBe('duplicate')
+  })
+
+  it('leaves the board chat its own keys', () => {
+    const made = board([node('shape:a')], 'shape:a')
+    const chat = document.createElement('div')
+    chat.setAttribute(BOARD_CHAT_MARK, '')
+    const message = document.createElement('p')
+    chat.append(message)
+    document.body.append(chat)
+    const event = press({ key: 'c', metaKey: true })
+    Object.defineProperty(event, 'target', { value: message })
+    expect(commandForKey(event, made.ctx)).toBe(null)
+    chat.remove()
   })
 
   it('reaches the command the selection can actually do', () => {
