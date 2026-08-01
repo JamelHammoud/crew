@@ -15,6 +15,7 @@ import {
 } from '../icons'
 import { useCrew, type ThreadMeta } from '../state/store'
 import { tasksShowing, useTasks } from '../state/tasks'
+import { EmojiText } from './Emoji'
 import { eventIndex } from './eventIndex'
 import { AgentName } from './Mention'
 import { AgentRow, MentionMenu, useMentionAutocomplete } from './MentionAutocomplete'
