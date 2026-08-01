@@ -86,9 +86,9 @@ describe('an agent face', () => {
     }
     const mine = sky(face())
     cleanup()
-    const theirs = sky(face({ seed: 'ali/codex' }))
+    const theirs = sky(face({ seed: 'ali/kimi' }))
 
-    expect(paletteFor(SEED)).not.toEqual(paletteFor('ali/codex'))
+    expect(paletteFor(SEED)).not.toEqual(paletteFor('ali/kimi'))
     expect(mine).not.toBe('')
     expect(mine).not.toBe(theirs)
   })
