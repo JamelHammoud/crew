@@ -52,18 +52,14 @@ export default function PlaceGroup({
         {busy && <Spinner size={13} className="text-fg/45" />}
       </button>
       {threads.map(thread => (
-        <button
+        <ThreadRow
           key={thread.id}
-          onClick={() => onOpenThread(thread.id)}
-          className={`w-full rounded-xl pl-8 pr-2 py-1.5 flex items-center gap-2 text-left text-sm transition-colors duration-150 ${
-            openThreadIds.includes(thread.id)
-              ? 'bg-fg/[0.10] text-fg'
-              : 'text-fg/70 hover:bg-fg/[0.06] hover:text-fg'
-          }`}
-        >
-          <span className="min-w-0 flex-1 truncate">{thread.title}</span>
-          {thread.working && <span className="w-1.5 h-1.5 rounded-full bg-positive shrink-0 animate-pulse" />}
-        </button>
+          thread={thread}
+          open={openThreadIds.includes(thread.id)}
+          here={here}
+          placeKey={place.key}
+          onOpen={() => onOpenThread(thread.id)}
+        />
       ))}
       <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined} className="min-w-44">
         {onStop && (
