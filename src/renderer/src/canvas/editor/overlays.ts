@@ -549,7 +549,6 @@ class ShapeIndicatorOverlayUtil implements ToolOverlayUtil {
   }
 
   private outlines(shape: TLShape, onScreen: Box): boolean {
-    if (shape.isLocked) return false
     if (this.editor.isShapeHidden(shape)) return false
     const bounds = this.editor.getShapePageBounds(shape)
     return !bounds || Box.Collides(bounds, onScreen)
