@@ -42,6 +42,7 @@ export class DrawTool {
       idle: new DrawIdle(this, editor),
       drawing: new Drawing(this, editor)
     }
+    this.children.idle.onEnter()
   }
 
   get id(): FreehandShapeType {
