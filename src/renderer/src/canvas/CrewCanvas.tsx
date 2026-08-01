@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Editor } from './editor'
 import { EditorContext } from './react'
 import { Canvas, type CanvasShapeRenderer } from './render'
