@@ -323,7 +323,12 @@ try {
       .filter(([, count]) => count > 0)
       .sort((a, b) => b[1] - a[1])
       .map(([name, count]) => `${name} ${count}`)
-    console.log(`  a move    ${calls.join(', ')}\n`)
+    console.log(`  a move    ${calls.join(', ')}`)
+    const spent = Object.entries(run.msPerMove ?? {})
+      .filter(([, ms]) => ms > 0.01)
+      .sort((a, b) => b[1] - a[1])
+      .map(([name, ms]) => `${name} ${ms}ms`)
+    console.log(`  spent     ${spent.join(', ')}\n`)
   }
   for (const error of result.errors ?? []) console.log(`window error: ${error}`)
 } finally {
