@@ -91,7 +91,7 @@ function Session() {
     return () => root?.classList.remove('railed')
   }, [pinned])
 
-  useEffect(() => window.crew?.onNotificationOpen?.(threadId => openThread(threadId)), [openThread])
+  useEffect(() => window.crew?.onNotificationOpen?.(threadId => openThreadAlone(threadId)), [openThreadAlone])
 
   useEffect(() => watchUpdates(), [])
 

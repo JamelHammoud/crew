@@ -1,7 +1,8 @@
-import type { ReactNode } from 'react'
+import { useState, type MouseEvent, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { CheckCircleGlyph, WarningGlyph } from '../icons'
 import { closeToast, holdToasts, useToasts, type Toast, type ToastTone } from '../state/toast'
+import { MenuItem, Popover } from './Popover'
 import Spinner from './Spinner'
 import { TOP_BAR_H } from './TopBar'
 import { useSwipeAway } from './useSwipeAway'
@@ -16,6 +17,7 @@ function markFor(tone: ToastTone): ReactNode {
 function Row({ toast }: { toast: Toast }) {
   const mark = toast.mark ?? markFor(toast.tone)
   const action = toast.action
+  const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
   // A row is pushed out of the way to the right, and what was a gesture is never
   // a press as well.
   const swipe = useSwipeAway(() => closeToast(toast.id))
@@ -30,12 +32,25 @@ function Row({ toast }: { toast: Toast }) {
     if (!action?.keep) closeToast(toast.id)
   }
 
+  const openMenu = (event: MouseEvent): void => {
+    if (!action?.menu?.length) return
+    event.preventDefault()
+    setMenuAt({ x: event.clientX, y: event.clientY })
+  }
+
+  const takeMenuAction = (onPress: () => void): void => {
+    setMenuAt(null)
+    onPress()
+    if (!action?.keep) closeToast(toast.id)
+  }
+
   return (
     <div className="toast-row" data-leaving={toast.leaving ? '' : undefined}>
       <div
         {...swipe.props}
         role={toast.tone === 'fail' ? 'alert' : 'status'}
         onClick={press}
+        onContextMenu={openMenu}
         className={`glass glass-strong toast-card pointer-events-auto cursor-pointer touch-none w-80 flex items-center gap-2.5 rounded-2xl py-2.5 ${
           action ? 'pl-3.5 pr-2' : 'px-3.5'
         }`}
@@ -55,6 +70,16 @@ function Row({ toast }: { toast: Toast }) {
           </button>
         )}
       </div>
+      <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined} className="min-w-52">
+        {action?.menu?.map(item => (
+          <MenuItem
+            key={item.label}
+            icon={item.mark}
+            label={item.label}
+            onClick={() => takeMenuAction(item.onPress)}
+          />
+        ))}
+      </Popover>
     </div>
   )
 }

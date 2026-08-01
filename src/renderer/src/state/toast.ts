@@ -8,9 +8,16 @@ export type ToastTone = 'plain' | 'done' | 'fail' | 'busy'
 export interface ToastAction {
   label: string
   onPress: () => void
+  menu?: ToastMenuAction[]
   // The row goes when the button is pressed, unless the press is the start of
   // something rather than the end of it.
   keep?: boolean
+}
+
+export interface ToastMenuAction {
+  label: string
+  mark?: ReactNode
+  onPress: () => void
 }
 
 export interface ToastOptions {

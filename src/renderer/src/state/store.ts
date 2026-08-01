@@ -482,13 +482,18 @@ export const useCrew = create<CrewState>((set, get) => {
       memberMentionAlert(event, get().selfId, get().openThreadIds) ??
       questionAlert(event, get(), boardOnScreen())
     if (alert) {
-      alertToast(alert, threadId => {
-        get().openThread(threadId)
-        if (alert.board) {
-          useBrowser.getState().showWork(threadId)
-          useBrowser.getState().openPanel()
-        }
-      })
+      const showAlertThread = (threadId: string, beside: boolean) => {
+        if (beside) get().openThread(threadId)
+        else get().openThreadAlone(threadId)
+        if (!alert.board) return
+        useBrowser.getState().showWork(threadId)
+        useBrowser.getState().openPanel()
+      }
+      alertToast(
+        alert,
+        threadId => showAlertThread(threadId, false),
+        threadId => showAlertThread(threadId, true)
+      )
       void window.crew?.notify?.(alert)
     }
     // A question asked on the side opens where it is answered. It is a ghost, so
