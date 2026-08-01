@@ -2,7 +2,7 @@ import { useId } from 'react'
 import { attachmentFileUrl } from '../../../shared/attachments'
 import { useCrew } from '../state/store'
 import GeneratedField from './art/GeneratedField'
-import { EYE_RADIUS, PET_GRID, eyeGapAt, petOf } from './art/pet'
+import { BODY, EYE_RADIUS, PET_GRID, eyeGapAt, petOf } from './art/pet'
 
 const SIZES = {
   xs: 'w-5 h-5',

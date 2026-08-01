@@ -27,8 +27,8 @@ import { coverFor } from '${where}/src/renderer/src/components/art/coverArt'
 import { coverArt } from '${where}/src/renderer/src/components/art/coverSeed'
 import { shapePath, subagentShape } from '${where}/src/renderer/src/components/art/subagentShape'
 import { paletteFor } from '${where}/src/shared/art'
-import { petOf, eyeGapAt, EYE_RADIUS, PET_GRID } from '${where}/src/renderer/src/components/art/pet'
-window.CrewCovers = { musicItems, coverFor, coverArt, shapePath, subagentShape, paletteFor, petOf, eyeGapAt, EYE_RADIUS, PET_GRID }
+import { petOf, eyeGapAt, BODY, EYE_RADIUS, PET_GRID } from '${where}/src/renderer/src/components/art/pet'
+window.CrewCovers = { musicItems, coverFor, coverArt, shapePath, subagentShape, paletteFor, petOf, eyeGapAt, BODY, EYE_RADIUS, PET_GRID }
 `
 
 const PAGE = `<!doctype html><html><body style="margin:0"><script src="covers.js"></script><script>
@@ -138,7 +138,7 @@ window.marks = () => {
   return { png: canvas.toDataURL('image/png'), kinds }
 }
 window.faces = () => {
-  const { coverFor, paletteFor, petOf, eyeGapAt, EYE_RADIUS, PET_GRID } = window.CrewCovers
+  const { coverFor, paletteFor, petOf, eyeGapAt, BODY, EYE_RADIUS, PET_GRID } = window.CrewCovers
   const SIZES = [20, 28, 40, 48]
   const COLS = 8
   const ids = Array.from({ length: 48 }, (_, i) => 'every-' + i)
@@ -173,6 +173,9 @@ window.faces = () => {
     white.translate(50 * unit, 54 * unit)
     white.rotate((pet.tilt * Math.PI) / 180)
     white.translate(-50 * unit, -54 * unit)
+    white.translate(50 * unit, 53 * unit)
+    white.scale(BODY, BODY)
+    white.translate(-50 * unit, -53 * unit)
     white.scale(unit, unit)
     const body = new Path2D(pet.body)
     white.fillStyle = '#ffffff'
