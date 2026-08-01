@@ -829,12 +829,13 @@ export class Editor {
   }
 
   updateHoveredShapeId(): void {
-    this.instance.hoveredShapeId =
+    this.setHoveredShape(
       this.getShapeAtPoint(this.inputs.getCurrentPagePoint(), {
         margin: this.hitTestMargin / this.getZoomLevel(),
         hitInside: true,
         renderingOnly: true
       })?.id ?? null
+    )
   }
 
   cancelUpdateHoveredShapeId(): void {}

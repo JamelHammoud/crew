@@ -450,10 +450,12 @@ export class Resizing<Shape extends TLShape = TLShape> extends TransformState<
     const end = this.info.onInteractionEnd
     if (typeof end === 'function') {
       end()
-    } else if (typeof end === 'string') {
-      this.editor.setCurrentTool?.(end, {})
-    } else if (!this.info.isCreating) {
-      this.parent.transition('idle')
+      return
     }
+    if (typeof end === 'string' && this.editor.getInstanceState?.().isToolLocked) {
+      this.editor.setCurrentTool?.(end, {})
+      return
+    }
+    this.parent.transition('idle')
   }
 }
