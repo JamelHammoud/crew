@@ -98,7 +98,11 @@ const probeSource = String.raw`(() => {
     await settle(4)
   }
 
-  const view = point => editor.pageToViewport(point)
+  const view = point => {
+    const at = editor.pageToViewport(point)
+    const rect = editor.getContainer().getBoundingClientRect()
+    return { x: at.x + rect.left, y: at.y + rect.top }
+  }
   const boundsOf = id => editor.getShapePageBounds(id)
   const madeHere = []
 
