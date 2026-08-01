@@ -8,6 +8,7 @@ import { useCrew } from '../src/renderer/src/state/store'
 import type { SessionEvent } from '../src/shared/events'
 import type { PooledAgent } from '../src/shared/llm'
 import { VIEW_LIMIT } from '../src/shared/threadViews'
+import { NO_UPDATE } from '../src/shared/update'
 import { landed } from './helpers/boot'
 
 class TestResizeObserver {
