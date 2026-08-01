@@ -89,6 +89,21 @@ function editor() {
   }
 }
 
+function translatable() {
+  const shape = { id: 'shape:a', type: 'geo', x: 0, y: 0, rotation: 0, parentId: 'page:1', index: 'a1' }
+  return {
+    ...editor(),
+    updateShapes: vi.fn(),
+    getSelectedShapeIds: () => [shape.id],
+    getSelectedShapes: () => [shape],
+    getOnlySelectedShape: () => shape,
+    getShape: () => shape,
+    getShapePageTransform: () => Mat.Identity(),
+    getSelectionPageBounds: () => undefined,
+    getShapeUtil: () => ({})
+  }
+}
+
 describe('StateNode', () => {
   it('enters nested initial states and forwards events through the active path', () => {
     const root = new Root({})
