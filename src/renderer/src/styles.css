@@ -105,6 +105,17 @@
     }
   }
 
+  @keyframes edge {
+    from {
+      opacity: 0;
+      transform: translate(12px, -50%);
+    }
+    to {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+  }
+
   @keyframes fade {
     from {
       opacity: 0;
