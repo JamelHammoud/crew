@@ -69,7 +69,9 @@ describe('the empty chat', () => {
   it('shows a skeleton while the Crew contents are loading', () => {
     open([], 'connecting')
 
-    expect(document.querySelector('[data-skeleton]')).not.toBeNull()
+    const list = document.querySelector('[data-chat-list-skeleton]')
+    expect(list).not.toBeNull()
+    expect(list?.querySelectorAll('[data-skeleton]')).toHaveLength(11)
     expect(screen.queryByRole('button', { name: 'Add an agent' })).toBeNull()
     expect(screen.queryByText('Say hi, or mention someone with @.')).toBeNull()
   })

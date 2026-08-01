@@ -1,5 +1,6 @@
 import { Fragment, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import ChatMessage from '../components/ChatMessage'
+import ChatListSkeleton from '../components/ChatListSkeleton'
 import CommandChip from '../components/CommandChip'
 import Composer from '../components/Composer'
 import CreateAgent from '../components/CreateAgent'
@@ -9,7 +10,6 @@ import TypingLine from '../components/TypingLine'
 import { MentionMenu, useMentionAutocomplete } from '../components/MentionAutocomplete'
 import PlanCard from '../components/PlanCard'
 import { SlashMenu, useSlashCommands } from '../components/SlashCommands'
-import Skeleton from '../components/Skeleton'
 import Spinner from '../components/Spinner'
 import ThreadCard from '../components/ThreadCard'
 import HuddleCard from '../components/huddle/HuddleCard'
@@ -200,17 +200,18 @@ export default function Chat() {
               {loadingHistory && <Spinner size={16} className="text-fg-faint" />}
             </div>
           )}
-          {feed.length === 0 && (
-            <div className="mt-16 flex flex-col items-center gap-4">
-              {connection !== 'online' ? (
-                <Skeleton className="h-10 w-32 rounded-full" />
-              ) : agents.length === 0 ? (
+          {feed.length === 0 &&
+            (connection !== 'online' ? (
+              <ChatListSkeleton />
+            ) : (
+              <div className="mt-16 flex flex-col items-center gap-4">
+                {agents.length === 0 ? (
                 <CreateAgent compact />
-              ) : (
-                <p className="text-base text-fg-muted text-center">Say hi, or mention someone with @.</p>
-              )}
-            </div>
-          )}
+                ) : (
+                  <p className="text-base text-fg-muted text-center">Say hi, or mention someone with @.</p>
+                )}
+              </div>
+            ))}
           {feed.map((entry, index) => {
             const tsOf = (e: Feed) => (e.kind === 'msg' ? e.item.ts : e.ts)
             const ts = tsOf(entry)
