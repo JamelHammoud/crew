@@ -1433,23 +1433,20 @@ export class Editor {
     return { gridSize: document?.typeName === 'document' ? document.gridSize : 10 }
   }
 
-  getCameraOptions(): { zoomSteps: number[] } {
-    return { zoomSteps: [0.05, 0.1, 0.2, 0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4, 6, 8] }
+  getCameraOptions(): ReturnType<CameraManager['getOptions']> {
+    return this.camera.getOptions()
   }
 
   getBaseZoom(): number {
-    return 1
+    return this.camera.getBaseZoom()
   }
 
-  stopCameraAnimation(): void {}
+  stopCameraAnimation(): void {
+    this.camera.stopAnimation()
+  }
 
-  slideCamera(options: { speed: number; direction: VecLike }): void {
-    const camera = this.getCamera()
-    this.setCamera({
-      x: camera.x + options.direction.x * options.speed,
-      y: camera.y + options.direction.y * options.speed,
-      z: camera.z
-    })
+  slideCamera(options: { speed: number; direction: VecLike; friction?: number; speedThreshold?: number }): void {
+    this.camera.slideCamera(options)
   }
 
   private ensureStore(preferredPageId?: TLPageId): void {
