@@ -11,11 +11,11 @@ import {
   textGrowthMatters,
   type TextGrowthState
 } from '../canvas/text'
-import { clearFaceMetrics, trimEdges, trimStyle, type TrimEdges } from '../canvas/text/trim'
+import { clearFontMetrics, fontMetrics, trimOf, type TextTrim } from '../canvas/text/metrics'
 
 const generation = atom('loaded fonts', 0)
 whenFontsLoad(() => {
-  clearFaceMetrics()
+  clearFontMetrics()
   generation.set(generation.get() + 1)
 })
 
