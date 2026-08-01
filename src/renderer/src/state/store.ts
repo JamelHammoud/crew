@@ -422,6 +422,15 @@ const settleSteps =(gathered: Record<string, AgentStep[]>): Record<string, Agent
   return steps
 }
 
+const withAgent = (
+  agents: PooledAgent[],
+  agentId: string,
+  change: (agent: PooledAgent) => PooledAgent
+): PooledAgent[] =>
+  agents.some(agent => agent.id === agentId)
+    ? agents.map(agent => (agent.id === agentId ? change(agent) : agent))
+    : agents
+
 const addPrompt = (active: Record<string, string[]>, agentId: string, promptId: string): string[] => [
   ...(active[agentId] ?? []).filter(id => id !== promptId),
   promptId
