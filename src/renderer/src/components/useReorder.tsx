@@ -200,7 +200,7 @@ export function useReorder(onMove: (id: string, to: number) => void, options: Op
     carry && carried !== null ? (
       <>
         <div
-          ref={line}
+          ref={holds(line)}
           data-reorder-line
           aria-hidden
           className="pointer-events-none absolute left-2 right-2 z-10 -mt-px h-0.5 rounded-full bg-fg"
