@@ -1730,6 +1730,7 @@ const driveSource = String.raw`(async () => {
       await settle()
       editor.selectNone()
       await settle()
+      await stillCamera()
       const at = aimAt(one)
       if (!at) return { ok: false, note: 'the board finds no ' + kind.type + ' anywhere on the shape it drew' }
       openPaint()
