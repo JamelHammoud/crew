@@ -45,7 +45,7 @@ export function placesOf(projects: RecentProject[], joins: RecentJoin[]): Place[
     join: null
   }))
   const fromJoins = joins.map<Place>(join => ({
-    key: `join:${join.link}`,
+    key: joinPlace(join.link),
     at: join.joinedAt,
     title: serverName(join.link),
     line: folderName(join.folder),
