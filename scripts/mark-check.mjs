@@ -170,19 +170,35 @@ try {
 if (seen.failed) throw new Error(seen.failed)
 if (!seen.drawn) throw new Error('the page came up empty, so nothing was really read')
 
+// A mark that painted nothing is a mark that was never really read, and a check
+// that passes on those is worse than no check at all.
 const blank = seen.read.filter(one => one.painted === 0)
+if (blank.length > 0) {
+  console.error(`${blank.length} of ${seen.read.length} marks painted nothing, so they were never read:`)
+  console.error(blank.map(one => one.say).join(', '))
+  process.exit(1)
+}
+
+// The level a mark is drawn at says the color really arrived at an opacity. Full
+// strength would be 255, and every mark would pass for the wrong reason.
+const levels = seen.read.map(one => one.level).sort((a, b) => a - b)
+const middle = levels[Math.floor(levels.length / 2)]
+if (middle > 200) {
+  console.error(`the marks were drawn at ${middle}, so they were painted at full strength and nothing was proven`)
+  process.exit(1)
+}
+
 const layered = seen.read
-  .filter(one => one.painted > 0 && one.over > 0)
+  .filter(one => one.over > 0)
   .sort((a, b) => b.over / b.painted - a.over / a.painted)
 
 for (const one of layered) {
   const share = Math.round((one.over / one.painted) * 1000) / 10
   console.log(
-    `${one.say.padEnd(30)} drawn at ${String(one.level).padStart(3)}, ${String(one.top).padStart(3)} at its darkest, ${share}% of it laid twice`
+    `${one.say.padEnd(30)} drawn at ${String(one.level).padStart(3)}, ${String(one.top).padStart(3)} where it is laid twice, ${share}% of it`
   )
 }
 console.log(
-  `\n${seen.read.length} marks read, ${layered.length} of them fade a stroke at a time rather than as one drawing`
+  `\n${seen.read.length} marks read at ${Math.round((ALPHA * 100))}%, drawn at ${middle}. ${layered.length} of them fade a stroke at a time rather than as one drawing.`
 )
-if (blank.length > 0) console.log(`${blank.length} drew nothing: ${blank.map(one => one.say).join(', ')}`)
 if (layered.length > 0) process.exit(1)
