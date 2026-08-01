@@ -82,7 +82,21 @@ export default function TopBar({
       style={{ height: TOP_BAR_H }}
       className="top-bar app-drag relative grid grid-cols-[1fr_auto_1fr] items-center px-6 shrink-0"
     >
-      <span className={`flex items-center ${full ? '' : 'mac:pl-[64px]'}`}>
+      <span className={`flex items-center gap-1 ${full || pinned ? '' : 'mac:pl-[64px]'}`}>
+        <Tooltip label={pinned ? 'Hide projects' : 'Projects'}>
+          <button
+            onClick={toggleSidebar}
+            onMouseEnter={() => peek(true)}
+            onMouseLeave={() => peek(false)}
+            aria-label="Projects"
+            aria-expanded={pinned}
+            className={`app-no-drag w-10 h-10 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
+              pinned ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
+            }`}
+          >
+            <PanelLeftGlyph className={`w-[18px] h-[18px] ${pinned ? '' : 'scale-x-[-1]'}`} />
+          </button>
+        </Tooltip>
         <CrewLogo />
       </span>
 
