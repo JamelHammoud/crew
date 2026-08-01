@@ -48,11 +48,12 @@ describe('attachments', () => {
     await host.close()
   })
 
-  async function connectRunner(name: string, repoPath = host.repoPath) {
+  async function connectRunner(name: string, repoPath = host.repoPath, crewBase: string | null = repoPath) {
     const runner = testRunner({
       name,
       code: host.code,
       repoPath,
+      crewBase,
       providers: [makeFakeProvider()],
       reconnectDelayMs: 100
     })
