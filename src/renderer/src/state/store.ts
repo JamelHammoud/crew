@@ -49,6 +49,8 @@ import { playSound, soundFor } from '../media/sounds'
 import { finishedAlert, memberMentionAlert, questionAlert } from './alerts'
 import { helperPrefs, onHelperPrefs } from './helpers'
 import { boardOnScreen, useBrowser } from './browser'
+import { usePlaces } from './places'
+import { forgetProject, recallProject, stashProject } from './projectMemory'
 import { toast } from './toast'
 
 export type Connection = 'booting' | 'home' | 'connecting' | 'online' | 'reconnecting'
@@ -356,6 +358,19 @@ const EMPTY = {
   threadCommands: {},
   pending: {},
   attachmentMb: DEFAULT_ATTACHMENT_MB
+}
+
+// Everything a window holds about the crew it is looking at, wiped in one go
+// whenever it stops looking at that one.
+const BLANK = {
+  place: '',
+  folder: '',
+  joinLink: null,
+  hosting: false,
+  shared: false,
+  selfId: '',
+  code: '',
+  ...EMPTY
 }
 
 export const CHAT_KEY = 'chat'

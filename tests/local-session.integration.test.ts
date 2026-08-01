@@ -171,8 +171,9 @@ describe('a crew kept on this machine', () => {
 
   it('opens a folder that is not tracked with git at all', async () => {
     const plain = tmpDir('local-plain')
-    const app = new AppSession(statePaths('local-plain-state'))
-    expect(await app.projectPlan(plain)).toEqual({
+    const paths = statePaths('local-plain-state')
+    const app = new AppSession(paths)
+    expect(await crewsAt(paths).projectPlan(plain)).toEqual({
       home: 'private',
       tracked: false,
       known: false,
