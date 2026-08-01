@@ -14,6 +14,7 @@ function textEditor() {
   const editor = new TipTapEditor({
     element,
     extensions: richTextExtensions,
+    enableCoreExtensions: { textDirection: false },
     content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'hello' }] }] }
   })
   made.push(editor)
