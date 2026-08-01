@@ -96,9 +96,12 @@ const { usePlaces } = await import('../src/renderer/src/state/places')
 const { PIN_MS, SIDEBAR_W, useSidebar } = await import('../src/renderer/src/state/sidebar')
 const { useCrew } = await import('../src/renderer/src/state/store')
 const { useBrowser } = await import('../src/renderer/src/state/browser')
-const Sidebar = (await import('../src/renderer/src/components/Sidebar')).default
+const SidebarView = (await import('../src/renderer/src/components/Sidebar')).default
 const TopBar = (await import('../src/renderer/src/components/TopBar')).default
 const WindowCorner = (await import('../src/renderer/src/components/WindowCorner')).default
+
+const Sidebar = (props: { overlay?: boolean; strong?: boolean; onTab?: (tab: 'chat' | 'docs' | 'design') => void } = {}) =>
+  createElement(SidebarView, { tab: 'chat' as const, onTab: () => {}, ...props })
 
 const corner = () => render(createElement(WindowCorner))
 
@@ -126,7 +129,7 @@ afterEach(() => {
 
 describe('the sidebar', () => {
   it('wears its lighter glass when it stands over the page', () => {
-    const { container } = render(createElement(Sidebar, { overlay: true, strong: true }))
+    const { container } = render(Sidebar({ overlay: true, strong: true }))
     const sidebar = container.querySelector('aside')
     expect(sidebar?.className).toContain('glass')
     expect(sidebar?.className).toContain('sidebar-glass')
@@ -134,19 +137,19 @@ describe('the sidebar', () => {
   })
 
   it('wears its pinned surface when it expands beside the page', () => {
-    const { container } = render(createElement(Sidebar))
+    const { container } = render(Sidebar())
     expect(container.querySelector('aside')?.className).toContain('sidebar-pinned')
   })
 
   it('stands the folder action off the bottom edge by what it stands off the sides', () => {
-    render(createElement(Sidebar))
+    render(Sidebar())
     const action = screen.getByRole('button', { name: 'Open a folder' })
     expect(action.parentElement?.className).toContain('px-4')
     expect(action.parentElement?.className).toContain('pb-4')
   })
 
   it('holds every place the app knows, newest first', async () => {
-    const { container } = render(createElement(Sidebar))
+    const { container } = render(Sidebar())
     await waitFor(() => expect(container.querySelectorAll('button[aria-current], button').length).toBeGreaterThan(1))
     const titles = [...container.querySelectorAll('span.font-medium')].map(el => el.textContent)
     expect(titles.slice(0, 2)).toEqual(['one', 'two'])
@@ -165,7 +168,7 @@ describe('the sidebar', () => {
   })
 
   it('keeps projects in the order they were dragged into', async () => {
-    const { container } = render(createElement(Sidebar))
+    const { container } = render(Sidebar())
     const groups = Array.from(container.querySelectorAll<HTMLElement>('[data-reorder]'))
     const list = groups[0]!.parentElement!
     list.getBoundingClientRect = () =>
@@ -197,7 +200,7 @@ describe('the sidebar', () => {
 
   it('does not open a project when its drag ends', () => {
     const start = vi.spyOn(window.crew, 'start')
-    const { container } = render(createElement(Sidebar))
+    const { container } = render(Sidebar())
     const groups = Array.from(container.querySelectorAll<HTMLElement>('[data-reorder]'))
     const list = groups[0]!.parentElement!
     list.getBoundingClientRect = () =>
@@ -219,7 +222,7 @@ describe('the sidebar', () => {
   })
 
   it('marks the current project', async () => {
-    const { container } = render(createElement(Sidebar))
+    const { container } = render(Sidebar())
     const current = container.querySelector('button[aria-current="page"]')
     expect(current?.textContent).toBe('one')
     expect(current?.querySelectorAll('span')).toHaveLength(2)
@@ -246,7 +249,7 @@ describe('the sidebar', () => {
     await act(async () => {
       await usePlaces.getState().load()
     })
-    const { container } = render(createElement(Sidebar))
+    const { container } = render(Sidebar())
     const rows = [...container.querySelectorAll('button')].map(b => b.textContent)
     expect(rows).toContain('Check the plan charge')
     expect(rows).toContain('Locate the STL files')
@@ -273,7 +276,7 @@ describe('the sidebar', () => {
       await usePlaces.getState().load()
     })
     useCrew.setState({ openThreadIds: ['t1'], openThreadId: 't1' })
-    render(createElement(Sidebar))
+    render(Sidebar())
     const thread = screen.getByRole('button', { name: 'Check the plan charge' })
     expect(thread.className).toContain('bg-fg/[0.10]')
     expect(thread.previousElementSibling?.textContent).toBe('one')
@@ -292,7 +295,7 @@ describe('the sidebar', () => {
     await act(async () => {
       await usePlaces.getState().load()
     })
-    const { container } = render(createElement(Sidebar))
+    const { container } = render(Sidebar())
     const row = [...container.querySelectorAll('button')].find(
       b => b.textContent === 'Check the plan charge'
     ) as HTMLElement
@@ -316,7 +319,7 @@ describe('the sidebar', () => {
       await usePlaces.getState().load()
     })
     useCrew.setState({ openThreadIds: ['t8'], openThreadId: 't8' })
-    const { container } = render(createElement(Sidebar))
+    const { container } = render(Sidebar())
     const row = [...container.querySelectorAll('button')].find(
       b => b.textContent === 'Fix tracked files'
     ) as HTMLElement
@@ -342,7 +345,7 @@ describe('the sidebar', () => {
       await usePlaces.getState().load()
     })
     useCrew.setState({ openThreadIds: ['t8'], openThreadId: 't8' })
-    render(createElement(Sidebar))
+    render(Sidebar())
 
     fireEvent.contextMenu(screen.getByText('Fix tracked files'))
     fireEvent.click(screen.getByText('Open to right'))
@@ -353,7 +356,7 @@ describe('the sidebar', () => {
   })
 
   it('holds a place with nothing running as a row on its own', async () => {
-    const { container } = render(createElement(Sidebar))
+    const { container } = render(Sidebar())
     const rows = [...container.querySelectorAll('button')].map(b => b.textContent)
     expect(rows).toContain('one')
     expect(rows).toContain('two')
@@ -485,7 +488,7 @@ describe('the sidebar', () => {
     await act(async () => {
       await usePlaces.getState().load()
     })
-    const { container } = render(createElement(Sidebar))
+    const { container } = render(Sidebar())
     const rows = [...container.querySelectorAll('button')].filter(b => b.textContent?.includes('two'))
     await act(async () => {
       fireEvent.click(rows[0])
@@ -510,7 +513,7 @@ describe('the sidebar', () => {
       })
     })
     useBrowser.getState().openUrl('https://example.com/host')
-    const { container } = render(createElement(Sidebar))
+    const { container } = render(Sidebar())
     const row = (name: string) =>
       [...container.querySelectorAll<HTMLButtonElement>('[data-reorder] > button')].find(
         button => button.textContent === name

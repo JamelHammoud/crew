@@ -89,7 +89,7 @@ const settle = async (): Promise<void> => {
 const openRail = async (): Promise<void> => {
   usePlaces.setState({ places: [], live: [] })
   useCrew.setState({ place: HERE, openThreadIds: [], selfName: 'ALI' })
-  render(createElement(Sidebar, {}))
+  render(createElement(Sidebar, { tab: 'chat' as const, onTab: () => {} }))
   await settle()
   drawn.groups = 0
   drawn.rows = 0
