@@ -96,8 +96,8 @@ export class Group2d extends Geometry2d {
 
   override hitTestPoint(
     point: VecLike,
-    margin: number,
-    hitInside: boolean,
+    margin = 0,
+    hitInside = false,
     filters: Geometry2dFilters = Geometry2dFilters.EXCLUDE_LABELS
   ): boolean {
     return this.children.some(
