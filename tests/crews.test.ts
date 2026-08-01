@@ -79,6 +79,19 @@ describe('several crews in one app', () => {
     expect(app.keyInView(2)).toBe(projectPlace(two))
   })
 
+  it('gives a shared Crew and a private Crew different renderer ports', async () => {
+    const app = crews('crews-distinct-host-ports')
+    const one = await repo('crews-distinct-host-ports-one')
+    const two = await repo('crews-distinct-host-ports-two')
+    const shared = await app.start(1, one, 'Jamel', { home: 'folder', share: true })
+    const privateCrew = await app.start(1, two, 'Jamel', { home: 'private', share: false })
+
+    expect(privateCrew.wsUrl).not.toBe(shared.wsUrl)
+    const sharedUi = await TestUi.connect(shared.wsUrl, 'Jamel', shared.code)
+    const privateUi = await TestUi.connect(privateCrew.wsUrl, 'Jamel', privateCrew.code)
+    uis.push(sharedUi, privateUi)
+  })
+
   it('reads a file out of the project the window asking is looking at', async () => {
     const app = crews('crews-files')
     const one = await repo('crews-files-one')
