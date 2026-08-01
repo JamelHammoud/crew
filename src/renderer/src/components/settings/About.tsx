@@ -11,7 +11,7 @@ export default function About() {
         <CreditsRow />
       </Section>
       <Section>
-        <ReportRow />
+        <FeedbackRow />
       </Section>
     </Page>
   )
