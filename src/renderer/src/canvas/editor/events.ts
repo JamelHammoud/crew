@@ -164,6 +164,12 @@ export class CanvasEventBridge {
   private keyDown(event: KeyboardEvent): void {
     this.editor.inputs.setKey(event.code, true)
     this.editor.inputs.updateModifiers(event)
+    if (event.key === 'Escape') {
+      if (this.editor.getEditingShape() || this.editor.getSelectedShapeIds().length) event.preventDefault()
+      this.editor.cancel()
+      this.editor.focus()
+      return
+    }
     this.dispatch(keyInfo(event.repeat ? 'key_repeat' : 'key_down', event))
   }
 
@@ -175,22 +181,37 @@ export class CanvasEventBridge {
 
   private touchStart(event: TouchEvent): void {
     if (event.touches.length !== 2) return
+    const center = touchCenter(event.touches, this.editor.getContainer())
+    this.pinchState = 'not sure'
     this.pinchDistance = touchDistance(event.touches)
+    this.pinchInitialDistance = Math.max(this.pinchDistance, 1)
+    this.pinchOrigin = center
+    this.pinchPrevious = center
     this.pinchCamera = this.editor.getCamera()
+    this.editor.inputs.setIsPinching(true)
   }
 
   private touchMove(event: TouchEvent): void {
-    if (event.touches.length !== 2 || !this.pinchCamera || this.pinchDistance <= 0) return
+    if (event.touches.length !== 2 || !this.pinchCamera) return
     const center = touchCenter(event.touches, this.editor.getContainer())
-    const z = (this.pinchCamera.z * touchDistance(event.touches)) / this.pinchDistance
-    const pageAtCenter = {
-      x: center.x / this.pinchCamera.z - this.pinchCamera.x,
-      y: center.y / this.pinchCamera.z - this.pinchCamera.y
+    this.pinchDistance = touchDistance(event.touches)
+    const offset = { x: center.x - this.pinchPrevious.x, y: center.y - this.pinchPrevious.y }
+    this.pinchPrevious = center
+    this.updatePinchState(center)
+    if (this.pinchState === 'panning') {
+      this.editor.pan(offset, { immediate: true })
+    } else if (this.pinchState === 'zooming') {
+      const z = (this.pinchCamera.z * this.pinchDistance) / this.pinchInitialDistance
+      const camera = this.editor.getCamera()
+      this.editor.setCamera(
+        {
+          x: camera.x + offset.x / camera.z + center.x / z - center.x / camera.z,
+          y: camera.y + offset.y / camera.z + center.y / z - center.y / camera.z,
+          z
+        },
+        { immediate: true }
+      )
     }
-    this.editor.setCamera(
-      { x: center.x / z - pageAtCenter.x, y: center.y / z - pageAtCenter.y, z },
-      { immediate: true }
-    )
     this.dispatch({
       name: 'pointer_move',
       point: this.editor.screenToPage(center),
@@ -203,8 +224,22 @@ export class CanvasEventBridge {
 
   private touchEnd(event: TouchEvent): void {
     if (event.touches.length >= 2) return
+    this.pinchState = 'not sure'
     this.pinchDistance = 0
     this.pinchCamera = null
+    this.editor.inputs.setIsPinching(false)
+  }
+
+  private updatePinchState(center: { x: number; y: number }): void {
+    if (this.pinchState === 'zooming') return
+    const fingers = Math.abs(this.pinchDistance - this.pinchInitialDistance)
+    if (this.pinchState === 'panning') {
+      if (fingers > PINCH_PAN_TO_ZOOM_THRESHOLD) this.pinchState = 'zooming'
+      return
+    }
+    const travelled = Math.hypot(center.x - this.pinchOrigin.x, center.y - this.pinchOrigin.y)
+    if (fingers > PINCH_ZOOM_THRESHOLD) this.pinchState = 'zooming'
+    else if (travelled > PINCH_PAN_THRESHOLD) this.pinchState = 'panning'
   }
 
   private dispatch(info: CanvasEventInfo): void {
