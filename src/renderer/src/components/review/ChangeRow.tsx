@@ -135,7 +135,7 @@ export default function ChangeRow({
             </button>
           </Tooltip>
           <Tooltip label={change.previousPath ? `${mark.word} from ${change.previousPath}` : mark.word}>
-            <span className={`w-4 shrink-0 text-center font-mono text-xs ${mark.tone}`}>{mark.letter}</span>
+            <span className={`w-4 shrink-0 text-center text-[11px] font-semibold ${mark.tone}`}>{mark.letter}</span>
           </Tooltip>
         </div>
         <Popover open={menu !== null} onClose={shut} at={menu ?? undefined}>
