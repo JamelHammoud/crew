@@ -59,7 +59,11 @@ export class OtherInstances {
   }
 
   private written(name: string): number {
-    return fs.statSync(path.join(this.dir, name), { throwIfNoEntry: false })?.mtimeMs ?? 0
+    try {
+      return fs.statSync(path.join(this.dir, name), { throwIfNoEntry: false })?.mtimeMs ?? 0
+    } catch {
+      return 0
+    }
   }
 
   count(): number {
