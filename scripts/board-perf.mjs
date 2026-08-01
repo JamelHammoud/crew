@@ -192,7 +192,8 @@ const driveSource = String.raw`(async () => {
       frame: summarise(framed),
       commitsPerMove: Number((commits / ${MOVES}).toFixed(2)),
       reactMsPerMove: Number((duration / ${MOVES}).toFixed(2)),
-      perMove: counts
+      perMove: counts,
+      msPerMove: times
     }
   }
 
