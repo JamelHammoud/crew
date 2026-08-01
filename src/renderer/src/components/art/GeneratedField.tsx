@@ -65,18 +65,21 @@ export default function GeneratedField({
   // relation to the others, where a black scrim is a grey film that flattens the
   // palette it covers.
   const shade = light === undefined ? '' : ` brightness(${light})`
-  const mesh = meshOf(subject, box)
+  const wash = (): Mesh => {
+    const mesh = meshOf(subject, box)
+    return { ...mesh, filter: `${mesh.filter}${shade}` }
+  }
 
   return (
     <span aria-hidden className={`absolute inset-0 ${className}`} style={clip ? { clipPath: clip } : undefined}>
       {drawn ? (
         <canvas
           ref={tile}
-          style={shade ? { filter: shade.trim() } : undefined}
+          style={shade ? { filter: shade.trimStart() } : undefined}
           className="absolute inset-0 w-full h-full"
         />
       ) : (
-        <span style={{ ...mesh, filter: `${mesh.filter}${shade}` }} className="absolute inset-0" />
+        <span style={wash()} className="absolute inset-0" />
       )}
       <span
         style={{ backgroundImage: GRAIN, backgroundSize: '160px 160px' }}
