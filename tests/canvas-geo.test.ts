@@ -295,6 +295,30 @@ describe('frames', () => {
     expect(util.getText(named)).toBe('Home')
   })
 
+  it('holds its name at one size however far the board is zoomed out', () => {
+    const util = new FrameShapeUtil(editor)
+    const named = {
+      id: 'shape:f' as TLShapeId,
+      typeName: 'shape',
+      type: 'frame',
+      x: 0,
+      y: 0,
+      rotation: 0,
+      index: 'a1',
+      parentId: 'page:page',
+      isLocked: false,
+      opacity: 1,
+      meta: {},
+      props: { ...util.getDefaultProps(), w: 300, h: 200, name: 'Sign up flow' }
+    } as unknown as TLShape<'frame'>
+
+    const painted = markup(util.component(named))
+    expect(painted).toContain('Sign up flow')
+    expect(painted).toContain('var(--crew-scale, 1)')
+    expect(painted).toContain('var(--crew-zoom, 1)')
+    expect(painted).toContain('3.5')
+  })
+
   it('keeps the frame bounds off its name', () => {
     const util = new FrameShapeUtil(editor)
     const named = {

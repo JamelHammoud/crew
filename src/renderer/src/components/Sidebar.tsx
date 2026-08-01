@@ -96,20 +96,14 @@ export default function Sidebar({ overlay }: { overlay?: boolean }) {
   }
 
   return (
-    <aside style={{ width: SIDEBAR_W }} className="h-full flex flex-col">
-      <div
-        className={
-          overlay
-            ? 'h-[70px] shrink-0 pointer-events-none'
-            : `app-drag h-[70px] shrink-0 bg-ink-800 border-r border-ink-700 ${pinned ? 'mac:pl-[64px]' : ''}`
-        }
-      />
-      <div
-        className={`flex-1 min-h-0 flex flex-col border-r border-ink-700 ${
-          overlay ? 'bg-ink-900 border-t rounded-tr-card shadow-[0_0_40px_rgba(0,0,0,0.55)]' : 'bg-ink-800'
-        }`}
-      >
-      <div className="flex-1 min-h-0 overflow-y-auto app-no-drag px-2 pt-2">
+    <aside
+      style={{ width: SIDEBAR_W }}
+      className={`h-full flex flex-col ${
+        overlay ? 'glass glass-strong rounded-r-card' : 'border-r border-fg/[0.08]'
+      }`}
+    >
+      <div className="app-drag h-[70px] shrink-0" />
+      <div className="flex-1 min-h-0 overflow-y-auto app-no-drag px-2">
         {places.map(place => (
           <PlaceGroup
             key={place.key}
@@ -131,12 +125,11 @@ export default function Sidebar({ overlay }: { overlay?: boolean }) {
       <div className="app-no-drag shrink-0 p-2">
         <button
           onClick={() => void pick()}
-          className="w-full h-9 rounded-xl flex items-center justify-center gap-2 text-sm font-medium text-fg-secondary transition-colors duration-150 hover:bg-ink-700 hover:text-fg active:scale-[0.98]"
+          className="w-full h-9 rounded-xl flex items-center justify-center gap-2 text-sm font-medium text-fg/70 transition-colors duration-150 hover:bg-fg/[0.06] hover:text-fg active:scale-[0.98]"
         >
           <PlusGlyph className="w-4 h-4" />
           Open a folder
         </button>
-      </div>
       </div>
       <Modal open={asking !== null} onClose={() => setAsking(null)} title="" width={520} flush>
         <div className="p-6">
