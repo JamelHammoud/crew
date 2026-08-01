@@ -56,6 +56,8 @@ export class FontManager {
 
 function resolve(options: TLTextMeasureOptions): TextMeasureOptions {
   const width = options.width ?? null
+  const otherStyles = { ...options.otherStyles }
+  if (options.letterSpacing !== undefined) otherStyles['letter-spacing'] = `${options.letterSpacing}px`
   return {
     fontStyle: options.fontStyle ?? 'normal',
     fontWeight: String(options.fontWeight ?? 'normal'),
@@ -65,7 +67,7 @@ function resolve(options: TLTextMeasureOptions): TextMeasureOptions {
     maxWidth: width ?? options.maxWidth ?? null,
     minWidth: width,
     padding: options.padding ?? '0px',
-    otherStyles: options.letterSpacing ? { 'letter-spacing': `${options.letterSpacing}px` } : undefined
+    otherStyles: Object.keys(otherStyles).length ? otherStyles : undefined
   }
 }
 

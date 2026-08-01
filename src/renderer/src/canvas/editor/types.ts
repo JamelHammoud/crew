@@ -135,6 +135,7 @@ export interface TLTextMeasureOptions {
   fontStyle?: string
   lineHeight?: number
   letterSpacing?: number
+  otherStyles?: Record<string, string>
   maxWidth?: number | null
   width?: number | null
   padding?: string
