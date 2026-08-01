@@ -103,8 +103,8 @@ export default function Sidebar({ overlay }: { overlay?: boolean }) {
         }
       />
       <div
-        className={`flex-1 min-h-0 flex flex-col bg-ink-800 border-r border-ink-700 ${
-          overlay ? 'border-t rounded-tr-card shadow-[0_0_40px_rgba(0,0,0,0.55)]' : ''
+        className={`flex-1 min-h-0 flex flex-col border-r border-ink-700 ${
+          overlay ? 'bg-ink-900 border-t rounded-tr-card shadow-[0_0_40px_rgba(0,0,0,0.55)]' : 'bg-ink-800'
         }`}
       >
       <div className="flex-1 min-h-0 overflow-y-auto app-no-drag px-2 pt-2">
