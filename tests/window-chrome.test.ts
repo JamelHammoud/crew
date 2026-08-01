@@ -64,27 +64,31 @@ describe('window chrome', () => {
   })
 
   it('gates the mark inset on the mac class instead of applying it everywhere', () => {
-    topBar()
+    const box = inset()
 
-    const inset = screen.getByRole('banner').firstElementChild!
-
-    expect(inset.className).toContain('mac:pl-[64px]')
-    expect(inset.className).not.toMatch(/(^|\s)pl-/)
+    expect(box.className).toContain('mac:pl-[64px]')
+    expect(box.className).not.toMatch(/(^|\s)pl-/)
   })
 
   it('drops the inset in fullscreen, where there are no stoplights to clear', () => {
     setFullScreen(true)
-    topBar()
 
-    expect(screen.getByRole('banner').firstElementChild!.className).not.toContain('pl-[64px]')
+    expect(inset().className).not.toContain('pl-[64px]')
   })
 
   it('puts the inset back when the window leaves fullscreen', () => {
     setFullScreen(true)
-    topBar()
+    const box = inset()
     act(() => setFullScreen(false))
 
-    expect(screen.getByRole('banner').firstElementChild!.className).toContain('mac:pl-[64px]')
+    expect(box.className).toContain('mac:pl-[64px]')
+  })
+
+  it('clears the stoplights once, at the window edge, rather than in the bar behind the rail', () => {
+    topBar()
+
+    expect(screen.getByRole('banner').className).not.toContain('pl-[64px]')
+    expect(screen.getByRole('banner').innerHTML).not.toContain('pl-[64px]')
   })
 
   it('reads zoomed and fullscreen apart, since only one takes the stoplights', () => {
