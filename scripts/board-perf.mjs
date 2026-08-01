@@ -179,6 +179,8 @@ const driveSource = String.raw`(async () => {
     }
     const counts = {}
     for (const [name, value] of Object.entries(perf.counts)) counts[name] = Math.round(value / ${MOVES})
+    const times = {}
+    for (const [name, value] of Object.entries(perf.times)) times[name] = Number((value / ${MOVES}).toFixed(3))
     const commits = perf.commits
     const duration = perf.duration
     pointer('pointerup', start.x + step.x * ${MOVES}, start.y + step.y * ${MOVES}, 0)
