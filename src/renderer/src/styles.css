@@ -282,6 +282,15 @@ body {
   box-shadow: none;
 }
 
+/* The rail standing in its own column is a hole in the window rather than a
+   surface in the page: what shows through it is the macOS material behind the
+   glass, which only reaches the screen where nothing in front of it is painted.
+   So the app stops painting its own floor and the columns beside the rail paint
+   theirs. The window is transparent already, so nothing else about it moves. */
+#root.railed {
+  background: transparent;
+}
+
 /* The dictation pill stands over whatever app is being typed into, so its window
    has no shell of its own. The glass it is drawn on is the whole of it, and a
    surface behind that glass would be Crew's own colour rather than the colour of
