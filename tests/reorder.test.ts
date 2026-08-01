@@ -53,6 +53,27 @@ describe('the room a dragged one leaves behind', () => {
   })
 })
 
+describe('where the line that says where it lands stands', () => {
+  it('reads the row own gap off the boxes', () => {
+    expect(gapOf(boxes)).toBe(10)
+    expect(gapOf([boxes[0]!])).toBe(0)
+  })
+
+  it('sits in the middle of the gap it would drop into, whichever way it came', () => {
+    expect(boundary(boxes, 0, 2)).toBe(295)
+    expect(boundary(boxes, 3, 1)).toBe(95)
+  })
+
+  it('stands in front of the one that is not moving anywhere', () => {
+    expect(boundary(boxes, 1, 1)).toBe(95)
+  })
+
+  it('stands at the head of the row without reaching for a box that is not there', () => {
+    expect(boundary(boxes, 2, 0)).toBe(-5)
+    expect(boundary(boxes, 0, 9)).toBe(0)
+  })
+})
+
 describe('how far the rest step aside', () => {
   it('moves back everything the held one has passed', () => {
     expect(shift(boxes, 0, 2, 1)).toBe(-100)
