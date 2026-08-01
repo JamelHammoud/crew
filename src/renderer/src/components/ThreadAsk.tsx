@@ -55,7 +55,7 @@ export default function ThreadAsk({
       content={
         askHasMore(ask, written, clipped) ? (
           <span className="block max-h-[300px] overflow-y-auto overscroll-contain whitespace-pre-wrap break-words text-sm leading-[1.6] text-fg/70 select-text">
-            {written}
+            <EmojiText text={written} />
           </span>
         ) : null
       }
