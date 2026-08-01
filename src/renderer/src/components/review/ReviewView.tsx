@@ -109,9 +109,10 @@ export default function ReviewView() {
     if (!change) return
     const key = keyOf(change)
     setReading(key)
-    requestAnimationFrame(() =>
-      scrollRef.current?.querySelector(`[data-row="${CSS.escape(key)}"]`)?.scrollIntoView({ block: 'nearest' })
-    )
+    requestAnimationFrame(() => {
+      const rows = scrollRef.current?.querySelectorAll<HTMLElement>('[data-row]') ?? []
+      for (const row of rows) if (row.dataset.row === key) row.scrollIntoView({ block: 'nearest' })
+    })
   }
 
   const openRow = (change: RepoChange) => {
