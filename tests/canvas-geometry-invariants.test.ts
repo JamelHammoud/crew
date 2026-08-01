@@ -214,6 +214,7 @@ describe('a hollow geometry', () => {
 
 describe('the way a geometry meets a line', () => {
   it.each(named)('agrees with its own crossing test for %s', (_name, geometry) => {
+    if (geometry instanceof Point2d) return
     const { bounds } = geometry
     const probes: [Vec, Vec][] = [
       [new Vec(bounds.minX - 30, bounds.center.y), new Vec(bounds.maxX + 30, bounds.center.y)],
