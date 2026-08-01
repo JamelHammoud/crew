@@ -77,7 +77,7 @@ import './probe.css'
 const store = createTLStore({ id: 'board-check' })
 loadSnapshot(store, ${JSON.stringify(snapshot)})
 
-window.__probe = { canvasCommits: 0, appCommits: 0, renamed: 0, asked: 0 }
+window.__probe = { canvasCommits: 0, overlayCommits: 0, appCommits: 0, renamed: 0, asked: 0 }
 
 function Board() {
   const [editor, setEditor] = React.useState(null)
