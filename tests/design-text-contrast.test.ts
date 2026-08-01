@@ -5,7 +5,7 @@ import { createShapeId, createTLStore, type TLShape, type TLShapeId } from '../s
 import { defaultBindingUtils, defaultShapeUtils } from '../src/renderer/src/canvas/shapes'
 import { SelectTool, TextShapeTool } from '../src/renderer/src/canvas/tools'
 import { DesignNodeUtil } from '../src/renderer/src/design/DesignNodeUtil'
-import { nodeDefaults, solid } from '../../crew/src/shared/designNode'
+import { nodeDefaults, solid } from '../src/shared/designNode'
 import {
   BOARD_SURFACE,
   backgroundBehind,
