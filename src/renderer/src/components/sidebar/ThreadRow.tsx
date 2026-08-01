@@ -1,17 +1,7 @@
 import { memo } from 'react'
-import type { LiveThread } from '../../../../shared/threads'
 import Spinner from '../Spinner'
 import { useThreadMenu } from '../threadMenu'
-import { sameLiveThread } from './placeItems'
-
-interface ThreadRowProps {
-  thread: LiveThread
-  open: boolean
-  here: boolean
-  placeKey: string
-  onOpen: (threadId: string) => void
-  onOpenToRight: (threadId: string) => void
-}
+import { sameThreadRow, type ThreadRowProps } from './placeItems'
 
 function ThreadRow({ thread, open, here, placeKey, onOpen, onOpenToRight }: ThreadRowProps) {
   const { onContextMenu, menu } = useThreadMenu({
