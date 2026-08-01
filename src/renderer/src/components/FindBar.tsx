@@ -92,6 +92,8 @@ export default function FindBar({
   }
   const queryRef = useRef(query)
   queryRef.current = query
+  const listensRef = useRef(listens)
+  listensRef.current = listens
 
   useEffect(() => () => setFindQuery(''), [])
 
