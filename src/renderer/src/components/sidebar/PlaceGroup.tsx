@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type PointerEvent as Press } from 'react'
 import type { LiveThread } from '../../../../shared/threads'
 import { DesktopGlyph, FolderGlyph, GlobeGlyph, TrashGlyph } from '../../icons'
 import Spinner from '../Spinner'
@@ -22,7 +22,9 @@ export default function PlaceGroup({
   onOpenThread,
   onOpenThreadToRight,
   onStop,
-  onForget
+  onForget,
+  onTake,
+  dragged
 }: {
   place: Place
   here: boolean
@@ -34,19 +36,24 @@ export default function PlaceGroup({
   onOpenThreadToRight: (threadId: string) => void
   onStop?: () => void
   onForget: () => void
+  onTake: (event: Press) => void
+  dragged: () => boolean
 }) {
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
 
   return (
-    <div className="pb-4">
+    <div data-reorder={place.key} className="pb-4">
       <button
-        onClick={onOpen}
+        onPointerDown={onTake}
+        onClick={() => {
+          if (!dragged()) onOpen()
+        }}
         onContextMenu={event => {
           event.preventDefault()
           setMenuAt({ x: event.clientX, y: event.clientY })
         }}
         aria-current={here ? 'page' : undefined}
-        className={`w-full rounded-xl px-2 py-1.5 flex items-center gap-2 text-left transition-colors duration-150 hover:bg-fg/[0.06] ${
+        className={`w-full rounded-xl px-2 py-1.5 flex items-center gap-2 text-left cursor-grab active:cursor-grabbing transition-[color,background-color,scale] duration-150 hover:bg-fg/[0.06] active:scale-[0.99] ${
           here ? 'text-fg' : 'text-fg/70'
         }`}
       >

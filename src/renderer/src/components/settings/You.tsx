@@ -18,11 +18,12 @@ export default function You({ onDone }: { onDone: () => void }) {
   const leave = useCrew(s => s.leave)
   const standing = useStanding()
   const [draft, setDraft] = useState<string | null>(null)
+  const editing = draft !== null
   const input = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (draft !== null) input.current?.select()
-  }, [draft])
+    if (editing) input.current?.select()
+  }, [editing])
 
   const commit = () => {
     if (draft !== null) renameSelf(draft)
@@ -41,7 +42,7 @@ export default function You({ onDone }: { onDone: () => void }) {
         </PhotoPicker>
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            {draft !== null ? (
+            {editing ? (
               <input
                 ref={input}
                 value={draft}
@@ -59,7 +60,7 @@ export default function You({ onDone }: { onDone: () => void }) {
               <p className="text-lg font-semibold text-fg truncate">{selfName}</p>
             )}
             {import.meta.env.DEV && <Pill glass>DEV</Pill>}
-            {draft === null && (
+            {!editing && (
               <Tooltip label="Rename">
                 <button
                   onClick={() => setDraft(selfName)}

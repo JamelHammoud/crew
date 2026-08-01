@@ -117,15 +117,24 @@ describe('the settings', () => {
     expect(page('Jamel')).toBeTruthy()
   })
 
-  it('renames you from your own page', () => {
+  it('keeps the caret while you type and renames you from your own page', () => {
+    useCrew.setState({
+      selfName: 'Jamel (dev)',
+      members: [{ id: 'jamel', name: 'Jamel (dev)', connected: true }]
+    })
     show()
     fireEvent.click(screen.getByRole('button', { name: 'Rename yourself' }))
-    const input = screen.getByRole('textbox', { name: 'Your name' })
-    fireEvent.change(input, { target: { value: '  Jamel   High  ' } })
+    const input = screen.getByRole<HTMLInputElement>('textbox', { name: 'Your name' })
+    fireEvent.change(input, { target: { value: 'J', selectionStart: 1, selectionEnd: 1 } })
+    expect(input.selectionStart).toBe(1)
+    expect(input.selectionEnd).toBe(1)
+    fireEvent.change(input, { target: { value: 'Jamel', selectionStart: 5, selectionEnd: 5 } })
+    expect(input.selectionStart).toBe(5)
+    expect(input.selectionEnd).toBe(5)
     fireEvent.keyDown(input, { key: 'Enter' })
 
-    expect(useCrew.getState().selfName).toBe('Jamel High')
-    expect(window.crew.rename).toHaveBeenCalledWith('Jamel High')
+    expect(useCrew.getState().selfName).toBe('Jamel')
+    expect(window.crew.rename).toHaveBeenCalledWith('Jamel')
   })
 
   it('turns the page over when a row is picked', () => {

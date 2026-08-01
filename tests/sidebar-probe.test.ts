@@ -141,6 +141,60 @@ describe('the sidebar', () => {
     expect(titles.slice(0, 2)).toEqual(['one', 'two'])
   })
 
+  it('keeps projects in the order they were dragged into', async () => {
+    const { container } = render(createElement(Sidebar))
+    const groups = Array.from(container.querySelectorAll<HTMLElement>('[data-reorder]'))
+    const list = groups[0]!.parentElement!
+    list.getBoundingClientRect = () =>
+      ({ top: 0, bottom: 400, height: 400, left: 0, right: 240, width: 240 }) as DOMRect
+    groups.forEach((group, index) => {
+      group.getBoundingClientRect = () =>
+        ({ top: index * 100, bottom: index * 100 + 90, height: 90, left: 0, right: 240, width: 240 }) as DOMRect
+    })
+    const second = groups[1]!.querySelector('button')!
+
+    act(() => {
+      fireEvent.pointerDown(second, { button: 0, clientY: 145 })
+      fireEvent.pointerMove(window, { clientY: 45 })
+      fireEvent.pointerUp(window)
+    })
+
+    expect(usePlaces.getState().places.map(place => place.title)).toEqual(['two', 'one'])
+    expect(JSON.parse(localStorage.getItem('crew.project-order') ?? '[]')).toEqual([
+      `project:${TWO}`,
+      `project:${ONE}`
+    ])
+
+    await act(async () => {
+      await usePlaces.getState().load()
+    })
+
+    expect(usePlaces.getState().places.map(place => place.title)).toEqual(['two', 'one'])
+  })
+
+  it('does not open a project when its drag ends', () => {
+    const start = vi.spyOn(window.crew, 'start')
+    const { container } = render(createElement(Sidebar))
+    const groups = Array.from(container.querySelectorAll<HTMLElement>('[data-reorder]'))
+    const list = groups[0]!.parentElement!
+    list.getBoundingClientRect = () =>
+      ({ top: 0, bottom: 400, height: 400, left: 0, right: 240, width: 240 }) as DOMRect
+    groups.forEach((group, index) => {
+      group.getBoundingClientRect = () =>
+        ({ top: index * 100, bottom: index * 100 + 90, height: 90, left: 0, right: 240, width: 240 }) as DOMRect
+    })
+    const second = groups[1]!.querySelector('button')!
+
+    act(() => {
+      fireEvent.pointerDown(second, { button: 0, clientY: 145 })
+      fireEvent.pointerMove(window, { clientY: 45 })
+      fireEvent.pointerUp(window)
+      fireEvent.click(second)
+    })
+
+    expect(start).not.toHaveBeenCalled()
+  })
+
   it('marks the current project', async () => {
     const { container } = render(createElement(Sidebar))
     const current = container.querySelector('button[aria-current="page"]')

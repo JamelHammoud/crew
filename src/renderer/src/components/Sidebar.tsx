@@ -10,6 +10,7 @@ import WhereTo from '../views/home/WhereTo'
 import type { Place } from '../views/home/place'
 import Modal from './Modal'
 import PlaceGroup from './sidebar/PlaceGroup'
+import { useReorder } from './useReorder'
 
 function said(err: unknown): string {
   return String(err instanceof Error ? err.message : err).replace(
@@ -24,6 +25,7 @@ export default function Sidebar({ overlay, strong }: { overlay?: boolean; strong
   const places = usePlaces(s => s.places)
   const live = usePlaces(s => s.live)
   const load = usePlaces(s => s.load)
+  const move = usePlaces(s => s.move)
   const here = useCrew(s => s.place)
   const openThreadIds = useCrew(s => s.openThreadIds)
   const name = useCrew(s => s.selfName)
@@ -32,6 +34,7 @@ export default function Sidebar({ overlay, strong }: { overlay?: boolean; strong
   const peek = useSidebar(s => s.peek)
   const [busyKey, setBusyKey] = useState<string | null>(null)
   const [asking, setAsking] = useState<string | null>(null)
+  const order = useReorder((key, to) => move(key, to), 'vertical')
 
   useEffect(() => {
     void load()
@@ -106,7 +109,7 @@ export default function Sidebar({ overlay, strong }: { overlay?: boolean; strong
       }`}
     >
       <div className="app-drag h-[70px] shrink-0" />
-      <div className="flex-1 min-h-0 overflow-y-auto app-no-drag px-2 pt-1">
+      <div ref={order.ref} className="flex-1 min-h-0 overflow-y-auto app-no-drag px-2 pt-1">
         {places.map(place => (
           <PlaceGroup
             key={place.key}
@@ -123,6 +126,8 @@ export default function Sidebar({ overlay, strong }: { overlay?: boolean; strong
             onOpenThreadToRight={threadId => void goToThread(place, threadId, true)}
             onStop={isLive(live, place.key) ? () => void closePlace(place.key) : undefined}
             onForget={() => void forget(place)}
+            onTake={order.take(place.key)}
+            dragged={order.dragged}
           />
         ))}
       </div>

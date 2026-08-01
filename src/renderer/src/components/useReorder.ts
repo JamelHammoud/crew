@@ -16,12 +16,14 @@ export type Reorder = {
   dragged(): boolean
 }
 
+type Axis = 'horizontal' | 'vertical'
+
 // Dragging one of a row of things into another place in it. Where each one goes
 // is written straight onto the elements rather than held in state, the way the
 // music's bars are: it runs every frame, and a render a frame would cost
 // everything standing beside the row. Nothing is reordered until it is let go,
 // so the row under the pointer stands still while it is being aimed at.
-export function useReorder(onMove: (id: string, to: number) => void): Reorder {
+export function useReorder(onMove: (id: string, to: number) => void, axis: Axis = 'horizontal'): Reorder {
   const row = useRef<HTMLElement | null>(null)
   const dragged = useRef(false)
 
@@ -36,24 +38,31 @@ export function useReorder(onMove: (id: string, to: number) => void): Reorder {
 
     // Boxes are read in the row's own coordinates rather than the window's, so a
     // row that scrolls under a drag does not put every one of them out.
+    const vertical = axis === 'vertical'
+    const scroll = () => (vertical ? strip.scrollTop : strip.scrollLeft)
+    const start = vertical ? bar.top : bar.left
+    const length = vertical ? bar.height : bar.width
+    const coordinate = (point: PointerEvent | Press) => (vertical ? point.clientY : point.clientX)
     const boxes: Box[] = items.map(item => {
       const box = item.getBoundingClientRect()
-      return { left: box.left - bar.left + strip.scrollLeft, width: box.width }
+      return vertical
+        ? { left: box.top - bar.top + strip.scrollTop, width: box.height }
+        : { left: box.left - bar.left + strip.scrollLeft, width: box.width }
     })
-    const startX = event.clientX - bar.left + strip.scrollLeft
+    const startAt = coordinate(event) - start + scroll()
 
-    let pointer = event.clientX
+    let pointer = coordinate(event)
     let taken = false
     let to = from
     let frame = 0
     dragged.current = false
 
     const tick = () => {
-      const dx = pointer - bar.left + strip.scrollLeft - startX
+      const dx = pointer - start + scroll() - startAt
       if (!taken && Math.abs(dx) < TAKES) return
       taken = true
       dragged.current = true
-      held.style.translate = `${dx}px`
+      held.style.translate = vertical ? `0 ${dx}px` : `${dx}px`
       held.style.zIndex = '10'
       held.style.cursor = 'grabbing'
       const next = landing(boxes, from, dx)
@@ -62,7 +71,8 @@ export function useReorder(onMove: (id: string, to: number) => void): Reorder {
       items.forEach((item, index) => {
         if (index === from) return
         item.style.transition = SLIDE
-        item.style.translate = `${shift(boxes, from, to, index)}px`
+        const distance = shift(boxes, from, to, index)
+        item.style.translate = vertical ? `0 ${distance}px` : `${distance}px`
       })
     }
 
@@ -70,14 +80,19 @@ export function useReorder(onMove: (id: string, to: number) => void): Reorder {
     // reading happens on a frame of its own as well as on every move.
     const draw = () => {
       frame = requestAnimationFrame(draw)
-      const past = pointer - bar.left
-      if (past < EDGE) strip.scrollLeft -= STEP
-      else if (past > bar.width - EDGE) strip.scrollLeft += STEP
+      const past = pointer - start
+      if (past < EDGE) {
+        if (vertical) strip.scrollTop -= STEP
+        else strip.scrollLeft -= STEP
+      } else if (past > length - EDGE) {
+        if (vertical) strip.scrollTop += STEP
+        else strip.scrollLeft += STEP
+      }
       tick()
     }
 
     const move = (moved: PointerEvent) => {
-      pointer = moved.clientX
+      pointer = coordinate(moved)
       tick()
     }
 
