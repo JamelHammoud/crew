@@ -9,6 +9,7 @@ import ThreadItems from '../ThreadItems'
 import { buildThread, eventsOfThread, lastEnd } from '../thread'
 import { useFamilySteps } from '../useThreadSteps'
 import { useAutoResize } from '../useAutoResize'
+import { useDrawnTail } from '../useDrawnTail'
 import useScrollEdges from '../useScrollEdges'
 import { useStickToBottom } from '../useStickToBottom'
 

@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { projectPlace } from '../../../shared/places'
 import type { CrewHome } from '../../../shared/project'
 import { PlusGlyph } from '../icons'
-import { isLive, threadsIn, usePlaces } from '../state/places'
+import { usePlaces } from '../state/places'
 import { SIDEBAR_W, useSidebar } from '../state/sidebar'
 import { useCrew } from '../state/store'
 import { toast } from '../state/toast'
@@ -10,6 +10,7 @@ import WhereTo from '../views/home/WhereTo'
 import type { Place } from '../views/home/place'
 import Modal from './Modal'
 import PlaceGroup from './sidebar/PlaceGroup'
+import { NO_THREADS } from './sidebar/placeItems'
 import { useReorder } from './useReorder'
 
 function said(err: unknown): string {
