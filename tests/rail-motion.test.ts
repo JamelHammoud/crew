@@ -16,13 +16,13 @@ const shut = () => rule('.rail {')
 const open = () => rule('.rail[data-open] {')
 
 const seconds = (css: string): number => Number(/transform\s+(\d*\.?\d+)s/.exec(css)?.[1])
-const opacity = (css: string): number => Number(/background:\s*rgb\([^)]*\/\s*(\d*\.?\d+)\)/.exec(css)?.[1])
+const opacity = (css: string): number =>
+  Number(/(?:background|--glass-bg):\s*rgb\([^)]*\/\s*(\d*\.?\d+)\)/.exec(css)?.[1])
 
 describe('the glass the hovered rail wears', () => {
   it('lets more of the page through without giving up its blur', () => {
-    const glass = rule('.glass {')
     const sidebar = rule('.sidebar-glass {')
-    expect(opacity(sidebar)).toBeLessThan(opacity(glass))
+    expect(opacity(sidebar)).toBeLessThan(opacity(rule(':root {')))
     expect(sidebar).toMatch(/backdrop-filter:\s*blur\(32px\)/)
   })
 
