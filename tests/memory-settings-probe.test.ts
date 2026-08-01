@@ -96,7 +96,7 @@ describe('the memory page', () => {
     useCrew.setState({ memories: [held('The tests boot real servers')] })
     render(createElement(Memory))
     fireEvent.click(screen.getByRole('button', { name: 'More for The tests boot real servers' }))
-    fireEvent.click(screen.getByRole('menuitem', { name: 'Edit memory' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Edit memory' }))
     fireEvent.change(within(card()).getByLabelText('Memory'), {
       target: { value: 'The tests boot real servers on loopback' }
     })
@@ -106,7 +106,7 @@ describe('the memory page', () => {
     ])
 
     fireEvent.click(screen.getByRole('button', { name: 'More for The tests boot real servers' }))
-    fireEvent.click(screen.getByRole('menuitem', { name: 'Delete memory' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Delete memory' }))
     expect(sent[1]).toEqual({ type: 'memory.remove', memoryId: 'The t' })
   })
 
