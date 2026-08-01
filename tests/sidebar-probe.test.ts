@@ -122,6 +122,14 @@ beforeEach(async () => {
 afterEach(cleanup)
 
 describe('the sidebar', () => {
+  it('wears its lighter glass when it stands over the page', () => {
+    const { container } = render(createElement(Sidebar, { overlay: true, strong: true }))
+    const sidebar = container.querySelector('aside')
+    expect(sidebar?.className).toContain('glass')
+    expect(sidebar?.className).toContain('sidebar-glass')
+    expect(sidebar?.className).toContain('glass-strong')
+  })
+
   it('holds every place the app knows, newest first', async () => {
     const { container } = render(createElement(Sidebar))
     await waitFor(() => expect(container.querySelectorAll('button[aria-current], button').length).toBeGreaterThan(1))

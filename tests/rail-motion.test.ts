@@ -16,6 +16,20 @@ const shut = () => rule('.rail {')
 const open = () => rule('.rail[data-open] {')
 
 const seconds = (css: string): number => Number(/transform\s+(\d*\.?\d+)s/.exec(css)?.[1])
+const opacity = (css: string): number => Number(/background:\s*rgb\([^)]*\/\s*(\d*\.?\d+)\)/.exec(css)?.[1])
+
+describe('the glass the hovered rail wears', () => {
+  it('lets more of the page through without giving up its blur', () => {
+    const glass = rule('.glass {')
+    const sidebar = rule('.sidebar-glass {')
+    expect(opacity(sidebar)).toBeLessThan(opacity(glass))
+    expect(sidebar).toMatch(/backdrop-filter:\s*blur\(32px\)/)
+  })
+
+  it('stays lighter over the design canvas too', () => {
+    expect(opacity(rule('.sidebar-glass.glass-strong {'))).toBeLessThan(opacity(rule('.glass-strong {')))
+  })
+})
 
 describe('the way the hovered rail arrives and leaves', () => {
   it('is a transition rather than a keyframe, so one caught halfway turns around', () => {
