@@ -17,7 +17,6 @@ export class LineShapeTool implements LineStateParent {
       pointing: new Pointing(editor, this)
     }
     this.current = this.states[LineShapeTool.initial]
-    this.current.onEnter({})
   }
 
   transition(id: string, info: LinePointerInfo = {}): void {
@@ -26,6 +25,15 @@ export class LineShapeTool implements LineStateParent {
     this.current.onExit()
     this.current = next
     next.onEnter(info)
+  }
+
+  enter(info: LinePointerInfo = {}): void {
+    this.current = this.states[LineShapeTool.initial]
+    this.current.onEnter(info)
+  }
+
+  exit(): void {
+    this.current.onExit()
   }
 
   getCurrentStateId(): string {
