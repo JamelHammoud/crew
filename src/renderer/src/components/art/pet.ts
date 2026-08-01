@@ -110,6 +110,14 @@ export function petOf(seed: string): Pet {
   return pet
 }
 
+// How much of the tile the pet takes. It is a drawing decision rather than
+// something the seed answers, so it is applied to the shape rather than built
+// into it: the pet is the pet, and this is how much room the picture behind it
+// gets. Drawn at its own size the body fills the circle and what is left of the
+// field is a rim, which is a white shape on a colored ring rather than a shape
+// standing on a photograph.
+export const BODY = 0.78
+
 // The least that may stand between the two eye holes, in real pixels at the size
 // the pet is drawn. Two holes that close up are one slot, and a slot across the
 // middle of a white shape is not a face: at 20 across, which is what a pet is
