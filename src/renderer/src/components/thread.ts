@@ -44,6 +44,20 @@ export const threadWorking = (
   )
 }
 
+export const workingThreads = (
+  threadPrompts: Record<string, string>,
+  queues: Record<string, unknown[]>,
+  threads: Record<string, Pick<ThreadMeta, 'id' | 'parentThreadId'>>
+): Set<string> => {
+  const working = new Set<string>()
+  for (const thread of Object.values(threads)) {
+    if (!threadPrompts[thread.id] && (queues[thread.id]?.length ?? 0) === 0) continue
+    working.add(thread.id)
+    if (thread.parentThreadId) working.add(thread.parentThreadId)
+  }
+  return working
+}
+
 export { eventsOfThread } from '../../../shared/threads'
 
 // Steps are held per run, so anything that wants a thread's own are gathered off
