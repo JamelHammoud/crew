@@ -52,7 +52,8 @@ beforeEach(() => {
     scribeSaid: vi.fn().mockResolvedValue([]),
     scribeState: vi.fn().mockResolvedValue({ hooked: true, trusted: true }),
     setTheme: vi.fn(),
-    keepAwake: vi.fn()
+    keepAwake: vi.fn(),
+    rename: vi.fn().mockResolvedValue(null)
   } as unknown as typeof window.crew
   useCrew.setState({
     selfId: 'jamel',
@@ -114,6 +115,17 @@ describe('the settings', () => {
     expect(rows[0]).toBe('Jamel')
     expect(within(rail()).getByText('Crew')).toBeTruthy()
     expect(page('Jamel')).toBeTruthy()
+  })
+
+  it('renames you from your own page', () => {
+    show()
+    fireEvent.click(screen.getByRole('button', { name: 'Rename yourself' }))
+    const input = screen.getByRole('textbox', { name: 'Your name' })
+    fireEvent.change(input, { target: { value: '  Jamel   High  ' } })
+    fireEvent.keyDown(input, { key: 'Enter' })
+
+    expect(useCrew.getState().selfName).toBe('Jamel High')
+    expect(window.crew.rename).toHaveBeenCalledWith('Jamel High')
   })
 
   it('turns the page over when a row is picked', () => {
