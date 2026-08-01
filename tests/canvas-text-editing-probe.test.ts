@@ -140,7 +140,19 @@ function mountBoard(): { view: ReturnType<typeof render>; editor: () => Editor }
   return { view, editor: () => made! }
 }
 
+function pointer(type: string, x: number, y: number, buttons: number): MouseEvent {
+  const event = new dom.window.MouseEvent(type, { bubbles: true, clientX: x, clientY: y, button: 0, buttons })
+  Object.defineProperties(event, {
+    pointerId: { value: 1 },
+    pointerType: { value: 'mouse' },
+    pressure: { value: buttons ? 0.5 : 0 }
+  })
+  return event
+}
+
 function doubleClick(node: HTMLElement, x: number, y: number): void {
+  node.dispatchEvent(pointer('pointerdown', x, y, 1))
+  node.dispatchEvent(pointer('pointerup', x, y, 0))
   node.dispatchEvent(new dom.window.MouseEvent('dblclick', { bubbles: true, cancelable: true, clientX: x, clientY: y }))
 }
 
