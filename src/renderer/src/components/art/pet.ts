@@ -116,7 +116,7 @@ export function petOf(seed: string): Pet {
 // gets. Drawn at its own size the body fills the circle and what is left of the
 // field is a rim, which is a white shape on a colored ring rather than a shape
 // standing on a photograph.
-export const BODY = 0.78
+export const BODY = 0.86
 
 // How much light the picture under a pet carries. It is the same scene the
 // covers are photographed in, stood a little further back from the light, so the
