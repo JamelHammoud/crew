@@ -5,6 +5,7 @@ import {
   closePutsAway,
   createPanelOptions,
   createScribeOptions,
+  createThreadWindowOptions,
   createWindowOptions
 } from '../src/main/window-options'
 
