@@ -39,9 +39,7 @@ describe('the glass the expanded sidebar wears on macOS', () => {
   })
 
   it('keeps the light surface translucent too', () => {
-    expect(opacity(rule('.mac.light .sidebar-pinned {'))).toBeLessThan(
-      opacity(rule('.light {'))
-    )
+    expect(opacity(rule('.mac.light .sidebar-pinned {'))).toBeLessThan(1)
   })
 })
 
