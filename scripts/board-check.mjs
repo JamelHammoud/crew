@@ -78,6 +78,7 @@ createRoot(document.getElementById('root')).render(
     store,
     shapeUtils: designShapeUtils,
     bindingUtils: defaultBindingUtils,
+    tools: [DesignNodeTool],
     onMount: mounted
   })
 )
@@ -324,7 +325,7 @@ const driveSource = String.raw`(async () => {
     return { ok: grouped && ungrouped, note: 'grouped ' + grouped + ' ungrouped ' + ungrouped }
   })
 
-  for (const tool of ['geo', 'note', 'frame', 'line', 'arrow', 'draw', 'text']) {
+  for (const tool of ['design-node', 'note', 'frame', 'line', 'arrow', 'draw', 'highlight', 'text']) {
     await attempt('the ' + tool + ' tool draws', async () => {
       editor.selectNone()
       editor.setCurrentTool(tool)
