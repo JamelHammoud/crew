@@ -908,12 +908,7 @@ export class Editor {
       requested.filter(id => this.getShape(id))
     )
     const deleting = new Set(ids)
-    const bindings = this.store
-      .query('binding')
-      .get()
-      .filter(binding => deleting.has(binding.fromId) || deleting.has(binding.toId))
-      .map(binding => binding.id)
-    this.store.remove([...bindings, ...ids])
+    this.store.remove(ids)
     this.selection.setSelectedShapeIds(this.getSelectedShapeIds().filter(id => !deleting.has(id)))
     return this
   }

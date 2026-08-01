@@ -108,10 +108,12 @@ export class DraggingHandle<Shape extends TLShape = TLShape> extends TransformSt
     const start = this.editor.getShapeUtil?.(info.shape).onHandleDragStart?.(info.shape, this.dragInfo())
     if (start) this.editor.updateShapes([start])
     this.update()
+    this.editor.select?.(info.shape.id)
   }
 
   override onExit(): void {
     this.parent.setCurrentToolIdMask?.(undefined)
+    this.editor.snaps?.clearIndicators?.()
     this.editor.setCursor?.({ type: 'default', rotation: 0 })
   }
 
