@@ -27,25 +27,23 @@ export function typeStyleOf(style: CSSProperties | undefined | null): CSSPropert
   return lifted as CSSProperties
 }
 
-function styleOf(node: ReactNode): CSSProperties | null {
-  if (!isValidElement(node)) return null
-  const props = node.props as { style?: CSSProperties; children?: ReactNode }
-  if (props.style) return props.style
-  const children = Array.isArray(props.children) ? props.children : [props.children]
-  for (const child of children) {
-    const found = styleOf(child)
-    if (found) return found
+function gather(node: ReactNode, into: Record<string, unknown>): void {
+  if (Array.isArray(node)) {
+    for (const child of node) gather(child, into)
+    return
   }
-  return null
+  if (!isValidElement(node)) return
+  const props = node.props as { style?: CSSProperties; children?: ReactNode }
+  Object.assign(into, typeStyleOf(props.style))
+  gather(props.children, into)
 }
 
-export function paintedTypeStyle<Shape>(
-  util: { component(shape: Shape): ReactNode },
-  shape: Shape
-): CSSProperties {
+export function paintedTypeStyle<Shape>(util: { component(shape: Shape): ReactNode }, shape: Shape): CSSProperties {
+  const gathered: Record<string, unknown> = {}
   try {
-    return typeStyleOf(styleOf(util.component(shape)))
+    gather(util.component(shape), gathered)
   } catch {
     return {}
   }
+  return gathered as CSSProperties
 }
