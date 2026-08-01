@@ -231,9 +231,12 @@ describe('canvas text editing', () => {
     const { view, editor } = mountBoard()
     await waitFor(() => expect(view.container.querySelectorAll('[data-canvas-shape="true"]')).toHaveLength(2))
 
-    act(() => {
-      editor().setEditingShape(textId)
-    })
+    const bounds = editor().getShapePageBounds(textId)!
+    const point = editor().pageToViewport(bounds.center)
+    const node = view.container.querySelector(`[data-shape-id="${textId}"]`) as HTMLElement
+    act(() => doubleClick(node, point.x, point.y))
+
+    await waitFor(() => expect(editor().getEditingShapeId()).toBe(textId))
     await waitFor(() => expect(editor().getRichTextEditor?.()).toBeTruthy())
 
     await act(async () => {

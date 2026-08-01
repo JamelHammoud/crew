@@ -124,7 +124,8 @@ export function createWindowOptions(
     height: 800,
     minWidth: 800,
     minHeight: 600,
-    ...windowShell(platform, preload, devTools)
+    ...windowShell(platform, preload, devTools),
+    ...(platform === 'darwin' ? { vibrancy: 'sidebar' as const } : {})
   }
 }
 

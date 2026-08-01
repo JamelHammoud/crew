@@ -549,7 +549,7 @@ export class Editor {
 
   deleteBindings(bindings: readonly (TLBinding | string)[], options?: { isolateShapes?: boolean }): this {
     this.bindings.delete(
-      bindings.map(binding => (typeof binding === 'string' ? binding : binding.id)),
+      bindings.map(binding => (typeof binding === 'string' ? (binding as TLBindingId) : binding.id)),
       options
     )
     return this

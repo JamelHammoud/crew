@@ -1,6 +1,8 @@
 import { react } from '../../signals'
 import { StateNode, type StateNodeConstructor } from '../state'
+import { transformStates } from '../transforms'
 import { Brushing } from './childStates/Brushing'
+import { Crop } from './childStates/Crop'
 import { EditingShape } from './childStates/EditingShape'
 import { Idle } from './childStates/Idle'
 import { PointingArrowLabel } from './childStates/PointingArrowLabel'
@@ -24,7 +26,9 @@ export const SELECT_BASE_STATES = [
   EditingShape,
   PointingRotateHandle,
   PointingArrowLabel,
-  PointingHandle
+  PointingHandle,
+  Crop,
+  ...transformStates()
 ] as StateNodeConstructor<SelectEditor>[]
 
 export class SelectTool extends StateNode<SelectEditor> {
