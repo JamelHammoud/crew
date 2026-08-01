@@ -18,6 +18,8 @@ export function ShapeLayer<Shape extends CanvasShapeRecord>({
   renderer: CanvasShapeRenderer<Shape>
 }) {
   const shapes = useValue('canvas rendering shapes', () => sortRenderingShapes(host.getRenderingShapes()), [host])
+  const probe = (globalThis as never as { __render?: Record<string, number> }).__render
+  if (probe) probe.layerRenders = (probe.layerRenders ?? 0) + 1
   return (
     <MountedShapeCullingProvider>
       {shapes.map(shape => (
