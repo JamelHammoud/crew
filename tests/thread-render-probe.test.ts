@@ -166,6 +166,7 @@ const openThread = (steps: AgentStep[]): void => {
   render(createElement(ThreadView, { threadId: THREAD }))
   drawn.items = 0
   drawn.rows = 0
+  drawn.walks = 0
 }
 
 beforeEach(() => {
@@ -193,6 +194,20 @@ describe('what a long thread draws again', () => {
     expect(composer().value).toBe('hello')
     expect(drawn.items).toBe(0)
     expect(drawn.rows).toBe(0)
+  })
+
+  it('walks the thread events no further while somebody types', () => {
+    const steps = Array.from({ length: STEPS }, (_, index) => stepAt(index))
+    openThread(steps)
+
+    for (const value of ['h', 'he', 'hel', 'hell', 'hello']) {
+      act(() => {
+        fireEvent.change(composer(), { target: { value } })
+      })
+    }
+
+    expect(composer().value).toBe('hello')
+    expect(drawn.walks).toBe(0)
   })
 
   it('shows a step that lands without redrawing what it did not change', () => {

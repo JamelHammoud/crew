@@ -319,7 +319,7 @@ describe('what one store write costs a thread column', () => {
     render(createElement(Reader, { seen }))
     act(() => useCrew.setState({ steps: { [PROMPT]: [...steps, steps[0]] } }))
     expect(seen.length).toBeGreaterThan(1)
-    expect(seen.at(-1)).toBe(seen[0])
+    expect(seen.every(held => held === seen[0])).toBe(true)
   })
 
   it('folds the read-back page in once across a burst of steps', () => {
