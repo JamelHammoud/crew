@@ -1,7 +1,19 @@
 // @vitest-environment jsdom
 import { act, fireEvent, render } from '@testing-library/react'
 import { createElement } from 'react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { cleanup } from '@testing-library/react'
+
+window.matchMedia = ((query: string) => ({
+  matches: false,
+  media: query,
+  onchange: null,
+  addListener: () => {},
+  removeListener: () => {},
+  addEventListener: () => {},
+  removeEventListener: () => {},
+  dispatchEvent: () => false
+})) as typeof window.matchMedia
 
 const { boardOnScreen, DEFAULT_WIDTH, useBrowser } = await import('../src/renderer/src/state/browser')
 const BrowserPanel = (await import('../src/renderer/src/components/BrowserPanel')).default
@@ -16,6 +28,8 @@ beforeEach(() => {
   window.crew = { warmTerminal: () => undefined } as unknown as CrewBridge
   useBrowser.setState({ tabs: [], activeTabId: null })
 })
+
+afterEach(cleanup)
 
 const pillFor = (root: HTMLElement, id: string) => root.querySelector(`[data-tab="${id}"]`)
 

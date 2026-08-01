@@ -5,6 +5,7 @@ import type { OpenRequest } from '../shared/cli'
 import type { CommandDone, CommandState } from '../shared/crewCommand'
 import type { PathLocation, RepoFile } from '../shared/files'
 import type { MediaAccess, MediaKind, ScreenSource } from '../shared/media'
+import type { LivePlace } from '../shared/places'
 import type { Present, PresenceSnapshot } from '../shared/presence'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../shared/llm'
 import type {

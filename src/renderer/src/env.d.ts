@@ -7,6 +7,7 @@ import type { CommandDone, CommandState } from '../../shared/crewCommand'
 import type { PathLocation, RepoFile } from '../../shared/files'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../../shared/llm'
 import type { MediaAccess, MediaKind, ScreenSource } from '../../shared/media'
+import type { LivePlace } from '../../shared/places'
 import type { Present, PresenceSnapshot } from '../../shared/presence'
 import type { RepoActionResult, RepoChange, RepoCommand, RepoStatus, RepoWork } from '../../shared/repository'
 import type { RecentJoin, RecentProject } from '../../shared/recent'
@@ -22,6 +23,10 @@ declare global {
     join(link: string, folder: string, name: string): Promise<CurrentSession>
     leave(): Promise<void>
     current(): Promise<CurrentSession | null>
+    switchTo(key: string): Promise<CurrentSession | null>
+    closeProject(key: string): Promise<void>
+    liveProjects(): Promise<LivePlace[]>
+    onLive(listener: (places: LivePlace[]) => void): () => void
     recentJoins(): Promise<RecentJoin[]>
     projects(): Promise<RecentProject[]>
     forgetProject(folder: string): Promise<void>
