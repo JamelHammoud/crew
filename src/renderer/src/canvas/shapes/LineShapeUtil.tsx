@@ -9,6 +9,7 @@ import {
   type ShapeHandleDragInfo,
   type ShapeResizeInfo
 } from './ShapeUtil'
+import { PathBuilder } from './PathBuilder'
 import { STROKES } from './shared'
 import { shapeColor } from './theme'
 

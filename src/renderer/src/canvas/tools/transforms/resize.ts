@@ -424,11 +424,12 @@ export class Resizing<Shape extends TLShape = TLShape> extends TransformState<
   }
 
   private complete(): void {
-    this.update()
+    this.editor.kickoutOccludedShapes?.(this.snapshots.map(snapshot => snapshot.shape.id))
     this.applyLifecycle('end')
-    if (this.info.isCreating) {
+    if (this.info.isCreating && this.info.onCreate) {
       const shape = this.snapshots[0] ? (this.editor.getShape(this.snapshots[0].shape.id) ?? null) : null
-      this.info.onCreate?.(shape)
+      this.info.onCreate(shape)
+      return
     }
     this.finish()
   }
