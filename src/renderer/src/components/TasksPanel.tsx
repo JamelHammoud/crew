@@ -470,9 +470,12 @@ export default function TasksPanel({
 
   return (
     <>
-      {open && <div className="absolute inset-0 z-30" onClick={onClose} />}
+      {pinned && <div className="absolute inset-0 z-30" onClick={close} />}
       <div className="absolute inset-0 z-50 overflow-hidden pointer-events-none">
         <aside
+          onMouseEnter={() => peek(true)}
+          onMouseLeave={() => peek(false)}
+          onMouseDown={keep}
           className={`app-no-drag pointer-events-auto absolute inset-y-0 right-0 w-[380px] bg-ink-900 border-l border-ink-700 shadow-2xl shadow-black/40 light:shadow-black/10 flex flex-col transition-transform duration-200 ${
             open ? 'translate-x-0' : 'translate-x-full'
           }`}
@@ -513,7 +516,7 @@ export default function TasksPanel({
                   <SearchGlyph className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={onClose}
+                  onClick={close}
                   aria-label="Close tasks"
                   className="w-9 h-9 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
                 >
