@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
+import { movedBy } from './movedBy'
 
 // A tooltip that is a line of text is a line of text: it never wraps and wears
 // the padding of a pill. One handed something drawn instead is a small card,
