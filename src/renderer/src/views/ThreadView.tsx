@@ -33,6 +33,8 @@ import {
 } from '../components/thread'
 import { useFamilySteps } from '../components/useThreadSteps'
 import { useAutoResize } from '../components/useAutoResize'
+import { useDrawnTail } from '../components/useDrawnTail'
+import { useFindQuery } from '../components/find'
 import { useStickToBottom } from '../components/useStickToBottom'
 import { commandTyped, threadCommands, type CommandName } from '../../../shared/commands'
 import { mentionsIn } from '../../../shared/llm'
