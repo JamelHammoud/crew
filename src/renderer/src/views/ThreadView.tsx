@@ -245,6 +245,10 @@ export default function ThreadView({
 
   const ask = threadAsk(thread, agents)
   const showPet = nameWidth >= AVATAR_WIDTH + NAME_MIN_WIDTH
+  // A column at its narrowest cannot hold the state twice. The mark says it and
+  // the word goes, since what is left in the row is the one thing there to press
+  // and the name of who the thread is with.
+  const tight = rowWidth < TIGHT_ROW
   const placeholder =
     command === 'btw'
       ? 'Ask about this thread, off to the side'
