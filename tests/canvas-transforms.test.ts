@@ -136,7 +136,7 @@ describe('handle dragging', () => {
     expect(findAdjacentHandle(handles, handles[2])?.id).toBe('start')
   })
 
-  it('prefers a handle's own named reference over the next one along', () => {
+  it('prefers a handle own named reference over the next one along', () => {
     const handles = [
       { id: 'start', type: 'vertex', index: 'a1', x: 0, y: 0, snapReferenceHandleId: 'end' },
       { id: 'mid', type: 'vertex', index: 'a2', x: 5, y: 5 },
