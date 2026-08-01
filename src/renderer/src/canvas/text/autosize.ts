@@ -1,7 +1,7 @@
 import { renderHtmlFromRichTextForMeasurement, type TLRichText } from '../schema/richText'
 import type { RichTextDocument } from './richText'
 import type { TextMeasureOptions } from './measurement'
-import type { TextTrim } from './metrics'
+import type { TrimEdges } from './trim'
 
 export const MIN_TEXT_WIDTH = 16
 
@@ -15,7 +15,7 @@ export interface TextLayoutRequest {
   width: number
   fontSize: number
   options: Omit<TextMeasureOptions, 'fontSize' | 'maxWidth'>
-  trim?: TextTrim | null
+  trim?: TrimEdges | null
 }
 
 export interface TextLayoutSize {

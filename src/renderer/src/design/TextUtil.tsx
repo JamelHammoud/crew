@@ -32,8 +32,10 @@ const customDisplayValues = (editor: ShapeUtil['editor'], shape: TLTextShape, _g
   }
 }
 
-function textTrim(type: TrimmedType): TrimEdges {
-  return trimEdges(typeMeasure(type, null), trimOf(type))
+export function textTrim(type: TypeStyle): TextTrim | null {
+  if (type.trim !== 'cap') return null
+  const face = fontMetrics(fontStack(type.family), type.weight, type.italic)
+  return trimOf(face, type.size, type.lineHeight)
 }
 
 function measure(editor: Editor, shape: TLTextShape): { width: number; height: number } {
@@ -41,14 +43,14 @@ function measure(editor: Editor, shape: TLTextShape): { width: number; height: n
   editor.fonts.trackFontsForShape({ props: { font: shape.props.font } })
   editor.fonts.trackFontsForShape({ props: { font: type.family } })
   const { maxWidth: _width, fontSize: _size, ...options } = typeMeasure(type, null)
-  const size = measureTextLayout(editor.textMeasure, {
+  return measureTextLayout(editor.textMeasure, {
     richText: shape.props.richText,
     autoSize: shape.props.autoSize,
     width: shape.props.w,
     fontSize: type.size,
-    options
+    options,
+    trim: textTrim(type)
   })
-  return { width: size.width, height: trimHeight(size.height, textTrim(type)) }
 }
 
 function growthState(editor: Editor, shape: TLTextShape): TextGrowthState {
