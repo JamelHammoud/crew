@@ -71,7 +71,7 @@ export default function ReportRow() {
           onChange={event => setText(event.target.value)}
           className={`mt-4 ${FIELD}`}
         />
-        <p className="mt-2.5 text-sm text-fg/45">Crew&rsquo;s version and your system go with it.</p>
+        <p className="mt-2.5 text-sm text-fg/45">Crew's version and your system go with it.</p>
         {stuck && (
           <p className="mt-3 text-sm text-danger">
             No mail app opened. Copy the report and send it to{' '}
