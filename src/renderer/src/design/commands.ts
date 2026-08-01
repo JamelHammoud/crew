@@ -42,7 +42,16 @@ export interface CommandContext {
   rename: (shape: TLShape) => void
 }
 
-export type CommandGroup = 'agent' | 'clipboard' | 'order' | 'group' | 'transform' | 'state' | 'remove' | 'canvas'
+export type CommandGroup =
+  | 'history'
+  | 'agent'
+  | 'clipboard'
+  | 'order'
+  | 'group'
+  | 'transform'
+  | 'state'
+  | 'remove'
+  | 'canvas'
 
 export interface DesignCommand {
   id: string
