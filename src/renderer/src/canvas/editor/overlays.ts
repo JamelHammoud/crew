@@ -1,4 +1,3 @@
-import { computed, type Computed } from '../signals'
 import { Box, Mat, Vec, type VecLike } from '../math'
 import type { CanvasOverlay, CanvasOverlayEntry, CanvasOverlayUtil } from '../render/types'
 import type { TLShape, TLShapeId } from '../schema'
@@ -206,15 +205,7 @@ const BOX_PATHS = new Set([
 class SelectionForegroundOverlayUtil implements ToolOverlayUtil {
   static type = 'selection_foreground'
   readonly options = { zIndex: 100 }
-  private readonly cached: Computed<SelectionForegroundState | null>
-
-  constructor(private readonly editor: OverlayEditor) {
-    this.cached = computed('selection foreground state', () => this.measure())
-  }
-
-  private state(): SelectionForegroundState | null {
-    return this.cached.get()
-  }
+  constructor(private readonly editor: OverlayEditor) {}
 
   isActive(): boolean {
     const path = this.editor.getCurrentToolPath()
@@ -330,7 +321,7 @@ class SelectionForegroundOverlayUtil implements ToolOverlayUtil {
     context.restore()
   }
 
-  private measure(): SelectionForegroundState | null {
+  private state(): SelectionForegroundState | null {
     const bounds = this.editor.getSelectionRotatedPageBounds()
     if (!bounds) return null
     const onlyShape = this.editor.getOnlySelectedShape()
@@ -396,15 +387,7 @@ class ShapeIndicatorOverlayUtil implements ToolOverlayUtil {
   static type = 'shape_indicator'
   readonly options = { zIndex: 50 }
 
-  private readonly cached: Computed<{ indicated: TLShape[]; hinted: TLShape[] }>
-
-  constructor(private readonly editor: OverlayEditor) {
-    this.cached = computed('shape indicator marks', () => this.measure())
-  }
-
-  private marked(): { indicated: TLShape[]; hinted: TLShape[] } {
-    return this.cached.get()
-  }
+  constructor(private readonly editor: OverlayEditor) {}
 
   isActive(): boolean {
     const { indicated, hinted } = this.marked()
@@ -451,7 +434,7 @@ class ShapeIndicatorOverlayUtil implements ToolOverlayUtil {
     }
   }
 
-  private measure(): { indicated: TLShape[]; hinted: TLShape[] } {
+  private marked(): { indicated: TLShape[]; hinted: TLShape[] } {
     const editor = this.editor
     const path = editor.getCurrentToolPath()
     const instance = editor.getInstanceState()
