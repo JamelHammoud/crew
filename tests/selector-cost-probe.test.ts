@@ -95,6 +95,7 @@ const step = (index: number, at: number): SessionEvent => ({
   threadId: THREAD,
   promptId: PROMPT,
   agentId: AGENT.id,
+  agentLabel: AGENT.label,
   step: {
     id: `step-${index}`,
     ts: at,
