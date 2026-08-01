@@ -239,6 +239,7 @@ interface CrewState {
   closePlace: (key: string) => Promise<void>
   wantThread: (threadId: string | null) => void
   loadHistory: () => void
+  readThread: (threadId: string) => void
   share: (shared: boolean) => Promise<string | null>
   leave: () => void
   setChatDraft: (text: string) => void
@@ -365,6 +366,8 @@ const EMPTY = {
   activePrompts: {},
   threads: {},
   threadPrompts: {},
+  readEvents: [],
+  readSteps: {},
   todos: [],
   tickets: [],
   tools: [],
