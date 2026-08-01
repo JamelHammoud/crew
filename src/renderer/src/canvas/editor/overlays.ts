@@ -493,7 +493,7 @@ class ShapeIndicatorOverlayUtil implements ToolOverlayUtil {
   }
 
   private pathOf(shape: TLShape): Path2D | null {
-    const cached = undefined
+    const cached = this.paths.get(shape.props)
     if (cached !== undefined) return cached
     const path = this.editor.getShapeUtil(shape).getIndicatorPath(shape as never) ?? null
     this.paths.set(shape.props, path)
