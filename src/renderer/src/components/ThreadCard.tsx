@@ -6,7 +6,7 @@ import Spinner from './Spinner'
 import { THREAD_STATE_LABELS, type ThreadState } from './thread'
 import ThreadCardShell from './ThreadCardShell'
 import ThreadStatusBar from './ThreadStatusBar'
-import { ThreadOpenItems, ThreadStatusItems } from './threadMenu'
+import { ThreadIdItem, ThreadOpenItems, ThreadStatusItems } from './threadMenu'
 
 export function StateIcon({ state }: { state: ThreadState }) {
   if (state === 'working') return <Spinner size={16} className="text-fg" />

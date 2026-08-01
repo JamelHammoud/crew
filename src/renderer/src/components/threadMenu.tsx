@@ -127,6 +127,8 @@ export function useThreadMenu({
         <ThreadOpenItems {...props} onDone={() => setAt(null)} />
         {status && <MenuDivider />}
         {status && <ThreadStatusItems threadId={props.threadId} onDone={() => setAt(null)} />}
+        <MenuDivider />
+        <ThreadIdItem threadId={props.threadId} onDone={() => setAt(null)} />
       </Popover>
     )
   }
