@@ -62,9 +62,6 @@ describe('the port a crew takes', () => {
     expect(await portToAsk(port)).toBe(0)
   })
 
-  // macOS lets the second of these bind, and hands it every loopback connection
-  // the first one was already being reached on. Asking for the preferred port
-  // without looking is what put a private crew in front of a shared one.
   it('leaves a shared crew reachable after a private one opens', async () => {
     const preferred = await freePort()
     const shared = await crewOn(await portToAsk(preferred), '0.0.0.0')
@@ -81,9 +78,6 @@ describe('the port a crew takes', () => {
     expect(other.type).toBe('welcome')
   })
 
-  // What the rule is written against. Left to itself a second crew binds the
-  // same port on the narrower address, every loopback connection lands on it,
-  // and a window coming back to the first crew is turned away forever.
   it('says which crew answers when two take the same loopback port', async () => {
     const port = await freePort()
     const shared = await crewOn(port, '0.0.0.0')
