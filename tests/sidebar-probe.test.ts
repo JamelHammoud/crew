@@ -91,7 +91,7 @@ window.crew = {
 } as unknown as CrewBridge
 
 const { usePlaces } = await import('../src/renderer/src/state/places')
-const { SIDEBAR_W, useSidebar } = await import('../src/renderer/src/state/sidebar')
+const { PIN_MS, SIDEBAR_W, useSidebar } = await import('../src/renderer/src/state/sidebar')
 const { useCrew } = await import('../src/renderer/src/state/store')
 const { useBrowser } = await import('../src/renderer/src/state/browser')
 const Sidebar = (await import('../src/renderer/src/components/Sidebar')).default
