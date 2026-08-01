@@ -564,7 +564,7 @@ describe('a note dropped beside another note', () => {
   }
 
   function nearRightPit(subject: Editor): number {
-    return 200 + 300 + (subject.options.adjacentShapeMargin as number) + 4
+    return 100 + 300 + (subject.options.adjacentShapeMargin as number) + 4
   }
 
   it('lands in the pit rather than where the pointer was', () => {
