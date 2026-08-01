@@ -84,38 +84,20 @@ export class DesignTextUtil extends Configured {
     return size
   }
 
-  override onBeforeUpdate(previous: TLTextShape, next: TLTextShape): TLTextShape {
-    const previousSize = measure(this.editor as Editor, previous)
-    const nextSize = measure(this.editor as Editor, next)
+  override onBeforeUpdate(previous: TLTextShape, next: TLTextShape): TLTextShape | undefined {
+    const editor = this.editor as Editor
+    const before = growthState(editor, previous)
+    const after = growthState(editor, next)
+    const contentChanged = richTextChanged(previous.props.richText, next.props.richText)
+    if (!textGrowthMatters(before, after, contentChanged)) return undefined
     const growth = compensateTextGrowth(
-      {
-        x: previous.x,
-        y: previous.y,
-        rotation: previous.rotation,
-        scale: previous.props.scale,
-        autoSize: previous.props.autoSize,
-        textAlign: previous.props.textAlign,
-        width: previous.props.w
-      },
-      {
-        x: next.x,
-        y: next.y,
-        rotation: next.rotation,
-        scale: next.props.scale,
-        autoSize: next.props.autoSize,
-        textAlign: next.props.textAlign,
-        width: next.props.w
-      },
-      previousSize,
-      nextSize,
-      JSON.stringify(previous.props.richText) !== JSON.stringify(next.props.richText)
+      before,
+      after,
+      measure(editor, previous),
+      measure(editor, next),
+      contentChanged
     )
-    return {
-      ...next,
-      x: growth.x,
-      y: growth.y,
-      props: { ...next.props, w: growth.width }
-    }
+    return { ...next, x: growth.x, y: growth.y, props: { ...next.props, w: growth.width } }
   }
 
   override component(shape: TLTextShape) {
