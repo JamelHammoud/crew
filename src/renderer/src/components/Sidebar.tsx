@@ -132,6 +132,15 @@ export default function Sidebar({
     [go, here]
   )
 
+  const goToTab = useCallback(
+    (next: Tab) => {
+      peek(false)
+      if (next !== tab) playSound(`tab.${next}`)
+      onTab(next)
+    },
+    [onTab, peek, tab]
+  )
+
   const stop = useCallback((place: Place) => void closePlace(place.key), [closePlace])
 
   const forget = useCallback(
