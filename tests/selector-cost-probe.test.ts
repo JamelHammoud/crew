@@ -261,7 +261,7 @@ function Screen(): ReactNode {
 
 function Reader({ seen }: { seen: SessionEvent[][] }): ReactNode {
   const { events: held } = useThreadRead(THREAD)
-  if (seen.at(-1) !== held) seen.push(held)
+  seen.push(held)
   return null
 }
 

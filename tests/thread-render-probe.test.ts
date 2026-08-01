@@ -19,7 +19,24 @@ class TestResizeObserver {
 global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
 landed()
 
-const drawn = vi.hoisted(() => ({ items: 0, rows: 0 }))
+const drawn = vi.hoisted(() => ({ items: 0, rows: 0, walks: 0 }))
+
+vi.mock('../src/renderer/src/components/thread', async () => {
+  const actual = await vi.importActual<typeof import('../src/renderer/src/components/thread')>(
+    '../src/renderer/src/components/thread'
+  )
+  return {
+    ...actual,
+    lastEnd: (...args: Parameters<typeof actual.lastEnd>) => {
+      drawn.walks += 1
+      return actual.lastEnd(...args)
+    },
+    lastStart: (...args: Parameters<typeof actual.lastStart>) => {
+      drawn.walks += 1
+      return actual.lastStart(...args)
+    }
+  }
+})
 
 vi.mock('../src/renderer/src/components/ThreadItems', async () => {
   const { createElement, memo } = await import('react')
