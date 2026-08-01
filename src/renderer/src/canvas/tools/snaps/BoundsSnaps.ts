@@ -536,10 +536,9 @@ export function snapTranslateBounds(options: TranslateBoundsSnapOptions): Bounds
       y: point.y
     }))
   const selectionPoints = sourcePoints.map((point, index) => ({
-    id: point.id || `selection:${index}`,
+    id: `selection:${index}`,
     x: point.x + dragDelta.x,
-    y: point.y + dragDelta.y,
-    handle: 'handle' in point ? point.handle : undefined
+    y: point.y + dragDelta.y
   }))
   const otherPoints = pointsForNodes(snappableShapes)
   const visibleGaps = getVisibleGaps(snappableShapes)
