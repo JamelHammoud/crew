@@ -1595,6 +1595,60 @@ export class CrewSession {
     this.emit({ id: randomUUID(), ts: Date.now(), kind: 'tool.removed', toolId, byName: member.name })
   }
 
+  private memoryLike(text: string, except = ''): CrewMemory | null {
+    const key = memoryKey(text)
+    for (const memory of this.memories.values()) {
+      if (memory.id !== except && memoryKey(memory.text) === key) return memory
+    }
+    return null
+  }
+
+  private writeMemory(text: string, byName: string, agentId?: string): string {
+    const memory: CrewMemory = {
+      id: shortId(new Set(this.memories.keys())),
+      text,
+      by: byName,
+      byAgentId: agentId,
+      ts: Date.now()
+    }
+    this.memories.set(memory.id, memory)
+    this.emit({
+      id: randomUUID(),
+      ts: memory.ts,
+      kind: 'memory.added',
+      memoryId: memory.id,
+      text,
+      agentId,
+      byName
+    })
+    return memory.id
+  }
+
+  private rewriteMemory(memory: CrewMemory, text: string, byName: string, agentId?: string): void {
+    memory.text = text
+    memory.by = byName
+    memory.byAgentId = agentId
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'memory.edited', memoryId: memory.id, text, agentId, byName })
+  }
+
+  private handleMemoryAdd(member: Member, raw: string): void {
+    const text = cleanMemoryLine(raw)
+    if (!text || this.memoryLike(text) || this.memories.size >= MEMORY_LIMIT) return
+    this.writeMemory(text, member.name)
+  }
+
+  private handleMemoryEdit(member: Member, memoryId: string, raw: string): void {
+    const memory = this.memories.get(memoryId)
+    const text = cleanMemoryLine(raw)
+    if (!memory || !text || text === memory.text || this.memoryLike(text, memoryId)) return
+    this.rewriteMemory(memory, text, member.name)
+  }
+
+  private handleMemoryRemove(member: Member, memoryId: string): void {
+    if (!this.memories.delete(memoryId)) return
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'memory.removed', memoryId, byName: member.name })
+  }
+
   // The size limit is the crew's, so it is refused from a runner the way the
   // music controls are: an agent's machine is connected the whole time it is
   // joined.

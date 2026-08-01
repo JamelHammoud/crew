@@ -133,6 +133,7 @@ function makeTab(url = ''): BrowserTab {
     line: null,
     diff: null,
     command: null,
+    folder: '',
     mime: '',
     size: 0,
     game: null,
@@ -503,8 +504,8 @@ export const useBrowser = create<BrowserState>((write, get) => {
       const tab = makeTab()
       set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
     },
-    addTerminal: command => {
-      const tab = { ...makeTab(), kind: 'terminal' as const, command: command ?? null }
+    addTerminal: (command, folder = '') => {
+      const tab = { ...makeTab(), kind: 'terminal' as const, command: command ?? null, folder }
       set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
     },
     selectTab: id => set({ activeTabId: id }),
