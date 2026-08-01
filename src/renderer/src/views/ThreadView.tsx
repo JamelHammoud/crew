@@ -366,18 +366,24 @@ export default function ThreadView({
                     {state === 'working' ? (
                       <>
                         <Spinner size={16} className="text-fg" />
-                        <span className="text-base font-semibold text-fg">Working</span>
+                        {!tight && <span className="text-base font-semibold text-fg">Working</span>}
                       </>
                     ) : (
                       <>
-                        {state === 'done' && <CheckGlyph className="w-5 h-5 text-fg" />}
-                        {state === 'ready' && <EyeGlyph className="w-5 h-5 text-fg" />}
-                        {state === 'failed' && <WarningGlyph className="w-5 h-5 text-danger" />}
-                        {state === 'stopped' && <StopGlyph className="w-5 h-5 text-fg-muted" />}
-                        {state === 'archived' && <ArchiveGlyph className="w-5 h-5 text-fg-muted" />}
-                        <span className={`text-base font-semibold ${state === 'failed' ? 'text-danger' : 'text-fg'}`}>
-                          {THREAD_STATE_LABELS[state]}
-                        </span>
+                        <Tooltip label={THREAD_STATE_LABELS[state]} disabled={!tight}>
+                          <span className="flex items-center">
+                            {state === 'done' && <CheckGlyph className="w-5 h-5 text-fg" />}
+                            {state === 'ready' && <EyeGlyph className="w-5 h-5 text-fg" />}
+                            {state === 'failed' && <WarningGlyph className="w-5 h-5 text-danger" />}
+                            {state === 'stopped' && <StopGlyph className="w-5 h-5 text-fg-muted" />}
+                            {state === 'archived' && <ArchiveGlyph className="w-5 h-5 text-fg-muted" />}
+                          </span>
+                        </Tooltip>
+                        {!tight && (
+                          <span className={`text-base font-semibold ${state === 'failed' ? 'text-danger' : 'text-fg'}`}>
+                            {THREAD_STATE_LABELS[state]}
+                          </span>
+                        )}
                         <button
                           onClick={() => setThreadStatus(threadId, statusAction.to)}
                           className="ml-1 h-10 px-4 rounded-full bg-ink-800 text-sm font-semibold text-fg-secondary transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95"
