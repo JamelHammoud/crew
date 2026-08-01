@@ -108,7 +108,7 @@ export class Group2d extends Geometry2d {
   override hitTestLineSegment(
     a: VecLike,
     b: VecLike,
-    zoom: number,
+    zoom = 0,
     filters: Geometry2dFilters = Geometry2dFilters.EXCLUDE_LABELS
   ): boolean {
     return this.children.some(
