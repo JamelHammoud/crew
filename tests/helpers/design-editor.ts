@@ -26,6 +26,8 @@ export function fakeBoard(list: FakeShape[]): FakeBoard {
   const shapes = new Map<string, TLShape>()
   const order = list.map(shape => shape.id)
   let selected: string[] = []
+  let undos = 0
+  let redos = 0
 
   for (const shape of list) {
     shapes.set(shape.id, {
