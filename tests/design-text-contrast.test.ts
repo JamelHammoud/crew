@@ -54,6 +54,7 @@ function frame(subject: Editor, background: string): TLShapeId {
 }
 
 function writeText(subject: Editor, x: number, y: number): TLShape {
+  const before = new Set(subject.getCurrentPageShapes().map(shape => shape.id))
   subject.setCurrentTool('text')
   subject.dispatch({
     name: 'pointer_down',
