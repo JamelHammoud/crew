@@ -24,6 +24,8 @@ export interface ShapeEditor {
   getCurrentThemeId?(): string
   getCurrentTheme?(): { colors?: Partial<Record<'light' | 'dark', Record<string, unknown>>> }
   getEditingShapeId?(): CrewShapeId | null
+  getErasingShapeIds?(): CrewShapeId[]
+  getCurrentPageState?(): { focusedGroupId: CrewShapeId | null; hintingShapeIds: CrewShapeId[] }
   getAsset?(id: string): CrewAsset | undefined
   getBindingsFromShape?(id: CrewShapeId, type?: CrewBindingType): CrewBinding[]
   getShape?(id: CrewShapeId): CrewShape | undefined

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import AgentIcon from '../components/AgentIcon'
 import CommandChip from '../components/CommandChip'
 import Composer from '../components/Composer'
