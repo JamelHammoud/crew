@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { paletteFor } from '../../../../shared/art'
 import { coverFor } from './coverArt'
-import { GRAIN, meshOf } from './mesh'
+import { GRAIN, type Mesh, meshOf } from './mesh'
 
 // The field a generated mark stands on: the same scene the covers are
 // photographed in, worked out from a seed and seen through whatever shape it is
