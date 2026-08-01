@@ -43,7 +43,6 @@ export class Idle extends StateNode<SelectEditor> {
   onEnter(): void {
     this.parent.setCurrentToolIdMask(undefined)
     this.editor.setCursor({ type: 'default', rotation: 0 })
-    updateHoveredShape(this.editor)
     this.selectedShapesOnKeyDown = []
   }
 
