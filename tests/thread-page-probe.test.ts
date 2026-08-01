@@ -204,13 +204,13 @@ describe('what a long thread draws at all', () => {
       el.scrollTop = 0
       fireEvent.scroll(el)
     })
-    const oldest = Array.from({ length: STEPS }, (_, i) => i).find(said) ?? -1
+    const oldest = oldestDrawn()
 
     act(() => {
       useCrew.setState({ steps: { [PROMPT]: [...steps, stepAt(STEPS)] } })
     })
 
-    expect(said(oldest)).toBe(true)
+    expect(oldestDrawn()).toBe(oldest)
     expect(said(STEPS)).toBe(true)
   })
 })
