@@ -13,6 +13,13 @@ export default function ThreadWindow() {
   const connection = useCrew(s => s.connection)
   const thread = useCrew(s => (threadId ? s.threads[threadId] : undefined))
 
+  // This window is reading that thread, and everything downstream asks the same
+  // question of the same field: what a page an agent shows opens in, what the
+  // panel holds, and what is already on the screen and so not worth a banner.
+  useEffect(() => {
+    if (threadId) useCrew.setState({ openThreadIds: [threadId], openThreadId: threadId })
+  }, [threadId, connection])
+
   return (
     <div className="h-full flex relative">
       <div className="flex-1 min-w-0 relative">
