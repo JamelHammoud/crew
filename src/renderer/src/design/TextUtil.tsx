@@ -32,18 +32,23 @@ const customDisplayValues = (editor: ShapeUtil['editor'], shape: TLTextShape, _g
   }
 }
 
+function textTrim(type: TrimmedType): TrimEdges {
+  return trimEdges(typeMeasure(type, null), trimOf(type))
+}
+
 function measure(editor: Editor, shape: TLTextShape): { width: number; height: number } {
   const type = textShapeType(editor, shape)
   editor.fonts.trackFontsForShape({ props: { font: shape.props.font } })
   editor.fonts.trackFontsForShape({ props: { font: type.family } })
   const { maxWidth: _width, fontSize: _size, ...options } = typeMeasure(type, null)
-  return measureTextLayout(editor.textMeasure, {
+  const size = measureTextLayout(editor.textMeasure, {
     richText: shape.props.richText,
     autoSize: shape.props.autoSize,
     width: shape.props.w,
     fontSize: type.size,
     options
   })
+  return { width: size.width, height: trimHeight(size.height, textTrim(type)) }
 }
 
 function growthState(editor: Editor, shape: TLTextShape): TextGrowthState {
