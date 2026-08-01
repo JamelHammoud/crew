@@ -37,13 +37,16 @@ export function chordHint(chord: Chord): string {
   return `${marks}${MARKS[chord.key] ?? chord.key.toUpperCase()}`
 }
 
+const SAME_AS: Record<string, string> = { delete: 'backspace' }
+
 export function matchesChord(event: KeyboardEvent, chord: Chord): boolean {
   const accel = event.metaKey || event.ctrlKey
   if (!!chord.meta !== accel) return false
   if (!!chord.ctrl !== (event.metaKey && event.ctrlKey)) return false
   if (event.shiftKey !== !!chord.shift) return false
   if (event.altKey !== !!chord.alt) return false
-  if (event.key.toLowerCase() === chord.key) return true
+  const typed = event.key.toLowerCase()
+  if ((SAME_AS[typed] ?? typed) === chord.key) return true
   return BASE_KEYS[event.code] === chord.key
 }
 
