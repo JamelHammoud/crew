@@ -57,6 +57,7 @@ export abstract class Geometry2d {
     this.isFilled = opts.isFilled
     this.isClosed = opts.isClosed
     this.isLabel = opts.isLabel ?? false
+    this.isEmptyLabel = opts.isEmptyLabel ?? false
     this.isInternal = opts.isInternal ?? false
     this.excludeFromShapeBounds = opts.excludeFromShapeBounds ?? false
     this.ignore = opts.ignore
