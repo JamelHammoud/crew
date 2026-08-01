@@ -451,7 +451,7 @@ export class Editor {
 
   getShapeAncestors(shapeOrId: TLShape | TLShapeId): TLShape[] {
     const result: TLShape[] = []
-    let shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    let shape = this.liveShape(shapeOrId)
     while (shape?.parentId.startsWith('shape:')) {
       const parent = this.getShape(shape.parentId as TLShapeId)
       if (!parent) break
@@ -462,7 +462,7 @@ export class Editor {
   }
 
   getShapeParent(shapeOrId: TLShape | TLShapeId): TLShape | undefined {
-    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    const shape = this.liveShape(shapeOrId)
     if (!shape || !shape.parentId.startsWith('shape:')) return undefined
     return this.getShape(shape.parentId as TLShapeId)
   }
@@ -474,14 +474,14 @@ export class Editor {
   }
 
   hasAncestor(shapeOrId: TLShape | TLShapeId | undefined, ancestorId: TLShapeId): boolean {
-    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    const shape = this.liveShape(shapeOrId)
     if (!shape) return false
     if (shape.parentId === ancestorId) return true
     return this.hasAncestor(this.getShapeParent(shape), ancestorId)
   }
 
   getAncestorPageId(shapeOrId: TLShape | TLShapeId | undefined): TLPageId | undefined {
-    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    const shape = this.liveShape(shapeOrId)
     if (!shape) return undefined
     if (shape.parentId.startsWith('page:')) return shape.parentId as TLPageId
     return this.getAncestorPageId(shape.parentId as TLShapeId)
@@ -515,7 +515,7 @@ export class Editor {
   }
 
   getShapeHandles(shapeOrId: TLShape | TLShapeId): ReturnType<NonNullable<ShapeUtil['getHandles']>> | undefined {
-    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    const shape = this.liveShape(shapeOrId)
     if (!shape) return undefined
     return this.getShapeUtil(shape).getHandles?.(shape as never)
   }
@@ -581,7 +581,7 @@ export class Editor {
   }
 
   getShapeGeometry(shapeOrId: TLShape | TLShapeId): Geometry2d {
-    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    const shape = this.liveShape(shapeOrId)
     if (!shape) return new Rectangle2d({ width: 1, height: 1, isFilled: true })
     if (shape.type === 'group') {
       const children = this.getSortedChildIdsForParent(shape.id)
@@ -597,19 +597,19 @@ export class Editor {
   }
 
   getShapeLocalTransform(shapeOrId: TLShape | TLShapeId): Mat {
-    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    const shape = this.liveShape(shapeOrId)
     if (!shape) return Mat.Identity()
     return Mat.Translate(shape.x, shape.y).rotate(shape.rotation)
   }
 
   getShapeParentTransform(shapeOrId: TLShape | TLShapeId): Mat {
-    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    const shape = this.liveShape(shapeOrId)
     if (!shape || shape.parentId.startsWith('page:')) return Mat.Identity()
     return this.getShapePageTransform(shape.parentId as TLShapeId)
   }
 
   getShapePageTransform(shapeOrId: TLShape | TLShapeId): Mat {
-    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    const shape = this.liveShape(shapeOrId)
     if (!shape) return Mat.Identity()
     return Mat.Compose(this.getShapeParentTransform(shape), this.getShapeLocalTransform(shape))
   }
@@ -619,7 +619,7 @@ export class Editor {
   }
 
   getShapePageBounds(shapeOrId: TLShape | TLShapeId): Box | undefined {
-    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    const shape = this.liveShape(shapeOrId)
     if (!shape) return undefined
     const geometry = this.getShapeGeometry(shape)
     return Box.FromPoints(this.getShapePageTransform(shape).applyToPoints(geometry.boundsVertices))
@@ -759,7 +759,7 @@ export class Editor {
   }
 
   canEditShape(shapeOrId: TLShape | TLShapeId | undefined): boolean {
-    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    const shape = this.liveShape(shapeOrId)
     if (!shape) return false
     const util = this.getShapeUtil(shape)
     if (shape.isLocked && !util.canEditWhileLocked(shape as never)) return false
@@ -767,7 +767,7 @@ export class Editor {
   }
 
   canCropShape(shapeOrId: TLShape | TLShapeId | null | undefined): boolean {
-    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    const shape = this.liveShape(shapeOrId)
     return Boolean(shape && this.getShapeUtil(shape).canCrop(shape as never))
   }
 
@@ -795,7 +795,7 @@ export class Editor {
   }
 
   isShapeOrAncestorLocked(shapeOrId: TLShape | TLShapeId): boolean {
-    let shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    let shape = this.liveShape(shapeOrId)
     while (shape) {
       if (shape.isLocked) return true
       shape = shape.parentId.startsWith('shape:') ? this.getShape(shape.parentId as TLShapeId) : undefined
@@ -1076,7 +1076,7 @@ export class Editor {
   }
 
   resizeShape(shapeOrId: TLShape | TLShapeId, scale: VecLike, options: TLResizeShapeOptions = {}): this {
-    const shape = options.initialShape ?? (typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId)
+    const shape = options.initialShape ?? (this.liveShape(shapeOrId))
     if (!shape || shape.isLocked) return this
     const util = this.getShapeUtil(shape)
     if (!util.canResize(shape as never)) return this
@@ -1403,7 +1403,7 @@ export class Editor {
   }
 
   getShapeMask(shapeOrId: TLShape | TLShapeId): Vec[] | undefined {
-    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    const shape = this.liveShape(shapeOrId)
     if (!shape || shape.parentId.startsWith('page:')) return undefined
     const clipPaths: Vec[][] = []
     for (const ancestor of this.getShapeAncestors(shape)) {
@@ -1420,7 +1420,7 @@ export class Editor {
   }
 
   getShapeClipPath(shapeOrId: TLShape | TLShapeId): string | undefined {
-    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    const shape = this.liveShape(shapeOrId)
     if (!shape) return undefined
     const mask = this.getShapeMask(shape)
     if (!mask) return undefined
@@ -1430,7 +1430,7 @@ export class Editor {
   }
 
   getShapeMaskedPageBounds(shapeOrId: TLShape | TLShapeId): Box | undefined {
-    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    const shape = this.liveShape(shapeOrId)
     if (!shape) return undefined
     const bounds = this.getShapePageBounds(shape)
     if (!bounds) return undefined
@@ -1450,7 +1450,7 @@ export class Editor {
   }
 
   isShapeHidden(shapeOrId: TLShape | TLShapeId): boolean {
-    let shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    let shape = this.liveShape(shapeOrId)
     while (shape) {
       if (shape.meta.hidden === true) return true
       shape = shape.parentId.startsWith('shape:') ? this.getShape(shape.parentId as TLShapeId) : undefined
@@ -1471,7 +1471,7 @@ export class Editor {
     point: VecLike,
     options: { margin?: number; hitInside?: boolean } = {}
   ): boolean {
-    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    const shape = this.liveShape(shapeOrId)
     if (!shape) return false
     const mask = this.getShapeMask(shape)
     if (mask && !pointInPolygon(point, mask)) return false
@@ -1483,7 +1483,7 @@ export class Editor {
   }
 
   isPointInShapeLabel(shapeOrId: TLShape | TLShapeId, point: VecLike): boolean {
-    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    const shape = this.liveShape(shapeOrId)
     if (!shape) return false
     const geometry = this.getShapeGeometry(shape)
     if (!(geometry instanceof Group2d)) return false
@@ -1492,7 +1492,7 @@ export class Editor {
   }
 
   isOverArrowLabel(shapeOrId: TLShape | TLShapeId | undefined): boolean {
-    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    const shape = this.liveShape(shapeOrId)
     if (!shape || shape.type !== 'arrow') return false
     if (!this.getShapeText(shape)?.trim()) return false
     return this.isPointInShapeLabel(shape, this.inputs.getCurrentPagePoint())
@@ -1539,7 +1539,7 @@ export class Editor {
   }
 
   startEditingShapeWithRichText(shapeOrId: TLShape | TLShapeId, options: { selectAll?: boolean } = {}): this {
-    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    const shape = this.liveShape(shapeOrId)
     if (!shape || !this.hasRichText(shape) || !this.canEditShape(shape)) return this
     this.setEditingShape(shape)
     this.setCurrentTool('select.editing_shape', { target: 'shape', shape, selectAll: options.selectAll })
