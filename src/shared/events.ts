@@ -370,12 +370,6 @@ export function trimEvents(events: SessionEvent[], limit: number): SessionEvent[
   return kept.filter(e => e.kind !== 'agent.step' || prompts.has(e.promptId))
 }
 
-// The same window with one more event on the end of it, worked out from the one
-// handed in rather than from the whole list again. A window is already what
-// trimEvents makes of itself, so at most one lasting event comes off the front
-// for the one arriving, and the only subtle part is the step rule: a run whose
-// start falls out of the window takes its steps with it wherever they stand, and
-// a step landing for a run that has already gone is not kept at all.
 export function appendEvent(events: SessionEvent[], event: SessionEvent, limit: number): SessionEvent[] {
   if (EPHEMERAL_KINDS.has(event.kind)) return events
   if (event.kind === 'agent.step') return startedIn(events, event.promptId) ? [...events, event] : events
