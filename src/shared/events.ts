@@ -129,8 +129,6 @@ export type SessionEvent =
   | { id: string; ts: number; kind: 'tool.added'; toolId: string; name: string; mark: string; action: ToolAction; byName: string }
   | { id: string; ts: number; kind: 'tool.edited'; toolId: string; name: string; mark: string; action: ToolAction; byName: string }
   | { id: string; ts: number; kind: 'tool.removed'; toolId: string; byName: string }
-  // What the crew has learned, which every agent reads before it starts. One
-  // list for everyone, so these carry no thread and no scope.
   | { id: string; ts: number; kind: 'memory.added'; memoryId: string; text: string; agentId?: string; byName: string }
   | { id: string; ts: number; kind: 'memory.edited'; memoryId: string; text: string; agentId?: string; byName: string }
   | { id: string; ts: number; kind: 'memory.removed'; memoryId: string; byName: string }
