@@ -3,6 +3,7 @@ import { atom, TextShapeUtil, type Editor, type ShapeUtil, type TLTextShape } fr
 import { fontStack, loadFonts, whenFontsLoad } from './fonts'
 import { textInkStyle } from './nodeCss'
 import { textShapeType, typeMeasure } from './textType'
+import { trimOf, type TrimmedType } from './verticalTrim'
 import {
   compensateTextGrowth,
   measureTextLayout,
@@ -10,9 +11,13 @@ import {
   textGrowthMatters,
   type TextGrowthState
 } from '../canvas/text'
+import { forgetFaceMetrics, trimEdges, trimHeight, trimStyle, type TrimEdges } from '../canvas/text/trim'
 
 const generation = atom('loaded fonts', 0)
-whenFontsLoad(() => generation.set(generation.get() + 1))
+whenFontsLoad(() => {
+  forgetFaceMetrics()
+  generation.set(generation.get() + 1)
+})
 
 const customDisplayValues = (editor: ShapeUtil['editor'], shape: TLTextShape, _geometry?: unknown, _mode?: string) => {
   const type = textShapeType(editor as Editor, shape)
