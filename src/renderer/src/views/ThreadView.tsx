@@ -117,6 +117,9 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const mention = useMentionAutocomplete(text, write, inputRef)
   const slash = useSlashCommands(text, write, takeCommand, inputRef, offered)
   const items = useMemo(() => buildThread(threadEvents, steps, selfId, agents), [threadEvents, steps, selfId, agents])
+  // The message the thread was opened on. The header holds the host's own short
+  // name for it, and this is what the whole of it reads as.
+  const opening = useMemo(() => items.find(item => item.kind === 'message'), [items])
   const threadSteps = useFamilySteps(threadId)
   const queueItems = useCrew(s => s.queues[threadId])
   const queuedMessages = useMemo<QueuedMessage[]>(
