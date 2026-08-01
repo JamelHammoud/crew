@@ -165,6 +165,35 @@ describe('brushing matches tldraw', () => {
   })
 })
 
+describe('scribble brushing matches tldraw', () => {
+  function frame(subject: Editor, id: string, x: number, y: number, w = 400, h = 400): TLShapeId {
+    const shapeId = createShapeId(id)
+    subject.createShape({ id: shapeId, type: 'frame', x, y, props: { w, h, name: id, color: 'black' } })
+    return shapeId
+  }
+
+  it('leaves out a frame the scribble started inside', () => {
+    const subject = editor()
+    frame(subject, 'f', 0, 0)
+    down(subject, 100, 100, { altKey: true })
+    move(subject, 140, 140, { altKey: true })
+    move(subject, 200, 200, { altKey: true })
+    expect(subject.getCurrentToolPath()).toBe('select.scribble_brushing')
+    expect(subject.getSelectedShapeIds()).toEqual([])
+  })
+
+  it('still takes a shape the scribble crosses inside that frame', () => {
+    const subject = editor()
+    const f = frame(subject, 'f', 0, 0)
+    const a = geo(subject, 'a', 100, 100)
+    subject.reparentShapes([a], f)
+    down(subject, 50, 150, { altKey: true })
+    move(subject, 120, 150, { altKey: true })
+    move(subject, 260, 150, { altKey: true })
+    expect(subject.getSelectedShapeIds()).toEqual([a])
+  })
+})
+
 describe('translating matches tldraw', () => {
   function startTranslate(subject: Editor, id: TLShapeId, mods: Mods = {}): void {
     downOn(subject, { target: 'shape', shape: subject.getShape(id) }, 120, 120, mods)
