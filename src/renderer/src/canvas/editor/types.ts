@@ -100,7 +100,14 @@ export interface TLEditorOptions {
     setUserPreferences?: (next: TLUserPreferences) => void
   }
   options?: {
-    camera?: { zoomMin?: number; zoomMax?: number; zoomSteps?: number[] | null }
+    camera?: {
+      zoomMin?: number
+      zoomMax?: number
+      zoomSteps?: number[] | null
+      panSpeed?: number
+      zoomSpeed?: number
+      isLocked?: boolean
+    }
     [key: string]: unknown
   }
 }
