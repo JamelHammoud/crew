@@ -316,6 +316,63 @@ describe('a group of geometries', () => {
   })
 })
 
+describe('whether a geometry overlaps a polygon', () => {
+  const square = (x: number, y: number, size: number) => [
+    new Vec(x, y),
+    new Vec(x + size, y),
+    new Vec(x + size, y + size),
+    new Vec(x, y + size)
+  ]
+
+  const filled = new Rectangle2d({ width: 100, height: 100, isFilled: true })
+
+  it('catches a polygon that swallows it whole', () => {
+    expect(filled.overlapsPolygon(square(-50, -50, 300))).toBe(true)
+  })
+
+  it('catches a polygon it swallows whole', () => {
+    expect(filled.overlapsPolygon(square(40, 40, 20))).toBe(true)
+  })
+
+  it('catches a polygon that only cuts a corner off it', () => {
+    expect(filled.overlapsPolygon(square(90, 90, 40))).toBe(true)
+  })
+
+  it('lets go of a polygon that stands clear of it', () => {
+    expect(filled.overlapsPolygon(square(400, 400, 30))).toBe(false)
+  })
+
+  it('reads a hollow shape by its outline rather than by its middle', () => {
+    const hollow = new Rectangle2d({ width: 100, height: 100, isFilled: false })
+    expect(hollow.overlapsPolygon(square(30, 30, 40))).toBe(false)
+    expect(hollow.overlapsPolygon(square(90, 30, 40))).toBe(true)
+  })
+
+  it('reads an open run by the line it draws', () => {
+    const line = new Polyline2d({ points: [new Vec(0, 0), new Vec(200, 200)] })
+    expect(line.overlapsPolygon(square(90, 90, 20))).toBe(true)
+    expect(line.overlapsPolygon(square(300, 0, 20))).toBe(false)
+  })
+
+  it('never catches a label with nothing written in it', () => {
+    const empty = new Rectangle2d({ width: 100, height: 100, isFilled: true, isLabel: true, isEmptyLabel: true })
+    expect(empty.isEmptyLabel).toBe(true)
+    expect(empty.overlapsPolygon(square(-50, -50, 300))).toBe(false)
+  })
+
+  it('catches a group wherever any one of its children is caught', () => {
+    const group = new Group2d({
+      children: [
+        new Rectangle2d({ width: 20, height: 20, isFilled: true }),
+        new Rectangle2d({ x: 500, y: 500, width: 20, height: 20, isFilled: true })
+      ]
+    })
+    expect(group.overlapsPolygon(square(505, 505, 5))).toBe(true)
+    expect(group.overlapsPolygon(square(5, 5, 5))).toBe(true)
+    expect(group.overlapsPolygon(square(200, 200, 5))).toBe(false)
+  })
+})
+
 describe('the filters a geometry is read through', () => {
   it('leaves a label out unless labels are asked for', () => {
     const label = new Rectangle2d({ width: 10, height: 10, isFilled: true, isLabel: true })
