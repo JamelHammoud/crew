@@ -1551,13 +1551,14 @@ const driveSource = String.raw`(async () => {
   await attempt('a drag commits nothing in React', async () => {
     if (!speed.drag) return null
     const commits = speed.drag.commits
-    const why =
-      !speed.drag.propsHeld && speed.drag.sizeHeld
-        ? ', and a move that changed no size still handed the shape a new props object, which is what the rendering list compares by identity'
-        : ''
+    const kept = speed.drag.sizeHeld
+      ? ', the size held and the props object ' + (speed.drag.propsHeld ? 'held with it' : 'was replaced anyway')
+      : ''
     return {
       ok: commits.canvas === 0 && commits.overlay === 0,
-      note: 'over ' + MOVES + ' moves: ' + commits.canvas + ' in the canvas, ' + commits.overlay + ' in the selection overlay, ' + commits.app + ' in the whole window' + why
+      note:
+        'over ' + MOVES + ' moves: ' + commits.canvas + ' in the canvas, ' + commits.overlay +
+        ' in the selection overlay, ' + commits.app + ' in the whole window' + kept
     }
   })
 
