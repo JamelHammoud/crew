@@ -33,7 +33,7 @@ const bytes = (size: number): Uint8Array => {
 }
 
 const fileOf = (name: string, mime: string, size = BIG): File =>
-  new page.File([bytes(size)], name, { type: mime }) as unknown as File
+  new page.File([bytes(size)], name, { type: mime })
 
 let painted: Array<{ width: number; height: number }> = []
 let handed: string[] = []
@@ -72,8 +72,8 @@ beforeEach(() => {
   sources = new Map()
   readers = 0
   decoded = 0
-  globalThis.FileReader = CountingFileReader as unknown as typeof FileReader
-  globalThis.Blob = page.Blob as unknown as typeof Blob
+  globalThis.FileReader = CountingFileReader
+  globalThis.Blob = page.Blob
   globalThis.OffscreenCanvas = TestCanvas as unknown as typeof OffscreenCanvas
   globalThis.createImageBitmap = ((_source: unknown, opts?: ImageBitmapOptions) => {
     decoded += 1
@@ -239,7 +239,7 @@ describe('ten megabytes through a real session', () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
 
-    const [item] = await readFiles([new page.File([raw], 'archive.zip', { type: 'application/zip' }) as unknown as File], 0)
+    const [item] = await readFiles([new page.File([raw], 'archive.zip', { type: 'application/zip' })], 0)
     expect(item!.size).toBe(BIG)
     ui.send({
       type: 'chat.send',
@@ -265,7 +265,7 @@ describe('ten megabytes through a real session', () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
 
-    const [item] = await readFiles([new page.File([raw], 'photo.png', { type: 'image/png' }) as unknown as File], 0)
+    const [item] = await readFiles([new page.File([raw], 'photo.png', { type: 'image/png' })], 0)
     expect(painted).toEqual([{ width: 168, height: 128 }])
     ui.send({
       type: 'chat.send',
