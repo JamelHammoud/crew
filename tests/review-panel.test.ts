@@ -343,7 +343,7 @@ describe('the review tab', () => {
   // The right click is where the rest of what a file can do lives, the way it
   // does in Files and the way it does in every client this is meant to feel
   // like.
-  it('opens the file's own menu on a right click', async () => {
+  it('opens the menu for a file on a right click', async () => {
     bridge(work({ changes: [change('src/app.ts', false, '@@ -1 +1 @@\n-a\n+b')] }))
 
     render(createElement(ReviewView))
