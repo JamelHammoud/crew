@@ -89,7 +89,7 @@ export default function ChangeRow({
             className={`w-3.5 h-3.5 shrink-0 text-fg-faint transition-transform duration-200 ${open ? 'rotate-90' : ''}`}
           />
           <span className="min-w-0 flex-1 truncate text-sm">
-            <span className="text-fg-secondary">{name}</span>
+            <span className={`text-fg-secondary ${change.kind === 'deleted' ? 'line-through' : ''}`}>{name}</span>
             {folder && <span className="ml-1.5 text-xs text-fg-faint">{folder}</span>}
           </span>
           <Counts added={change.added} removed={change.removed} />
