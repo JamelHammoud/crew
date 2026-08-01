@@ -248,15 +248,13 @@ describe('what one store write costs a thread column', () => {
   it('walks the log for nothing when a write touches neither the log nor the steps', () => {
     stand()
     const walked = cost(() => useCrew.setState({ tokens: { [PROMPT]: 40 } }))
-    console.log('TOKEN WRITE', walked)
     expect(walked).toBe(0)
   })
 
-  it('holds a step landing to the events it really has to read', () => {
+  it('reads nothing off the log when a step lands', () => {
     stand()
     const walked = cost(() => useCrew.setState({ steps: { [PROMPT]: [...steps, steps[0]] } }))
-    console.log('STEP WRITE', walked)
-    expect(walked).toBeLessThan(events.length)
+    expect(walked).toBe(0)
   })
 
   it('still finds the picture on the message a quote points at', () => {
