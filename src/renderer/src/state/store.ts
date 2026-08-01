@@ -531,6 +531,12 @@ let forkWanted: string | null = null
 // there are to open.
 let threadsWanted: string[] = []
 
+// The threads whose own history has been asked for. A thread is opened, closed
+// and opened again all day, and the log does not move under it, so one asked
+// for twice is one request. Every welcome empties it, since a session that has
+// come back up is one nothing has been read out of yet.
+let threadsRead = new Set<string>()
+
 export const useCrew = create<CrewState>((set, get) => {
   const stepBuffer = makeStepBuffer(deltas => {
     set(state => {
