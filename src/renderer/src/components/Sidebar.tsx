@@ -37,59 +37,91 @@ export default function Sidebar({ overlay, strong }: { overlay?: boolean; strong
   const [asking, setAsking] = useState<string | null>(null)
   const order = useReorder((key, to) => move(key, to), 'vertical')
 
+  const held = useRef(order)
+  held.current = order
+  const take = useCallback((key: string) => held.current.take(key), [])
+  const dragged = useCallback(() => held.current.dragged(), [])
+
+  const threadsOf = useMemo(() => new Map(live.map(place => [place.key, place.threads])), [live])
+  const liveKeys = useMemo(() => new Set(live.map(place => place.key)), [live])
+
   useEffect(() => {
     void load()
   }, [load])
 
-  const open = async (folder: string, key: string, home?: CrewHome) => {
-    setBusyKey(key)
-    try {
-      useCrew.getState().connect(await window.crew.start(folder, name, home ? { home } : undefined))
-    } catch (err) {
-      toast.fail(said(err), { key: 'open-place' })
-    } finally {
-      setBusyKey(null)
-    }
-  }
-
-  const go = async (place: Place): Promise<boolean> => {
-    if (busyKey) return false
-    peek(false)
-    if (isLive(live, place.key)) {
-      await switchTo(place.key)
-      return true
-    }
-    if (place.key === here) return true
-    if (place.join) {
-      setBusyKey(place.key)
+  const open = useCallback(
+    async (folder: string, key: string, home?: CrewHome) => {
+      setBusyKey(key)
       try {
-        useCrew.getState().connect(await window.crew.join(place.join.link, place.join.folder, place.join.name))
-        return true
+        useCrew.getState().connect(await window.crew.start(folder, name, home ? { home } : undefined))
       } catch (err) {
         toast.fail(said(err), { key: 'open-place' })
-        return false
       } finally {
         setBusyKey(null)
       }
-    }
-    if (!place.project) return false
-    await open(place.project.folder, place.key)
-    return true
-  }
+    },
+    [name]
+  )
 
-  const goToThread = async (place: Place, threadId: string, toRight = false) => {
-    useCrew.getState().wantThread(threadId)
-    if (place.key === here) {
-      if (toRight) useCrew.getState().openThread(threadId)
-      else useCrew.getState().openThreadAlone(threadId)
-    } else await go(place)
-  }
+  const go = useCallback(
+    async (place: Place): Promise<boolean> => {
+      if (busyKey) return false
+      peek(false)
+      if (liveKeys.has(place.key)) {
+        await switchTo(place.key)
+        return true
+      }
+      if (place.key === here) return true
+      if (place.join) {
+        setBusyKey(place.key)
+        try {
+          useCrew.getState().connect(await window.crew.join(place.join.link, place.join.folder, place.join.name))
+          return true
+        } catch (err) {
+          toast.fail(said(err), { key: 'open-place' })
+          return false
+        } finally {
+          setBusyKey(null)
+        }
+      }
+      if (!place.project) return false
+      await open(place.project.folder, place.key)
+      return true
+    },
+    [busyKey, here, liveKeys, open, peek, switchTo]
+  )
 
-  const forget = async (place: Place) => {
-    if (place.project) await window.crew.forgetProject(place.project.folder).catch(() => {})
-    if (place.join) await window.crew.forgetJoin(place.join.link).catch(() => {})
-    await load()
-  }
+  const goToPlace = useCallback(
+    (place: Place) => {
+      useCrew.getState().wantThread(null)
+      void go(place)
+    },
+    [go]
+  )
+
+  const goToThread = useCallback(
+    (place: Place, threadId: string, toRight: boolean) => {
+      useCrew.getState().wantThread(threadId)
+      if (place.key === here) {
+        if (toRight) useCrew.getState().openThread(threadId)
+        else useCrew.getState().openThreadAlone(threadId)
+      } else void go(place)
+    },
+    [go, here]
+  )
+
+  const stop = useCallback((place: Place) => void closePlace(place.key), [closePlace])
+
+  const forget = useCallback(
+    async (place: Place) => {
+      if (place.project) await window.crew.forgetProject(place.project.folder).catch(() => {})
+      if (place.join) await window.crew.forgetJoin(place.join.link).catch(() => {})
+      await load()
+    },
+    [load]
+  )
+
+  const forgetPlace = useCallback((place: Place) => void forget(place), [forget])
 
   const pick = async () => {
     const folder = await window.crew.pickFolder()
