@@ -50,4 +50,26 @@ describe('CrewSocket project switching', () => {
     socket.connect(first.url, hello('Jamel', first.code))
     expect((await backWelcome).snapshot.code).toBe(first.code)
   }, 30000)
+
+  it('keeps switching between two live Crews without a reconnecting state', async () => {
+    vi.stubGlobal('window', globalThis)
+    vi.stubGlobal('WebSocket', WebSocket)
+    const first = await startHost()
+    const second = await startHost()
+    hosts.push(first, second)
+    const socket = new CrewSocket()
+    sockets.push(socket)
+    const statuses: string[] = []
+    socket.onStatus = status => statuses.push(status)
+
+    for (let index = 0; index < 12; index++) {
+      const host = index % 2 === 0 ? first : second
+      const welcome = welcomeFrom(socket)
+      socket.connect(host.url, hello('Jamel', host.code))
+      expect((await welcome).snapshot.code).toBe(host.code)
+    }
+
+    expect(statuses.filter(status => status === 'closed')).toEqual([])
+    expect(statuses.filter(status => status === 'open')).toHaveLength(12)
+  }, 30000)
 })
