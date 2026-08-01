@@ -84,7 +84,7 @@ const driveSource = String.raw`(async (stage, zoom, look) => {
     )
   const nodeOf = id => document.querySelector('[data-shape-id="' + id + '"][data-canvas-shape="true"]')
   const dragged = 'shape:d'
-  const held = { x: 806, y: 65 }
+  const held = { x: 801, y: 61 }
 
   if (stage === 'start') {
     editor.selectNone()
@@ -232,7 +232,7 @@ try {
   if (result.failed) throw new Error(result.failed)
   for (const shot of result.shots)
     console.log(
-      `${shot.name}  zoom ${shot.zoom ? shot.zoom.toFixed(2) : '?'}  ${shot.indicators ? shot.indicators.join(', ') || 'no indicators' : shot.failed}\n      ${shot.file}`
+      `${shot.name}  zoom ${shot.zoom ? shot.zoom.toFixed(2) : '?'}  ${shot.mode ?? '?'}  ${shot.indicators ? shot.indicators.join(', ') || 'no indicators' : shot.failed}\n      ${shot.file}`
     )
   for (const error of result.errors) console.log(`window error: ${error}`)
 } finally {
