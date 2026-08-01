@@ -15,7 +15,6 @@ import {
   SelectTool,
   TextShapeTool
 } from '../src/renderer/src/canvas/tools'
-import { DESIGN_COMMANDS, type CommandContext } from '../src/renderer/src/design/commands'
 
 function editor() {
   const subject = new Editor({
@@ -46,63 +45,72 @@ function node(subject: Editor, name: string, x: number, y: number): TLShapeId {
   return id
 }
 
-function snap(subject: Editor): string {
-  return JSON.stringify(
-    subject
-      .getCurrentPageShapesSorted()
-      .map(s => [s.type, s.x, s.y, s.parentId, s.isLocked, s.meta.hidden, (s.props as { w?: number }).w])
-  )
-}
-
 describe('scratch', () => {
-  it('reports what each command changed', () => {
-    for (const command of DESIGN_COMMANDS) {
-      const subject = editor()
-      const a = node(subject, 'a', 0, 0)
-      const b = node(subject, 'b', 200, 0)
-      subject.setSelectedShapes([a, b])
-      const ctx: CommandContext = { editor: subject, point: { x: 400, y: 400 }, ask: () => {}, rename: () => {} }
-      const before = snap(subject)
-      const beforeCamera = JSON.stringify(subject.getCamera())
-      const beforeSelection = JSON.stringify(subject.getSelectedShapeIds())
-      const enabled = command.when(ctx)
-      if (enabled) command.run(ctx)
-      const changed =
-        before !== snap(subject) ||
-        beforeCamera !== JSON.stringify(subject.getCamera()) ||
-        beforeSelection !== JSON.stringify(subject.getSelectedShapeIds())
-      console.log(`${command.id.padEnd(20)} when=${enabled ? 'yes' : 'NO '} changed=${changed ? 'yes' : 'NO '}`)
+  it('reorders', () => {
+    const subject = editor()
+    const a = node(subject, 'a', 0, 0)
+    const b = node(subject, 'b', 20, 0)
+    const c = node(subject, 'c', 40, 0)
+    const order = () => subject.getCurrentPageShapesSorted().map(s => s.id.replace('shape:', ''))
+    console.log('start', order())
+    subject.setSelectedShapes([a])
+    subject.bringToFront([a])
+    console.log('a to front', order())
+    subject.sendToBack([a])
+    console.log('a to back', order())
+    subject.bringForward([a])
+    console.log('a forward', order())
+    subject.sendBackward([a])
+    console.log('a backward', order())
+    console.log('unused', b, c)
+  })
+
+  it('zooms', () => {
+    const subject = editor()
+    node(subject, 'a', 500, 500)
+    console.log('camera at start', subject.getCamera())
+    subject.setCamera({ x: 0, y: 0, z: 3 })
+    console.log('camera after set', subject.getCamera(), 'zoom', subject.getZoomLevel())
+    subject.resetZoom()
+    console.log('camera after resetZoom', subject.getCamera(), 'zoom', subject.getZoomLevel())
+    subject.zoomToFit()
+    console.log('camera after zoomToFit', subject.getCamera(), 'zoom', subject.getZoomLevel())
+    subject.setCamera({ x: 0, y: 0, z: 1 })
+    subject.zoomToFit({ animation: { duration: 180 } })
+    console.log('camera after animated zoomToFit', subject.getCamera(), 'zoom', subject.getZoomLevel())
+    subject.setCamera({ x: 0, y: 0, z: 1 })
+    subject.selectAll()
+    subject.zoomToSelection({ animation: { duration: 180 } })
+    console.log('camera after animated zoomToSelection', subject.getCamera())
+    subject.setCamera({ x: 0, y: 0, z: 1 })
+    subject.zoomIn()
+    console.log('camera after zoomIn', subject.getCamera())
+    subject.zoomOut()
+    console.log('camera after zoomOut', subject.getCamera())
+  })
+
+  it('exports', async () => {
+    const subject = editor()
+    const a = node(subject, 'a', 0, 0)
+    const mod = await import('../src/renderer/src/canvas')
+    console.log('copyAs type', typeof mod.copyAs)
+    try {
+      await mod.copyAs(subject, [a], { format: 'svg' })
+      console.log('copyAs svg ok')
+    } catch (error) {
+      console.log('copyAs svg threw', (error as Error).message)
+    }
+    try {
+      await mod.copyAs(subject, [a], { format: 'png' })
+      console.log('copyAs png ok')
+    } catch (error) {
+      console.log('copyAs png threw', (error as Error).message)
     }
   })
 
-  it('reports paste after a copy', () => {
+  it('checks presence records land', () => {
     const subject = editor()
-    const a = node(subject, 'a', 0, 0)
-    subject.setSelectedShapes([a])
-    const ctx: CommandContext = { editor: subject, point: { x: 400, y: 400 }, ask: () => {}, rename: () => {} }
-    DESIGN_COMMANDS.find(c => c.id === 'copy')!.run(ctx)
-    const paste = DESIGN_COMMANDS.find(c => c.id === 'paste')!
-    console.log('paste when', paste.when(ctx))
-    paste.run(ctx)
-    console.log('shapes after paste', subject.getCurrentPageShapes().length)
-    console.log(
-      'shapes',
-      subject.getCurrentPageShapes().map(s => [s.id, s.x, s.y])
-    )
-  })
-
-  it('reports copy style then paste style', () => {
-    const subject = editor()
-    const a = node(subject, 'a', 0, 0)
-    const b = node(subject, 'b', 200, 0)
-    subject.updateShape({ id: a, type: 'design-node', props: { blend: 'multiply' } })
-    subject.setSelectedShapes([a])
-    const ctx: CommandContext = { editor: subject, point: null, ask: () => {}, rename: () => {} }
-    DESIGN_COMMANDS.find(c => c.id === 'copy-style')!.run(ctx)
-    subject.setSelectedShapes([b])
-    const pasteStyle = DESIGN_COMMANDS.find(c => c.id === 'paste-style')!
-    console.log('paste-style when', pasteStyle.when(ctx))
-    pasteStyle.run(ctx)
-    console.log('b blend', (subject.getShape(b)!.props as { blend?: string }).blend)
+    console.log('collaborators', typeof (subject as unknown as { getCollaborators?: unknown }).getCollaborators)
+    console.log('overlays', subject.overlays.all().map(u => (u.constructor as { type?: string }).type))
   })
 })
