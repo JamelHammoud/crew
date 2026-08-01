@@ -4,12 +4,12 @@ import type { Editor } from '../editor'
 import { shapeCssTransform } from '../render'
 import type { TLShape } from '../schema'
 import { ARROW_FONT_SIZES, FONT_FAMILIES, LABEL_FONT_SIZES, TEXT_FONT_SIZES } from '../shapes/shared'
-import { canvasSurface, shapeColor } from '../shapes/theme'
+import { canvasSurface, selectionStroke, shapeColor } from '../shapes/theme'
 import { useValue } from '../signals'
 import { RichTextEditor } from './editor'
 import type { RichTextDocument } from './richText'
 import { RichTextToolbar } from './toolbar'
-import { paintedTypeStyle } from './typeStyle'
+import { paintedTypeStyle, TEXT_LINE_HEIGHT, withResolvedLineHeight } from './typeStyle'
 
 type EditableTextShape = TLShape<'text' | 'geo' | 'note' | 'arrow'>
 
