@@ -11,6 +11,12 @@ function installBridge(version: string) {
   const appVersion = vi.fn().mockResolvedValue(version)
   window.crew = {
     appVersion,
+    systemInfo: vi.fn().mockResolvedValue({
+      version,
+      platform: 'darwin',
+      release: '25.5.0',
+      arch: 'arm64'
+    }),
     commandState: vi.fn().mockResolvedValue({ kind: 'off' }),
     keepAwake: vi.fn()
   } as unknown as CrewBridge
