@@ -12,7 +12,7 @@ import {
   setStyle,
   viewportLayerStyle
 } from './style'
-import type { CanvasProps, CanvasShapeRecord } from './types'
+import type { CanvasProps, CanvasRenderHost, CanvasShapeRecord } from './types'
 
 const join = (...parts: Array<string | undefined>) => parts.filter(Boolean).join(' ')
 
