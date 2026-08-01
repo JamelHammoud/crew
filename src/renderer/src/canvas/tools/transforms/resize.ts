@@ -107,13 +107,8 @@ export function resizeShape<Shape extends TLShape>(
   scale: VecLike,
   options: ResizeShapeOptions<Shape>
 ): ShapeUpdate<Shape> {
-  const {
-    shape,
-    bounds,
-    pageTransform,
-    parentTransform,
-    isAspectRatioLocked = options.isAspectRatioLocked ?? false
-  } = snapshot
+  const { shape, bounds, pageTransform, parentTransform } = snapshot
+  const isAspectRatioLocked = snapshot.isAspectRatioLocked || (options.isAspectRatioLocked ?? false)
   const pageRotation = Mat.Rotation(pageTransform)
   const requestedScale = Vec.From(scale)
   const adjustedScale = Vec.From(scale)
