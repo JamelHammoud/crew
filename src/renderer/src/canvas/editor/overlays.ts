@@ -294,7 +294,7 @@ class SelectionForegroundOverlayUtil implements ToolOverlayUtil {
     context.translate(state.bounds.x, state.bounds.y)
     context.rotate(state.rotation)
     context.strokeStyle = stroke
-    context.fillStyle = '#ffffff'
+    context.fillStyle = colorOf(this.editor, 'background')
     context.lineWidth = 1.5 / state.zoom
     if (state.showBox) context.strokeRect(0, 0, state.width, state.height)
     if (state.showResizeHandles) {
@@ -336,9 +336,10 @@ class SelectionForegroundOverlayUtil implements ToolOverlayUtil {
     const isTinyY = bounds.h < handleSize * 2
     const isSmallX = bounds.w < handleSize * 4
     const isSmallY = bounds.h < handleSize * 4
-    const hitTargetSize = 6 / zoom
-    const hitX = (isSmallX ? hitTargetSize / 2 : hitTargetSize) * 0.75
-    const hitY = (isSmallY ? hitTargetSize / 2 : hitTargetSize) * 0.75
+    const coarse = instance.isCoarsePointer ? 1.75 : 1
+    const hitTargetSize = (6 / zoom) * coarse
+    const hitX = (isSmallX ? hitTargetSize / 2 : hitTargetSize) * (coarse * 0.75)
+    const hitY = (isSmallY ? hitTargetSize / 2 : hitTargetSize) * (coarse * 0.75)
     const controls = CONTROL_PATHS.has(path) && !instance.isChangingStyle && !this.editor.getIsReadonly()
     const locked = Boolean(onlyShape && this.editor.isShapeOrAncestorLocked(onlyShape))
     const showResizeHandles =
@@ -573,7 +574,7 @@ class ShapeHandleOverlayUtil implements ToolOverlayUtil {
     if (handles.length === 0) return
     const zoom = this.editor.getZoomLevel()
     context.strokeStyle = colorOf(this.editor, 'selectionStroke')
-    context.fillStyle = '#ffffff'
+    context.fillStyle = colorOf(this.editor, 'background')
     context.lineWidth = 1.5 / zoom
     for (const { handle, point } of handles) {
       const radius = (handle.type === 'virtual' ? 3 : 4) / zoom
