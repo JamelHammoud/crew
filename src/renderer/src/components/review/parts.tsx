@@ -89,7 +89,7 @@ export function SectionAction({
 export function Progress({ seen, of }: { seen: number; of: number }) {
   if (seen === 0 || of === 0) return null
   return (
-    <div aria-label={`${seen} of ${of} viewed`} className="h-0.5 w-full bg-fg/[0.06]">
+    <div aria-label={`${seen} of ${of} viewed`} className="h-0.5 w-full bg-fg/10">
       <div
         className="h-full bg-fg/30 transition-[width] duration-300"
         style={{ width: `${Math.round((seen / of) * 100)}%` }}

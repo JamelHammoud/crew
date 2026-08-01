@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react'
-import { hoverCardOpen } from './HoverCard'
+import { hoverCardIn } from './HoverCard'
 
 // Hysteresis: rubber-band bounce at the bottom must not unpin, and a deliberate
 // upward scroll must never have to outrun the streaming auto-scroll.
