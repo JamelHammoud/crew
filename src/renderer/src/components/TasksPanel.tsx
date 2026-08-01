@@ -203,6 +203,7 @@ export default function TasksPanel({
   // it dropped older threads from the panel while they still counted as work.
   const rows = useMemo<Row[]>(() => {
     const list: Row[] = []
+    const busy = workingThreads(threadPrompts, queues, threads)
     for (const thread of Object.values(threads)) {
       // A helper is not a row of its own. It reads inside the thread that sent
       // it, which is where somebody would go looking for it. Nor is a question

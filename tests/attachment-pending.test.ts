@@ -84,7 +84,6 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  globalThis.FileReader = NativeFileReader
   keepPreviews(new Set())
 })
 
