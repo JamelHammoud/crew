@@ -254,7 +254,15 @@ export class Editor {
   }
 
   getCameraState(): 'idle' | 'moving' {
-    return 'idle'
+    return this.camera.getState()
+  }
+
+  getViewportScreenCenter(): Vec {
+    return this.camera.getScreenCenter()
+  }
+
+  getViewportPageCenter(): Vec {
+    return this.getViewportPageBounds().center
   }
 
   getInstanceState(): typeof this.instance & { devicePixelRatio: number; screenBounds: ViewportBounds } {
