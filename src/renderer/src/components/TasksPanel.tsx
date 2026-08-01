@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type MouseEvent, type ReactNode } from 'react'
 import type { Todo } from '../../../shared/events'
-import { mentionsIn, relabelMentions, type PooledAgent } from '../../../shared/llm'
+import { mentionsIn, relabelMentions, stripMention, type PooledAgent } from '../../../shared/llm'
 import {
   CheckGlyph,
   ChevronDownGlyph,
@@ -25,7 +25,6 @@ import {
   describeStep,
   endPreview,
   lastEnd,
-  stripMention,
   threadState,
   threadWorking,
   type ThreadState

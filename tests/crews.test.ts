@@ -186,7 +186,7 @@ describe('several crews in one app', () => {
 
     const here = app.places().find(place => place.key === projectPlace(one))
     expect(here?.threads.map(thread => thread.id)).toContain(opened.threadId)
-    expect(here?.threads.find(thread => thread.id === opened.threadId)?.title).toContain('draw the rail')
+    expect(here?.threads.find(thread => thread.id === opened.threadId)?.title).toBe('Draw the rail')
 
     const said = pushed.at(-1)?.find(place => place.key === projectPlace(one))
     expect(said?.threads.map(thread => thread.id)).toContain(opened.threadId)

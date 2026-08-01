@@ -25,6 +25,18 @@ describe('the threads a place is showing', () => {
     expect(list.map(thread => thread.title)).toEqual(['Second', 'First'])
   })
 
+  it('leaves the agent name out and capitalizes the first letter', () => {
+    const list = activeThreads(
+      [started('a', '@Bubbles draw the rail'), started('b', 'check the sync @Bubbles')],
+      none
+    )
+    expect(list.map(thread => thread.title)).toEqual(['Check the sync', 'Draw the rail'])
+  })
+
+  it('gives a mention-only thread a name', () => {
+    expect(activeThreads([started('a', '@Bubbles')], none)[0]?.title).toBe('Untitled')
+  })
+
   it('leaves out a thread somebody has finished or put away', () => {
     const events: SessionEvent[] = [
       started('a', 'Done with'),

@@ -188,6 +188,14 @@ export interface AgentMentionRef {
   label: string
 }
 
+const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+export const stripMention = (text: string, label: string): string =>
+  text
+    .replace(new RegExp(`@${escapeRegExp(label)}(?![\\w-])`, 'i'), ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+
 // Who a piece of text names, whether or not they are here right now. Only
 // agents that are here get the work, but a name on the page points at its agent
 // either way, so it can be read back under the name they carry today.

@@ -3,7 +3,7 @@ import type { BoardMentionRef } from '../../../shared/design'
 import type { DocMentionRef } from '../../../shared/docs'
 import type { MessageReply, SessionEvent } from '../../../shared/events'
 import type { AgentMentionRef, AgentStep, FileChange, PooledAgent } from '../../../shared/llm'
-import { relabelMentions } from '../../../shared/llm'
+import { relabelMentions, stripMention } from '../../../shared/llm'
 import { agentEndReactionTarget, agentStepReactionTarget, messageReactionTarget } from '../../../shared/reactions'
 import type { ThreadMeta } from '../state/store'
 import { shownPages } from '../../../shared/showPage'
@@ -132,14 +132,6 @@ export function threadState(thread: ThreadMeta, events: SessionEvent[], running:
   if (!end || end.ok) return 'ready'
   return end.stopped ? 'stopped' : 'failed'
 }
-
-const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-
-export const stripMention = (text: string, label: string): string =>
-  text
-    .replace(new RegExp(`@${escapeRegExp(label)}(?![\\w-])`, 'i'), ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
 
 // What a thread is about, as it reads inside the thread. The card in the feed
 // puts the agent's name in front of the ask, since the feed has to say where it

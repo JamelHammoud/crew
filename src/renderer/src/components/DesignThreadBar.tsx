@@ -1,11 +1,10 @@
 import { useState } from 'react'
-import { relabelMentions, type PooledAgent } from '../../../shared/llm'
+import { relabelMentions, stripMention, type PooledAgent } from '../../../shared/llm'
 import { ChevronDownGlyph, PlusGlyph } from '../icons'
 import { useCrew, type ThreadMeta } from '../state/store'
 import AgentIcon from './AgentIcon'
 import { PanelButton } from './DesignControls'
 import { MenuItem, Popover } from './Popover'
-import { stripMention } from './thread'
 
 const ROW = 'h-8 flex items-center gap-2 pl-1 pr-2.5'
 

@@ -1,8 +1,8 @@
 import type { AgentAlert } from '../../../shared/alerts'
 import type { SessionEvent } from '../../../shared/events'
-import { relabelMentions, type PooledAgent } from '../../../shared/llm'
+import { relabelMentions, stripMention, type PooledAgent } from '../../../shared/llm'
 import type { QueuedItem } from '../../../shared/protocol'
-import { stripMention, threadWorking } from '../components/thread'
+import { threadWorking } from '../components/thread'
 import type { ThreadMeta } from './store'
 
 export interface ReviewState {
