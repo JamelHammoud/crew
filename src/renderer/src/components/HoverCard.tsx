@@ -56,11 +56,20 @@ export default function HoverCard({
         hide()
       }
     }
+    // The page moving under a card takes it away, and a card being read is not
+    // the page: one that holds more than it can show is scrolled inside itself,
+    // and a card that went down on the first turn of the wheel could never be
+    // read to the end.
+    const onScroll = (event: Event) => {
+      const target = event.target
+      if (target instanceof Node && cardRef.current?.contains(target)) return
+      hide()
+    }
     window.addEventListener('pointermove', onMove, { passive: true })
-    window.addEventListener('scroll', hide, { capture: true, passive: true })
+    window.addEventListener('scroll', onScroll, { capture: true, passive: true })
     return () => {
       window.removeEventListener('pointermove', onMove)
-      window.removeEventListener('scroll', hide, { capture: true })
+      window.removeEventListener('scroll', onScroll, { capture: true })
     }
   }, [rect, hide])
 
