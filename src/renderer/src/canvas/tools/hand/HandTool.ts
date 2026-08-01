@@ -221,6 +221,7 @@ export class HandTool {
       dragging: new HandDragging(this, editor),
       one_finger_zooming: new HandOneFingerZooming(this, editor)
     }
+    this.children.idle.onEnter()
   }
 
   get state(): HandState {

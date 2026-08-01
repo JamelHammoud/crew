@@ -242,6 +242,13 @@ export class Translating<Shape extends TLShape = TLShape> extends TransformState
   }
 
   private update(): void {
+    const shapes = this.snapshots
+      .map(snapshot => this.editor.getShape(snapshot.shape.id))
+      .filter(Boolean) as TLShape[]
+    this.dragTargets?.startDraggingShapes(shapes, Vec.From(this.editor.inputs.getOriginPagePoint()), () =>
+      this.refreshParentTransforms()
+    )
+
     const averagePagePoint = Vec.Average(this.snapshots.map(snapshot => snapshot.pagePoint))
     const originPagePoint = this.editor.inputs.getOriginPagePoint()
     const currentPagePoint = this.editor.inputs.getCurrentPagePoint()
@@ -256,8 +263,9 @@ export class Translating<Shape extends TLShape = TLShape> extends TransformState
     })
     const snapMode = this.editor.getIsSnapMode?.() ?? true
     const accelKey = this.editor.inputs.getAccelKey?.() ?? false
+    const slowEnough = (this.editor.inputs.getPointerVelocity?.()?.len() ?? 0) < 0.5
     const snap =
-      (snapMode ? !accelKey : accelKey) && this.info.initialPageBounds
+      (snapMode ? !accelKey : accelKey) && slowEnough && this.info.initialPageBounds
         ? this.editor.snaps?.snapTranslateBounds?.({
             initialSelectionPageBounds: this.info.initialPageBounds,
             initialSelectionSnapPoints: this.info.initialSnapPoints,
