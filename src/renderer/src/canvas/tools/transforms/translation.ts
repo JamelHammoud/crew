@@ -182,6 +182,12 @@ export class Translating<Shape extends TLShape = TLShape> extends TransformState
     this.finish(false)
   }
 
+  private selectionSnapPoints(): TransformSnapPoint[] {
+    const bounds = this.editor.getSelectionPageBounds?.()
+    if (!bounds) return []
+    return bounds.cornersAndCenter.map((point, index) => ({ id: `selection:${index}`, x: point.x, y: point.y }))
+  }
+
   private startCloning(): void {
     const ids = this.editor.getSelectedShapeIds?.() ?? []
     if (!ids.length) return
