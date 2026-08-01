@@ -32,10 +32,8 @@ const customDisplayValues = (editor: ShapeUtil['editor'], shape: TLTextShape, _g
   }
 }
 
-export function textTrim(type: TypeStyle): TextTrim | null {
-  if (type.trim !== 'cap') return null
-  const face = fontMetrics(fontStack(type.family), type.weight, type.italic)
-  return trimOf(face, type.size, type.lineHeight)
+export function textTrim(type: TypeStyle): TrimEdges | null {
+  return trimEdges(typeMeasure(type, null), type.trim)
 }
 
 function measure(editor: Editor, shape: TLTextShape): { width: number; height: number } {
@@ -108,11 +106,10 @@ export class DesignTextUtil extends Configured {
   override component(shape: TLTextShape) {
     const label = super.component(shape) as ReactElement<{ style?: CSSProperties }>
     const type = textShapeType(this.editor as Editor, shape)
-    const trim = textTrim(type)
     const style = {
       ...label.props.style,
       ...textInkStyle(type),
-      ...(trim ? { marginTop: -trim.top * shape.props.scale } : {})
+      ...trimStyle(textTrim(type), shape.props.scale)
     }
     return cloneElement(label, { style })
   }
