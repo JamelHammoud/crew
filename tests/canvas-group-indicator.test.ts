@@ -4,16 +4,30 @@ import { createShapeId, createTLStore, type TLShapeId } from '../src/renderer/sr
 import { GeoShapeUtil, GroupShapeUtil, defaultBindingUtils } from '../src/renderer/src/canvas/shapes'
 import { SelectTool } from '../src/renderer/src/canvas/tools/select'
 
+interface Rect {
+  x: number
+  y: number
+  w: number
+  h: number
+}
+
 interface Drawn {
-  rects: Array<{ x: number; y: number; w: number; h: number }>
+  rects: Rect[]
   lines: Array<{ x: number; y: number }>
 }
 
 const drawn: Drawn = { rects: [], lines: [] }
+const painted: Rect[] = []
 
 class Recorder {
+  readonly own: Rect[] = []
+
   rect(x: number, y: number, w: number, h: number): void {
+    this.own.push({ x, y, w, h })
     drawn.rects.push({ x, y, w, h })
+  }
+  addPath(path: Recorder): void {
+    painted.push(...path.own)
   }
   moveTo(x: number, y: number): void {
     drawn.lines.push({ x, y })
@@ -23,6 +37,7 @@ class Recorder {
   }
   ellipse(): void {}
   roundRect(): void {}
+  closePath(): void {}
 }
 
 const had = (globalThis as { Path2D?: unknown }).Path2D
@@ -30,6 +45,7 @@ const had = (globalThis as { Path2D?: unknown }).Path2D
 beforeEach(() => {
   drawn.rects = []
   drawn.lines = []
+  painted.length = 0
   ;(globalThis as { Path2D?: unknown }).Path2D = Recorder
 })
 
