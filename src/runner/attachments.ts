@@ -45,6 +45,11 @@ export class AttachmentCache {
     fs.rmSync(this.ghostDir(promptId), { recursive: true, force: true })
   }
 
+  private keptDir(): string {
+    if (this.crewBase) return path.join(this.crewBase, '.crew', 'attachments')
+    return path.join(os.tmpdir(), 'crew-attachments')
+  }
+
   private ghostDir(promptId: string): string {
     return path.join(os.tmpdir(), `crew-${promptId}`)
   }
