@@ -67,7 +67,7 @@ export default function AgentIcon({
               over a surface that changes under it. */}
           <svg viewBox={`0 0 ${PET_GRID} ${PET_GRID}`} className="absolute inset-0 w-full h-full" aria-hidden>
             <mask id={mask}>
-              <g transform={`rotate(${pet.tilt} 50 54)`}>
+              <g transform={`rotate(${pet.tilt} 50 54) translate(50 53) scale(${BODY}) translate(-50 -53)`}>
                 <path d={pet.body} fill="#fff" stroke="#fff" strokeWidth={7} strokeLinejoin="round" />
                 <circle cx={50 - gap / 2} cy={pet.eyeY} r={EYE_RADIUS} fill="#000" />
                 <circle cx={50 + gap / 2} cy={pet.eyeY} r={EYE_RADIUS} fill="#000" />
