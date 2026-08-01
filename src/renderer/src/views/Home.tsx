@@ -5,6 +5,7 @@ import Avatar from '../components/Avatar'
 import ScreenSwap from '../components/ScreenSwap'
 import Tooltip from '../components/Tooltip'
 import { ChevronLeftGlyph } from '../icons'
+import { usePlaces } from '../state/places'
 import { useCrew } from '../state/store'
 import CrewAway from './home/CrewAway'
 import JoinLink from './home/JoinLink'
@@ -55,9 +56,7 @@ export default function Home() {
   const [busyKey, setBusyKey] = useState<string | null>(null)
 
   const load = () => {
-    void Promise.all([window.crew.projects().catch(() => []), window.crew.recentJoins().catch(() => [])]).then(
-      ([projects, joins]) => setPlaces(placesOf(projects, joins))
-    )
+    void usePlaces.getState().load()
   }
 
   useEffect(load, [])
