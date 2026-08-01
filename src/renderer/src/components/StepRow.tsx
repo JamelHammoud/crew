@@ -133,12 +133,14 @@ export default function StepRow({ item, linked, inGroup }: { item: ThreadItem; l
   const totals = stepTotals(files)
   const detail = thinking ? '' : (item.detail ?? '')
   const opens = useOpener(detail, files)
-  const expandable =
-    thinking || files.length > 0 || (!opens && Boolean(detail) && (!action.prose || crowded(detail)))
+  const preview = thinking ? thoughtPreview(item.text) : ''
+  const expandable = thinking
+    ? crowded(item.text)
+    : files.length > 0 || (!opens && Boolean(detail) && (!action.prose || crowded(detail)))
   const query = useFindQuery()
   const found = expandable && carries(query, stepHidden(item))
-  const expanded = open ?? (found || (thinking ? item.streaming : false))
-  const subject = files.length === 0 && item.detail && !expanded ? item.detail : ''
+  const expanded = expandable && (open ?? (found || (thinking && item.streaming)))
+  const subject = expanded ? '' : thinking ? preview : files.length === 0 ? (item.detail ?? '') : ''
 
   return (
     <div className={`animate-rise ${inGroup ? '' : 'pl-14'} ${linked ? '-mt-3' : ''}`}>
