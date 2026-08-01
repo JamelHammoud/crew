@@ -17,9 +17,18 @@ interface OverlayEditor {
   getHoveredShape(): TLShape | undefined
   getEditingShapeId(): TLShapeId | null
   getZoomLevel(): number
+  getCurrentToolPath(): string
+  getIsReadonly(): boolean
+  isShapeHidden(shape: TLShape): boolean
+  isShapeOrAncestorLocked(shape: TLShape): boolean
   getCurrentTheme(): { colors: Record<'light' | 'dark', Record<string, unknown>> }
   getColorMode(): 'light' | 'dark'
-  getInstanceState(): { brush?: { x: number; y: number; w: number; h: number } | null; scribbles?: TLScribble[] }
+  getInstanceState(): {
+    brush?: { x: number; y: number; w: number; h: number } | null
+    scribbles?: TLScribble[]
+    isCoarsePointer?: boolean
+    isChangingStyle?: boolean
+  }
   snaps: { getIndicators(): BoundsSnapIndicator[] }
 }
 
@@ -141,6 +150,43 @@ const CORNERS = ['top_left', 'top_right', 'bottom_right', 'bottom_left'] as cons
 const EDGES = ['top', 'right', 'bottom', 'left'] as const
 const ROTATE_CORNERS = ['top_left_rotate', 'top_right_rotate', 'bottom_right_rotate', 'bottom_left_rotate'] as const
 
+interface SelectionForegroundState {
+  bounds: Box
+  onlyShape: TLShape | null
+  zoom: number
+  rotation: number
+  width: number
+  height: number
+  handleSize: number
+  hitX: number
+  hitY: number
+  showBox: boolean
+  showResizeHandles: boolean
+  showRotateHandles: boolean
+  hideAlternateCorners: boolean
+  showOnlyOneHandle: boolean
+  hideVerticalEdges: boolean
+  hideHorizontalEdges: boolean
+}
+
+const CONTROL_PATHS = new Set([
+  'select.idle',
+  'select.pointing_selection',
+  'select.pointing_shape',
+  'select.pointing_resize_handle',
+  'select.pointing_rotate_handle',
+  'select.crop.idle'
+])
+
+const BOX_PATHS = new Set([
+  ...CONTROL_PATHS,
+  'select.brushing',
+  'select.scribble_brushing',
+  'select.pointing_canvas',
+  'select.crop.pointing_crop',
+  'select.crop.pointing_crop_handle'
+])
+
 class SelectionForegroundOverlayUtil implements ToolOverlayUtil {
   static type = 'selection_foreground'
   readonly options = { zIndex: 100 }
@@ -148,77 +194,175 @@ class SelectionForegroundOverlayUtil implements ToolOverlayUtil {
   constructor(private readonly editor: OverlayEditor) {}
 
   isActive(): boolean {
-    return this.editor.getEditingShapeId() === null && this.editor.getSelectedShapeIds().length > 0
+    const path = this.editor.getCurrentToolPath()
+    return (
+      this.editor.getEditingShapeId() === null &&
+      this.editor.getSelectedShapeIds().length > 0 &&
+      (BOX_PATHS.has(path) || path === 'select.resizing')
+    )
   }
 
   getOverlays(): CanvasOverlay[] {
-    const bounds = this.editor.getSelectionRotatedPageBounds()
-    if (!bounds) return []
-    const zoom = this.editor.getZoomLevel()
-    const rotation = this.editor.getSelectionRotation()
-    const origin = { x: bounds.x, y: bounds.y }
-    const { w, h } = bounds
-    const size = 6 / zoom
-    const hitX = (w < (8 / zoom) * 4 ? size / 2 : size) * 0.75
-    const hitY = (h < (8 / zoom) * 4 ? size / 2 : size) * 0.75
-    const corner = Math.max(hitX, hitY) * 1.5
-    const rotateSize = Math.max(hitX, hitY) * 1.62
-    const overlay = (handle: string, rect: HitTarget['rect']): CanvasOverlay => ({
+    const state = this.state()
+    if (!state) return []
+    const origin = { x: state.bounds.x, y: state.bounds.y }
+    const corner = Math.max(state.hitX, state.hitY) * 1.5
+    const rotateSize = Math.max(state.hitX, state.hitY) * 1.62
+    const overlay = (overlayType: string, handle: string, rect: HitTarget['rect']): CanvasOverlay => ({
       id: `selection:${handle}`,
       type: 'selection_foreground',
       props: {
+        overlayType,
         handle,
         point: Mat.Identity()
           .translate(origin.x, origin.y)
-          .rotate(rotation)
+          .rotate(state.rotation)
           .applyToPoint({
             x: rect.x + rect.w / 2,
             y: rect.y + rect.h / 2
           }),
-        radius: 6 / zoom,
-        hit: { origin, rotation, rect }
+        radius: 6 / state.zoom,
+        hit: { origin, rotation: state.rotation, rect }
       }
     })
-    return [
-      ...CORNERS.map(handle => {
-        const at = cornerPoint(handle, w, h)
-        return overlay(handle, { x: at.x - corner, y: at.y - corner, w: corner * 2, h: corner * 2 })
-      }),
-      ...EDGES.map(handle => overlay(handle, edgeRect(handle, w, h, hitX, hitY))),
-      ...ROTATE_CORNERS.map(handle => {
-        const at = rotateCornerPoint(handle, w, h, rotateSize)
-        return overlay(handle, {
-          x: at.x - rotateSize,
-          y: at.y - rotateSize,
-          w: rotateSize * 2,
-          h: rotateSize * 2
-        })
-      })
-    ]
+    const result: CanvasOverlay[] = []
+    if (state.showResizeHandles) {
+      const cornerHandles = state.showOnlyOneHandle
+        ? (['top_left'] as const)
+        : state.hideAlternateCorners
+          ? (['top_left', 'bottom_right'] as const)
+          : CORNERS
+      for (const handle of cornerHandles) {
+        const at = cornerPoint(handle, state.width, state.height)
+        result.push(
+          overlay('resize_handle', handle, {
+            x: at.x - corner,
+            y: at.y - corner,
+            w: corner * 2,
+            h: corner * 2
+          })
+        )
+      }
+      for (const handle of EDGES) {
+        if ((handle === 'top' || handle === 'bottom') && state.hideVerticalEdges) continue
+        if ((handle === 'left' || handle === 'right') && state.hideHorizontalEdges) continue
+        result.push(
+          overlay(
+            'resize_handle',
+            handle,
+            edgeRect(handle, state.width, state.height, state.hitX, state.hitY)
+          )
+        )
+      }
+    }
+    if (state.showRotateHandles) {
+      for (const handle of ROTATE_CORNERS) {
+        const at = rotateCornerPoint(handle, state.width, state.height, rotateSize)
+        result.push(
+          overlay('rotate_handle', handle, {
+            x: at.x - rotateSize,
+            y: at.y - rotateSize,
+            w: rotateSize * 2,
+            h: rotateSize * 2
+          })
+        )
+      }
+    }
+    return result
   }
 
   render(context: CanvasRenderingContext2D): void {
-    const bounds = this.editor.getSelectionRotatedPageBounds()
-    if (!bounds) return
-    const zoom = this.editor.getZoomLevel()
-    const rotation = this.editor.getSelectionRotation()
+    const state = this.state()
+    if (!state) return
     const stroke = colorOf(this.editor, 'selectionStroke')
     context.save()
-    context.translate(bounds.x, bounds.y)
-    context.rotate(rotation)
+    context.translate(state.bounds.x, state.bounds.y)
+    context.rotate(state.rotation)
     context.strokeStyle = stroke
     context.fillStyle = '#ffffff'
-    context.lineWidth = 1.5 / zoom
-    context.strokeRect(0, 0, bounds.w, bounds.h)
-    const radius = 4 / zoom
-    for (const handle of CORNERS) {
-      const point = cornerPoint(handle, bounds.w, bounds.h)
-      context.beginPath()
-      context.arc(point.x, point.y, radius, 0, Math.PI * 2)
-      context.fill()
-      context.stroke()
+    context.lineWidth = 1.5 / state.zoom
+    if (state.showBox) context.strokeRect(0, 0, state.width, state.height)
+    if (state.showResizeHandles) {
+      const cornerHandles = state.showOnlyOneHandle
+        ? (['top_left'] as const)
+        : state.hideAlternateCorners
+          ? (['top_left', 'bottom_right'] as const)
+          : CORNERS
+      for (const handle of cornerHandles) {
+        const point = cornerPoint(handle, state.width, state.height)
+        context.fillRect(
+          point.x - state.handleSize / 2,
+          point.y - state.handleSize / 2,
+          state.handleSize,
+          state.handleSize
+        )
+        context.strokeRect(
+          point.x - state.handleSize / 2,
+          point.y - state.handleSize / 2,
+          state.handleSize,
+          state.handleSize
+        )
+      }
     }
     context.restore()
+  }
+
+  private state(): SelectionForegroundState | null {
+    const bounds = this.editor.getSelectionRotatedPageBounds()
+    if (!bounds) return null
+    const onlyShape = this.editor.getOnlySelectedShape()
+    if (onlyShape && this.editor.isShapeHidden(onlyShape)) return null
+    const util = onlyShape ? this.editor.getShapeUtil(onlyShape) : null
+    const instance = this.editor.getInstanceState()
+    const path = this.editor.getCurrentToolPath()
+    const zoom = this.editor.getZoomLevel()
+    const handleSize = 8 / zoom
+    const isTinyX = bounds.w < handleSize * 2
+    const isTinyY = bounds.h < handleSize * 2
+    const isSmallX = bounds.w < handleSize * 4
+    const isSmallY = bounds.h < handleSize * 4
+    const hitTargetSize = 6 / zoom
+    const hitX = (isSmallX ? hitTargetSize / 2 : hitTargetSize) * 0.75
+    const hitY = (isSmallY ? hitTargetSize / 2 : hitTargetSize) * 0.75
+    const controls = CONTROL_PATHS.has(path) && !instance.isChangingStyle && !this.editor.getIsReadonly()
+    const locked = Boolean(onlyShape && this.editor.isShapeOrAncestorLocked(onlyShape))
+    const showResizeHandles =
+      controls && !locked && (!onlyShape || (util?.canResize(onlyShape as never) && !util.hideResizeHandles(onlyShape as never)))
+    const showRotateHandles =
+      controls &&
+      !locked &&
+      !instance.isCoarsePointer &&
+      !isTinyX &&
+      !isTinyY &&
+      (!onlyShape || !util?.hideRotateHandle(onlyShape as never))
+    const hideAlternateCorners = isTinyX || isTinyY
+    const showOnlyOneHandle = isTinyX && isTinyY
+    const hideVerticalEdges = hideAlternateCorners || showOnlyOneHandle || Boolean(instance.isCoarsePointer)
+    const mobileText = Boolean(instance.isCoarsePointer && onlyShape?.type === 'text')
+    const hideHorizontalEdges = hideVerticalEdges && !mobileText
+    const showSelectionBounds = !onlyShape || !util?.hideSelectionBoundsFg(onlyShape as never)
+    const showBox =
+      showSelectionBounds &&
+      !instance.isChangingStyle &&
+      (BOX_PATHS.has(path) || (path === 'select.resizing' && onlyShape?.type === 'text'))
+    return {
+      bounds,
+      onlyShape,
+      zoom,
+      rotation: this.editor.getSelectionRotation(),
+      width: bounds.w,
+      height: bounds.h,
+      handleSize,
+      hitX,
+      hitY,
+      showBox,
+      showResizeHandles,
+      showRotateHandles,
+      hideAlternateCorners,
+      showOnlyOneHandle,
+      hideVerticalEdges,
+      hideHorizontalEdges
+    }
   }
 }
 
