@@ -38,8 +38,8 @@ const work = (over: Partial<RepoWork> = {}): RepoWork => ({
 
 // A row of a diff is one line of the file however many spans the word picking
 // broke it into, so it is read off the row rather than off a span.
-const line = (text: string): HTMLElement | undefined =>
-  screen.getAllByText((_, el) => el?.className.includes('whitespace-pre') === true).find(el => el.textContent === text)
+const line = (text: string): Element | undefined =>
+  [...document.querySelectorAll('.whitespace-pre')].find(el => el.textContent === text)
 
 let sent: RepoCommand[] = []
 
