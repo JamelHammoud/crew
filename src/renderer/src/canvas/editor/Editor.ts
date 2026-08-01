@@ -1713,6 +1713,12 @@ class FallbackShapeUtil extends ShapeUtil<TLShape> {
   }
 }
 
+function sameIds(previous: ReadonlySet<TLShapeId>, next: ReadonlySet<TLShapeId>): boolean {
+  if (previous.size !== next.size) return false
+  for (const id of previous) if (!next.has(id)) return false
+  return true
+}
+
 function idOf(shapeOrId: TLShape | TLShapeId): TLShapeId {
   return typeof shapeOrId === 'string' ? shapeOrId : shapeOrId.id
 }
