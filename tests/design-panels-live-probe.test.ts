@@ -1,0 +1,132 @@
+// @vitest-environment jsdom
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { createElement } from 'react'
+import { afterEach, describe, expect, it } from 'vitest'
+import { EditorContext, createShapeId, createTLStore, type TLShapeId } from '../src/renderer/src/canvas'
+import { Editor } from '../src/renderer/src/canvas/editor'
+import {
+  ArrowShapeTool,
+  DrawShapeTool,
+  EraserTool,
+  FrameShapeTool,
+  HandTool,
+  HighlightShapeTool,
+  LineShapeTool,
+  NoteShapeTool,
+  SelectTool,
+  TextShapeTool
+} from '../src/renderer/src/canvas/tools'
+import { DesignNodeTool } from '../src/renderer/src/design/DesignNodeTool'
+import { designShapeUtils } from '../src/renderer/src/design/shapeUtils'
+
+class TestResizeObserver {
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+}
+
+global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
+
+const { default: DesignLeftPanel } = await import('../src/renderer/src/components/DesignLeftPanel')
+const { default: DesignToolbar } = await import('../src/renderer/src/components/DesignToolbar')
+
+function board() {
+  const editor = new Editor({
+    store: createTLStore({ id: 'panels-live', shapeUtils: designShapeUtils }),
+    shapeUtils: designShapeUtils,
+    tools: [
+      SelectTool,
+      HandTool,
+      DrawShapeTool,
+      HighlightShapeTool,
+      EraserTool,
+      TextShapeTool,
+      NoteShapeTool,
+      FrameShapeTool,
+      LineShapeTool,
+      ArrowShapeTool,
+      DesignNodeTool
+    ],
+    getContainer: () => document.body
+  })
+  editor.setViewportScreenBounds({ x: 0, y: 0, w: 900, h: 700 })
+  return editor
+}
+
+function node(editor: Editor, name: string, x: number): TLShapeId {
+  const id = createShapeId(name)
+  editor.createShape({ id, type: 'design-node', x, y: 0, props: { w: 100, h: 60, name } })
+  return id
+}
+
+const inside = (editor: Editor, element: ReturnType<typeof createElement>) =>
+  render(createElement(EditorContext.Provider, { value: editor }, element))
+
+describe('the design panels on a real board', () => {
+  afterEach(cleanup)
+
+  it('lists every layer on the page', () => {
+    const editor = board()
+    node(editor, 'Card', 0)
+    node(editor, 'Label', 200)
+    inside(editor, createElement(DesignLeftPanel))
+    expect(screen.getByText('Card')).toBeTruthy()
+    expect(screen.getByText('Label')).toBeTruthy()
+  })
+
+  it('picks the shape the layer row names', () => {
+    const editor = board()
+    const card = node(editor, 'Card', 0)
+    node(editor, 'Label', 200)
+    inside(editor, createElement(DesignLeftPanel))
+    fireEvent.click(screen.getByText('Card'))
+    expect(editor.getSelectedShapeIds()).toEqual([card])
+  })
+
+  it('hides a layer from the row and the canvas together', () => {
+    const editor = board()
+    const card = node(editor, 'Card', 0)
+    inside(editor, createElement(DesignLeftPanel))
+    fireEvent.click(screen.getByLabelText('Hide'))
+    expect(editor.getShape(card)!.meta.hidden).toBe(true)
+    expect(editor.isShapeHidden(card)).toBe(true)
+  })
+
+  it('locks a layer from the row', () => {
+    const editor = board()
+    const card = node(editor, 'Card', 0)
+    inside(editor, createElement(DesignLeftPanel))
+    fireEvent.click(screen.getByLabelText('Lock'))
+    expect(editor.getShape(card)!.isLocked).toBe(true)
+  })
+
+  it('turns the layers over for the inspector once something is picked', () => {
+    const editor = board()
+    const card = node(editor, 'Card', 0)
+    const view = inside(editor, createElement(DesignLeftPanel))
+    expect(view.container.querySelector('[aria-label="Layers"]')).toBeTruthy()
+    editor.setSelectedShapes([card])
+    expect(view.container.querySelector('[aria-label="Design"]')).toBeTruthy()
+  })
+
+  it('follows the tool the toolbar was clicked on', () => {
+    const editor = board()
+    inside(editor, createElement(DesignToolbar, { onAsk: () => {}, onRename: () => {} }))
+    fireEvent.click(screen.getByLabelText('Frame'))
+    expect(editor.getCurrentToolId()).toBe('frame')
+    expect(screen.getByLabelText('Frame').getAttribute('aria-pressed')).toBe('true')
+  })
+
+  it('takes the letter each tool names', () => {
+    const editor = board()
+    inside(editor, createElement(DesignToolbar, { onAsk: () => {}, onRename: () => {} }))
+    fireEvent.keyDown(window, { key: 'f' })
+    expect(editor.getCurrentToolId()).toBe('frame')
+    fireEvent.keyDown(window, { key: 't' })
+    expect(editor.getCurrentToolId()).toBe('text')
+    fireEvent.keyDown(window, { key: 'r' })
+    expect(editor.getCurrentToolId()).toBe('design-node')
+    fireEvent.keyDown(window, { key: 'v' })
+    expect(editor.getCurrentToolId()).toBe('select')
+  })
+})
