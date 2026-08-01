@@ -439,9 +439,12 @@ describe('the review tab', () => {
     render(createElement(ReviewView))
     fireEvent.contextMenu(await screen.findByText('app.ts'))
 
-    expect(await screen.findByText('Open changes')).not.toBeNull()
+    // Opening the changes is what pressing the row does, so the menu holds the
+    // rest of it rather than a second way to do the same thing.
+    expect(await screen.findByText('Open file')).not.toBeNull()
     expect(screen.getByText('Copy path')).not.toBeNull()
     expect(screen.getByText('Stage changes')).not.toBeNull()
+    expect(screen.queryByText('Open changes')).toBeNull()
   })
 
   it('says what is stashed and puts it back', async () => {
