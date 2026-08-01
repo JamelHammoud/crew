@@ -11,6 +11,10 @@ export type FrameShape = CrewShape<'frame'>
 const HEADING_FONT_SIZE = 12
 const HEADING_HEIGHT = 20
 const HEADING_GAP = 4
+const MAX_HEADING_SCALE = 3.5
+
+export const ZOOM_VAR = '--crew-zoom'
+export const SCALE_VAR = '--crew-scale'
 
 function headingWidth(name: string): number {
   return name.length * HEADING_FONT_SIZE * 0.58
