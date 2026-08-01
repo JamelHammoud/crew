@@ -72,12 +72,22 @@ describe('design corner radius handle', () => {
     expect(style).toContain('top: 11px')
   })
 
-  it('does not move the radius when the handle is pressed and let go', () => {
+  it('does not jump when the handle is taken hold of', () => {
     const { editor, radiusNow } = boardWith(0)
     const { container } = render(createElement(SelectionOverlay, { editor }))
     press(topLeftHandle(container), 11, 11)
-    window.dispatchEvent(pointerAt('pointerup', 11, 11))
-    expect(radiusNow()).toBe(0)
+    window.dispatchEvent(pointerAt('pointermove', 12, 12))
+    expect(radiusNow()).toBe(1)
+    window.dispatchEvent(pointerAt('pointerup', 12, 12))
+  })
+
+  it('keeps the room it was given out of the radius it reports', () => {
+    const { editor, radiusNow } = boardWith(5)
+    const { container } = render(createElement(SelectionOverlay, { editor }))
+    press(topLeftHandle(container), 11, 11)
+    window.dispatchEvent(pointerAt('pointermove', 12, 12))
+    expect(radiusNow()).toBe(6)
+    window.dispatchEvent(pointerAt('pointerup', 12, 12))
   })
 
   it('follows the pointer down the diagonal, one for one', () => {
