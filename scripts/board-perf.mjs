@@ -4,12 +4,13 @@ import { tmpdir } from 'node:os'
 import { createRequire } from 'node:module'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { boardFile, byShapeCount, compile, root, run } from './board-window.mjs'
+import { boardFile, byShapeCount, root, run } from './board-window.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const resolve = createRequire(path.join(root, 'package.json')).resolve
 
 const MOVES = 60
+const DEV = process.env.CREW_PERF_DEV === '1'
 
 function probeSource(snapshot) {
   const from = file => JSON.stringify(path.join(root, 'src/renderer/src', file))
