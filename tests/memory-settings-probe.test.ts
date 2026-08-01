@@ -22,7 +22,7 @@ vi.mock('../src/renderer/src/api/ws', () => ({
 }))
 
 const held = (text: string, by = 'Jamel', byAgentId?: string): CrewMemory => ({
-  id: text.slice(0, 6),
+  id: text.toLowerCase().replace(/\s+/g, '-'),
   text,
   by,
   byAgentId,
@@ -102,12 +102,12 @@ describe('the memory page', () => {
     })
     fireEvent.click(within(card()).getByRole('button', { name: 'Save' }))
     expect(sent).toEqual([
-      { type: 'memory.edit', memoryId: 'The te', text: 'The tests boot real servers on loopback' }
+      { type: 'memory.edit', memoryId: 'the-tests-boot-real-servers', text: 'The tests boot real servers on loopback' }
     ])
 
     fireEvent.click(screen.getByRole('button', { name: 'More for The tests boot real servers' }))
     fireEvent.click(screen.getByRole('button', { name: 'Delete memory' }))
-    expect(sent[1]).toEqual({ type: 'memory.remove', memoryId: 'The te' })
+    expect(sent[1]).toEqual({ type: 'memory.remove', memoryId: 'the-tests-boot-real-servers' })
   })
 
   it('wears the pet for an agent and the face for a person', () => {
