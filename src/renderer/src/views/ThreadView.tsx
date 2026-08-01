@@ -54,7 +54,22 @@ const NAME_MIN_WIDTH = 96
 const ASK_MIN_WIDTH = 180
 const EMPTY_COMMANDS: CommandName[] = []
 
-export default function ThreadView({ threadId }: { threadId: string }) {
+// `many` is a row of threads rather than one, so the way out of this one is a
+// close rather than a way back to the chat. `focused` is whether the panel is
+// following this column, since there is one panel and it holds the things of
+// the thread you are in. `alone` is a window of its own, where there is no chat
+// to go back to and nowhere further to pop out to.
+export default function ThreadView({
+  threadId,
+  many = false,
+  focused = true,
+  alone = false
+}: {
+  threadId: string
+  many?: boolean
+  focused?: boolean
+  alone?: boolean
+}) {
   const events = useCrew(s => s.events)
   const steps = useCrew(s => s.steps)
   const selfId = useCrew(s => s.selfId)
