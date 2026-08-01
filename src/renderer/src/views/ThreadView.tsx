@@ -49,7 +49,6 @@ import {
 import { useBrowser } from '../state/browser'
 import { pendingCount, useCrew } from '../state/store'
 
-const OWN_MENU = 'a, img, input, textarea, [contenteditable="true"]'
 const BACK_WIDTH = 40
 const AVATAR_WIDTH = 52
 const NAME_MIN_WIDTH = 96
