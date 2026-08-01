@@ -203,7 +203,12 @@ export class Terminals {
     return this.sessions.size
   }
 
-  ready(): boolean {
-    return !!this.spare && !this.spare.ended && this.spare.held.length > 0
+  ready(folder?: string): boolean {
+    if (folder === undefined) {
+      for (const spare of this.spares.values()) if (standing(spare)) return true
+      return false
+    }
+    const spare = this.spares.get(startingFolder(folder))
+    return !!spare && standing(spare)
   }
 }
