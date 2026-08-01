@@ -169,7 +169,30 @@ describe('the sidebar', () => {
       fireEvent.click(row)
     })
     expect(asked).toEqual([`project:${TWO}`])
-    expect(useCrew.getState().openThreadId).toBe('t1')
+  })
+
+  it('opens a thread in the place you are already in without going anywhere', async () => {
+    live = [
+      {
+        key: `project:${ONE}`,
+        folder: ONE,
+        name: 'Jamel',
+        hosting: true,
+        threads: [{ id: 't9', title: 'Fix tracked files', working: false }]
+      }
+    ]
+    await act(async () => {
+      await usePlaces.getState().load()
+    })
+    const { container } = render(createElement(Sidebar))
+    const row = [...container.querySelectorAll('button')].find(
+      b => b.textContent === 'Fix tracked files'
+    ) as HTMLElement
+    await act(async () => {
+      fireEvent.click(row)
+    })
+    expect(asked).toEqual([])
+    expect(useCrew.getState().openThreadId).toBe('t9')
   })
 
   it('holds a place with nothing running as a row on its own', async () => {
