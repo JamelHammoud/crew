@@ -76,10 +76,15 @@ describe('the crew memory over http', () => {
 
   async function openRun(
     ms = 1500,
-    commands?: Parameters<TestUi['chat']>[3]
+    commands?: Parameters<TestUi['chat']>[3],
+    memoryEnabled = true
   ): Promise<{ ui: TestUi; run: Start; agent: string }> {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
+    if (memoryEnabled) {
+      ui.send({ type: 'memory.set', enabled: true })
+      await ui.waitForEvent(e => e.kind === 'memory.setting' && e.enabled)
+    }
     await connectRunner('sam', slow('one', 'One', ms, prompts))
     const agent = agentId('sam', 'one')
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === agent)
@@ -87,6 +92,17 @@ describe('the crew memory over http', () => {
     await ui.waitForEvent(e => e.kind === 'thread.started')
     return { ui, run: (await ui.waitForEvent(e => e.kind === 'agent.start')) as Start, agent }
   }
+
+  it('starts off and keeps its prompt and api out of reach', async () => {
+    const { run } = await openRun(1500, undefined, false)
+
+    expect(host.session.snapshot().memoryEnabled).toBe(false)
+    expect(prompts[0]).not.toContain('What this crew has learned')
+
+    const put = await post('/memory', { promptId: run.promptId, memories: ['Something to keep'] })
+    expect(put.status).toBe(400)
+    expect(put.body.error).toContain('turned off')
+  })
 
   it('writes one down, rewrites it, forgets it, and reads the list back', async () => {
     const { ui, run } = await openRun()
@@ -202,6 +218,7 @@ describe('the crew memory over http', () => {
     await ui.waitForEvent(e => e.kind === 'memory.added')
 
     const revived = new CrewSession(host.store).snapshot()
+    expect(revived.memoryEnabled).toBe(true)
     expect(revived.memories).toEqual([
       expect.objectContaining({ id: put.body.ids[0], text: 'The tests boot real servers', by: 'One' })
     ])
