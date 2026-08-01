@@ -1,6 +1,6 @@
 import { diffRows, type Row } from '../diffRows'
 
-const HUNK = /^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@/
+const HUNK = /^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@(.*)$/
 
 // What a change reads as when the whole point is reading it. `rowsOf` keeps the
 // lines that moved and throws the rest away, which is the right answer for a
