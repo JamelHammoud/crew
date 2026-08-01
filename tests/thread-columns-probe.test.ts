@@ -236,7 +236,7 @@ describe('the chat standing beside a thread', () => {
   }
   const slot = (): HTMLElement => {
     reveal()
-    return screen.getByLabelText('The chat')
+    return screen.getByLabelText('Chat')
   }
   const chatColumn = (): HTMLElement => document.querySelector<HTMLElement>('[data-column="chat"]')!
 
@@ -288,15 +288,15 @@ describe('the chat standing beside a thread', () => {
       'row-1'
     )
     reveal()
-    expect(screen.queryByLabelText('The chat')).toBeNull()
+    expect(screen.queryByLabelText('Chat')).toBeNull()
   })
 
   it('stands out of the way until the pointer comes near the right', () => {
     open(['thread-1'], 'thread-1')
-    expect(screen.queryByLabelText('The chat')).toBeNull()
+    expect(screen.queryByLabelText('Chat')).toBeNull()
 
     reveal()
-    expect(screen.getByLabelText('The chat')).toBeTruthy()
+    expect(screen.getByLabelText('Chat')).toBeTruthy()
   })
 
   it('goes with the last column', () => {
