@@ -173,6 +173,7 @@ export default function ThreadView({
   const [headerRow, setHeaderRow] = useState<HTMLDivElement | null>(null)
   const [headerStatus, setHeaderStatus] = useState<HTMLDivElement | null>(null)
   const [nameWidth, setNameWidth] = useState(Number.POSITIVE_INFINITY)
+  const [rowWidth, setRowWidth] = useState(Number.POSITIVE_INFINITY)
 
   useEffect(() => {
     const el = overlayRef.current
@@ -188,6 +189,7 @@ export default function ThreadView({
       const style = getComputedStyle(headerRow)
       const gap = parseFloat(style.columnGap) || 0
       const inner = headerRow.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)
+      setRowWidth(inner)
       setNameWidth(inner - BACK_WIDTH - headerStatus.offsetWidth - gap * 2)
     }
     const observer = new ResizeObserver(measure)
