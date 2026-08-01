@@ -1,3 +1,4 @@
+import { textInkAt } from '../../../../design/textContrast'
 import { Vec } from '../../../math'
 import { createShapeId, fromPlainText, type TLShape, type TLShapeId } from '../../../schema'
 import { BoxStateNode, maybeSnapToGrid, type BoxPointerInfo } from '../../box'

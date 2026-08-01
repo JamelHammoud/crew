@@ -235,6 +235,49 @@ describe('member mention alerts', () => {
   })
 })
 
+describe('reply alerts', () => {
+  const reply = (targetAuthor = 'ali', over: Partial<SessionEvent & { kind: 'message' }> = {}): SessionEvent => ({
+    id: 'm2',
+    ts: 2,
+    kind: 'message',
+    authorId: 'jamel',
+    authorName: 'Jamel',
+    text: 'that fixed it',
+    mentions: [],
+    threadId: 't1',
+    replyTo: { targetId: 'm1', authorId: targetAuthor, authorName: 'ALI', text: 'try the other branch' },
+    ...over
+  })
+
+  it('alerts whoever was replied to, and carries who it came from', () => {
+    expect(memberReplyAlert(reply(), 'ali', [])).toEqual({
+      title: 'Jamel replied to you',
+      body: 'that fixed it',
+      threadId: 't1',
+      from: 'Jamel'
+    })
+  })
+
+  it('says nothing about a reply to somebody else, or to your own reply', () => {
+    expect(memberReplyAlert(reply('jamel'), 'ali', [])).toBeNull()
+    expect(memberReplyAlert(reply('ali', { authorId: 'ali' }), 'ali', [])).toBeNull()
+  })
+
+  it('stays quiet inside the thread it was said in, and speaks up from another', () => {
+    expect(memberReplyAlert(reply(), 'ali', ['t1'])).toBeNull()
+    expect(memberReplyAlert(reply(), 'ali', ['t2'])).not.toBeNull()
+  })
+
+  it('ignores a message that is not a reply at all', () => {
+    expect(memberReplyAlert(reply('ali', { replyTo: undefined }), 'ali', [])).toBeNull()
+  })
+
+  it('is one word rather than two when it also mentions you', () => {
+    const both = reply('ali', { memberMentionRefs: [{ id: 'ali', name: 'ALI' }] })
+    expect(memberMentionAlert(both, 'ali', [])?.title).toBe('Jamel mentioned you')
+  })
+})
+
 describe('an alert in the app', () => {
   const finished = (): AgentAlert => finishedAlert(ended('t1'), state())!
 
