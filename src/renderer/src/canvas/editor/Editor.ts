@@ -131,6 +131,7 @@ export class Editor {
   private disposed = false
   private stopSideEffects: () => void = () => undefined
   private toolIdMask: string | undefined
+  private culled: ReadonlySet<TLShapeId> = new Set()
   private richTextEditor: {
     commands?: { focus(position?: unknown): unknown }
     isFocused?: boolean
