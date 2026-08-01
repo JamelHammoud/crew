@@ -316,7 +316,12 @@ export class Translating<Shape extends TLShape = TLShape> extends TransformState
 
   private complete(): void {
     this.update()
+    const moving = this.snapshots
+      .map(snapshot => this.editor.getShape(snapshot.shape.id))
+      .filter(Boolean) as TLShape[]
+    this.dragTargets?.dropShapes(moving)
     this.applyLifecycle('end')
+    this.editor.kickoutOccludedShapes?.(this.snapshots.map(snapshot => snapshot.shape.id))
     if (this.info.isCreating) {
       const shape = this.snapshots[0] ? (this.editor.getShape(this.snapshots[0].shape.id) ?? null) : null
       this.info.onCreate?.(shape)
@@ -330,7 +335,7 @@ export class Translating<Shape extends TLShape = TLShape> extends TransformState
       end()
       return
     }
-    if (typeof end === 'string') {
+    if (typeof end === 'string' && (!completed || this.editor.getInstanceState?.().isToolLocked)) {
       this.editor.setCurrentTool?.(end)
       return
     }
