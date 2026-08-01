@@ -99,6 +99,7 @@
     "voice-check": "node scripts/voice-check.mjs",
     "selection-check": "node scripts/selection-check.mjs",
     "board-check": "node scripts/board-check.mjs",
+    "board-perf": "node scripts/board-perf.mjs",
     "snap-check": "node scripts/snap-check.mjs",
     "scribe-check": "node scripts/scribe-check.mjs",
     "scribe-caret-check": "node scripts/scribe-caret-check.mjs",

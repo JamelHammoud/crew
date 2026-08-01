@@ -378,7 +378,7 @@ try {
     `${path.basename(file)}: ${result.shapes} shapes, ${result.mounted} mounted, ${result.culled} culled, ${result.mountMs}ms to open\n`
   )
   for (const run of result.results) {
-    console.log(`${run.label}, ${MOVES} pointer moves`)
+    console.log(`${run.label}, ${MOVES} interactions`)
     console.log(
       `  handler   mean ${run.sync.mean}ms  median ${run.sync.median}ms  p95 ${run.sync.p95}ms  worst ${run.sync.worst}ms`
     )
@@ -398,6 +398,15 @@ try {
       .map(([name, ms]) => `${name} ${ms}ms`)
     console.log(`  spent     ${spent.join(', ')}\n`)
   }
+  const selecting = result.results.find(run => run.label === 'select')
+  const marquee = result.results.find(run => run.label === 'marquee')
+  if (!selecting || selecting.selected < 2) throw new Error('selection performance check did not change selection')
+  if (selecting.sync.p95 > 8) throw new Error(`selection handler p95 reached ${selecting.sync.p95}ms`)
+  if (selecting.frame.p95 > 16) throw new Error(`selection paint p95 reached ${selecting.frame.p95}ms`)
+  if (selecting.frame.worst > 80) throw new Error(`selection paint stalled for ${selecting.frame.worst}ms`)
+  if (!marquee) throw new Error('marquee performance check did not run')
+  if (marquee.sync.p95 > 4) throw new Error(`marquee handler p95 reached ${marquee.sync.p95}ms`)
+  if (marquee.frame.p95 > 16) throw new Error(`marquee paint p95 reached ${marquee.frame.p95}ms`)
   for (const error of result.errors ?? []) console.log(`window error: ${error}`)
 } finally {
   await rm(directory, { recursive: true, force: true })
