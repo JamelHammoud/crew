@@ -4,6 +4,7 @@ import { DesktopGlyph, FolderGlyph, GlobeGlyph, TrashGlyph } from '../../icons'
 import Spinner from '../Spinner'
 import { MenuItem, Popover } from '../Popover'
 import type { Place } from '../../views/home/place'
+import ThreadRow from './ThreadRow'
 
 function markOf(place: Place) {
   if (place.join) return <GlobeGlyph className="w-4 h-4" />
