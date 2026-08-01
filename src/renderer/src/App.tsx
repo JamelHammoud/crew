@@ -82,6 +82,12 @@ function Session() {
     if (openThreadIds.length > 0) setTab('chat')
   }, [openThreadIds])
 
+  useEffect(() => {
+    const root = document.getElementById('root')
+    root?.classList.toggle('railed', pinned)
+    return () => root?.classList.remove('railed')
+  }, [pinned])
+
   useEffect(() => window.crew?.onNotificationOpen?.(threadId => openThread(threadId)), [openThread])
 
   useEffect(() => watchUpdates(), [])
@@ -122,7 +128,7 @@ function Session() {
           <Sidebar overlay />
         </div>
       )}
-      <div className="flex-1 min-w-0 relative">
+      <div className="flex-1 min-w-0 relative bg-ink-900">
         <main className="absolute inset-0">
           {tab === 'chat' && (openThreadIds.length > 0 ? <ThreadColumns ids={openThreadIds} /> : <Chat />)}
           {tab === 'docs' && <Docs />}

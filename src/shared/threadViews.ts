@@ -12,9 +12,6 @@ export function threadIdInHash(hash: string): string | null {
   return id ? id : null
 }
 
-// Beside the one already open rather than in place of it. A thread already
-// being watched is brought to the front of nothing: it stays where it stands,
-// so the columns never reorder under somebody reading one of them.
 export function openBeside(open: string[], threadId: string, limit = VIEW_LIMIT): string[] {
   if (open.includes(threadId)) return open
   if (open.length >= limit) return open
@@ -29,12 +26,22 @@ export function closeOne(open: string[], threadId: string): string[] {
   return open.filter(id => id !== threadId)
 }
 
-// What the caret is in once a column has gone. The one that took its place is
-// the one to the right, or the one before it where the last column went, so
-// closing down a row never lands the focus back at the far end of it.
 export function focusAfterClose(open: string[], closing: string, focused: string | null): string | null {
   if (focused !== closing) return focused && open.includes(focused) ? focused : (open[0] ?? null)
   const at = open.indexOf(closing)
   const left = open.filter(id => id !== closing)
   return left[at] ?? left[at - 1] ?? null
+}
+
+export type ThreadOpenAction = 'open' | 'beside' | 'window' | 'close'
+
+export function threadMenuActions(
+  open: string[],
+  threadId: string,
+  limit = VIEW_LIMIT
+): ThreadOpenAction[] {
+  if (open.includes(threadId)) return ['window', 'close']
+  if (open.length === 0) return ['open', 'window']
+  if (isFull(open, limit)) return ['window']
+  return ['beside', 'window']
 }
