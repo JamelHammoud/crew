@@ -1,5 +1,8 @@
 import { act, cleanup, render } from '@testing-library/react'
+import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { createElement } from 'react'
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import { Mat } from '../src/renderer/src/canvas/math'

@@ -13,7 +13,7 @@ import {
 import { richTextToHtml, type RichTextDocument } from '../text/richText'
 import { TEXT_LINE_HEIGHT, withResolvedLineHeight } from '../text/typeStyle'
 import { ShapeUtil, type ShapeEditor, type ShapeResizeInfo } from './ShapeUtil'
-import { FONT_FAMILIES, TEXT_FONT_SIZES, richText } from './shared'
+import { FONT_FAMILIES, TEXT_FONT_SIZES, plainText, richText } from './shared'
 import { shapeColor } from './theme'
 
 export type TextShape = CrewShape<'text'>

@@ -48,6 +48,11 @@ export function measureTextLayout(measurer: TextMeasurer, request: TextLayoutReq
   }
 }
 
+export function richTextChanged(previous: RichTextDocument, next: RichTextDocument): boolean {
+  if (previous === next) return false
+  return JSON.stringify(previous) !== JSON.stringify(next)
+}
+
 export function textGrowthMatters(
   previous: TextGrowthState,
   next: TextGrowthState,
