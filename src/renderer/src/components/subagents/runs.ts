@@ -63,15 +63,8 @@ export type RunState = 'working' | 'done' | 'stopped' | 'failed'
 export function useRunState(threadId: string): RunState {
   const running = useCrew(state => Boolean(state.threadPrompts[threadId]))
   const queued = useCrew(state => state.queues[threadId]?.length ?? 0)
-  const ended = useCrew(state => {
-    for (let i = state.events.length - 1; i >= 0; i--) {
-      const event = state.events[i]
-      if (event.kind === 'agent.end' && event.threadId === threadId) {
-        return event.ok ? 'done' : event.stopped ? 'stopped' : 'failed'
-      }
-    }
-    return 'done' as const
-  })
+  const end = useCrew(state => eventIndex(state.events).lastEnds.get(threadId))
   if (running || queued > 0) return 'working'
-  return ended
+  if (!end || end.ok) return 'done'
+  return end.stopped ? 'stopped' : 'failed'
 }
