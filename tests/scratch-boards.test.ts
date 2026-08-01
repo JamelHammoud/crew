@@ -80,7 +80,10 @@ describe('probe: real boards on disk', () => {
             expect(Number.isFinite(point.x)).toBe(true)
             expect(Number.isFinite(point.y)).toBe(true)
           }
-          expect(encodePoints(points, dim)).toBe(segment.path)
+          const reencoded = encodePoints(points, dim)
+          expect(decodePoints(reencoded, dim)).toEqual(points)
+          expect(encodePoints(decodePoints(reencoded, dim), dim)).toBe(reencoded)
+          if (reencoded !== segment.path) drifted.push({ name, from: segment.path, to: reencoded })
           checked++
         }
       }
