@@ -14,6 +14,7 @@ class TestResizeObserver {
 }
 
 global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
+Element.prototype.getAnimations ??= () => []
 
 const capability: ProviderCapability = {
   provider: 'codex',
