@@ -165,43 +165,99 @@ export function arrowGeometry(editor: ShapeEditor, shape: ArrowShape): Geometry2
   })
 }
 
-function arrowheadPath(
-  point: Vec,
-  toward: Vec,
-  strokeWidth: number,
-  kind: ArrowShape['props']['arrowheadEnd']
-): string | undefined {
-  if (kind === 'none' || kind === 'pipe') return undefined
-  const distance = Math.max(strokeWidth, Math.min(strokeWidth * 3, Vec.Dist(point, toward) / 5))
-  const inside = Vec.Nudge(point, toward, distance)
-  const left = Vec.RotWith(inside, point, Math.PI / 6)
-  const right = Vec.RotWith(inside, point, -Math.PI / 6)
-  if (kind === 'arrow') return `M ${left.x} ${left.y} L ${point.x} ${point.y} L ${right.x} ${right.y}`
-  if (kind === 'triangle') return `M ${left.x} ${left.y} L ${right.x} ${right.y} L ${point.x} ${point.y} Z`
-  if (kind === 'inverted') {
-    const delta = Vec.Sub(inside, point).div(2)
-    const side = Vec.Rot(delta, Math.PI / 2)
-    return `M ${point.x + side.x} ${point.y + side.y} L ${inside.x} ${inside.y} L ${point.x - side.x} ${point.y - side.y} Z`
+export type Arrowhead = ArrowShape['props']['arrowheadEnd']
+
+const CLOSED_ARROWHEADS: Arrowhead[] = ['triangle', 'square', 'diamond', 'dot', 'inverted']
+
+export function isClosedArrowhead(kind: Arrowhead): boolean {
+  return CLOSED_ARROWHEADS.includes(kind)
+}
+
+function arrowheadInt(body: Geometry2d, point: Vec, opposite: Vec, strokeWidth: number, atEnd: boolean): Vec {
+  let int: Vec
+  if (body instanceof Arc2d) {
+    const length = clamp(Math.abs(body.length) / 5, strokeWidth, strokeWidth * 3)
+    const intersections = intersectCircleCircle(point, length, body.arcCenter, body.radius)
+    const picked = atEnd
+      ? body.sweepFlag
+        ? intersections[0]
+        : intersections[1]
+      : body.sweepFlag
+        ? intersections[1]
+        : intersections[0]
+    int = picked ? Vec.From(picked) : point
+  } else {
+    const compare = body instanceof Polyline2d ? Vec.ManhattanDist(opposite, point) / 2 : Vec.Dist(opposite, point) / 5
+    const length = clamp(compare, strokeWidth, strokeWidth * 3)
+    int = Vec.Nudge(point, opposite, length)
   }
-  if (kind === 'dot') {
-    const center = Vec.Lrp(point, inside, 0.45)
-    const radius = Vec.Dist(center, point)
-    return `M ${center.x - radius},${center.y} a ${radius},${radius} 0 1,0 ${radius * 2},0 a ${radius},${radius} 0 1,0 -${radius * 2},0`
+  return Vec.IsNaN(int) ? point : int
+}
+
+export function arrowheadPath(point: Vec, int: Vec, kind: Arrowhead): string | undefined {
+  if (kind === 'none') return undefined
+  const left = Vec.RotWith(int, point, PI / 6)
+  const right = Vec.RotWith(int, point, -PI / 6)
+  switch (kind) {
+    case 'arrow':
+      return `M ${left.x} ${left.y} L ${point.x} ${point.y} L ${right.x} ${right.y}`
+    case 'triangle':
+      return `M ${left.x} ${left.y} L ${right.x} ${right.y} L ${point.x} ${point.y} Z`
+    case 'inverted': {
+      const d = Vec.Sub(int, point).div(2)
+      const pl = Vec.Add(point, Vec.Rot(d, HALF_PI))
+      const pr = Vec.Sub(point, Vec.Rot(d, HALF_PI))
+      return `M ${pl.x} ${pl.y} L ${int.x} ${int.y} L ${pr.x} ${pr.y} Z`
+    }
+    case 'dot': {
+      const a = Vec.Lrp(point, int, 0.45)
+      const r = Vec.Dist(a, point)
+      return `M ${a.x - r},${a.y} a ${r},${r} 0 1,0 ${r * 2},0 a ${r},${r} 0 1,0 -${r * 2},0`
+    }
+    case 'diamond': {
+      const pb = Vec.Lrp(point, int, 0.75)
+      const pl = Vec.RotWith(pb, point, PI / 4)
+      const pr = Vec.RotWith(pb, point, -PI / 4)
+      const pq = Vec.Lrp(pl, pr, 0.5)
+      pq.add(Vec.Sub(pq, point))
+      return `M ${pq.x} ${pq.y} L ${pr.x} ${pr.y} ${point.x} ${point.y} L ${pl.x} ${pl.y} Z`
+    }
+    case 'square': {
+      const pb = Vec.Lrp(point, int, 0.85)
+      const d = Vec.Sub(pb, point).div(2)
+      const pl1 = Vec.Add(point, Vec.Rot(d, HALF_PI))
+      const pr1 = Vec.Sub(point, Vec.Rot(d, HALF_PI))
+      const pl2 = Vec.Add(pb, Vec.Rot(d, HALF_PI))
+      const pr2 = Vec.Sub(pb, Vec.Rot(d, HALF_PI))
+      return `M ${pl1.x} ${pl1.y} L ${pl2.x} ${pl2.y} L ${pr2.x} ${pr2.y} L ${pr1.x} ${pr1.y} Z`
+    }
+    case 'bar': {
+      const d = Vec.Sub(int, point).div(2)
+      const pl = Vec.Add(point, Vec.Rot(d, HALF_PI))
+      const pr = Vec.Sub(point, Vec.Rot(d, HALF_PI))
+      return `M ${pl.x} ${pl.y} L ${pr.x} ${pr.y}`
+    }
+    default:
+      return undefined
   }
-  if (kind === 'diamond') {
-    const back = Vec.Lrp(point, inside, 0.75)
-    const diamondLeft = Vec.RotWith(back, point, Math.PI / 4)
-    const diamondRight = Vec.RotWith(back, point, -Math.PI / 4)
-    const far = Vec.Lrp(diamondLeft, diamondRight, 0.5).add(Vec.Sub(Vec.Lrp(diamondLeft, diamondRight, 0.5), point))
-    return `M ${far.x} ${far.y} L ${diamondRight.x} ${diamondRight.y} ${point.x} ${point.y} L ${diamondLeft.x} ${diamondLeft.y} Z`
+}
+
+export function arrowBodyPath(body: Geometry2d, start: Vec, end: Vec): PathBuilder {
+  const ends = { offset: 0, roundness: 0 }
+  if (body instanceof Arc2d) {
+    return new PathBuilder()
+      .moveTo(start.x, start.y, ends)
+      .circularArcTo(body.radius, !!body.largeArcFlag, !!body.sweepFlag, end.x, end.y, ends)
   }
-  if (kind === 'square') {
-    const back = Vec.Lrp(point, inside, 0.85)
-    const side = Vec.Rot(Vec.Sub(back, point).div(2), Math.PI / 2)
-    return `M ${point.x + side.x} ${point.y + side.y} L ${back.x + side.x} ${back.y + side.y} L ${back.x - side.x} ${back.y - side.y} L ${point.x - side.x} ${point.y - side.y} Z`
+  if (body instanceof Polyline2d) {
+    const points = body.vertices
+    const path = new PathBuilder().moveTo(points[0].x, points[0].y, { offset: 0 })
+    for (let i = 1; i < points.length; i++) {
+      path.lineTo(points[i].x, points[i].y, i === points.length - 1 ? { offset: 0 } : undefined)
+    }
+    return path
   }
-  const delta = Vec.Rot(Vec.Sub(inside, point).div(2), Math.PI / 2)
-  return `M ${point.x + delta.x} ${point.y + delta.y} L ${point.x - delta.x} ${point.y - delta.y}`
+  return new PathBuilder().moveTo(start.x, start.y, ends).lineTo(end.x, end.y, ends)
 }
 
 export class ArrowShapeUtil extends ShapeUtil<ArrowShape> {
