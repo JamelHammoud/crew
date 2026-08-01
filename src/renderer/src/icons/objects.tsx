@@ -234,7 +234,7 @@ export const DesktopGlyph = glyph(
 )
 
 export const ComputerGlyph = glyph(
-  <path d="M6.75 4.6H17.25A2 2 0 0 1 19.25 6.6V15.2A2 2 0 0 1 17.25 17.2H6.75A2 2 0 0 1 4.75 15.2V6.6A2 2 0 0 1 6.75 4.6ZM2.25 19.4H21.75" />
+  <path d="M6 3.5H18A2.5 2.5 0 0 1 20.5 6V18A2.5 2.5 0 0 1 18 20.5H6A2.5 2.5 0 0 1 3.5 18V6A2.5 2.5 0 0 1 6 3.5ZM9.5 8.5H14.5A1 1 0 0 1 15.5 9.5V14.5A1 1 0 0 1 14.5 15.5H9.5A1 1 0 0 1 8.5 14.5V9.5A1 1 0 0 1 9.5 8.5Z" />
 )
 
 export const GlobeGlyph = glyph(
