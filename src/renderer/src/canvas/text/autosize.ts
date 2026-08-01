@@ -1,6 +1,7 @@
 import { renderHtmlFromRichTextForMeasurement, type TLRichText } from '../schema/richText'
 import type { RichTextDocument } from './richText'
 import type { TextMeasureOptions } from './measurement'
+import type { TextTrim } from './metrics'
 
 export const MIN_TEXT_WIDTH = 16
 
