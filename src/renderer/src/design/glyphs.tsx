@@ -310,7 +310,7 @@ export const TrimStandardGlyph = glyph(
 export const TrimCapGlyph = glyph(
   <>
     {TRIM_BOX}
-    {trimInk(3.5, 17)}
+    {trimInk(5.5, 13)}
   </>
 )
 
