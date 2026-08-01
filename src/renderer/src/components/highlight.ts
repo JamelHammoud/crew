@@ -203,12 +203,6 @@ export async function loadLanguage(lang: string): Promise<void> {
   }
 }
 
-export function highlightedNow(path: string, text: string, theme: Theme): Highlighted | null {
-  const lang = languageFor(path)
-  if (!lang || text.length > MAX_CHARS) return null
-  return shelf(lang, theme).get(text) ?? null
-}
-
 export async function highlightLines(path: string, text: string, theme: Theme): Promise<Highlighted | null> {
   const lang = languageFor(path)
   if (!lang || text.length > MAX_CHARS) return null
