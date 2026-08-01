@@ -122,7 +122,12 @@ const columns = (): HTMLElement[] =>
 
 beforeEach(() => {
   popOutThread.mockClear()
-  window.crew = { warmTerminal: () => undefined, popOutThread } as unknown as CrewBridge
+  window.crew = {
+    warmTerminal: () => undefined,
+    popOutThread,
+    onUpdate: () => () => {},
+    updateState: async () => NO_UPDATE
+  } as unknown as CrewBridge
   useBrowser.setState({ open: false })
 })
 

@@ -107,20 +107,31 @@ export class Translating<Shape extends TLShape = TLShape> extends TransformState
   static override trackPerformance = true
 
   info: TranslatingInfo<Shape> = {}
+  selectionSnapshots: TranslationSnapshot<Shape>[] = []
   snapshots: TranslationSnapshot<Shape>[] = []
   markId = ''
+  isCloning = false
+  dragTargets?: TranslatingDragTargets
 
   override onEnter(info: TranslatingInfo<Shape>): void {
     this.info = info
     this.parent.setCurrentToolIdMask?.(typeof info.onInteractionEnd === 'string' ? info.onInteractionEnd : undefined)
-    this.snapshots = info.snapshots ?? this.createSnapshots()
-    if (this.snapshots.length === 0) {
+    this.isCloning = false
+    this.selectionSnapshots = info.snapshots ?? this.createSnapshots()
+    if (this.selectionSnapshots.length === 0) {
       this.parent.transition('idle')
       return
     }
     this.markId = info.creatingMarkId ?? this.editor.markHistoryStoppingPoint?.('translating') ?? ''
     this.editor.setCursor?.({ type: 'move', rotation: 0 })
-    this.applyLifecycle('start')
+
+    if (!info.isCreating && this.editor.inputs.getAltKey?.()) {
+      this.startCloning()
+      if (this.isCloning) return
+    }
+
+    this.snapshots = this.selectionSnapshots
+    this.handleStart()
     this.update()
   }
 
@@ -128,6 +139,7 @@ export class Translating<Shape extends TLShape = TLShape> extends TransformState
     this.parent.setCurrentToolIdMask?.(undefined)
     this.editor.snaps?.clearIndicators?.()
     this.editor.setCursor?.({ type: 'default', rotation: 0 })
+    this.dragTargets?.clear()
   }
 
   onPointerMove(): void {
@@ -135,10 +147,18 @@ export class Translating<Shape extends TLShape = TLShape> extends TransformState
   }
 
   onKeyDown(): void {
+    if (this.editor.inputs.getAltKey?.() && !this.isCloning && !this.info.isCreating) {
+      this.startCloning()
+      if (this.isCloning) return
+    }
     this.update()
   }
 
   onKeyUp(): void {
+    if (!this.editor.inputs.getAltKey?.() && this.isCloning) {
+      this.stopCloning()
+      return
+    }
     this.update()
   }
 
