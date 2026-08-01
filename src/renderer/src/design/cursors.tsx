@@ -93,10 +93,33 @@ export const DESIGN_CURSORS = {
   '--crew-cursor-grabbing': hand(CLOSED_HAND, CLOSED_HAND_PLACE, 'grabbing')
 } satisfies Partial<Record<`--crew-cursor-${TLCursorType}`, string>>
 
+const NATIVE_CURSORS: Record<string, string> = {
+  'ns-resize': 'ns-resize',
+  'ew-resize': 'ew-resize',
+  'nesw-resize': 'nesw-resize',
+  'nwse-resize': 'nwse-resize',
+  'nwse-rotate': 'grabbing',
+  'nesw-rotate': 'grabbing',
+  'senw-rotate': 'grabbing',
+  'swne-rotate': 'grabbing',
+  'zoom-in': 'zoom-in',
+  'zoom-out': 'zoom-out'
+}
+
 export const ARROW_TIP = { x: AT_TIP.x, y: AT_TIP.y }
+
+export function cursorFor(type: string): string {
+  const drawn = `--crew-cursor-${type}`
+  if (drawn in DESIGN_CURSORS) return `var(${drawn})`
+  return NATIVE_CURSORS[type] ?? 'var(--crew-cursor-default)'
+}
 
 export function applyDesignCursors(container: HTMLElement): void {
   for (const [name, value] of Object.entries(DESIGN_CURSORS)) container.style.setProperty(name, value)
+}
+
+export function showCursor(container: HTMLElement, type: string): void {
+  container.style.cursor = cursorFor(type)
 }
 
 export function applyToolCursor(container: HTMLElement, toolId: string): void {
