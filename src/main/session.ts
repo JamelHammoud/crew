@@ -315,9 +315,15 @@ export class AppSession {
       projectSync: auto
     }
     this.folder = repoPath
-    this.savedStore()?.save({ mode: 'host', folder: repoPath, name, home, shared })
+    this.place = projectPlace(repoPath)
+    this.keep({ mode: 'host', folder: repoPath, name, home, shared })
     this.rememberProject()
     return this.live
+  }
+
+  private keep(session: SavedSession): void {
+    this.written = session
+    this.savedStore()?.save(session)
   }
 
   private syncAll(): Promise<void> {
