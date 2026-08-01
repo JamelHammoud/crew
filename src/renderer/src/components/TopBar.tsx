@@ -14,25 +14,19 @@ import Toolbox from './Toolbox'
 import ToolboxMark from './ToolboxMark'
 import Tooltip from './Tooltip'
 import UpdatePill from './UpdatePill'
+import { TABS, type NavTab, type Tab } from './navTabs'
 import { MenuItem, Popover } from './Popover'
 
-export type Tab = 'chat' | 'docs' | 'design'
-
-export type NavTab = Tab
+export type { NavTab, Tab }
 
 export const TOP_BAR_H = 70
 
 const COMPACT_WIDTH = 760
 const COLLAPSED_NAV_WIDTH = 560
 
-const TABS: Array<{ id: NavTab; label: string }> = [
-  { id: 'chat', label: 'Chat' },
-  { id: 'docs', label: 'Docs' },
-  { id: 'design', label: 'Design' }
-]
-
 export default function TopBar({ tab, onTab }: { tab: Tab; onTab: (tab: Tab) => void }) {
   const connection = useCrew(s => s.connection)
+  const pinned = useSidebar(s => s.pinned)
   const selfName = useCrew(s => s.selfName)
   const waiting = useCrew(reviewCount)
   const settingsOpen = useSettings() !== null
