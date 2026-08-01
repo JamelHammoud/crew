@@ -38,7 +38,7 @@ If this sounds interesting to you, you can try Crew out yourself (it's incredibl
 
 ## The highlights
 
-![Crew in a thread with the changed file open beside it](images/hero.png)
+<img height="600" alt="image" src="https://github.com/user-attachments/assets/6bd2ef7c-dbb0-4f0c-9275-14c59d827ab5" />
 
 - Run several agents at once (even in the same thread!)
 - Split-view up to 10 active agent threads, across projects
