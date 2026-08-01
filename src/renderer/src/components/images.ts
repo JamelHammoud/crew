@@ -5,8 +5,19 @@ export interface PendingAttachment extends OutgoingAttachment {
   size: number
 }
 
-export const previewSrc = (attachment: PendingAttachment): string =>
-  `data:${attachment.mime};base64,${attachment.data}`
+const previews = new Map<string, string>()
+
+export function previewSrc(attachment: PendingAttachment): string {
+  const made = previews.get(attachment.id)
+  if (made) return made
+  const src = `data:${attachment.mime};base64,${attachment.data}`
+  previews.set(attachment.id, src)
+  return src
+}
+
+export function keepPreviews(ids: Set<string>): void {
+  for (const id of [...previews.keys()]) if (!ids.has(id)) previews.delete(id)
+}
 
 const readAsBase64 = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {
