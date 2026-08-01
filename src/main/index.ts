@@ -412,8 +412,12 @@ function poppedOut(win: BrowserWindow): boolean {
 
 function openWindow(place?: string | null): BrowserWindow {
   tray.hidePanel()
-  const full = appWindows().filter(one => !poppedOut(one))
-  const win = full[windowForAlert(full.map(one => ({ place: crews.keyInView(one.webContents.id), popped: false })), place ?? null)]
+  const all = appWindows()
+  const at = windowForAlert(
+    all.map(one => ({ place: crews.keyInView(one.webContents.id), popped: poppedOut(one) })),
+    place ?? null
+  )
+  const win = all[at]
   if (!win) return createWindow()
   if (win.isMinimized()) win.restore()
   win.show()
