@@ -626,7 +626,7 @@ export class Editor {
         .map(id => this.getShapePageBounds(id))
         .filter((value): value is Box => value !== undefined)
       if (children.length > 0) {
-        const inverse = this.getShapePageTransform(shape).invert()
+        const inverse = this.getShapePageTransform(shape).clone().invert()
         const bounds = Box.FromPoints(inverse.applyToPoints(Box.Common(children).corners))
         return new Rectangle2d({ x: bounds.x, y: bounds.y, width: bounds.w, height: bounds.h, isFilled: false })
       }
@@ -662,7 +662,7 @@ export class Editor {
   }
 
   getPointInShapeSpace(shapeOrId: TLShape | TLShapeId, point: VecLike): Vec {
-    return this.getShapePageTransform(shapeOrId).invert().applyToPoint(point)
+    return this.getShapePageTransform(shapeOrId).clone().invert().applyToPoint(point)
   }
 
   getShapePageBounds(shapeOrId: TLShape | TLShapeId): Box | undefined {
