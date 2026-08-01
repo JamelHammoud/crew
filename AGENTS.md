@@ -547,7 +547,7 @@ Two things, and they belong to different people. The row of reactions that opens
 
 ## The side panel
 
-Everything the app can stand beside the chat: a web page, a terminal, the project files, the music, the games, and the thread's own plan, board and helpers. `SidePanel` holds it and `BrowserPanel` draws it.
+Everything the app can stand beside the chat: a web page, a terminal, the project files, what has changed since the last commit, the music, the games, and the thread's own plan, board and helpers. `SidePanel` holds it and `BrowserPanel` draws it.
 
 - It is a place rather than a side effect of a tab existing. `open` on the browser store is the whole of whether it is standing, so it can be open on nothing, and putting it away keeps what is in it rather than throwing three tabs away for one press. Read off `tabs.length` it could not do either.
 - Putting something in it opens it, and that rule is written once, in the `set` the store's actions are given. It counts what arrived rather than what is there, or a page that finished loading behind a panel somebody had just put away would bring it back on its own.
