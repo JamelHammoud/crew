@@ -81,12 +81,15 @@ export function nextUpdate(state: UpdateState, said: UpdateWord): UpdateState {
     // download somebody asked for and did not get is worth a word.
     case 'error':
       return state.stage === 'getting' ? failing(state, 'download') : state
-    // An install that did not happen is the one thing said after it landed. The
-    // bytes are still here, so the press offers the whole of it again, and being
-    // held a second time is said a second time.
+    // An install that did not happen is the one thing said after it landed, and
+    // it is a moment rather than a new state: the bytes are here, the offer on
+    // the screen has not changed, and the press is the same press. Falling back
+    // to a stage that says an update is available read as the whole thing coming
+    // undone, when the one thing left to do about it was the restart the pill was
+    // already offering. Being held a second time is said a second time.
     case 'stuck':
-      return state.stage === 'ready' || state.stage === 'failed'
-        ? failing(state, said.why)
+      return state.stage === 'ready'
+        ? { ...state, why: said.why, told: state.told + 1 }
         : state
   }
 }
