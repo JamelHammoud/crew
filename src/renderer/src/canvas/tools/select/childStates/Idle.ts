@@ -368,12 +368,9 @@ export class Idle extends StateNode<SelectEditor> {
   }
 
   private nudgeSelectedShapes(ephemeral: boolean, info: any): void {
-    const keys: Set<string> = this.editor.inputs.keys ?? new Set([info.code])
-    const delta = new Vec(0, 0)
-    if (keys.has('ArrowLeft')) delta.x -= 1
-    if (keys.has('ArrowRight')) delta.x += 1
-    if (keys.has('ArrowUp')) delta.y -= 1
-    if (keys.has('ArrowDown')) delta.y += 1
+    const keys: Set<string> = this.editor.inputs.keys ?? new Set()
+    const delta = nudgeDelta(keys)
+    if (delta.equals(new Vec(0, 0))) delta.setTo(nudgeDelta(new Set([info.code])))
     if (delta.equals(new Vec(0, 0))) return
     if (!ephemeral) this.editor.markHistoryStoppingPoint('nudge shapes')
     this.editor.updateInstanceState({ isChangingStyle: true })
