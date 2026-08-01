@@ -4,7 +4,7 @@ import { cleanup, render } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import AgentIcon from '../src/renderer/src/components/AgentIcon'
-import { petOf } from '../src/renderer/src/components/art/pet'
+import { EYE_RADIUS, MIN_BRIDGE, PET_GRID, eyeGapAt, petOf } from '../src/renderer/src/components/art/pet'
 import { paletteFor } from '../src/shared/art'
 import { useCrew } from '../src/renderer/src/state/store'
 
@@ -31,6 +31,16 @@ describe('the pet an agent wears', () => {
   it('is the same pet for one id and a different one for two', () => {
     expect(petOf(SEED)).toEqual(petOf(SEED))
     expect(petOf('ali/codex').body).not.toBe(petOf(SEED).body)
+  })
+
+  // The angular family keeps its flat sides and its count, and every vertex is
+  // turned rather than pointed: nothing a pet is made of comes to a corner.
+  it('never comes to a hard corner, whichever family it was drawn from', () => {
+    for (let i = 0; i < 400; i++) {
+      const body = petOf(`every-${i}`).body
+      expect(body).toContain('Q')
+      expect(body).not.toMatch(/L[^QZ]*L/)
+    }
   })
 
   // The numbers come off one stream in the order makePet reads them, so

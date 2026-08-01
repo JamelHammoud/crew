@@ -47,29 +47,25 @@ export default function ThreadAsk({
   // the words are drawn.
   const written = useMemo(() => relabelMentions(whole, mentionRefs, agents).trim(), [agents, mentionRefs, whole])
 
-  const button = (
-    <button
-      ref={setLine}
-      onClick={onJump}
-      className="block max-w-full truncate text-sm text-fg-muted transition-colors duration-150 hover:text-fg-secondary"
-    >
-      {ask}
-    </button>
-  )
-
-  if (!askHasMore(ask, written, clipped)) return button
-
   return (
     <HoverCard
       width={CARD_WIDTH}
       className="min-w-0 max-w-full"
       content={
-        <span className="block max-h-[300px] overflow-y-auto overscroll-contain whitespace-pre-wrap break-words text-sm leading-[1.6] text-fg/70 select-text">
-          {written}
-        </span>
+        askHasMore(ask, written, clipped) ? (
+          <span className="block max-h-[300px] overflow-y-auto overscroll-contain whitespace-pre-wrap break-words text-sm leading-[1.6] text-fg/70 select-text">
+            {written}
+          </span>
+        ) : null
       }
     >
-      {button}
+      <button
+        ref={setLine}
+        onClick={onJump}
+        className="block max-w-full truncate text-sm text-fg-muted transition-colors duration-150 hover:text-fg-secondary"
+      >
+        {ask}
+      </button>
     </HoverCard>
   )
 }
