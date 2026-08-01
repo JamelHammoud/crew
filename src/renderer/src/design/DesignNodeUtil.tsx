@@ -71,6 +71,7 @@ export class DesignNodeUtil extends ShapeUtil<DesignNodeShape> {
   }
 
   getIndicatorPath(shape: DesignNodeShape) {
+    if (typeof Path2D === 'undefined') return undefined
     const { w, h } = shape.props
     const kind = nodeShapeOf(shape.props.shape)
     const path = new Path2D()
