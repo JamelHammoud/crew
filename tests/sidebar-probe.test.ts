@@ -219,6 +219,11 @@ describe('the sidebar', () => {
     const current = container.querySelector('button[aria-current="page"]')
     expect(current?.textContent).toBe('one')
     expect(current?.querySelectorAll('span')).toHaveLength(2)
+    expect(current?.closest('[data-reorder]')?.className).toContain('opacity-100')
+    const other = [...container.querySelectorAll('[data-reorder]')].find(group => group.textContent === 'two')
+    expect(other?.className).toContain('opacity-45')
+    expect(other?.className).toContain('hover:opacity-100')
+    expect(other?.className).toContain('focus-within:opacity-100')
   })
 
   it('holds the threads running in a place under it', async () => {

@@ -42,7 +42,12 @@ export default function PlaceGroup({
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
 
   return (
-    <div data-reorder={place.key} className="pb-4">
+    <div
+      data-reorder={place.key}
+      className={`pb-4 transition-opacity duration-150 ${
+        here ? 'opacity-100' : 'opacity-45 hover:opacity-100 focus-within:opacity-100'
+      }`}
+    >
       <button
         onPointerDown={onTake}
         onClick={() => {
