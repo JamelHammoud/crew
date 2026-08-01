@@ -1,5 +1,6 @@
 import { atom, computed, transact, unsafe__withoutCapture, type Atom, type Computed } from '../signals'
 import { hasAnyKey, squashRecordDiffs, type RecordsDiff } from './RecordsDiff'
+import { sameRecordValue } from './equality'
 import { HistoryAccumulator, type ChangeSource, type HistoryEntry } from './historyAccumulator'
 import { SideEffectManager } from './SideEffectManager'
 import type { IdOf, RecordScope, UnknownRecord } from './RecordType'
@@ -413,7 +414,7 @@ export class Store<R extends UnknownRecord> {
       depth++
       if (depth > 100) throw new Error('Maximum store update depth exceeded, bailing out')
       for (const { before, after } of events.values()) {
-        if (before && after && before !== after) {
+        if (before && after && before !== after && !sameRecordValue(before, after)) {
           this.sideEffects.handleAfterChange(before, after, source)
         } else if (before && !after) {
           this.sideEffects.handleAfterDelete(before, source)
