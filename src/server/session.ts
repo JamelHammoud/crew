@@ -922,6 +922,15 @@ export class CrewSession {
       case 'tool.remove':
         if (meta.role === 'ui') this.handleToolRemove(member, msg.toolId)
         break
+      case 'memory.add':
+        if (meta.role === 'ui') this.handleMemoryAdd(member, msg.text)
+        break
+      case 'memory.edit':
+        if (meta.role === 'ui') this.handleMemoryEdit(member, msg.memoryId, msg.text)
+        break
+      case 'memory.remove':
+        if (meta.role === 'ui') this.handleMemoryRemove(member, msg.memoryId)
+        break
       case 'attachment.limit':
         if (meta.role === 'ui') this.handleAttachmentLimit(member, msg.mb)
         break
