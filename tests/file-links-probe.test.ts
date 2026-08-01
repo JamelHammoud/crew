@@ -567,6 +567,16 @@ describe('steps and thinking', () => {
     expect(useBrowser.getState().tabs[0].path).toBe(SHOT)
   })
 
+  it('opens a picture an agent read from a folder named in two words', async () => {
+    render(createElement(StepRow, { item: item({ name: 'Read', detail: SENT }) }))
+    await screen.findByText(SENT)
+    await waitFor(() => {
+      fireEvent.click(screen.getByRole('button'))
+      expect(useBrowser.getState().tabs[0]?.path).toBe(SENT)
+    })
+    expect(document.querySelector('svg + span + span')?.textContent).not.toContain('\n')
+  })
+
   it('hides a thought about a file on someone else’s computer', async () => {
     render(createElement(StepRow, { item: item({ kind: 'thinking', text: 'I saved /Users/ali/Desktop/notes.md' }) }))
     fireEvent.click(screen.getByText('Thought'))
