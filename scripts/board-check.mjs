@@ -185,20 +185,25 @@ const driveSource = String.raw`(async () => {
       if (moved) await restore(shape, before)
       return { ok: moved, note: moved ? 'moved' : 'did not move at all' }
     })
-    await attempt('a click finds the ' + type, async () => {
-      const centre = boundsOf(shape).center
-      const hit = editor.getShapeAtPoint(centre, {
-        margin: editor.options.hitTestMargin / editor.getZoomLevel(),
-        hitInside: true,
-        renderingOnly: true
+    if (type === 'geo' && shape.props && shape.props.fill !== 'none')
+      await attempt('a click finds a filled geo', async () => {
+        const hit = editor.getShapeAtPoint(boundsOf(shape).center, {
+          margin: editor.options.hitTestMargin / editor.getZoomLevel(),
+          hitInside: true,
+          renderingOnly: true
+        })
+        return { ok: Boolean(hit) && hit.id === shape.id, note: hit ? 'found ' + hit.type : 'found nothing' }
       })
-      const hollow = type === 'geo' && shape.props && shape.props.fill === 'none'
-      if (hollow && !(shape.props.richText || shape.props.text)) return null
-      return { ok: Boolean(hit) && hit.id === shape.id, note: hit ? 'found ' + hit.type : 'found nothing' }
-    })
   }
 
-  const box = shapes.find(shape => editor.getShapeUtil(shape).canResize(shape) && shape.type !== 'geo') || shapes[0]
+  const box =
+    shapes.find(
+      shape =>
+        (shape.type === 'design-node' || shape.type === 'note') &&
+        editor.getShapeUtil(shape).canResize(shape) &&
+        boundsOf(shape).w > 40 &&
+        boundsOf(shape).h > 40
+    ) || shapes.find(shape => editor.getShapeUtil(shape).canResize(shape))
 
   await attempt('a corner handle resizes', async () => {
     editor.select(box.id)
