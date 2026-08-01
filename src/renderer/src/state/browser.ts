@@ -110,7 +110,9 @@ type BrowserState = {
   togglePreview(id: string): void
   toggleFolder(id: string, path: string): void
   addTab(): void
-  addTerminal(command?: string): void
+  addTerminal(command?: string, folder?: string): void
+  stash(): PanelMemory
+  restore(memory: PanelMemory | null): void
   selectTab(id: string): void
   moveTab(id: string, to: number): void
   closeTab(id: string): void
