@@ -383,8 +383,7 @@ function findAdjacentGaps(
   shapeId: string,
   gapLength: number,
   direction: 'forward' | 'backward',
-  intersection: [number, number],
-  visited = new Set<string>()
+  intersection: [number, number]
 ): BoundsSnapGap[] {
   const matches = gaps.filter(gap => {
     const id = direction === 'forward' ? gap.startNode.id : gap.endNode.id
@@ -394,22 +393,24 @@ function findAdjacentGaps(
       rangeIntersection(gap.breadthIntersection[0], gap.breadthIntersection[1], intersection[0], intersection[1])
     )
   })
-  const result: BoundsSnapGap[] = []
-  for (const match of matches) {
-    const key = `${match.startNode.id}:${match.endNode.id}`
-    if (visited.has(key)) continue
-    visited.add(key)
-    result.push(match)
+  if (matches.length === 0) return []
+
+  const nextNodes = new Set<string>()
+  const direct = matches.length
+  for (let i = 0; i < direct; i++) {
+    const match = matches[i]
     const nextId = direction === 'forward' ? match.endNode.id : match.startNode.id
+    if (nextNodes.has(nextId)) continue
+    nextNodes.add(nextId)
     const nextIntersection = rangeIntersection(
       match.breadthIntersection[0],
       match.breadthIntersection[1],
       intersection[0],
       intersection[1]
     )!
-    result.push(...findAdjacentGaps(gaps, nextId, gapLength, direction, nextIntersection, visited))
+    matches.push(...findAdjacentGaps(gaps, nextId, gapLength, direction, nextIntersection))
   }
-  return result
+  return matches
 }
 
 const edgesEqual = (a: [Vec, Vec], b: [Vec, Vec]) =>
