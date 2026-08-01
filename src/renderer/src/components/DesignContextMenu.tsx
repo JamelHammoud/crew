@@ -11,7 +11,7 @@ import { glyphForShape, LayersGlyph } from '../design/glyphs'
 import { layerName } from '../design/tools'
 import { MenuDivider, MenuItem, Popover, SubMenu } from './Popover'
 
-const ORDER: CommandGroup[] = ['agent', 'clipboard', 'order', 'group', 'transform', 'state', 'remove', 'canvas']
+const ORDER: CommandGroup[] = ['history', 'agent', 'clipboard', 'order', 'group', 'transform', 'state', 'remove', 'canvas']
 
 const MENU_HEIGHT = 420
 
