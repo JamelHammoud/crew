@@ -143,7 +143,7 @@ function Session() {
           <Sidebar overlay strong={tab === 'design'} />
         </div>
       )}
-      <div className="flex-1 min-w-0 relative bg-ink-900">
+      <div className="flex-1 min-w-0 relative isolate bg-ink-900">
         <main className="absolute inset-0">
           {tab === 'chat' && (openThreadIds.length > 0 ? <ThreadColumns ids={openThreadIds} /> : <Chat />)}
           {tab === 'docs' && <Docs />}
