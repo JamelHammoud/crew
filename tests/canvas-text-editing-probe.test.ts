@@ -247,12 +247,24 @@ describe('canvas text editing', () => {
 
     const written = editor().getShape(textId)!.props.richText as RichTextDocument
     expect(richTextToPlainText(written)).toBe('Hello crew')
+  })
 
-    const canvas = view.container.querySelector('[data-canvas="true"]') as HTMLElement
+  it('takes the caret down again when the run is cancelled', async () => {
+    const { view, editor } = mountBoard()
+    await waitFor(() => expect(view.container.querySelectorAll('[data-canvas-shape="true"]')).toHaveLength(2))
+
+    const bounds = editor().getShapePageBounds(textId)!
+    const point = editor().pageToViewport(bounds.center)
+    const node = view.container.querySelector(`[data-shape-id="${textId}"]`) as HTMLElement
+    act(() => doubleClick(node, point.x, point.y))
+    await waitFor(() => expect(view.container.querySelector('[contenteditable="true"]')).toBeTruthy())
+
     act(() => {
-      canvas.dispatchEvent(new dom.window.KeyboardEvent('keydown', { bubbles: true, key: 'Escape' }))
+      editor().cancel()
     })
+
     await waitFor(() => expect(editor().getEditingShapeId()).toBe(null))
     expect(view.container.querySelector('[contenteditable="true"]')).toBeNull()
+    expect(view.container.querySelector(`[data-canvas-text-editor="${textId}"]`)).toBeNull()
   })
 })

@@ -164,12 +164,9 @@ describe('SelectTool', () => {
     expect(tool.getPath()).toBe('select.pointing_canvas')
   })
 
-  it('can receive an excluded interaction state and reach it from a pointer state', () => {
-    class Translating extends StateNode<any> {
-      static id = 'translating'
-    }
+  it('reaches translating from a pointer state without anything registering it', () => {
     const host = editor()
-    const tool = new SelectTool(host).addChild(Translating)
+    const tool = new SelectTool(host)
     tool.enter()
     tool.transition(PointingSelection.id)
     host.inputs.dragging = true
