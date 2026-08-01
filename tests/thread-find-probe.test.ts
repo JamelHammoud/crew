@@ -49,7 +49,7 @@ const steps: AgentStep[] = [
     ts: 5,
     kind: 'thinking',
     status: 'done',
-    text: 'The keyline set decides how big a circle may be.'
+    text: 'A circle and a square are not equal on the ruler.\n\nThe keyline set decides how big a circle may be.'
   },
   read('t1', 'src/renderer/src/App.tsx'),
   read('t2', 'design/hero-shot.png'),

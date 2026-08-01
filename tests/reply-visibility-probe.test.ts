@@ -63,6 +63,15 @@ const openChat = (events: SessionEvent[], sendChat = vi.fn()): void => {
   render(createElement(Chat))
 }
 
+const frames = async (count: number): Promise<void> => {
+  for (let i = 0; i < count; i++) {
+    await new Promise(resolve => {
+      if (typeof requestAnimationFrame === 'function') requestAnimationFrame(() => resolve(null))
+      else setTimeout(() => resolve(null), 16)
+    })
+  }
+}
+
 describe('seeing a reply', () => {
   afterEach(cleanup)
 
@@ -77,6 +86,22 @@ describe('seeing a reply', () => {
     const target = document.querySelector('[data-message="message:mine"]')
     expect(target).toBeTruthy()
     await waitFor(() => expect(target!.classList.contains('message-flash')).toBe(true))
+  })
+
+  it('holds the flash until the message it answers is in view', async () => {
+    openChat([mine, theirs])
+
+    const target = document.querySelector('[data-message="message:mine"]') as HTMLElement
+    let top = 2400
+    target.getBoundingClientRect = () =>
+      ({ top, bottom: top + 80, height: 80, left: 0, right: 660, width: 660 }) as unknown as DOMRect
+
+    fireEvent.click(screen.getByLabelText('Go to the message this replies to'))
+    await frames(10)
+    expect(target.classList.contains('message-flash')).toBe(false)
+
+    top = 240
+    await waitFor(() => expect(target.classList.contains('message-flash')).toBe(true))
   })
 
   it('previews the picture when the message it answers is one', () => {
