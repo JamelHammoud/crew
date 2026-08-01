@@ -14,6 +14,15 @@ const node = (id: string, x: number, y: number, w = 10, h = 10): BoundsSnapNode 
   pageBounds: new Box(x, y, w, h)
 })
 
+const at = (id: string, box: Box, ...points: Vec[]): BoundsSnapNode => ({ id, pageBounds: box, points })
+
+const axes = ['x', 'y'] as const
+
+const along = (axis: (typeof axes)[number], main: number, cross: number, length: number, breadth: number) =>
+  axis === 'x' ? new Box(main, cross, length, breadth) : new Box(cross, main, breadth, length)
+
+const towards = (axis: (typeof axes)[number], main: number) => (axis === 'x' ? new Vec(main, 0) : new Vec(0, main))
+
 describe('canvas bounds snapping', () => {
   it('snaps to the closest point on each axis and accumulates equal point matches', () => {
     const result = snapTranslateBounds({

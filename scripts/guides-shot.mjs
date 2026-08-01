@@ -151,11 +151,13 @@ app.whenReady().then(async () => {
     await wait(50)
   }
   await wait(600)
+  const drive = args => win.webContents.executeJavaScript('(' + ${JSON.stringify(driveSource)} + ')(' + args + ')')
   const shots = []
-  for (const { name, z } of zooms) {
+  await drive("'start'")
+  for (const { name, z, look } of zooms) {
     let result = null
     try {
-      result = await win.webContents.executeJavaScript('(' + ${JSON.stringify(driveSource)} + ')(' + z + ')')
+      result = await drive("'at'," + z + ',' + JSON.stringify(look))
     } catch (error) {
       result = { failed: String((error && error.message) || error) }
     }
@@ -163,8 +165,8 @@ app.whenReady().then(async () => {
     const file = path.join(${JSON.stringify(out)}, ${JSON.stringify(label)} + '-' + name + '.png')
     await fs.writeFile(file, shot.toPNG())
     shots.push({ name, file, ...result })
-    await win.webContents.executeJavaScript('window.canvasEditor.snaps.clearIndicators()').catch(() => {})
   }
+  await drive("'end'").catch(() => {})
   console.log('GUIDES ' + JSON.stringify({ shots, errors: [...new Set(errors)].slice(0, 8) }))
   app.exit(0)
 }).catch(error => {
