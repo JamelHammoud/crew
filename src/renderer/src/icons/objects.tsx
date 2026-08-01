@@ -230,19 +230,11 @@ export const GhostGlyph = glyph(
 )
 
 export const DesktopGlyph = glyph(
-  <>
-    <rect x="2.5" y="4.5" width="19" height="13" rx="3" />
-    <path d="M12 17.5v3" />
-    <path d="M8 20.5h8" />
-  </>
+  <path d="M5.5 4.5H18.5A3 3 0 0 1 21.5 7.5V14.5A3 3 0 0 1 18.5 17.5H5.5A3 3 0 0 1 2.5 14.5V7.5A3 3 0 0 1 5.5 4.5ZM12 17.5v3M8 20.5h8" />
 )
 
 export const GlobeGlyph = glyph(
-  <>
-    <circle cx="12" cy="12" r="9.25" />
-    <ellipse cx="12" cy="12" rx="4" ry="9.25" />
-    <path d="M2.75 12h18.5" />
-  </>
+  <path d="M2.75 12A9.25 9.25 0 0 1 21.25 12A9.25 9.25 0 0 1 2.75 12ZM8 12A4 9.25 0 0 1 16 12A4 9.25 0 0 1 8 12ZM2.75 12H21.25" />
 )
 
 // Two commits on a line and a third off to one side, which is the drawing
