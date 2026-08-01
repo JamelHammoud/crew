@@ -392,20 +392,6 @@ export default function ThreadView({
                         </button>
                       </>
                     )}
-                    {!alone && (
-                      <Tooltip label="Open in its own window" className="ml-1">
-                        <button
-                          onClick={() => {
-                            void window.crew?.popOutThread?.(threadId)
-                            closeThread(threadId)
-                          }}
-                          aria-label="Open in its own window"
-                          className="w-10 h-10 rounded-full bg-ink-800 text-fg-secondary flex items-center justify-center transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95"
-                        >
-                          <PopOutGlyph className="w-5 h-5" />
-                        </button>
-                      </Tooltip>
-                    )}
                     {/* One button for the panel rather than one per thing the
                         panel can hold. What is in it is picked in the panel,
                         where the plus and the Start tab both read the one
