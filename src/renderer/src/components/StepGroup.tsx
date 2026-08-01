@@ -20,7 +20,7 @@ export default function StepGroup({ items, linked }: { items: ThreadItem[]; link
       <button onClick={() => setOpen(!expanded)} className={rowClass(true)}>
         {thinking ? <ThinkingMark running={live} /> : <Mark icon={action.icon} running={live} />}
         {live ? (
-          <Label action={action} running swap={thinking} />
+          <Label action={action} running />
         ) : (
           <span className="shrink-0 text-fg-muted group-hover:text-fg-secondary transition-colors">
             {action.many ?? action.done}
