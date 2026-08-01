@@ -1411,6 +1411,18 @@ export const useCrew = create<CrewState>((set, get) => {
       set({ openThreadIds: openBeside(open, threadId), openThreadId: threadId })
     },
     openThreadAlone: threadId => set({ openThreadIds: [threadId], openThreadId: threadId, chatColumn: false }),
+    // A banner names the crew it was raised in, so one clicked after this window
+    // has moved on goes back to that project first and the welcome is what opens
+    // the thread. Read without the crew it landed on whatever was in view, which
+    // is a column standing on a thread that project has never heard of.
+    openAlertThread: (threadId, place) => {
+      if (place && place !== get().place) {
+        get().wantThread(threadId)
+        void get().switchTo(place)
+        return
+      }
+      get().openThreadAlone(threadId)
+    },
     focusThread: threadId => {
       if (get().openThreadId === threadId) return
       if (!get().openThreadIds.includes(threadId)) return
