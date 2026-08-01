@@ -103,8 +103,12 @@ const thresholdAtZoom = (threshold = 8, zoom = 1) => {
 
 const boxFrom = (box: BoxLike) => new Box(box.x, box.y, box.w, box.h)
 
-const pointsForNodes = (nodes: readonly BoundsSnapNode[]) =>
-  nodes.flatMap(node => {
+const pointCache = new WeakMap<object, BoundsSnapPoint[]>()
+
+const pointsForNodes = (nodes: readonly BoundsSnapNode[]) => {
+  const held = pointCache.get(nodes)
+  if (held) return held
+  const points = nodes.flatMap(node => {
     const bounds = boxFrom(node.pageBounds)
     return (node.points ?? bounds.cornersAndCenter).map((point, index) => ({
       id: `${node.id}:${index}`,
@@ -112,6 +116,9 @@ const pointsForNodes = (nodes: readonly BoundsSnapNode[]) =>
       y: point.y
     }))
   })
+  pointCache.set(nodes, points)
+  return points
+}
 
 const gapNodes = (nodes: readonly BoundsSnapNode[]): BoundsSnapGapNode[] =>
   nodes.map(node => ({ id: node.id, pageBounds: boxFrom(node.pageBounds) }))
