@@ -35,12 +35,12 @@ const thread = (id: string, parentThreadId?: string): ThreadMeta => ({
   parentThreadId
 })
 
-const spawned = (threadId: string, subject: string): SessionEvent => ({
+const spawned = (threadId: string, subject: string, parentThreadId = PARENT): SessionEvent => ({
   id: `started-${threadId}`,
   ts: 1000,
   kind: 'subagent.started',
   threadId,
-  parentThreadId: PARENT,
+  parentThreadId,
   parentPromptId: 'p1',
   name: 'Scout',
   subject,

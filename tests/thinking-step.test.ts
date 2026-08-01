@@ -67,8 +67,8 @@ describe('a thinking step', () => {
   })
 
   it('sets the thought in italic, in the muted grey', () => {
-    render(createElement(StepRow, { item: thought('working it out', true) }))
-    const line = screen.getByText('working it out')
+    render(createElement(StepRow, { item: thought(LONG, true) }))
+    const line = screen.getByText(LONG)
     const quiet = line.closest('.md-quiet')
     expect(quiet).not.toBeNull()
 
@@ -76,6 +76,56 @@ describe('a thinking step', () => {
     const rule = css.split('.md-quiet {')[1]?.split('}')[0] ?? ''
     expect(rule).toContain('italic')
     expect(rule).toContain('text-fg-muted')
+  })
+
+  it('never sets a thought in bold, however the model wrote it', () => {
+    render(createElement(StepRow, { item: thought(`**A heading**\n\n${LONG}`, true) }))
+    const bold = document.querySelector('.md-quiet strong')
+    expect(bold?.textContent).toBe('A heading')
+
+    const rule = readStyles().split('.md-quiet strong {')[1]?.split('}')[0] ?? ''
+    expect(rule).toContain('font-normal')
+    expect(rule).not.toContain('font-semibold')
+    expect(rule).not.toContain('font-bold')
+  })
+
+  it('reads on the row, with the markers taken off, and only opens when there is more to read', () => {
+    const { rerender } = render(createElement(StepRow, { item: thought('**Planning the edit**', false) }))
+    screen.getByText('Planning the edit')
+    expect(document.querySelector('.md-quiet')).toBeNull()
+    expect(document.querySelector('button')?.className).toContain('cursor-default')
+
+    rerender(createElement(StepRow, { item: thought(`**Planning the edit**\n\n${LONG}`, false) }))
+    screen.getByText('Planning the edit')
+    expect(document.querySelector('.md-quiet')).toBeNull()
+    fireEvent.click(document.querySelector('button') as HTMLButtonElement)
+    expect(screen.getByText(LONG).closest('.md-quiet')).not.toBeNull()
+  })
+
+  it('folds a run of thoughts into one that opens onto every one of them', () => {
+    const run = ['a', 'b', 'c'].map((key, index) =>
+      thought(`**Thought ${index + 1}**`, false, { key, promptId: 'p1' })
+    )
+    expect(stepBlocks(run).map(block => block.items.length)).toEqual([3])
+
+    render(createElement(StepGroup, { items: run }))
+    screen.getByText('Thought')
+    expect(screen.queryByText('Thought 1')).toBeNull()
+    fireEvent.click(document.querySelector('button') as HTMLButtonElement)
+    screen.getByText('Thought 1')
+    screen.getByText('Thought 3')
+  })
+
+  it('keeps a pair of thoughts where they can be read, and never folds two runs together', () => {
+    const pair = ['a', 'b'].map(key => thought('**One**', false, { key, promptId: 'p1' }))
+    expect(stepBlocks(pair).map(block => block.items.length)).toEqual([1, 1])
+
+    const split = [
+      thought('**One**', false, { key: 'a', promptId: 'p1' }),
+      thought('**Two**', false, { key: 'b', promptId: 'p1' }),
+      thought('**Three**', false, { key: 'c', promptId: 'p2' })
+    ]
+    expect(stepBlocks(split).map(block => block.items.length)).toEqual([1, 1, 1])
   })
 
   it('breaks a thought into paragraphs instead of leaving a blank line between them', () => {
