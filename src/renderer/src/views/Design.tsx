@@ -61,21 +61,7 @@ export default function Design() {
     rememberPanels(panels)
   }, [panels])
 
-  if (!current) {
-    return (
-      <div
-        className="h-full flex flex-col items-center justify-center px-8"
-        style={{ paddingTop: TOP_BAR_H }}
-      >
-        <button
-          onClick={() => setSelected(createBoard('Untitled'))}
-          className="h-10 px-5 rounded-full bg-fg text-ink-900 text-base font-semibold transition-all duration-150 hover:bg-fg/90 active:scale-95"
-        >
-          New board
-        </button>
-      </div>
-    )
-  }
+  if (!current) return null
 
   return (
     <DesignBoardContext.Provider value={boardContext}>
