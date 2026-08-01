@@ -65,6 +65,7 @@ export class CanvasEventBridge {
     const page = this.editor.screenToPage(screen)
     this.pointers.set(event.pointerId, screen)
     this.editor.inputs.pointerDown(screen, page, event, event.pointerType)
+    this.editor.inputs.setButton(event.button, true)
     const currentTarget = event.currentTarget as (EventTarget & { setPointerCapture?: (id: number) => void }) | null
     currentTarget?.setPointerCapture?.(event.pointerId)
     this.dispatch({
