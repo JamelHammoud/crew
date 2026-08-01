@@ -351,6 +351,7 @@ export class Translating<Shape extends TLShape = TLShape> extends TransformState
       .map(snapshot => this.editor.getShape(snapshot.shape.id))
       .filter(Boolean) as TLShape[]
     this.dragTargets?.dropShapes(moving)
+    this.recordDuplicateProps(moving)
     this.applyLifecycle('end')
     this.editor.kickoutOccludedShapes?.(this.snapshots.map(snapshot => snapshot.shape.id))
     if (this.info.isCreating) {
