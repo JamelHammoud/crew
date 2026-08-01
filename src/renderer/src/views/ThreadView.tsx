@@ -75,8 +75,7 @@ export default function ThreadView({
   focused?: boolean
   alone?: boolean
 }) {
-  const events = useCrew(s => s.events)
-  const steps = useCrew(s => s.steps)
+  const { events, steps } = useThreadRead(threadId)
   const selfId = useCrew(s => s.selfId)
   const thread = useCrew(s => s.threads[threadId])
   const activePromptId = useCrew(s => s.threadPrompts[threadId])
