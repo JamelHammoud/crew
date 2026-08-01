@@ -312,6 +312,43 @@ function serveTickets(session: CrewSession, raw: string, req: http.IncomingMessa
   return false
 }
 
+// What the crew has learned: writing one down, rewriting one, taking one out and
+// reading the list again. Every one names the promptId of the run asking, the
+// same credential the board and the helpers are reached on.
+function serveMemory(session: CrewSession, raw: string, req: http.IncomingMessage, res: http.ServerResponse): boolean {
+  const [url, query = ''] = raw.split('?')
+  if (req.method === 'GET' && url === '/memory') {
+    const result = session.memoryRead(new URLSearchParams(query).get('promptId') ?? '')
+    sendJson(res, 'error' in result ? 400 : 200, result)
+    return true
+  }
+  if (req.method !== 'POST') return false
+  if (url === '/memory') {
+    readJson(req, res, MAX_AGENT_BODY, body => {
+      const result = session.memoryPut(said(body, 'promptId'), body.memories ?? body.text)
+      sendJson(res, 'error' in result ? 400 : 200, result)
+    })
+    return true
+  }
+  const forget = /^\/memory\/([\w-]+)\/forget$/.exec(url)
+  if (forget) {
+    readJson(req, res, MAX_AGENT_BODY, body => {
+      const result = session.memoryForget(said(body, 'promptId'), forget[1])
+      sendJson(res, 'error' in result ? 404 : 200, result)
+    })
+    return true
+  }
+  const edit = /^\/memory\/([\w-]+)$/.exec(url)
+  if (edit) {
+    readJson(req, res, MAX_AGENT_BODY, body => {
+      const result = session.memoryEdit(said(body, 'promptId'), edit[1], body.text)
+      sendJson(res, 'error' in result ? 404 : 200, result)
+    })
+    return true
+  }
+  return false
+}
+
 // A page an agent wants on the screen. It names the promptId of the run asking,
 // the same credential the board and the helpers are reached on, and the thread
 // it opens in is read off that run rather than taken from the body.
