@@ -194,6 +194,35 @@ describe('canvas rendering', () => {
     expect(node.textContent).toBe('Away')
   })
 
+  it('publishes the zoom and its reciprocal so chrome can hold its size on screen', () => {
+    const context = canvasContext()
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(context as unknown as CanvasRenderingContext2D)
+    const state = setup()
+    let shapeRenders = 0
+    const renderer: CanvasShapeRenderer<Shape> = {
+      render: () => {
+        shapeRenders++
+        return null
+      }
+    }
+    const view = render(createElement(Canvas<Shape>, { host: state.host, shapeRenderer: renderer }))
+    const root = view.container.querySelector('[data-canvas="true"]') as HTMLElement
+
+    expect(root.style.getPropertyValue(CANVAS_ZOOM_VARIABLE)).toBe('1')
+    expect(root.style.getPropertyValue(CANVAS_SCALE_VARIABLE)).toBe('1')
+
+    act(() => state.camera.set({ x: 0, y: 0, z: 4 }))
+    expect(root.style.getPropertyValue(CANVAS_ZOOM_VARIABLE)).toBe('4')
+    expect(root.style.getPropertyValue(CANVAS_SCALE_VARIABLE)).toBe('0.25')
+
+    act(() => state.camera.set({ x: 0, y: 0, z: 0.14 }))
+    expect(root.style.getPropertyValue(CANVAS_ZOOM_VARIABLE)).toBe('0.14')
+    expect(root.style.getPropertyValue(CANVAS_SCALE_VARIABLE)).toBe(String(cameraZoomVariables(0.14).scale))
+    expect(Number(root.style.getPropertyValue(CANVAS_SCALE_VARIABLE))).toBeCloseTo(1 / 0.14, 3)
+
+    expect(shapeRenders).toBe(1)
+  })
+
   it('sizes its bitmap and hands overlay renderers page-space coordinates', () => {
     const context = canvasContext()
     vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(context as unknown as CanvasRenderingContext2D)
