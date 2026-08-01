@@ -1,6 +1,6 @@
 import { textInkAt, type ContrastEditor } from '../../../../design/textContrast'
 import { Vec } from '../../../math'
-import { createShapeId, fromPlainText } from '../../../schema'
+import { createShapeId, fromPlainText, type TLShape } from '../../../schema'
 import { StateNode } from '../../state'
 import { selectAdjacentShape, selectFirstChildShape, selectParentShape } from '../adjacent'
 import {
