@@ -127,28 +127,23 @@ export default function ChangeRow({
               </Popover>
             </div>
           </span>
-          {/* Read is a state before it is a button, so it stands whether or not
-              the pointer is there, and it is the same circle a task is checked
-              off with. */}
+          {/* Read is a state before it is a button, and the row going quiet is
+              what really says it, so the mark is the quietest thing on the row
+              rather than the loudest. White is the one action color and this is
+              not the action. Unread, it is nothing at all until the pointer is
+              there: a slot of empty circles down a list of files is a column
+              asking to be dealt with, and most of them never are. */}
           <span className="pl-0.5">
             <Tooltip label={read ? 'Read it again' : 'Mark as read'}>
               <button
                 aria-label={read ? 'Read it again' : 'Mark as read'}
                 aria-pressed={read}
                 onClick={() => onRead(!read)}
-                className={`flex h-7 w-7 items-center justify-center rounded-full transition-colors duration-150 hover:bg-fg/[0.06] ${
-                  read ? 'text-fg' : 'text-fg-faint hover:text-fg'
+                className={`flex h-7 w-7 items-center justify-center rounded-full transition-colors duration-150 hover:bg-fg/[0.06] hover:text-fg ${
+                  read ? 'text-fg-muted' : 'text-transparent group-hover:text-fg-faint'
                 }`}
               >
-                <span
-                  className={`flex h-4 w-4 items-center justify-center rounded-full transition-colors duration-150 ${
-                    read
-                      ? 'bg-fg text-ink-900'
-                      : 'border-[1.5px] border-current text-transparent group-hover:text-fg-muted'
-                  }`}
-                >
-                  <CheckGlyph className="w-3 h-3" />
-                </span>
+                <CheckGlyph className="w-3.5 h-3.5" />
               </button>
             </Tooltip>
           </span>

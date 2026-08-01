@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useCallback, useRef } from 'react'
 import { useQuickReactor, useValue } from '../signals'
 import { OverlayCanvas } from './OverlayCanvas'
 import { ShapeLayer } from './ShapeLayer'
