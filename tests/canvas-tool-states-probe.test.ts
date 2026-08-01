@@ -35,7 +35,8 @@ function editor(): Editor {
     shapeUtils: [...defaultShapeUtils],
     bindingUtils: [...defaultBindingUtils],
     tools: TOOLS,
-    getContainer: () => ({ getBoundingClientRect: () => ({ left: 0, top: 0 }) }) as HTMLElement
+    getContainer: () =>
+      ({ getBoundingClientRect: () => ({ left: 0, top: 0 }), focus: () => undefined }) as unknown as HTMLElement
   })
   subject.setViewportScreenBounds({ x: 0, y: 0, w: 800, h: 600 })
   return subject

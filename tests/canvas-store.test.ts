@@ -609,14 +609,15 @@ describe('what a side effect is told about', () => {
     expect(afterChange).toHaveBeenCalledTimes(1)
   })
 
-  it('reads a nested value rather than the reference it arrived under', () => {
+  it('reads the value rather than the reference it arrived under', () => {
     const store = makeStore()
     store.put([shape('a', { x: 1 })])
     const afterChange = vi.fn()
     store.sideEffects.registerAfterChangeHandler('shape', afterChange)
-    const existing = store.get(ShapeType.createId('a'))!
-    store.put([{ ...existing, meta: { ...(existing as { meta?: object }).meta } } as Rec])
+    store.put([shape('a', { x: 1 })])
     expect(afterChange).not.toHaveBeenCalled()
+    store.put([shape('a', { x: 2 })])
+    expect(afterChange).toHaveBeenCalledTimes(1)
   })
 })
 
