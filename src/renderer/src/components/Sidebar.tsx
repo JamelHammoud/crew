@@ -108,7 +108,7 @@ export default function Sidebar({ overlay, strong }: { overlay?: boolean; strong
     >
       <div className="app-drag h-[70px] shrink-0" />
       <div className="app-no-drag shrink-0 px-5 pb-2.5">
-        <span className="text-sm font-semibold text-fg/65">Projects</span>
+        <span className="text-sm font-medium text-fg/65">Projects</span>
       </div>
       <div className="flex-1 min-h-0 overflow-y-auto app-no-drag px-3 pb-2">
         {places.map(place => (
