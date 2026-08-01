@@ -1676,10 +1676,15 @@ export class Editor {
 
   popFocusedGroupId(): this {
     const focused = this.getFocusedGroupId()
-    if (!focused.startsWith('shape:')) return this
-    const group = this.getShape(focused as TLShapeId)
-    const parent = group?.parentId
-    this.selection.setFocusedGroupId(parent?.startsWith('shape:') ? (parent as TLShapeId) : null)
+    const group = focused.startsWith('shape:') ? this.getShape(focused as TLShapeId) : undefined
+    if (!group) {
+      this.selection.setFocusedGroupId(null)
+      this.selectNone()
+      return this
+    }
+    const above = this.findShapeAncestor(group, shape => this.isShapeOfType(shape, 'group'))
+    this.selection.setFocusedGroupId(above?.id ?? null)
+    this.select(group.id)
     return this
   }
 
