@@ -251,7 +251,8 @@ const driveSource = String.raw`(async () => {
     results,
     shapes: shapes.length,
     mounted: document.querySelectorAll('[data-canvas-shape="true"]').length,
-    culled: editor.getCulledShapes().size
+    culled: editor.getCulledShapes().size,
+    mountMs: Number((perf.ready - perf.start).toFixed(1))
   }
 })()`
 
