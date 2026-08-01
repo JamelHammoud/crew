@@ -17,6 +17,7 @@ export class ArrowShapeTool implements ArrowStateParent {
       pointing: new Pointing(editor, this)
     }
     this.current = this.states[ArrowShapeTool.initial]
+    this.current.onEnter({})
   }
 
   transition(id: string, info: ArrowPointerInfo = {}): void {
