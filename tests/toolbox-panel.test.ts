@@ -368,7 +368,7 @@ describe('the toolbox', () => {
     ])
 
     cleanup()
-    toolbox([tool({ id: 'tool-7', name: 'Join link', mark: 'clipboard', action: { kind: 'copy', text: 'crew://join/abc' } })])
+    toolbox([tool({ id: 'tool-7', name: 'Join link', mark: 'copy', action: { kind: 'copy', text: 'crew://join/abc' } })])
 
     fireEvent.click(screen.getByText('Join link'))
     expect(copied).toEqual(['crew://join/abc'])
@@ -422,7 +422,7 @@ describe('the toolbox', () => {
 
   it('runs a chain in the order it was built, and a pair that name each other stops', () => {
     const dev = tool({ id: 'd', name: 'Dev', mark: 'terminal', action: { kind: 'terminal', command: 'yarn dev' } })
-    const link = tool({ id: 'l', name: 'Link', mark: 'clipboard', action: { kind: 'copy', text: 'crew://join' } })
+    const link = tool({ id: 'l', name: 'Link', mark: 'copy', action: { kind: 'copy', text: 'crew://join' } })
     toolbox([
       dev,
       link,
