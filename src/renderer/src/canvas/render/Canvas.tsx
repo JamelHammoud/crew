@@ -98,13 +98,7 @@ export function Canvas<Shape extends CanvasShapeRecord>({
         </div>
         <OverlayCanvas host={host} />
         {viewportOverlay && <div style={viewportLayerStyle}>{viewportOverlay}</div>}
-        {cameraMoving && (
-          <div
-            data-canvas-hit-test-blocker="true"
-            className="crew-hit-test-blocker"
-            style={{ ...viewportLayerStyle, pointerEvents: 'all' }}
-          />
-        )}
+        {cameraMoving && <div data-canvas-hit-test-blocker="true" className="crew-hit-test-blocker" />}
       </div>
       {inFrontOfCanvas && (
         <div className="crew-canvas-in-front" style={viewportLayerStyle}>
