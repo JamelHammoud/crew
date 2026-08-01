@@ -1492,6 +1492,11 @@ const base64Of = (file: File): Promise<string> =>
 // picture from is nothing rather than a picture that will not load.
 useCrew.subscribe(state => holdCustomEmoji(state.emoji, state.httpBase))
 
+useCrew.subscribe((state, prev) => {
+  if (state.pending === prev.pending) return
+  keepPreviews(new Set(Object.values(state.pending).flat().map(item => item.id)))
+})
+
 // What is waiting to be sent, read at the moment it is asked for. A picked GIF is
 // attached and sent in the same breath, and a count held from the last render is
 // still nought at that point, so a guard reading one would refuse to send the
