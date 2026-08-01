@@ -5,13 +5,16 @@ import { describe, expect, it } from 'vitest'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 
-const ADDRESS = /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/g
+const ADDRESS = /\b\d{1,3}\\*\.\d{1,3}\\*\.\d{1,3}\\*\.\d{1,3}\b/g
 
 const ALLOWED = ['127.0.0.1', '0.0.0.0', '192.0.2.', '198.51.100.', '203.0.113.']
 
+const plain = (address: string): string => address.replace(/\\/g, '')
+
 const allowed = (address: string): boolean => ALLOWED.some(start => address.startsWith(start))
 
-const offenders = (text: string): string[] => (text.match(ADDRESS) ?? []).filter(one => !allowed(one))
+const offenders = (text: string): string[] =>
+  (text.match(ADDRESS) ?? []).map(plain).filter(one => !allowed(one))
 
 const files = (dir: string): string[] =>
   readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
