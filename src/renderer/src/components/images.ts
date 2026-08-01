@@ -65,12 +65,14 @@ export async function readFiles(files: File[], taken: number): Promise<PendingAt
   const read = await Promise.all(
     files.slice(0, room).map(async file => {
       const mime = typeOf(file)
+      const id = crypto.randomUUID()
+      const [data] = await Promise.all([readAsBase64(file), holdPending(id, mime, file)])
       return {
-        id: crypto.randomUUID(),
+        id,
         name: file.name || (isImageType(mime) ? 'image' : 'file'),
         mime,
         size: file.size,
-        data: await readAsBase64(file)
+        data
       }
     })
   )
