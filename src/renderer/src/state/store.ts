@@ -822,11 +822,12 @@ export const useCrew = create<CrewState>((set, get) => {
         const wanted = threadsWanted.filter(id => threads[id])
         for (const agent of msg.snapshot.agents) {
           for (const [promptId, run] of Object.entries(agent.runs)) {
-            for (const step of run.steps) steps[promptId] = upsertStep(steps[promptId], step)
+            for (const step of run.steps) gather(promptId, step)
             tokens[promptId] = run.tokens
             if (run.cost !== undefined) costs[promptId] = run.cost
           }
         }
+        const steps = settleSteps(gathered)
         set({
           connection: 'online',
           selfId: msg.selfId,

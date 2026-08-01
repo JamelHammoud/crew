@@ -97,19 +97,4 @@ function PlaceGroup({
   )
 }
 
-export default memo(
-  PlaceGroup,
-  (a, b) =>
-    a.here === b.here &&
-    a.busy === b.busy &&
-    a.stoppable === b.stoppable &&
-    a.openThreadIds === b.openThreadIds &&
-    a.onOpen === b.onOpen &&
-    a.onOpenThread === b.onOpenThread &&
-    a.onStop === b.onStop &&
-    a.onForget === b.onForget &&
-    a.take === b.take &&
-    a.dragged === b.dragged &&
-    samePlace(a.place, b.place) &&
-    sameLiveThreads(a.threads, b.threads)
-)
+export default memo(PlaceGroup, samePlaceGroup)
