@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useEditor, useValue, type Editor, type TLShape, type TLShapeId } from '../canvas'
 import DesignPanel from '../design/DesignPanel'
 import { glyphForShape } from '../design/glyphs'
@@ -24,7 +24,12 @@ export default function DesignLeftPanel() {
       aria-label={selection > 0 ? 'Design' : 'Layers'}
       className="w-64 shrink-0 flex flex-col min-w-0 min-h-0 overflow-hidden bg-ink-900 border-r border-ink-700"
     >
-      {selection > 0 ? <DesignPanel /> : <Layers editor={editor} />}
+      <div data-design-layers hidden={selection > 0} className="flex-1 min-h-0">
+        <Layers editor={editor} />
+      </div>
+      <div data-design-inspector hidden={selection === 0} className="flex-1 min-h-0">
+        <DesignPanel />
+      </div>
     </aside>
   )
 }
@@ -63,9 +68,6 @@ function Layers({ editor }: { editor: Editor }) {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
   const [renaming, setRenaming] = useState<string | null>(null)
   const shapes = useValue('design shapes', () => editor.getCurrentPageShapesSorted(), [editor])
-  const selected = useValue('design selection', () => editor.getSelectedShapeIds(), [editor])
-  const selectedSet = useMemo(() => new Set<string>(selected), [selected])
-  const listRef = useRef<HTMLDivElement>(null)
 
   const closeSearch = () => {
     setSearching(false)
@@ -78,12 +80,6 @@ function Layers({ editor }: { editor: Editor }) {
     if (!clean) return all
     return buildRows(shapes, new Set()).filter(row => layerName(row.shape).toLowerCase().includes(clean))
   }, [shapes, collapsed, query])
-
-  useEffect(() => {
-    const first = selected[0]
-    if (!first) return
-    listRef.current?.querySelector(`[data-shape="${first}"]`)?.scrollIntoView({ block: 'nearest' })
-  }, [selected])
 
   const toggle = (id: string) =>
     setCollapsed(prev => {
@@ -119,7 +115,7 @@ function Layers({ editor }: { editor: Editor }) {
           {searching ? <CloseGlyph className="w-4 h-4" /> : <SearchGlyph className="w-4 h-4" />}
         </PanelButton>
       </div>
-      <div ref={listRef} className="flex-1 min-h-0 overflow-y-auto px-2 pb-2">
+      <div className="flex-1 min-h-0 overflow-y-auto px-2 pb-2">
         {rows.length === 0 && (
           <p className="px-2 py-6 text-xs text-fg-muted text-center">
             {query ? 'Nothing matches that.' : 'Draw something and it shows up here.'}
@@ -128,15 +124,12 @@ function Layers({ editor }: { editor: Editor }) {
         {rows.map(row => {
           const id = row.shape.id
           const hidden = row.shape.meta.hidden === true
-          const active = selectedSet.has(id)
           const Glyph = glyphForShape(row.shape)
           return (
             <div
               key={id}
               data-shape={id}
-              className={`group h-7 flex items-center gap-1 rounded-lg pr-1 transition-colors ${
-                active ? 'bg-fg/[0.1]' : 'hover:bg-fg/[0.06]'
-              }`}
+              className="group h-7 flex items-center gap-1 rounded-lg pr-1 transition-colors hover:bg-fg/[0.06]"
               style={{ paddingLeft: 4 + row.depth * 12 }}
             >
               {row.children > 0 && !query ? (
@@ -152,7 +145,7 @@ function Layers({ editor }: { editor: Editor }) {
               ) : (
                 <span className="w-4 shrink-0" />
               )}
-              <Glyph className={`w-4 h-4 shrink-0 ${active ? 'text-fg' : 'text-fg-muted'}`} />
+              <Glyph className="w-4 h-4 shrink-0 text-fg-muted" />
               {renaming === id ? (
                 <input
                   autoFocus
@@ -173,7 +166,7 @@ function Layers({ editor }: { editor: Editor }) {
                   onClick={() => editor.select(id as TLShapeId)}
                   onDoubleClick={() => canRename(row.shape) && setRenaming(id)}
                   className={`flex-1 min-w-0 text-xs text-left truncate ${
-                    hidden ? 'text-fg-faint' : active ? 'text-fg font-semibold' : 'text-fg-secondary'
+                    hidden ? 'text-fg-faint' : 'text-fg-secondary'
                   }`}
                 >
                   {layerName(row.shape)}

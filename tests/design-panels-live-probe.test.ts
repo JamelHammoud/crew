@@ -104,10 +104,18 @@ describe('the design panels on a real board', () => {
     const editor = board()
     const card = node(editor, 'Card', 0)
     const view = inside(editor, createElement(DesignLeftPanel))
+    const layers = view.container.querySelector('[data-design-layers]') as HTMLElement
+    const inspector = view.container.querySelector('[data-design-inspector]') as HTMLElement
+    expect(layers.hidden).toBe(false)
+    expect(inspector.hidden).toBe(true)
     expect(view.container.querySelector('[aria-label="Layers"]')).toBeTruthy()
     act(() => {
       editor.setSelectedShapes([card])
     })
+    expect(view.container.querySelector('[data-design-layers]')).toBe(layers)
+    expect(view.container.querySelector('[data-design-inspector]')).toBe(inspector)
+    expect(layers.hidden).toBe(true)
+    expect(inspector.hidden).toBe(false)
     expect(view.container.querySelector('[aria-label="Design"]')).toBeTruthy()
   })
 
