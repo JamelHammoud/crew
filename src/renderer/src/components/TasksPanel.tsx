@@ -28,7 +28,7 @@ import {
   endPreview,
   lastEnd,
   threadState,
-  threadWorking,
+  workingThreads,
   type ThreadState
 } from './thread'
 import { formatFullTime, formatShortDay } from './time'
