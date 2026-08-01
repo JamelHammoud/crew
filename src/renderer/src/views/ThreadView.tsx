@@ -258,7 +258,12 @@ export default function ThreadView({
   return (
     <div className="h-full flex">
       <div className="flex-1 min-w-0 relative">
-        <FindBar containerRef={contentRef} scrollerRef={scrollRef} placeholder="Find in thread" />
+        <FindBar
+          containerRef={contentRef}
+          scrollerRef={scrollRef}
+          placeholder="Find in thread"
+          listens={focused}
+        />
         <div ref={scrollRef} onScroll={onScroll} className="h-full overflow-y-auto overflow-x-hidden px-6">
           <div
             ref={contentRef}
