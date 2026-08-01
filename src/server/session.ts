@@ -815,6 +815,7 @@ export class CrewSession {
       ),
       todos: [...this.todos.values()],
       tools: [...this.tools.values()],
+      memories: [...this.memories.values()],
       attachmentMb: this.attachmentMb,
       boards: this.boardList(),
       huddle: this.huddleRoom(),
