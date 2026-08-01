@@ -54,6 +54,10 @@
      watched, and only ever a transform, so nothing is painted twice. */
   --animate-drift: drift 19s ease-in-out infinite;
 
+  /* The sidebar arriving over the page it is standing on. It comes from its own
+     left edge rather than growing, so the rows inside it never move. */
+  --animate-rail: rail 0.18s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+
   /* One screen inside a card giving way to another. It travels the way you are
      going, so going deeper comes in from the right and coming back comes in from
      the left, and the card's own height is what carries the rest of it. */
@@ -87,6 +91,15 @@
     to {
       opacity: 1;
       transform: none;
+    }
+  }
+
+  @keyframes rail {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
     }
   }
 

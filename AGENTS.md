@@ -319,6 +319,22 @@ Crew owns the board engine in `src/renderer/src/canvas`. It keeps the persisted 
 - The columns run in the order they want you, not the order work travels: a review, then what is being worked on, then what is next, then what is done. The panel is 480 across and a ticket is a sentence, so they are sections down the panel rather than columns across it. Four columns at 480 is 105 pixels each.
 - Claude and Codex take a steer mid-run, so anywhere else an answer joins the queue.
 
+## Memory
+
+What the crew has learned, in one list every agent on every machine reads before it starts. It is three events in the chat log, so it syncs for free, replays for free, and nobody scrolls past the moment a fact landed.
+
+- The two halves are deliberately uneven. Reading is free: the host puts the whole list on the prompt itself, beside the tickets and the helpers, so every agent has it in front of it before it does anything and nothing has to be fetched, remembered or polled. Writing is a curl on the host's own http, the way a ticket and a helper are, so every provider gets it at once rather than one CLI's own tool. A store an agent has to remember to open is a store most runs never open, which is the whole reason the reading half is not a call.
+- Every memory is in every prompt, so the list is a budget rather than a store. A line is `MEMORY_TEXT_LIMIT` and the list is `MEMORY_LIMIT`, both in `src/shared/memory.ts`, and anything longer than a sentence is a doc. A full list is refused with the move to make, "Take one out before adding another", rather than the oldest being dropped for somebody: a fact quietly falling off the end is worse than a call that failed and said why.
+- One list, not one per agent. Cross agent is the whole point of it, and a scope would be a second thing to explain on every screen and in every preamble for a distinction nobody asked for.
+- The same fact twice is one memory, keyed on the words the way `askKey` keys a question, so the second call comes back with the id the first one got rather than writing a second row that says the same thing.
+- An id is six hex characters rather than a uuid. It is written out beside every line, sixty times over, in front of every agent on every run, and 36 characters of noise a row is a paragraph of nothing.
+- A ghost thread is refused in words. Its events never reach the log, so a memory written from one would either vanish with the window or leak the hidden thread into the crew's own history, and there is no third answer. Refused, the model reads why instead of watching a call quietly not appear.
+- A write over http is refused unless the promptId names a run the host has going right now, which is the credential the board and the helpers are already reached on. A write over the socket is refused from a runner, the way the music controls are: an agent's machine is connected the whole time it is joined, and the door it writes through is the live prompt.
+- The three events fold off the snapshot the way the toolbox does, so the memory rides in `SessionSnapshot` as a list of its own and a fact learned months ago is still a fact after its event has fallen off the window.
+- Whoever wrote what is there now owns the line, so rewriting one puts the new name on it. The row wears `AgentIcon` for an agent and `Avatar` for a person, which is the one thing a list of sentences cannot say about itself.
+- The page is under Crew in the settings, since it is everyone's. The way in stands at the end of the list, so it is the empty state and the way in both, and adding and editing are one card because they are one question. What comes back from a refusal is said on that card rather than somewhere the person is not looking.
+- The line under the heading is the one page that has earned one. A list of sentences and a button cannot say that every agent reads them before it starts, and that is the whole of what makes this different from a notes page.
+
 ## Docs
 
 A page of the crew's own writing, block by block, in a BlockNote editor crew draws all the chrome for. Every panel BlockNote ships is turned off in `DocEditor` and replaced: `DocSlashMenu` for what `/` opens, `DocToolbar` for a selection, `DocSideMenu` for the gutter, `DocEmojiMenu` for `:`. They are crew's own glass menus, the same rows the mention menu uses.
