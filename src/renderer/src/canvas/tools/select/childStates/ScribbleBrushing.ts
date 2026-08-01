@@ -1,4 +1,5 @@
-import { Box } from '../../../math'
+import { intersectLineSegmentPolygon } from '../../../geometry'
+import { Box, pointInPolygon } from '../../../math'
 import { StateNode } from '../../state'
 import type { SelectEditor } from '../types'
 
