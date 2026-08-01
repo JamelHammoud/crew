@@ -199,6 +199,51 @@ describe('several crews in one app', () => {
     expect(app.places().find(place => place.key === projectPlace('/elsewhere'))).toBeUndefined()
   })
 
+  it('pops a thread out on a crew the window asking is not looking at', async () => {
+    const app = crews('crews-pop-other')
+    const one = await repo('crews-pop-other-one')
+    const two = await repo('crews-pop-other-two')
+    await app.start(1, one, 'Jamel')
+    await app.start(2, two, 'Jamel')
+
+    const target = popOutTarget(app.keyInView(1), projectPlace(two), app.openKeys())
+
+    expect(target).toBe(projectPlace(two))
+    expect(app.switchTo(3, target ?? '')?.folder).toBe(two)
+    expect(app.keyInView(1)).toBe(projectPlace(one))
+  })
+
+  it('pops nothing out on a crew that is not running', async () => {
+    const app = crews('crews-pop-dead')
+    const one = await repo('crews-pop-dead-one')
+    await app.start(1, one, 'Jamel')
+
+    expect(popOutTarget(app.keyInView(1), projectPlace('/nowhere'), app.openKeys())).toBeNull()
+  })
+
+  it('pops out on the crew the window asking is in when it was told none', async () => {
+    const app = crews('crews-pop-here')
+    const one = await repo('crews-pop-here-one')
+    const two = await repo('crews-pop-here-two')
+    await app.start(1, one, 'Jamel')
+    await app.start(2, two, 'Jamel')
+
+    expect(popOutTarget(app.keyInView(2), undefined, app.openKeys())).toBe(projectPlace(two))
+  })
+
+  it('leaves a crew it is no longer running out of the ones a thread may pop out on', async () => {
+    const app = crews('crews-pop-left')
+    const one = await repo('crews-pop-left-one')
+    const two = await repo('crews-pop-left-two')
+    await app.start(1, one, 'Jamel')
+    await app.start(2, two, 'Jamel')
+
+    await app.close(projectPlace(two))
+
+    expect(app.openKeys()).toEqual([projectPlace(one)])
+    expect(popOutTarget(app.keyInView(1), projectPlace(two), app.openKeys())).toBeNull()
+  })
+
   it('remembers every project it has opened rather than only the one in view', async () => {
     const app = crews('crews-recent')
     const one = await repo('crews-recent-one')
