@@ -11,7 +11,10 @@ import type { LiveThread } from '../src/shared/threads'
 const popOutThread = vi.fn()
 const onOpen = vi.fn()
 const onOpenToRight = vi.fn()
+const written = vi.fn(async () => {})
 const sent = vi.spyOn(CrewSocket.prototype, 'send').mockImplementation(() => {})
+
+Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: written } })
 
 const meta = (status: ThreadMeta['status']): Record<string, ThreadMeta> => ({
   'thread-2': {
