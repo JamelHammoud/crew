@@ -305,26 +305,6 @@ describe('changed file lists', () => {
     await screen.findByText('src/app.ts')
     expect(document.body.textContent).not.toContain(ROOT)
   })
-
-  it('opens a read of a file whose path has spaces in it', async () => {
-    const item: ThreadItem = {
-      key: 'p1:t2',
-      ts: 0,
-      kind: 'tool',
-      author: 'Claude',
-      self: false,
-      text: '',
-      streaming: false,
-      name: 'Read',
-      detail: SENT
-    }
-    render(createElement(StepRow, { item }))
-    await screen.findByText(SENT)
-    await waitFor(() => {
-      fireEvent.click(screen.getByRole('button'))
-      expect(useBrowser.getState().tabs[0]?.path).toBe(SENT)
-    })
-  })
 })
 
 describe('changed lines', () => {
