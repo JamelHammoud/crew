@@ -305,7 +305,7 @@ export default function ThreadView({
         />
         <div
           ref={scrollRef}
-          onScroll={onScroll}
+          onScroll={scrolled}
           onContextMenu={onBackground}
           className="h-full overflow-y-auto overflow-x-hidden px-6"
         >
