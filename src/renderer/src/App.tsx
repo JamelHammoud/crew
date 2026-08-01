@@ -9,6 +9,7 @@ import TasksPanel from './components/TasksPanel'
 import Toaster from './components/Toaster'
 import TopBar, { type Tab } from './components/TopBar'
 import VoiceScreen from './components/voice/VoiceScreen'
+import WindowCorner from './components/WindowCorner'
 import { lazy, Suspense } from 'react'
 import { reviewCount } from './state/alerts'
 import { SIDEBAR_W, useSidebar } from './state/sidebar'
@@ -147,6 +148,7 @@ function Session() {
         <TasksPanel open={tasksOpen} onClose={() => setTasksOpen(false)} onOpenThread={openFromTasks} />
       </div>
       <SidePanel visible={tab === 'chat'} />
+      <WindowCorner />
       <HuddlePanel />
       <VoiceScreen />
       <Settings />
