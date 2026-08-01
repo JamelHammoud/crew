@@ -123,10 +123,22 @@ const pointsForNodes = (nodes: readonly BoundsSnapNode[]) => {
 const gapNodes = (nodes: readonly BoundsSnapNode[]): BoundsSnapGapNode[] =>
   nodes.map(node => ({ id: node.id, pageBounds: boxFrom(node.pageBounds) }))
 
-export function getVisibleGaps(nodes: readonly BoundsSnapNode[]): {
+interface VisibleGaps {
   horizontal: BoundsSnapGap[]
   vertical: BoundsSnapGap[]
-} {
+}
+
+const gapCache = new WeakMap<object, VisibleGaps>()
+
+export function getVisibleGaps(nodes: readonly BoundsSnapNode[]): VisibleGaps {
+  const held = gapCache.get(nodes)
+  if (held) return held
+  const found = collectVisibleGaps(nodes)
+  gapCache.set(nodes, found)
+  return found
+}
+
+function collectVisibleGaps(nodes: readonly BoundsSnapNode[]): VisibleGaps {
   const horizontal: BoundsSnapGap[] = []
   const vertical: BoundsSnapGap[] = []
   const byX = gapNodes(nodes).sort((a, b) => a.pageBounds.minX - b.pageBounds.minX)
