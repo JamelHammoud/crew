@@ -139,8 +139,6 @@ const runEvents: SessionEvent[] = [
   }
 ]
 
-// A thread that has finished, so the resting cards are reading a real end out of
-// the log rather than falling through the empty case.
 const endEvents: SessionEvent[] = Array.from({ length: CARDS }, (_, index) =>
   threadId(index) === LIVE
     ? []

@@ -217,7 +217,8 @@ describe('what the canvas draws over the artwork', () => {
     subject.groupShapes([first, second])
 
     const drawn = paint(subject)
-    expect(drawn.named('strokeRect').some(call => call.args[2] === 300 && call.args[3] === 100)).toBe(false)
+    expect(drawn.named('strokeRect').some(call => call.args[2] === 300 && call.args[3] === 100)).toBe(true)
+    expect(drawn.named('strokeRect').some(call => call.args[2] === 100 && call.args[3] === 100)).toBe(false)
     expect(drawn.named('stroke').length).toBeGreaterThan(0)
   })
 
