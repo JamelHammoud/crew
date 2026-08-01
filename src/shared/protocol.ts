@@ -127,6 +127,9 @@ export type ClientMessage =
   | { type: 'tool.add'; name: string; mark: string; action: ToolAction }
   | { type: 'tool.edit'; toolId: string; name: string; mark: string; action: ToolAction }
   | { type: 'tool.remove'; toolId: string }
+  | { type: 'memory.add'; text: string }
+  | { type: 'memory.edit'; memoryId: string; text: string }
+  | { type: 'memory.remove'; memoryId: string }
   | { type: 'attachment.limit'; mb: number }
   | { type: 'subagent.stop'; threadId: string }
   // What one person lets helpers do on their own machine. It is kept in that
