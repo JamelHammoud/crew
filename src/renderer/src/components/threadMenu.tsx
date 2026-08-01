@@ -1,6 +1,6 @@
 import { useState, type MouseEvent, type ReactNode } from 'react'
 import { threadMenuActions, type ThreadOpenAction } from '../../../shared/threadViews'
-import { CloseGlyph, ColumnsGlyph, ColumnsRightGlyph, PopOutGlyph } from '../icons'
+import { CloseGlyph, ColumnsGlyph, PopOutGlyph } from '../icons'
 import { useCrew } from '../state/store'
 import { MenuItem, Popover } from './Popover'
 
