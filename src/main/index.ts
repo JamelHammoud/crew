@@ -9,6 +9,7 @@ import {
   shell,
   type WebContents
 } from 'electron'
+import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { setBadge, showAlert } from './alerts'
