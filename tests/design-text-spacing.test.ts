@@ -1,9 +1,22 @@
-// @vitest-environment jsdom
+import { createRequire } from 'node:module'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Editor } from '../src/renderer/src/canvas/editor'
 import { createShapeId, createTLStore, fromPlainText, type TLTextShape } from '../src/renderer/src/canvas/schema'
 import { DesignTextUtil } from '../src/renderer/src/design/TextUtil'
 import { setTextShapeType } from '../src/renderer/src/design/textType'
+
+const JSDOM = createRequire(import.meta.url)('jsdom').JSDOM as new (html: string) => {
+  window: Window & typeof globalThis
+}
+
+const originalDocument = Object.getOwnPropertyDescriptor(globalThis, 'document')
+const originalHTMLElement = Object.getOwnPropertyDescriptor(globalThis, 'HTMLElement')
+
+function installDom(): void {
+  const dom = new JSDOM('<!doctype html><html><body></body></html>')
+  Object.defineProperty(globalThis, 'document', { configurable: true, value: dom.window.document })
+  Object.defineProperty(globalThis, 'HTMLElement', { configurable: true, value: dom.window.HTMLElement })
+}
 
 function board(): Editor {
   return new Editor({
@@ -15,11 +28,15 @@ function board(): Editor {
 
 afterEach(() => {
   vi.restoreAllMocks()
-  document.body.replaceChildren()
+  if (originalDocument) Object.defineProperty(globalThis, 'document', originalDocument)
+  else Reflect.deleteProperty(globalThis, 'document')
+  if (originalHTMLElement) Object.defineProperty(globalThis, 'HTMLElement', originalHTMLElement)
+  else Reflect.deleteProperty(globalThis, 'HTMLElement')
 })
 
 describe('letter spacing on a Design text shape', () => {
   it('remeasures the automatic width with the same spacing that is painted', () => {
+    installDom()
     vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
       const characters = this.textContent?.length ?? 0
       const spacing = Number.parseFloat(this.style.letterSpacing) || 0
