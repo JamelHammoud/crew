@@ -120,23 +120,29 @@ export class CanvasEventBridge {
   private wheel(event: WheelEvent): void {
     const screen = screenPoint(event, this.editor.getContainer())
     const page = this.editor.screenToPage(screen)
+    this.pinchState = 'not sure'
     this.editor.inputs.updateModifiers(event)
+    this.editor.inputs.update(screen, page)
+    const delta = normalizeWheel(event)
+    if (delta.x === 0 && delta.y === 0) return
+    const { panSpeed, zoomSpeed } = this.editor.getCameraOptions()
     const camera = this.editor.getCamera()
+    this.editor.stopCameraAnimation()
     if (event.ctrlKey || event.metaKey) {
-      const z = Math.max(0.05, Math.min(8, camera.z * Math.exp(-event.deltaY * 0.002)))
+      const zoom = camera.z + delta.z * zoomSpeed * camera.z
       this.editor.setCamera(
         {
-          x: camera.x + screen.x / z - screen.x / camera.z,
-          y: camera.y + screen.y / z - screen.y / camera.z,
-          z
+          x: camera.x + screen.x / zoom - screen.x / camera.z,
+          y: camera.y + screen.y / zoom - screen.y / camera.z,
+          z: zoom
         },
         { immediate: true }
       )
     } else {
       this.editor.setCamera(
         {
-          x: camera.x - event.deltaX / camera.z,
-          y: camera.y - event.deltaY / camera.z,
+          x: camera.x + (delta.x * panSpeed) / camera.z,
+          y: camera.y + (delta.y * panSpeed) / camera.z,
           z: camera.z
         },
         { immediate: true }
@@ -144,12 +150,12 @@ export class CanvasEventBridge {
     }
     this.dispatch({
       name: 'wheel',
-      point: page,
+      point: this.editor.inputs.getCurrentPagePoint(),
       screenPoint: screen,
-      delta: { x: event.deltaX, y: event.deltaY, z: event.ctrlKey ? event.deltaY : 0 },
+      delta,
       shiftKey: event.shiftKey,
       altKey: event.altKey,
-      ctrlKey: event.ctrlKey,
+      ctrlKey: event.metaKey || event.ctrlKey,
       accelKey: event.metaKey || event.ctrlKey,
       originalEvent: event
     })
