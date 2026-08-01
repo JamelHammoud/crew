@@ -19,6 +19,7 @@ export default function GeneratedField({
   seed,
   box,
   clip,
+  light,
   className = ''
 }: {
   seed: string
@@ -28,6 +29,10 @@ export default function GeneratedField({
   box: number
   // The silhouette, as a clip path. Left out, it fills whatever box it is given.
   clip?: string
+  // How much light the scene carries, for a shape that stands on it in white.
+  // Left out it is the picture as the covers are photographed, which is what a
+  // mark seen through its own silhouette wears.
+  light?: number
   className?: string
 }) {
   const tile = useRef<HTMLCanvasElement>(null)
