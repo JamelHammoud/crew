@@ -67,6 +67,8 @@ const liveOf = (workingAt: number | null): LivePlace[] =>
   Array.from({ length: PLACES }, (_, index) => ({
     key: keyOf(index),
     folder: folderOf(index),
+    name: `place ${index}`,
+    hosting: true,
     threads: threadsOf(index, workingAt === index)
   }))
 

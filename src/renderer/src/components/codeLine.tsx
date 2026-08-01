@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTheme } from '../state/theme'
 import { docText, type Row, type Span } from './diffRows'
-import { highlightedNow, highlightLines, type ThemedToken } from './highlight'
+import { highlightLines, type Highlighted, type ThemedToken } from './highlight'
 
 interface Piece {
   text: string

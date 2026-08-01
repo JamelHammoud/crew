@@ -409,10 +409,7 @@ const upsertStep =(steps: AgentStep[] | undefined, step: AgentStep): AgentStep[]
   return [...held.filter(one => one.id !== step.id), step].sort(byTime)
 }
 
-// The same run built from a pile of steps at once. Upserting them one at a time
-// sorts the whole run again per step, which is what a thread of a few thousand
-// of them spent its first second doing.
-const settleSteps = (gathered: Record<string, AgentStep[]>): Record<string, AgentStep[]> => {
+const settleSteps =(gathered: Record<string, AgentStep[]>): Record<string, AgentStep[]> => {
   const steps: Record<string, AgentStep[]> = {}
   for (const [promptId, held] of Object.entries(gathered)) {
     const byId = new Map<string, AgentStep>()
@@ -444,7 +441,7 @@ const readPhoto = (file: File, limit: number, send: (image: OutgoingAttachment) 
 // What a thread is, read off the events that made it. One fold for all three
 // ways they arrive: the welcome, one landing live, and a page read back out of
 // the history.
-const foldThread = (threads: Record<string, ThreadMeta>, event: SessionEvent): void => {
+const foldThread = (threads: Record<string, ThreadMeta>, event: SessionEvent): boolean => {
   switch (event.kind) {
     case 'thread.started':
       threads[event.threadId] = {
