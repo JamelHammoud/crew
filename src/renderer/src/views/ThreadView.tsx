@@ -378,7 +378,6 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                 </div>
               </div>
               <div className="relative">
-                <TypingLine where={threadId} />
                 <Composer
                   attachmentKey={threadId}
                   value={text}
