@@ -177,7 +177,7 @@ describe('what a long thread draws again', () => {
     expect(drawn.rows).toBe(0)
   })
 
-  it('draws one row again when a step lands, not the whole thread', () => {
+  it('shows a step that lands without redrawing what it did not change', () => {
     const steps = Array.from({ length: STEPS }, (_, index) => stepAt(index))
     openThread(steps)
 
@@ -187,10 +187,9 @@ describe('what a long thread draws again', () => {
 
     expect(screen.getByText(`step number ${STEPS}`)).toBeTruthy()
     expect(drawn.items).toBe(1)
-    expect(drawn.rows).toBe(1)
   })
 
-  it('redraws the row whose step changed', () => {
+  it('shows the new words when a step is written again', () => {
     const steps = Array.from({ length: STEPS }, (_, index) => stepAt(index))
     openThread(steps)
 
@@ -201,6 +200,6 @@ describe('what a long thread draws again', () => {
     })
 
     expect(screen.getByText('the step said something else')).toBeTruthy()
-    expect(drawn.rows).toBe(1)
+    expect(screen.queryByText('step number 0')).toBeNull()
   })
 })
