@@ -289,14 +289,7 @@ export default function ThreadView({
             style={{ paddingBottom: Math.max(120, overlayHeight - 16) }}
           >
             {thread.forkedFrom && <ForkedFrom threadId={thread.forkedFrom} />}
-            <ThreadItems
-              threadId={threadId}
-              items={items}
-              onReply={item => {
-                setReplyTo(item)
-                inputRef.current?.focus()
-              }}
-            />
+            <ThreadItems threadId={threadId} items={items} onReply={onReply} />
             {activePromptId && startedAt ? (
               <RunStatus startedAt={startedAt} tokens={tokens} cost={cost} steps={steps[activePromptId] ?? []} />
             ) : (
