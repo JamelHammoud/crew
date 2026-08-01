@@ -22,6 +22,7 @@ export interface HitTestHost {
   getCurrentPageRenderingShapesSorted(): TLShape[]
   getShapeGeometry(shape: TLShape): Geometry2d
   getPointInShapeSpace(shape: TLShape, point: Vec): Vec
+  isPointInShape(shape: TLShape, point: Vec, options: { margin?: number; hitInside?: boolean }): boolean
   getShapeMask(shape: TLShape): Vec[] | undefined
   getShapePageBounds(shape: TLShape): Box | undefined
   getShapeText(shape: TLShape): string | undefined
