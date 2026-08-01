@@ -3,6 +3,7 @@ import { Mat, type MatLike } from '../../math/Mat'
 import { HALF_PI, approximately } from '../../math/utils'
 import { Vec, type VecLike } from '../../math/Vec'
 import type { TLShape } from '../../schema'
+import { updateEdgeScrolling } from './edgeScroll'
 import { resizeBox, type ResizeInfo, type ResizeMode } from './resizeBox'
 import { TransformState, type ShapeUpdate, type TransformEditor, type TransformSnapNode } from './types'
 
