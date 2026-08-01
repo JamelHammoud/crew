@@ -54,10 +54,6 @@
      watched, and only ever a transform, so nothing is painted twice. */
   --animate-drift: drift 19s ease-in-out infinite;
 
-  /* The sidebar arriving over the page it is standing on. It comes from its own
-     left edge rather than growing, so the rows inside it never move. */
-  --animate-rail: rail 0.18s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-
   --animate-edge: edge 0.16s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 
   /* One screen inside a card giving way to another. It travels the way you are
