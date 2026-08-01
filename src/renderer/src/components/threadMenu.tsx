@@ -57,10 +57,38 @@ export function ThreadOpenItems({
   )
 }
 
-export function useThreadMenu(props: {
+export function ThreadStatusItems({ threadId, onDone }: { threadId: string; onDone: () => void }) {
+  const status = useCrew(s => s.threads[threadId]?.status)
+  const setThreadStatus = useCrew(s => s.setThreadStatus)
+
+  const set = (to: 'open' | 'done' | 'archived') => {
+    onDone()
+    setThreadStatus(threadId, to)
+  }
+
+  return (
+    <>
+      {status === 'done' ? (
+        <MenuItem icon={<UndoGlyph />} label="Reopen" onClick={() => set('open')} />
+      ) : (
+        <MenuItem icon={<CheckGlyph />} label="Mark done" onClick={() => set('done')} />
+      )}
+      <MenuItem icon={<ArchiveGlyph />} label="Archive thread" onClick={() => set('archived')} />
+    </>
+  )
+}
+
+export function useThreadMenu({
+  status,
+  ...props
+}: {
   threadId: string
   here?: boolean
   placeKey?: string
+  // Where a thread is left is the crew's own, and this window's socket only
+  // reaches the crew it is in, so a thread in another project is opened from
+  // here and finished there.
+  status?: boolean
   onOpen: () => void
 }): { onContextMenu: (event: MouseEvent) => void; menu: ReactNode } {
   const [at, setAt] = useState<{ x: number; y: number } | null>(null)
@@ -73,6 +101,8 @@ export function useThreadMenu(props: {
     menu: (
       <Popover open={at !== null} onClose={() => setAt(null)} at={at ?? undefined} className="min-w-52">
         <ThreadOpenItems {...props} onDone={() => setAt(null)} />
+        {status && <MenuDivider />}
+        {status && <ThreadStatusItems threadId={props.threadId} onDone={() => setAt(null)} />}
       </Popover>
     )
   }
