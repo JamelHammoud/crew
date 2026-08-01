@@ -3,13 +3,12 @@ import { BASE_TYPE, cleanType, type Paint, type TypeStyle } from '../../../share
 import { fontStack } from './fonts'
 import { textInkStyle } from './nodeCss'
 import { alignOf, familyOf, labelAlign, paletteHex, sizeFont } from './palette'
-import { trimOf, withTrim, type TrimmedType } from './verticalTrim'
 
 export function autoLineHeight(editor: Editor): number {
   return editor.getCurrentTheme().lineHeight ?? BASE_TYPE.lineHeight
 }
 
-export function textShapeType(editor: Editor, shape: TLTextShape): TrimmedType {
+export function textShapeType(editor: Editor, shape: TLTextShape): TypeStyle {
   const { font, size, textAlign, color } = shape.props
   const drawn = familyOf(font)
   const base: TypeStyle = {
