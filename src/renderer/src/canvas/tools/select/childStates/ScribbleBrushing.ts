@@ -85,6 +85,10 @@ export class ScribbleBrushing extends StateNode<SelectEditor> {
       const inverse = transform.clone().invert()
       if (geometry.hitTestLineSegment(inverse.applyToPoint(previous), inverse.applyToPoint(current), 0)) {
         const outermost = this.editor.getOutermostSelectableShape(shape)
+        const mask = this.editor.getShapeMask(outermost.id)
+        if (mask && intersectLineSegmentPolygon(previous, current, mask) !== null && !pointInPolygon(current, mask)) {
+          continue
+        }
         this.newlySelectedShapeIds.add(outermost.id)
       }
     }
