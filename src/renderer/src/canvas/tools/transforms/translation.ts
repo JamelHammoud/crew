@@ -145,7 +145,7 @@ export class Translating<Shape extends TLShape = TLShape> extends TransformState
     this.dragTargets?.clear()
   }
 
-  onTickDisabled(info: { elapsed: number }): void {
+  onTick(info: { elapsed: number }): void {
     updateEdgeScrolling(this.editor, info.elapsed)
   }
 
