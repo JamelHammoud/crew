@@ -270,7 +270,9 @@ export interface StepBlock {
 }
 
 const sameStep = (a: ThreadItem, b: ThreadItem): boolean => {
-  if (a.kind !== 'tool' || b.kind !== 'tool' || a.promptId !== b.promptId) return false
+  if (a.promptId !== b.promptId) return false
+  if (a.kind === 'thinking' && b.kind === 'thinking') return true
+  if (a.kind !== 'tool' || b.kind !== 'tool') return false
   const one = toolAction(a.name, a.subagent)
   const two = toolAction(b.name, b.subagent)
   return one.icon === two.icon && one.done === two.done

@@ -2,7 +2,7 @@ import { WarningGlyph } from '../icons'
 import { useBrowser } from '../state/browser'
 import { useCrew } from '../state/store'
 import SubagentMark from './SubagentMark'
-import { describeStep, type SubagentRun } from './thread'
+import { describeStep, rootThread, type SubagentRun } from './thread'
 import { formatSpan } from './time'
 
 // The helpers a thread sent out, as a row of ways in. A chip reads its own
@@ -11,7 +11,7 @@ import { formatSpan } from './time'
 
 const SHOWN = 3
 
-function Chip({ run, threadId }: { run: SubagentRun; threadId: string }) {
+function Chip({ run, parentThreadId }: { run: SubagentRun; parentThreadId: string }) {
   const openSubagent = useBrowser(state => state.openSubagent)
   const promptId = useCrew(state => state.threadPrompts[run.threadId])
   const queued = useCrew(state => state.queues[run.threadId]?.length ?? 0)
@@ -28,7 +28,7 @@ function Chip({ run, threadId }: { run: SubagentRun; threadId: string }) {
   return (
     <button
       type="button"
-      onClick={() => openSubagent(run.threadId, threadId)}
+      onClick={() => openSubagent(run.threadId, parentThreadId)}
       className="group flex items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-ink-700 bg-ink-800/60 transition-all active:scale-[0.98] hover:border-ink-600 hover:bg-ink-700"
     >
       <SubagentMark seed={run.threadId} size="xs" className={working ? 'pulse-soft' : ''} />
