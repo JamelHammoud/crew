@@ -190,7 +190,7 @@ describe('seeing a reply', () => {
     fireEvent.change(composer, { target: { value: 'Still broken.' } })
     fireEvent.click(screen.getByLabelText('Send'))
 
-    expect(sendChat).toHaveBeenCalledWith('Still broken.', undefined, undefined, 'message:mine')
+    expect(sendChat).toHaveBeenCalledWith('Still broken.', undefined, undefined, 'message:mine', undefined, [])
     expect(screen.getByText('Replying to yourself')).toBeTruthy()
   })
 })
