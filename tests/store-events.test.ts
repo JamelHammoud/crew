@@ -138,14 +138,14 @@ describe('an event landing', () => {
     const before = held()
     land(stepped('p1', step('b1', 1)))
 
-    expect(moved(before)).toEqual(['events', 'steps'].sort())
+    expect(moved(before)).toEqual(['events', 'steps'])
   })
 
   it('writes the threads only when a thread event lands', () => {
     const before = held()
     land(threadStarted('t1'))
 
-    expect(moved(before)).toEqual(['events', 'threads'].sort())
+    expect(moved(before)).toEqual(['events', 'threads'])
     expect(useCrew.getState().threads.t1?.title).toBe('Work')
   })
 
