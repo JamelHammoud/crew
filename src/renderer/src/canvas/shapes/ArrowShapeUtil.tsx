@@ -24,50 +24,6 @@ export interface ArrowTerminals {
   end: Vec
 }
 
-function bindingPoint(
-  editor: ShapeEditor,
-  binding: ArrowBinding,
-  opposite: Vec,
-  hasArrowhead: boolean,
-  scale: number,
-  strokeWidth: number
-): Vec | null {
-  const target = editor.getShape?.(binding.toId)
-  if (!target) return null
-  const bounds = editor.getShapePageBounds?.(target)
-  if (!bounds) return null
-  const arrow = editor.getShape?.(binding.fromId)
-  const anchor = new Vec(
-    bounds.x + bounds.w * binding.props.normalizedAnchor.x,
-    bounds.y + bounds.h * binding.props.normalizedAnchor.y
-  )
-  let pagePoint = anchor
-  if (!binding.props.isExact) {
-    const oppositePage = arrow ? opposite.clone().rot(arrow.rotation).addXY(arrow.x, arrow.y) : opposite
-    const direction = oppositePage.clone().sub(anchor)
-    const distances = [
-      direction.x < 0
-        ? (bounds.x - anchor.x) / direction.x
-        : direction.x > 0
-          ? (bounds.x + bounds.w - anchor.x) / direction.x
-          : Infinity,
-      direction.y < 0
-        ? (bounds.y - anchor.y) / direction.y
-        : direction.y > 0
-          ? (bounds.y + bounds.h - anchor.y) / direction.y
-          : Infinity
-    ].filter(value => value >= 0 && Number.isFinite(value))
-    if (distances.length) pagePoint = anchor.clone().add(direction.clone().mul(Math.min(...distances)))
-    if (hasArrowhead) {
-      const away = oppositePage.clone().sub(pagePoint)
-      if (Vec.Len(away)) pagePoint.add(away.uni().mul((10 + strokeWidth / 2) * scale))
-    }
-  }
-  if (!arrow) return pagePoint
-  const local = editor.getPointInShapeSpace?.(arrow, pagePoint)
-  return local ? new Vec(local.x, local.y) : new Vec(pagePoint.x - arrow.x, pagePoint.y - arrow.y).rot(-arrow.rotation)
-}
-
 export function getArrowBindings(editor: ShapeEditor, arrow: ArrowShape): { start?: ArrowBinding; end?: ArrowBinding } {
   const bindings = (editor.getBindingsFromShape?.(arrow.id, 'arrow') ?? []).filter(
     (binding): binding is ArrowBinding => binding.type === 'arrow'
@@ -78,33 +34,12 @@ export function getArrowBindings(editor: ShapeEditor, arrow: ArrowShape): { star
   }
 }
 
+export function getArrowHandles(editor: ShapeEditor, arrow: ArrowShape): ArrowTerminals {
+  return terminalsInArrowSpace(editor, arrow, getArrowBindings(editor, arrow))
+}
+
 export function getArrowTerminals(editor: ShapeEditor, arrow: ArrowShape): ArrowTerminals {
-  const bindings = getArrowBindings(editor, arrow)
-  const storedStart = new Vec(arrow.props.start.x, arrow.props.start.y)
-  const storedEnd = new Vec(arrow.props.end.x, arrow.props.end.y)
-  const strokeWidth = STROKES[arrow.props.size]
-  return {
-    start: bindings.start
-      ? (bindingPoint(
-          editor,
-          bindings.start,
-          storedEnd,
-          arrow.props.arrowheadStart !== 'none',
-          arrow.props.scale,
-          strokeWidth
-        ) ?? storedStart)
-      : storedStart,
-    end: bindings.end
-      ? (bindingPoint(
-          editor,
-          bindings.end,
-          storedStart,
-          arrow.props.arrowheadEnd !== 'none',
-          arrow.props.scale,
-          strokeWidth
-        ) ?? storedEnd)
-      : storedEnd
-  }
+  return straightArrowTerminals(editor, arrow, getArrowBindings(editor, arrow))
 }
 
 function arcFrom(start: Vec, end: Vec, bend: number): Arc2d | Edge2d {
