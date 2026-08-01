@@ -97,7 +97,7 @@ describe('toolbox', () => {
 
     // What is copied is kept the way it was written, since a snippet is only
     // worth having if its own spacing survives.
-    sam.send({ type: 'tool.add', name: 'Join link', mark: 'clipboard', action: { kind: 'copy', text: '  crew://join  ' } })
+    sam.send({ type: 'tool.add', name: 'Join link', mark: 'copy', action: { kind: 'copy', text: '  crew://join  ' } })
     const copy = (await sam.waitForEvent(e => e.kind === 'tool.added' && e.name === 'Join link')) as Added
     expect(copy.action).toEqual({ kind: 'copy', text: '  crew://join  ' })
   })
