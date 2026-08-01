@@ -25,9 +25,13 @@ export default function ThreadWindow() {
     <div className="h-full flex relative">
       <div className="flex-1 min-w-0 relative">
         {/* The window has no bar of its own, so this band is what it is dragged
-            by and what the traffic lights stand in. The thread already clears
-            the same room at the top of its own column. */}
-        <div className="app-drag absolute top-0 inset-x-0 h-14 z-30" />
+            by and what the traffic lights stand in. It is the app's own surface
+            with the same fade under it the chat wears, or the thread would be
+            read right up to the top edge of the window and under the lights. */}
+        <div className="absolute top-0 inset-x-0 z-30 pointer-events-none">
+          <div className="app-drag pointer-events-auto h-14 bg-ink-900" />
+          <div className="h-10 bg-gradient-to-b from-ink-900 to-transparent" />
+        </div>
         {threadId && thread ? (
           <ThreadView threadId={threadId} alone />
         ) : connection === 'booting' || connection === 'connecting' ? (

@@ -372,10 +372,9 @@ function pointIndicators(nearestSnapsX: NearestSnap[], nearestSnapsY: NearestSna
 
   return Array.from(groups, ([key, group]): PointsSnapIndicator => {
     const points: Vec[] = []
-    for (const point of [...group.map(pair => pair.otherPoint), ...group.map(pair => pair.thisPoint)]) {
-      if (!points.some(existing => existing.x === point.x && existing.y === point.y)) {
-        points.push(new Vec(point.x, point.y))
-      }
+    for (const pair of [...group.map(pair => pair.otherPoint), ...group.map(pair => pair.thisPoint)]) {
+      const point = new Vec(pair.x, pair.y)
+      if (!points.some(existing => existing.equals(point))) points.push(point)
     }
     return { id: `point:${key}`, type: 'points', points }
   })
