@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo, useRef } from 'react'
+import { useCallback, useLayoutEffect, useMemo, useRef } from 'react'
 import { pendingCount, useCrew } from '../../state/store'
 import Composer from '../Composer'
 import FilesChanged from '../FilesChanged'
