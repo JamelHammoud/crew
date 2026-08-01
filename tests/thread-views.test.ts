@@ -53,6 +53,26 @@ describe('where the caret goes when a column closes', () => {
   })
 })
 
+describe('what the right click on a thread offers', () => {
+  it('opens the first one and stands the next beside it', () => {
+    expect(threadMenuActions([], 't1')).toEqual(['open', 'window'])
+    expect(threadMenuActions(['t1'], 't2')).toEqual(['beside', 'window'])
+  })
+
+  it('is a window of its own or the way out for one already in the row', () => {
+    expect(threadMenuActions(['t1', 't2'], 't2')).toEqual(['window', 'close'])
+  })
+
+  it('leaves the row out once it is full rather than offering a move that cannot happen', () => {
+    expect(threadMenuActions(row(VIEW_LIMIT), 'one-more')).toEqual(['window'])
+  })
+
+  it('cannot put a thread of another project in this row, so it offers to go there or to a window', () => {
+    expect(threadMenuActions(['t1'], 'elsewhere', false)).toEqual(['open', 'window'])
+    expect(threadMenuActions(row(VIEW_LIMIT), 'elsewhere', false)).toEqual(['open', 'window'])
+  })
+})
+
 describe('a thread in a window of its own', () => {
   it('writes the thread into the hash and reads it back', () => {
     expect(threadIdInHash(threadWindowHash('thread-1'))).toBe('thread-1')
