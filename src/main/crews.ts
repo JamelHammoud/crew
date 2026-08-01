@@ -3,7 +3,7 @@ import { builtinProviders } from '../runner/providers/detect'
 import { installCommand, runInstall } from '../runner/providers/install'
 import { crewHere } from '../server/crewRepo'
 import type { ProviderCapability } from '../shared/llm'
-import { projectPlace, type LivePlace } from '../shared/places'
+import { projectPlace, RESHAPES_THREADS, type LivePlace } from '../shared/places'
 import { projectKey, readCrewRemote } from '../shared/project'
 import type { RecentJoin, RecentProject } from '../shared/recent'
 import type { CurrentSession, OpenOptions, ProjectPlan } from '../shared/session'
@@ -238,6 +238,9 @@ export class Crews {
       projects: this.projectsPath ?? undefined
     })
     session.onTrouble = message => this.onTrouble(message)
+    session.onEvent = event => {
+      if (RESHAPES_THREADS.has(event.kind)) this.onLive(this.places())
+    }
     return session
   }
 
