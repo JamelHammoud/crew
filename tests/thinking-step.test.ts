@@ -105,9 +105,12 @@ describe('a thinking step', () => {
   })
 
   it('leaves the row upright and keeps the italic for what opens under it', () => {
-    render(createElement(StepRow, { item: thought(`**Planning the edit**\n\n${LONG}`, true) }))
+    const { rerender } = render(createElement(StepRow, { item: thought('**Planning the edit**', false) }))
     expect(screen.getByText('Planning the edit').closest('.italic')).toBeNull()
-    expect(document.querySelector('button .italic')).toBeNull()
+
+    rerender(createElement(StepRow, { item: thought(`**Planning the edit**\n\n${LONG}`, false) }))
+    expect(screen.getByText('Planning the edit').closest('.italic')).toBeNull()
+    fireEvent.click(document.querySelector('button') as HTMLButtonElement)
     expect(screen.getByText(LONG).closest('.md-quiet')).not.toBeNull()
   })
 
