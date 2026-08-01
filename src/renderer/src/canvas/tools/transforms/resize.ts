@@ -251,10 +251,14 @@ export class Resizing<Shape extends TLShape = TLShape> extends TransformState<
   selectionBounds = new Box()
   selectionRotation = 0
   markId = ''
+  private cursorHandleOffset = new Vec()
+  private creationCursorOffset: VecLike = { x: 0, y: 0 }
+  private canShapesDeform = true
 
   override onEnter(info: ResizingInfo<Shape>): void {
     this.info = info
     this.parent.setCurrentToolIdMask?.(typeof info.onInteractionEnd === 'string' ? info.onInteractionEnd : undefined)
+    this.creationCursorOffset = info.creationCursorOffset ?? { x: 0, y: 0 }
     this.snapshots = info.snapshots ?? this.createSnapshots()
     if (this.snapshots.length === 0) {
       this.parent.transition('idle')
@@ -262,6 +266,17 @@ export class Resizing<Shape extends TLShape = TLShape> extends TransformState<
     }
     this.selectionBounds = info.selectionBounds ?? this.editor.getSelectionRotatedPageBounds?.() ?? new Box()
     this.selectionRotation = info.selectionRotation ?? this.editor.getSelectionRotation?.() ?? 0
+    this.canShapesDeform = !this.snapshots.some(
+      snapshot =>
+        snapshot.isAspectRatioLocked ||
+        !areAnglesCompatible(Mat.Rotation(snapshot.pageTransform), this.selectionRotation)
+    )
+    const handlePoint = Vec.RotWith(
+      this.selectionBounds.getHandlePoint(info.handle),
+      this.selectionBounds.point,
+      this.selectionRotation
+    )
+    this.cursorHandleOffset = Vec.Sub(this.editor.inputs.getOriginPagePoint(), handlePoint)
     this.markId = info.creatingMarkId ?? this.editor.markHistoryStoppingPoint?.('starting resizing') ?? ''
     if (info.isCreating) this.editor.setCursor?.({ type: 'cross', rotation: 0 })
     this.applyLifecycle('start')
@@ -272,6 +287,7 @@ export class Resizing<Shape extends TLShape = TLShape> extends TransformState<
     this.parent.setCurrentToolIdMask?.(undefined)
     this.editor.snaps?.clearIndicators?.()
     this.editor.setCursor?.({ type: 'default', rotation: 0 })
+    if (this.info?.isCreating) this.editor.setHintingShapes?.([])
   }
 
   onPointerMove(): void {

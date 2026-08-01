@@ -447,7 +447,60 @@ export class Editor {
       result.push(parent)
       shape = parent
     }
-    return result
+    return result.reverse()
+  }
+
+  getShapeParent(shapeOrId: TLShape | TLShapeId): TLShape | undefined {
+    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    if (!shape || !shape.parentId.startsWith('shape:')) return undefined
+    return this.getShape(shape.parentId as TLShapeId)
+  }
+
+  findShapeAncestor(shapeOrId: TLShape | TLShapeId, predicate: (parent: TLShape) => boolean): TLShape | undefined {
+    const parent = this.getShapeParent(shapeOrId)
+    if (!parent) return undefined
+    return predicate(parent) ? parent : this.findShapeAncestor(parent, predicate)
+  }
+
+  hasAncestor(shapeOrId: TLShape | TLShapeId | undefined, ancestorId: TLShapeId): boolean {
+    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    if (!shape) return false
+    if (shape.parentId === ancestorId) return true
+    return this.hasAncestor(this.getShapeParent(shape), ancestorId)
+  }
+
+  getAncestorPageId(shapeOrId: TLShape | TLShapeId | undefined): TLPageId | undefined {
+    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    if (!shape) return undefined
+    if (shape.parentId.startsWith('page:')) return shape.parentId as TLPageId
+    return this.getAncestorPageId(shape.parentId as TLShapeId)
+  }
+
+  findCommonAncestor(shapes: readonly (TLShape | TLShapeId)[], predicate?: (shape: TLShape) => boolean): TLShapeId | undefined {
+    if (shapes.length === 0) return undefined
+    const records = shapes
+      .map(shape => (typeof shape === 'string' ? this.getShape(shape) : shape))
+      .filter((shape): shape is TLShape => shape !== undefined)
+    if (records.length === 0) return undefined
+    if (records.length === 1) {
+      const parentId = records[0].parentId
+      return parentId.startsWith('shape:') ? (parentId as TLShapeId) : undefined
+    }
+    const [first, ...rest] = records
+    let ancestors = this.getShapeAncestors(first)
+    for (const shape of rest) {
+      const others = new Set(this.getShapeAncestors(shape).map(ancestor => ancestor.id))
+      ancestors = ancestors.filter(ancestor => others.has(ancestor.id))
+    }
+    const match = [...ancestors].reverse().find(ancestor => !predicate || predicate(ancestor))
+    return match?.id
+  }
+
+  getShapeNearestSibling(siblingShape: TLShape, targetShape: TLShape | undefined): TLShape | undefined {
+    if (!targetShape) return undefined
+    if (targetShape.parentId === siblingShape.parentId) return targetShape
+    const ancestor = this.getShapeAncestors(targetShape).find(shape => shape.parentId === siblingShape.parentId)
+    return ancestor
   }
 
   getShapeHandles(shapeOrId: TLShape | TLShapeId): ReturnType<NonNullable<ShapeUtil['getHandles']>> | undefined {
