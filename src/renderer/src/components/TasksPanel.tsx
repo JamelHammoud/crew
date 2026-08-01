@@ -375,7 +375,9 @@ export default function TasksPanel({
             </Tooltip>
           </span>
           <span className="min-w-0 flex-1 cursor-text" onClick={() => setEditingId(todo.id)}>
-            <span className="block text-base text-fg whitespace-pre-wrap break-words">{todo.text}</span>
+            <span className="block text-base text-fg whitespace-pre-wrap break-words">
+              <EmojiText text={todo.text} />
+            </span>
             {agent && (
               <span className="block text-sm text-fg-muted truncate">
                 <AgentName agent={agent}>
