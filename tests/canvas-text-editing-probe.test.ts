@@ -317,7 +317,7 @@ describe('empty note editing', () => {
     const wrapper = view.container.querySelector('.crew-note-text-editor') as HTMLElement
     const mount = wrapper.querySelector('.crew-text') as HTMLElement
     expect(wrapper.style.width).toBe('100%')
-    expect(mount.style.width).toBe('100%')
+    expect(dom.window.getComputedStyle(mount).width).toBe('100%')
     expect(mount.contains(dom.window.document.activeElement)).toBe(true)
   })
 })

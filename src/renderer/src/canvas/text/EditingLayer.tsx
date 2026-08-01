@@ -162,6 +162,7 @@ function ShapeTextEditor({
     return (
       <CenteredEditor
         {...common}
+        className="crew-note-text-editor"
         inset={12 * shape.props.scale}
         align={shape.props.align}
         verticalAlign={shape.props.verticalAlign}

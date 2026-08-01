@@ -117,6 +117,7 @@
     "electron-updater": "^6.8.9",
     "koffi": "^3.1.2",
     "node-pty": "1.1.0",
+    "rbush": "^3.0.1",
     "uiohook-napi": "^1.5.4",
     "ws": "^8.18.0"
   },
