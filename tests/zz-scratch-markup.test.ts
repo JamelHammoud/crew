@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { renderHtmlFromRichTextForMeasurement } from '../Users/jamel/Documents/Repositories/crew/src/renderer/src/canvas/schema/richText'
-import { richTextForMeasurement } from '../Users/jamel/Documents/Repositories/crew/src/renderer/src/canvas/text/richText'
+import { renderHtmlFromRichTextForMeasurement } from '../src/renderer/src/canvas/schema/richText'
+import { richTextForMeasurement } from '../src/renderer/src/canvas/text/richText'
 
 const docs: Record<string, any> = {
   plain: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Hello' }] }] },
