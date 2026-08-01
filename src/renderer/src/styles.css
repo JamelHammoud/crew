@@ -92,15 +92,6 @@
     }
   }
 
-  @keyframes rail {
-    from {
-      transform: translateX(-100%);
-    }
-    to {
-      transform: translateX(0);
-    }
-  }
-
   @keyframes edge {
     from {
       opacity: 0;
