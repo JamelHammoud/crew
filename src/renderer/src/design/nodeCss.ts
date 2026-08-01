@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react'
 import { nodeShapeOf, type DesignNodeProps, type Effect, type Layout, type Paint, type Stroke, type TypeStyle } from '../../../shared/designNode'
+import { trimEdges, trimStyle, type TrimFont } from '../canvas/text/trim'
 import { fontStack } from './fonts'
 import { polygonClip, type UnitPoint } from './nodeShape'
 

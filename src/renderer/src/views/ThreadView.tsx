@@ -152,10 +152,22 @@ export default function ThreadView({
   useEffect(() => {
     if (finding) drawWhole()
   }, [finding, drawWhole])
+  const heading = useRef(false)
   const reachTop = useCallback(() => {
+    if (!tail.more) {
+      jumpToTop()
+      return
+    }
+    heading.current = true
     drawWhole()
+  }, [drawWhole, jumpToTop, tail.more])
+  useLayoutEffect(() => {
+    if (!heading.current || tail.more) return
+    heading.current = false
+    const el = scrollRef.current
+    if (el) el.scrollTop = 0
     jumpToTop()
-  }, [drawWhole, jumpToTop])
+  }, [jumpToTop, tail.more])
   const tailScroll = tail.onScroll
   const scrolled = useCallback(() => {
     onScroll()
