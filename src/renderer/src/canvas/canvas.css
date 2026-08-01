@@ -2,7 +2,6 @@
 
 .crew-canvas {
   --crew-layer-background: 100;
-  --crew-layer-in-front: 250;
   --crew-layer-shapes: 300;
   --crew-layer-overlays: 500;
   --crew-layer-blocker: 10000;
@@ -33,10 +32,6 @@
 
 .crew-background-wrapper {
   z-index: var(--crew-layer-background);
-}
-
-.crew-canvas-in-front {
-  z-index: var(--crew-layer-in-front);
 }
 
 .crew-shapes {
