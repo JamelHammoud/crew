@@ -24,6 +24,11 @@ export interface TransformInputs {
   getPointerVelocity?(): Vec
 }
 
+export interface TransformDuplicateProps {
+  shapeIds: string[]
+  offset: { x: number; y: number }
+}
+
 export interface TransformSnapPoint {
   id: string
   x: number
