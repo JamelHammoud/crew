@@ -1258,11 +1258,11 @@ textarea:placeholder-shown {
 .doc .doc-emoji::after {
   content: '';
   position: absolute;
-  left: 0;
-  right: 0;
+  left: 50%;
   top: 50%;
+  width: calc(100% - 2px);
   aspect-ratio: 1;
-  transform: translateY(-50%);
+  transform: translate(-50%, -50%);
   pointer-events: none;
   background-image: var(--doc-emoji-image);
   background-size: var(--doc-emoji-size);
