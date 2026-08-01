@@ -122,23 +122,38 @@ describe('StateNode', () => {
 })
 
 describe('SelectTool', () => {
-  it('owns the 5.2.5 base hierarchy without the separately implemented transform states', () => {
+  it('owns the whole 5.2.5 hierarchy, transform and crop states included', () => {
     expect(SelectTool.id).toBe('select')
     expect(SelectTool.initial).toBe('idle')
     expect(SelectTool.isLockable).toBe(false)
-    expect(SELECT_BASE_STATES.map(State => State.id)).toEqual([
-      'idle',
-      'pointing_canvas',
-      'pointing_shape',
-      'brushing',
-      'scribble_brushing',
-      'pointing_selection',
-      'pointing_resize_handle',
-      'editing_shape',
-      'pointing_rotate_handle',
-      'pointing_arrow_label',
-      'pointing_handle'
-    ])
+    expect(new Set(SELECT_BASE_STATES.map(State => State.id))).toEqual(
+      new Set([
+        'idle',
+        'pointing_canvas',
+        'pointing_shape',
+        'brushing',
+        'scribble_brushing',
+        'pointing_selection',
+        'pointing_resize_handle',
+        'editing_shape',
+        'pointing_rotate_handle',
+        'pointing_arrow_label',
+        'pointing_handle',
+        'crop',
+        'translating',
+        'resizing',
+        'rotating',
+        'dragging_handle'
+      ])
+    )
+  })
+
+  it('reaches translating, resizing, rotating and dragging handle without anything adding them', () => {
+    const tool = new SelectTool(editor())
+    for (const id of ['translating', 'resizing', 'rotating', 'dragging_handle', 'crop']) {
+      expect(tool.children?.[id], `${id} is not a child of select`).toBeDefined()
+    }
+    expect(tool.children?.crop.children?.pointing_crop_handle).toBeDefined()
   })
 
   it('routes a blank canvas press through idle to pointing canvas', () => {
