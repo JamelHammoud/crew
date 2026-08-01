@@ -303,6 +303,12 @@ try {
       .map(([kind, count]) => `${kind} ${count}`)
       .join(', ')
   )
+  console.log(`agent faces drawn to ${path.relative(root, facesOut)}`)
+  console.log(
+    Object.entries(said.bodies)
+      .map(([kind, count]) => `${kind} ${count}`)
+      .join(', ')
+  )
 } finally {
   await rm(dir, { recursive: true, force: true })
 }

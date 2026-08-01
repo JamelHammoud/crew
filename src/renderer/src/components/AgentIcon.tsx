@@ -4,8 +4,6 @@ import { useCrew } from '../state/store'
 import GeneratedField from './art/GeneratedField'
 import { EYE_RADIUS, PET_GRID, petOf } from './art/pet'
 
-export { petHue } from './art/pet'
-
 const SIZES = {
   xs: 'w-5 h-5',
   sm: 'w-7 h-7',
