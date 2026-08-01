@@ -3,9 +3,8 @@ import { render } from '@testing-library/react'
 import { createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 
-const { ARROW_TIP, CursorArrow, DESIGN_CURSORS, applyDesignCursors, applyToolCursor } = await import(
-  '../src/renderer/src/design/cursors'
-)
+const { ARROW_TIP, CursorArrow, DESIGN_CURSORS, applyDesignCursors, applyToolCursor, cursorFor, showCursor } =
+  await import('../src/renderer/src/design/cursors')
 
 const vars = DESIGN_CURSORS as unknown as Record<string, string>
 
@@ -141,5 +140,30 @@ describe('design cursors', () => {
     for (const [name, value] of Object.entries(vars)) {
       expect(container.style.getPropertyValue(name), name).toBe(value)
     }
+  })
+
+  it('wears the one the board asked for', () => {
+    expect(cursorFor('cross')).toBe('var(--crew-cursor-cross)')
+    expect(cursorFor('grabbing')).toBe('var(--crew-cursor-grabbing)')
+    expect(cursorFor('text')).toBe('var(--crew-cursor-text)')
+  })
+
+  it('takes the plain one for a corner it does not draw', () => {
+    expect(cursorFor('nwse-resize')).toBe('nwse-resize')
+    expect(cursorFor('ew-resize')).toBe('ew-resize')
+    expect(cursorFor('nwse-rotate')).toBe('grabbing')
+  })
+
+  it('falls back to the arrow for anything it has never heard of', () => {
+    expect(cursorFor('something-else')).toBe('var(--crew-cursor-default)')
+  })
+
+  it('paints it onto the box the board is drawn in', () => {
+    const container = document.createElement('div')
+    applyDesignCursors(container)
+    showCursor(container, 'cross')
+    expect(container.style.cursor).toBe('var(--crew-cursor-cross)')
+    showCursor(container, 'ew-resize')
+    expect(container.style.cursor).toBe('ew-resize')
   })
 })
