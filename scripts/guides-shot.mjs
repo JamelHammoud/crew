@@ -62,14 +62,11 @@ createRoot(document.getElementById('root')).render(
 `
 }
 
-const driveSource = String.raw`(async zoom => {
+const driveSource = String.raw`(async (stage, zoom, look) => {
   const editor = window.canvasEditor
   if (!editor) return { failed: 'the editor never mounted' }
   const surface = document.querySelector('[data-canvas="true"]')
   const frame = () => new Promise(done => requestAnimationFrame(() => requestAnimationFrame(done)))
-  const settle = async (times = 4) => {
-    for (let at = 0; at < times; at++) await frame()
-  }
   const pointer = (name, x, y, buttons, target) =>
     (target || surface).dispatchEvent(
       new PointerEvent(name, {
@@ -86,35 +83,46 @@ const driveSource = String.raw`(async zoom => {
       })
     )
   const nodeOf = id => document.querySelector('[data-shape-id="' + id + '"][data-canvas-shape="true"]')
-
   const dragged = 'shape:d'
-  editor.selectNone()
-  editor.setCurrentTool('select')
-  const held = editor.getShape(dragged)
-  editor.updateShape({ id: dragged, type: held.type, x: 300, y: 320 })
-  await settle()
+  const held = { x: 806, y: 65 }
+
+  if (stage === 'start') {
+    editor.selectNone()
+    editor.setCurrentTool('select')
+    const shape = editor.getShape(dragged)
+    editor.updateShape({ id: dragged, type: shape.type, x: 300, y: 320 })
+    editor.setCamera({ x: 200, y: 260, z: 1 }, { immediate: true })
+    await frame()
+    const from = editor.pageToViewport({ x: 380, y: 380 })
+    pointer('pointerdown', from.x, from.y, 1, nodeOf(dragged))
+    await frame()
+    const to = editor.pageToViewport(held)
+    for (let step = 1; step <= 8; step++) {
+      pointer('pointermove', from.x + ((to.x - from.x) * step) / 8, from.y + ((to.y - from.y) * step) / 8, 1)
+      await frame()
+    }
+    return { ok: true }
+  }
+
+  if (stage === 'end') {
+    const at = editor.pageToViewport(held)
+    pointer('pointerup', at.x, at.y, 0)
+    await frame()
+    return { ok: true }
+  }
 
   const bounds = editor.getViewportScreenBounds()
-  const centre = { x: 340, y: 60 }
-  editor.setCamera({ x: bounds.w / 2 / zoom - centre.x, y: bounds.h / 2 / zoom - centre.y, z: zoom }, { immediate: true })
-  await settle()
-
-  const from = editor.pageToViewport({ x: 380, y: 380 })
-  const to = editor.pageToViewport({ x: 800 + 6, y: 60 + 5 })
-  pointer('pointerdown', from.x, from.y, 1, nodeOf(dragged))
+  editor.setCamera({ x: bounds.w / 2 / zoom - look.x, y: bounds.h / 2 / zoom - look.y, z: zoom }, { immediate: true })
   await frame()
-  for (let step = 1; step <= 8; step++) {
-    pointer('pointermove', from.x + ((to.x - from.x) * step) / 8, from.y + ((to.y - from.y) * step) / 8, 1)
+  for (let rest = 0; rest < 12; rest++) {
+    const at = editor.pageToViewport(held)
+    pointer('pointermove', at.x, at.y, 1)
     await frame()
   }
-  for (let rest = 0; rest < 10; rest++) {
-    pointer('pointermove', to.x, to.y, 1)
-    await frame()
-  }
-  await settle(3)
   const indicators = editor.snaps.getIndicators()
   return {
     zoom: editor.getZoomLevel(),
+    mode: editor.getColorMode(),
     indicators: indicators.map(one => one.type + (one.type === 'gaps' ? ':' + one.gaps.length : ':' + one.points.length))
   }
 })`
