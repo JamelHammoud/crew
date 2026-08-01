@@ -82,6 +82,22 @@ export function petOf(seed: string): Pet {
   return pet
 }
 
+// The least that may stand between the two eye holes, in real pixels at the size
+// the pet is drawn. Two holes that close up are one slot, and a slot across the
+// middle of a white shape is not a face: at 20 across, which is what a pet is
+// worn at in a mention menu, the narrowest pair a seed hands out leaves under
+// half a pixel between them and they merge.
+export const MIN_BRIDGE = 1.2
+
+// So the gap is opened at draw time rather than seeded wider. Equal on the ruler
+// is not equal to the eye, which is the same reason a circle is not 17 on the
+// keylines and the shadow is a share of the box: the pet is one pet at every
+// size, and what changes is what the size can hold. Seeding it wider instead
+// would redraw everybody's face for the sake of the smallest one it is worn at.
+export function eyeGapAt(pet: Pet, box: number): number {
+  return Math.max(pet.eyeGap, EYE_RADIUS * 2 + (MIN_BRIDGE * PET_GRID) / box)
+}
+
 // The one number a cursor takes off a pet. A cursor has to be one legible color
 // rather than a picture, so it reads the hue the pet was seeded with even though
 // nothing about the mark is painted in it any more.
