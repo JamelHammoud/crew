@@ -3,7 +3,7 @@ import { FrameGlyph } from '../design/glyphs'
 import {
   ChatGlyph,
   ChecklistGlyph,
-  ClipboardGlyph,
+  CopyGlyph,
   DocGlyph,
   FileGlyph,
   GlobeGlyph,
@@ -31,7 +31,7 @@ export const TOOL_KINDS: Array<{ kind: ToolKind; title: string; note: string; ma
   { kind: 'todo', title: 'Add a task', note: "Puts it on the crew's list", mark: ChecklistGlyph },
   { kind: 'note', title: 'Write in a doc', note: 'Adds a line to the end of a page', mark: PencilGlyph },
   { kind: 'music', title: 'Put music on', note: 'Plays it for everyone here', mark: MusicGlyph },
-  { kind: 'copy', title: 'Copy something', note: 'Puts what you write on the clipboard', mark: ClipboardGlyph },
+  { kind: 'copy', title: 'Copy something', note: 'Puts what you write on the clipboard', mark: CopyGlyph },
   { kind: 'chain', title: 'Do several things', note: 'Runs your other tools in order', mark: GroupGlyph }
 ]
 

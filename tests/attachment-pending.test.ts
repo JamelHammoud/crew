@@ -1,6 +1,6 @@
-// @vitest-environment jsdom
 import fs from 'node:fs'
 import path from 'node:path'
+import { JSDOM } from 'jsdom'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import type { SessionEvent } from '../src/shared/events'
 import { attachmentBytes, httpBaseFrom, MAX_ATTACHMENTS } from '../src/shared/attachments'
@@ -14,6 +14,8 @@ const BIG = 10_000_000
 const WIDE = 2100
 const TALL = 1600
 
+const page = new JSDOM('').window
+
 const bytes = (size: number): Uint8Array => {
   const made = new Uint8Array(size)
   for (let at = 0; at < size; at += 1) made[at] = (at * 31 + 7) % 256
@@ -21,7 +23,7 @@ const bytes = (size: number): Uint8Array => {
 }
 
 const fileOf = (name: string, mime: string, size = BIG): File =>
-  new File([bytes(size)], name, { type: mime })
+  new page.File([bytes(size)], name, { type: mime }) as unknown as File
 
 let painted: Array<{ width: number; height: number }> = []
 let handed: string[] = []
@@ -30,9 +32,7 @@ let sources = new Map<string, Blob>()
 let readers = 0
 let decoded = 0
 
-const NativeFileReader = globalThis.FileReader
-
-class CountingFileReader extends NativeFileReader {
+class CountingFileReader extends page.FileReader {
   constructor() {
     super()
     readers += 1
