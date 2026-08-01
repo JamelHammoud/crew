@@ -128,13 +128,14 @@ export function useReorder(onMove: (id: string, to: number) => void, options: Op
         dragged.current = true
         if (carry) lift()
       }
-      if (!carry) push(dx)
       const next = landing(boxes, from, dx)
-      if (next !== to) {
-        to = next
-        if (!carry) aside()
-      }
+      const moved = next !== to
+      to = next
       if (carry) draw()
+      else {
+        push(dx)
+        if (moved) aside()
+      }
     }
 
     // The pointer standing still near an end still carries the row along, so the
