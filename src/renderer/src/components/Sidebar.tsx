@@ -26,7 +26,17 @@ function said(err: unknown): string {
 
 const EMPTY_THREADS: string[] = []
 
-export default function Sidebar({ overlay, strong }: { overlay?: boolean; strong?: boolean }) {
+export default function Sidebar({
+  overlay,
+  strong,
+  tab,
+  onTab
+}: {
+  overlay?: boolean
+  strong?: boolean
+  tab: Tab
+  onTab: (tab: Tab) => void
+}) {
   const places = usePlaces(s => s.places)
   const live = usePlaces(s => s.live)
   const load = usePlaces(s => s.load)
