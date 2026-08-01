@@ -353,6 +353,7 @@ export class AppSession {
       name,
       code: session.code,
       repoPath,
+      crewBase: base,
       providers: builtinProviders,
       agents: this.agentDefs(detected, name),
       onBeforeRun: () => this.syncAll(),

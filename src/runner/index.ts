@@ -74,7 +74,7 @@ export class Runner {
   constructor(private opts: RunnerOptions) {
     for (const provider of opts.providers) this.providersByName.set(provider.name, provider)
     for (const def of opts.agents ?? []) this.define(def)
-    this.attachments = new AttachmentCache(opts.repoPath)
+    this.attachments = new AttachmentCache(opts.crewBase ?? null)
     this.baseDelay = opts.reconnectDelayMs ?? 1000
     this.silenceTimeout = opts.silenceTimeoutMs ?? SILENCE_TIMEOUT_MS
   }
