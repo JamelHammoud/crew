@@ -80,15 +80,17 @@ describe('an agent face', () => {
   })
 
   it('is photographed in the palette its own id answers to', () => {
-    const mine = face().querySelector('span > span') as HTMLElement
+    const sky = (box: HTMLElement): string => {
+      const field = Array.from(box.children).find(one => one.className.includes('rounded-full'))!
+      return (field.firstElementChild as HTMLElement).style.backgroundColor
+    }
+    const mine = sky(face())
     cleanup()
-    const theirs = render(createElement(AgentIcon, { seed: 'ali/codex' })).container.querySelector(
-      'span > span'
-    ) as HTMLElement
+    const theirs = sky(face({ seed: 'ali/codex' }))
 
-    expect(mine.style.backgroundColor).not.toBe('')
     expect(paletteFor(SEED)).not.toEqual(paletteFor('ali/codex'))
-    expect(mine.style.backgroundColor).not.toBe(theirs.style.backgroundColor)
+    expect(mine).not.toBe('')
+    expect(mine).not.toBe(theirs)
   })
 
   // A white shape on a photograph reads by its shadow, and a shadow held at one
