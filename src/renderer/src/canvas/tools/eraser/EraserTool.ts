@@ -324,6 +324,17 @@ export class EraserTool {
     this.info = {}
   }
 
+  enter(info: EraserPointerEvent & { onInteractionEnd?: string } = {}): void {
+    this.onEnter(info)
+    this.stateId = EraserTool.initial
+    this.state.onEnter(info)
+  }
+
+  exit(info?: EraserPointerEvent, to?: EraserStateId): void {
+    this.onExit()
+    this.state.onExit(info, to)
+  }
+
   maybeReturnToOriginatingTool(): void {
     if (this.info.onInteractionEnd) this.editor.setCurrentTool(this.info.onInteractionEnd)
   }
