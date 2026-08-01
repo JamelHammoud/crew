@@ -116,6 +116,52 @@ describe('window options', () => {
   })
 })
 
+describe('thread window options', () => {
+  it('opens the dev tools where it was told it may', () => {
+    expect(createThreadWindowOptions('darwin', 'preload.mjs', true).webPreferences?.devTools).toBe(
+      true
+    )
+    expect(createThreadWindowOptions('win32', 'preload.mjs', true).webPreferences?.devTools).toBe(
+      true
+    )
+  })
+
+  it('cannot open the dev tools where it was told it may not', () => {
+    expect(createThreadWindowOptions('darwin', 'preload.mjs', false).webPreferences?.devTools).toBe(
+      false
+    )
+    expect(createThreadWindowOptions('win32', 'preload.mjs', false).webPreferences?.devTools).toBe(
+      false
+    )
+  })
+
+  it('is a narrower column than the app window and may be taken in further', () => {
+    const thread = createThreadWindowOptions('darwin', 'preload.mjs', true)
+    const whole = createWindowOptions('darwin', 'preload.mjs', true)
+
+    expect(thread.width ?? 0).toBeLessThan(whole.width ?? 0)
+    expect(thread.minWidth ?? 0).toBeLessThan(whole.minWidth ?? 0)
+    expect(thread.minHeight ?? 0).toBeLessThan(whole.minHeight ?? 0)
+  })
+
+  it('keeps the inset title bar the app window wears', () => {
+    expect(createThreadWindowOptions('darwin', 'preload.mjs', true).titleBarStyle).toBe('hiddenInset')
+    expect(createThreadWindowOptions('win32', 'preload.mjs', true).titleBarStyle).toBe('hiddenInset')
+  })
+
+  it('wears the same surface as the app window on either platform', () => {
+    for (const platform of ['darwin', 'win32'] as const) {
+      const thread = createThreadWindowOptions(platform, 'preload.mjs', true)
+      const whole = createWindowOptions(platform, 'preload.mjs', true)
+
+      expect(thread.transparent).toBe(whole.transparent)
+      expect(thread.backgroundColor).toBe(whole.backgroundColor)
+      expect(thread.webPreferences?.webviewTag).toBe(true)
+      expect(thread.webPreferences?.spellcheck).toBe(true)
+    }
+  })
+})
+
 describe('the application menu', () => {
   it('offers the dev tools where they are allowed', () => {
     expect(everyRole(appMenuTemplate('darwin', true))).toContain('toggleDevTools')
