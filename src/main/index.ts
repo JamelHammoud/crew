@@ -228,7 +228,13 @@ async function caretInCrew(): Promise<Landing | null> {
 }
 
 function sharing(): void {
-  tray.update({ sharing: session.current() !== null })
+  tray.update({ sharing: crews.any() })
+}
+
+function tellLive(places: LivePlace[]): void {
+  for (const win of appWindows()) {
+    if (!win.webContents.isDestroyed()) win.webContents.send('session:live', places)
+  }
 }
 
 // The default icon is a white mark on black, or the inverse, so it follows the
