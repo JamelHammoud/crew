@@ -67,9 +67,6 @@ function whenArrived(row: HTMLElement, done: () => void): void {
   window.requestAnimationFrame(look)
 }
 
-// How much of the row the scroller is really showing. A box with no height has
-// nothing to say about what is in it, so it stands aside rather than holding
-// the flash back forever.
 function shownOf(row: HTMLElement): number {
   const rect = row.getBoundingClientRect()
   const view = viewOf(row)
