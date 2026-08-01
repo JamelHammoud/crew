@@ -51,14 +51,33 @@ const probeSource = String.raw`(() => {
       })
     )
 
+  const statePath = () => {
+    const parts = []
+    let node = editor.root
+    while (node && parts.length < 8) {
+      const next = node.getCurrent ? node.getCurrent() : null
+      if (!next) break
+      parts.push(next.constructor && next.constructor.id ? next.constructor.id : '?')
+      node = next
+    }
+    return parts.join('.')
+  }
+
   const hold = async (from, to, options) => {
     const settings = options || {}
-    const mods = settings.modifiers || {}
-    if (mods.metaKey) keyEvent('keydown', 'Meta', 'MetaLeft', mods)
-    pointer('pointerdown', from.x, from.y, 1, settings.target, mods)
+    const after = settings.pressAfter || {}
+    const none = {}
+    pointer('pointerdown', from.x, from.y, 1, settings.target, none)
     await frame()
     const steps = settings.steps || 14
+    const pressAt = settings.pressAt === undefined ? 4 : settings.pressAt
+    let mods = none
     for (let step = 1; step <= steps; step++) {
+      if (step === pressAt && after.metaKey) {
+        mods = after
+        keyEvent('keydown', 'Meta', 'MetaLeft', mods)
+        await frame()
+      }
       const along = step / steps
       pointer('pointermove', from.x + (to.x - from.x) * along, from.y + (to.y - from.y) * along, 1, undefined, mods)
       await frame()
@@ -67,12 +86,15 @@ const probeSource = String.raw`(() => {
       pointer('pointermove', to.x, to.y, 1, undefined, mods)
       await frame()
     }
+    return mods
   }
 
   const letGo = async (at, modifiers) => {
     const mods = modifiers || {}
     pointer('pointerup', at.x, at.y, 0, undefined, mods)
-    if (mods.metaKey) keyEvent('keyup', 'Meta', 'MetaLeft', mods)
+    keyEvent('keyup', 'Meta', 'MetaLeft', {})
+    keyEvent('keyup', 'Control', 'ControlLeft', {})
+    pointer('pointermove', at.x, at.y, 0, undefined, {})
     await settle(4)
   }
 
