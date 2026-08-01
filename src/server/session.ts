@@ -367,6 +367,15 @@ const DESIGN_CURSOR_STEPS_MAX = 25
 // of what a window is handed, the way a high score and a track on the shelf are.
 const chatEvents = (events: SessionEvent[]): SessionEvent[] => events.filter(event => !isTicketEvent(event.kind))
 
+const THREAD_EVENT_KINDS = new Set<SessionEvent['kind']>([
+  'thread.started',
+  'thread.plan',
+  'thread.implement',
+  'thread.archived',
+  'thread.agent',
+  'thread.status'
+])
+
 // A person is one row per game however they happen to be capitalised, since a
 // member is keyed by their name in lower case everywhere else here too.
 const scoreKey = (gameId: string, name: string): string => `${gameId}\n${name.toLowerCase()}`
@@ -809,6 +818,12 @@ export class CrewSession {
       })),
       agents: [...this.agents.values()].map(agent => this.pooled(agent)),
       events: chatEvents(recent.events),
+      threadEvents: this.events.filter(event => THREAD_EVENT_KINDS.has(event.kind)),
+      threadPrompts: Object.fromEntries(
+        [...this.threads.values()].flatMap(thread =>
+          thread.running && !thread.ghost ? [[thread.id, thread.running]] : []
+        )
+      ),
       moreEvents: recent.more,
       tickets: this.ticketHistory(),
       docs: Object.fromEntries(this.docs),

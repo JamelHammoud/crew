@@ -1,7 +1,9 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { Editor } from '../src/renderer/src/canvas/editor'
+import { SelectionManager } from '../src/renderer/src/canvas/editor/selection'
 import { Box } from '../src/renderer/src/canvas/math'
 import { createShapeId, createTLStore, fromPlainText, type TLShapeId } from '../src/renderer/src/canvas/schema'
+import { react } from '../src/renderer/src/canvas/signals'
 import {
   ArrowShapeUtil,
   FrameShapeUtil,
@@ -30,6 +32,71 @@ function frame(subject: Editor, id: string, x: number, y: number, w = 100, h = 6
 }
 
 describe('the canvas editor', () => {
+  it('keeps an unchanged selection quiet and selected-id readers independent of shape records', () => {
+    const selection = new SelectionManager()
+    const id = createShapeId('quiet')
+    let selectionReads = 0
+    const stopSelection = react('selection reads', () => {
+      selection.getSelectedShapeIds()
+      selectionReads++
+    })
+    selection.setSelectedShapeIds([id])
+    selection.setSelectedShapeIds([id])
+    expect(selectionReads).toBe(2)
+    stopSelection()
+
+    const subject = editor()
+    frame(subject, 'quiet', 0, 0)
+    subject.select(id)
+    let editorReads = 0
+    const stopEditor = react('editor selected ids', () => {
+      subject.getSelectedShapeIds()
+      editorReads++
+    })
+    subject.updateShape({ id, type: 'frame', x: 20 })
+    expect(editorReads).toBe(1)
+    stopEditor()
+  })
+
+  it('keeps page ordering and geometry cached until a shape changes', () => {
+    const subject = editor()
+    const id = frame(subject, 'cached', 0, 0)
+    const geometry = vi.spyOn(FrameShapeUtil.prototype, 'getGeometry')
+    const firstShapes = subject.getCurrentPageShapesSorted()
+    const firstBounds = subject.getShapePageBounds(id)
+    const calls = geometry.mock.calls.length
+    expect(subject.getCurrentPageShapesSorted()).toBe(firstShapes)
+    expect(subject.getShapePageBounds(id)).toBe(firstBounds)
+    expect(geometry).toHaveBeenCalledTimes(calls)
+    subject.select(id)
+    expect(subject.getCurrentPageShapesSorted()).toBe(firstShapes)
+    subject.updateShape({ id, type: 'frame', x: 20 })
+    expect(subject.getCurrentPageShapesSorted()).not.toBe(firstShapes)
+    expect(subject.getShapePageBounds(id)).not.toBe(firstBounds)
+  })
+
+  it('resolves overlays once on an idle pointer move', () => {
+    const subject = editor()
+    const overlayHit = vi.spyOn(subject.overlays, 'getOverlayAtPoint')
+    const target = { closest: () => null }
+    subject.getCanvasEventHandlers().onPointerMove({
+      clientX: 10,
+      clientY: 10,
+      pointerId: 1,
+      pointerType: 'mouse',
+      button: 0,
+      buttons: 0,
+      pressure: 0,
+      shiftKey: false,
+      altKey: false,
+      ctrlKey: false,
+      metaKey: false,
+      target,
+      currentTarget: null
+    } as unknown as PointerEvent)
+    expect(overlayHit).toHaveBeenCalledTimes(1)
+  })
+
   it('creates, selects, updates, resizes and deletes shapes', () => {
     const subject = editor()
     const id = frame(subject, 'one', 10, 20)

@@ -729,8 +729,10 @@ export const useCrew = create<CrewState>((set, get) => {
         const steps: Record<string, AgentStep[]> = {}
         const tokens: Record<string, number> = {}
         const costs: Record<string, number> = {}
-        for (const event of msg.snapshot.events) {
+        for (const event of [...(msg.snapshot.threadEvents ?? []), ...msg.snapshot.events]) {
           foldThread(threads, event)
+        }
+        for (const event of msg.snapshot.events) {
           if (event.kind === 'agent.step') steps[event.promptId] = upsertStep(steps[event.promptId], event.step)
           if (event.kind === 'agent.start') {
             activePrompts[event.agentId] = addPrompt(activePrompts, event.agentId, event.promptId)
@@ -741,6 +743,7 @@ export const useCrew = create<CrewState>((set, get) => {
             if (event.threadId && threadPrompts[event.threadId] === event.promptId) delete threadPrompts[event.threadId]
           }
         }
+        Object.assign(threadPrompts, msg.snapshot.threadPrompts ?? {})
         // A thread that has gone since is not one to come back to, so the row is
         // read against what the welcome really holds.
         const wanted = threadsWanted.filter(id => threads[id])

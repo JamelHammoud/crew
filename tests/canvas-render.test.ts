@@ -248,4 +248,37 @@ describe('canvas rendering', () => {
     expect(context.save).toHaveBeenCalledTimes(1)
     expect(context.restore).toHaveBeenCalledTimes(1)
   })
+
+  it('coalesces overlay changes into one paint with the latest state', () => {
+    let queued: FrameRequestCallback | null = null
+    vi.spyOn(globalThis, 'requestAnimationFrame').mockImplementation(callback => {
+      queued = callback
+      return 1
+    })
+    vi.spyOn(globalThis, 'cancelAnimationFrame').mockImplementation(() => undefined)
+    const context = canvasContext()
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(context as unknown as CanvasRenderingContext2D)
+    const state = setup()
+    const paint = vi.fn()
+    const renderer: CanvasShapeRenderer<Shape> = { render: () => null }
+    render(createElement(Canvas<Shape>, { host: state.host, shapeRenderer: renderer }))
+    context.clearRect.mockClear()
+
+    act(() => {
+      state.entries.set([{ util: { isActive: () => true, render: paint }, overlays: [{ id: 'one' }] }])
+      state.entries.set([{ util: { isActive: () => true, render: paint }, overlays: [{ id: 'two' }] }])
+      state.entries.set([{ util: { isActive: () => true, render: paint }, overlays: [{ id: 'latest' }] }])
+    })
+
+    expect(context.clearRect).not.toHaveBeenCalled()
+    expect(queued).not.toBeNull()
+    act(() => {
+      const callback = queued as FrameRequestCallback | null
+      queued = null
+      callback?.(16)
+    })
+    expect(context.clearRect).toHaveBeenCalledTimes(1)
+    expect(paint).toHaveBeenCalledTimes(1)
+    expect(paint.mock.calls[0][1]).toEqual([{ id: 'latest' }])
+  })
 })

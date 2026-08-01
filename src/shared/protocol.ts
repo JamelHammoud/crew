@@ -57,6 +57,8 @@ export interface SessionSnapshot {
   members: MemberInfo[]
   agents: PooledAgent[]
   events: SessionEvent[]
+  threadEvents?: SessionEvent[]
+  threadPrompts?: Record<string, string>
   docs: Record<string, DocPage>
   queues: Record<string, QueuedItem[]>
   todos: Todo[]
