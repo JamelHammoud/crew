@@ -9,7 +9,8 @@ export interface SubagentRow extends SubagentRun {
 
 type Started = Extract<SessionEvent, { kind: 'subagent.started' }>
 
-// The helpers one thread sent out, read off the log rather than held anywhere.
+// The helpers a thread sent out and the ones those sent out in turn, read off
+// the log rather than held anywhere.
 // The record of a run is two events, and the second one is a fact about the
 // first, so they are folded back into one thing here the way the chat block
 // folds the three events of a call.
