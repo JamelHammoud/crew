@@ -50,6 +50,7 @@ import { openShown } from '../components/openShown'
 import { playSound, soundFor } from '../media/sounds'
 import { finishedAlert, memberMentionAlert, memberReplyAlert, questionAlert } from './alerts'
 import { helperPrefs, onHelperPrefs } from './helpers'
+import { makeStepBuffer } from './stepBuffer'
 import { boardOnScreen, useBrowser } from './browser'
 import { usePlaces } from './places'
 import { forgetProject, recallProject, stashProject } from './projectMemory'
@@ -480,9 +481,6 @@ let forkWanted: string | null = null
 let threadsWanted: string[] = []
 
 export const useCrew = create<CrewState>((set, get) => {
-  // A streaming run says a step many times a second, and every one of them used
-  // to replace the whole record, which walks the thread again for each. They are
-  // held for a frame and land as one write instead, in the order they arrived.
   const stepBuffer = makeStepBuffer(deltas => {
     set(state => {
       const steps = { ...state.steps }
