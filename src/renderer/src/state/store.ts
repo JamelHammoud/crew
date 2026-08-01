@@ -911,6 +911,8 @@ export const useCrew = create<CrewState>((set, get) => {
       set({
         connection: 'connecting',
         selfName: session.name,
+        place: session.place,
+        folder: session.folder,
         joinLink: session.link,
         hosting: session.hosting,
         shared: session.shared,
@@ -918,6 +920,38 @@ export const useCrew = create<CrewState>((set, get) => {
       })
       const hello: ClientMessage = { type: 'hello', role: 'ui', name: session.name, code: session.code }
       socket.connect(session.wsUrl, hello)
+    },
+    // Moving between two projects that are both running. The connection goes
+    // straight from one to the other and never through home, so the app never
+    // unmounts and what the window holds for itself stays where it is.
+    switchTo: async key => {
+      const from = get().place
+      if (from === key) return
+      const panel = useBrowser.getState()
+      if (from) stashProject(from, { panel: panel.stash(), openThreadId: get().openThreadId })
+      const info = await window.crew.switchTo(key).catch(() => null)
+      const memory = recallProject(key)
+      if (!info) {
+        if (from) panel.restore(recallProject(from)?.panel ?? null)
+        toast.fail('That project is not open any more.', { key: 'switch' })
+        return
+      }
+      useHuddleLeave()
+      socket.close()
+      threadWanted = memory?.openThreadId ?? null
+      set({ joinLink: null, hosting: false, shared: false, selfId: '', code: '', ...EMPTY })
+      get().connect(info)
+      panel.restore(memory?.panel ?? null)
+    },
+    closePlace: async key => {
+      const others = usePlaces.getState().live.filter(place => place.key !== key)
+      if (key === get().place) {
+        if (others[0]) await get().switchTo(others[0].key)
+        else get().leave()
+      }
+      forgetProject(key)
+      await window.crew.closeProject(key).catch(() => {})
+      void usePlaces.getState().load()
     },
     // The oldest thing held is what the next page is asked for, so one asked
     // for twice is the same page rather than a second one.
