@@ -94,7 +94,7 @@ app.whenReady().then(async () => {
 }).catch(e => { console.log('SHOT ' + JSON.stringify({ failed: String(e) })); app.quit() })
 `
 
-const dir = await realpath(await mkdtemp(path.join(tmpdir(), 'crew-review-')))
+const dir = await realpath(await mkdtemp(path.join(root, '.tmp-review-')))
 await writeFile(path.join(dir, 'index.html'), PAGE)
 await writeFile(
   path.join(dir, 'shot.css'),
