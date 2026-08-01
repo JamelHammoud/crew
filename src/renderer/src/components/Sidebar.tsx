@@ -149,18 +149,15 @@ export default function Sidebar({ overlay, strong }: { overlay?: boolean; strong
             place={place}
             here={place.key === here}
             busy={busyKey === place.key}
-            threads={threadsIn(live, place.key)}
+            stoppable={liveKeys.has(place.key)}
+            threads={threadsOf.get(place.key) ?? NO_THREADS}
             openThreadIds={place.key === here ? openThreadIds : EMPTY_THREADS}
-            onOpen={() => {
-              useCrew.getState().wantThread(null)
-              void go(place)
-            }}
-            onOpenThread={threadId => void goToThread(place, threadId)}
-            onOpenThreadToRight={threadId => void goToThread(place, threadId, true)}
-            onStop={isLive(live, place.key) ? () => void closePlace(place.key) : undefined}
-            onForget={() => void forget(place)}
-            onTake={order.take(place.key)}
-            dragged={order.dragged}
+            onOpen={goToPlace}
+            onOpenThread={goToThread}
+            onStop={stop}
+            onForget={forgetPlace}
+            take={take}
+            dragged={dragged}
           />
         ))}
       </div>
