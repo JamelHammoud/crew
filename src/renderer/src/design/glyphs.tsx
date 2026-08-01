@@ -294,6 +294,26 @@ export const TextBottomGlyph = glyph(
   </>
 )
 
+const TRIM_BOX = <rect x="3.5" y="3.5" width="17" height="17" rx="2.5" />
+
+const trimInk = (y: number, height: number) => (
+  <rect x="7.5" y={y} width="9" height={height} rx="1.5" fill="currentColor" stroke="none" />
+)
+
+export const TrimStandardGlyph = glyph(
+  <>
+    {TRIM_BOX}
+    {trimInk(9, 6)}
+  </>
+)
+
+export const TrimCapGlyph = glyph(
+  <>
+    {TRIM_BOX}
+    {trimInk(3.5, 17)}
+  </>
+)
+
 export const TypeSettingsGlyph = glyph(
   <>
     <path d="M9 4v4.5M9 13.5V20" />
