@@ -3,8 +3,8 @@ import { createRequire } from 'node:module'
 import { createElement } from 'react'
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import { CrewCanvas } from '../src/renderer/src/canvas/CrewCanvas'
-import type { Editor } from '../src/renderer/src/canvas/editor'
-import { createShapeId, createTLStore, fromPlainText } from '../src/renderer/src/canvas/schema'
+import { Editor } from '../src/renderer/src/canvas/editor'
+import { createShapeId, createTLStore, fromPlainText, getSnapshot, loadSnapshot } from '../src/renderer/src/canvas/schema'
 import type { TLTextShape } from '../src/renderer/src/canvas'
 import { DesignTextUtil } from '../src/renderer/src/design/TextUtil'
 import { setTextShapeType, textShapeType } from '../src/renderer/src/design/textType'
@@ -210,14 +210,15 @@ describe('typography settings on a Design text shape', () => {
     await act(async () => {
       setTextShapeType(editor(), shapeOf(editor()), { family: 'mono', size: 21, weight: 600, spacing: 4 })
     })
-    const snapshot = JSON.parse(JSON.stringify(editor().store.getSnapshot()))
+    const snapshot = JSON.parse(JSON.stringify(getSnapshot(editor().store)))
 
-    const reloaded = new (editor().constructor as typeof Editor)({
-      store: createTLStore({ id: 'design-typography-probe-reload' }),
+    const store = createTLStore({ id: 'design-typography-probe-reload' })
+    loadSnapshot(store, snapshot)
+    const reloaded = new Editor({
+      store,
       shapeUtils: [DesignTextUtil],
       getContainer: () => dom.window.document.body
     })
-    reloaded.store.loadSnapshot(snapshot)
 
     const type = textShapeType(reloaded, reloaded.getShape(textId) as TLTextShape)
     expect(type).toMatchObject({ family: 'mono', size: 21, weight: 600, spacing: 4 })
