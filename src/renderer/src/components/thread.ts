@@ -143,6 +143,18 @@ export function lastEnd(
   return undefined
 }
 
+export function lastStart(
+  events: SessionEvent[],
+  promptId: string | undefined
+): Extract<SessionEvent, { kind: 'agent.start' }> | undefined {
+  if (!promptId) return undefined
+  for (let i = events.length - 1; i >= 0; i--) {
+    const e = events[i]
+    if (e.kind === 'agent.start' && e.promptId === promptId) return e
+  }
+  return undefined
+}
+
 export function endPreview(end: Extract<SessionEvent, { kind: 'agent.end' }> | undefined): string {
   if (!end) return ''
   const reply = end.ok ? (end.text ?? '') : (end.error ?? '')
