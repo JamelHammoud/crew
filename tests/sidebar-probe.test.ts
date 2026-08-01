@@ -148,6 +148,18 @@ describe('the sidebar', () => {
     expect(titles.slice(0, 2)).toEqual(['one', 'two'])
   })
 
+  it('keeps its first order when opening a project changes its recent time', async () => {
+    expect(usePlaces.getState().places.map(place => place.title)).toEqual(['one', 'two'])
+    const reordered = [project(TWO), { ...project(ONE), openedAt: 0 }]
+    vi.spyOn(window.crew, 'projects').mockResolvedValueOnce(reordered)
+
+    await act(async () => {
+      await usePlaces.getState().load()
+    })
+
+    expect(usePlaces.getState().places.map(place => place.title)).toEqual(['one', 'two'])
+  })
+
   it('keeps projects in the order they were dragged into', async () => {
     const { container } = render(createElement(Sidebar))
     const groups = Array.from(container.querySelectorAll<HTMLElement>('[data-reorder]'))

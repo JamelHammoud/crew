@@ -1,8 +1,12 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import WebSocket from 'ws'
+import path from 'node:path'
+import { Crews } from '../src/main/crews'
 import type { ClientMessage, ServerMessage } from '../src/shared/protocol'
+import { projectPlace } from '../src/shared/places'
 import { CrewSocket } from '../src/renderer/src/api/ws'
-import { startHost, type TestHost } from './helpers/session'
+import { initRepo } from './helpers/git'
+import { startHost, tmpDir, type TestHost } from './helpers/session'
 
 function hello(name: string, code: string): ClientMessage {
   return { type: 'hello', role: 'ui', name, code }
@@ -22,12 +26,43 @@ function welcomeFrom(socket: CrewSocket): Promise<Extract<ServerMessage, { type:
 describe('CrewSocket project switching', () => {
   const hosts: TestHost[] = []
   const sockets: CrewSocket[] = []
+  const crews: Crews[] = []
 
   afterEach(async () => {
     for (const socket of sockets.splice(0)) socket.close()
     await Promise.all(hosts.splice(0).map(host => host.close()))
+    await Promise.all(crews.splice(0).map(app => app.shutdownAll()))
     vi.unstubAllGlobals()
   })
+
+  it('returns from a private local project to a shared hosted project', async () => {
+    vi.stubGlobal('window', globalThis)
+    vi.stubGlobal('WebSocket', WebSocket)
+    const state = tmpDir('crew-socket-project-state')
+    const app = new Crews()
+    app.setAgentsPath(path.join(state, 'agents.json'))
+    app.setSessionPath(path.join(state, 'session.json'))
+    app.setProjectsPath(path.join(state, 'projects'))
+    crews.push(app)
+    const hostedFolder = tmpDir('crew-socket-hosted')
+    const localFolder = tmpDir('crew-socket-local')
+    await initRepo(hostedFolder)
+    await initRepo(localFolder)
+    const hosted = await app.start(1, hostedFolder, 'Jamel', { home: 'folder', share: true })
+    const local = await app.start(1, localFolder, 'Jamel', { home: 'private', share: false })
+    const socket = new CrewSocket()
+    sockets.push(socket)
+
+    const localWelcome = welcomeFrom(socket)
+    socket.connect(local.wsUrl, hello(local.name, local.code))
+    expect((await localWelcome).snapshot.code).toBe(local.code)
+
+    const back = app.switchTo(1, projectPlace(hostedFolder))
+    expect(back).not.toBeNull()
+    const hostedWelcome = welcomeFrom(socket)
+    socket.connect(back!.wsUrl, hello(back!.name, back!.code))
+    expect((await hostedWelcome).snapshot.code).toBe(hosted.code)
+  }, 40000)
 
   it('switches between two live Crews and back through one renderer socket', async () => {
     vi.stubGlobal('window', globalThis)
