@@ -90,6 +90,37 @@ describe('the right click on a thread in the rail', () => {
     expect(popOutThread).toHaveBeenCalledWith('thread-2', AWAY)
     expect(useCrew.getState().openThreadIds).toEqual(['thread-1'])
   })
+
+  it('marks one done from the rail', () => {
+    row(false)
+
+    fireEvent.click(screen.getByText('Mark done'))
+    expect(sent).toHaveBeenCalledWith({ type: 'thread.status', threadId: 'thread-2', status: 'done' })
+  })
+
+  it('archives one from the rail', () => {
+    row(false)
+
+    fireEvent.click(screen.getByText('Archive thread'))
+    expect(sent).toHaveBeenCalledWith({ type: 'thread.archive', threadId: 'thread-2' })
+  })
+
+  it('offers the way back once a thread is done', () => {
+    useCrew.setState({ threads: meta('done') })
+    row(false)
+
+    expect(said()).toContain('Reopen')
+    expect(said()).not.toContain('Mark done')
+    fireEvent.click(screen.getByText('Reopen'))
+    expect(sent).toHaveBeenCalledWith({ type: 'thread.status', threadId: 'thread-2', status: 'open' })
+  })
+
+  it('leaves a thread of another project to be finished where it lives', () => {
+    row(false, false, AWAY)
+
+    expect(said()).not.toContain('Mark done')
+    expect(said()).not.toContain('Archive thread')
+  })
 })
 
 describe('a right click on the thread itself', () => {
