@@ -41,8 +41,26 @@ describe('several crews in one app', () => {
 
   afterEach(async () => {
     for (const ui of uis.splice(0)) ui.close()
+    for (const runner of runners.splice(0)) runner.close()
     await Promise.all(standing.splice(0).map(made => made.shutdownAll()))
   })
+
+  async function agentIn(started: { wsUrl: string; code: string }, folder: string): Promise<void> {
+    const runner = testRunner({
+      name: 'jamel',
+      code: started.code,
+      repoPath: folder,
+      providers: [makeFakeProvider()],
+      reconnectDelayMs: 100
+    })
+    runners.push(runner)
+    runner.connect(started.wsUrl)
+    await new Promise<void>(resolve => {
+      runner.onStatus = status => {
+        if (status === 'online') resolve()
+      }
+    })
+  }
 
   it('lets two windows look at two different projects at once', async () => {
     const app = crews('crews-two-windows')
