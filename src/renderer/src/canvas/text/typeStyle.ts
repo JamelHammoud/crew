@@ -14,6 +14,7 @@ const TYPE_PROPERTIES = [
   'fontWeight',
   'letterSpacing',
   'lineHeight',
+  'marginTop',
   'textAlign',
   'textDecoration',
   'textTransform',
