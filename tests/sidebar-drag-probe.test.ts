@@ -158,16 +158,30 @@ describe('dragging a project up the list', () => {
     fireEvent.pointerUp(window)
   })
 
-  it('stands the line in the gap the drop would land in', () => {
+  it('says nothing while the drop is where it already stands', () => {
     const { container } = render(Sidebar())
     const { groups } = lay(container)
     fireEvent.pointerDown(groups[1]!.querySelector('button')!, { button: 0, clientX: 40, clientY: 110 })
 
     fireEvent.pointerMove(window, { clientX: 40, clientY: 100 })
-    expect(line(container)?.style.top).toBe(`${TOP + TALL + GAP / 2}px`)
+    expect(line(container)?.style.opacity).toBe('0')
 
     fireEvent.pointerMove(window, { clientX: 40, clientY: 40 })
-    expect(line(container)?.style.top).toBe('0px')
+    expect(line(container)?.style.opacity).toBe('1')
+    fireEvent.pointerUp(window)
+  })
+
+  it('stands the line inside the head of the list rather than on its edge', () => {
+    const { container } = render(Sidebar())
+    const { groups } = lay(container)
+    fireEvent.pointerDown(groups[0]!.querySelector('button')!, { button: 0, clientX: 40, clientY: 30 })
+
+    fireEvent.pointerMove(window, { clientX: 40, clientY: 130 })
+    expect(line(container)?.style.top).toBe(`${TOP + TALL + GAP / 2}px`)
+
+    fireEvent.pointerDown(groups[1]!.querySelector('button')!, { button: 0, clientX: 40, clientY: 110 })
+    fireEvent.pointerMove(window, { clientX: 40, clientY: 40 })
+    expect(line(container)?.style.top).toBe(`${TOP / 2}px`)
     fireEvent.pointerUp(window)
   })
 
