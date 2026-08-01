@@ -1,0 +1,129 @@
+// @vitest-environment jsdom
+import { cleanup, render } from '@testing-library/react'
+import { createElement } from 'react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { SessionEvent, Todo } from '../src/shared/events'
+import type { CustomEmoji } from '../src/shared/customEmoji'
+import type { LiveThread } from '../src/shared/threads'
+
+Element.prototype.getAnimations ??= () => []
+
+const { holdCustomEmoji } = await import('../src/renderer/src/components/customEmojiSheet')
+const { useCrew, type ThreadMeta } = await import('../src/renderer/src/state/store')
+const { useTasks } = await import('../src/renderer/src/state/tasks')
+const ThreadRow = (await import('../src/renderer/src/components/sidebar/ThreadRow')).default
+const ThreadAsk = (await import('../src/renderer/src/components/ThreadAsk')).default
+const TasksPanel = (await import('../src/renderer/src/components/TasksPanel')).default
+
+const BASE = 'http://127.0.0.1:4321'
+const PICTURE = `${BASE}/emoji/a.gif`
+
+const SHEET: CustomEmoji[] = [{ id: 'e1', name: 'shipit', file: 'a.gif', by: 'jamel', ts: 1 }]
+
+const HEART = '❤️'
+
+const live = (title: string): LiveThread => ({ id: 't1', title, working: false })
+
+const thread = (title: string): ThreadMeta => ({
+  id: 't1',
+  agentId: 'a1',
+  agentLabel: 'Bubbles',
+  title,
+  createdBy: 'Jamel',
+  status: 'open',
+  mode: 'build'
+})
+
+const started = (title: string): SessionEvent => ({
+  id: 's-t1',
+  ts: 1,
+  kind: 'thread.started',
+  threadId: 't1',
+  agentId: 'a1',
+  agentLabel: 'Bubbles',
+  title,
+  byName: 'Jamel'
+})
+
+const todo = (text: string): Todo => ({
+  id: 'd1',
+  text,
+  createdBy: 'Jamel',
+  ts: 1,
+  checked: false
+})
+
+const pictures = (root: HTMLElement): string[] =>
+  [...root.querySelectorAll('img')].map(el => el.getAttribute('src') ?? '').filter(src => src === PICTURE)
+
+const written = (root: HTMLElement): string =>
+  [...root.querySelectorAll('.sr-only')].map(el => el.textContent ?? '').join(' ')
+
+beforeEach(() => {
+  vi.stubGlobal(
+    'ResizeObserver',
+    class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    }
+  )
+  holdCustomEmoji(SHEET, BASE)
+})
+
+afterEach(() => {
+  cleanup()
+  vi.unstubAllGlobals()
+  holdCustomEmoji([], '')
+})
+
+describe('what somebody wrote, read back as pictures', () => {
+  it('draws them on the line the thread header is about', () => {
+    useCrew.setState({ agents: {} })
+    const { container } = render(
+      createElement(ThreadAsk, {
+        ask: `put made with ${HEART} :shipit: in the About page`,
+        whole: `put made with ${HEART} :shipit: in the About page`,
+        onJump: () => {}
+      })
+    )
+
+    expect(pictures(container)).toHaveLength(1)
+    expect(written(container)).toContain(HEART)
+  })
+
+  it('draws them on the row in the rail', () => {
+    const { container } = render(
+      createElement(ThreadRow, {
+        thread: live(`made with ${HEART} :shipit:`),
+        open: false,
+        here: true,
+        placeKey: 'project:/tmp/one',
+        onOpen: () => {},
+        onOpenToRight: () => {}
+      })
+    )
+
+    expect(pictures(container)).toHaveLength(1)
+    expect(written(container)).toContain(HEART)
+  })
+
+  it('draws them on a task and on a todo in the Tasks panel', () => {
+    const title = `@Bubbles made with ${HEART} :shipit:`
+    useCrew.setState({
+      threads: { t1: thread(title) },
+      threadPrompts: {},
+      queues: {},
+      steps: {},
+      todos: [todo(`water the plants ${HEART} :shipit:`)],
+      events: [started(title)]
+    })
+    useTasks.setState({ pinned: true, peeking: false })
+    const { container } = render(
+      createElement(TasksPanel, { onOpenThread: () => {}, onOpenThreadBeside: () => {} })
+    )
+
+    expect(pictures(container)).toHaveLength(2)
+    expect(written(container).match(new RegExp(HEART, 'g')) ?? []).toHaveLength(2)
+  })
+})
