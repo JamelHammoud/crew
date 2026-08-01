@@ -433,8 +433,8 @@ export const useCrew = create<CrewState>((set, get) => {
   const applyEvent = (event: SessionEvent) => {
     const cue = soundFor(event, get().selfId, get())
     if (cue) playSound(cue)
-    // One decision, said in two places: the app says it every time, and the
-    // system says it only when the window is not the one being looked at.
+    // One decision, said in two places: the row in the app and the banner from
+    // the system, and neither one waits on the window being in the background.
     const alert =
       finishedAlert(event, get()) ??
       memberMentionAlert(event, get().selfId, get().openThreadId) ??
