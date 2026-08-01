@@ -54,12 +54,20 @@ beforeEach(() => {
   window.crew = { warmTerminal: () => undefined } as unknown as CrewBridge
   useBrowser.setState({ open: false, tabs: [], activeTabId: null, closedPlans: [], closedBoards: [] })
   useCrew.setState({
-    threads: { [PARENT]: thread(PARENT), [CHILD]: thread(CHILD, PARENT), [OTHER]: thread(OTHER, PARENT) },
+    threads: {
+      [PARENT]: thread(PARENT),
+      [CHILD]: thread(CHILD, PARENT),
+      [OTHER]: thread(OTHER, PARENT),
+      [GRAND]: thread(GRAND, CHILD)
+    },
     openThreadId: PARENT,
     events: [],
     steps: {},
     threadPrompts: {},
-    queues: {}
+    threadDrafts: {},
+    queues: {},
+    tokens: {},
+    pending: {}
   })
 })
 

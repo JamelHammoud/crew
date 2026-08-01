@@ -1,9 +1,10 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, describe, expect, it } from 'vitest'
+import StepGroup from '../src/renderer/src/components/StepGroup'
 import StepRow from '../src/renderer/src/components/StepRow'
-import type { ThreadItem } from '../src/renderer/src/components/thread'
+import { stepBlocks, type ThreadItem } from '../src/renderer/src/components/thread'
 import { DOT_R, RING_R } from '../src/renderer/src/components/toolGlyphs'
 
 if (!Element.prototype.getAnimations) {
