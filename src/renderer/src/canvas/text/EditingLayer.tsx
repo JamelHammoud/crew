@@ -25,8 +25,20 @@ export function EditingLayer({ editor }: { editor: Editor }) {
 function EditingRichText({ editor, shape }: { editor: Editor; shape: EditableTextShape }) {
   const [textEditor, setTextEditor] = useState<TipTapEditor | null>(null)
   const mark = useRef<string | null>(null)
-  const transform = editor.getShapePageTransform(shape)
-  const bounds = editor.getShapeGeometry(shape).bounds
+  const transform = useValue(
+    'canvas editing transform',
+    () => shapeCssTransform(editor.getShapePageTransform(shape.id)),
+    [editor, shape.id]
+  )
+  const bounds = useValue(
+    'canvas editing bounds',
+    () => {
+      const current = editor.getShape(shape.id)
+      const box = current ? editor.getShapeGeometry(current).bounds : null
+      return { w: Math.max(1, box?.w ?? 1), h: Math.max(1, box?.h ?? 1) }
+    },
+    [editor, shape.id]
+  )
   const richText = shape.props.richText as RichTextDocument
 
   useEffect(() => {

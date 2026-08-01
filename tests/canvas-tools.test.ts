@@ -211,6 +211,7 @@ function lineEditor() {
 }
 
 function arrowEditor() {
+  const shapes = new Map<TLShapeId, TLArrowShape>()
   const editor = {
     inputs: {
       getCurrentPagePoint: () => new Vec(),
@@ -218,8 +219,11 @@ function arrowEditor() {
       getIsDragging: () => false
     },
     timers: { setTimeout: () => 0 as unknown as ReturnType<typeof setTimeout>, clearTimeout: vi.fn() },
-    getShape: () => undefined,
-    getShapeHandles: () => [],
+    getShape: (id: TLShapeId) => shapes.get(id),
+    getShapeHandles: () => [
+      { id: 'start', type: 'vertex', index: ZERO_INDEX_KEY, x: 0, y: 0 },
+      { id: 'end', type: 'vertex', index: ZERO_INDEX_KEY, x: 1, y: 1 }
+    ],
     getShapeUtil: () => ({ options: { hoverPreciseTimeout: 100, pointingPreciseTimeout: 100 } }),
     getPointInShapeSpace: (_shape: TLArrowShape, point: Vec) => point,
     getResizeScaleFactor: () => 1,
