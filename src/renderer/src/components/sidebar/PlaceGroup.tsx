@@ -53,7 +53,7 @@ function PlaceGroup({
           event.preventDefault()
           setMenuAt({ x: event.clientX, y: event.clientY })
         }}
-        aria-current={here ? 'page' : undefined}
+        aria-current={here ? 'true' : undefined}
         className={`w-full rounded-xl px-2 py-1.5 flex items-center gap-2 text-left cursor-grab active:cursor-grabbing transition-[color,background-color,scale] duration-150 hover:bg-fg/[0.06] active:scale-[0.99] ${
           here ? 'text-fg' : 'text-fg/70'
         }`}
