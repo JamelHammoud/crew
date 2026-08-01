@@ -59,30 +59,43 @@ export function CrewCanvas({
   children
 }: CrewCanvasProps) {
   const container = useRef<HTMLDivElement>(null)
-  const [editor] = useState(
-    () =>
-      new Editor({
-        store,
-        shapeUtils,
-        bindingUtils,
-        tools: [...BUILT_IN_TOOLS, ...tools],
-        overlayUtils,
-        options,
-        getContainer: () => container.current ?? document.body
-      })
-  )
+  const built = useRef<Pick<
+    CrewCanvasProps,
+    'store' | 'shapeUtils' | 'bindingUtils' | 'tools' | 'overlayUtils' | 'options'
+  > | null>(null)
+  if (!built.current) built.current = { store, shapeUtils, bindingUtils, tools, overlayUtils, options }
+  const [editor, setEditor] = useState<Editor | null>(null)
 
-  const renderer = useMemo<CanvasShapeRenderer<TLShape>>(
-    () => ({
-      render: shape => editor.getShapeUtil(shape).component(shape as never),
-      isFilled: shape => editor.getShapeGeometry(shape).isFilled
-    }),
+  useLayoutEffect(() => {
+    const from = built.current
+    if (!from) return
+    const made = new Editor({
+      store: from.store,
+      shapeUtils: from.shapeUtils,
+      bindingUtils: from.bindingUtils ?? [],
+      tools: [...BUILT_IN_TOOLS, ...(from.tools ?? [])],
+      overlayUtils: from.overlayUtils ?? [],
+      options: from.options,
+      getContainer: () => container.current ?? document.body
+    })
+    setEditor(made)
+    return () => made.dispose()
+  }, [])
+
+  const renderer = useMemo<CanvasShapeRenderer<TLShape> | null>(
+    () =>
+      editor
+        ? {
+            render: shape => editor.getShapeUtil(shape).component(shape as never),
+            isFilled: shape => editor.getShapeGeometry(shape).isFilled
+          }
+        : null,
     [editor]
   )
 
   useEffect(() => {
     const element = container.current
-    if (!element) return
+    if (!element || !editor) return
     const handlers = editor.getCanvasEventHandlers()
     const pointerDown = (event: PointerEvent) => {
       element.focus({ preventScroll: true })
