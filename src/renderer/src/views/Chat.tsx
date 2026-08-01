@@ -82,68 +82,54 @@ export default function Chat() {
   const working = Object.keys(threadPrompts).length > 0
   const now = useNow(working)
 
-  const feed = useMemo<Feed[]>(() => {
-    const list: Feed[] = []
-    const reactions = reactionGroups(events, selfId)
-    const huddles = huddleRecords(events)
-    for (const e of events) {
-      if (e.kind === 'message' && !e.threadId) {
-        const targetId = messageReactionTarget(e.id)
-        list.push({
-          kind: 'msg',
-          key: e.id,
-          item: {
-            key: e.id,
-            ts: e.ts,
-            kind: e.authorId === 'crew' ? 'note' : 'message',
-            author: agents.find(a => a.id === e.authorId)?.label ?? e.authorName,
-            authorId: e.authorId,
-            self: e.authorId === selfId,
-            text: e.text,
-            streaming: false,
-            attachments: e.attachments,
-            mentionRefs: e.mentionRefs,
-            docMentions: e.docMentions,
-            boardMentions: e.boardMentions,
-            replyTo: e.replyTo,
-            reactionTargetId: e.authorId === 'crew' ? undefined : targetId,
-            reactions: e.authorId === 'crew' ? undefined : reactions.get(targetId)
-          }
-        })
-      }
-      // Neither of the two threads that are not the crew's work is a card here.
-      // One another thread sent out reads inside its parent, on the row of chips
-      // the parent's run stands under, and a question asked on the side stands
-      // in the panel it was answered in, which is what it was asked to do.
-      if (e.kind === 'thread.started' && !e.aside && !e.parentThreadId && threads[e.threadId]?.status === 'open') {
-        list.push({ kind: 'card', key: e.id, ts: e.ts, thread: threads[e.threadId] })
-      }
-      if (e.kind === 'huddle.started') {
-        const record = huddles.get(e.huddleId)
-        if (record) list.push({ kind: 'huddle', key: e.id, ts: e.ts, record })
-      }
-    }
-    return list
-  }, [agents, events, threads, selfId])
+  const feed = useMemo<FeedEntry[]>(
+    () => buildFeed(events, threads, agents, selfId),
+    [agents, events, threads, selfId]
+  )
 
   useLayoutEffect(() => {
     follow(feed.length > 0)
   }, [feed, steps, threadPrompts, follow])
 
-  const threadStatus = (thread: ThreadMeta): { state: ThreadState; detail: string } => {
-    const promptId = threadPrompts[thread.id]
-    if (promptId) {
-      const start = events.find(e => e.kind === 'agent.start' && e.promptId === promptId)
-      const parts = [describeStep((steps[promptId] ?? []).at(-1))]
-      if (start) parts.push(formatElapsed(now - start.ts))
-      const count = tokens[promptId] ?? 0
-      if (prefs.tokens && count > 0) parts.push(`${formatTokens(count)} tokens`)
-      const cost = costs[promptId]
-      if (prefs.cost && cost !== undefined && cost > 0) parts.push(formatCost(cost))
-      return { state: 'working', detail: parts.join(' · ') }
+  // Reading a thread's last run out of the log is a walk over every event there
+  // has ever been, and a card does it twice. Done in the render it is that walk
+  // per card per keystroke, so what a resting card says is worked out once,
+  // beside the feed, and handed back by the same reference until the log moves.
+  const resting = useMemo(() => {
+    const ends = lastEnds(events)
+    const held = new Map<string, ThreadStatus>()
+    for (const entry of feed) {
+      if (entry.kind !== 'card') continue
+      held.set(entry.thread.id, {
+        state: threadState(entry.thread, ends, false),
+        detail: endPreview(lastEnd(entry.thread.id, ends))
+      })
     }
-    return { state: threadState(thread, events, false), detail: endPreview(lastEnd(thread.id, events)) }
+    return held
+  }, [events, feed])
+
+  const startedAt = useMemo(() => runStarts(events), [events])
+
+  const threadStatus = (thread: ThreadMeta): ThreadStatus => {
+    const promptId = threadPrompts[thread.id]
+    if (!promptId) return resting.get(thread.id) ?? RESTING
+    const started = startedAt.get(promptId)
+    const parts = [describeStep((steps[promptId] ?? []).at(-1))]
+    if (started !== undefined) parts.push(formatElapsed(now - started))
+    const count = tokens[promptId] ?? 0
+    if (prefs.tokens && count > 0) parts.push(`${formatTokens(count)} tokens`)
+    const cost = costs[promptId]
+    if (prefs.cost && cost !== undefined && cost > 0) parts.push(formatCost(cost))
+    return { state: 'working', detail: parts.join(' · ') }
   }
+
+  const reply = useCallback(
+    (item: ThreadItem) => {
+      setReplyTo(item)
+      inputRef.current?.focus()
+    },
+    [inputRef]
+  )
 
   const send = () => {
     if (!text.trim() && pendingCount(CHAT_KEY) === 0) return
