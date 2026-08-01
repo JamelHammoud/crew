@@ -1,6 +1,6 @@
 import { BindingRecordType, createBindingId, type TLBinding, type TLBindingId, type TLShape, type TLShapeId } from '../schema'
 import { arrowBindingBehavior } from './arrowBindings'
-import type { BindingEditor, BindingBehavior, BindingPartial } from './bindingTypes'
+import type { BindingBehavior, BindingEditor, BindingPartial } from './bindingTypes'
 
 interface BindingUtilInstance {
   onAfterCreate?(binding: TLBinding): void
@@ -11,7 +11,7 @@ interface BindingUtilInstance {
 
 export class BindingManager {
   private readonly utils = new Map<TLBinding['type'], BindingUtilInstance>()
-  private readonly behaviors = new Map<TLBinding['type'], BindingBehavior>()
+  private readonly behaviors = new Map<TLBinding['type'], BindingBehavior>([['arrow', arrowBindingBehavior]])
 
   constructor(
     private readonly editor: BindingEditor,
@@ -23,7 +23,6 @@ export class BindingManager {
       if (!type) continue
       this.utils.set(type, new (Constructor as new (editor: BindingEditor) => BindingUtilInstance)(editor))
     }
-    this.behaviors.set('arrow', arrowBindingBehavior)
   }
 
   getBindingUtil(type: TLBinding['type']): BindingUtilInstance | undefined {
@@ -46,24 +45,20 @@ export class BindingManager {
   }
 
   delete(ids: readonly TLBindingId[], options: { isolateShapes?: boolean } = {}): void {
-    const bindings = ids
-      .map(id => this.editor.store.get(id))
-      .filter((binding): binding is TLBinding => binding?.typeName === 'binding')
+    const bindings = ids.map(id => this.get(id)).filter((binding): binding is TLBinding => binding !== undefined)
     if (bindings.length === 0) return
     this.editor.run(() => {
       for (const binding of bindings) {
-        if (options.isolateShapes) {
-          const from = this.editor.getShape(binding.fromId)
-          const to = this.editor.getShape(binding.toId)
-          if (from && to) {
-            this.behaviors.get(binding.type)?.onBeforeIsolateFromShape?.(this.editor, binding, to)
-            this.behaviors.get(binding.type)?.onBeforeIsolateToShape?.(this.editor, binding, from)
-          }
-        }
+        if (options.isolateShapes) this.isolate(binding, this.editor.getShape(binding.toId))
         this.utils.get(binding.type)?.onBeforeDelete?.(binding)
       }
       this.editor.store.remove(bindings.map(binding => binding.id))
     })
+  }
+
+  get(id: TLBindingId): TLBinding | undefined {
+    const record = this.editor.store.get(id)
+    return record?.typeName === 'binding' ? record : undefined
   }
 
   fromShape(id: TLShapeId, type?: TLBinding['type']): TLBinding[] {
@@ -85,7 +80,7 @@ export class BindingManager {
   }
 
   handleBindingChanged(before: TLBinding, after: TLBinding): void {
-    this.utils.get(before.type)?.onAfterChange?.(before, after)
+    this.utils.get(after.type)?.onAfterChange?.(before, after)
   }
 
   handleShapeChanged(before: TLShape, after: TLShape): void {
@@ -97,18 +92,21 @@ export class BindingManager {
     }
   }
 
-  handleShapeDeleted(shape: TLShape, alsoDeleted: ReadonlySet<TLShapeId>): void {
+  handleShapeDeleted(shape: TLShape): void {
     const bindings = this.involvingShape(shape.id)
     if (bindings.length === 0) return
-    const isolating = bindings.filter(binding => {
-      const other = binding.fromId === shape.id ? binding.toId : binding.fromId
-      return !alsoDeleted.has(other)
-    })
-    this.delete(
-      isolating.map(binding => binding.id),
-      { isolateShapes: true }
-    )
+    for (const binding of bindings) {
+      const behavior = this.behaviors.get(binding.type)
+      if (binding.fromId === shape.id) behavior?.onBeforeIsolateToShape?.(this.editor, binding, shape)
+      else behavior?.onBeforeIsolateFromShape?.(this.editor, binding, shape)
+      this.utils.get(binding.type)?.onBeforeDelete?.(binding)
+    }
     this.editor.store.remove(bindings.map(binding => binding.id))
+  }
+
+  private isolate(binding: TLBinding, removed: TLShape | undefined): void {
+    if (!removed) return
+    this.behaviors.get(binding.type)?.onBeforeIsolateFromShape?.(this.editor, binding, removed)
   }
 
   private all(): TLBinding[] {
