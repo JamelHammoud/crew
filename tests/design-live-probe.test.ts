@@ -24,7 +24,19 @@ function editor() {
   const subject = new Editor({
     store: createTLStore({ id: 'design-live', shapeUtils: designShapeUtils }),
     shapeUtils: designShapeUtils,
-    tools: [SelectTool, DesignNodeTool],
+    tools: [
+      SelectTool,
+      HandTool,
+      DrawShapeTool,
+      HighlightShapeTool,
+      EraserTool,
+      TextShapeTool,
+      NoteShapeTool,
+      FrameShapeTool,
+      LineShapeTool,
+      ArrowShapeTool,
+      DesignNodeTool
+    ],
     getContainer: () => ({ getBoundingClientRect: () => ({ left: 0, top: 0 }) }) as HTMLElement
   })
   subject.setViewportScreenBounds({ x: 0, y: 0, w: 800, h: 600 })
