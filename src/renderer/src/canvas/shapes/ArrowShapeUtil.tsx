@@ -1,6 +1,8 @@
 import { createElement, type ReactNode } from 'react'
-import { Arc2d, Edge2d, Group2d, Polyline2d, Rectangle2d, type Geometry2d } from '../geometry'
+import { Arc2d, Edge2d, Group2d, Polyline2d, Rectangle2d, intersectCircleCircle, type Geometry2d } from '../geometry'
 import { Vec } from '../math/Vec'
+import { HALF_PI, PI, clamp } from '../math/utils'
+import { PathBuilder } from './PathBuilder'
 import { BINDING_PROPS, arrowShapeProps, type TLBinding as CrewBinding, type TLShape as CrewShape } from '../schema'
 import { richTextToHtml, type RichTextDocument } from '../text/richText'
 import {

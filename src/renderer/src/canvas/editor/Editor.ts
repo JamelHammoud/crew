@@ -123,7 +123,8 @@ export class Editor {
     isReadonly: false,
     erasingShapeIds: [] as TLShapeId[],
     hintingShapeIds: [] as TLShapeId[],
-    hoveredShapeId: null as TLShapeId | null
+    hoveredShapeId: null as TLShapeId | null,
+    scribbles: [] as unknown[]
   }
   private currentPageId: TLPageId
   private disposed = false
