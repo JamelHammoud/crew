@@ -405,9 +405,15 @@ function createWindow(threadId?: string): BrowserWindow {
   return win
 }
 
-function openWindow(): BrowserWindow {
+function poppedOut(win: BrowserWindow): boolean {
+  for (const one of popped.values()) if (one === win) return true
+  return false
+}
+
+function openWindow(place?: string | null): BrowserWindow {
   tray.hidePanel()
-  const win = appWindows()[0]
+  const full = appWindows().filter(one => !poppedOut(one))
+  const win = full[windowForAlert(full.map(one => ({ place: crews.keyInView(one.webContents.id), popped: false })), place ?? null)]
   if (!win) return createWindow()
   if (win.isMinimized()) win.restore()
   win.show()
@@ -415,9 +421,11 @@ function openWindow(): BrowserWindow {
   return win
 }
 
-function openThreadIn(win: BrowserWindow, threadId: string): void {
+// The crew rides with the thread, so a window that has moved on to another
+// project since knows to go back to this one before it opens anything.
+function openThreadIn(win: BrowserWindow, threadId: string, place: string | null): void {
   const send = () => {
-    if (!win.webContents.isDestroyed()) win.webContents.send('notification:open', threadId)
+    if (!win.webContents.isDestroyed()) win.webContents.send('notification:open', threadId, place)
   }
   if (win.webContents.isLoading()) win.webContents.once('did-finish-load', send)
   else send()

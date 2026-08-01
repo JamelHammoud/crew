@@ -313,7 +313,7 @@ interface CrewState {
 }
 
 const socket = new CrewSocket()
-let destination = ''
+let destination: string | null = null
 let transition = 0
 
 // A window says it is writing at most every couple of seconds, and says it has
@@ -994,7 +994,7 @@ export const useCrew = create<CrewState>((set, get) => {
       if (get().connection === 'booting') set({ connection: 'home' })
     },
     connect: session => {
-      destination = session.place
+      destination = null
       transition++
       set({
         connection: 'connecting',
@@ -1014,7 +1014,7 @@ export const useCrew = create<CrewState>((set, get) => {
     // unmounts and what the window holds for itself stays where it is.
     switchTo: async key => {
       const from = get().place
-      if (destination === key) return
+      if (destination === key || (destination === null && from === key)) return
       destination = key
       const request = ++transition
       const panel = useBrowser.getState()
@@ -1023,7 +1023,7 @@ export const useCrew = create<CrewState>((set, get) => {
       if (request !== transition) return
       const memory = recallProject(key)
       if (!info) {
-        destination = from
+        destination = null
         if (from) panel.restore(recallProject(from)?.panel ?? null)
         toast.fail('That project is not open any more.', { key: 'switch' })
         return
