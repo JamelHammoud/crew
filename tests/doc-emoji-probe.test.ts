@@ -52,6 +52,38 @@ describe('emoji in a doc', () => {
   })
 })
 
+// A caret is drawn against the edge of the character beside it and runs the
+// height of the line, so anything the app paints over an emoji decides whether
+// that caret can be seen. Held to the character's own square it is met above and
+// below the picture; a pixel wider, or as tall as the line, and it is gone
+// outright, which reads as a box nothing can be typed into. No suite can see a
+// caret, so what is held here is the rule that decides it.
+describe('a picture over a character takes the room the character takes', () => {
+  const rule = () => {
+    const at = styles.indexOf('.doc .doc-emoji::after')
+    expect(at).toBeGreaterThan(-1)
+    return styles.slice(at, styles.indexOf('\n}', at))
+  }
+
+  it('draws the doc sheet as a square of the character box', () => {
+    expect(rule()).toContain('aspect-ratio: 1')
+    expect(rule()).toContain('left: 0')
+    expect(rule()).toContain('right: 0')
+  })
+
+  it('never draws the doc sheet wider or taller than that', () => {
+    expect(rule()).not.toMatch(/(width|height):\s*[\d.]+em/)
+    expect(rule()).not.toMatch(/(top|bottom):\s*0/)
+  })
+
+  it('keeps the composer patch off the line it stands in', () => {
+    const at = composer.indexOf('absolute inset-x-0')
+    expect(at).toBeGreaterThan(-1)
+    expect(composer.slice(at, composer.indexOf('>', at))).toContain('aspect-square')
+    expect(composer).not.toContain('inset-y-0 -inset-x-px')
+  })
+})
+
 describe('the doc emoji menu', () => {
   const stand = (query: string, onItemClick: (item: unknown) => void, selectedIndex = 0) => {
     const editor = BlockNoteEditor.create({ schema: docSchema as never })
