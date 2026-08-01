@@ -1,7 +1,7 @@
 import { createRequire } from 'node:module'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { Editor } from '../src/renderer/src/canvas/editor'
-import { createShapeId, createTLStore, fromPlainText, type TLTextShape } from '../src/renderer/src/canvas/schema'
+import { Editor, type TLTextShape } from '../src/renderer/src/canvas'
+import { createShapeId, createTLStore, fromPlainText } from '../src/renderer/src/canvas/schema'
 import { DesignTextUtil } from '../src/renderer/src/design/TextUtil'
 import { setTextShapeType } from '../src/renderer/src/design/textType'
 
@@ -63,11 +63,11 @@ describe('letter spacing on a Design text shape', () => {
       meta: { type: { spacing: 0 } }
     })
     const before = editor.getShapePageBounds(id)!.width
-    const shape = editor.getShape<TLTextShape>(id)!
+    const shape = editor.getShape(id) as TLTextShape
 
     setTextShapeType(editor, shape, { spacing: 4 })
 
-    const updated = editor.getShape<TLTextShape>(id)!
+    const updated = editor.getShape(id) as TLTextShape
     expect(updated.props.w).toBe(before + 12)
     expect(editor.getShapePageBounds(id)!.width).toBe(before + 12)
   })
