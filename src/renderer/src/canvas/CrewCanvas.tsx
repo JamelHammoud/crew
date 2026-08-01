@@ -38,6 +38,8 @@ export interface CrewCanvasOptions {
   [key: string]: unknown
 }
 
+const VIEWPORT_SETTLE_MS = 1000
+
 const handled = new WeakSet<Event>()
 
 function taken(event: Event): boolean {
