@@ -21,6 +21,7 @@ const globalKeys = [
   'MutationObserver',
   'ResizeObserver',
   'getSelection',
+  'getComputedStyle',
   'requestAnimationFrame',
   'cancelAnimationFrame',
   'IS_REACT_ACT_ENVIRONMENT'
@@ -51,6 +52,7 @@ beforeAll(() => {
   setGlobal('Node', view.Node)
   setGlobal('MutationObserver', view.MutationObserver)
   setGlobal('getSelection', view.getSelection.bind(view))
+  setGlobal('getComputedStyle', view.getComputedStyle.bind(view))
   setGlobal('requestAnimationFrame', view.requestAnimationFrame.bind(view))
   setGlobal('cancelAnimationFrame', view.cancelAnimationFrame.bind(view))
   setGlobal('IS_REACT_ACT_ENVIRONMENT', true)
