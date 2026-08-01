@@ -23,23 +23,15 @@ landed()
 const VIEW = 800
 const ROW = 30
 
-Object.defineProperty(HTMLElement.prototype, 'clientHeight', {
-  configurable: true,
-  get(this: HTMLElement) {
-    return this.dataset.scroller === undefined ? 0 : VIEW
-  }
-})
-
 const SAID = /^step number \d+$/
 
-const rows = (): number => screen.queryAllByText(SAID).length
+const drawnRows = (): HTMLElement[] => screen.queryAllByText(SAID)
 
-Object.defineProperty(HTMLElement.prototype, 'scrollHeight', {
-  configurable: true,
-  get(this: HTMLElement) {
-    return this.dataset.scroller === undefined ? 0 : rows() * ROW
-  }
-})
+const rows = (): number => drawnRows().length
+
+Object.defineProperty(HTMLElement.prototype, 'clientHeight', { configurable: true, get: () => VIEW })
+
+Object.defineProperty(HTMLElement.prototype, 'scrollHeight', { configurable: true, get: () => rows() * ROW })
 
 const AGENT: PooledAgent = {
   id: 'ali/claude',

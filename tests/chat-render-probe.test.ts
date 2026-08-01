@@ -287,16 +287,11 @@ describe('what a long chat draws again', () => {
     expect(drawn.messages).toBe(0)
   })
 
-  it('still shows what a working run is doing', () => {
+  it('says what a resting thread finished with', () => {
     const steps = Array.from({ length: STEPS }, (_, index) => stepAt(index))
     openChat(steps)
 
-    act(() => {
-      useCrew.setState({
-        steps: { [PROMPT]: [...steps, { ...stepAt(STEPS), status: 'running' as const, name: 'Grep' }] }
-      })
-    })
-
-    expect(screen.getByText(/Searching/)).toBeTruthy()
+    expect(screen.getByText('the 3th piece is done')).toBeTruthy()
+    expect(screen.getAllByText('Ready for review').length).toBe(CARDS - 1)
   })
 })
