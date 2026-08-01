@@ -428,6 +428,53 @@ const runOfPages = (events: SessionEvent[]): Map<string, string> => {
   return runs
 }
 
+interface ThreadIndex {
+  ended: Set<string>
+  started: Set<string>
+  routes: Map<string, Extract<SessionEvent, { kind: 'message.route' }>>
+  pageRuns: Map<string, string>
+  reactions: Map<string, ReactionGroup[]>
+  returned: Map<string, Extract<SessionEvent, { kind: 'subagent.ended' }>>
+}
+
+// Six of the seven walks a thread is built from read the events and nothing
+// else, and a step landing replaces the steps rather than the events. Held
+// against the array they were read off, they are walked once for a thread
+// rather than once a frame for the whole of a run. Nothing here may be handed
+// an array that is written to in place: every event list in the store is made
+// again rather than pushed onto, which is what makes the identity honest.
+const indexes = new WeakMap<SessionEvent[], Map<string, ThreadIndex>>()
+
+function readIndex(events: SessionEvent[], selfId: string): ThreadIndex {
+  const ended = new Set<string>()
+  const started = new Set<string>()
+  // The last route wins: a steer the agent turned down is re-emitted as queued.
+  const routes = new Map<string, Extract<SessionEvent, { kind: 'message.route' }>>()
+  // The end of a helper is a fact about the chip that stands where it started,
+  // so it is folded onto that chip rather than landing as a row of its own.
+  const returned = new Map<string, Extract<SessionEvent, { kind: 'subagent.ended' }>>()
+  for (const event of events) {
+    if (event.kind === 'agent.end') ended.add(event.promptId)
+    if (event.kind === 'agent.start') started.add(event.promptId)
+    if (event.kind === 'message.route') routes.set(event.messageId, event)
+    if (event.kind === 'subagent.ended') returned.set(event.threadId, event)
+  }
+  return { ended, started, routes, pageRuns: runOfPages(events), reactions: reactionGroups(events, selfId), returned }
+}
+
+function threadIndex(events: SessionEvent[], selfId: string): ThreadIndex {
+  let bySelf = indexes.get(events)
+  if (!bySelf) {
+    bySelf = new Map()
+    indexes.set(events, bySelf)
+  }
+  const held = bySelf.get(selfId)
+  if (held) return held
+  const read = readIndex(events, selfId)
+  bySelf.set(selfId, read)
+  return read
+}
+
 // Every name an agent wrote under is read back off its id, so a rename shows on
 // work it did before the rename instead of leaving the old name behind.
 export function buildThread(
