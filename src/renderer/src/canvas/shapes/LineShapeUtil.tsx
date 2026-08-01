@@ -20,6 +20,14 @@ export function linePoints(shape: LineShape): Vec[] {
     .map(point => new Vec(point.x, point.y))
 }
 
+export function linePath(shape: LineShape): PathBuilder {
+  const points = linePoints(shape)
+  const spread = points.length < 2 ? [points[0] ?? new Vec(), (points[0] ?? new Vec()).clone().addXY(0.1, 0.1)] : points
+  return shape.props.spline === 'cubic' && spread.length > 2
+    ? PathBuilder.cubicSplineThroughPoints(spread, { endOffsets: 0 })
+    : PathBuilder.lineThroughPoints(spread, { endOffsets: 0 })
+}
+
 export class LineShapeUtil extends ShapeUtil<LineShape> {
   static override type = 'line' as const
   static override props = lineShapeProps
