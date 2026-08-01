@@ -15,7 +15,11 @@ export default function ThreadColumns({ ids }: { ids: string[] }) {
   const many = ids.length > 1
 
   return (
-    <div className="h-full flex overflow-x-auto overflow-y-hidden">
+    // The bar down the bottom of the row is off. It is 10 pixels of real
+    // height, so the frame a row starts scrolling on is the frame every column
+    // shortens and every composer jumps up the screen, and what says there is
+    // more to the right is already there: the column at the edge, cut off.
+    <div className="h-full flex overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {ids.map(id => (
         <div
           key={id}
