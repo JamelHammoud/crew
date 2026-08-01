@@ -209,7 +209,7 @@ function CanvasShapeView<Shape extends CanvasShapeRecord>({ host, renderer, resu
           draggable={false}
           style={shapeStyle}
         >
-          {background}
+          <ShapeContent host={host} renderer={renderer} shape={result.shape} behind />
         </div>
       )}
       <div
@@ -222,7 +222,7 @@ function CanvasShapeView<Shape extends CanvasShapeRecord>({ host, renderer, resu
         draggable={false}
         style={shapeStyle}
       >
-        {renderer.render(result.shape)}
+        <ShapeContent host={host} renderer={renderer} shape={result.shape} behind={false} />
       </div>
     </>
   )
