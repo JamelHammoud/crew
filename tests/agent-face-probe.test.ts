@@ -93,16 +93,22 @@ describe('an agent face', () => {
     expect(mine).not.toBe(theirs)
   })
 
-  // A white shape on a photograph reads by its shadow, and a shadow held at one
-  // number of pixels lifts a big face and presses a small one flat.
-  it('lifts off the picture by a shadow that is a share of the box', () => {
-    const small = (face({ size: 'xs' }).querySelector('svg') as SVGElement).style.filter
+  // Two holes closer together than a pixel are one slot, and a slot across the
+  // middle of a white shape is not a face.
+  it('keeps a bridge between the eyes at the size they are really drawn', () => {
+    const bridge = (size: string, box: number): number => {
+      const eyes = Array.from(face({ size }).querySelectorAll('svg mask circle'))
+      const gap = eyes.map(eye => Number(eye.getAttribute('cx')))
+      return ((gap[1] - gap[0] - EYE_RADIUS * 2) / PET_GRID) * box
+    }
+    const small = bridge('xs', 20)
     cleanup()
-    const large = (face({ size: 'lg' }).querySelector('svg') as SVGElement).style.filter
+    const large = bridge('lg', 48)
 
-    expect(small).toContain('drop-shadow')
-    expect(large).toContain('drop-shadow')
-    expect(small).not.toBe(large)
+    expect(small).toBeGreaterThanOrEqual(MIN_BRIDGE - 0.001)
+    expect(large).toBeGreaterThanOrEqual(MIN_BRIDGE - 0.001)
+    // Opened only as far as the size asks for, so a face is not two faces.
+    expect(eyeGapAt(petOf(SEED), 48)).toBe(petOf(SEED).eyeGap)
   })
 
   it('draws none of it where somebody has put a photo on', () => {
