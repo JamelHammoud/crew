@@ -436,61 +436,10 @@ app.whenReady().then(async () => {
 })
 `
 
-async function stage(file) {
-  const saved = JSON.parse(await readFile(file, 'utf8'))
-  if (!saved.document?.store || !saved.document?.schema) throw new Error(`${file} is not a Crew board`)
-  const directory = await realpath(await mkdtemp(path.join(tmpdir(), 'crew-board-')))
-  await writeFile(
-    path.join(directory, 'index.html'),
-    '<!doctype html><html><head><meta charset="utf-8"><script type="module" src="/probe.tsx"></script></head><body><div id="root"></div></body></html>'
-  )
-  await writeFile(path.join(directory, 'probe.tsx'), probeSource(saved.document))
-  await writeFile(
-    path.join(directory, 'probe.css'),
-    `@import "${path.join(root, 'src/renderer/src/styles.css')}";\n@import "${path.join(root, 'src/renderer/src/canvas/canvas.css')}";\n@source "${path.join(root, 'src/renderer/src')}";\nhtml, body, #root { width: 100%; height: 100%; margin: 0; }\n`
-  )
-  await writeFile(path.join(directory, 'main.cjs'), mainSource)
-  return directory
-}
-
-async function compile(directory) {
-  const { build } = await import('vite')
-  const tailwind = (await import('@tailwindcss/vite')).default
-  await build({
-    root: directory,
-    base: './',
-    logLevel: 'silent',
-    plugins: [tailwind()],
-    build: { outDir: path.join(directory, 'dist'), emptyOutDir: true }
-  })
-}
-
-function run(directory) {
-  return new Promise((resolve, reject) => {
-    const child = spawn(electron, [path.join(directory, 'main.cjs')], { stdio: ['ignore', 'pipe', 'pipe'] })
-    let output = ''
-    child.stdout.on('data', chunk => {
-      output += chunk
-    })
-    child.stderr.on('data', () => {})
-    const timeout = setTimeout(() => {
-      child.kill('SIGKILL')
-      reject(new Error('The board check did not finish'))
-    }, 180_000)
-    child.on('exit', () => {
-      clearTimeout(timeout)
-      const line = output.split('\n').find(value => value.startsWith('BOARD '))
-      if (!line) reject(new Error('The board window did not report a result'))
-      else resolve(JSON.parse(line.slice(6)))
-    })
-    child.on('error', reject)
-  })
-}
-
 const file = await boardFile()
-const directory = await stage(file)
+const directory = await stage(file, mainSource)
 try {
-  const result = await run(await compile(directory).then(() => directory))
+  const result = await run(await compile(directory))
   if (result.failed)
     throw new Error(`${result.failed}${result.errors?.length ? `\n${result.errors.join('\n')}` : ''}`)
   for (const check of result.checks) console.log(`${check.ok ? 'ok  ' : 'FAIL'}  ${check.name}${check.note ? `  (${check.note})` : ''}`)
