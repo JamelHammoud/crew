@@ -1,6 +1,7 @@
 import { Box } from '../math/Box'
 import { linesIntersect, pointInPolygon } from '../math/utils'
 import { Vec, type VecLike } from '../math/Vec'
+import { polygonIntersectsPolyline, polygonsIntersect } from './intersect'
 
 const ARC_SPACING = 20
 const ARC_MIN_COUNT = 8
