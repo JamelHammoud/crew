@@ -22,7 +22,8 @@ import {
   ARROW_TIP,
   cursorColor,
   CursorArrow,
-  DESIGN_CURSORS
+  DESIGN_CURSORS,
+  showCursor
 } from '../design/cursors'
 import { busyAgents } from '../design/busyAgents'
 import { applyDesignDefaults } from '../design/defaults'
@@ -40,6 +41,8 @@ import { avatarHue } from './avatarColor'
 import Spinner from './Spinner'
 
 const tools = [DesignNodeTool]
+
+const CURSOR_EVENTS = ['pointermove', 'pointerdown', 'pointerup', 'pointerenter'] as const
 
 const FLUSH_MS = 80
 const PRESENCE_MS = 100
