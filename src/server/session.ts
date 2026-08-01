@@ -333,8 +333,6 @@ type TicketAdded = Extract<SessionEvent, { kind: 'ticket.added' }>
 // names is not one going here. Only a model reads it, so it is a sentence.
 const NOT_RUNNING = 'That promptId is not a run this session has going.'
 
-// A hidden thread is never written down, so a memory written from one would
-// either vanish with the window or leak the thread into the crew's history.
 const GHOST_MEMORY = 'This thread is hidden, so nothing in it can go in the crew memory.'
 
 // A call over http either happened or is refused in words, and nothing about
@@ -3855,7 +3853,8 @@ export class CrewSession {
       spawnRoom: canSend ? room : 0,
       spawnProviders: canSend ? this.spawnProviders() : undefined,
       tickets: thread.tickets,
-      goal: entry.goal
+      goal: entry.goal,
+      memories: [...this.memories.values()]
     }
   }
 
