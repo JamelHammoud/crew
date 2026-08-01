@@ -319,19 +319,28 @@ describe('what the canvas draws over the artwork', () => {
     geo(subject, 'two', 0, 200, 100, 100)
     subject.select(first)
     subject.snaps.setIndicators([
-      {
-        id: 'snap:one',
-        type: 'points',
-        points: [
-          { x: 50, y: 50 },
-          { x: 50, y: 250 }
-        ]
-      }
+      { id: 'snap:one', type: 'points', points: [new Vec(50, 50), new Vec(50, 250)] }
     ])
 
     expect(activeTypes(subject)).toContain('snap_indicator')
     const drawn = paint(subject)
-    expect(drawn.named('moveTo').length + drawn.named('lineTo').length).toBeGreaterThan(0)
+    expect(drawn.named('moveTo')[0].args).toEqual([50, 50])
+    expect(drawn.named('lineTo')[0].args).toEqual([50, 250])
+    expect(drawn.named('stroke').length).toBeGreaterThan(0)
+  })
+
+  it('marks each point a snap landed on', () => {
+    const subject = editor()
+    const id = geo(subject, 'one', 0, 0, 100, 100)
+    subject.select(id)
+    subject.snaps.setIndicators([
+      { id: 'snap:one', type: 'points', points: [new Vec(0, 0), new Vec(100, 0)] }
+    ])
+
+    const drawn = paint(subject)
+    const marks = drawn.named('moveTo').filter(call => call.args.length === 2)
+    expect(marks.length).toBeGreaterThanOrEqual(1)
+    expect(drawn.named('setLineDash').length).toBeGreaterThan(0)
   })
 
   it('paints the overlays in the order they stack', () => {

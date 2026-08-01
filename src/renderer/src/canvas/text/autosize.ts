@@ -1,8 +1,10 @@
 import { richTextForMeasurement, type RichTextDocument } from './richText'
-import type { MeasuredTextSize, TextMeasureOptions } from './measurement'
+import type { TextMeasureOptions } from './measurement'
+
+export const MIN_TEXT_WIDTH = 16
 
 export interface TextMeasurer {
-  measureHtml(html: string, options: TextMeasureOptions): MeasuredTextSize
+  measureHtml(html: string, options: TextMeasureOptions): { w: number; h: number }
 }
 
 export interface TextLayoutRequest {
