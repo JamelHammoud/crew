@@ -42,6 +42,7 @@ interface HitTarget {
   origin: VecLike
   rotation: number
   rect: { x: number; y: number; w: number; h: number }
+  filled: boolean
 }
 
 export class OverlayManager {
