@@ -488,6 +488,56 @@ textarea:placeholder-shown {
   }
 }
 
+/* A list that runs past its own ends says so by fading out. The panel is glass,
+   so what stands behind a row is whatever is behind the window: there is no
+   colour to fade to, and a scrim of one would be a band of the app's own grey
+   laid over somebody's desktop. The rows fade to nothing instead, which is a
+   mask over the scroller rather than anything drawn on top of it.
+
+   An end only fades while something is really past it, or the first row of a
+   list that fits is cut in half for nothing. The two lengths are registered
+   properties so the mask eases in and out rather than snapping on at the first
+   pixel of a scroll. */
+@property --fade-top {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --fade-bottom {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+.scroll-fade {
+  --fade-run: 24px;
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 var(--fade-top),
+    #000 calc(100% - var(--fade-bottom)),
+    transparent 100%
+  );
+  transition:
+    --fade-top 0.15s ease-out,
+    --fade-bottom 0.15s ease-out;
+}
+
+.scroll-fade[data-fade-top] {
+  --fade-top: var(--fade-run);
+}
+
+.scroll-fade[data-fade-bottom] {
+  --fade-bottom: var(--fade-run);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-fade {
+    transition-duration: 1ms;
+  }
+}
+
 /* The dictation pill, which is the one panel in the app that floats over another
    application rather than over Crew. Nothing can blur what is back there: a
    backdrop filter samples the page it is drawn in, and behind this window there
