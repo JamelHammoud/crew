@@ -17,14 +17,7 @@ export function replyTargetLabel(authorName: string, toSelf: boolean, byMe: bool
 // showing, so it wins over a file that came with it.
 export function replyAttachment(events: SessionEvent[], targetId: string | undefined): Attachment | undefined {
   if (!targetId) return undefined
-  for (let i = events.length - 1; i >= 0; i--) {
-    const event = events[i]
-    if (event.kind !== 'message' || messageReactionTarget(event.id) !== targetId) continue
-    const carried = event.attachments
-    if (!carried || carried.length === 0) return undefined
-    return carried.find(attachment => isImageType(attachment.mime)) ?? carried[0]
-  }
-  return undefined
+  return eventIndex(events).replyAttachments.get(targetId)
 }
 
 export function jumpToMessage(targetId: string): boolean {
