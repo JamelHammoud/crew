@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { relabelMentions, type AgentMentionRef } from '../../../shared/llm'
 import { useCrew } from '../state/store'
+import { EmojiText } from './Emoji'
 import HoverCard from './HoverCard'
 
 const CARD_WIDTH = 380
