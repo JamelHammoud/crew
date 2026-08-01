@@ -386,6 +386,7 @@ export class CrewSession {
   private ghostFiles = new Map<string, { ws: WebSocket; mime: string; data: Buffer }>()
   private todos = new Map<string, Todo>()
   private tools = new Map<string, CrewTool>()
+  private memories = new Map<string, CrewMemory>()
   // How big a file may be, in megabytes. The crew's own, folded off the log the
   // way the toolbox is.
   private attachmentMb = DEFAULT_ATTACHMENT_MB
