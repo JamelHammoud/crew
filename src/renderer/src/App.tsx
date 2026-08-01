@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import HuddlePanel from './components/huddle/HuddlePanel'
 import Settings from './components/settings/Settings'
+import Sidebar from './components/Sidebar'
 import SidePanel from './components/SidePanel'
 import Spinner from './components/Spinner'
 import TasksPanel from './components/TasksPanel'
@@ -9,6 +10,7 @@ import TopBar, { type Tab } from './components/TopBar'
 import VoiceScreen from './components/voice/VoiceScreen'
 import { lazy, Suspense } from 'react'
 import { reviewCount } from './state/alerts'
+import { SIDEBAR_W, useSidebar } from './state/sidebar'
 import { useCrew } from './state/store'
 import { toast } from './state/toast'
 import { watchUpdates } from './state/update'
@@ -57,6 +59,9 @@ function Loading() {
 function Session() {
   const [tab, setTab] = useState<Tab>('chat')
   const [tasksOpen, setTasksOpen] = useState(false)
+  const pinned = useSidebar(s => s.pinned)
+  const peeking = useSidebar(s => s.peeking)
+  const peek = useSidebar(s => s.peek)
   const openThreadId = useCrew(s => s.openThreadId)
   const closeThread = useCrew(s => s.closeThread)
   const openThread = useCrew(s => s.openThread)
