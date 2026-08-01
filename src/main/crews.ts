@@ -37,7 +37,13 @@ export class Crews {
     for (const [key, session] of this.open) {
       const current = session.current()
       if (current) {
-        live.push({ key, folder: current.folder, name: current.name, hosting: current.hosting })
+        live.push({
+          key,
+          folder: current.folder,
+          name: current.name,
+          hosting: current.hosting,
+          threads: session.liveThreads()
+        })
       }
     }
     return live
