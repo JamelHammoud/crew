@@ -82,7 +82,7 @@ export default function DiffPane({
           onClick={onViewed}
           aria-pressed={viewed}
           className={`flex h-6 shrink-0 items-center gap-1 rounded-full px-2 text-xs font-semibold transition-colors active:scale-95 ${
-            viewed ? 'bg-fg/10 text-fg-muted hover:bg-fg/15' : 'text-fg-secondary hover:bg-fg/10 hover:text-fg'
+            viewed ? 'bg-fg/15 text-fg' : 'text-fg-muted hover:bg-fg/10 hover:text-fg'
           }`}
         >
           <CheckGlyph className="w-3.5 h-3.5" />
