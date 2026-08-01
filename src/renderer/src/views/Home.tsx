@@ -41,7 +41,7 @@ export default function Home() {
   const [name, setName] = useState(known)
   const [folder, setFolder] = useState<string | null>(() => localStorage.getItem('crew.folder'))
   const [link, setLink] = useState(() => localStorage.getItem('crew.link') ?? '')
-  const [places, setPlaces] = useState<Place[]>([])
+  const places = usePlaces(s => s.places)
   const [screen, setScreen] = useState<Screen>(known ? 'places' : 'name')
   // Only the very first time is there nowhere to go back to.
   const [first, setFirst] = useState(!known)
