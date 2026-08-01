@@ -13,7 +13,7 @@ export interface ReviewState {
 
 export interface AlertState extends ReviewState {
   agents: Array<Pick<PooledAgent, 'id' | 'label'>>
-  openThreadId: string | null
+  openThreadIds: string[]
 }
 
 // The badge is the count of the tasks panel's "Needs review" list, so both read
