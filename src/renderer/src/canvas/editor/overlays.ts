@@ -168,10 +168,13 @@ class SelectionForegroundOverlayUtil implements ToolOverlayUtil {
       type: 'selection_foreground',
       props: {
         handle,
-        point: Mat.Identity().translate(origin.x, origin.y).rotate(rotation).applyToPoint({
-          x: rect.x + rect.w / 2,
-          y: rect.y + rect.h / 2
-        }),
+        point: Mat.Identity()
+          .translate(origin.x, origin.y)
+          .rotate(rotation)
+          .applyToPoint({
+            x: rect.x + rect.w / 2,
+            y: rect.y + rect.h / 2
+          }),
         radius: 6 / zoom,
         hit: { origin, rotation, rect }
       }

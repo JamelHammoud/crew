@@ -67,18 +67,11 @@ function drawGaps(
     }
     context.stroke()
     const length = Math.abs(end - start)
-    if (length * zoom >= LABEL_ROOM)
-      drawLabel(context, String(Math.round(length)), at((start + end) / 2), zoom, color)
+    if (length * zoom >= LABEL_ROOM) drawLabel(context, String(Math.round(length)), at((start + end) / 2), zoom, color)
   }
 }
 
-function drawLabel(
-  context: CanvasRenderingContext2D,
-  text: string,
-  at: VecLike,
-  zoom: number,
-  color: string
-): void {
+function drawLabel(context: CanvasRenderingContext2D, text: string, at: VecLike, zoom: number, color: string): void {
   context.save()
   context.font = `500 ${LABEL_SIZE / zoom}px ${LABEL_FACE}`
   context.textAlign = 'center'
