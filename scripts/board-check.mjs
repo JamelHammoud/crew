@@ -496,6 +496,53 @@ const driveSource = String.raw`(async () => {
     }
   })
 
+  await attempt('the group box follows a shape that moved inside it', async () => {
+    const overlay = document.querySelector('[data-canvas-overlays="true"]')
+    if (!overlay) return { ok: false, note: 'the board draws no overlay canvas' }
+    const ink = at => {
+      const shell = overlay.getBoundingClientRect()
+      const pixels = overlay.getContext('2d').getImageData(0, 0, overlay.width, overlay.height).data
+      const across = Math.round((at.x - shell.left) * (overlay.width / shell.width))
+      const down = Math.round((at.y - shell.top) * (overlay.height / shell.height))
+      let most = 0
+      for (let step = -2; step <= 2; step++) {
+        const column = across + step
+        if (column < 0 || column >= overlay.width || down < 0 || down >= overlay.height) continue
+        most = Math.max(most, pixels[(down * overlay.width + column) * 4 + 3])
+      }
+      return most
+    }
+    const { one, group } = await grouped()
+    editor.select(group)
+    await settle()
+    const was = boundsOf(group)
+    const held = { x: was.minX, y: was.midY }
+    const before = ink(viewport(held))
+    await doubleClick(viewport(boundsOf(one).center))
+    const at = viewport(boundsOf(one).center)
+    await drag(at, { x: at.x - 200, y: at.y })
+    press('Escape')
+    await settle()
+    const now = boundsOf(group)
+    const after = ink(viewport(held))
+    const moved = ink(viewport({ x: now.minX, y: now.midY }))
+    await clear()
+    return {
+      ok: before > 0 && now.minX < was.minX - 50 && after === 0 && moved > 0,
+      note:
+        'the group ran from ' +
+        round(was.minX) +
+        ' to ' +
+        round(now.minX) +
+        ', and its old edge went from ' +
+        before +
+        ' to ' +
+        after +
+        ' where the new one reads ' +
+        moved
+    }
+  })
+
   section = 'Dragging'
 
   await attempt('a drag moves a shape by what the pointer travelled', async () => {
