@@ -768,7 +768,7 @@ export const useCrew = create<CrewState>((set, get) => {
         members,
         agents,
         activePrompts,
-        steps: all.length > events.length ? pruneSteps(steps, events) : steps,
+        steps: events.length <= state.events.length ? pruneSteps(steps, events) : steps,
         threads,
         threadPrompts
       }
