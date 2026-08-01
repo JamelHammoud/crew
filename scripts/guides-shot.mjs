@@ -11,6 +11,7 @@ const root = path.resolve(here, '..')
 const resolve = createRequire(path.join(root, 'package.json')).resolve
 const out = process.env.CREW_GUIDES_OUT ?? path.join(root, '.guides-shots')
 const label = process.argv[2] ?? 'shot'
+const surface = process.env.CREW_GUIDES_SURFACE === 'light' ? 'light' : ''
 
 function probeSource() {
   const canvas = JSON.stringify(path.join(root, 'src/renderer/src/canvas/index.ts'))
@@ -179,7 +180,7 @@ async function stage() {
   const directory = await realpath(await mkdtemp(path.join(tmpdir(), 'crew-guides-')))
   await writeFile(
     path.join(directory, 'index.html'),
-    '<!doctype html><html><head><meta charset="utf-8"><script type="module" src="/probe.tsx"></script></head><body><div id="root"></div></body></html>'
+    `<!doctype html><html class="${surface}"><head><meta charset="utf-8"><script type="module" src="/probe.tsx"></script></head><body><div id="root"></div></body></html>`
   )
   await writeFile(path.join(directory, 'probe.tsx'), probeSource())
   await writeFile(
