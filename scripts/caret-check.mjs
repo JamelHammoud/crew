@@ -233,6 +233,7 @@ try {
 
   if (problems.length > 0) {
     for (const problem of problems) console.error(problem)
+    for (const read of seen.seen) console.error(`  ${read.where} ${read.side}: ${read.lit}`)
     process.exit(1)
   }
   console.log('the caret stands either side of an emoji in a doc and in the composer')

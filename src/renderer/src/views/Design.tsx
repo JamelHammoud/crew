@@ -16,6 +16,7 @@ const GLYPH = 'w-[18px] h-[18px] transition-transform duration-200'
 
 export default function Design() {
   const boards = useCrew(s => s.boards)
+  const connection = useCrew(s => s.connection)
   const createBoard = useCrew(s => s.createBoard)
   const designTarget = useCrew(s => s.designTarget)
   const clearDesignTarget = useCrew(s => s.clearDesignTarget)
@@ -23,6 +24,7 @@ export default function Design() {
   const [editor, setEditor] = useState<Editor | null>(null)
   const [panels, setPanels] = useState(lastPanels)
   const [renaming, setRenaming] = useState<string | null>(null)
+  const asked = useRef(false)
 
   const current = selected && boards.some(b => b.id === selected) ? selected : (boards[0]?.id ?? null)
   const boardContext = useMemo(() => ({ current: current ?? '', select: setSelected }), [current])
