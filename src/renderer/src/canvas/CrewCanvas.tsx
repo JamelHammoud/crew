@@ -185,7 +185,7 @@ export function CrewCanvas({
     return () => {
       observer.disconnect()
       element.removeEventListener('pointerdown', pointerDown)
-      element.removeEventListener('pointermove', handlers.onPointerMove)
+      ownerDocument.removeEventListener('pointermove', pointerMove)
       element.removeEventListener('pointerup', pointerUp)
       element.removeEventListener('pointercancel', handlers.onPointerCancel)
       element.removeEventListener('dblclick', handlers.onDoubleClick)
