@@ -46,6 +46,7 @@ function Board() {
     window.canvasEditor = editor
     requestAnimationFrame(() => {
       editor.zoomToFit({ immediate: true })
+      window.__perf.ready = performance.now()
       window.canvasReady = true
     })
     return () => stopRounding()
