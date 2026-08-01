@@ -131,4 +131,43 @@ describe('two crews open in one app', () => {
     const away = app.switchTo(1, projectPlace(localFolder))
     expect((await firstReply(away!.wsUrl, away!.code)).type).toBe('welcome')
   }, 60000)
+
+  it('opens two projects asked for in the same breath one at a time', async () => {
+    const state = tmpDir('two-crews-race-state')
+    const app = new Crews()
+    app.setAgentsPath(path.join(state, 'agents.json'))
+    app.setSessionPath(path.join(state, 'session.json'))
+    app.setProjectsPath(path.join(state, 'projects'))
+    apps.push(app)
+    const one = tmpDir('two-crews-race-one')
+    const two = tmpDir('two-crews-race-two')
+    await initRepo(one)
+    await initRepo(two)
+
+    const [first, second] = await Promise.all([
+      app.start(1, one, 'Jamel', { home: 'folder', share: true }),
+      app.start(2, two, 'Jamel', { home: 'private', share: false })
+    ])
+    expect(first.wsUrl).not.toBe(second.wsUrl)
+    expect((await firstReply(first.wsUrl, first.code)).type).toBe('welcome')
+    expect((await firstReply(second.wsUrl, second.code)).type).toBe('welcome')
+  }, 60000)
+
+  it('opens one crew for one folder asked for twice at once', async () => {
+    const state = tmpDir('one-crew-twice-state')
+    const app = new Crews()
+    app.setAgentsPath(path.join(state, 'agents.json'))
+    app.setSessionPath(path.join(state, 'session.json'))
+    app.setProjectsPath(path.join(state, 'projects'))
+    apps.push(app)
+    const folder = tmpDir('one-crew-twice')
+    await initRepo(folder)
+
+    const [first, second] = await Promise.all([
+      app.start(1, folder, 'Jamel', { home: 'private' }),
+      app.start(2, folder, 'Jamel', { home: 'private' })
+    ])
+    expect(second.wsUrl).toBe(first.wsUrl)
+    expect(app.places()).toHaveLength(1)
+  }, 60000)
 })
