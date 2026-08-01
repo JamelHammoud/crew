@@ -348,7 +348,7 @@ describe('canvas rendering', () => {
     const view = render(createElement(Canvas<Shape>, { host: state.host, shapeRenderer: renderer }))
     const canvas = view.container.querySelector('canvas') as HTMLCanvasElement
 
-    expect(canvas.getAttribute('style')).toBeNull()
+    expect([...canvas.style]).toEqual(['width', 'height'])
     expect(canvas.style.width).toBe('300px')
     expect(canvas.style.height).toBe('200px')
 

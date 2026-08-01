@@ -1,12 +1,5 @@
 import { cloneElement, type CSSProperties, type ReactElement } from 'react'
-import {
-  atom,
-  renderHtmlFromRichTextForMeasurement,
-  TextShapeUtil,
-  type Editor,
-  type ShapeUtil,
-  type TLTextShape
-} from '../canvas'
+import { atom, TextShapeUtil, type Editor, type ShapeUtil, type TLTextShape } from '../canvas'
 import { fontStack, loadFonts, whenFontsLoad } from './fonts'
 import { textInkStyle } from './nodeCss'
 import { textShapeType, typeMeasure } from './textType'
