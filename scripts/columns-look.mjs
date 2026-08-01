@@ -221,7 +221,17 @@ try {
   await compile(dir)
   const seen = await run(dir)
   if (seen.failed) throw new Error(seen.failed)
-  console.log(JSON.stringify(seen, null, 2))
+  await writeFile(`${OUT}/geometry.json`, JSON.stringify(seen, null, 2))
+  for (const one of seen) {
+    const bar = one.row.offsetHeight - one.row.clientHeight
+    console.log(
+      `${one.at.width}w ${one.at.count}col  columns=${one.columns.map(c => c.w).join(',')}  ` +
+        `scrollWidth=${one.row.scrollWidth} clientWidth=${one.row.clientWidth} scrolls=${one.row.maxScroll > 0}  ` +
+        `hbar=${bar}px  first overlay ${one.firstOverlay.x},${one.firstOverlay.y} ${one.firstOverlay.w}x${one.firstOverlay.h} bottom=${one.firstOverlay.bottom}  ` +
+        `last overlay ${one.lastOverlay.x},${one.lastOverlay.y} ${one.lastOverlay.w}x${one.lastOverlay.h}  ` +
+        `seams=${one.seams.map(s => s.litDevicePixels).join('/')}`
+    )
+  }
 } finally {
   await rm(dir, { recursive: true, force: true })
 }
