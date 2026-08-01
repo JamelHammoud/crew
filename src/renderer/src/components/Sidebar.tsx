@@ -18,7 +18,7 @@ function said(err: unknown): string {
   )
 }
 
-export default function Sidebar() {
+export default function Sidebar({ overlay }: { overlay?: boolean }) {
   const places = usePlaces(s => s.places)
   const live = usePlaces(s => s.live)
   const load = usePlaces(s => s.load)
@@ -94,12 +94,20 @@ export default function Sidebar() {
   }
 
   return (
-    <aside
-      style={{ width: SIDEBAR_W }}
-      className="h-full flex flex-col bg-ink-800 border-r border-ink-700"
-    >
-      <div className={`app-drag h-[70px] shrink-0 ${pinned ? 'mac:pl-[64px]' : ''}`} />
-      <div className="flex-1 min-h-0 overflow-y-auto app-no-drag px-2">
+    <aside style={{ width: SIDEBAR_W }} className="h-full flex flex-col">
+      <div
+        className={
+          overlay
+            ? 'h-[70px] shrink-0 pointer-events-none'
+            : `app-drag h-[70px] shrink-0 bg-ink-800 border-r border-ink-700 ${pinned ? 'mac:pl-[64px]' : ''}`
+        }
+      />
+      <div
+        className={`flex-1 min-h-0 flex flex-col bg-ink-800 border-r border-ink-700 ${
+          overlay ? 'border-t rounded-tr-card shadow-[0_0_40px_rgba(0,0,0,0.55)]' : ''
+        }`}
+      >
+      <div className="flex-1 min-h-0 overflow-y-auto app-no-drag px-2 pt-2">
         {places.map(place => (
           <PlaceGroup
             key={place.key}
@@ -126,6 +134,7 @@ export default function Sidebar() {
           <PlusGlyph className="w-4 h-4" />
           Open a folder
         </button>
+      </div>
       </div>
       <Modal open={asking !== null} onClose={() => setAsking(null)} title="" width={520} flush>
         <div className="p-6">
