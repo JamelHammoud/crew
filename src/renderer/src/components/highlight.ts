@@ -132,15 +132,6 @@ export function languageFor(path: string): string | null {
 let corePromise: Promise<HighlighterCore> | null = null
 const loading = new Map<string, Promise<void>>()
 
-// Tokenizing is the whole cost of drawing code, and a thread asks for the same
-// answer over and over: the same command run twenty times, the same file edited
-// all morning, and every card mounting again the moment somebody scrolls back
-// to it. It is settled by the text, the grammar and the theme and by nothing
-// else, so it is worked out once and handed out after that.
-//
-// What is held is capped by how much text it stands for rather than by a count
-// of entries, since one file is worth a thousand shell lines, and the least
-// lately read is what goes when the cap is reached.
 const CACHE_CHARS = 4_000_000
 
 interface Held {
