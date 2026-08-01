@@ -1322,7 +1322,7 @@ export class Editor {
   }
 
   getCurrentToolPath(): string {
-    return this.tools.getCurrentToolPath()
+    return this.tools?.getCurrentToolPath() ?? 'select.idle'
   }
 
   setCurrentToolIdMask(id: string | undefined): this {
