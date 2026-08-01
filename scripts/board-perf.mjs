@@ -401,7 +401,10 @@ try {
     )
     console.log(`  react     ${run.commitsPerMove} commits a move, ${run.reactMsPerMove}ms a move`)
     if (run.selected !== undefined) console.log(`  selected  ${run.selected} distinct selections`)
-    if (run.covered !== undefined) console.log(`  covered   ${run.covered} shapes by the end of it`)
+    if (run.covered !== undefined)
+      console.log(
+        `  covered   ${run.covered} shapes of the ${run.topLevel} standing at the top of the board, the rest inside frames a marquee takes whole`
+      )
     const calls = Object.entries(run.perMove)
       .filter(([, count]) => count > 0)
       .sort((a, b) => b[1] - a[1])
