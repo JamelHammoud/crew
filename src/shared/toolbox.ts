@@ -29,7 +29,7 @@ export const TOOL_MARKS = [
   'folder',
   'file',
   'doc',
-  'clipboard',
+  'copy',
   'checklist',
   'archive',
   'photo',
