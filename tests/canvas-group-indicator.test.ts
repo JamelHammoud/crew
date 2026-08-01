@@ -151,6 +151,34 @@ describe('the outline around a selected group', () => {
     expect(painted?.props?.children).toBeUndefined()
   })
 
+  it('follows a shape that has moved inside it', () => {
+    const subject = board()
+    const group = grouped(subject)
+    expect(paint(subject)).toEqual([{ x: 0, y: 0, w: 300, h: 100 }])
+
+    subject.updateShape({ id: createShapeId('two'), type: 'geo', x: 400 })
+    expect(paint(subject)).toEqual([{ x: 0, y: 0, w: 500, h: 100 }])
+    expect(subject.getShapePageBounds(group)?.w).toBe(500)
+  })
+
+  it('follows a shape that has grown inside it', () => {
+    const subject = board()
+    grouped(subject)
+    expect(paint(subject)).toEqual([{ x: 0, y: 0, w: 300, h: 100 }])
+
+    subject.updateShape({ id: createShapeId('two'), type: 'geo', props: { h: 400 } })
+    expect(paint(subject)).toEqual([{ x: 0, y: 0, w: 300, h: 400 }])
+  })
+
+  it('closes up again when a shape leaves it', () => {
+    const subject = board()
+    grouped(subject)
+    expect(paint(subject)).toEqual([{ x: 0, y: 0, w: 300, h: 100 }])
+
+    subject.deleteShapes([createShapeId('two')])
+    expect(paint(subject)).toEqual([{ x: 0, y: 0, w: 100, h: 100 }])
+  })
+
   it('keeps the selection box and its handles for a group', () => {
     const subject = board()
     const group = grouped(subject)
