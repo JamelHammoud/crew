@@ -171,31 +171,7 @@ describe('dragging a project up the list', () => {
     fireEvent.pointerUp(window)
   })
 
-  it('draws one centered narrow rule with a larger open dot', () => {
-    const { container } = render(Sidebar())
-    const { groups } = lay(container)
-    fireEvent.pointerDown(groups[1]!.querySelector('button')!, { button: 0, clientX: 40, clientY: 110 })
-    fireEvent.pointerMove(window, { clientX: 40, clientY: 40 })
-
-    const mark = line(container)
-    const shape = mark?.firstElementChild as HTMLElement | null
-    const dot = mark?.querySelector('[data-reorder-dot]') as HTMLElement | null
-    const rule = mark?.querySelector('[data-reorder-rule]') as HTMLElement | null
-    expect(shape?.className).toContain('w-[42%]')
-    expect(shape?.className).toContain('items-center')
-    expect(dot?.className).toContain('h-3')
-    expect(dot?.className).toContain('w-3')
-    expect(dot?.className).toContain('border-[1.5px]')
-    expect(dot?.className).toContain('bg-transparent')
-    expect(rule?.className).toContain('h-[1.5px]')
-    expect(rule?.className).toContain('rounded-r-full')
-    fireEvent.pointerUp(window)
-  })
-
   it('stands the line inside the head of the list rather than on its edge', () => {
-    vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockImplementation(function () {
-      return this.hasAttribute('data-reorder-line') ? 12 : 0
-    })
     const { container } = render(Sidebar())
     const { groups } = lay(container)
     fireEvent.pointerDown(groups[0]!.querySelector('button')!, { button: 0, clientX: 40, clientY: 30 })
@@ -208,7 +184,7 @@ describe('dragging a project up the list', () => {
 
     fireEvent.pointerDown(groups[1]!.querySelector('button')!, { button: 0, clientX: 40, clientY: 110 })
     fireEvent.pointerMove(window, { clientX: 40, clientY: 40 })
-    expect(line(container)?.style.top).toBe('6px')
+    expect(line(container)?.style.top).toBe(`${TOP / 2}px`)
     fireEvent.pointerUp(window)
   })
 

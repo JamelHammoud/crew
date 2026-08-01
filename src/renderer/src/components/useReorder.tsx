@@ -194,7 +194,7 @@ export function useReorder(onMove: (id: string, to: number) => void, options: Op
           aria-hidden
           className="pointer-events-none absolute inset-x-0 z-10 flex -translate-y-1/2 items-center justify-center opacity-0 transition-opacity duration-100"
         >
-          <span className="flex w-[42%] items-center">
+          <span className="flex w-1/2 items-center">
             <span
               data-reorder-dot
               className="h-3 w-3 shrink-0 rounded-full border-[1.5px] border-fg bg-transparent"
