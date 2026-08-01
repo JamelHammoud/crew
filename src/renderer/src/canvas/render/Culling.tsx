@@ -1,4 +1,5 @@
-import { createContext, useCallback, useContext, useMemo, useRef, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useLayoutEffect, useMemo, useRef, type ReactNode } from 'react'
+import { EffectScheduler } from '../signals'
 import { setStyle } from './style'
 
 interface MountedShape {
@@ -9,10 +10,13 @@ interface MountedShape {
 
 export class MountedShapeCulling {
   private shapes = new Map<string, MountedShape>()
+  private culled: ReadonlySet<string> = new Set()
 
-  register(id: string, foreground: HTMLElement, background: HTMLElement | null, culled: boolean): void {
-    this.shapes.set(id, { foreground, background, culled })
-    this.write(this.shapes.get(id)!, culled)
+  register(id: string, foreground: HTMLElement, background: HTMLElement | null): void {
+    const culled = this.culled.has(id)
+    const shape = { foreground, background, culled }
+    this.shapes.set(id, shape)
+    this.write(shape, culled)
   }
 
   unregister(id: string): void {
@@ -20,6 +24,7 @@ export class MountedShapeCulling {
   }
 
   update(culledIds: ReadonlySet<string>): void {
+    this.culled = culledIds
     for (const [id, shape] of this.shapes) {
       const culled = culledIds.has(id)
       if (culled === shape.culled) continue
@@ -44,18 +49,28 @@ export function MountedShapeCullingProvider({ children }: { children: ReactNode 
 }
 
 export function useMountedShapeCulling(): {
-  register(id: string, foreground: HTMLElement, background: HTMLElement | null, culled: boolean): void
+  register(id: string, foreground: HTMLElement, background: HTMLElement | null): void
   unregister(id: string): void
   update(culledIds: ReadonlySet<string>): void
 } {
   const culling = useContext(CullingContext)
   if (!culling) throw new Error('useMountedShapeCulling requires MountedShapeCullingProvider')
   const register = useCallback(
-    (id: string, foreground: HTMLElement, background: HTMLElement | null, culled: boolean) =>
-      culling.register(id, foreground, background, culled),
+    (id: string, foreground: HTMLElement, background: HTMLElement | null) =>
+      culling.register(id, foreground, background),
     [culling]
   )
   const unregister = useCallback((id: string) => culling.unregister(id), [culling])
   const update = useCallback((ids: ReadonlySet<string>) => culling.update(ids), [culling])
   return useMemo(() => ({ register, unregister, update }), [register, unregister, update])
+}
+
+export function useCullingReactor(name: string, reactFn: () => void, deps: unknown[]): void {
+  useLayoutEffect(() => {
+    const scheduler = new EffectScheduler(name, reactFn)
+    scheduler.attach()
+    scheduler.execute()
+    return () => scheduler.detach()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps)
 }
