@@ -1,7 +1,12 @@
 export { Canvas } from './Canvas'
-export { MountedShapeCulling, MountedShapeCullingProvider, useMountedShapeCulling } from './Culling'
+export {
+  MountedShapeCulling,
+  MountedShapeCullingProvider,
+  useCanvasLayoutReactor,
+  useMountedShapeCulling
+} from './Culling'
 export { OverlayCanvas } from './OverlayCanvas'
-export { ShapeLayer, sortRenderingShapes } from './ShapeLayer'
+export { RenderingShapeOrder, sameRenderingShapes, ShapeLayer, sortRenderingShapes } from './ShapeLayer'
 export {
   CANVAS_OVERLAY_TYPES,
   canvasOverlayIsActive,
