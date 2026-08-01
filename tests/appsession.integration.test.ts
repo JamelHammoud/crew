@@ -7,6 +7,7 @@ import { Store } from '../src/server/store'
 import { parseLink } from '../src/shared/link'
 import { writeCrewRemote } from '../src/shared/project'
 import type { ServerMessage } from '../src/shared/protocol'
+import { crewsAt } from './helpers/crews'
 import { initBare, initRepo } from './helpers/git'
 import { linkOf, TestUi, tmpDir, waitUntil } from './helpers/session'
 
@@ -49,8 +50,9 @@ describe('app session', () => {
     await initRepo(project)
     await writeCrewRemote(project, `file://${origin}`)
 
-    const app = new AppSession({ projects: tmpDir('named-crew-state') })
-    const plan = await app.projectPlan(project)
+    const state = tmpDir('named-crew-state')
+    const app = new AppSession({ projects: state })
+    const plan = await crewsAt({ projects: state }).projectPlan(project)
     expect(plan.home).toBe('private')
     expect(plan.known).toBe(true)
     expect(plan.crewHere).toBe(false)
