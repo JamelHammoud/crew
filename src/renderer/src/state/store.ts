@@ -834,6 +834,7 @@ export const useCrew = create<CrewState>((set, get) => {
       // threads it names are folded in under the ones already known, which were
       // built from everything since.
       case 'history':
+        stepBuffer.flush()
         set(state => {
           const held = new Set(state.events.map(e => e.id))
           const older = msg.events.filter(e => !held.has(e.id))
