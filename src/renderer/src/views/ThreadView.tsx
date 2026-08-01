@@ -145,6 +145,22 @@ export default function ThreadView({
   const mention = useMentionAutocomplete(text, write, inputRef)
   const slash = useSlashCommands(text, write, takeCommand, inputRef, offered)
   const items = useMemo(() => buildThread(threadEvents, steps, selfId, agents), [threadEvents, steps, selfId, agents])
+  const tail = useDrawnTail(items.length, THREAD_PAGE, scrollRef)
+  const drawn = useMemo(() => (tail.from === 0 ? items : items.slice(tail.from)), [items, tail.from])
+  const finding = useFindQuery() !== ''
+  const drawWhole = tail.drawWhole
+  useEffect(() => {
+    if (finding) drawWhole()
+  }, [finding, drawWhole])
+  const reachTop = useCallback(() => {
+    drawWhole()
+    jumpToTop()
+  }, [drawWhole, jumpToTop])
+  const tailScroll = tail.onScroll
+  const scrolled = useCallback(() => {
+    onScroll()
+    tailScroll()
+  }, [onScroll, tailScroll])
   // The message the thread was opened on. The header holds the host's own short
   // name for it, and this is what the whole of it reads as.
   const opening = useMemo(() => items.find(item => item.kind === 'message'), [items])
