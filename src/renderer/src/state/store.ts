@@ -1167,7 +1167,7 @@ export const useCrew = create<CrewState>((set, get) => {
     // one thread this can be asked for and come back empty, since it was never
     // written down, and it is asked once either way.
     readThread: threadId => {
-      if (get().connection !== 'online' || threadsRead.has(threadId)) return
+      if (!threadId || get().connection !== 'online' || threadsRead.has(threadId)) return
       if (get().events.some(event => event.kind === 'thread.started' && event.threadId === threadId)) return
       threadsRead.add(threadId)
       socket.send({ type: 'thread.history', threadId })
