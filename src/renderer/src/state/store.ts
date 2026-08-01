@@ -921,21 +921,22 @@ export const useCrew = create<CrewState>((set, get) => {
           }
         })
         break
-      // One thread read back on its own. What the window already holds of it is
-      // the fresher copy and stands, so only what is missing is kept, and the
-      // steps are folded here rather than at every place that draws a thread.
+      // One thread read back on its own. The whole of what came back is kept,
+      // including what the window happens to hold as well, since the window
+      // trims and this does not, and which of the two copies is drawn is
+      // settled where a thread is read rather than here. The steps are folded
+      // once, on the way in, rather than at every place that draws one.
       case 'thread.history':
         set(state => {
-          const held = new Set(state.events.map(e => e.id))
-          const older = msg.events.filter(e => !held.has(e.id))
-          if (older.length === 0) return {}
+          const readEvents = mergeEvents(msg.events, state.readEvents)
+          if (readEvents === state.readEvents) return {}
           const readSteps = { ...state.readSteps }
-          for (const event of older) {
+          for (const event of msg.events) {
             if (event.kind === 'agent.step') {
               readSteps[event.promptId] = upsertStep(readSteps[event.promptId], event.step)
             }
           }
-          return { readEvents: mergeEvents(older, state.readEvents), readSteps }
+          return { readEvents, readSteps }
         })
         break
       case 'agent.added':
