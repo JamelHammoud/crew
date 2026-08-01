@@ -25,6 +25,7 @@ export class DragAndDropManager {
 
   startDraggingShapes(movingShapes: any[], point: Vec, onReparent?: () => void): void {
     if (this.intervalId !== null) return
+    if (typeof this.editor.getShapesAtPoint !== 'function') return
 
     const moving = new Set(movingShapes)
     const movingGroups = new Set<any>()
