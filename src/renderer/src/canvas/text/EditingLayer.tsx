@@ -74,8 +74,8 @@ function EditingRichText({ editor, shape }: { editor: Editor; shape: EditableTex
       data-canvas-text-editor={shape.id}
       style={{
         position: 'absolute',
-        width: bounds.w,
-        height: bounds.h,
+        width,
+        height,
         transform,
         transformOrigin: 'top left',
         pointerEvents: 'all',
