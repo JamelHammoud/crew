@@ -200,3 +200,9 @@ function StepRow({ item, linked, inGroup }: { item: ThreadItem; linked?: boolean
     </div>
   )
 }
+
+export default memo(
+  StepRow,
+  (before, after) =>
+    before.linked === after.linked && before.inGroup === after.inGroup && sameItem(before.item, after.item)
+)
