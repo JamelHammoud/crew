@@ -68,7 +68,7 @@ function Layers({ editor }: { editor: Editor }) {
   const [searching, setSearching] = useState(false)
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
   const [renaming, setRenaming] = useState<string | null>(null)
-  const shapes = useLayerShapes(editor)
+  const shapes = useValue('design shapes', () => editor.getCurrentPageShapesSorted(), [editor])
 
   const closeSearch = () => {
     setSearching(false)
