@@ -39,6 +39,22 @@ function pageOffset(shape: TLShape): Vec {
   return new Vec(x, y)
 }
 
+const childrenOf = new Map<string, TLShape[]>()
+for (const shape of shapes) {
+  const list = childrenOf.get(shape.parentId as string) ?? []
+  list.push(shape)
+  childrenOf.set(shape.parentId as string, list)
+}
+const sorted: TLShape[] = []
+function walk(parentId: string) {
+  const kids = (childrenOf.get(parentId) ?? []).slice().sort((a, b) => (a.index < b.index ? -1 : 1))
+  for (const kid of kids) {
+    sorted.push(kid)
+    walk(kid.id as string)
+  }
+}
+for (const parentId of childrenOf.keys()) if (parentId.startsWith('page:')) walk(parentId)
+
 const host = {
   hitTestMargin: 8,
   getZoomLevel: () => 1,
