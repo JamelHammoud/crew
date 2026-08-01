@@ -1,5 +1,11 @@
 export const VIEW_LIMIT = 10
 
+export const NEAR_RIGHT = 96
+
+export function nearRight(x: number, right: number, reach = NEAR_RIGHT): boolean {
+  return right - x <= reach
+}
+
 const THREAD_HASH = '#thread='
 
 export function threadWindowHash(threadId: string): string {
