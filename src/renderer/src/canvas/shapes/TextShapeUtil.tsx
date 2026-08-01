@@ -80,6 +80,20 @@ export class TextShapeUtil extends ShapeUtil<TextShape> {
   override getText(shape: TextShape): string {
     return plainText(shape.props.richText)
   }
+  override onResize(shape: TextShape, info: ShapeResizeInfo<TextShape>): TextShape {
+    if (info.mode === 'scale_shape' || (info.handle !== 'right' && info.handle !== 'left')) {
+      return resizeScaled(shape, info)
+    }
+    const width = Math.max(1, Math.abs(info.initialBounds.width * info.scaleX))
+    const point =
+      info.scaleX < 0 ? Vec.Sub(info.newPoint, Vec.FromAngle(shape.rotation).mul(width)) : info.newPoint
+    return {
+      ...shape,
+      x: point.x,
+      y: point.y,
+      props: { ...shape.props, w: width / info.initialShape.props.scale, autoSize: false }
+    }
+  }
   component(shape: TextShape): ReactNode {
     const custom = this.options.getCustomDisplayValues(this.editor, shape)
     const size = this.getMinDimensions(shape)
