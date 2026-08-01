@@ -30,6 +30,7 @@ export interface Geometry2dOptions {
   isFilled: boolean
   isClosed: boolean
   isLabel?: boolean
+  isEmptyLabel?: boolean
   isInternal?: boolean
   excludeFromShapeBounds?: boolean
   ignore?: boolean
@@ -40,6 +41,7 @@ export abstract class Geometry2d {
   isFilled = false
   isClosed = true
   isLabel = false
+  isEmptyLabel = false
   isInternal = false
   excludeFromShapeBounds = false
   ignore?: boolean

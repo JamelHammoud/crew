@@ -38,8 +38,10 @@ export type ThreadOpenAction = 'open' | 'beside' | 'window' | 'close'
 export function threadMenuActions(
   open: string[],
   threadId: string,
+  here = true,
   limit = VIEW_LIMIT
 ): ThreadOpenAction[] {
+  if (!here) return ['open', 'window']
   if (open.includes(threadId)) return ['window', 'close']
   if (open.length === 0) return ['open', 'window']
   if (isFull(open, limit)) return ['window']
