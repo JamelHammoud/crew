@@ -714,6 +714,11 @@ const driveSource = String.raw`(async () => {
 
   section = 'Text'
 
+  const stopEditing = () => {
+    editor.setEditingShape(null)
+    editor.setCurrentTool('select.idle')
+  }
+
   const wordsOf = id => {
     const shape = editor.getShape(id)
     if (!shape) return ''
@@ -853,14 +858,19 @@ const driveSource = String.raw`(async () => {
     const before = boundsOf(id)
     await typeInto('a longer line of words than it started with')
     const after = boundsOf(id)
-    editor.setEditingShape(null)
+    stopEditing()
     await settle()
     return { ok: after.w > before.w + 20 || after.h > before.h + 4, note: round(before.w) + 'x' + round(before.h) + ' to ' + round(after.w) + 'x' + round(after.h) }
   })
 
-  const field = label => document.querySelector('input[aria-label="' + label + '"]')
-  const setField = async (label, value) => {
-    const input = field(label)
+  const sectionNamed = title => {
+    const head = [...document.querySelectorAll('h3')].find(item => (item.textContent || '').trim() === title)
+    return head ? head.closest('section') : null
+  }
+  const field = (label, within) =>
+    (within || document).querySelector('input[aria-label="' + label + '"]')
+  const setField = async (label, value, within) => {
+    const input = field(label, within)
     if (!input) return false
     input.focus()
     input.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
@@ -874,8 +884,8 @@ const driveSource = String.raw`(async () => {
     await settle(4)
     return true
   }
-  const pressButton = async label => {
-    const button = document.querySelector('button[aria-label="' + label + '"]')
+  const pressButton = async (label, within) => {
+    const button = (within || document).querySelector('button[aria-label="' + label + '"]')
     if (!button) return false
     button.click()
     await settle(4)
@@ -895,7 +905,7 @@ const driveSource = String.raw`(async () => {
     editor.startEditingShapeWithRichText(id)
     await settle(4)
     await typeInto('Settings hold')
-    editor.setEditingShape(null)
+    stopEditing()
     editor.select(id)
     await settle(6)
     if (!field('Size')) return { ok: false, note: 'the typography fields never appeared for a text shape' }
@@ -966,7 +976,7 @@ const driveSource = String.raw`(async () => {
     editor.startEditingShapeWithRichText(id)
     await settle(4)
     await typeInto('spacing moves the edges')
-    editor.setEditingShape(null)
+    stopEditing()
     editor.select(id)
     await settle(6)
     const before = boundsOf(id)
@@ -1339,7 +1349,7 @@ const driveSource = String.raw`(async () => {
     const count = editor.getCurrentPageShapes().length - start
     const editing = editor.getEditingShapeId()
     const focused = focus()
-    editor.setEditingShape(null)
+    stopEditing()
     editor.setCurrentTool('select')
     await settle()
     if (count > 0) {
@@ -1372,7 +1382,7 @@ const driveSource = String.raw`(async () => {
     await doubleClick(viewport(boundsOf(editable).center), nodeOf(editable.id) || surface)
     const editing = editor.getEditingShapeId()
     const caret = document.querySelector('[contenteditable="true"], textarea')
-    editor.setEditingShape(null)
+    stopEditing()
     await settle()
     return { ok: Boolean(editing) && Boolean(caret), note: 'editing ' + Boolean(editing) + ' caret ' + Boolean(caret) }
   })
