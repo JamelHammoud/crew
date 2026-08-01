@@ -98,7 +98,7 @@ export class Editor {
     _notifyInteractionStart: (_id: string, _path: string) => undefined,
     _notifyInteractionEnd: () => undefined
   }
-  readonly edgeScrollManager = { start: () => undefined, stop: () => undefined, update: () => undefined }
+  readonly edgeScrollManager: EdgeScrollManager
   readonly snaps = new SnapManager()
   readonly scribbles: ScribbleManager
   readonly bindings: BindingManager
