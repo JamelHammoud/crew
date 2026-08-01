@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
 import { Editor as TipTapEditor } from '@tiptap/core'
 import { render } from '@testing-library/react'
-import { StrictMode, createElement } from 'react'
+import { StrictMode, createElement, useState } from 'react'
 import { afterEach, describe, expect, it } from 'vitest'
+import { RichTextEditor } from '../src/renderer/src/canvas/text/editor'
 import { richTextExtensions } from '../src/renderer/src/canvas/text/richText'
 import { RichTextToolbar } from '../src/renderer/src/canvas/text/toolbar'
 
