@@ -134,29 +134,101 @@ describe('the review tab', () => {
     expect(screen.getByText('A')).not.toBeNull()
   })
 
-  // Reading a change is reading several files, so opening one never puts away
-  // the one already open.
-  it('holds several files open at once', async () => {
+  // The list is never taken away, because the list is how you get to the next
+  // file. One file is read at a time, under it, and picking another puts that
+  // one in its place rather than stacking a second reading under the first.
+  it('reads one file at a time under the list', async () => {
     bridge(
       work({
         changes: [
           change('src/app.ts', true, '@@ -1 +1 @@\n-old\n+staged'),
-          change('src/app.ts', false, '@@ -1 +1 @@\n-staged\n+loose')
+          change('src/other.ts', false, '@@ -1 +1 @@\n-was\n+loose')
         ]
       })
     )
 
     render(createElement(ReviewView))
-    const rows = await screen.findAllByText('app.ts')
+    fireEvent.click(await screen.findByText('app.ts'))
+    await waitFor(() => expect(line('staged')).not.toBeUndefined())
 
-    fireEvent.click(rows[0]!)
-    await waitFor(() => expect(screen.getByText('staged')).not.toBeNull())
+    fireEvent.click(screen.getByText('other.ts'))
+    await waitFor(() => expect(line('loose')).not.toBeUndefined())
+    expect(line('staged')).toBeUndefined()
 
-    fireEvent.click(rows[1]!)
-    await waitFor(() => expect(screen.getByText('loose')).not.toBeNull())
-    // Once in the file it was added to and once in the file it was taken out
-    // of, which is both diffs standing open together.
-    expect(screen.getAllByText('staged')).toHaveLength(2)
+    // The row it is standing on says so, so the list and the pane can never
+    // disagree about which file is being read.
+    fireEvent.click(screen.getByLabelText('Close other.ts'))
+    await waitFor(() => expect(line('loose')).toBeUndefined())
+  })
+
+  // Every client draws the list and the file beside each other and none of them
+  // has a next-file key, because walking the list is what opens the next file.
+  it('walks the list on the arrows and follows with the reading', async () => {
+    bridge(
+      work({
+        changes: [
+          change('src/one.ts', false, '@@ -1 +1 @@\n-a\n+first'),
+          change('src/two.ts', false, '@@ -1 +1 @@\n-a\n+second')
+        ]
+      })
+    )
+
+    render(createElement(ReviewView))
+    fireEvent.click(await screen.findByText('one.ts'))
+    await waitFor(() => expect(line('first')).not.toBeUndefined())
+
+    const list = document.querySelector('[tabindex="-1"]') as HTMLElement
+    fireEvent.keyDown(list, { key: 'ArrowDown' })
+    await waitFor(() => expect(line('second')).not.toBeUndefined())
+
+    fireEvent.keyDown(list, { key: 'ArrowUp' })
+    await waitFor(() => expect(line('first')).not.toBeUndefined())
+  })
+
+  // Marking a file read and moving on is one press, because that is the whole
+  // of what a review is made of and doing it in two presses is doing it twice.
+  it('marks a file viewed and moves to the next one', async () => {
+    bridge(
+      work({
+        changes: [
+          change('src/one.ts', false, '@@ -1 +1 @@\n-a\n+first'),
+          change('src/two.ts', false, '@@ -1 +1 @@\n-a\n+second')
+        ]
+      })
+    )
+
+    render(createElement(ReviewView))
+    fireEvent.click(await screen.findByText('one.ts'))
+    await waitFor(() => expect(line('first')).not.toBeUndefined())
+
+    fireEvent.click(screen.getByText('Viewed'))
+
+    await waitFor(() => expect(line('second')).not.toBeUndefined())
+    expect(screen.getByLabelText('Mark one.ts as not viewed')).not.toBeNull()
+  })
+
+  // Staging a file moves it to another group, so the key it was opened under
+  // stops answering. It is the same file and the same reading, so the pane
+  // follows the path rather than going dark under somebody mid-sentence.
+  it('keeps reading a file that has just been staged', async () => {
+    let staged = false
+    window.crew = {
+      repoWork: async () =>
+        work({ changes: [change('src/app.ts', staged, '@@ -1 +1 @@\n-a\n+kept')] }),
+      runRepo: async (command: RepoCommand) => {
+        if (command.do === 'stage') staged = true
+        return { ok: true, updated: true, message: 'Done', status: work().status }
+      }
+    } as unknown as CrewBridge
+
+    render(createElement(ReviewView))
+    fireEvent.click(await screen.findByText('app.ts'))
+    await waitFor(() => expect(line('kept')).not.toBeUndefined())
+
+    fireEvent.click(screen.getByLabelText('Stage app.ts'))
+
+    await waitFor(() => expect(screen.getByText('Staged Changes')).not.toBeNull())
+    expect(line('kept')).not.toBeUndefined()
   })
 
   // A long group is a group somebody wants out of the way, the way it folds in
