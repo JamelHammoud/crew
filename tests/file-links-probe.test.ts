@@ -111,6 +111,11 @@ describe('file refs', () => {
     expect(parseFileRef('hello world')).toBeNull()
   })
 
+  it('parses a path with spaces in it', () => {
+    expect(parseFileRef(SENT)).toEqual({ path: SENT, line: null })
+    expect(parseFileRef('My Notes/todo list.md:4')).toEqual({ path: 'My Notes/todo list.md', line: 4 })
+  })
+
   it('finds candidates in plain text but skips versions, domains, and urls', () => {
     const tokens = fileTokens('fixed src/app.ts:3 and AGENTS.md, not 0.51.4, e.g. example.com or https://a.dev/x/y')
     const files = tokens.filter(t => t.kind === 'file')
