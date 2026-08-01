@@ -73,7 +73,9 @@ export class DraggingHandle<Shape extends TLShape = TLShape> extends TransformSt
     this.parent.setCurrentToolIdMask?.(typeof info.onInteractionEnd === 'string' ? info.onInteractionEnd : undefined)
     this.initialHandle = { ...info.handle }
     this.currentHandle = { ...info.handle }
-    this.adjacentHandle = info.adjacentHandle ? { ...info.adjacentHandle } : null
+    this.adjacentHandle = info.adjacentHandle
+      ? { ...info.adjacentHandle }
+      : findAdjacentHandle(this.editor.getShapeHandles?.(info.shape) ?? [], info.handle)
     this.initialPagePoint = this.editor.inputs.getOriginPagePoint().clone()
     this.pageRotation =
       info.pageRotation ??

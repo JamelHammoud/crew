@@ -1297,7 +1297,24 @@ export class Editor {
   }
 
   getCurrentToolId(): string {
-    return this.tools.getCurrentToolId()
+    return this.toolIdMask ?? this.tools.getCurrentToolId()
+  }
+
+  setCurrentToolIdMask(id: string | undefined): this {
+    this.toolIdMask = id
+    return this
+  }
+
+  cancel(): this {
+    return this.dispatch({ name: 'cancel' })
+  }
+
+  complete(): this {
+    return this.dispatch({ name: 'complete' })
+  }
+
+  interrupt(): this {
+    return this.dispatch({ name: 'interrupt' })
   }
 
   setCurrentTool(id: string, info?: unknown): this {
