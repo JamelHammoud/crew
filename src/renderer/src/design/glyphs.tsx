@@ -14,10 +14,12 @@ import {
   LockGlyph,
   PencilGlyph,
   PhotoGlyph,
+  RedoGlyph,
   SearchGlyph,
   SparkGlyph,
   StarGlyph,
   TrashGlyph,
+  UndoGlyph,
   UnlockGlyph
 } from '../icons'
 import { ARROW_BODY, ARROW_ON_GRID } from './cursors'
@@ -37,10 +39,12 @@ export {
   HandGlyph,
   LockGlyph,
   PencilGlyph,
+  RedoGlyph,
   SearchGlyph,
   SparkGlyph,
   StarGlyph,
   TrashGlyph,
+  UndoGlyph,
   UnlockGlyph
 }
 
