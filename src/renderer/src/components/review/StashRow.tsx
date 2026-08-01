@@ -32,7 +32,7 @@ export default function StashRow({
         <Popover open={menu} onClose={() => setMenu(false)} align="end">
           <MenuItem
             icon={<UnarchiveGlyph className="w-4 h-4" />}
-            label="Put it back"
+            label="Apply stash"
             onClick={() => {
               setMenu(false)
               onApply()
@@ -41,7 +41,7 @@ export default function StashRow({
           <MenuDivider />
           <MenuItem
             icon={<TrashGlyph className="w-4 h-4" />}
-            label="Throw it away"
+            label="Drop stash"
             danger
             onClick={() => {
               setMenu(false)
