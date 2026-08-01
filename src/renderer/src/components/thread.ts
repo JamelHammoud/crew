@@ -44,18 +44,7 @@ export const threadWorking = (
   )
 }
 
-// Which events a thread is built from. Almost every one of them names the
-// thread it happened on, and the two a helper raises are the exception: they
-// name the helper's own thread and belong to the one that sent it out. Read
-// the plain way, a chip lands inside the helper pointing at itself and never
-// lands in the thread that has something to say about it, which is a spawn
-// that leaves no mark on screen anywhere.
-export const eventsOfThread = (events: SessionEvent[], threadId: string): SessionEvent[] =>
-  events.filter(event =>
-    event.kind === 'subagent.started' || event.kind === 'subagent.ended'
-      ? event.parentThreadId === threadId
-      : 'threadId' in event && event.threadId === threadId
-  )
+export { eventsOfThread } from '../../../shared/threads'
 
 // Steps are held per run, so anything that wants a thread's own are gathered off
 // the runs that thread started, in the order they were started.
