@@ -151,6 +151,112 @@ export class TextMeasurement {
     )
   }
 
+  measureElementTextNodeSpans(
+    element: HTMLElement,
+    { truncateToFirstLine = false }: { truncateToFirstLine?: boolean } = {}
+  ): { spans: MeasuredTextSpan[]; truncated: boolean } {
+    const spans: MeasuredTextSpan[] = []
+    const elementBounds = element.getBoundingClientRect()
+    const offsetX = -elementBounds.left
+    const offsetY = -elementBounds.top
+    const range = this.document.createRange()
+    const textNode = element.childNodes[0]
+    let index = 0
+    let current: MeasuredTextSpan | null = null
+    let previousWasSpace: boolean | null = null
+    let previousTop = 0
+    let previousLeftForRtl = 0
+    let truncated = false
+
+    for (const child of Array.from(element.childNodes)) {
+      if (child.nodeType !== 3) continue
+      for (const character of child.textContent ?? '') {
+        range.setStart(textNode, index)
+        range.setEnd(textNode, index + character.length)
+        const rects = range.getClientRects()
+        const rect = rects[rects.length - 1]
+        if (!rect) {
+          index += character.length
+          continue
+        }
+        const top = rect.top + offsetY
+        const left = rect.left + offsetX
+        const right = rect.right + offsetX
+        const isRtl = left < previousLeftForRtl
+        const isSpace = SPACE_CHARACTER.test(character)
+
+        if (isSpace !== previousWasSpace || top !== previousTop || !current) {
+          if (current) {
+            if (truncateToFirstLine && top !== previousTop) {
+              truncated = true
+              break
+            }
+            spans.push(current)
+          }
+          current = { box: { x: left, y: top, w: rect.width, h: rect.height }, text: character }
+          previousLeftForRtl = left
+        } else {
+          if (isRtl) current.box.x = left
+          current.box.w = isRtl ? current.box.w + rect.width : right - current.box.x
+          current.text += character
+        }
+
+        if (character === '\n') previousLeftForRtl = 0
+        previousWasSpace = isSpace
+        previousTop = top
+        index += character.length
+      }
+    }
+
+    if (current) spans.push(current)
+    return { spans, truncated }
+  }
+
+  measureTextSpans(text: string, options: TextSpanMeasureOptions): MeasuredTextSpan[] {
+    if (text === '') return []
+    const truncateToFirstLine = options.overflow === 'truncate-ellipsis' || options.overflow === 'truncate-clip'
+    const elementWidth = Math.ceil(options.width - options.padding * 2)
+    const restore = this.applyStyles(this.element, {
+      'font-family': options.fontFamily,
+      'font-style': options.fontStyle,
+      'font-weight': options.fontWeight,
+      'font-size': `${options.fontSize}px`,
+      'line-height': `${resolveLineHeight(options.fontSize, options.lineHeight)}px`,
+      width: `${elementWidth}px`,
+      height: 'min-content',
+      'text-align': LTR_TEXT_ALIGNMENTS[options.textAlign],
+      'overflow-wrap': truncateToFirstLine ? 'anywhere' : 'break-word',
+      'word-break': truncateToFirstLine ? 'break-all' : 'normal',
+      ...options.otherStyles
+    })
+
+    try {
+      const normalized = normalizeTextForMeasurement(text)
+      this.element.textContent = normalized
+      const { spans, truncated } = this.measureElementTextNodeSpans(this.element, { truncateToFirstLine })
+      if (options.overflow !== 'truncate-ellipsis' || !truncated) return spans
+
+      this.element.textContent = '…'
+      const ellipsisWidth = Math.ceil(this.measureElementTextNodeSpans(this.element).spans[0].box.w)
+      this.element.style.setProperty('width', `${elementWidth - ellipsisWidth}px`)
+      this.element.textContent = normalized
+      const truncatedSpans = this.measureElementTextNodeSpans(this.element, { truncateToFirstLine: true }).spans
+      const last = truncatedSpans[truncatedSpans.length - 1]
+      truncatedSpans.push({
+        text: '…',
+        box: {
+          x: Math.min(last.box.x + last.box.w, options.width - options.padding - ellipsisWidth),
+          y: last.box.y,
+          w: ellipsisWidth,
+          h: last.box.h
+        }
+      })
+      return truncatedSpans
+    } finally {
+      restore()
+    }
+  }
+
   private createElement(): HTMLDivElement {
     const element = this.document.createElement('div')
     element.classList.add('crew-text', 'crew-text-measure')
