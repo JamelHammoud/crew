@@ -248,7 +248,21 @@ export default function DesignCanvas({
   const tool = useValue('design tool cursor', () => editor?.getCurrentToolId() ?? '', [editor])
 
   useEffect(() => {
-    if (editor) applyToolCursor(editor.getContainer(), tool)
+    if (!editor) return
+    const container = editor.getContainer()
+    applyToolCursor(container, tool)
+    let worn = ''
+    const wear = () => {
+      const type = editor.getInstanceState().cursor.type
+      if (type === worn) return
+      worn = type
+      showCursor(container, type)
+    }
+    wear()
+    for (const name of CURSOR_EVENTS) container.addEventListener(name, wear)
+    return () => {
+      for (const name of CURSOR_EVENTS) container.removeEventListener(name, wear)
+    }
   }, [editor, tool])
 
   const onMount = useCallback(
