@@ -33,6 +33,13 @@ export function selectOnCanvasPointerUp(editor: SelectEditor, info: SelectPointe
       editor.markHistoryStoppingPoint('selecting none')
       editor.selectNone()
     }
+    const focused = editor.getFocusedGroupId()
+    if (typeof focused === 'string' && focused.startsWith('shape:')) {
+      const group = editor.getShape(focused)
+      if (!group || !editor.isPointInShape(group, point, { margin: 0, hitInside: true })) {
+        editor.setFocusedGroup(null)
+      }
+    }
     return
   }
   const outermost = editor.getOutermostSelectableShape(hit)
