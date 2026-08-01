@@ -36,6 +36,7 @@ import { emptyMusic, type MusicPlaylist, type MusicUpload } from '../../../share
 import { mentionsIn, type AgentMentionRef, type AgentStep, type PooledAgent } from '../../../shared/llm'
 import type { ClientMessage, MemberInfo, QueuedItem, ServerMessage } from '../../../shared/protocol'
 import { messageReactionTarget, type ReactionEmoji } from '../../../shared/reactions'
+import { cleanMemberName } from '../../../shared/people'
 import { shownPages } from '../../../shared/showPage'
 import { isTicketEvent, type TicketEvent } from '../../../shared/tickets'
 import { closeOne, focusAfterClose, isFull, openBeside } from '../../../shared/threadViews'
@@ -293,6 +294,7 @@ interface CrewState {
   removeQueued: (promptId: string) => void
   updateAgentSetting: (agentId: string, key: string, value: string) => void
   renameAgent: (agentId: string, label: string) => void
+  renameSelf: (name: string) => boolean
   setAgentAvatar: (agentId: string, file: File | null) => void
   setMyPhoto: (file: File | null) => void
   removeAgent: (agentId: string) => void
@@ -858,6 +860,44 @@ export const useCrew = create<CrewState>((set, get) => {
           agents: state.agents.map(a => (a.id === msg.agentId ? { ...a, avatar: msg.file ?? undefined } : a))
         }))
         break
+      case 'member.renamed':
+        set(state => {
+          const old = state.members.find(member => member.id === msg.fromId)
+          const mine = state.selfId === msg.fromId
+          const members = state.members.filter(member => member.id !== msg.fromId && member.id !== msg.member.id)
+          const events = state.events.map(event => {
+            if (event.kind !== 'message' || event.authorId !== msg.fromId) return event
+            return { ...event, authorId: msg.member.id, authorName: msg.member.name }
+          })
+          return {
+            selfId: mine ? msg.member.id : state.selfId,
+            selfName: mine ? msg.member.name : state.selfName,
+            members: [...members, msg.member],
+            agents: state.agents.map(agent =>
+              agent.ownerId === msg.fromId
+                ? { ...agent, ownerId: msg.member.id, ownerName: msg.member.name }
+                : agent
+            ),
+            events,
+            threads: Object.fromEntries(
+              Object.entries(state.threads).map(([id, thread]) => [
+                id,
+                old && thread.createdBy === old.name ? { ...thread, createdBy: msg.member.name } : thread
+              ])
+            ),
+            queues: Object.fromEntries(
+              Object.entries(state.queues).map(([id, items]) => [
+                id,
+                items.map(item =>
+                  item.authorId === msg.fromId
+                    ? { ...item, authorId: msg.member.id, authorName: msg.member.name }
+                    : item
+                )
+              ])
+            )
+          }
+        })
+        break
       case 'member.avatar':
         set(state => ({
           members: state.members.map(m => (m.id === msg.memberId ? { ...m, avatar: msg.file ?? undefined } : m))
@@ -1311,6 +1351,14 @@ export const useCrew = create<CrewState>((set, get) => {
     },
     renameAgent: (agentId, label) => {
       socket.send({ type: 'agent.rename', agentId, label })
+    },
+    renameSelf: name => {
+      const clean = cleanMemberName(name)
+      if (!clean || clean === get().selfName) return false
+      set({ selfName: clean })
+      socket.send({ type: 'member.rename', name: clean })
+      void window.crew.rename(clean)
+      return true
     },
     setAgentAvatar: (agentId, file) => {
       if (!file) {
