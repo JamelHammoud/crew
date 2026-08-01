@@ -840,13 +840,29 @@ const driveSource = String.raw`(async () => {
     await click(viewport(boundsOf(id).center))
     await settle(4)
     const held = typeOf(id)
+    const align = editor.getShape(id).props.textAlign
+    const shown = label => {
+      const input = field(label)
+      return input ? input.value : 'no field'
+    }
+    const pressed = label => {
+      const button = document.querySelector('button[aria-label="' + label + '"]')
+      return Boolean(button) && button.getAttribute('aria-pressed') === 'true'
+    }
     const wrong = []
     if (!near(held.size, 33, 0.01)) wrong.push('size is ' + held.size)
     if (!near(held.spacing, 7, 0.01)) wrong.push('spacing is ' + held.spacing)
     if (!near(held.lineHeight, 1.75, 0.01)) wrong.push('line height is ' + held.lineHeight)
-    if (held.align !== 'center') wrong.push('alignment is ' + held.align)
+    if (align !== 'middle') wrong.push('alignment is ' + align)
     if (family && held.family !== family) wrong.push('font is ' + held.family + ' where ' + family + ' was picked')
-    return { ok: wrong.length === 0, note: wrong.length ? wrong.join(', ') : 'size ' + held.size + ', spacing ' + held.spacing + ', line height ' + held.lineHeight + ', ' + held.align + ', ' + held.family }
+    if (shown('Size') !== '33') wrong.push('the size field reads ' + shown('Size'))
+    if (shown('Letter spacing') !== '7') wrong.push('the spacing field reads ' + shown('Letter spacing'))
+    if (shown('Line height') !== '175') wrong.push('the line height field reads ' + shown('Line height'))
+    if (!pressed('Align center')) wrong.push('the centre button is not lit')
+    return {
+      ok: wrong.length === 0,
+      note: wrong.length ? wrong.join(', ') : 'size ' + held.size + ', spacing ' + held.spacing + ', line height ' + held.lineHeight + ', ' + align + ', ' + held.family
+    }
   })
 
   await attempt('letter spacing resizes the box', async () => {

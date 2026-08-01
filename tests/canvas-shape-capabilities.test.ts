@@ -33,13 +33,20 @@ function shape<Type extends TLShapeType>(type: Type, props: TLShape<Type>['props
   return { ...base, id: `shape:${type}` as TLShapeId, type, props } as TLShape<Type>
 }
 
-function strokeShape(type: 'draw' | 'highlight', points: number[][]) {
-  const util = type === 'draw' ? new DrawShapeUtil(editor) : new HighlightShapeUtil(editor)
+function drawShape(points: number[][]): TLShape<'draw'> {
   const encoded = points.map(([x, y]) => ({ x, y, z: 0.5 }))
-  return shape(type, {
-    ...(util.getDefaultProps() as unknown as Record<string, unknown>),
+  return shape('draw', {
+    ...new DrawShapeUtil(editor).getDefaultProps(),
     segments: [{ type: 'free', path: encodePoints(encoded), dim: 3 }]
-  } as never)
+  } as TLShape<'draw'>['props'])
+}
+
+function highlightShape(points: number[][]): TLShape<'highlight'> {
+  const encoded = points.map(([x, y]) => ({ x, y, z: 0.5 }))
+  return shape('highlight', {
+    ...new HighlightShapeUtil(editor).getDefaultProps(),
+    segments: [{ type: 'free', path: encodePoints(encoded), dim: 3 }]
+  } as TLShape<'highlight'>['props'])
 }
 
 describe('what each shape lets you do to it', () => {
@@ -68,8 +75,8 @@ describe('what each shape lets you do to it', () => {
 
   it('takes the handles off a stroke that is only a dot', () => {
     const draw = new DrawShapeUtil(editor)
-    const dot = strokeShape('draw', [[0, 0]])
-    const line = strokeShape('draw', [
+    const dot = drawShape([[0, 0]])
+    const line = drawShape([
       [0, 0],
       [30, 20],
       [60, 0]
@@ -88,13 +95,13 @@ describe('what each shape lets you do to it', () => {
 
   it('holds a highlighter to the same rule', () => {
     const util = new HighlightShapeUtil(editor)
-    expect(util.hideResizeHandles(strokeShape('highlight', [[0, 0]]) as never)).toBe(true)
+    expect(util.hideResizeHandles(highlightShape([[0, 0]]))).toBe(true)
     expect(
       util.hideResizeHandles(
-        strokeShape('highlight', [
+        highlightShape([
           [0, 0],
           [40, 40]
-        ]) as never
+        ])
       )
     ).toBe(false)
   })
@@ -135,8 +142,8 @@ describe('what each shape lets you do to it', () => {
 
   it('locks a picture to its own proportions and lets it be cropped', () => {
     const util = new ImageShapeUtil(editor)
-    expect(util.isAspectRatioLocked(null as never)).toBe(true)
-    expect(util.canCrop(null as never)).toBe(true)
+    expect(util.isAspectRatioLocked()).toBe(true)
+    expect(util.canCrop()).toBe(true)
     expect(new GeoShapeUtil(editor).canCrop(null as never)).toBe(false)
   })
 })
