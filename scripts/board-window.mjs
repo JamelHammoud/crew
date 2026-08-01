@@ -139,7 +139,7 @@ function Board() {
         className: 'absolute inset-0 flex design',
         style: { ...DESIGN_CURSORS, cursor: 'var(--crew-cursor-default)', '--design-selected': selected }
       },
-      React.createElement(
+      ${process.env.CREW_BOARD_PANEL === '0' ? 'false &&' : ''} React.createElement(
         'div',
         { className: 'w-64 shrink-0 flex min-h-0', 'data-probe-panel': 'true' },
         editor && React.createElement(EditorContext.Provider, { value: editor }, React.createElement(DesignLeftPanel))
