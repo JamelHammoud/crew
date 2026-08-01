@@ -310,7 +310,7 @@ export class Runner {
           msg.spawnProviders ?? [],
           msg.tickets === true,
           msg.goal === true,
-          msg.memories ?? []
+          msg.memories
         )
         break
       case 'steer':
