@@ -30,13 +30,6 @@ export interface MenuSpot {
   page: { x: number; y: number }
 }
 
-export function menuTarget(editor: ReturnType<typeof useEditor>, under: TLShape): TLShape {
-  const outermost = editor.getOutermostSelectableShape(under)
-  if (outermost.id === under.id) return under
-  if (outermost.id === editor.getFocusedGroupId()) return under
-  return editor.getSelectedShapeIds().includes(outermost.id) ? under : outermost
-}
-
 export function useContextMenu(editor: ReturnType<typeof useEditor> | null): {
   spot: MenuSpot | null
   close: () => void
@@ -49,14 +42,6 @@ export function useContextMenu(editor: ReturnType<typeof useEditor> | null): {
     const onContextMenu = (event: MouseEvent) => {
       event.preventDefault()
       const page = editor.screenToPage({ x: event.clientX, y: event.clientY })
-      const under = shapesUnder(editor, page)[0]
-      const selected = editor.getSelectedShapeIds()
-      if (under) {
-        const target = menuTarget(editor, under)
-        if (!selected.includes(target.id)) editor.setSelectedShapes([target.id])
-      } else if (selected.length > 0) {
-        editor.selectNone()
-      }
       setSpot({ screen: { x: event.clientX, y: event.clientY }, page })
     }
     container.addEventListener('contextmenu', onContextMenu)
