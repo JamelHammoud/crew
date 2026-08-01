@@ -71,28 +71,32 @@ const DIFF = [
   ' }'
 ].join('\\n')
 
+const DAY = 86400000
+const BEGAN = 1753920000000
+const at = index => BEGAN + Math.floor(index / 140) * DAY + index * 1000
+
 const stepAt = index => {
-  const at = index % 3
-  if (at === 1) return { id: 'step-' + index, ts: 100 + index, kind: 'thinking', status: 'done', text: 'Working out what the row at ' + index + ' has to hold, and whether the one before it already said it.' }
-  if (at === 2) return {
+  const kind = index % 3
+  if (kind === 1) return { id: 'step-' + index, ts: at(index), kind: 'thinking', status: 'done', text: 'Working out what the row at ' + index + ' has to hold, and whether the one before it already said it.' }
+  if (kind === 2) return {
     id: 'step-' + index,
-    ts: 100 + index,
+    ts: at(index),
     kind: 'tool',
     status: 'done',
     name: 'Edit',
     detail: 'src/renderer/src/components/row-' + index + '.tsx',
     files: [{ path: 'src/renderer/src/components/row-' + index + '.tsx', added: 2, removed: 1, diff: DIFF }]
   }
-  return { id: 'step-' + index, ts: 100 + index, kind: 'tool', status: 'done', name: 'Read', detail: 'step number ' + index }
+  return { id: 'step-' + index, ts: at(index), kind: 'tool', status: 'done', name: 'Read', detail: 'step number ' + index }
 }
 
 const messageAt = index => ({
   id: 'said-' + index,
-  ts: 100 + index,
+  ts: at(index),
   kind: 'message',
   authorId: 'ali',
   authorName: 'ALI',
-  text: 'A line somebody wrote partway down the thread, at row ' + index + '.',
+  text: 'A line somebody wrote partway down the thread, at row ' + index + '. It runs on a while, the way a real one does, so the row is a paragraph rather than a word and the column has something to lay out.',
   threadId: THREAD
 })
 
