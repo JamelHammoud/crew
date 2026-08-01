@@ -311,8 +311,11 @@ export class GeoShapeUtil extends BaseBoxShapeUtil<GeoShape> {
     const before = previous.props
     const after = next.props
 
+    if (before.richText === after.richText && before.font === after.font && before.size === after.size) {
+      return undefined
+    }
     if (
-      richTextToHtml(before.richText as RichTextDocument) === richTextToHtml(after.richText as RichTextDocument) &&
+      plainText(before.richText) === plainText(after.richText) &&
       before.font === after.font &&
       before.size === after.size
     ) {
