@@ -282,7 +282,7 @@ export class EraserErasing extends EraserState {
   }
 
   complete(info?: EraserPointerEvent): void {
-    this.editor.deleteShapes(this.editor.getCurrentPageState().erasingShapeIds)
+    this.editor.deleteShapes(this.editor.getErasingShapeIds())
     this.tool.transition('idle', info)
     this.erasingShapeIds = []
   }
