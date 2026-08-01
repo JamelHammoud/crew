@@ -39,3 +39,8 @@ function StepGroup({ items, linked }: { items: ThreadItem[]; linked?: boolean })
     </div>
   )
 }
+
+export default memo(
+  StepGroup,
+  (before, after) => before.linked === after.linked && sameItems(before.items, after.items)
+)
