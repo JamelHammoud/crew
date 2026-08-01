@@ -110,8 +110,6 @@ const online = {
 const THREAD_COMPOSER = 'Send a message or @ someone'
 const CHAT_COMPOSER = 'Send a message, @ someone, or / for a command'
 
-// setState merges, so a fixture that leaves either of the two out is handed
-// whatever the test before it opened.
 const open = (ids: string[], focused: string | null): void => {
   useCrew.setState({ ...online, openThreadIds: ids, openThreadId: focused })
   render(createElement(App))
