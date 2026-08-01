@@ -208,7 +208,12 @@ export function useReorder(onMove: (id: string, to: number) => void, options: Op
           <span className="absolute -left-0.5 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-fg" />
         </div>
         {createPortal(
-          <div ref={hand} data-reorder-hand aria-hidden className="pointer-events-none fixed left-0 top-0 z-[70]">
+          <div
+            ref={holds(hand)}
+            data-reorder-hand
+            aria-hidden
+            className="pointer-events-none fixed left-0 top-0 z-[70]"
+          >
             <div className="glass glass-strong animate-pop flex w-max max-w-[220px] items-center gap-2 rounded-xl px-2.5 py-1.5 text-sm font-medium text-fg/70">
               {carry(carried)}
             </div>
