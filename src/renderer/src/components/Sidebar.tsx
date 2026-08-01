@@ -184,7 +184,7 @@ export default function Sidebar({
             }`}
           >
             <span className={tab === one.id ? 'text-fg/70' : 'text-fg/45'}>
-              <TabIcon tab={one.id} size={16} />
+              <TabIcon tab={one.id} size={18} />
             </span>
             {one.label}
           </button>
