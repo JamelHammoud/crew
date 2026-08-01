@@ -46,6 +46,7 @@ export interface TypeStyle {
   color: string
   transform: 'none' | 'upper' | 'lower'
   decoration: 'none' | 'underline' | 'strike'
+  trim: 'none' | 'cap'
   italic: boolean
 }
 
@@ -96,6 +97,7 @@ export const BASE_TYPE: TypeStyle = {
   color: '#ffffff',
   transform: 'none',
   decoration: 'none',
+  trim: 'none',
   italic: false
 }
 
