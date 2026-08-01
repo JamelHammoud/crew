@@ -19,6 +19,7 @@ function whole<T extends TLShape>(shape: T): T {
   const w = Math.max(1, Math.round(shape.x + size.w) - x)
   const h = Math.max(1, Math.round(shape.y + size.h) - y)
   if (x === shape.x && y === shape.y && w === size.w && h === size.h) return shape
+  if (w === size.w && h === size.h) return { ...shape, x, y }
   return { ...shape, x, y, props: { ...shape.props, w, h } }
 }
 
