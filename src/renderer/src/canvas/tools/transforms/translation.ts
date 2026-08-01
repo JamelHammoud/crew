@@ -93,6 +93,12 @@ export interface TranslatingInfo<Shape extends TLShape = TLShape> {
   onInteractionEnd?: string | (() => void)
 }
 
+export interface TranslatingDragTargets {
+  startDraggingShapes(shapes: readonly TLShape[], point: Vec, onReparent?: () => void): void
+  dropShapes(shapes: readonly TLShape[]): void
+  clear(): void
+}
+
 export class Translating<Shape extends TLShape = TLShape> extends TransformState<
   TransformEditor<Shape>,
   TranslatingInfo<Shape>
