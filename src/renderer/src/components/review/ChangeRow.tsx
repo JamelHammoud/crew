@@ -6,6 +6,7 @@ import { toast } from '../../state/toast'
 import Counts from '../Counts'
 import { MenuDivider, MenuItem, Popover } from '../Popover'
 import Tooltip from '../Tooltip'
+import { keyOf } from './walk'
 
 // The letter git itself puts in front of a path, which is where `git status`
 // puts it and where every client that reads like a terminal puts it. It is the
