@@ -324,7 +324,7 @@ function collectGapSnaps(
     if (gap.length > selectionPageBounds.height && rounded(Math.abs(centerNudge)) <= rounded(minOffset.y)) {
       if (rounded(Math.abs(centerNudge)) < rounded(minOffset.y)) nearestSnapsY.length = 0
       minOffset.y = Math.abs(centerNudge)
-      addCenterSnap(nearestSnapsY, { type: 'gap_center', gap, nudge: centerNudge }, breadthsOverlap)
+      addCenterSnap(nearestSnapsY, { type: 'gap_center', gap, nudge: centerNudge }, breadthsIntersect)
       continue
     }
 
@@ -374,7 +374,7 @@ function pointIndicators(nearestSnapsX: NearestSnap[], nearestSnapsY: NearestSna
     const points: Vec[] = []
     for (const pair of [...group.map(pair => pair.otherPoint), ...group.map(pair => pair.thisPoint)]) {
       const point = new Vec(pair.x, pair.y)
-      if (!points.some(existing => existing.equals(point))) points.push(point)
+      if (!points.some(existing => existing.x === point.x && existing.y === point.y)) points.push(point)
     }
     return { id: `point:${key}`, type: 'points', points }
   })

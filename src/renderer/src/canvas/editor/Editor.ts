@@ -310,6 +310,10 @@ export class Editor {
     return this.camera.screenToPage(point)
   }
 
+  pageToScreen(point: VecLike): Vec {
+    return this.camera.pageToScreen(point)
+  }
+
   pageToViewport(point: VecLike): Vec {
     return this.camera.pageToViewport(point)
   }
