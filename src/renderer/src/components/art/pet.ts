@@ -29,6 +29,34 @@ export interface Pet {
   tilt: number
 }
 
+// How far back along each edge a corner is cut before it is turned, on the 100
+// box. Nothing a pet is made of comes to a point: the angular family is there so
+// that not every one of them is a blob, and it keeps its flat sides and its
+// count either way. A corner is what the stroke's round join was already trying
+// to do at 3.5 and could not be seen doing at the size a pet is worn.
+const CORNER = 9
+
+// A polygon turned at every vertex. The cut is held under a share of the shorter
+// of the two edges meeting there, or a corner standing on a short edge reaches
+// past the middle of it and the two cuts cross, which folds the outline inside
+// out.
+const turned = (coords: Array<[number, number]>): string => {
+  const count = coords.length
+  const along = (from: [number, number], to: [number, number], by: number): [number, number] => {
+    const run = Math.hypot(to[0] - from[0], to[1] - from[1]) || 1
+    const step = Math.min(by, run * 0.42) / run
+    return [from[0] + (to[0] - from[0]) * step, from[1] + (to[1] - from[1]) * step]
+  }
+  const parts: string[] = []
+  for (let i = 0; i < count; i++) {
+    const here = coords[i]
+    const back = along(here, coords[(i + count - 1) % count], CORNER)
+    const on = along(here, coords[(i + 1) % count], CORNER)
+    parts.push(`${i === 0 ? 'M' : 'L'} ${back.join(' ')} Q ${here.join(' ')} ${on.join(' ')}`)
+  }
+  return `${parts.join(' ')} Z`
+}
+
 function blobPath(rand: () => number, straight: boolean): string {
   const points = straight ? 5 + Math.floor(rand() * 3) : 8
   const jitter = straight ? 8 : 11
