@@ -579,16 +579,17 @@ describe('a note dropped beside another note', () => {
     expect(notes[1].y).toBe(100)
   })
 
-  it('leaves a rotated note out of the pits it offers', () => {
+  it('leaves a note turned even a little out of the pits it offers', () => {
     const subject = editor()
     firstNote(subject)
     const first = subject.getCurrentPageShapes()[0]
-    subject.updateShape({ id: first.id, type: 'note', rotation: 0.4 })
-    const aim = nearRightPit(subject)
+    subject.updateShape({ id: first.id, type: 'note', rotation: 0.02 })
+    const aim = nearRightPit(subject) - 4
     subject.setCurrentTool('note')
     click(subject, aim, 200)
     const notes = subject.getCurrentPageShapes().filter(shape => shape.type === 'note')
     expect(notes[1].x).toBe(aim - 100)
+    expect(notes[1].y).toBe(100)
   })
 })
 
