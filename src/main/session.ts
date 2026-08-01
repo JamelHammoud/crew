@@ -393,7 +393,7 @@ export class AppSession {
       link: shared ? makeLink(lanAddress(), port, hosted.session.code) : null
     }
     if (url !== live.wsUrl) this.runner?.connect(url)
-    this.savedStore()?.save({
+    this.keep({
       mode: 'host',
       folder: hosted.folder,
       name: hosted.name,
