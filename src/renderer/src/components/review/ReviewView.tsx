@@ -1,27 +1,23 @@
-import { useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
 import type { RepoChange, RepoCommand } from '../../../../shared/repository'
-import { ArchiveGlyph, ArrowDownGlyph, ArrowUpGlyph, BranchGlyph, MinusGlyph, MoreGlyph, PlusGlyph, RefreshGlyph, UndoGlyph } from '../../icons'
 import { useCrew } from '../../state/store'
-import { digestOf, rowKey, useReviewed } from '../../state/reviewed'
+import { digestOf, useReviewed } from '../../state/reviewed'
 import { toast } from '../../state/toast'
-import Counts from '../Counts'
 import Modal from '../Modal'
-import { MenuDivider, MenuItem, Popover } from '../Popover'
 import ScrollFade from '../ScrollFade'
 import Skeleton from '../Skeleton'
-import Spinner from '../Spinner'
-import Tooltip from '../Tooltip'
 import useScrollEdges from '../useScrollEdges'
-import ChangeRow from './ChangeRow'
+import ChangeList from './ChangeList'
 import CommitBar from './CommitBar'
 import CommitDialog from './CommitDialog'
-import { Section, SectionAction } from './parts'
-import StashRow from './StashRow'
+import DiffPane from './DiffPane'
+import ReviewHeader from './ReviewHeader'
+import { clampSplit, defaultSplit, loadSplit, saveSplit } from './split'
+import SplitGrip from './SplitGrip'
 import { useRepoWork } from './useRepoWork'
+import { groupsOf, keyOf, readingAt, reviewWalk, stepTo } from './walk'
 
 type Ask = { kind: 'discard'; paths: string[]; what: string } | { kind: 'drop'; ref: string }
-
-const keyOf = (change: RepoChange): string => rowKey(change.path, change.staged)
 
 export default function ReviewView() {
   const { work, loading, busy, refresh, run } = useRepoWork()
@@ -31,24 +27,19 @@ export default function ReviewView() {
   const markUnread = useReviewed(s => s.markUnread)
   const forgetRead = useReviewed(s => s.forget)
   const [message, setMessage] = useState('')
-  const [open, setOpen] = useState<string[]>([])
+  const [reading, setReading] = useState<string | null>(null)
   const [shut, setShut] = useState<string[]>([])
-  const [menu, setMenu] = useState(false)
   const [committing, setCommitting] = useState(false)
   const [ask, setAsk] = useState<Ask | null>(null)
+  const [room, setRoom] = useState(0)
+  const [split, setSplit] = useState<number | null>(loadSplit)
+  const box = useRef<HTMLDivElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const { edges } = useScrollEdges(scrollRef)
 
-  // A conflict is neither staged nor unstaged until somebody has settled it, so
-  // it stands in a group of its own at the head of the list. It is the one thing
-  // on this screen that has to be dealt with by hand, and it read as an ordinary
-  // edit with a mark on it when it sat in among them.
-  const clashing = useMemo(() => work.changes.filter(change => change.kind === 'conflict'), [work.changes])
-  const staged = useMemo(() => work.changes.filter(change => change.staged), [work.changes])
-  const loose = useMemo(
-    () => work.changes.filter(change => !change.staged && change.kind !== 'conflict'),
-    [work.changes]
-  )
+  const groups = useMemo(() => groupsOf(work.changes), [work.changes])
+  const walk = useMemo(() => reviewWalk(work.changes), [work.changes])
+  const open = readingAt(walk, reading)
   const { status, stashes } = work
 
   // What was viewed is that version of it, so the digest is what the mark is
@@ -60,13 +51,31 @@ export default function ReviewView() {
   }, [work.changes])
 
   const mine = held[place]
-  const isViewed = (change: RepoChange): boolean => mine?.[keyOf(change)] === digests[keyOf(change)]
+  const isViewed = useCallback(
+    (change: RepoChange): boolean => mine?.[keyOf(change)] === digests[keyOf(change)],
+    [mine, digests]
+  )
   const seen = work.changes.filter(isViewed).length
   const totals = work.changes.reduce(
     (sum, change) => ({ added: sum.added + change.added, removed: sum.removed + change.removed }),
     { added: 0, removed: 0 }
   )
-  const files = new Set(work.changes.map(change => change.path)).size
+
+  // The two panes are measured against the room they really have, so a panel
+  // dragged narrower or a window made shorter never leaves the list holding
+  // more than there is.
+  useEffect(() => {
+    const el = box.current
+    if (!el) return
+    const measure = () => setRoom(el.clientHeight)
+    measure()
+    if (typeof ResizeObserver === 'undefined') return
+    const watching = new ResizeObserver(measure)
+    watching.observe(el)
+    return () => watching.disconnect()
+  }, [])
+
+  const listHeight = room === 0 ? 0 : clampSplit(split ?? defaultSplit(room), room)
 
   const send = async (command: RepoCommand, said?: string) => {
     const result = await run(command)
@@ -83,7 +92,7 @@ export default function ReviewView() {
     if (result.ok) {
       setMessage('')
       setCommitting(false)
-      setOpen([])
+      setReading(null)
     } else toast.fail(result.message, { key: 'repo' })
   }
 
@@ -94,28 +103,53 @@ export default function ReviewView() {
     await send(command)
   }
 
-  const folded = (title: string) => ({
-    open: !shut.includes(title),
-    onToggle: () => setShut(now => (now.includes(title) ? now.filter(one => one !== title) : [...now, title]))
-  })
-
-  const row = (change: RepoChange) => {
+  // The row that is open is kept in view when the keys are what moved it, or
+  // walking a long list reads as the diff changing under a list standing still.
+  const goTo = (change: RepoChange | null) => {
+    if (!change) return
     const key = keyOf(change)
-    return (
-      <ChangeRow
-        key={key}
-        change={change}
-        // Reading a change is reading several files, so opening one never puts
-        // away the one already open.
-        open={open.includes(key)}
-        viewed={isViewed(change)}
-        onToggle={() => setOpen(now => (now.includes(key) ? now.filter(one => one !== key) : [...now, key]))}
-        onViewed={seenNow => (seenNow ? markRead(place, key, digests[key]) : markUnread(place, key))}
-        onStage={() => void send({ do: 'stage', paths: [change.path] })}
-        onUnstage={() => void send({ do: 'unstage', paths: [change.path] })}
-        onDiscard={() => setAsk({ kind: 'discard', paths: [change.path], what: change.path })}
-      />
+    setReading(key)
+    requestAnimationFrame(() =>
+      scrollRef.current?.querySelector(`[data-row="${CSS.escape(key)}"]`)?.scrollIntoView({ block: 'nearest' })
     )
+  }
+
+  const openRow = (change: RepoChange) => {
+    setReading(keyOf(change))
+    scrollRef.current?.focus({ preventScroll: true })
+  }
+
+  const setViewed = (change: RepoChange, viewed: boolean) => {
+    const key = keyOf(change)
+    if (viewed) markRead(place, key, digests[key] ?? '')
+    else markUnread(place, key)
+  }
+
+  // Marking a file read and moving to the next one is one press, because that
+  // is the whole of what a review is made of and doing it in two is doing it
+  // twice. The last file has nowhere to move on to and stands where it is.
+  const done = () => {
+    if (!open) return
+    setViewed(open, true)
+    goTo(stepTo(walk, keyOf(open), 1))
+  }
+
+  // The arrows walk the list and the file under them opens as they go, which is
+  // how every client does this and why none of them needs a key of its own for
+  // the next file. They are read off the list rather than off the window, so
+  // nothing here reaches a composer somebody is typing in.
+  const keys = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.metaKey || event.ctrlKey || event.altKey || walk.length === 0) return
+    const by = event.key === 'ArrowDown' ? 1 : event.key === 'ArrowUp' ? -1 : 0
+    if (by !== 0) {
+      event.preventDefault()
+      goTo(open ? stepTo(walk, keyOf(open), by) : (walk[0] ?? null))
+      return
+    }
+    if (event.key === 'v' && open) {
+      event.preventDefault()
+      done()
+    }
   }
 
   if (!loading && !status.available) {
@@ -127,194 +161,86 @@ export default function ReviewView() {
   }
 
   const nothing = work.changes.length === 0 && stashes.length === 0
+  const bar = groups.staged.length > 0
 
   return (
-    <div className="relative h-full">
-      <div ref={scrollRef} className="h-full overflow-y-auto">
-        <div className={`space-y-4 p-3 ${staged.length > 0 ? 'pb-24' : 'pb-6'}`}>
-          <div className="space-y-1.5">
-            <div className="flex h-8 items-center gap-2 px-1">
-              <BranchGlyph className="w-4 h-4 shrink-0 text-fg-faint" />
-              <span className="min-w-0 flex-1 truncate text-sm text-fg-secondary">{status.branch || 'Project'}</span>
-              <Tooltip label={status.behind > 0 ? `Pull ${status.behind}` : 'Pull'}>
-                <button
-                  onClick={() => void send({ do: 'pull' }, 'Pulled')}
-                  disabled={!status.remote || busy !== null}
-                  className="flex h-7 items-center gap-1.5 rounded-full px-2 text-fg-muted transition-colors hover:bg-fg/[0.06] hover:text-fg active:scale-90 disabled:pointer-events-none disabled:opacity-35"
-                >
-                  {busy === 'pull' ? <Spinner size={13} /> : <ArrowDownGlyph className="w-4 h-4" />}
-                  {status.behind > 0 && <span className="text-xs">{status.behind}</span>}
-                </button>
-              </Tooltip>
-              <Tooltip label={status.ahead > 0 ? `Push ${status.ahead}` : 'Push'}>
-                <button
-                  onClick={() => void send({ do: 'push' }, 'Pushed')}
-                  disabled={!status.remote || busy !== null}
-                  className="flex h-7 items-center gap-1.5 rounded-full px-2 text-fg-muted transition-colors hover:bg-fg/[0.06] hover:text-fg active:scale-90 disabled:pointer-events-none disabled:opacity-35"
-                >
-                  {busy === 'push' ? <Spinner size={13} /> : <ArrowUpGlyph className="w-4 h-4" />}
-                  {status.ahead > 0 && <span className="text-xs">{status.ahead}</span>}
-                </button>
-              </Tooltip>
-              <div className="relative">
-                <Tooltip label="More" disabled={menu}>
-                  <button
-                    aria-label="More"
-                    onClick={() => setMenu(true)}
-                    className="flex h-7 w-7 items-center justify-center rounded-full text-fg-muted transition-colors hover:bg-fg/[0.06] hover:text-fg active:scale-90"
-                  >
-                    <MoreGlyph className="w-4 h-4" />
-                  </button>
-                </Tooltip>
-                <Popover open={menu} onClose={() => setMenu(false)} align="end">
-                  {work.changes.length > 0 && (
-                    <MenuItem
-                      icon={<ArchiveGlyph className="w-4 h-4" />}
-                      label="Stash changes"
-                      onClick={() => {
-                        setMenu(false)
-                        void send({ do: 'stash' }, 'Stashed')
-                      }}
-                    />
-                  )}
-                  {seen > 0 && (
-                    <MenuItem
-                      icon={<UndoGlyph className="w-4 h-4" />}
-                      label="Mark all as not viewed"
-                      onClick={() => {
-                        setMenu(false)
-                        forgetRead(place)
-                      }}
-                    />
-                  )}
-                  {(work.changes.length > 0 || seen > 0) && <MenuDivider />}
-                  <MenuItem
-                    icon={<RefreshGlyph className="w-4 h-4" />}
-                    label="Refresh"
-                    onClick={() => {
-                      setMenu(false)
-                      refresh()
-                    }}
-                  />
-                </Popover>
+    <div className="flex h-full flex-col">
+      <ReviewHeader
+        status={status}
+        busy={busy}
+        added={totals.added}
+        removed={totals.removed}
+        seen={seen}
+        total={work.changes.length}
+        onRun={(command, said) => void send(command, said)}
+        onRefresh={refresh}
+        onForget={() => forgetRead(place)}
+      />
+
+      <div ref={box} className="relative flex min-h-0 flex-1 flex-col">
+        <div
+          className="relative min-h-0"
+          style={open ? { height: listHeight, flex: '0 0 auto' } : { flex: '1 1 auto' }}
+        >
+          <div
+            ref={scrollRef}
+            tabIndex={-1}
+            onKeyDown={keys}
+            className={`h-full overflow-y-auto focus:outline-none ${bar && !open ? 'pb-14' : ''}`}
+          >
+            {loading && work.changes.length === 0 ? (
+              <div className="space-y-1 p-2 pt-3">
+                <Skeleton className="h-7 w-full rounded-xl" />
+                <Skeleton className="h-7 w-full rounded-xl" />
+                <Skeleton className="h-7 w-full rounded-xl" />
               </div>
-            </div>
-            {/* How much there is to get through. The groups say how many files
-                are in each, and nothing else on the screen says how big the
-                whole of it is or how far through it somebody already is. */}
-            {work.changes.length > 0 && (
-              <div className="flex items-center gap-2 px-1 text-xs">
-                <span className="text-fg-muted">
-                  {files} {files === 1 ? 'file' : 'files'}
-                </span>
-                <Counts added={totals.added} removed={totals.removed} />
-                <span className="flex-1" />
-                {seen > 0 && (
-                  <span className="text-fg-faint">
-                    {seen} of {work.changes.length} viewed
-                  </span>
-                )}
-              </div>
+            ) : nothing ? (
+              <p className="px-6 pt-8 text-center text-sm text-fg-muted">Nothing has changed since the last commit.</p>
+            ) : (
+              <ChangeList
+                groups={groups}
+                stashes={stashes}
+                shut={shut}
+                onFold={title => setShut(now => (now.includes(title) ? now.filter(one => one !== title) : [...now, title]))}
+                rows={{
+                  isViewed,
+                  reading: open ? keyOf(open) : null,
+                  onOpen: openRow,
+                  onViewed: setViewed,
+                  onStage: paths => void send({ do: 'stage', paths }),
+                  onUnstage: paths => void send({ do: 'unstage', paths }),
+                  onDiscard: (paths, what) => setAsk({ kind: 'discard', paths, what })
+                }}
+                onApplyStash={ref => void send({ do: 'apply', ref }, 'Stash applied')}
+                onDropStash={ref => setAsk({ kind: 'drop', ref })}
+              />
             )}
           </div>
-
-          {loading && work.changes.length === 0 ? (
-            <div className="space-y-1.5 pt-2">
-              <Skeleton className="h-10 w-full rounded-card" />
-              <Skeleton className="h-10 w-full rounded-card" />
-              <Skeleton className="h-10 w-full rounded-card" />
-            </div>
-          ) : nothing ? (
-            <p className="px-1 pt-6 text-center text-sm text-fg-muted">Nothing has changed since the last commit.</p>
-          ) : (
-            <div className="space-y-4">
-              {clashing.length > 0 && (
-                <Section
-                  title="Merge Changes"
-                  count={clashing.length}
-                  {...folded('Merge Changes')}
-                  actions={
-                    <SectionAction
-                      label="Stage all merge changes"
-                      icon={<PlusGlyph className="w-3.5 h-3.5" />}
-                      onClick={() => void send({ do: 'stage', paths: clashing.map(one => one.path) })}
-                    />
-                  }
-                >
-                  {clashing.map(row)}
-                </Section>
-              )}
-
-              {staged.length > 0 && (
-                <Section
-                  title="Staged Changes"
-                  count={staged.length}
-                  {...folded('Staged Changes')}
-                  actions={
-                    <SectionAction
-                      label="Unstage all changes"
-                      icon={<MinusGlyph className="w-3.5 h-3.5" />}
-                      onClick={() => void send({ do: 'unstage', paths: staged.map(one => one.path) })}
-                    />
-                  }
-                >
-                  {staged.map(row)}
-                </Section>
-              )}
-
-              {loose.length > 0 && (
-                <Section
-                  title="Changes"
-                  count={loose.length}
-                  {...folded('Changes')}
-                  actions={
-                    <>
-                      <SectionAction
-                        label="Discard all changes"
-                        icon={<UndoGlyph className="w-3.5 h-3.5" />}
-                        danger
-                        onClick={() =>
-                          setAsk({
-                            kind: 'discard',
-                            paths: loose.map(one => one.path),
-                            what: `${loose.length} ${loose.length === 1 ? 'file' : 'files'}`
-                          })
-                        }
-                      />
-                      <SectionAction
-                        label="Stage all changes"
-                        icon={<PlusGlyph className="w-3.5 h-3.5" />}
-                        onClick={() => void send({ do: 'stage', paths: loose.map(one => one.path) })}
-                      />
-                    </>
-                  }
-                >
-                  {loose.map(row)}
-                </Section>
-              )}
-
-              {stashes.length > 0 && (
-                <Section title="Stashes" count={stashes.length} {...folded('Stashes')}>
-                  {stashes.map(stash => (
-                    <StashRow
-                      key={stash.ref}
-                      stash={stash}
-                      onApply={() => void send({ do: 'apply', ref: stash.ref }, 'Stash applied')}
-                      onDrop={() => setAsk({ kind: 'drop', ref: stash.ref })}
-                    />
-                  ))}
-                </Section>
-              )}
-            </div>
-          )}
+          <ScrollFade edges={edges} />
         </div>
+
+        {open && (
+          <>
+            <SplitGrip height={listHeight} total={room} onHeight={setSplit} onSettle={saveSplit} />
+            <DiffPane
+              change={open}
+              viewed={isViewed(open)}
+              room={bar}
+              onViewed={done}
+              onClose={() => setReading(null)}
+              onStage={() => void send({ do: 'stage', paths: [open.path] })}
+              onUnstage={() => void send({ do: 'unstage', paths: [open.path] })}
+              onDiscard={() => setAsk({ kind: 'discard', paths: [open.path], what: open.path })}
+            />
+          </>
+        )}
+
+        <CommitBar staged={groups.staged.length} onOpen={() => setCommitting(true)} />
       </div>
-      <ScrollFade edges={edges} />
-      <CommitBar staged={staged.length} onOpen={() => setCommitting(true)} />
 
       <CommitDialog
         open={committing}
-        staged={staged.length}
+        staged={groups.staged.length}
         message={message}
         busy={busy === 'commit'}
         onMessage={setMessage}
