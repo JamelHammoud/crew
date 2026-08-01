@@ -132,17 +132,6 @@ function Session() {
           <Sidebar />
         </div>
       </div>
-      {(!pinned || peeking) && (
-        <div
-          onMouseEnter={() => peek(true)}
-          onMouseLeave={() => peek(false)}
-          data-open={peeking || undefined}
-          style={{ width: SIDEBAR_W }}
-          className="rail absolute inset-y-0 left-0 z-50"
-        >
-          <Sidebar overlay strong={tab === 'design'} />
-        </div>
-      )}
       <div className="flex-1 min-w-0 relative isolate bg-ink-900">
         <main className="absolute inset-0">
           {tab === 'chat' && (openThreadIds.length > 0 ? <ThreadColumns ids={openThreadIds} /> : <Chat />)}
