@@ -38,6 +38,28 @@ export interface CrewCanvasOptions {
   [key: string]: unknown
 }
 
+const handled = new WeakSet<Event>()
+
+function taken(event: Event): boolean {
+  return handled.has(event)
+}
+
+function take(event: Event): void {
+  handled.add(event)
+}
+
+function capturesKeys(element: Element | null): boolean {
+  if (!element) return false
+  const tag = element.tagName.toLowerCase()
+  return (
+    (element as HTMLElement).isContentEditable ||
+    tag === 'input' ||
+    tag === 'textarea' ||
+    tag === 'select' ||
+    tag === 'button'
+  )
+}
+
 export interface CrewCanvasProps {
   store: Store<TLRecord>
   shapeUtils: readonly ShapeUtilConstructor[]
