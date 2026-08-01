@@ -16,6 +16,7 @@ export interface FakeBoard {
   order: string[]
   select: (...ids: string[]) => void
   shape: (id: string) => TLShape
+  step: () => void
 }
 
 const PAGE = 'page:main'
