@@ -480,7 +480,19 @@ let forkWanted: string | null = null
 let threadsWanted: string[] = []
 
 export const useCrew = create<CrewState>((set, get) => {
+  // A streaming run says a step many times a second, and every one of them used
+  // to replace the whole record, which walks the thread again for each. They are
+  // held for a frame and land as one write instead, in the order they arrived.
+  const stepBuffer = makeStepBuffer(deltas => {
+    set(state => {
+      const steps = { ...state.steps }
+      for (const { promptId, step } of deltas) steps[promptId] = upsertStep(steps[promptId], step)
+      return { steps }
+    })
+  })
+
   const applyEvent = (event: SessionEvent) => {
+    stepBuffer.flush()
     const cue = soundFor(event, get().selfId, get())
     if (cue) playSound(cue)
     // One decision, said in two places: the row in the app and the banner from
