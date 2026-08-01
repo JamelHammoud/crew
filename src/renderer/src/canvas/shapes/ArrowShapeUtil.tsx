@@ -352,27 +352,28 @@ export class ArrowShapeUtil extends ShapeUtil<ArrowShape> {
     const geometry = this.getGeometry(shape)
     const body = geometry instanceof Group2d ? geometry.children[0] : geometry
     const vertices = body.vertices
-    const start = vertices[0]
-    const end = vertices[vertices.length - 1]
-    const previous = vertices[Math.max(0, vertices.length - 2)]
-    const next = vertices[Math.min(vertices.length - 1, 1)]
+    const terminals = getArrowTerminals(this.editor, shape)
+    const start = terminals.start
+    const end = terminals.end
     const strokeWidth = STROKES[shape.props.size] * shape.props.scale
-    const dash =
-      shape.props.dash === 'dashed'
-        ? `${strokeWidth * 2} ${strokeWidth * 2}`
-        : shape.props.dash === 'dotted'
-          ? `0 ${strokeWidth * 2}`
-          : undefined
     const text = plainText(shape.props.richText)
     const middle = vertices[Math.floor(vertices.length * shape.props.labelPosition)] ?? Vec.Med(start, end)
-    const startHead = arrowheadPath(start, next, strokeWidth, shape.props.arrowheadStart)
-    const endHead = arrowheadPath(end, previous, strokeWidth, shape.props.arrowheadEnd)
-    const fillHead = (kind: ArrowShape['props']['arrowheadEnd']) =>
-      kind === 'triangle' || kind === 'square' || kind === 'dot'
-        ? 'currentColor'
-        : kind === 'diamond' || kind === 'inverted'
+    const startHead = arrowheadPath(
+      start,
+      arrowheadInt(body, start, end, strokeWidth, false),
+      shape.props.arrowheadStart
+    )
+    const endHead = arrowheadPath(end, arrowheadInt(body, end, start, strokeWidth, true), shape.props.arrowheadEnd)
+    const fillColor =
+      shape.props.fill === 'none'
+        ? undefined
+        : shape.props.fill === 'semi'
           ? canvasSurface(this.editor)
-          : 'none'
+          : shapeColor(
+              this.editor,
+              shape.props.color,
+              shape.props.fill === 'solid' ? 'semi' : shape.props.fill === 'lined-fill' ? 'linedFill' : shape.props.fill
+            )
     const editing = this.editor.getEditingShapeId?.() === shape.id
     return createElement(
       'div',
