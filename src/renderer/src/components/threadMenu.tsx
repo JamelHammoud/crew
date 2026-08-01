@@ -1,8 +1,8 @@
 import { useState, type MouseEvent, type ReactNode } from 'react'
 import { threadMenuActions, type ThreadOpenAction } from '../../../shared/threadViews'
-import { CloseGlyph, ColumnsGlyph, PopOutGlyph } from '../icons'
+import { ArchiveGlyph, CheckGlyph, CloseGlyph, ColumnsGlyph, PopOutGlyph, UndoGlyph } from '../icons'
 import { useCrew } from '../state/store'
-import { MenuItem, Popover } from './Popover'
+import { MenuDivider, MenuItem, Popover } from './Popover'
 
 const LABEL: Record<ThreadOpenAction, string> = {
   open: 'Open',
