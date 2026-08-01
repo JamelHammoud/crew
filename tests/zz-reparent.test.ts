@@ -4,6 +4,8 @@ import { createShapeId, createTLStore } from '../src/renderer/src/canvas/schema'
 import { FrameShapeUtil, GeoShapeUtil, GroupShapeUtil } from '../src/renderer/src/canvas/shapes'
 import { SelectTool } from '../src/renderer/src/canvas/tools/select'
 
+const MODS = { shiftKey: false, altKey: false, ctrlKey: false, metaKey: false, accelKey: false }
+
 function ed(): Editor {
   const e = new Editor({
     store: createTLStore({ id: 'rp' }),
@@ -15,25 +17,31 @@ function ed(): Editor {
   return e
 }
 
-function pointer(e: Editor, name: string, x: number, y: number): void {
+function at(e: Editor, name: string, x: number, y: number): void {
+  const screen = { x, y }
+  const page = e.screenToPage(screen)
+  if (name === 'pointer_down') {
+    e.inputs.pointerDown(screen, page, MODS as never, 'mouse')
+    e.inputs.setButton(0, true)
+  } else if (name === 'pointer_move') {
+    e.inputs.pointerMove(screen, page, MODS as never, e.options.dragDistanceSquared as number)
+  } else {
+    e.inputs.pointerUp(screen, page, MODS as never)
+  }
   e.dispatch({
     name,
     type: 'pointer',
     target: 'canvas',
-    point: { x, y },
+    point: page,
     button: 0,
     isPen: false,
-    shiftKey: false,
-    altKey: false,
-    ctrlKey: false,
-    metaKey: false,
-    accelKey: false,
-    pointerId: 1
+    pointerId: 1,
+    ...MODS
   } as never)
 }
 
 function path(e: Editor): string {
-  let node: { id: string; getCurrent?: () => unknown } | undefined = (e as never as { root: never }).root as never
+  let node = (e as never as { root: { id: string; getCurrent?: () => never } }).root
   const parts: string[] = []
   while (node) {
     parts.push(node.id)
@@ -42,8 +50,8 @@ function path(e: Editor): string {
   return parts.join('.')
 }
 
-describe('dragging a shape', () => {
-  it('moves it, and drops it into a frame the way tldraw does', () => {
+describe('dragging a shape with the inputs driven as the dom layer drives them', () => {
+  it('moves it and drops it into the frame it was dragged over', () => {
     const e = ed()
     const frame = createShapeId('frame')
     e.createShape({ id: frame, type: 'frame', x: 300, y: 60, props: { w: 300, h: 300, name: 'Card' } })
@@ -51,15 +59,16 @@ describe('dragging a shape', () => {
     e.createShape({ id: box, type: 'geo', x: 20, y: 20, props: { w: 60, h: 60, fill: 'solid' } })
     e.setSelectedShapes([box])
 
-    pointer(e, 'pointer_down', 50, 50)
-    console.log('page point after down:', JSON.stringify(e.inputs.getCurrentPagePoint()))
-    console.log('state after down:', path(e))
-    pointer(e, 'pointer_move', 90, 60)
-    console.log('isDragging after 40px:', e.inputs.getIsDragging(), 'state:', path(e))
-    for (let i = 2; i <= 12; i++) pointer(e, 'pointer_move', 50 + i * 33, 50 + i * 12)
-    console.log('state before up:', path(e), 'shape at:', e.getShape(box)!.x, e.getShape(box)!.y)
-    pointer(e, 'pointer_up', 446, 194)
-    console.log('final at:', e.getShape(box)!.x, e.getShape(box)!.y, 'parent:', e.getShape(box)!.parentId)
-    expect(e.getShape(box)!.parentId).toBe(frame)
+    at(e, 'pointer_down', 50, 50)
+    console.log('after down:', path(e), 'page point:', JSON.stringify(e.inputs.getCurrentPagePoint()))
+    at(e, 'pointer_move', 90, 62)
+    console.log('after 40px:', path(e), 'dragging:', e.inputs.getIsDragging())
+    for (let i = 2; i <= 12; i++) at(e, 'pointer_move', 50 + i * 33, 50 + i * 12)
+    console.log('before up:', path(e), 'shape at:', e.getShape(box)!.x, e.getShape(box)!.y)
+    at(e, 'pointer_up', 446, 194)
+    const after = e.getShape(box)!
+    console.log('final at:', after.x, after.y, 'parent:', after.parentId)
+    expect(after.x).not.toBe(20)
+    expect(after.parentId).toBe(frame)
   })
 })
