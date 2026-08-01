@@ -9,7 +9,7 @@ const DOTS = THINKING_DOTS.map((cx, index) => ({ cx, delay: `${index * 140}ms` }
 // the same wave a thought carries while it is still going.
 function TypingDots() {
   return (
-    <svg aria-hidden viewBox="0 0 24 24" fill="none" className="typing-dots w-3 h-3 shrink-0">
+    <svg aria-hidden viewBox="0 0 24 24" fill="none" className="typing-dots w-4 h-4 shrink-0">
       {DOTS.map(dot => (
         <circle
           key={dot.cx}
