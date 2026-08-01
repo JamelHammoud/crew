@@ -172,11 +172,18 @@ describe('the outline around a selected group', () => {
 
   it('closes up again when a shape leaves it', () => {
     const subject = board()
-    grouped(subject)
-    expect(paint(subject)).toEqual([{ x: 0, y: 0, w: 300, h: 100 }])
+    for (const [name, x] of [
+      ['a', 0],
+      ['b', 200],
+      ['c', 400]
+    ] as const) {
+      subject.createShape({ id: createShapeId(name), type: 'geo', x, y: 0, props: { w: 100, h: 100 } })
+    }
+    subject.groupShapes(['a', 'b', 'c'].map(name => createShapeId(name)))
+    expect(paint(subject)).toEqual([{ x: 0, y: 0, w: 500, h: 100 }])
 
-    subject.deleteShapes([createShapeId('two')])
-    expect(paint(subject)).toEqual([{ x: 0, y: 0, w: 100, h: 100 }])
+    subject.deleteShapes([createShapeId('c')])
+    expect(paint(subject)).toEqual([{ x: 0, y: 0, w: 300, h: 100 }])
   })
 
   it('keeps the selection box and its handles for a group', () => {
