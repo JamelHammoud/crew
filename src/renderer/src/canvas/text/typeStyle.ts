@@ -39,6 +39,12 @@ function gather(node: ReactNode, into: Record<string, unknown>): void {
   gather(props.children, into)
 }
 
+export function withResolvedLineHeight(style: CSSProperties): CSSProperties {
+  const { fontSize, lineHeight } = style
+  if (typeof fontSize !== 'number' || typeof lineHeight !== 'number') return style
+  return { ...style, lineHeight: `${resolveLineHeight(fontSize, lineHeight)}px` }
+}
+
 export function paintedTypeStyle<Shape>(util: { component(shape: Shape): ReactNode }, shape: Shape): CSSProperties {
   const gathered: Record<string, unknown> = {}
   try {
