@@ -21,6 +21,19 @@ class TestResizeObserver {
 global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
 landed()
 
+const merges = vi.hoisted(() => ({ count: 0 }))
+
+vi.mock('../src/shared/events', async () => {
+  const actual = await vi.importActual<typeof import('../src/shared/events')>('../src/shared/events')
+  return {
+    ...actual,
+    mergeEvents: (...args: Parameters<typeof actual.mergeEvents>) => {
+      merges.count += 1
+      return actual.mergeEvents(...args)
+    }
+  }
+})
+
 const AGENT: PooledAgent = {
   id: 'ali/claude',
   label: 'Claude',
