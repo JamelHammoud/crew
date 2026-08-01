@@ -470,19 +470,28 @@ class ShapeIndicatorOverlayUtil implements ToolOverlayUtil {
 
   private stroke(context: CanvasRenderingContext2D, shapes: TLShape[]): void {
     for (const shape of shapes) {
-      const transform = this.editor.getShapePageTransform(shape)
       const geometry = this.editor.getShapeGeometry(shape)
-      const vertices = geometry.vertices.map(vertex => transform.applyToPoint(vertex))
-      if (vertices.length < 2) continue
+      const vertices = geometry.vertices
+      const count = vertices.length
+      if (count < 2) continue
+      const { a, b, c, d, e, f } = this.editor.getShapePageTransform(shape)
+      const first = vertices[0]
       context.beginPath()
-      context.moveTo(vertices[0].x, vertices[0].y)
-      for (const vertex of vertices.slice(1)) context.lineTo(vertex.x, vertex.y)
+      context.moveTo(a * first.x + c * first.y + e, b * first.x + d * first.y + f)
+      for (let index = 1; index < count; index++) {
+        const vertex = vertices[index]
+        context.lineTo(a * vertex.x + c * vertex.y + e, b * vertex.x + d * vertex.y + f)
+      }
       if (geometry.isClosed) context.closePath()
       context.stroke()
     }
   }
 
-  private marked(): { indicated: TLShape[]; hinted: TLShape[] } {
+  private marked(): MarkedShapes {
+    return this.memo.read(this.pass, () => this.computeMarked())
+  }
+
+  private computeMarked(): MarkedShapes {
     const editor = this.editor
     const path = editor.getCurrentToolPath()
     const instance = editor.getInstanceState()
@@ -501,7 +510,7 @@ class ShapeIndicatorOverlayUtil implements ToolOverlayUtil {
       }
     }
     const hinted: TLShape[] = []
-    for (const id of editor.getInstanceState().hintingShapeIds ?? []) {
+    for (const id of instance.hintingShapeIds ?? []) {
       const shape = editor.getShape(id)
       if (shape && !editor.isShapeHidden(shape)) hinted.push(shape)
     }
