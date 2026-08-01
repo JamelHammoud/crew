@@ -100,22 +100,21 @@ function Session() {
   return (
     <div className="h-full flex relative">
       <div
-        className={`shrink-0 overflow-hidden ${sidebar ? 'transition-[width] duration-200' : 'transition-[width] duration-200'}`}
-        style={{ width: sidebar ? SIDEBAR_W : 0 }}
+        className="shrink-0 overflow-hidden transition-[width] duration-200"
+        style={{ width: pinned ? SIDEBAR_W : 0 }}
       >
         <div className="h-full" style={{ width: SIDEBAR_W }}>
           <Sidebar />
         </div>
       </div>
-      {peeking && !sidebar && (
+      {peeking && (
         <div
           onMouseEnter={() => peek(true)}
           onMouseLeave={() => peek(false)}
-          className="absolute inset-y-0 left-0 z-40 flex animate-slide-in pointer-events-none"
+          style={{ width: SIDEBAR_W }}
+          className="absolute inset-y-0 left-0 z-40 animate-rail shadow-[0_0_40px_rgba(0,0,0,0.5)]"
         >
-          <div className="h-full pointer-events-auto glass glass-strong border-r border-ink-700 shadow-[var(--glass-shadow)] [&>div:first-child]:pointer-events-none">
-            <Sidebar />
-          </div>
+          <Sidebar />
         </div>
       )}
       <div className="flex-1 min-w-0 relative">
