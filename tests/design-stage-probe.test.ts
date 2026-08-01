@@ -131,6 +131,37 @@ describe('the design stage', () => {
     expect(made.calls).toContain('toggleLock(shape:a)')
   })
 
+  it('deletes on the delete key', () => {
+    const { made } = boot()
+    fireEvent.keyDown(window, { key: 'Backspace' })
+    expect(made.calls).toContain('delete(shape:a)')
+  })
+
+  it('undoes on the undo key', () => {
+    const { made } = boot()
+    made.step()
+    fireEvent.keyDown(window, { key: 'z', metaKey: true })
+    expect(made.calls).toContain('undo()')
+  })
+
+  it('duplicates, groups and reorders on the keys the menu names', () => {
+    const { made } = boot()
+    fireEvent.keyDown(window, { key: 'd', metaKey: true })
+    fireEvent.keyDown(window, { key: ']' })
+    expect(made.calls).toContain('duplicate(shape:a)')
+    expect(made.calls).toContain('bringToFront(shape:a)')
+  })
+
+  it('leaves a key typed in the board chat to the board chat', () => {
+    const { made } = boot()
+    const chat = document.createElement('div')
+    chat.setAttribute('data-board-chat', '')
+    document.body.appendChild(chat)
+    fireEvent.keyDown(chat, { key: 'Backspace' })
+    expect(made.calls).not.toContain('delete(shape:a)')
+    chat.remove()
+  })
+
   it('puts the ask away when the board changes under it', () => {
     const { container, rerender } = boot()
     rightClick(container)
