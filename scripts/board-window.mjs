@@ -61,8 +61,10 @@ export function probeSource(snapshot) {
   const reactDom = JSON.stringify(resolve('react-dom/client'))
   return `import React from ${react}
 import { createRoot } from ${reactDom}
-import { createTLStore, defaultBindingUtils, loadSnapshot, useValue } from ${from('canvas/index.ts')}
+import { createTLStore, defaultBindingUtils, EditorContext, loadSnapshot, useValue } from ${from('canvas/index.ts')}
 import { CrewCanvas } from ${from('canvas/CrewCanvas.tsx')}
+import DesignLeftPanel from ${from('components/DesignLeftPanel.tsx')}
+import { commandForKey } from ${from('design/commands.ts')}
 import { applyDesignCursors, DESIGN_CURSORS } from ${from('design/cursors.tsx')}
 import { applyDesignDefaults } from ${from('design/defaults.ts')}
 import { DesignNodeTool } from ${from('design/DesignNodeTool.ts')}
@@ -74,6 +76,8 @@ import './probe.css'
 
 const store = createTLStore({ id: 'board-check' })
 loadSnapshot(store, ${JSON.stringify(snapshot)})
+
+window.__probe = { canvasCommits: 0, appCommits: 0, renamed: 0, asked: 0 }
 
 function Board() {
   const [editor, setEditor] = React.useState(null)
@@ -91,20 +95,69 @@ function Board() {
     })
     return () => stopRounding()
   }, [])
+
+  React.useEffect(() => {
+    if (!editor) return
+    const ctx = {
+      editor,
+      point: null,
+      ask: () => {
+        window.__probe.asked += 1
+      },
+      rename: () => {
+        window.__probe.renamed += 1
+      }
+    }
+    window.canvasCommands = ctx
+    const onKeyDown = event => {
+      const command = commandForKey(event, ctx)
+      if (!command) return
+      event.preventDefault()
+      event.stopPropagation()
+      command.run(ctx)
+    }
+    window.addEventListener('keydown', onKeyDown, true)
+    return () => window.removeEventListener('keydown', onKeyDown, true)
+  }, [editor])
+
+  const onCanvasRender = React.useCallback(() => {
+    window.__probe.canvasCommits += 1
+  }, [])
+  const onAppRender = React.useCallback(() => {
+    window.__probe.appCommits += 1
+  }, [])
+
   return React.createElement(
-    'div',
-    {
-      className: 'absolute inset-0 design',
-      style: { ...DESIGN_CURSORS, cursor: 'var(--crew-cursor-default)', '--design-selected': selected }
-    },
-    React.createElement(CrewCanvas, {
-      store,
-      shapeUtils: designShapeUtils,
-      bindingUtils: defaultBindingUtils,
-      tools: [DesignNodeTool],
-      onMount: mounted
-    }),
-    React.createElement(SelectionOverlay, { editor })
+    React.Profiler,
+    { id: 'app', onRender: onAppRender },
+    React.createElement(
+      'div',
+      {
+        className: 'absolute inset-0 flex design',
+        style: { ...DESIGN_CURSORS, cursor: 'var(--crew-cursor-default)', '--design-selected': selected }
+      },
+      React.createElement(
+        'div',
+        { className: 'w-64 shrink-0 flex min-h-0', 'data-probe-panel': 'true' },
+        editor && React.createElement(EditorContext.Provider, { value: editor }, React.createElement(DesignLeftPanel))
+      ),
+      React.createElement(
+        'div',
+        { className: 'relative flex-1 min-w-0' },
+        React.createElement(
+          React.Profiler,
+          { id: 'canvas', onRender: onCanvasRender },
+          React.createElement(CrewCanvas, {
+            store,
+            shapeUtils: designShapeUtils,
+            bindingUtils: defaultBindingUtils,
+            tools: [DesignNodeTool],
+            onMount: mounted
+          }),
+          React.createElement(SelectionOverlay, { editor })
+        )
+      )
+    )
   )
 }
 

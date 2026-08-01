@@ -17,6 +17,7 @@ export class Crews {
   private sessionPath: string | null = null
   private projectsPath: string | null = null
   private idle = new AppSession()
+  private queue: Promise<void> = Promise.resolve()
   onTrouble: (message: string) => void = () => {}
   onLive: (places: LivePlace[]) => void = () => {}
 
