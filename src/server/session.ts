@@ -602,6 +602,26 @@ export class CrewSession {
       if (event.kind === 'tool.removed') {
         this.tools.delete(event.toolId)
       }
+      if (event.kind === 'memory.added') {
+        this.memories.set(event.memoryId, {
+          id: event.memoryId,
+          text: event.text,
+          by: event.byName,
+          byAgentId: event.agentId,
+          ts: event.ts
+        })
+      }
+      if (event.kind === 'memory.edited') {
+        const memory = this.memories.get(event.memoryId)
+        if (memory) {
+          memory.text = event.text
+          memory.by = event.byName
+          memory.byAgentId = event.agentId
+        }
+      }
+      if (event.kind === 'memory.removed') {
+        this.memories.delete(event.memoryId)
+      }
       if (event.kind === 'attachment.limit') {
         this.attachmentMb = cleanAttachmentMb(event.mb) ?? this.attachmentMb
       }
