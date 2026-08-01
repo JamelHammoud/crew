@@ -23,8 +23,8 @@ function geo(subject: Editor, name: string, x: number, y: number): TLShapeId {
   return id
 }
 
-describe('what a move hands the rendering list', () => {
-  it('keeps the props of a shape that only moved', () => {
+describe('what keeping whole pixels hands the rendering list', () => {
+  it('leaves the props of a shape alone when only its position moved', () => {
     const subject = board()
     const stop = keepWholePixels(subject)
     const id = geo(subject, 'moved', 100, 100)
