@@ -105,8 +105,7 @@ describe('the drag the top bar takes', () => {
   it('cuts a dialog out of it', () => {
     render(
       createElement(Modal, {
-        open: true,
-        onClose: () => {},
+
         title: 'Rename',
         children: createElement('p', null, 'body')
       })
@@ -118,8 +117,7 @@ describe('the drag the top bar takes', () => {
   it('cuts a menu out of it', () => {
     const { baseElement } = render(
       createElement(Popover, {
-        open: true,
-        onClose: () => {},
+
         at: { x: 100, y: 30 },
         children: createElement('button', null, 'Open')
       })
@@ -139,8 +137,7 @@ describe('the scrim behind the tasks panel', () => {
   it('stands under the top bar, so the bar is still there to press', () => {
     const { container } = render(
       createElement(TasksPanel, {
-        open: true,
-        onClose: () => {},
+
         onOpenThread: () => {},
         onOpenThreadBeside: () => {}
       })

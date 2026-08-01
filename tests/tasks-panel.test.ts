@@ -57,8 +57,7 @@ const day = (ts: number): number => Date.now() - ts * 86_400_000
 const panel = () =>
   render(
     createElement(TasksPanel, {
-      open: true,
-      onClose: () => {},
+
       onOpenThread: () => {},
       onOpenThreadBeside: () => {}
     })

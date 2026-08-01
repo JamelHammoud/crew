@@ -171,8 +171,7 @@ describe('tasks outside the first page of chat', () => {
     join(recent, true, [started(1), started(2)], { 'thread-2': 'prompt-2' })
     const view = render(
       createElement(TasksPanel, {
-        open: true,
-        onClose: () => {},
+
         onOpenThread: () => {},
         onOpenThreadBeside: () => {}
       })
