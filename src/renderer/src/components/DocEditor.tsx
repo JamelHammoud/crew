@@ -33,6 +33,7 @@ export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: 
     const editor = useCreateBlockNote({
       schema: docSchema,
       dictionary: docDictionary,
+      extensions: [docEmoji],
       dropCursor: { width: 2, color: false },
       links: {
         onClick: (event: MouseEvent) => {
