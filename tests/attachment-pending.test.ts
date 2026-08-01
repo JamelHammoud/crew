@@ -1,6 +1,6 @@
 import fs from 'node:fs'
+import { createRequire } from 'node:module'
 import path from 'node:path'
-import { JSDOM } from 'jsdom'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import type { SessionEvent } from '../src/shared/events'
 import { attachmentBytes, httpBaseFrom, MAX_ATTACHMENTS } from '../src/shared/attachments'
