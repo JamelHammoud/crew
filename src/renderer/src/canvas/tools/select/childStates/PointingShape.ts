@@ -61,7 +61,9 @@ export class PointingShape extends StateNode<SelectEditor> {
 
   onPointerUp(info: SelectPointerInfo): void {
     const selected = this.editor.getSelectedShapeIds()
+    const focusedGroupId = this.editor.getFocusedGroupId()
     const point = this.editor.inputs.getCurrentPagePoint()
+    const additive = Boolean(info.shiftKey || info.accelKey)
     const hit =
       this.editor.getShapeAtPoint(point, {
         margin: this.editor.options.hitTestMargin / this.editor.getZoomLevel(),
@@ -72,17 +74,73 @@ export class PointingShape extends StateNode<SelectEditor> {
       this.parent.transition('idle', info)
       return
     }
-    const selecting = this.editor.getOutermostSelectableShape(hit)
-    if (!this.didSelectOnEnter) {
-      if ((info.shiftKey || info.accelKey) && selected.includes(selecting.id)) {
-        this.editor.markHistoryStoppingPoint('deselecting on pointer up')
-        this.editor.deselect(selecting)
-      } else {
-        this.editor.markHistoryStoppingPoint('selecting on pointer up')
-        this.editor.select(selecting.id)
+
+    const selecting = this.editor.getOutermostSelectableShape(hit) ?? this.hitShapeForPointerUp
+    if (selecting) {
+      const util = this.editor.getShapeUtil(selecting)
+      if (util.onClick) {
+        const change = util.onClick(selecting)
+        if (change) {
+          this.editor.markHistoryStoppingPoint('shape on click')
+          this.editor.updateShapes([change])
+          this.parent.transition('idle', info)
+          return
+        }
+      }
+      if (selecting.id === focusedGroupId) {
+        if (selected.length > 0) {
+          this.editor.markHistoryStoppingPoint('clearing shape ids')
+          this.editor.setSelectedShapes([])
+        } else {
+          this.editor.popFocusedGroupId()
+        }
+        this.parent.transition('idle', info)
+        return
       }
     }
+
+    if (!this.didSelectOnEnter) {
+      const outermost = this.editor.getOutermostSelectableShape(hit, (parent: any) => !selected.includes(parent.id))
+      if (selected.includes(outermost.id)) {
+        if (additive) {
+          this.editor.markHistoryStoppingPoint('deselecting on pointer up')
+          this.editor.deselect(selecting)
+        } else if (selected.includes(selecting.id)) {
+          if (selected.length === 1 && this.editLabelAtPoint(selecting, point, info)) return
+          this.editor.markHistoryStoppingPoint('selecting on pointer up')
+          this.editor.select(selecting.id)
+        } else {
+          this.editor.markHistoryStoppingPoint('selecting on pointer up')
+          this.editor.select(selecting)
+        }
+      } else if (additive) {
+        const ancestors = this.editor.getShapeAncestors?.(outermost) ?? []
+        this.editor.markHistoryStoppingPoint('shift deselecting on pointer up')
+        this.editor.setSelectedShapes([
+          ...selected.filter((id: any) => !ancestors.some((ancestor: any) => ancestor.id === id)),
+          outermost.id
+        ])
+      } else {
+        this.editor.markHistoryStoppingPoint('selecting on pointer up')
+        this.editor.setSelectedShapes([outermost.id])
+      }
+    }
+
     this.parent.transition('idle', info)
+  }
+
+  private editLabelAtPoint(shape: any, point: any, info: SelectPointerInfo): boolean {
+    if (!this.editor.isPointInShapeLabel?.(shape, point)) return false
+    this.editor.markHistoryStoppingPoint('editing on pointer up')
+    this.editor.select(shape.id)
+    if (!this.editor.canEditShape(shape)) return true
+    this.editor.setEditingShape(shape.id)
+    this.parent.transition('editing_shape', { ...info, target: 'shape', shape })
+    this.editor.emit?.(this.isDoubleClick ? 'select-all-text' : 'place-caret', {
+      shapeId: shape.id,
+      point: info.point
+    })
+    return true
   }
 
   onDoubleClick(info: SelectPointerInfo): void {
