@@ -62,12 +62,7 @@ export default function ThreadCard({
       <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined} className="min-w-52">
         <ThreadOpenItems threadId={thread.id} onOpen={onOpen} onDone={() => setMenuAt(null)} />
         <MenuDivider />
-        {thread.status === 'done' ? (
-          <MenuItem icon={<UndoGlyph />} label="Reopen" onClick={() => setStatus('open')} />
-        ) : (
-          <MenuItem icon={<CheckGlyph />} label="Mark done" onClick={() => setStatus('done')} />
-        )}
-        <MenuItem icon={<ArchiveGlyph />} label="Archive thread" onClick={() => setStatus('archived')} />
+        <ThreadStatusItems threadId={thread.id} onDone={() => setMenuAt(null)} />
       </Popover>
     </>
   )
