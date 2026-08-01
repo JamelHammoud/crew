@@ -127,6 +127,18 @@ export const PanelRightGlyph = glyph(
   </>
 )
 
+// The same screen with the work heading for its far corner. The arrow stays
+// inside the frame, which is what tells this from a link leaving the app: that
+// one breaks its own box open and sends the arrow out of it, and this one is a
+// window of Crew's own standing somewhere else.
+export const PopOutGlyph = glyph(
+  <>
+    <rect {...SCREEN} />
+    <path d="M11.5 8H16v4.5" />
+    <path d="m8 16 8-8" />
+  </>
+)
+
 export const TerminalGlyph = glyph(
   <>
     <rect {...SCREEN} />
