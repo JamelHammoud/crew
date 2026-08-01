@@ -354,7 +354,9 @@ describe('the review tab', () => {
     render(createElement(ReviewView))
     fireEvent.click(await screen.findByLabelText('Mark one.ts as viewed'))
 
-    expect(await screen.findByText('1 of 2 viewed')).not.toBeNull()
+    // How far through is a line rather than a sentence: said in words it costs
+    // a row of the panel for the whole of a session.
+    expect(await screen.findByLabelText('1 of 2 viewed')).not.toBeNull()
     expect(screen.getByLabelText('Mark one.ts as not viewed')).not.toBeNull()
   })
 
