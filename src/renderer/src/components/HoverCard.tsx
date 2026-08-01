@@ -39,7 +39,7 @@ export default function HoverCard({
   const hide = useRef(() => hideRef.current()).current
   hideRef.current = () => {
     if (enterTimer.current !== null) window.clearTimeout(enterTimer.current)
-    if (closeActive === hide) closeActive = null
+    if (active?.hide === hide) active = null
     setRect(null)
     setSize(null)
   }
@@ -47,7 +47,7 @@ export default function HoverCard({
   useEffect(() => {
     return () => {
       if (enterTimer.current !== null) window.clearTimeout(enterTimer.current)
-      if (closeActive === hide) closeActive = null
+      if (active?.hide === hide) active = null
     }
   }, [hide])
 

@@ -141,7 +141,7 @@ describe('reading one thread back out of the log', () => {
     // The row is still in the rail and the thread is still in the chat, and
     // there is not one event left to draw it from. That is the whole bug.
     const snapshot = host.session.snapshot()
-    expect(snapshot.threadEvents?.some(event => event.threadId === OLD)).toBe(true)
+    expect(snapshot.threadEvents?.some(event => 'threadId' in event && event.threadId === OLD)).toBe(true)
     expect(snapshot.events.some(event => 'threadId' in event && event.threadId === OLD)).toBe(false)
 
     alice.send({ type: 'thread.history', threadId: OLD })
