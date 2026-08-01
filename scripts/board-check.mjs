@@ -1153,6 +1153,8 @@ const driveSource = String.raw`(async () => {
     const grip = document.querySelector('[data-scrub="W"]') || document.querySelector('[data-scrub="Width"]') || document.querySelector('[data-scrub]')
     if (!grip) return { ok: false, note: 'the inspector draws no field to scrub' }
     const label = grip.getAttribute('data-scrub')
+    grip.setPointerCapture = () => {}
+    grip.releasePointerCapture = () => {}
     const start = JSON.stringify(editor.getShape(id).props)
     const at = grip.getBoundingClientRect()
     const from = { x: at.left + at.width / 2, y: at.top + at.height / 2 }
