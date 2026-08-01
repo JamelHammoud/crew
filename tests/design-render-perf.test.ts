@@ -293,5 +293,8 @@ describe('design board render work', () => {
     expect(shapeStyle.contain).toBe('size layout')
     expect(shapeStyle.transformOrigin).toBe('top left')
     expect(shapeStyle.position).toBe('absolute')
+    expect(pageLayerStyle.contain).toBe('layout style size')
+    expect(canvasStyle.contain).toBe('strict')
+    expect(shapeStyle.willChange).toBeUndefined()
   })
 })
