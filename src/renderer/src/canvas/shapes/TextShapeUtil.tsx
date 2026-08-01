@@ -78,13 +78,49 @@ export class TextShapeUtil extends ShapeUtil<TextShape> {
   override canEdit(): boolean {
     return true
   }
-  getMinDimensions(shape: TextShape): { width: number; height: number } {
-    const text = plainText(shape.props.richText)
-    const fontSize = TEXT_FONT_SIZES[shape.props.size]
-    const width = shape.props.autoSize
-      ? Math.max(8, ...text.split('\n').map(line => line.length * fontSize * 0.58))
-      : shape.props.w
-    return { width, height: Math.max(fontSize * 1.35, text.split('\n').length * fontSize * 1.35) }
+  measurer(): TextMeasurer {
+    return (this.editor.textMeasure as TextMeasurer | undefined) ?? ESTIMATE
+  }
+  getMinDimensions(shape: TextShape): TextLayoutSize {
+    return measureTextLayout(this.measurer(), {
+      richText: shape.props.richText as RichTextDocument,
+      autoSize: shape.props.autoSize,
+      width: shape.props.w,
+      fontSize: TEXT_FONT_SIZES[shape.props.size],
+      options: {
+        fontFamily: FONT_FAMILIES[shape.props.font],
+        fontStyle: 'normal',
+        fontWeight: 'normal',
+        lineHeight: TEXT_LINE_HEIGHT,
+        padding: '0px'
+      }
+    })
+  }
+  growthState(shape: TextShape): TextGrowthState {
+    return {
+      x: shape.x,
+      y: shape.y,
+      rotation: shape.rotation,
+      scale: shape.props.scale,
+      autoSize: shape.props.autoSize,
+      textAlign: shape.props.textAlign,
+      width: shape.props.w,
+      style: `${shape.props.size}|${shape.props.font}|${shape.props.textAlign}`
+    }
+  }
+  override onBeforeUpdate(previous: TextShape, next: TextShape): TextShape | undefined {
+    const before = this.growthState(previous)
+    const after = this.growthState(next)
+    const contentChanged = previous.props.richText !== next.props.richText
+    if (!textGrowthMatters(before, after, contentChanged)) return undefined
+    const grown = compensateTextGrowth(
+      before,
+      after,
+      this.getMinDimensions(previous),
+      this.getMinDimensions(next),
+      contentChanged
+    )
+    return { ...next, x: grown.x, y: grown.y, props: { ...next.props, w: grown.width } }
   }
   getGeometry(shape: TextShape) {
     const size = this.getMinDimensions(shape)

@@ -216,22 +216,16 @@ describe('what the canvas draws over the artwork', () => {
     expect(drawn.named('strokeRect').some(call => call.args[2] === 300 && call.args[3] === 100)).toBe(true)
   })
 
-  it('takes the handles off a text shape while it is being written in', () => {
+  it('takes the handles off a shape while it is being written in', () => {
     const subject = editor()
-    const id = createShapeId('text')
-    subject.createShape({
-      id,
-      type: 'text',
-      x: 10,
-      y: 10,
-      props: { richText: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Crew' }] }] } }
-    })
+    const id = geo(subject, 'labelled', 10, 10, 120, 80)
     subject.select(id)
     expect(activeTypes(subject)).toContain('selection_foreground')
 
     subject.setEditingShape(id)
     expect(activeTypes(subject)).not.toContain('selection_foreground')
     expect(activeTypes(subject)).not.toContain('shape_handle')
+    expect(paint(subject).named('strokeRect').length).toBe(0)
   })
 
   it('holds every stroke to one screen pixel however far in the camera is', () => {

@@ -1,7 +1,10 @@
 import { readdirSync, readFileSync, existsSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
-import { describe, expect, it } from 'vitest'
+import { createRequire } from 'node:module'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { defaultShapeUtils } from '../src/renderer/src/canvas/shapes'
+import { DesignNodeUtil } from '../src/renderer/src/design/DesignNodeUtil'
 import { createTLStore, getSnapshot, loadSnapshot } from '../src/renderer/src/canvas/schema'
 import { decodePoints, encodePoints, DIM_2D, DIM_3D } from '../src/renderer/src/canvas/schema/points'
 
@@ -137,4 +140,51 @@ describe('probe: point codec shape', () => {
     expect(decoded[0].x).toBeCloseTo(first.x, 3)
     expect(decoded[0].y).toBeCloseTo(first.y, 3)
   })
+})
+
+describe('probe: geometry for every shape on a real board', () => {
+  const JSDOM = createRequire(import.meta.url)('jsdom').JSDOM as new (html: string) => {
+    window: Window & typeof globalThis
+  }
+  let dom: { window: Window & typeof globalThis }
+  beforeAll(() => {
+    dom = new JSDOM('<!doctype html><html><body></body></html>')
+    Object.defineProperty(globalThis, 'window', { configurable: true, value: dom.window })
+    Object.defineProperty(globalThis, 'document', { configurable: true, value: dom.window.document })
+  })
+  afterAll(() => dom.window.close())
+
+  for (const path of paths) {
+    const name = path.split('/').pop()!
+    it(`${name}: every shape gets finite geometry`, () => {
+      const file = JSON.parse(readFileSync(path, 'utf8'))
+      const store = createTLStore()
+      loadSnapshot(store, file.document)
+      const utils = new Map<string, any>()
+      for (const Util of [...defaultShapeUtils, DesignNodeUtil] as any[]) utils.set(Util.type, new Util({}))
+      const missing = new Set<string>()
+      let checked = 0
+      for (const record of store.records()) {
+        if (record.typeName !== 'shape') continue
+        const util = utils.get((record as any).type)
+        if (!util) {
+          missing.add((record as any).type)
+          continue
+        }
+        const geometry = util.getGeometry(record)
+        expect(geometry, `${(record as any).type} ${record.id}`).toBeTruthy()
+        const bounds = geometry.bounds
+        expect(Number.isFinite(bounds.w), `${(record as any).type} w`).toBe(true)
+        expect(Number.isFinite(bounds.h), `${(record as any).type} h`).toBe(true)
+        expect(Number.isFinite(bounds.x), `${(record as any).type} x`).toBe(true)
+        expect(Number.isFinite(bounds.y), `${(record as any).type} y`).toBe(true)
+        for (const vertex of geometry.vertices) {
+          expect(Number.isFinite(vertex.x) && Number.isFinite(vertex.y), `${(record as any).type} vertex`).toBe(true)
+        }
+        checked++
+      }
+      console.log(`${name}: geometry for ${checked} shapes, no util for: ${[...missing].join(', ') || 'none'}`)
+      expect(missing.size).toBe(0)
+    })
+  }
 })
