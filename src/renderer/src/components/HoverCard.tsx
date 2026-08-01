@@ -95,12 +95,12 @@ export default function HoverCard({
 
   const style = ((): CSSProperties | null => {
     if (!rect) return null
-    if (!size) return { left: 0, top: 0, width: CARD_WIDTH, visibility: 'hidden' }
+    if (!size) return { left: 0, top: 0, width, visibility: 'hidden' }
     const left = Math.max(8, Math.min(rect.left, window.innerWidth - size.w - 8))
     let top = rect.top - 8 - size.h
     if (top < 8) top = rect.bottom + 8
     top = Math.max(8, Math.min(top, window.innerHeight - size.h - 8))
-    return { left, top, width: CARD_WIDTH }
+    return { left, top, width }
   })()
 
   return (
