@@ -122,18 +122,26 @@ function sameShapeContent<Shape extends CanvasShapeRecord>(
   previous: CanvasShapeProps<Shape>,
   next: CanvasShapeProps<Shape>
 ): boolean {
-  return (
-    previous.host === next.host &&
-    previous.renderer === next.renderer &&
-    previous.result.id === next.result.id &&
-    previous.result.index === next.result.index &&
-    previous.result.backgroundIndex === next.result.backgroundIndex &&
-    previous.result.opacity === next.result.opacity &&
-    previous.result.isEditing === next.result.isEditing &&
-    previous.result.shape.type === next.result.shape.type &&
-    previous.result.shape.props === next.result.shape.props &&
-    previous.result.shape.meta === next.result.shape.meta
-  )
+  const probe = (globalThis as never as { __render?: Record<string, number> }).__render
+  const checks: Array<[string, boolean]> = [
+    ['host', previous.host === next.host],
+    ['renderer', previous.renderer === next.renderer],
+    ['id', previous.result.id === next.result.id],
+    ['index', previous.result.index === next.result.index],
+    ['backgroundIndex', previous.result.backgroundIndex === next.result.backgroundIndex],
+    ['opacity', previous.result.opacity === next.result.opacity],
+    ['isEditing', previous.result.isEditing === next.result.isEditing],
+    ['type', previous.result.shape.type === next.result.shape.type],
+    ['props', previous.result.shape.props === next.result.shape.props],
+    ['meta', previous.result.shape.meta === next.result.shape.meta]
+  ]
+  if (probe) probe.compares = (probe.compares ?? 0) + 1
+  for (const [name, ok] of checks) {
+    if (ok) continue
+    if (probe) probe[`miss.${name}`] = (probe[`miss.${name}`] ?? 0) + 1
+    return false
+  }
+  return true
 }
 
 const CanvasShape = memo(CanvasShapeView, sameShapeContent) as typeof CanvasShapeView
