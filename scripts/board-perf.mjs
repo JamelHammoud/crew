@@ -427,7 +427,8 @@ try {
   if (marquee.frame.p95 > 16) throw new Error(`marquee paint p95 reached ${marquee.frame.p95}ms`)
   const wide = result.results.find(run => run.label === 'marquee across the board')
   if (!wide) throw new Error('the wide marquee performance check did not run')
-  if (wide.covered < 100) throw new Error(`the wide marquee only covered ${wide.covered} shapes, so the expensive case went unmeasured`)
+  if (wide.covered < wide.topLevel / 2)
+    throw new Error(`the wide marquee covered ${wide.covered} of ${wide.topLevel} shapes, so the expensive case went unmeasured`)
   for (const error of result.errors ?? []) console.log(`window error: ${error}`)
 } finally {
   await rm(directory, { recursive: true, force: true })
