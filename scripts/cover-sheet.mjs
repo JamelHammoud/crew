@@ -213,7 +213,7 @@ window.faces = () => {
   sheet(strip, '#f4f4f4', '#333')
   const bodies = {}
   for (const id of ids) {
-    const kind = petOf(id).body.includes(' Q ') ? 'curved' : 'straight'
+    const kind = petOf(id).body.includes(' L ') ? 'angular' : 'curved'
     bodies[kind] = (bodies[kind] || 0) + 1
   }
   return { png: canvas.toDataURL('image/png'), bodies }
