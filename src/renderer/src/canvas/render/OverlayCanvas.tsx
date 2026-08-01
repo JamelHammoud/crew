@@ -19,7 +19,7 @@ export const OverlayCanvas = memo(function OverlayCanvas<Shape extends CanvasSha
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     let frame: number | null = null
     const inputs = computed<OverlayRenderInputs>(
       'canvas overlay render inputs',
