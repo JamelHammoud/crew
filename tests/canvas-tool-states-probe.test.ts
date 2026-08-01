@@ -94,6 +94,18 @@ function drag(subject: Editor, fromX: number, fromY: number, toX: number, toY: n
   pointerUp(subject, toX, toY)
 }
 
+function heldDrag(subject: Editor, fromX: number, fromY: number, toX: number, toY: number): void {
+  vi.useFakeTimers()
+  try {
+    pointerDown(subject, fromX, fromY)
+    vi.advanceTimersByTime(200)
+    pointerMove(subject, toX, toY)
+    pointerUp(subject, toX, toY)
+  } finally {
+    vi.useRealTimers()
+  }
+}
+
 function geo(subject: Editor, id: string, x: number, y: number, w = 100, h = 100): TLShapeId {
   const shapeId = createShapeId(id)
   subject.createShape({ id: shapeId, type: 'geo', x, y, props: { w, h } })

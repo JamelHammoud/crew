@@ -380,18 +380,32 @@ class ShapeIndicatorOverlayUtil implements ToolOverlayUtil {
   }
 
   getOverlays(): CanvasOverlay[] {
-    return this.indicated().map(shape => ({
-      id: `shape-indicator:${shape.id}`,
-      type: 'shape_indicator',
-      props: { shapeId: shape.id }
-    }))
+    const { indicated, hinted } = this.marked()
+    if (indicated.length === 0 && hinted.length === 0) return []
+    return [
+      {
+        id: 'shape-indicator',
+        type: 'shape_indicator',
+        props: { indicated: indicated.map(shape => shape.id), hinted: hinted.map(shape => shape.id) }
+      }
+    ]
   }
 
   render(context: CanvasRenderingContext2D): void {
-    const shapes = this.indicated()
-    if (shapes.length === 0) return
+    const { indicated, hinted } = this.marked()
+    if (indicated.length === 0 && hinted.length === 0) return
+    const zoom = this.editor.getZoomLevel()
+    context.lineCap = 'round'
+    context.lineJoin = 'round'
     context.strokeStyle = colorOf(this.editor, 'selectionStroke')
-    context.lineWidth = 1.5 / this.editor.getZoomLevel()
+    context.lineWidth = INDICATOR_WIDTH / zoom
+    this.stroke(context, indicated)
+    if (hinted.length === 0) return
+    context.lineWidth = HINTED_INDICATOR_WIDTH / zoom
+    this.stroke(context, hinted)
+  }
+
+  private stroke(context: CanvasRenderingContext2D, shapes: TLShape[]): void {
     for (const shape of shapes) {
       const transform = this.editor.getShapePageTransform(shape)
       const geometry = this.editor.getShapeGeometry(shape)
@@ -405,11 +419,30 @@ class ShapeIndicatorOverlayUtil implements ToolOverlayUtil {
     }
   }
 
-  private indicated(): TLShape[] {
-    if (this.editor.getEditingShapeId() !== null) return []
-    const hovered = this.editor.getHoveredShape()
-    if (!hovered || this.editor.getSelectedShapeIds().includes(hovered.id)) return []
-    return [hovered]
+  private marked(): { indicated: TLShape[]; hinted: TLShape[] } {
+    const editor = this.editor
+    const path = editor.getCurrentToolPath()
+    const instance = editor.getInstanceState()
+    const indicated: TLShape[] = []
+    const idle = IDLE_INDICATOR_PATHS.has(path)
+    if (!instance.isChangingStyle && (idle || SELECTING_INDICATOR_PATHS.has(path))) {
+      for (const id of editor.getSelectedShapeIds()) {
+        const shape = editor.getShape(id)
+        if (shape && !editor.isShapeHidden(shape)) indicated.push(shape)
+      }
+      if (idle && !instance.isCoarsePointer) {
+        const hovered = editor.getHoveredShape()
+        if (hovered && !editor.isShapeHidden(hovered) && !indicated.some(shape => shape.id === hovered.id)) {
+          indicated.push(hovered)
+        }
+      }
+    }
+    const hinted: TLShape[] = []
+    for (const id of editor.getInstanceState().hintingShapeIds ?? []) {
+      const shape = editor.getShape(id)
+      if (shape && !editor.isShapeHidden(shape)) hinted.push(shape)
+    }
+    return { indicated, hinted }
   }
 }
 
