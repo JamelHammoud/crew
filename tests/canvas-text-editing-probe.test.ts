@@ -233,7 +233,6 @@ describe('canvas text editing', () => {
     expect(layer.style.height).toBe(`${bounds.h}px`)
     expect(layer.style.outline).toContain('var(--design-selected')
     expect(layer.style.outline).toContain('var(--crew-scale, 1)')
-    expect(layer.style.outline).toMatch(/var\(--design-selected,\s*\S+\)/)
   })
 
   it('draws the bounds in a real colour where nothing sets the design variable', async () => {

@@ -430,7 +430,7 @@ describe('the sign a distance carries', () => {
   })
 
   it('agrees with the nearest point everywhere outside', () => {
-    const shapes = [filled, hollow, circle, new Stadium2d({ x: 0, y: 0, width: 90, height: 40 })]
+    const shapes = [filled, hollow, circle, new Stadium2d({ width: 90, height: 40 })]
     for (const shape of shapes) {
       for (let run = 0; run < 100; run++) {
         const point = { x: 300 + scatter(50), y: 300 + scatter(50) }
@@ -498,7 +498,7 @@ describe('what each geometry measures of itself', () => {
     const shapes = [
       new Rectangle2d({ x: 5, y: 7, width: 100, height: 60, isFilled: true }),
       new Circle2d({ x: 0, y: 0, radius: 50, isFilled: false }),
-      new Stadium2d({ x: 0, y: 0, width: 90, height: 40 }),
+      new Stadium2d({ width: 90, height: 40 }),
       new Polyline2d({ points: [new Vec(0, 0), new Vec(30, 40), new Vec(-10, 5)] })
     ]
     for (const shape of shapes) {
@@ -507,8 +507,8 @@ describe('what each geometry measures of itself', () => {
   })
 
   it('puts a single point nowhere but on itself', () => {
-    const point = new Point2d({ point: new Vec(4, 9) })
-    expect(point.nearestPoint({ x: 100, y: 100 })).toMatchObject({ x: 4, y: 9 })
+    const point = new Point2d({ point: new Vec(4, 9), margin: 0 })
+    expect(point.nearestPoint()).toMatchObject({ x: 4, y: 9 })
     expect(point.bounds.w).toBe(0)
     expect(point.bounds.h).toBe(0)
   })

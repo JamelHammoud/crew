@@ -604,7 +604,7 @@ describe('what a side effect is told about', () => {
     store.put([shape('a', { x: 1 })])
     const afterChange = vi.fn()
     store.sideEffects.registerAfterChangeHandler('shape', afterChange)
-    const existing = store.get(ShapeType.createId('a'))!
+    const existing = store.get(ShapeType.createId('a')) as Shape
     store.put([{ ...existing, x: 9 }])
     expect(afterChange).toHaveBeenCalledTimes(1)
   })
