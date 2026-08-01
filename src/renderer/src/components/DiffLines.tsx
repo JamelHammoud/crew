@@ -6,12 +6,14 @@ function Line({
   row,
   tokens,
   numbers,
-  width
+  width,
+  wrap
 }: {
   row: Row
   tokens: ReturnType<ReturnType<typeof useHighlight>>
   numbers: boolean
   width: number
+  wrap: boolean
 }) {
   const gone = row.line === null
   return (
@@ -31,7 +33,11 @@ function Line({
       >
         {gone ? '−' : row.changed ? '+' : ''}
       </span>
-      <span className={`whitespace-pre pr-3 ${gone ? 'text-fg-muted' : 'text-fg-secondary'}`}>
+      <span
+        className={`pr-3 ${wrap ? 'min-w-0 flex-1 whitespace-pre-wrap break-words' : 'whitespace-pre'} ${
+          gone ? 'text-fg-muted' : 'text-fg-secondary'
+        }`}
+      >
         <LineText row={row} tokens={tokens} tint={gone ? 'bg-danger/25' : 'bg-positive/25'} />
       </span>
     </div>
