@@ -104,17 +104,29 @@ const driveSource = String.raw`(async () => {
     'getSortedChildIdsForParent',
     'getShapeClipPath'
   ]
+  perf.times = {}
+  let depth = 0
   for (const name of watched) {
     if (typeof editor[name] !== 'function') continue
     const original = editor[name].bind(editor)
     perf.counts[name] = 0
+    perf.times[name] = 0
     editor[name] = function (...args) {
       perf.counts[name] += 1
-      return original(...args)
+      if (depth > 0) return original(...args)
+      depth += 1
+      const began = performance.now()
+      try {
+        return original(...args)
+      } finally {
+        depth -= 1
+        perf.times[name] += performance.now() - began
+      }
     }
   }
   const resetCounts = () => {
     for (const name of Object.keys(perf.counts)) perf.counts[name] = 0
+    for (const name of Object.keys(perf.times)) perf.times[name] = 0
     perf.commits = 0
     perf.duration = 0
   }
