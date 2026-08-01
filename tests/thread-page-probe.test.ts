@@ -125,17 +125,14 @@ const seed = (held: AgentStep[]) => ({
   pending: {}
 })
 
-const scroller = (): HTMLElement => {
-  const el = document.querySelector('.overflow-y-auto') as HTMLElement
-  el.dataset.scroller = 'yes'
-  return el
-}
+const scroller = (): HTMLElement => document.querySelector('.overflow-y-auto') as HTMLElement
 
 const openThread = (held: AgentStep[] = steps): void => {
   useCrew.setState(seed(held))
   render(createElement(ThreadView, { threadId: THREAD }))
-  scroller()
 }
+
+const oldestDrawn = (): string => drawnRows()[0]?.textContent ?? ''
 
 const said = (index: number): boolean => screen.queryByText(`step number ${index}`) !== null
 
