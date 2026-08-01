@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
 import { Editor } from '../src/renderer/src/canvas/editor'
 import { createShapeId, createTLStore, type TLShapeId } from '../src/renderer/src/canvas/schema'
