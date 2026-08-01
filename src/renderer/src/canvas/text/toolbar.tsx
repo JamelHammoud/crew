@@ -93,7 +93,7 @@ export function RichTextToolbar({ editor, disabled = false }: RichTextToolbarPro
       if (link === null) setPosition(null)
       return
     }
-    const selection = editor.view.dom.ownerDocument.getSelection()
+    const selection = document.getSelection()
     if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
       if (link === null) setPosition(null)
       return
