@@ -143,7 +143,7 @@ describe('the review tab', () => {
     render(createElement(ReviewView))
     fireEvent.click(await screen.findByText('app.ts'))
 
-    await waitFor(() => expect(screen.getByText('three')).not.toBeNull())
+    await waitFor(() => expect(line('three')).not.toBeUndefined())
     expect(screen.getByText('40')).not.toBeNull()
     expect(screen.getByText('42')).not.toBeNull()
   })
