@@ -1,4 +1,5 @@
 import { Vec } from '../../../math'
+import { createShapeId, fromPlainText } from '../../../schema'
 import { StateNode } from '../../state'
 import { selectAdjacentShape, selectFirstChildShape, selectParentShape } from '../adjacent'
 import {
@@ -347,19 +348,23 @@ export class Idle extends StateNode<SelectEditor> {
   private createTextOnCanvas(info: SelectPointerInfo): void {
     if (this.editor.getIsReadonly()) return
     if (this.editor.options.createTextOnCanvasDoubleClick === false) return
-    if (this.editor.createTextOnCanvasDoubleClick) {
-      this.editor.createTextOnCanvasDoubleClick(info)
-      return
-    }
-    if (!this.editor.getShapeUtil.length) return
 
     this.editor.markHistoryStoppingPoint('creating text shape')
+    const id = createShapeId()
     const { x, y } = this.editor.inputs.getCurrentPagePoint()
-    const created = this.editor.createShape({ type: 'text', x, y, props: { autoSize: true } })
-    const id = created?.id ?? this.editor.getOnlySelectedShapeId?.()
-    const shape = id && this.editor.getShape(id)
+    this.editor.createShapes([
+      {
+        id,
+        type: 'text',
+        x,
+        y,
+        props: { richText: fromPlainText(''), autoSize: true, scale: this.editor.getResizeScaleFactor() }
+      }
+    ])
+    const shape = this.editor.getShape(id)
     if (!shape || !this.editor.canEditShape(shape)) return
-    this.editor.startEditingShapeWithRichText?.(shape, { info })
+    this.editor.setEditingShape(shape)
+    this.parent.transition('editing_shape', { ...info, target: 'shape', shape })
   }
 
   private nudgeSelectedShapes(ephemeral: boolean): void {
