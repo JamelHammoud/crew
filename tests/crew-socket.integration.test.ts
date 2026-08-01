@@ -86,6 +86,43 @@ describe('CrewSocket project switching', () => {
     expect((await backWelcome).snapshot.code).toBe(first.code)
   }, 30000)
 
+  it('returns to the shared host before the local Crew welcomes the renderer', async () => {
+    vi.stubGlobal('window', globalThis)
+    vi.stubGlobal('WebSocket', WebSocket)
+    const state = tmpDir('crew-socket-fast-return-state')
+    const app = new Crews()
+    app.setAgentsPath(path.join(state, 'agents.json'))
+    app.setSessionPath(path.join(state, 'session.json'))
+    app.setProjectsPath(path.join(state, 'projects'))
+    crews.push(app)
+    const hostedFolder = tmpDir('crew-socket-fast-hosted')
+    const localFolder = tmpDir('crew-socket-fast-local')
+    await initRepo(hostedFolder)
+    await initRepo(localFolder)
+    const hosted = await app.start(1, hostedFolder, 'Jamel', { home: 'folder', share: true })
+    const local = await app.start(1, localFolder, 'Jamel', { home: 'private', share: false })
+    const socket = new CrewSocket()
+    sockets.push(socket)
+    const statuses: string[] = []
+    socket.onStatus = status => statuses.push(status)
+
+    const firstWelcome = welcomeFrom(socket)
+    socket.connect(hosted.wsUrl, hello(hosted.name, hosted.code))
+    await firstWelcome
+
+    for (let index = 0; index < 20; index++) {
+      app.switchTo(1, projectPlace(localFolder))
+      socket.connect(local.wsUrl, hello(local.name, local.code))
+      const back = app.switchTo(1, projectPlace(hostedFolder))
+      const welcome = welcomeFrom(socket)
+      socket.connect(back!.wsUrl, hello(back!.name, back!.code))
+      expect((await welcome).snapshot.code).toBe(hosted.code)
+    }
+
+    expect(app.current(1)?.place).toBe(projectPlace(hostedFolder))
+    expect(statuses.filter(status => status === 'closed')).toEqual([])
+  }, 40000)
+
   it('keeps switching between two live Crews without a reconnecting state', async () => {
     vi.stubGlobal('window', globalThis)
     vi.stubGlobal('WebSocket', WebSocket)

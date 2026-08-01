@@ -97,6 +97,36 @@ describe('CrewSocket', () => {
     expect(made.map(item => item.url)).toEqual(['ws://127.0.0.1:1001/ws', 'ws://127.0.0.1:1002/ws'])
   })
 
+  it('returns to the first Crew before the second Crew welcomes it', () => {
+    const socket = new CrewSocket()
+    const statuses: SocketStatus[] = []
+    const messages: unknown[] = []
+    socket.onStatus = status => statuses.push(status)
+    socket.onMessage = message => messages.push(message)
+
+    socket.connect('ws://127.0.0.1:1001/ws', hello('One'))
+    made[0].open()
+    made[0].message({ type: 'welcome', selfId: 'one', snapshot: {} })
+    socket.connect('ws://127.0.0.1:1002/ws', hello('Two'))
+    made[1].open()
+    socket.connect('ws://127.0.0.1:1001/ws', hello('One'))
+    made[2].open()
+    made[1].message({ type: 'welcome', selfId: 'two', snapshot: {} })
+    made[1].finishClose()
+    made[2].message({ type: 'welcome', selfId: 'one-again', snapshot: {} })
+
+    expect(statuses).toEqual(['connecting', 'open', 'connecting', 'open', 'connecting', 'open'])
+    expect(messages).toEqual([
+      { type: 'welcome', selfId: 'one', snapshot: {} },
+      { type: 'welcome', selfId: 'one-again', snapshot: {} }
+    ])
+    expect(made.map(item => item.url)).toEqual([
+      'ws://127.0.0.1:1001/ws',
+      'ws://127.0.0.1:1002/ws',
+      'ws://127.0.0.1:1001/ws'
+    ])
+  })
+
   it('keeps messages queued for one Crew out of the next Crew', () => {
     const socket = new CrewSocket()
     socket.connect('ws://127.0.0.1:1001/ws', hello('One'))
