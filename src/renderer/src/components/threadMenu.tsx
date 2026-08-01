@@ -6,14 +6,14 @@ import { MenuItem, Popover } from './Popover'
 
 const LABEL: Record<ThreadOpenAction, string> = {
   open: 'Open',
-  beside: 'Open beside this one',
+  beside: 'Open beside',
   window: 'Open in its own window',
   close: 'Close'
 }
 
 const MARK: Record<ThreadOpenAction, ReactNode> = {
   open: <ColumnsGlyph />,
-  beside: <ColumnsRightGlyph />,
+  beside: <ColumnsGlyph />,
   window: <PopOutGlyph />,
   close: <CloseGlyph />
 }
