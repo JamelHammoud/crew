@@ -72,6 +72,17 @@ const written = (): { count: () => number; stop: () => void } => {
 
 const settle = (): Promise<void> => new Promise(resolve => setTimeout(resolve, 50))
 
+const started = (promptId: string): SessionEvent => ({
+  id: `start-${promptId}`,
+  ts: 0,
+  kind: 'agent.start',
+  promptId,
+  agentId: 'a1',
+  agentLabel: 'Bubbles',
+  text: 'go',
+  threadId: 't1'
+})
+
 const stepEvent = (one: AgentStep): SessionEvent => ({
   id: 'e1',
   ts: 9,
