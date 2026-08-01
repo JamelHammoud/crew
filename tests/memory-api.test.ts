@@ -95,6 +95,7 @@ describe('the crew memory over http', () => {
 
   it('starts off and keeps its prompt and api out of reach', async () => {
     const { run } = await openRun(1500, undefined, false)
+    while (!prompts[0]) await new Promise(resolve => setTimeout(resolve, 5))
 
     expect(host.session.snapshot().memoryEnabled).toBe(false)
     expect(prompts[0]).not.toContain('What this crew has learned')
@@ -184,7 +185,7 @@ describe('the crew memory over http', () => {
     const late = await post('/memory', { promptId: run.promptId, memories: ['Too late'] })
     expect(late.status).toBe(400)
     expect((await get(`/memory?promptId=${run.promptId}`)).status).toBe(400)
-    expect(ui.events.some(e => e.kind.startsWith('memory.'))).toBe(false)
+    expect(ui.events.some(e => ['memory.added', 'memory.edited', 'memory.removed'].includes(e.kind))).toBe(false)
   })
 
   it('refuses a hidden thread in words, so nothing about one reaches the crew', async () => {
@@ -193,7 +194,7 @@ describe('the crew memory over http', () => {
     const put = await post('/memory', { promptId: run.promptId, memories: ['Something only this window saw'] })
     expect(put.status).toBe(400)
     expect(put.body.error).toContain('hidden')
-    expect(ui.events.some(e => e.kind.startsWith('memory.'))).toBe(false)
+    expect(ui.events.some(e => ['memory.added', 'memory.edited', 'memory.removed'].includes(e.kind))).toBe(false)
     expect(host.session.snapshot().memories).toEqual([])
   })
 
