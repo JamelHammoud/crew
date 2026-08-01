@@ -59,3 +59,15 @@
 .design .crew-text {
   caret-color: currentColor;
 }
+
+.crew-group-outline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible;
+  pointer-events: none;
+  stroke: var(--design-selected);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
