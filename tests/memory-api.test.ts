@@ -108,8 +108,6 @@ describe('the crew memory over http', () => {
     expect(added.byName).toBe('One')
     expect(added.agentId).toBe(agentId('sam', 'one'))
 
-    // The same fact written again is the memory that is already there, so a
-    // second call comes back with the id the first one got.
     const twice = await post('/memory', {
       promptId: run.promptId,
       memories: ['the tests   boot real servers, so run one suite at a time']
@@ -133,8 +131,6 @@ describe('the crew memory over http', () => {
     await ui.waitForEvent(e => e.kind === 'memory.removed')
     expect((await get(`/memory?promptId=${run.promptId}`)).body.memories).toHaveLength(1)
 
-    // It rides in the snapshot rather than being scrolled past in the chat, so
-    // a window arriving later is handed the fact and not the moment it landed.
     const late = await TestUi.connect(host.url, 'robin', host.code)
     uis.push(late)
     const welcome = late.messages.find(m => m.type === 'welcome') as Extract<ServerMessage, { type: 'welcome' }>
@@ -195,8 +191,6 @@ describe('the crew memory over http', () => {
     expect(full.body.error).toContain('Take one out')
     expect(host.session.snapshot().memories).toHaveLength(MEMORY_LIMIT)
 
-    // The one already there still comes back with its id, since nothing new has
-    // to fit for that.
     const already = await post('/memory', { promptId: run.promptId, memories: ['fact number 0'] })
     expect(already.status).toBe(200)
     expect(already.body.ids).toHaveLength(1)
