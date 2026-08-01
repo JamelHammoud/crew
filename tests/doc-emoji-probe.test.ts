@@ -13,6 +13,7 @@ window.matchMedia = ((query: string) => ({
   removeEventListener: () => {},
   dispatchEvent: () => false
 })) as typeof window.matchMedia
+Element.prototype.scrollIntoView = () => {}
 
 const { BlockNoteContext } = await import('@blocknote/react')
 const { default: DocEditor } = await import('../src/renderer/src/components/DocEditor')
