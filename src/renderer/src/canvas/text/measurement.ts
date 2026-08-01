@@ -325,7 +325,8 @@ export class TextMeasurement {
   }
 
   private read(element: HTMLElement, scroll: boolean): MeasuredTextSize {
+    const scrollWidth = scroll ? element.scrollWidth : 0
     const bounds = element.getBoundingClientRect()
-    return { x: 0, y: 0, w: bounds.width, h: bounds.height, scrollWidth: scroll ? element.scrollWidth : 0 }
+    return { x: 0, y: 0, w: bounds.width, h: bounds.height, scrollWidth }
   }
 }
