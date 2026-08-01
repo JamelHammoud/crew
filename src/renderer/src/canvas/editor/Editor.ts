@@ -511,8 +511,8 @@ export class Editor {
 
   getCurrentPageBounds(): Box | null {
     const bounds = this.getCurrentPageShapesSorted()
-      .filter(shape => shape.parentId === this.currentPageId)
-      .map(shape => this.getShapePageBounds(shape))
+      .filter(shape => !this.isShapeHidden(shape))
+      .map(shape => this.getShapeMaskedPageBounds(shape))
       .filter((value): value is Box => value !== undefined)
     return bounds.length ? Box.Common(bounds) : null
   }
