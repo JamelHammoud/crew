@@ -70,6 +70,7 @@ declare global {
     popOutThread(threadId: string, key?: string): Promise<void>
     closeTray(): void
     appVersion(): Promise<string>
+    systemInfo(): Promise<SystemDetails>
     setTheme(theme: 'dark' | 'light'): Promise<void>
     setAppIcon(icon: AppIconId): Promise<void>
     keepAwake(on: boolean): void
