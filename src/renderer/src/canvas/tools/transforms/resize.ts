@@ -291,7 +291,7 @@ export class Resizing<Shape extends TLShape = TLShape> extends TransformState<
     if (this.info?.isCreating) this.editor.setHintingShapes?.([])
   }
 
-  onTickDisabled(info: { elapsed: number }): void {
+  onTick(info: { elapsed: number }): void {
     updateEdgeScrolling(this.editor, info.elapsed)
   }
 
