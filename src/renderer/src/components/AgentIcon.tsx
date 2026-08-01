@@ -1,6 +1,10 @@
+import { useId } from 'react'
 import { attachmentFileUrl } from '../../../shared/attachments'
 import { useCrew } from '../state/store'
-import { useTheme } from '../state/theme'
+import GeneratedField from './art/GeneratedField'
+import { EYE_RADIUS, PET_GRID, petOf } from './art/pet'
+
+export { petHue } from './art/pet'
 
 const SIZES = {
   xs: 'w-5 h-5',
@@ -9,6 +13,15 @@ const SIZES = {
   lg: 'w-12 h-12'
 } as const
 
+// The same boxes said as numbers, which is what the picture behind the face is
+// sampled and blurred against.
+const BOX: Record<keyof typeof SIZES, number> = {
+  xs: 20,
+  sm: 28,
+  md: 40,
+  lg: 48
+}
+
 const DOTS = {
   xs: 'w-1.5 h-1.5 ring-2',
   sm: 'w-2 h-2 ring-2',
@@ -16,82 +29,12 @@ const DOTS = {
   lg: 'w-3 h-3 ring-[2.5px]'
 } as const
 
-function prng(seed: string): () => number {
-  let hash = 2166136261
-  for (const char of seed) {
-    hash ^= char.charCodeAt(0)
-    hash = Math.imul(hash, 16777619)
-  }
-  return () => {
-    hash = Math.imul(hash ^ (hash >>> 15), hash | 1)
-    hash ^= hash + Math.imul(hash ^ (hash >>> 7), hash | 61)
-    return ((hash ^ (hash >>> 14)) >>> 0) / 4294967296
-  }
-}
-
-const EYE_RADIUS = 4.5
-
-interface Pet {
-  hue: number
-  body: string
-  eyeY: number
-  eyeGap: number
-  tilt: number
-}
-
-function blobPath(rand: () => number, straight: boolean): string {
-  const points = straight ? 5 + Math.floor(rand() * 3) : 8
-  const jitter = straight ? 8 : 11
-  const coords: Array<[number, number]> = []
-  for (let i = 0; i < points; i++) {
-    const angle = (i / points) * Math.PI * 2 - Math.PI / 2
-    const radius = 30 + (rand() - 0.5) * 2 * jitter
-    coords.push([50 + Math.cos(angle) * radius, 54 + Math.sin(angle) * radius * 0.92])
-  }
-  const cx = coords.reduce((sum, c) => sum + c[0], 0) / points
-  const cy = coords.reduce((sum, c) => sum + c[1], 0) / points
-  for (const c of coords) {
-    c[0] += 50 - cx
-    c[1] += 53 - cy
-  }
-  if (straight) {
-    return `M ${coords.map(c => c.join(' ')).join(' L ')} Z`
-  }
-  const mid = (a: [number, number], b: [number, number]): [number, number] => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]
-  let path = `M ${mid(coords[points - 1], coords[0]).join(' ')}`
-  for (let i = 0; i < points; i++) {
-    const next = coords[(i + 1) % points]
-    path += ` Q ${coords[i].join(' ')} ${mid(coords[i], next).join(' ')}`
-  }
-  return path + ' Z'
-}
-
-function makePet(seed: string): Pet {
-  const rand = prng(seed)
-  const pet = {
-    hue: Math.floor(rand() * 360),
-    body: blobPath(rand, rand() < 0.3),
-    eyeY: 48 + rand() * 8,
-    eyeGap: 11 + rand() * 7
-  }
-  rand()
-  return { ...pet, tilt: (rand() - 0.5) * 14 }
-}
-
-const pets = new Map<string, Pet>()
-
-function petOf(seed: string): Pet {
-  let pet = pets.get(seed)
-  if (!pet) {
-    pet = makePet(seed)
-    pets.set(seed, pet)
-  }
-  return pet
-}
-
-export function petHue(seed: string): number {
-  return petOf(seed).hue
-}
+// A white shape standing on a photograph reads by its shadow, the way a disc on
+// the app icon does. It is a share of the box rather than a number of pixels, or
+// the same face is lifted off the picture at 48 and pressed flat into it at 20.
+// Keep it gentle: a hard black edge under a white mark turns it into a sticker.
+const shadowOf = (box: number): string =>
+  `drop-shadow(0 ${(box * 0.02).toFixed(2)}px ${(box * 0.05).toFixed(2)}px rgb(0 0 0 / 0.3))`
 
 export default function AgentIcon({
   seed,
@@ -109,12 +52,11 @@ export default function AgentIcon({
   className?: string
 }) {
   const pet = petOf(seed)
-  const light = useTheme() === 'light'
+  const box = BOX[size]
+  const mask = useId()
   const file = useCrew(state => state.agents.find(agent => agent.id === seed)?.avatar)
   const httpBase = useCrew(state => state.httpBase)
   const src = photo ?? (file && httpBase ? attachmentFileUrl(httpBase, file) : undefined)
-  const bg = light ? `oklch(0.93 0.05 ${pet.hue})` : `oklch(0.3 0.055 ${pet.hue})`
-  const body = light ? `oklch(0.62 0.16 ${pet.hue})` : `oklch(0.76 0.15 ${pet.hue})`
   return (
     <span className={`${SIZES[size]} relative inline-block align-middle shrink-0 ${className}`}>
       {src ? (
@@ -125,14 +67,28 @@ export default function AgentIcon({
           className="block w-full h-full rounded-full object-cover"
         />
       ) : (
-        <svg viewBox="0 0 100 100" className="w-full h-full rounded-full" aria-hidden>
-          <rect width="100" height="100" fill={bg} />
-          <g transform={`rotate(${pet.tilt} 50 54)`}>
-            <path d={pet.body} fill={body} stroke={body} strokeWidth={7} strokeLinejoin="round" />
-            <circle cx={50 - pet.eyeGap / 2} cy={pet.eyeY} r={EYE_RADIUS} fill={bg} />
-            <circle cx={50 + pet.eyeGap / 2} cy={pet.eyeY} r={EYE_RADIUS} fill={bg} />
-          </g>
-        </svg>
+        <>
+          <GeneratedField seed={seed} box={box} className="rounded-full overflow-hidden" />
+          {/* The eyes are cut out rather than painted on, the way the arrow is
+              cut out of the tile it stands in, so what comes through them is
+              whatever the picture is doing behind rather than one fixed colour
+              over a surface that changes under it. */}
+          <svg
+            viewBox={`0 0 ${PET_GRID} ${PET_GRID}`}
+            style={{ filter: shadowOf(box) }}
+            className="absolute inset-0 w-full h-full"
+            aria-hidden
+          >
+            <mask id={mask}>
+              <g transform={`rotate(${pet.tilt} 50 54)`}>
+                <path d={pet.body} fill="#fff" stroke="#fff" strokeWidth={7} strokeLinejoin="round" />
+                <circle cx={50 - pet.eyeGap / 2} cy={pet.eyeY} r={EYE_RADIUS} fill="#000" />
+                <circle cx={50 + pet.eyeGap / 2} cy={pet.eyeY} r={EYE_RADIUS} fill="#000" />
+              </g>
+            </mask>
+            <rect width={PET_GRID} height={PET_GRID} fill="#fff" mask={`url(#${mask})`} />
+          </svg>
+        </>
       )}
       {presence && (
         <span
