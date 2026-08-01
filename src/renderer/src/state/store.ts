@@ -746,6 +746,7 @@ export const useCrew = create<CrewState>((set, get) => {
   const handleMessage = (msg: ServerMessage) => {
     switch (msg.type) {
       case 'welcome': {
+        stepBuffer.drop()
         // Said on every connect, because the host holds it in memory and a host
         // that has just come up knows nothing about what anyone allows.
         socket.send({ type: 'subagent.prefs', ...helperPrefs() })
