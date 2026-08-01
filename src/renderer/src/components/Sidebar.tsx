@@ -173,7 +173,7 @@ export default function Sidebar({
       }`}
     >
       <div className="app-drag h-[70px] shrink-0" />
-      <nav aria-label="Main navigation" className="app-no-drag shrink-0 px-2">
+      <nav aria-label="Main navigation" className="app-no-drag shrink-0 px-2 flex flex-col gap-0.5">
         {TABS.map(one => (
           <button
             key={one.id}
