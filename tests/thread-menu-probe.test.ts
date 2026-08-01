@@ -4,12 +4,26 @@ import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import ThreadRow from '../src/renderer/src/components/sidebar/ThreadRow'
 import { ownsMenu } from '../src/renderer/src/components/threadMenu'
-import { useCrew } from '../src/renderer/src/state/store'
+import { CrewSocket } from '../src/renderer/src/api/ws'
+import { useCrew, type ThreadMeta } from '../src/renderer/src/state/store'
 import type { LiveThread } from '../src/shared/threads'
 
 const popOutThread = vi.fn()
 const onOpen = vi.fn()
 const onOpenToRight = vi.fn()
+const sent = vi.spyOn(CrewSocket.prototype, 'send').mockImplementation(() => {})
+
+const meta = (status: ThreadMeta['status']): Record<string, ThreadMeta> => ({
+  'thread-2': {
+    id: 'thread-2',
+    agentId: 'agent-1',
+    agentLabel: 'Bubbles',
+    title: 'Draw the footer',
+    createdBy: 'Jamel',
+    status,
+    mode: 'build'
+  }
+})
 
 const HERE = 'project:/work/crew'
 const AWAY = 'project:/work/site'
