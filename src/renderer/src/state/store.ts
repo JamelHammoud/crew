@@ -167,6 +167,10 @@ interface CrewState {
   shared: boolean
   selfId: string
   selfName: string
+  // Which place this window is looking at, and where its work is. Everything
+  // filed away while you are somewhere else is filed under the first.
+  place: string
+  folder: string
   code: string
   members: MemberInfo[]
   agents: PooledAgent[]
@@ -215,6 +219,8 @@ interface CrewState {
   attachmentMb: number
   boot: () => Promise<void>
   connect: (session: CurrentSession) => void
+  switchTo: (key: string) => Promise<void>
+  closePlace: (key: string) => Promise<void>
   loadHistory: () => void
   share: (shared: boolean) => Promise<string | null>
   leave: () => void
