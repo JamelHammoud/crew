@@ -85,6 +85,21 @@ describe('the measurement html a shape is sized from', () => {
     )
   })
 
+  it('leaves an ordinary space alone so a long line still wraps', () => {
+    const long = 'the quick brown fox jumps over the lazy dog and keeps on running well past the edge'
+    const html = renderHtmlFromRichText(doc(paragraph(long)))
+    expect(html).toContain(long)
+    expect(html).not.toContain('&nbsp;')
+    expect(html).toBe(richTextToHtml(doc(paragraph(long)) as RichTextDocument))
+  })
+
+  it('keeps a space somebody meant to hold a line together', () => {
+    const held = `held together`
+    const html = renderHtmlFromRichText(doc(paragraph(held)))
+    expect(html).toContain('&nbsp;')
+    expect(html).toBe(richTextToHtml(doc(paragraph(held)) as RichTextDocument))
+  })
+
   it('draws a list as a list rather than as a run of paragraphs', () => {
     const html = renderHtmlFromRichText(doc({ type: 'bulletList', content: [item('one'), item('two')] }))
     expect(html.startsWith('<ul')).toBe(true)

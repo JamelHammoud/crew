@@ -27,6 +27,15 @@ const EDGE_HANDLES = new Set(['top', 'right', 'bottom', 'left'])
 const CORNER_HANDLES = new Set(['top_left', 'top_right', 'bottom_left', 'bottom_right'])
 const ARROW_CODES = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']
 
+function nudgeDelta(keys: Set<string>): Vec {
+  const delta = new Vec(0, 0)
+  if (keys.has('ArrowLeft')) delta.x -= 1
+  if (keys.has('ArrowRight')) delta.x += 1
+  if (keys.has('ArrowUp')) delta.y -= 1
+  if (keys.has('ArrowDown')) delta.y += 1
+  return delta
+}
+
 export class Idle extends StateNode<SelectEditor> {
   static id = 'idle'
   private selectedShapesOnKeyDown: any[] = []

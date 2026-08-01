@@ -5,6 +5,7 @@ import {
   isFull,
   openBeside,
   threadIdInHash,
+  threadMenuActions,
   threadWindowHash,
   VIEW_LIMIT
 } from '../src/shared/threadViews'
