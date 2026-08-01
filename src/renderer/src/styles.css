@@ -1248,8 +1248,13 @@ textarea:placeholder-shown {
    character keeps its box and the caret, the selection band and a highlight
    behind it all stay the app's own. A transparent color is what takes the
    machine's own picture away: it is a bitmap glyph and nothing else hides it.
-   The picture takes the room the character takes and no more, or it stands over
-   the caret beside it and the line reads as one nothing can be typed into. */
+   The picture takes the room the character takes, less the column the caret is
+   drawn in. A caret is drawn just left of the place it marks, so the one after
+   an emoji lands inside the character's own box while the one before it lands in
+   the character in front: filling the box exactly took away one of the two and
+   left the other, which reads as a line that can only be typed into from one
+   side. Whatever it is standing over, it is never as tall as the line, so the
+   caret is met above and below the picture as well. */
 .doc .doc-emoji {
   position: relative;
   color: transparent;
