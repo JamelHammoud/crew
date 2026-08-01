@@ -894,6 +894,8 @@ export const useCrew = create<CrewState>((set, get) => {
     shared: false,
     selfId: '',
     selfName: '',
+    place: '',
+    folder: '',
     code: '',
     httpBase: '',
     ...EMPTY,
