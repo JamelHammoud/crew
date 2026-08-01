@@ -105,6 +105,20 @@ const driveSource = String.raw`(async () => {
     'getSortedChildIdsForParent',
     'getShapeClipPath'
   ]
+  if (${process.env.CREW_PERF_CACHE === '1'}) {
+    const geometry = new WeakMap()
+    const original = editor.getShapeGeometry.bind(editor)
+    editor.getShapeGeometry = function (shapeOrId) {
+      const shape = typeof shapeOrId === 'string' ? editor.getShape(shapeOrId) : shapeOrId
+      if (!shape || shape.type === 'group') return original(shapeOrId)
+      const hit = geometry.get(shape)
+      if (hit) return hit
+      const value = original(shape)
+      geometry.set(shape, value)
+      return value
+    }
+  }
+
   perf.times = {}
   let depth = 0
   for (const name of watched) {
