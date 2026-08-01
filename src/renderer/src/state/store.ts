@@ -876,6 +876,7 @@ export const useCrew = create<CrewState>((set, get) => {
           openThreadId: wanted.at(-1) ?? null
         })
         threadsWanted = []
+        threadsRead = new Set()
         for (const listener of huddleListeners) {
           listener({ type: 'huddle.room', room: msg.snapshot.huddle ?? emptyRoom() })
         }
