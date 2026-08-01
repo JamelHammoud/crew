@@ -1399,6 +1399,11 @@ export class Editor {
   }
 
   dispatch(info: CanvasEventInfo): this {
+    this.inputs.updateFromEvent(info, {
+      camera: this.getCamera(),
+      screenBounds: this.getViewportScreenBounds(),
+      dragDistanceSquared: this.options.dragDistanceSquared as number
+    })
     this.tools.dispatch(info)
     return this
   }
