@@ -343,6 +343,35 @@ describe('the arrow tool', () => {
     const bindings = subject.getBindingsFromShape(arrow!.id, 'arrow')
     expect(bindings.map(binding => binding.props.terminal)).toContain('end')
   })
+
+  it('aims at the middle of a shape the pointer only passed over', () => {
+    const subject = editor()
+    geo(subject, 'target', 300, 60, 100, 100)
+    subject.setCurrentTool('arrow')
+    drag(subject, 100, 100, 320, 80)
+    const arrow = subject.getCurrentPageShapes().find(shape => shape.type === 'arrow')
+    const binding = subject.getBindingsFromShape(arrow!.id, 'arrow').find(each => each.props.terminal === 'end')
+    expect(binding?.props.normalizedAnchor).toMatchObject({ x: 0.5, y: 0.5 })
+  })
+
+  it('aims at the point itself once the pointer has rested on the shape', () => {
+    const subject = editor()
+    geo(subject, 'target', 300, 60, 100, 100)
+    subject.setCurrentTool('arrow')
+    vi.useFakeTimers()
+    try {
+      pointerMove(subject, 320, 80)
+      vi.advanceTimersByTime(700)
+      pointerDown(subject, 320, 80)
+      pointerMove(subject, 325, 85)
+      pointerUp(subject, 325, 85)
+    } finally {
+      vi.useRealTimers()
+    }
+    const arrow = subject.getCurrentPageShapes().find(shape => shape.type === 'arrow')
+    const binding = subject.getBindingsFromShape(arrow!.id, 'arrow').find(each => each.props.terminal === 'start')
+    expect(binding?.props.normalizedAnchor).not.toMatchObject({ x: 0.5, y: 0.5 })
+  })
 })
 
 describe('the line tool', () => {
