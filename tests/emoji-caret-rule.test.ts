@@ -22,14 +22,14 @@ describe('a picture over a character takes the room the character takes', () => 
     return styles.slice(at, styles.indexOf('\n}', at))
   }
 
-  it('draws the sheet in a doc as a square of the character box', () => {
+  it('draws the sheet in a doc as a square inside the character box', () => {
     expect(rule()).toContain('aspect-ratio: 1')
-    expect(rule()).toContain('left: 0')
-    expect(rule()).toContain('right: 0')
+    expect(rule()).toContain('width: calc(100% - 2px)')
   })
 
-  it('never draws it wider than the character or as tall as the line', () => {
+  it('never draws it as wide as the character or as tall as the line', () => {
     expect(rule()).not.toMatch(/(width|height):\s*[\d.]+em/)
+    expect(rule()).not.toMatch(/\n\s*(width|height):\s*100%/)
     expect(rule()).not.toMatch(/\n\s*(top|bottom):\s*0/)
   })
 
