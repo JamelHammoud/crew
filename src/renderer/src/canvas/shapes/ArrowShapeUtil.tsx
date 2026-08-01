@@ -13,7 +13,7 @@ import {
   type ShapeHandle,
   type ShapeHandleDragInfo
 } from './ShapeUtil'
-import { straightArrowTerminals, terminalsInArrowSpace } from './arrowTerminals'
+import { MIN_ARROW_BEND, straightArrowTerminals, terminalsInArrowSpace } from './arrowTerminals'
 import { ARROW_FONT_SIZES, FONT_FAMILIES, STROKES, plainText, richText } from './shared'
 import { canvasSurface, shapeColor } from './theme'
 
@@ -82,7 +82,7 @@ export function arrowGeometry(editor: ShapeEditor, shape: ArrowShape): Geometry2
     )
     body = points.length > 1 ? new Polyline2d({ points }) : new Edge2d({ start, end })
   } else {
-    body = arcFrom(start, end, shape.props.bend)
+    body = arcFrom(start, end, shape.props.bend, shape.props.scale)
   }
   const text = plainText(shape.props.richText)
   if (!text) return body
