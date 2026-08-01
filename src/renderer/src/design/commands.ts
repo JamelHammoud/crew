@@ -620,7 +620,7 @@ export function availableCommands(ctx: CommandContext): DesignCommand[] {
 }
 
 export function commandForKey(event: KeyboardEvent, ctx: CommandContext): DesignCommand | null {
-  if (typingInto(event.target) || ctx.editor.getEditingShapeId()) return null
+  if (!keyIsTheBoards(event.target) || ctx.editor.getEditingShapeId()) return null
   return DESIGN_COMMANDS.find(command => command.keys && matchesChord(event, command.keys) && command.when(ctx)) ?? null
 }
 
