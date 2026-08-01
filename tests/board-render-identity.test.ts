@@ -28,9 +28,10 @@ describe('what a move hands the rendering list', () => {
     const subject = board()
     const stop = keepWholePixels(subject)
     const id = geo(subject, 'moved', 100, 100)
-    const before = subject.getShape(id)!.props
+    const sizeOf = (id: TLShapeId) => subject.getShape(id)!.props as { w: number; h: number }
+    const before = sizeOf(id)
     subject.updateShape({ id, type: 'geo', x: 180.4, y: 140.6 })
-    const after = subject.getShape(id)!.props
+    const after = sizeOf(id)
     stop()
     expect(after.w).toBe(before.w)
     expect(after.h).toBe(before.h)
