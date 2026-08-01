@@ -268,7 +268,8 @@ export class Idle extends StateNode<SelectEditor> {
               hitFrameInside: true,
               renderingOnly: true
             })
-      if (hit) this.onRightClick({ ...info, target: 'shape', shape: hit })
+      const aimed = hit ?? this.groupUnder(point)
+      if (aimed) this.onRightClick({ ...info, target: 'shape', shape: aimed })
       else this.editor.selectNone()
       return
     }
