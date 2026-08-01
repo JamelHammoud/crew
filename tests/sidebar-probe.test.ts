@@ -131,12 +131,12 @@ describe('the sidebar', () => {
     expect(SIDEBAR_W).toBeGreaterThan(0)
   })
 
-  it('is still pinned in the window that opens after it', async () => {
+  it('is written down, so a window that opens after it is pinned too', () => {
     const { container } = topBar()
     fireEvent.click(toggleIn(container))
-    cleanup()
-    const again = await import('../src/renderer/src/state/sidebar?again')
-    expect((again as { useSidebar: typeof useSidebar }).useSidebar.getState().pinned).toBe(true)
+    expect(localStorage.getItem('crew.sidebar')).toBe('open')
+    fireEvent.click(toggleIn(container))
+    expect(localStorage.getItem('crew.sidebar')).toBe('shut')
   })
 
   it('switches to a place that is already running rather than opening it again', async () => {
