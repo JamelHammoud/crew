@@ -97,8 +97,10 @@ const { PIN_MS, SIDEBAR_W, useSidebar } = await import('../src/renderer/src/stat
 const { useCrew } = await import('../src/renderer/src/state/store')
 const { useBrowser } = await import('../src/renderer/src/state/browser')
 const SidebarView = (await import('../src/renderer/src/components/Sidebar')).default
+const { markOf } = await import('../src/renderer/src/components/sidebar/PlaceFace')
 const TopBar = (await import('../src/renderer/src/components/TopBar')).default
 const WindowCorner = (await import('../src/renderer/src/components/WindowCorner')).default
+const { FolderGlyph, GlobeGlyph } = await import('../src/renderer/src/icons')
 
 const Sidebar = (props: { overlay?: boolean; strong?: boolean; onTab?: (tab: 'chat' | 'docs' | 'design') => void } = {}) =>
   createElement(SidebarView, { tab: 'chat' as const, onTab: () => {}, ...props })
@@ -215,6 +217,16 @@ describe('the sidebar', () => {
     await waitFor(() => expect(container.querySelectorAll('button[aria-current], button').length).toBeGreaterThan(1))
     const titles = [...container.querySelectorAll('span.font-medium')].map(el => el.textContent)
     expect(titles.slice(0, 2)).toEqual(['one', 'two'])
+  })
+
+  it('draws folders for local projects and a globe for remote projects', () => {
+    const local = usePlaces.getState().places[0]!
+    const privateLocal = { ...local, project: { ...local.project!, home: 'private' as const } }
+    const remote = { ...local, project: null, join: {} as never }
+
+    expect(markOf(local).type).toBe(FolderGlyph)
+    expect(markOf(privateLocal).type).toBe(FolderGlyph)
+    expect(markOf(remote).type).toBe(GlobeGlyph)
   })
 
   it('keeps its first order when opening a project changes its recent time', async () => {

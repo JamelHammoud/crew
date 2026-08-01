@@ -1,9 +1,8 @@
-import { ComputerGlyph, FolderGlyph, GlobeGlyph } from '../../icons'
+import { FolderGlyph, GlobeGlyph } from '../../icons'
 import type { Place } from '../../views/home/place'
 
 export function markOf(place: Place) {
   if (place.join) return <GlobeGlyph className="w-4 h-4" />
-  if (place.project?.home === 'private') return <ComputerGlyph className="w-4 h-4" />
   return <FolderGlyph className="w-4 h-4" />
 }
 
