@@ -2,7 +2,6 @@
 import { cleanup, render } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { holdCustomEmoji } from '../src/renderer/src/components/customEmojiSheet'
 import ThreadAsk from '../src/renderer/src/components/ThreadAsk'
 import ThreadRow from '../src/renderer/src/components/sidebar/ThreadRow'
 import TasksPanel from '../src/renderer/src/components/TasksPanel'
@@ -16,10 +15,9 @@ Element.prototype.getAnimations ??= () => []
 
 const BASE = 'http://127.0.0.1:4321'
 const PICTURE = `${BASE}/emoji/a.gif`
-
-const SHEET: CustomEmoji[] = [{ id: 'e1', name: 'shipit', file: 'a.gif', by: 'jamel', ts: 1 }]
-
 const HEART = '❤️'
+
+const SHEET: CustomEmoji[] = [{ id: 'e1', name: 'shipit', file: 'a.gif', by: 'Jamel', ts: 1 }]
 
 const live = (title: string): LiveThread => ({ id: 't1', title, working: false })
 
@@ -52,11 +50,14 @@ const todo = (text: string): Todo => ({
   checked: false
 })
 
+const seed = (state: Partial<Parameters<typeof useCrew.setState>[0]> = {}) =>
+  useCrew.setState({ agents: [], emoji: SHEET, httpBase: BASE, ...state })
+
 const pictures = (root: HTMLElement): string[] =>
   [...root.querySelectorAll('img')].map(el => el.getAttribute('src') ?? '').filter(src => src === PICTURE)
 
-const written = (root: HTMLElement): string =>
-  [...root.querySelectorAll('.sr-only')].map(el => el.textContent ?? '').join(' ')
+const written = (root: HTMLElement): string[] =>
+  [...root.querySelectorAll('.sr-only')].map(el => el.textContent ?? '')
 
 beforeEach(() => {
   vi.stubGlobal(
@@ -67,31 +68,26 @@ beforeEach(() => {
       disconnect() {}
     }
   )
-  holdCustomEmoji(SHEET, BASE)
 })
 
 afterEach(() => {
   cleanup()
   vi.unstubAllGlobals()
-  holdCustomEmoji([], '')
+  useCrew.setState({ emoji: [], httpBase: '' })
 })
 
 describe('what somebody wrote, read back as pictures', () => {
   it('draws them on the line the thread header is about', () => {
-    useCrew.setState({ agents: [] })
-    const { container } = render(
-      createElement(ThreadAsk, {
-        ask: `put made with ${HEART} :shipit: in the About page`,
-        whole: `put made with ${HEART} :shipit: in the About page`,
-        onJump: () => {}
-      })
-    )
+    seed()
+    const said = `put made with ${HEART} :shipit: in the About page`
+    const { container } = render(createElement(ThreadAsk, { ask: said, whole: said, onJump: () => {} }))
 
     expect(pictures(container)).toHaveLength(1)
     expect(written(container)).toContain(HEART)
   })
 
   it('draws them on the row in the rail', () => {
+    seed()
     const { container } = render(
       createElement(ThreadRow, {
         thread: live(`made with ${HEART} :shipit:`),
@@ -109,8 +105,7 @@ describe('what somebody wrote, read back as pictures', () => {
 
   it('draws them on a task and on a todo in the Tasks panel', () => {
     const title = `@Bubbles made with ${HEART} :shipit:`
-    useCrew.setState({
-      agents: [],
+    seed({
       threads: { t1: thread(title) },
       threadPrompts: {},
       queues: {},
@@ -124,6 +119,6 @@ describe('what somebody wrote, read back as pictures', () => {
     )
 
     expect(pictures(container)).toHaveLength(2)
-    expect(written(container).match(new RegExp(HEART, 'g')) ?? []).toHaveLength(2)
+    expect(written(container).filter(text => text === HEART)).toHaveLength(2)
   })
 })
