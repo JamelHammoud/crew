@@ -105,8 +105,8 @@ const bridge = {
   setAppIcon: (icon: AppIconId): Promise<void> => ipcRenderer.invoke('app:icon', icon),
   keepAwake: (on: boolean): void => ipcRenderer.send('app:awake', on),
   notify: (alert: AgentAlert): Promise<void> => ipcRenderer.invoke('app:notify', alert),
-  onNotificationOpen: (listener: (threadId: string) => void): (() => void) => {
-    const handler = (_event: unknown, threadId: string) => listener(threadId)
+  onNotificationOpen: (listener: (threadId: string, place: string | null) => void): (() => void) => {
+    const handler = (_event: unknown, threadId: string, place: string | null) => listener(threadId, place)
     ipcRenderer.on('notification:open', handler)
     return () => {
       ipcRenderer.off('notification:open', handler)
