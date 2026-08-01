@@ -3,6 +3,7 @@ import {
   DesktopGlyph,
   FileGlyph,
   InfoGlyph,
+  MemoryGlyph,
   PeopleGlyph,
   PhotoGlyph,
   ScribeGlyph,

@@ -332,3 +332,219 @@ describe('the board on screen', () => {
     expect(boardOnScreen()).toBe('t1')
   })
 })
+
+// A switch of project hands the panel over: what belongs to the crew goes with
+// the project it belongs to, and a terminal is this machine's own shell, so it
+// stays standing under whatever is put back over it.
+describe('handing the panel over on a switch', () => {
+  const kinds = () => useBrowser.getState().tabs.map(t => t.kind)
+  const panel = () => useBrowser.getState()
+
+  beforeEach(() => {
+    useBrowser.setState({
+      tabs: [],
+      activeTabId: null,
+      width: DEFAULT_WIDTH,
+      open: false,
+      closedPlans: [],
+      closedBoards: []
+    })
+  })
+
+  it('lifts the project own tabs out and leaves the terminals standing', () => {
+    useBrowser.getState().openUrl('https://example.com/one')
+    useBrowser.getState().addTerminal(undefined, '/one')
+    useBrowser.getState().showPlan('t1')
+
+    const memory = useBrowser.getState().stash()
+
+    expect(memory.tabs.map(t => t.kind)).toEqual(['plan', 'web'])
+    expect(kinds()).toEqual(['terminal'])
+  })
+
+  it('carries the folder a shell was opened in', () => {
+    useBrowser.getState().addTerminal(undefined, '/Users/one')
+    useBrowser.getState().addTerminal('yarn dev', '/Users/two')
+    const [one, two] = useBrowser.getState().tabs
+
+    expect(one!.folder).toBe('/Users/one')
+    expect(two!.folder).toBe('/Users/two')
+    expect(two!.command).toBe('yarn dev')
+    expect(useBrowser.getState().stash().tabs).toEqual([])
+  })
+
+  it('stays on the shell that was up when the project tabs go', () => {
+    useBrowser.getState().addTerminal()
+    const shell = useBrowser.getState().tabs[0]!
+    useBrowser.getState().openUrl('https://example.com/one')
+    useBrowser.getState().selectTab(shell.id)
+
+    useBrowser.getState().stash()
+
+    expect(panel().activeTabId).toBe(shell.id)
+  })
+
+  it('stands on the first shell when the tab that was up has gone', () => {
+    useBrowser.getState().addTerminal()
+    useBrowser.getState().addTerminal()
+    const first = useBrowser.getState().tabs[0]!
+    useBrowser.getState().openUrl('https://example.com/one')
+
+    useBrowser.getState().stash()
+
+    expect(panel().activeTabId).toBe(first.id)
+  })
+
+  // Nothing left standing is nothing to stand on, whether the tabs went by hand
+  // or with the project they belonged to.
+  it('stands on nothing and puts the panel away when no shell is left', () => {
+    useBrowser.getState().openUrl('https://example.com/one')
+
+    const memory = useBrowser.getState().stash()
+
+    expect(panel().tabs).toEqual([])
+    expect(panel().activeTabId).toBeNull()
+    expect(panel().open).toBe(false)
+    expect(memory.open).toBe(true)
+  })
+
+  it('puts the project tabs at the head and holds the shells at the tail', () => {
+    useBrowser.getState().openUrl('https://example.com/one')
+    useBrowser.getState().openUrl('https://example.com/two')
+    const memory = useBrowser.getState().stash()
+    useBrowser.getState().addTerminal(undefined, '/one')
+    useBrowser.getState().addTerminal(undefined, '/two')
+    const shells = useBrowser.getState().tabs.map(t => t.id)
+
+    useBrowser.getState().restore(memory)
+
+    expect(kinds()).toEqual(['web', 'web', 'terminal', 'terminal'])
+    expect(order()).toEqual([...memory.tabs.map(t => t.id), ...shells])
+  })
+
+  it('carries a shell that stood in the middle of the row to the tail', () => {
+    useBrowser.getState().openUrl('https://example.com/one')
+    useBrowser.getState().addTerminal()
+    const shell = useBrowser.getState().tabs[1]!
+    useBrowser.getState().openUrl('https://example.com/two')
+
+    const memory = useBrowser.getState().stash()
+    useBrowser.getState().restore(memory)
+
+    expect(kinds()).toEqual(['web', 'web', 'terminal'])
+    expect(order()[2]).toBe(shell.id)
+  })
+
+  // You were typing in a shell and you still are: the one thing that persists is
+  // the one thing that must not move under the pointer.
+  it('leaves the shell you were typing in up through the switch', () => {
+    useBrowser.getState().openUrl('https://example.com/one')
+    const memory = useBrowser.getState().stash()
+    useBrowser.getState().addTerminal()
+    const shell = useBrowser.getState().tabs[0]!
+
+    useBrowser.getState().restore(memory)
+
+    expect(panel().activeTabId).toBe(shell.id)
+  })
+
+  it('opens the tab the project was left on when no shell is standing', () => {
+    useBrowser.getState().openUrl('https://example.com/one')
+    useBrowser.getState().openUrl('https://example.com/two')
+    const memory = useBrowser.getState().stash()
+
+    useBrowser.getState().restore(memory)
+
+    expect(panel().activeTabId).toBe(memory.tabs[1]!.id)
+    expect(panel().activeTabId).toBe(memory.activeTabId)
+  })
+
+  it('opens a project nobody has been in on nothing of its own', () => {
+    useBrowser.getState().showPlan('t1')
+    useBrowser.getState().closeTab(useBrowser.getState().tabs[0]!.id)
+    useBrowser.getState().openUrl('https://example.com/one')
+    useBrowser.getState().setWidth(560)
+    useBrowser.getState().stash()
+    useBrowser.getState().addTerminal()
+    const shell = useBrowser.getState().tabs[0]!
+
+    useBrowser.getState().restore(null)
+
+    expect(order()).toEqual([shell.id])
+    expect(panel().activeTabId).toBe(shell.id)
+    expect(panel().width).toBe(DEFAULT_WIDTH)
+    expect(panel().open).toBe(true)
+    expect(panel().closedPlans).toEqual([])
+    expect(panel().closedBoards).toEqual([])
+  })
+
+  it('puts the panel away for a project nobody has been in with no shell standing', () => {
+    useBrowser.getState().openUrl('https://example.com/one')
+    useBrowser.getState().stash()
+
+    useBrowser.getState().restore(null)
+
+    expect(panel().tabs).toEqual([])
+    expect(panel().open).toBe(false)
+  })
+
+  // A plan that was put away waits to be asked for again, and that is the
+  // project's own memory rather than the window's.
+  it('takes what was put away with it and hands it back', () => {
+    useBrowser.getState().showPlan('t1')
+    useBrowser.getState().closeTab(useBrowser.getState().tabs[0]!.id)
+
+    const memory = useBrowser.getState().stash()
+    expect(memory.closedPlans).toEqual(['t1'])
+
+    useBrowser.getState().restore(null)
+    expect(panel().closedPlans).toEqual([])
+
+    useBrowser.getState().restore(memory)
+    expect(panel().closedPlans).toEqual(['t1'])
+  })
+
+  // A switch is not somebody pressing something, so tabs arriving in the panel
+  // never stand it up on their own.
+  it('leaves the panel put away when the project it opens was put away', () => {
+    useBrowser.getState().openUrl('https://example.com/one')
+    useBrowser.getState().closePanel()
+
+    const memory = useBrowser.getState().stash()
+    expect(memory.open).toBe(false)
+    useBrowser.getState().restore(memory)
+
+    expect(panel().tabs).toHaveLength(1)
+    expect(panel().open).toBe(false)
+  })
+
+  it('is the row it was after a stash and a restore of the same memory', () => {
+    useBrowser.getState().openUrl('https://example.com/one')
+    useBrowser.getState().showPlan('t1')
+    useBrowser.getState().openUrl('https://example.com/two')
+    useBrowser.getState().setWidth(560)
+    const row = order()
+    const active = panel().activeTabId
+
+    const memory = useBrowser.getState().stash()
+    useBrowser.getState().restore(memory)
+
+    expect(order()).toEqual(row)
+    expect(panel().activeTabId).toBe(active)
+    expect(panel().width).toBe(560)
+    expect(panel().open).toBe(true)
+  })
+
+  it('is the row it was with a shell standing at the tail of it', () => {
+    useBrowser.getState().openUrl('https://example.com/one')
+    useBrowser.getState().addTerminal()
+    const row = order()
+    const shell = panel().activeTabId
+
+    const memory = useBrowser.getState().stash()
+    useBrowser.getState().restore(memory)
+
+    expect(order()).toEqual(row)
+    expect(panel().activeTabId).toBe(shell)
+  })
+})
