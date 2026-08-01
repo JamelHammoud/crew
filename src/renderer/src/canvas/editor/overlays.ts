@@ -476,22 +476,44 @@ class ShapeIndicatorOverlayUtil implements ToolOverlayUtil {
   }
 
   private stroke(context: CanvasRenderingContext2D, shapes: TLShape[]): void {
+    const batch = typeof Path2D === 'undefined' ? null : new Path2D()
+    let batched = false
     for (const shape of shapes) {
-      const geometry = this.editor.getShapeGeometry(shape)
-      const vertices = geometry.vertices
-      const count = vertices.length
-      if (count < 2) continue
-      const { a, b, c, d, e, f } = this.editor.getShapePageTransform(shape)
-      const first = vertices[0]
-      context.beginPath()
-      context.moveTo(a * first.x + c * first.y + e, b * first.x + d * first.y + f)
-      for (let index = 1; index < count; index++) {
-        const vertex = vertices[index]
-        context.lineTo(a * vertex.x + c * vertex.y + e, b * vertex.x + d * vertex.y + f)
+      const transform = this.editor.getShapePageTransform(shape)
+      const path = batch ? this.pathOf(shape) : null
+      if (batch && path) {
+        batch.addPath(path, transform)
+        batched = true
+        continue
       }
-      if (geometry.isClosed) context.closePath()
-      context.stroke()
+      this.trace(context, shape, transform)
     }
+    if (batch && batched) context.stroke(batch)
+  }
+
+  private pathOf(shape: TLShape): Path2D | null {
+    const cached = this.paths.get(shape.props)
+    if (cached !== undefined) return cached
+    const path = this.editor.getShapeUtil(shape).getIndicatorPath(shape as never) ?? null
+    this.paths.set(shape.props, path)
+    return path
+  }
+
+  private trace(context: CanvasRenderingContext2D, shape: TLShape, transform: Mat): void {
+    const geometry = this.editor.getShapeGeometry(shape)
+    const vertices = geometry.vertices
+    const count = vertices.length
+    if (count < 2) return
+    const { a, b, c, d, e, f } = transform
+    const first = vertices[0]
+    context.beginPath()
+    context.moveTo(a * first.x + c * first.y + e, b * first.x + d * first.y + f)
+    for (let index = 1; index < count; index++) {
+      const vertex = vertices[index]
+      context.lineTo(a * vertex.x + c * vertex.y + e, b * vertex.x + d * vertex.y + f)
+    }
+    if (geometry.isClosed) context.closePath()
+    context.stroke()
   }
 
   private marked(): MarkedShapes {
