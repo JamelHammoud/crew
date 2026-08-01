@@ -125,8 +125,6 @@ const huddleEvents: SessionEvent[] = Array.from({ length: HUDDLES }, (_, index) 
   }
 ]).flat()
 
-// The run that is going, so the one card that really has something new to say
-// each frame is telling the truth about it.
 const runEvents: SessionEvent[] = [
   {
     id: 'run-live',
