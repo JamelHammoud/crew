@@ -340,6 +340,22 @@ describe('the review tab', () => {
     expect(screen.getByLabelText('Unstage app.ts')).not.toBeNull()
   })
 
+  // Restoring a conflict would throw away both sides of it rather than one
+  // edit, so the one way out of it is staging what has been settled.
+  it('offers no discard on a conflict', async () => {
+    bridge(work({ changes: [change('src/clash.ts', false, '@@ -1 +1 @@\n-a\n+b', { kind: 'conflict' })] }))
+
+    render(createElement(ReviewView))
+    await screen.findByText('clash.ts')
+
+    expect(screen.queryByLabelText('Discard changes in clash.ts')).toBeNull()
+    expect(screen.getByLabelText('Stage clash.ts')).not.toBeNull()
+
+    fireEvent.contextMenu(screen.getByText('clash.ts'))
+    expect(await screen.findByText('Stage changes')).not.toBeNull()
+    expect(screen.queryByText('Discard changes')).toBeNull()
+  })
+
   // The right click is where the rest of what a file can do lives, the way it
   // does in Files and the way it does in every client this is meant to feel
   // like.
