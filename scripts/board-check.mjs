@@ -1314,15 +1314,24 @@ const driveSource = String.raw`(async () => {
       })
       if (!grabbed) return { ok: true, note: 'nothing sits at its centre' }
       const before = editor.getShape(grabbed.id)
+      const wasAt = boundsOf(grabbed.id)
       const at = viewport(centre)
       await drag(at, { x: at.x + 44, y: at.y + 32 }, { target: nodeOf(grabbed.id) })
-      const after = editor.getShape(grabbed.id)
-      const moved = after.x !== before.x || after.y !== before.y
-      if (moved) await restore(grabbed, before)
-      const selected = editor.getSelectedShapeIds().includes(grabbed.id)
+      const nowAt = boundsOf(grabbed.id)
+      const moved = Boolean(nowAt) && (!near(nowAt.minX, wasAt.minX, 1) || !near(nowAt.minY, wasAt.minY, 1))
+      const family = [grabbed.id].concat(editor.getShapeAncestors(grabbed).map(one => one.id))
+      const selected = editor.getSelectedShapeIds().some(id => family.includes(id))
+      const carried = editor.getSelectedShapeIds().filter(id => id !== grabbed.id && family.includes(id))
+      if (moved) {
+        const mover = carried.length ? editor.getShape(carried[0]) : null
+        if (mover) editor.updateShape({ id: mover.id, type: mover.type, x: mover.x - (nowAt.minX - wasAt.minX), y: mover.y - (nowAt.minY - wasAt.minY) })
+        else await restore(grabbed, before)
+        await frame()
+      }
       const over = grabbed.id === shape.id ? '' : ', over it'
-      if (moved) return { ok: true, note: 'moved the ' + grabbed.type + over }
-      if (selected) return { ok: true, note: 'selected the ' + grabbed.type + over + ', which is not dragged from here' }
+      const by = carried.length ? ' by the ' + editor.getShape(carried[0]).type + ' it stands in' : ''
+      if (moved) return { ok: true, note: 'moved the ' + grabbed.type + over + by }
+      if (selected) return { ok: true, note: 'selected the ' + grabbed.type + over + by + ', which is not dragged from here' }
       return { ok: false, note: 'pressing the ' + grabbed.type + over + ' neither moved nor selected anything' }
     })
   }
