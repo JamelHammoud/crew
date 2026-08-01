@@ -16,6 +16,12 @@ import type { CanvasProps, CanvasShapeRecord } from './types'
 
 const join = (...parts: Array<string | undefined>) => parts.filter(Boolean).join(' ')
 
+function HitTestBlocker<Shape extends CanvasShapeRecord>({ host }: { host: CanvasRenderHost<Shape> }) {
+  const moving = useValue('canvas camera state', () => host.getCameraState() === 'moving', [host])
+  if (!moving) return null
+  return <div data-canvas-hit-test-blocker="true" className="crew-hit-test-blocker" />
+}
+
 export function Canvas<Shape extends CanvasShapeRecord>({
   host,
   shapeRenderer,
