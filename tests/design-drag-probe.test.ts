@@ -43,7 +43,6 @@ function down(subject: Editor, x: number, y: number, extra: Record<string, unkno
 function move(subject: Editor, x: number, y: number, extra: Record<string, unknown> = {}): void {
   const point = { x, y }
   const mods = { ...NONE, ...extra }
-  subject.inputs.pointerMove(point, point, mods as never, 16)
   subject.dispatch({
     name: 'pointer_move',
     target: 'canvas',
