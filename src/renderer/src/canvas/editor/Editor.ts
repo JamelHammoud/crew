@@ -1887,3 +1887,13 @@ function canvasBlob(canvas: HTMLCanvasElement, type: string, quality?: number): 
     )
   })
 }
+
+function measureViewport(element: HTMLElement): ViewportBounds {
+  const rect = element.getBoundingClientRect()
+  return {
+    x: rect.left,
+    y: rect.top,
+    w: Math.max(1, rect.width),
+    h: Math.max(1, rect.height)
+  }
+}
