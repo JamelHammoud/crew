@@ -36,9 +36,9 @@ const agent: PooledAgent = {
   fields: []
 }
 
-function open(agents: PooledAgent[]) {
+function open(agents: PooledAgent[], connection: 'connecting' | 'online' = 'online') {
   useCrew.setState({
-    connection: 'online',
+    connection,
     selfId: 'jamel',
     selfName: 'Jamel',
     members: [{ id: 'jamel', name: 'Jamel', connected: true }],
@@ -66,6 +66,14 @@ afterEach(() => {
 })
 
 describe('the empty chat', () => {
+  it('shows a skeleton while the Crew contents are loading', () => {
+    open([], 'connecting')
+
+    expect(document.querySelector('[data-skeleton]')).not.toBeNull()
+    expect(screen.queryByRole('button', { name: 'Add an agent' })).toBeNull()
+    expect(screen.queryByText('Say hi, or mention someone with @.')).toBeNull()
+  })
+
   it('opens agent setup from the empty state when the Crew has no agents', async () => {
     const agentCapabilities = vi.fn(async () => [capability])
     Object.defineProperty(window, 'crew', {
