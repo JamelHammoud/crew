@@ -488,6 +488,98 @@ describe('the draw tool', () => {
   })
 })
 
+describe('a cancel from an armed tool', () => {
+  it('goes back to select', () => {
+    const subject = editor()
+    for (const tool of ['hand', 'draw', 'highlight', 'eraser', 'text', 'note', 'frame', 'line', 'arrow']) {
+      subject.setCurrentTool(tool)
+      subject.dispatch({ name: 'cancel' })
+      expect(subject.getCurrentToolPath()).toBe('select.idle')
+    }
+  })
+})
+
+describe('the eraser borrowed from another tool', () => {
+  it('goes back to the tool that borrowed it once the key is let go', () => {
+    const subject = editor()
+    subject.setCurrentTool('draw')
+    pointerDown(subject, 100, 100, { accelKey: true, ctrlKey: true })
+    expect(subject.getCurrentToolPath()).toBe('eraser.pointing')
+    pointerUp(subject, 100, 100, { accelKey: true, ctrlKey: true })
+    expect(subject.getCurrentToolPath()).toBe('eraser.idle')
+    subject.dispatch({ name: 'key_up', key: 'Control', code: 'ControlLeft', ctrlKey: false, metaKey: false })
+    expect(subject.getCurrentToolPath()).toBe('draw.idle')
+  })
+
+  it('rubs out only the top shape while the key is held', () => {
+    const subject = editor()
+    const under = geo(subject, 'under', 0, 0, 200, 200)
+    const over = geo(subject, 'over', 50, 50, 100, 100)
+    subject.setCurrentTool('eraser')
+    pointerDown(subject, 100, 100, { accelKey: true })
+    pointerUp(subject, 100, 100, { accelKey: true })
+    expect(subject.getShape(over)).toBeUndefined()
+    expect(subject.getShape(under)).toBeTruthy()
+  })
+})
+
+describe('a stroke straightened part way through', () => {
+  it('opens a straight segment when shift goes down and a free one when it comes up', () => {
+    const subject = editor()
+    subject.setCurrentTool('draw')
+    pointerDown(subject, 100, 100)
+    pointerMove(subject, 120, 110)
+    subject.dispatch({ name: 'key_down', key: 'Shift', code: 'ShiftLeft', shiftKey: true })
+    pointerMove(subject, 220, 110, { shiftKey: true })
+    expect(segments(subject).map(segment => segment.type)).toEqual(['free', 'straight'])
+    subject.dispatch({ name: 'key_up', key: 'Shift', code: 'ShiftLeft', shiftKey: false })
+    pointerMove(subject, 320, 200)
+    expect(segments(subject).map(segment => segment.type)).toEqual(['free', 'straight', 'free'])
+    pointerUp(subject, 320, 200)
+  })
+})
+
+describe('a stroke that was never a drag', () => {
+  it('is taken back off on an interrupt', () => {
+    const subject = editor()
+    subject.setCurrentTool('draw')
+    pointerDown(subject, 100, 100)
+    subject.dispatch({ name: 'interrupt' })
+    expect(subject.getCurrentPageShapes().length).toBe(0)
+    expect(subject.getCurrentToolPath()).toBe('draw.idle')
+  })
+})
+
+describe('a note dropped beside another note', () => {
+  it('lands in the pit rather than where the pointer was', () => {
+    const subject = editor()
+    subject.setCurrentTool('note')
+    click(subject, 200, 200)
+    subject.dispatch({ name: 'cancel' })
+    subject.selectNone()
+    subject.setCurrentTool('note')
+    click(subject, 522, 200)
+    const notes = subject.getCurrentPageShapes().filter(shape => shape.type === 'note')
+    expect(notes.length).toBe(2)
+    expect(notes[1].x).toBe(320)
+    expect(notes[1].y).toBe(100)
+  })
+
+  it('leaves a rotated note out of the pits it offers', () => {
+    const subject = editor()
+    subject.setCurrentTool('note')
+    click(subject, 200, 200)
+    subject.dispatch({ name: 'cancel' })
+    const first = subject.getCurrentPageShapes()[0]
+    subject.updateShape({ id: first.id, type: 'note', rotation: 0.4 })
+    subject.selectNone()
+    subject.setCurrentTool('note')
+    click(subject, 522, 200)
+    const notes = subject.getCurrentPageShapes().filter(shape => shape.type === 'note')
+    expect(notes[1].x).toBe(422)
+  })
+})
+
 describe('the hand tool', () => {
   it('pans the camera by the drag', () => {
     const subject = editor()
