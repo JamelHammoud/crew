@@ -80,7 +80,7 @@ export default function ChangeRow({
       data-row={keyOf(change)}
       onContextMenu={held}
       className={`group relative flex h-7 items-center rounded-xl pl-1.5 pr-1 transition-colors ${
-        reading ? 'bg-fg/[0.07]' : 'hover:bg-fg/[0.04]'
+        reading ? 'bg-fg/[0.09]' : 'hover:bg-fg/[0.04]'
       }`}
     >
       <button
