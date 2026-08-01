@@ -312,11 +312,9 @@ export class Editor {
     }
   }
 
-  setViewportScreenBounds(bounds: ViewportBounds | HTMLElement): this {
-    const next = bounds instanceof HTMLElement ? measureViewport(bounds) : bounds
-    if (!this.camera.setScreenBounds(next)) return this
+  setViewportScreenBounds(bounds: ViewportBounds): this {
+    if (!this.camera.setScreenBounds(bounds)) return this
     this.refreshInputPagePoint()
-    this.emit('resize', this.camera.getScreenBounds())
     return this
   }
 
@@ -1886,14 +1884,4 @@ function canvasBlob(canvas: HTMLCanvasElement, type: string, quality?: number): 
       quality
     )
   })
-}
-
-function measureViewport(element: HTMLElement): ViewportBounds {
-  const rect = element.getBoundingClientRect()
-  return {
-    x: rect.left,
-    y: rect.top,
-    w: Math.max(1, rect.width),
-    h: Math.max(1, rect.height)
-  }
 }

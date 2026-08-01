@@ -38,8 +38,6 @@ export interface CrewCanvasOptions {
   [key: string]: unknown
 }
 
-const VIEWPORT_SETTLE_MS = 1000
-
 const handled = new WeakSet<Event>()
 
 function taken(event: Event): boolean {
@@ -186,9 +184,6 @@ export function CrewCanvas({
     const stopMount = onMount?.(editor)
     return () => {
       observer.disconnect()
-      ownerWindow.removeEventListener('resize', size)
-      ownerDocument.removeEventListener('scroll', size, { capture: true })
-      ownerWindow.clearInterval(settle)
       element.removeEventListener('pointerdown', pointerDown)
       ownerDocument.removeEventListener('pointermove', pointerMove)
       element.removeEventListener('pointerup', pointerUp)

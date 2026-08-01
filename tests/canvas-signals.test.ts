@@ -11,10 +11,10 @@ import {
   react,
   reactor,
   RESET_VALUE,
-  unsafe__withoutCapture,
   track,
   transact,
   transaction,
+  unsafe__withoutCapture,
   useAtom,
   useComputed,
   useQuickReactor,
@@ -482,5 +482,371 @@ describe('the react bindings', () => {
     })
     expect(button.textContent).toBe('4')
     expect(seenAtom).toBe(first)
+  })
+})
+
+function swallow(fn: () => void): void {
+  try {
+    fn()
+  } catch {
+    return
+  }
+}
+
+describe('the shape of the graph', () => {
+  it('runs a leaf exactly once for a diamond', () => {
+    const source = atom('source', 1)
+    const left = computed('left', () => source.get() + 1)
+    const right = computed('right', () => source.get() * 2)
+    const leaf = vi.fn(() => {
+      left.get()
+      right.get()
+    })
+    react('leaf', leaf)
+    expect(leaf).toHaveBeenCalledTimes(1)
+    source.set(2)
+    expect(leaf).toHaveBeenCalledTimes(2)
+    source.set(3)
+    expect(leaf).toHaveBeenCalledTimes(3)
+  })
+
+  it('runs a leaf exactly once for a diamond two layers deep', () => {
+    const source = atom('source', 1)
+    const first = computed('first', () => source.get() + 1)
+    const second = computed('second', () => source.get() + 2)
+    const sum = computed('sum', () => first.get() + second.get())
+    const difference = computed('difference', () => first.get() - second.get())
+    const leaf = vi.fn(() => {
+      sum.get()
+      difference.get()
+    })
+    react('leaf', leaf)
+    source.set(9)
+    expect(leaf).toHaveBeenCalledTimes(2)
+  })
+
+  it('keeps the same parent arrays when it reads the same parents in the same order', () => {
+    const a = atom('a', 1)
+    const b = atom('b', 2)
+    const sum = computed('sum', () => a.get() + b.get()) as unknown as {
+      parents: unknown[]
+      parentEpochs: number[]
+    }
+    react('r', () => (sum as unknown as { get(): number }).get())
+    const parents = sum.parents
+    const epochs = sum.parentEpochs
+    a.set(5)
+    expect(sum.parents).toBe(parents)
+    expect(sum.parentEpochs).toBe(epochs)
+    expect(sum.parents.length).toBe(2)
+  })
+
+  it('shrinks the parent arrays when it reads fewer parents', () => {
+    const both = atom('both', true)
+    const a = atom('a', 1)
+    const b = atom('b', 2)
+    const value = computed('value', () => (both.get() ? a.get() + b.get() : a.get())) as unknown as {
+      get(): number
+      parents: unknown[]
+      parentEpochs: number[]
+    }
+    react('r', () => value.get())
+    expect(value.parents.length).toBe(3)
+    both.set(false)
+    expect(value.parents.length).toBe(2)
+    expect(value.parentEpochs.length).toBe(2)
+  })
+
+  it('stops propagating when a recompute lands on an equal value', () => {
+    const source = atom('source', 1.2)
+    const floored = computed('floored', () => Math.floor(source.get()))
+    const scale = vi.fn(() => floored.get() * 10)
+    const scaled = computed('scaled', scale)
+    expect(scaled.get()).toBe(10)
+    expect(scale).toHaveBeenCalledTimes(1)
+    source.set(1.5)
+    expect(scaled.get()).toBe(10)
+    expect(scale).toHaveBeenCalledTimes(1)
+    source.set(2.5)
+    expect(scaled.get()).toBe(20)
+    expect(scale).toHaveBeenCalledTimes(2)
+  })
+
+  it('never asks isEqual about the first computation', () => {
+    const isEqual = vi.fn((a, b) => a === b)
+    const source = atom('source', 1)
+    const doubled = computed('doubled', () => source.get() * 2, { isEqual })
+    expect(doubled.get()).toBe(2)
+    expect(isEqual).not.toHaveBeenCalled()
+    source.set(2)
+    expect(doubled.get()).toBe(4)
+    expect(isEqual).toHaveBeenCalledTimes(1)
+  })
+
+  it('never recomputes when the first run read nothing', () => {
+    const derive = vi.fn(() => 1)
+    const constant = computed('constant', derive) as unknown as { get(): number; parents: unknown[] }
+    expect(constant.get()).toBe(1)
+    const unrelated = atom('unrelated', 0)
+    unrelated.set(1)
+    unrelated.set(2)
+    expect(constant.get()).toBe(1)
+    expect(derive).toHaveBeenCalledTimes(1)
+    expect(constant.parents.length).toBe(0)
+  })
+
+  it('reads nothing at all inside withoutCapture', () => {
+    const source = atom('source', 1)
+    const value = computed('value', () => unsafe__withoutCapture(() => source.get())) as unknown as {
+      get(): number
+      parents: unknown[]
+    }
+    react('r', () => value.get())
+    expect(value.parents.length).toBe(0)
+  })
+
+  it('puts the capture context back when what it wrapped threw', () => {
+    const a = atom('a', 1)
+    const b = atom('b', 2)
+    const value = computed('value', () => {
+      a.get()
+      swallow(() =>
+        unsafe__withoutCapture(() => {
+          throw new Error('boom')
+        })
+      )
+      return a.get() + b.get()
+    }) as unknown as { get(): number; parents: unknown[] }
+    react('r', () => value.get())
+    expect(value.parents.length).toBe(2)
+  })
+})
+
+describe('a computed that throws', () => {
+  it('holds on to what it threw until a parent changes', () => {
+    const source = atom('source', 1)
+    const derive = vi.fn(() => {
+      if (source.get() === 2) throw new Error('boom')
+      return source.get()
+    })
+    const value = computed('value', derive)
+    expect(value.get()).toBe(1)
+    expect(derive).toHaveBeenCalledTimes(1)
+    source.set(2)
+    expect(() => value.get()).toThrow('boom')
+    expect(() => value.get()).toThrow('boom')
+    expect(() => value.get()).toThrow('boom')
+    expect(derive).toHaveBeenCalledTimes(2)
+    source.set(3)
+    expect(value.get()).toBe(3)
+  })
+
+  it('tells an effect it went wrong once rather than every time', () => {
+    const source = atom('source', 1)
+    const derive = vi.fn(() => {
+      if (source.get() % 2 === 0) throw new Error('boom')
+      return source.get()
+    })
+    const value = computed('value', derive)
+    const effect = vi.fn(() => swallow(() => value.get()))
+    react('r', effect)
+    expect(effect).toHaveBeenCalledTimes(1)
+    source.set(2)
+    expect(effect).toHaveBeenCalledTimes(2)
+    source.set(4)
+    expect(derive).toHaveBeenCalledTimes(3)
+    expect(effect).toHaveBeenCalledTimes(2)
+    source.set(3)
+    expect(effect).toHaveBeenCalledTimes(3)
+  })
+
+  it('throws its history away', () => {
+    const source = atom('source', 1)
+    const value = computed(
+      'value',
+      () => {
+        if (source.get() === 2) throw new Error('boom')
+        return source.get()
+      },
+      { historyLength: 4, computeDiff: (from: number, to: number) => to - from }
+    )
+    const start = getGlobalEpoch()
+    expect(value.get()).toBe(1)
+    source.set(3)
+    expect(value.get()).toBe(3)
+    source.set(2)
+    expect(() => value.get()).toThrow()
+    source.set(5)
+    expect(value.get()).toBe(5)
+    expect(value.getDiffSince(start)).toBe(RESET_VALUE)
+  })
+
+  it('does not carry the throw out through a parent check', () => {
+    const source = atom('source', 1)
+    const thrower = computed('thrower', () => {
+      if (source.get() === 2) throw new Error('boom')
+      return source.get()
+    })
+    const guarded = computed('guarded', () => {
+      try {
+        return thrower.get()
+      } catch {
+        return -1
+      }
+    })
+    let seen = 0
+    react('r', () => {
+      seen = guarded.get()
+    })
+    expect(seen).toBe(1)
+    expect(() => source.set(2)).not.toThrow()
+    expect(seen).toBe(-1)
+  })
+
+  it('leaves the atom that caused it where it is', () => {
+    const source = atom('source', 1)
+    const value = computed('value', () => {
+      if (source.get() === 2) throw new Error('boom')
+      return source.get()
+    })
+    expect(value.get()).toBe(1)
+    source.set(2)
+    expect(() => value.get()).toThrow()
+    expect(source.get()).toBe(2)
+  })
+})
+
+describe('what a transaction puts back', () => {
+  it('puts every atom back the way it found it', () => {
+    const a = atom('a', 1)
+    const b = atom('b', 2)
+    transaction(rollback => {
+      a.set(10)
+      b.set(20)
+      rollback()
+    })
+    expect(a.get()).toBe(1)
+    expect(b.get()).toBe(2)
+  })
+
+  it('puts a computed back with them', () => {
+    const source = atom('source', 1)
+    const doubled = computed('doubled', () => source.get() * 2)
+    expect(doubled.get()).toBe(2)
+    transaction(rollback => {
+      source.set(10)
+      expect(doubled.get()).toBe(20)
+      rollback()
+    })
+    expect(doubled.get()).toBe(2)
+  })
+
+  it('moves the epoch on when it gives up', () => {
+    const source = atom('source', 1)
+    const before = getGlobalEpoch()
+    transaction(rollback => {
+      source.set(2)
+      rollback()
+    })
+    expect(getGlobalEpoch()).toBeGreaterThan(before)
+  })
+
+  it('lets an inner one give up on its own', () => {
+    const a = atom('a', 1)
+    const b = atom('b', 1)
+    transaction(() => {
+      a.set(2)
+      transaction(rollback => {
+        b.set(2)
+        rollback()
+      })
+    })
+    expect(a.get()).toBe(2)
+    expect(b.get()).toBe(1)
+  })
+
+  it('takes a finished inner one down with the outer one', () => {
+    const source = atom('source', 1)
+    transaction(rollback => {
+      transaction(() => {
+        source.set(2)
+      })
+      rollback()
+    })
+    expect(source.get()).toBe(1)
+  })
+
+  it('gives up and says why when the work throws', () => {
+    const source = atom('source', 1)
+    expect(() =>
+      transaction(() => {
+        source.set(2)
+        throw new Error('boom')
+      })
+    ).toThrow('boom')
+    expect(source.get()).toBe(1)
+  })
+
+  it('joins the one already going rather than standing inside it', () => {
+    const source = atom('source', 1)
+    transaction(() => {
+      source.set(2)
+      swallow(() =>
+        transact(() => {
+          source.set(3)
+          throw new Error('boom')
+        })
+      )
+    })
+    expect(source.get()).toBe(3)
+  })
+
+  it('holds every effect until it commits', () => {
+    const source = atom('source', 1)
+    const effect = vi.fn(() => source.get())
+    react('r', effect)
+    expect(effect).toHaveBeenCalledTimes(1)
+    transact(() => {
+      source.set(2)
+      source.set(3)
+      source.set(4)
+      expect(effect).toHaveBeenCalledTimes(1)
+    })
+    expect(effect).toHaveBeenCalledTimes(2)
+  })
+})
+
+describe('the flush loop', () => {
+  it('drains what an effect set while it was reacting', () => {
+    const a = atom('a', 0)
+    const b = atom('b', 0)
+    react('r', () => {
+      b.set(a.get() + 1)
+    })
+    expect(b.get()).toBe(1)
+    a.set(4)
+    expect(b.get()).toBe(5)
+  })
+
+  it('stands down rather than spinning forever', () => {
+    expect(() => {
+      const source = atom('source', 0)
+      react('r', () => {
+        source.set(source.get() + 1)
+      })
+    }).toThrow()
+  })
+
+  it('leaves a reactor alone when nothing it reads has moved', () => {
+    const source = atom('source', 1)
+    const fn = vi.fn(() => source.get())
+    const started = reactor('r', fn)
+    started.start()
+    expect(fn).toHaveBeenCalledTimes(1)
+    started.stop()
+    started.start()
+    expect(fn).toHaveBeenCalledTimes(1)
+    started.start({ force: true })
+    expect(fn).toHaveBeenCalledTimes(2)
   })
 })
