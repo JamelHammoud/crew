@@ -91,8 +91,6 @@ const events: SessionEvent[] = [
   }
 ]
 
-// A run of the same tool folds into one row, so every step is named apart to
-// keep them as the separate rows this is counting.
 const stepAt = (index: number): AgentStep => ({
   id: `step-${index}`,
   ts: 10 + index,
