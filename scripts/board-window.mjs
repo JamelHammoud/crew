@@ -108,7 +108,9 @@ function Board() {
   )
 }
 
-createRoot(document.getElementById('root')).render(React.createElement(Board))
+createRoot(document.getElementById('root')).render(
+  React.createElement(React.StrictMode, null, React.createElement(Board))
+)
 `
 }
 
