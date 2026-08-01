@@ -30,7 +30,7 @@ describe('no real address is written into a suite', () => {
 
   it('catches one written out as a pattern', () => {
     const madeUp = [198, 18, 0, 1].join('\\.')
-    expect(offenders(`name: /${madeUp}:2739/`)).toEqual(['198.18.0.1'])
+    expect(offenders(`name: /${madeUp}:2739/`)).toEqual([[198, 18, 0, 1].join('.')])
   })
 
   it('leaves loopback and the documentation ranges alone', () => {
