@@ -230,6 +230,7 @@ function CenteredEditor({
       <RichTextEditor
         {...editorProps}
         editorClassName="crew-rich-text"
+        editorStyle={{ width: '100%' }}
         style={{
           ...style,
           position: 'relative',

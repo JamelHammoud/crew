@@ -11,6 +11,7 @@ export interface RichTextEditorProps {
   className?: string
   style?: CSSProperties
   editorClassName?: string
+  editorStyle?: CSSProperties
   extensions?: Extensions
   selectAll?: boolean
   caret?: TextPoint | null
@@ -45,6 +46,7 @@ export function RichTextEditor({
   className = '',
   style,
   editorClassName = '',
+  editorStyle,
   extensions = richTextExtensions,
   selectAll = false,
   caret = null,
@@ -132,7 +134,7 @@ export function RichTextEditor({
       onTouchEnd={stop}
       onDragStart={event => event.preventDefault()}
     >
-      <div ref={mount} className={`crew-text crew-rich-text ${editorClassName}`} />
+      <div ref={mount} className={`crew-text crew-rich-text ${editorClassName}`} style={editorStyle} />
     </div>
   )
 }
