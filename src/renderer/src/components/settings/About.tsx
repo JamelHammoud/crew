@@ -1,5 +1,6 @@
 import CreditsRow from './CreditsRow'
 import FeedbackRow from './FeedbackRow'
+import MadeBy from './MadeBy'
 import { Page, Section } from './parts'
 import VersionRow from './VersionRow'
 
@@ -13,6 +14,7 @@ export default function About() {
       <Section>
         <FeedbackRow />
       </Section>
+      <MadeBy />
     </Page>
   )
 }
