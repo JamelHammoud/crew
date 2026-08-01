@@ -1,4 +1,4 @@
-import { forwardRef, type InputHTMLAttributes } from 'react'
+import { forwardRef, type InputHTMLAttributes, type TextareaHTMLAttributes } from 'react'
 
 // A line of text somebody types. It is the sunken field the app uses wherever
 // something is asked for outright, rather than the pill a search wears.
