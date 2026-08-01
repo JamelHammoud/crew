@@ -365,19 +365,26 @@ function createWindow(threadId?: string): BrowserWindow {
     // nothing, so it is told where the update has got to as it lands.
     updates.tell(win)
   })
-  win.on('close', event => {
-    if (!closePutsAway(process.platform, quitting)) return
-    event.preventDefault()
-    // A full screen window has a desktop of its own, and hiding one leaves that
-    // desktop standing there empty with nothing in it to come back to. It comes
-    // out first and goes away once it has landed.
-    if (!win.isFullScreen()) {
-      win.hide()
-      return
-    }
-    win.once('leave-full-screen', () => win.hide())
-    win.setFullScreen(false)
-  })
+  // A window standing on one thread is that thread rather than the app, so its
+  // close is the way out of it and not a way to put the app aside. Wearing the
+  // put-away close it would be hidden rather than taken down, and the thread it
+  // was popped out of would open nothing on the next press: a window nobody can
+  // see is still a window standing on that thread.
+  if (!threadId) {
+    win.on('close', event => {
+      if (!closePutsAway(process.platform, quitting)) return
+      event.preventDefault()
+      // A full screen window has a desktop of its own, and hiding one leaves that
+      // desktop standing there empty with nothing in it to come back to. It comes
+      // out first and goes away once it has landed.
+      if (!win.isFullScreen()) {
+        win.hide()
+        return
+      }
+      win.once('leave-full-screen', () => win.hide())
+      win.setFullScreen(false)
+    })
+  }
   // Who is here is read from a window's own view of the session, so with none
   // open the tray says so rather than showing a list that stopped moving.
   win.on('closed', () => {
