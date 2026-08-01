@@ -968,13 +968,13 @@ export const useCrew = create<CrewState>((set, get) => {
       const { useHuddle } = await import('./huddle')
       useHuddle.getState().leave()
       socket.close()
-      threadWanted = threadWanted ?? memory?.openThreadId ?? null
+      threadsWanted = threadsWanted.length > 0 ? threadsWanted : (memory?.openThreadIds ?? [])
       set({ connection: 'connecting', ...BLANK })
       get().connect(info)
       panel.restore(memory?.panel ?? null)
     },
     wantThread: threadId => {
-      threadWanted = threadId
+      threadsWanted = threadId ? [threadId] : []
     },
     closePlace: async key => {
       const others = usePlaces.getState().live.filter(place => place.key !== key)
