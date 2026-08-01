@@ -1,4 +1,5 @@
-import { richTextForMeasurement, type RichTextDocument } from './richText'
+import { renderHtmlFromRichTextForMeasurement, type TLRichText } from '../schema/richText'
+import type { RichTextDocument } from './richText'
 import type { TextMeasureOptions } from './measurement'
 
 export const MIN_TEXT_WIDTH = 16
