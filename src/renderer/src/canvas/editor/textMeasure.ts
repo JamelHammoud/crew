@@ -38,11 +38,13 @@ export class TextMeasure implements TLTextMeasure {
 export class FontManager {
   private readonly tracked = new Set<string>()
 
-  trackFontsForShape(shape: { props?: Record<string, unknown> }): void {
+  trackFontsForShape(shape: { props?: Record<string, unknown>; meta?: Record<string, unknown> }): void {
     const font = shape.props?.font
     if (typeof font === 'string') this.tracked.add(font)
-    const family = (shape.props?.type as { family?: unknown } | undefined)?.family
-    if (typeof family === 'string') this.tracked.add(family)
+    for (const source of [shape.props?.type, shape.meta?.type]) {
+      const family = (source as { family?: unknown } | undefined)?.family
+      if (typeof family === 'string') this.tracked.add(family)
+    }
   }
 
   getTrackedFonts(): string[] {

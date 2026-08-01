@@ -462,6 +462,39 @@ const driveSource = String.raw`(async () => {
 
   section = 'Resizing'
 
+  await attempt('a selected shape wears all twelve handles', async () => {
+    await clear()
+    await scratch()
+    const one = rect({ x: 0, y: 0 }, { w: 200, h: 160 })
+    await settle()
+    editor.select(one)
+    await settle()
+    const util = editor.overlays.getOverlayUtil('selection_foreground')
+    const handles = util.isActive() ? util.getOverlays().map(item => item.props.handle) : []
+    return {
+      ok: handles.length === 12,
+      note: handles.length + ' handles on a 200 by 160 shape at zoom ' + round(editor.getZoomLevel())
+    }
+  })
+
+  await attempt('the handles collapse on a shape too small to grab', async () => {
+    await clear()
+    editor.setCurrentTool('select.idle')
+    look(home, { x: 300, y: 260 }, 0.05)
+    await settle()
+    const one = rect({ x: 0, y: 0 }, { w: 200, h: 160 })
+    await settle()
+    editor.select(one)
+    await settle()
+    const util = editor.overlays.getOverlayUtil('selection_foreground')
+    const handles = util.isActive() ? util.getOverlays().map(item => item.props.handle) : []
+    const turns = handles.filter(handle => handle.endsWith('_rotate'))
+    return {
+      ok: turns.length === 0 && handles.length < 12,
+      note: handles.length + ' handles and ' + turns.length + ' of them rotate, on a shape ' + round(200 * editor.getZoomLevel()) + ' across the screen'
+    }
+  })
+
   const EDGES = [
     { handle: 'top_left', by: { x: -40, y: -30 }, moves: ['minX', 'minY'] },
     { handle: 'top', by: { x: 0, y: -30 }, moves: ['minY'] },
