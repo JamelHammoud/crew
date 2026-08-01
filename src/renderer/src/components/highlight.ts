@@ -134,15 +134,15 @@ const loading = new Map<string, Promise<void>>()
 
 const CACHE_CHARS = 4_000_000
 
-interface Held {
-  tokens: ThemedToken[][]
-  chars: number
+export interface Highlighted {
+  lines: string[]
+  byLine: ThemedToken[][]
 }
 
-const cache = new Map<string, Map<string, Held>>()
+const cache = new Map<string, Map<string, Highlighted>>()
 let cached = 0
 
-function shelf(lang: string, theme: Theme): Map<string, Held> {
+function shelf(lang: string, theme: Theme): Map<string, Highlighted> {
   const key = `${theme} ${lang}`
   let found = cache.get(key)
   if (!found) {
@@ -152,25 +152,20 @@ function shelf(lang: string, theme: Theme): Map<string, Held> {
   return found
 }
 
-function recall(shelved: Map<string, Held>, text: string): ThemedToken[][] | undefined {
-  const found = shelved.get(text)
-  if (!found) return undefined
-  shelved.delete(text)
-  shelved.set(text, found)
-  return found.tokens
-}
-
-function keep(shelved: Map<string, Held>, text: string, tokens: ThemedToken[][]): void {
-  shelved.set(text, { tokens, chars: text.length })
+function keep(shelved: Map<string, Highlighted>, text: string, byLine: ThemedToken[][]): Highlighted {
+  const held: Highlighted = { lines: text.split('\n'), byLine }
+  shelved.set(text, held)
   cached += text.length
-  if (cached <= CACHE_CHARS) return
+  if (cached <= CACHE_CHARS) return held
   for (const other of cache.values()) {
-    for (const [stale, held] of other) {
-      if (cached <= CACHE_CHARS) return
+    for (const [stale, gone] of other) {
+      if (cached <= CACHE_CHARS) return held
       other.delete(stale)
-      cached -= held.chars
+      cached -= stale.length
+      if (gone === held) return held
     }
   }
+  return held
 }
 
 function core(): Promise<HighlighterCore> {
