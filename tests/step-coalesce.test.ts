@@ -117,6 +117,8 @@ describe('a run streaming its steps', () => {
   })
 
   it('holds what is waiting until anything reads the steps exactly', () => {
+    socket().onMessage({ type: 'event', event: started('p1') })
+    socket().onMessage({ type: 'event', event: started('p2') })
     stream()
     expect(useCrew.getState().steps.p1).toBeUndefined()
 
