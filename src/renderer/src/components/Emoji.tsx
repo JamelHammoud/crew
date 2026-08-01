@@ -69,7 +69,7 @@ export function EmojiTip({ char }: { char: string }) {
 // The alignment rides on the tooltip rather than on the sprite, since the box it
 // wraps what it holds in is a flex one and a flex item is not aligned by the
 // line it stands in.
-export function EmojiText({ text }: { text: string }) {
+export function EmojiText({ text, quiet }: { text: string; quiet?: boolean }) {
   const sheet = useCustomEmoji()
   const tokens = useMemo(() => tokenizeEmoji(text), [text, sheet])
   return (
@@ -79,7 +79,7 @@ export function EmojiText({ text }: { text: string }) {
         const char = token.kind === 'emoji' ? token.entry.char : token.text
         return (
           <Fragment key={index}>
-            <Tooltip label={<EmojiTip char={char} />} className="align-[-0.2em]">
+            <Tooltip label={<EmojiTip char={char} />} disabled={quiet} className="align-[-0.2em]">
               <Emoji char={char} size="1.15em" />
             </Tooltip>
             <span className="sr-only">{token.text}</span>
