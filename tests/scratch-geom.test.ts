@@ -137,8 +137,8 @@ describe('probe: Mat against known values', () => {
       expect(decomposed.x).toBeCloseTo(x, 5)
       expect(decomposed.y).toBeCloseTo(y, 5)
       expect(decomposed.scaleX).toBeCloseTo(scale, 5)
-      const turn = Math.PI * 2
-      expect(((decomposed.rotation - rotation) % turn + turn) % turn).toBeCloseTo(0, 5)
+      expect(Math.cos(decomposed.rotation)).toBeCloseTo(Math.cos(rotation), 5)
+      expect(Math.sin(decomposed.rotation)).toBeCloseTo(Math.sin(rotation), 5)
     }
   })
 

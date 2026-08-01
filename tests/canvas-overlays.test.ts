@@ -75,6 +75,10 @@ function recorder(): Recorder {
   }
 }
 
+if (!('HTMLElement' in globalThis)) {
+  Object.defineProperty(globalThis, 'HTMLElement', { configurable: true, writable: true, value: class {} })
+}
+
 function editor(): Editor {
   const subject = new Editor({
     store: createTLStore({ id: 'overlay-probe' }),
