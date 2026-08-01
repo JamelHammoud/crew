@@ -11,6 +11,7 @@ import ScrollFade from './ScrollFade'
 import ThreadItems from './ThreadItems'
 import { buildThread, eventsOfThread, lastEnd, type ThreadItem } from './thread'
 import { useAutoResize } from './useAutoResize'
+import { useThreadRead } from './useThreadRead'
 import useScrollEdges from './useScrollEdges'
 import { useStickToBottom } from './useStickToBottom'
 

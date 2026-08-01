@@ -30,8 +30,11 @@ export default function Tooltip({
 
   useEffect(() => {
     if (!rect) return
-    window.addEventListener('scroll', hide, { capture: true, passive: true })
-    return () => window.removeEventListener('scroll', hide, { capture: true })
+    const onScroll = (event: Event) => {
+      if (movedBy(event, anchorRef.current)) hide()
+    }
+    window.addEventListener('scroll', onScroll, { capture: true, passive: true })
+    return () => window.removeEventListener('scroll', onScroll, { capture: true })
   }, [rect])
 
   useEffect(() => {
