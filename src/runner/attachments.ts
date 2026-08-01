@@ -12,15 +12,18 @@ export interface LocalAttachment {
 const DOWNLOAD_TIMEOUT_MS = 30000
 
 export class AttachmentCache {
-  constructor(private repoPath: string) {}
+  constructor(private crewBase: string | null) {}
 
   // Anything the agent has to read has to be a file somewhere. For an ordinary
   // message that is the folder beside the session, where it is already kept and
-  // where it stays. A ghost thread has nothing beside the session, so what it
-  // carries goes outside the project altogether and is taken away with the run:
-  // the folder the crew syncs never holds one, on any machine.
+  // where it stays. A crew kept on this machine keeps that folder beside the
+  // app, so nothing is written into the project on the strength of a picture
+  // somebody sent, and a machine with no crew of its own keeps them outside the
+  // project for the same reason. A ghost thread has nothing beside the session,
+  // so what it carries goes outside the project altogether and is taken away
+  // with the run: the folder the crew syncs never holds one, on any machine.
   async ensure(attachments: Attachment[], httpBase: string, ghostPromptId?: string): Promise<LocalAttachment[]> {
-    const dir = ghostPromptId ? this.ghostDir(ghostPromptId) : path.join(this.repoPath, '.crew', 'attachments')
+    const dir = ghostPromptId ? this.ghostDir(ghostPromptId) : this.keptDir()
     const local: LocalAttachment[] = []
     for (const attachment of attachments) {
       // The name is the host's own uuid, so a message carrying anything else is
