@@ -235,7 +235,7 @@ export default function ReviewView() {
                   {...folded('Merge Changes')}
                   actions={
                     <SectionAction
-                      label="Stage all changes"
+                      label="Stage all merge changes"
                       icon={<PlusGlyph className="w-3.5 h-3.5" />}
                       onClick={() => void send({ do: 'stage', paths: clashing.map(one => one.path) })}
                     />

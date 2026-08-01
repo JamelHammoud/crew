@@ -113,7 +113,7 @@ function TypeSettings({ value, set }: { value: TypeStyle; set: (patch: Partial<T
           <SubLabel>Decoration</SubLabel>
           <Choice value={value.decoration} options={DECORATIONS} onPick={decoration => set({ decoration })} />
           <SubLabel>Vertical trim</SubLabel>
-          <Choice value={trimOf(value)} options={TRIMS} onPick={trim => set({ trim })} />
+          <Choice value={value.trim} options={TRIMS} onPick={trim => set({ trim })} />
         </div>
       </Popover>
     </span>
