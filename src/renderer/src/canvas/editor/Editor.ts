@@ -170,6 +170,7 @@ export class Editor {
     [key: string]: unknown
   } | null = null
   private arrowTargetId: TLShapeId | null = null
+  private hoverLocked = false
 
   constructor(options: TLEditorOptions) {
     this.store = options.store
