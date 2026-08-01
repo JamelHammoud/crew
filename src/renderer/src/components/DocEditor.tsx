@@ -11,6 +11,7 @@ import {
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react'
 import { useCrew } from '../state/store'
 import { useTheme } from '../state/theme'
+import { docEmoji } from './doc/docEmoji'
 import { DocEmojiMenu, docEmojiItems } from './doc/DocEmojiMenu'
 import DocSideMenu from './doc/DocSideMenu'
 import { DocSlashMenu, docSlashItems } from './doc/DocSlashMenu'
