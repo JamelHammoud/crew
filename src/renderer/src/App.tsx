@@ -85,7 +85,7 @@ function Session() {
 
   useEffect(() => {
     const root = document.getElementById('root')
-    root?.classList.toggle('railed', pinned)
+    root?.classList.toggle('railed', pinned && onMac())
     return () => root?.classList.remove('railed')
   }, [pinned])
 
