@@ -33,6 +33,7 @@ export default function Sidebar() {
   const switchTo = useCrew(s => s.switchTo)
   const closePlace = useCrew(s => s.closePlace)
   const peek = useSidebar(s => s.peek)
+  const pinned = useSidebar(s => s.pinned)
   const [busyKey, setBusyKey] = useState<string | null>(null)
   const [asking, setAsking] = useState<string | null>(null)
 
@@ -87,8 +88,11 @@ export default function Sidebar() {
   }
 
   return (
-    <aside style={{ width: SIDEBAR_W }} className="h-full flex flex-col bg-ink-800/50">
-      <div className="app-drag h-[70px] shrink-0" />
+    <aside
+      style={{ width: SIDEBAR_W }}
+      className="h-full flex flex-col bg-ink-800 border-r border-ink-700"
+    >
+      <div className={`app-drag h-[70px] shrink-0 ${pinned ? 'mac:pl-[64px]' : ''}`} />
       <div className="flex-1 min-h-0 overflow-y-auto app-no-drag px-2 pb-2">
         {places.map(place => (
           <PlaceRow
