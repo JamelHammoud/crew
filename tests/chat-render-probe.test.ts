@@ -103,7 +103,8 @@ const messageEvents: SessionEvent[] = Array.from({ length: MESSAGES }, (_, index
   kind: 'message',
   authorId: 'ali',
   authorName: 'ALI',
-  text: `something somebody said, number ${index}`
+  text: `something somebody said, number ${index}`,
+  mentions: []
 }))
 
 const huddleEvents: SessionEvent[] = Array.from({ length: HUDDLES }, (_, index) => [
