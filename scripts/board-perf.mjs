@@ -244,8 +244,8 @@ const driveSource = String.raw`(async () => {
       commitsPerMove: Number((perf.commits / ${MOVES}).toFixed(2)),
       reactMsPerMove: Number((perf.duration / ${MOVES}).toFixed(2)),
       perMove: counts,
-      msPerMove: times
-      ,selected: selected.size
+      msPerMove: times,
+      selected: selected.size
     }
   }
 
