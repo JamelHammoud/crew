@@ -1470,6 +1470,334 @@ const driveSource = String.raw`(async () => {
     return { ok: Boolean(exported && exported.svg && exported.svg.includes('data-shape-id=')), note: exported && exported.svg ? exported.svg.length + ' characters' : 'nothing' }
   })
 
+  section = 'Painting'
+
+  const overlayNode = document.querySelector('[data-canvas-overlays="true"]')
+  const painting = { on: false, calls: [] }
+  const heldPaint = {}
+  const watchPainting = () => {
+    if (!overlayNode || heldPaint.clearRect) return
+    for (const name of ['clearRect', 'fillRect', 'strokeRect', 'stroke', 'fill']) {
+      const original = CanvasRenderingContext2D.prototype[name]
+      heldPaint[name] = original
+      CanvasRenderingContext2D.prototype[name] = function (...args) {
+        if (painting.on && this.canvas === overlayNode) {
+          const m = this.getTransform()
+          painting.calls.push({
+            op: name,
+            args: args.filter(one => typeof one === 'number'),
+            m: [m.a, m.b, m.c, m.d, m.e, m.f]
+          })
+        }
+        return original.apply(this, args)
+      }
+    }
+  }
+  const stopPainting = () => {
+    for (const name of Object.keys(heldPaint)) CanvasRenderingContext2D.prototype[name] = heldPaint[name]
+  }
+  const openPaint = () => {
+    watchPainting()
+    painting.calls = []
+    painting.on = true
+  }
+  const shutPaint = () => {
+    painting.on = false
+  }
+  const stepPaint = async act => {
+    const mark = painting.calls.length
+    await act()
+    await frame()
+    return painting.calls.slice(mark)
+  }
+  const paintedBox = call => {
+    const shell = overlayNode.getBoundingClientRect()
+    const wide = shell.width / overlayNode.width
+    const tall = shell.height / overlayNode.height
+    const at = (x, y) => ({
+      x: shell.left + (call.m[0] * x + call.m[2] * y + call.m[4]) * wide,
+      y: shell.top + (call.m[1] * x + call.m[3] * y + call.m[5]) * tall
+    })
+    const one = at(call.args[0], call.args[1])
+    const other = at(call.args[0] + call.args[2], call.args[1] + call.args[3])
+    return {
+      minX: Math.min(one.x, other.x),
+      minY: Math.min(one.y, other.y),
+      maxX: Math.max(one.x, other.x),
+      maxY: Math.max(one.y, other.y)
+    }
+  }
+  const boxesOf = (calls, op) => calls.filter(call => call.op === op && call.args.length === 4).map(paintedBox)
+  const repainted = calls => calls.some(call => call.op === 'clearRect')
+  const spanning = (one, other) => ({
+    minX: Math.min(one.x, other.x),
+    minY: Math.min(one.y, other.y),
+    maxX: Math.max(one.x, other.x),
+    maxY: Math.max(one.y, other.y)
+  })
+  const onScreen = id => {
+    const bounds = boundsOf(id)
+    return spanning(viewport({ x: bounds.minX, y: bounds.minY }), viewport({ x: bounds.maxX, y: bounds.maxY }))
+  }
+  const boxOff = (one, other) =>
+    Math.max(
+      Math.abs(one.minX - other.minX),
+      Math.abs(one.minY - other.minY),
+      Math.abs(one.maxX - other.maxX),
+      Math.abs(one.maxY - other.maxY)
+    )
+  const nearest = (boxes, wanted) => boxes.map(box => boxOff(box, wanted)).sort((one, other) => one - other)[0]
+  const aimAt = id => {
+    const bounds = boundsOf(id)
+    if (!bounds) return null
+    const margin = editor.options.hitTestMargin / editor.getZoomLevel()
+    const tries = [bounds.center, { x: bounds.minX + 1, y: bounds.center.y }, { x: bounds.center.x, y: bounds.minY + 1 }]
+    for (const point of tries) {
+      const hit = editor.getShapeAtPoint(point, { margin, hitInside: true, renderingOnly: true })
+      if (hit && hit.id === id) return viewport(point)
+    }
+    return null
+  }
+  const grid = async () => {
+    await clear()
+    await scratch()
+    for (let down = 0; down < 5; down++)
+      for (let across = 0; across < 8; across++) rect({ x: across * 80, y: down * 60 }, { w: 60, h: 40 })
+    await settle()
+  }
+
+  const brushed = { frames: 0, missed: 0, still: 0, lag: 0, covered: 0 }
+
+  await attempt('a marquee is painted on every frame', async () => {
+    if (!overlayNode) return { ok: false, note: 'the board draws no overlay canvas to paint the chrome on' }
+    await grid()
+    editor.selectNone()
+    await settle()
+    const from = inCanvas({ x: 60, y: 60 })
+    const step = { x: 21, y: 12 }
+    const steps = 40
+    openPaint()
+    pointer('pointerdown', from.x, from.y, 1)
+    await frame()
+    let widest = -Infinity
+    for (let move = 1; move <= steps; move++) {
+      const to = { x: from.x + step.x * move, y: from.y + step.y * move }
+      const drawn = await stepPaint(async () => {
+        pointer('pointermove', to.x, to.y, 1)
+      })
+      const brush = boxesOf(drawn, 'fillRect')[0]
+      brushed.frames++
+      if (!brush) {
+        brushed.missed++
+        continue
+      }
+      brushed.lag = Math.max(brushed.lag, boxOff(brush, spanning(from, to)))
+      if (brush.maxX <= widest) brushed.still++
+      widest = brush.maxX
+    }
+    brushed.covered = editor.getSelectedShapeIds().length
+    pointer('pointerup', from.x + step.x * steps, from.y + step.y * steps, 0)
+    await settle()
+    shutPaint()
+    return {
+      ok: brushed.missed === 0,
+      note: 'drawn on ' + (brushed.frames - brushed.missed) + ' of ' + brushed.frames + ' frames, over ' + brushed.covered + ' shapes'
+    }
+  })
+
+  await attempt('the marquee is drawn where the pointer is', async () => {
+    if (brushed.frames === 0) return { ok: false, note: 'the marquee never ran' }
+    if (brushed.missed) return { ok: false, note: brushed.missed + ' frames drew no marquee at all' }
+    return {
+      ok: brushed.lag <= 1.5 && brushed.still === 0,
+      note:
+        'the furthest it sat from the pointer was ' +
+        round(brushed.lag) +
+        'px, and it stood still on ' +
+        brushed.still +
+        ' of ' +
+        brushed.frames +
+        ' frames'
+    }
+  })
+
+  await attempt('the overlay really has ink under the marquee', async () => {
+    if (!overlayNode) return { ok: false, note: 'the board draws no overlay canvas' }
+    await grid()
+    editor.selectNone()
+    await settle()
+    const from = inCanvas({ x: 60, y: 60 })
+    const to = { x: from.x + 700, y: from.y + 400 }
+    pointer('pointerdown', from.x, from.y, 1)
+    await frame()
+    pointer('pointermove', to.x, to.y, 1)
+    await frame()
+    const context = overlayNode.getContext('2d')
+    const shell = overlayNode.getBoundingClientRect()
+    const alphaAt = (x, y) =>
+      context.getImageData(
+        Math.round((x - shell.left) * (overlayNode.width / shell.width)),
+        Math.round((y - shell.top) * (overlayNode.height / shell.height)),
+        1,
+        1
+      ).data[3]
+    const middle = alphaAt((from.x + to.x) / 2, (from.y + to.y) / 2)
+    const edge = alphaAt((from.x + to.x) / 2, from.y)
+    const beyond = alphaAt(shell.right - 40, shell.bottom - 40)
+    pointer('pointerup', to.x, to.y, 0)
+    await settle()
+    return {
+      ok: (middle > 0 || edge > 0) && beyond === 0,
+      note: 'inside it the canvas reads ' + middle + ' and along its edge ' + edge + ', where past it reads ' + beyond
+    }
+  })
+
+  for (const kind of [
+    { type: 'design-node', props: { w: 200, h: 160, shape: 'rect', name: 'Probe' } },
+    { type: 'geo', props: { w: 200, h: 160 } },
+    { type: 'note', props: {} }
+  ]) {
+    await attempt('hovering a ' + kind.type + ' paints an outline', async () => {
+      if (!overlayNode) return { ok: false, note: 'the board draws no overlay canvas' }
+      await clear()
+      await scratch()
+      const one = build(kind.type, { x: 0, y: 0 }, kind.props)
+      await settle()
+      editor.selectNone()
+      await settle()
+      const at = aimAt(one)
+      if (!at) return { ok: false, note: 'the board finds no ' + kind.type + ' anywhere on the shape it drew' }
+      openPaint()
+      const onto = await stepPaint(async () => {
+        pointer('pointermove', at.x, at.y, 0, nodeOf(one) || surface)
+      })
+      const hovered = editor.getHoveredShapeId ? editor.getHoveredShapeId() : null
+      if (hovered !== one) {
+        shutPaint()
+        return { ok: false, note: 'the pointer landed on ' + String(hovered) + ' rather than the ' + kind.type }
+      }
+      const away = await stepPaint(async () => {
+        pointer('pointermove', empty().x, empty().y, 0)
+      })
+      shutPaint()
+      const drawn = onto.some(call => call.op === 'stroke')
+      const lifted = repainted(away) && !away.some(call => call.op === 'stroke')
+      if (!drawn) return { ok: false, note: 'nothing was stroked on the frame the pointer arrived' }
+      if (!lifted)
+        return {
+          ok: false,
+          note: repainted(away)
+            ? 'it was still being stroked a frame after the pointer left'
+            : 'the frame the pointer left painted nothing, so the outline stayed on screen'
+        }
+      return { ok: true, note: 'drawn as the pointer arrived and gone as it left' }
+    })
+  }
+
+  await attempt('hovering a shape on the real board paints an outline', async () => {
+    if (!overlayNode) return { ok: false, note: 'the board draws no overlay canvas' }
+    await clear()
+    editor.selectNone()
+    editor.zoomToFit({ immediate: true })
+    await settle()
+    const zoom = editor.getZoomLevel()
+    const target = shapes
+      .filter(shape => {
+        const bounds = boundsOf(shape)
+        if (!bounds || bounds.w * zoom < 24 || bounds.h * zoom < 24) return false
+        const hit = editor.getShapeAtPoint(bounds.center, { margin: 0, hitInside: true, renderingOnly: true })
+        return hit && hit.id === shape.id
+      })
+      .pop()
+    if (!target) return null
+    const at = viewport(boundsOf(target).center)
+    openPaint()
+    const onto = await stepPaint(async () => {
+      pointer('pointermove', at.x, at.y, 0, nodeOf(target.id) || surface)
+    })
+    const hovered = editor.getHoveredShapeId ? editor.getHoveredShapeId() : null
+    shutPaint()
+    if (hovered !== target.id) return { ok: false, note: 'the pointer landed on ' + String(hovered) + ' rather than the ' + target.type }
+    return {
+      ok: onto.some(call => call.op === 'stroke'),
+      note: onto.some(call => call.op === 'stroke') ? 'a ' + target.type + ' outlined at zoom ' + round(zoom) : 'the ' + target.type + ' was hovered and nothing was stroked'
+    }
+  })
+
+  await attempt('the chrome keeps up with a shape being dragged', async () => {
+    if (!overlayNode) return { ok: false, note: 'the board draws no overlay canvas' }
+    await clear()
+    await scratch()
+    const one = rect({ x: 0, y: 0 }, { w: 200, h: 160 })
+    await settle()
+    editor.select(one)
+    await settle(4)
+    const stale = onScreen(one)
+    const at = viewport(boundsOf(one).center)
+    const step = { x: 9, y: 6 }
+    const steps = 20
+    let frozen = 0
+    let followed = 0
+    let quiet = 0
+    let held = []
+    openPaint()
+    pointer('pointerdown', at.x, at.y, 1, nodeOf(one) || surface)
+    await frame()
+    for (let move = 1; move <= steps; move++) {
+      const to = { x: at.x + step.x * move, y: at.y + step.y * move }
+      const drawn = await stepPaint(async () => {
+        pointer('pointermove', to.x, to.y, 1)
+      })
+      if (repainted(drawn)) held = drawn
+      else quiet++
+      const boxes = boxesOf(held, 'strokeRect').concat(boxesOf(held, 'fillRect'))
+      const wanted = onScreen(one)
+      if (boxOff(wanted, stale) > 4 && boxes.some(box => boxOff(box, stale) <= 2)) frozen++
+      if (boxes.some(box => boxOff(box, wanted) <= 2)) followed++
+    }
+    pointer('pointerup', at.x + step.x * steps, at.y + step.y * steps, 0)
+    await settle()
+    shutPaint()
+    return {
+      ok: frozen === 0,
+      note: frozen
+        ? 'the chrome sat where the shape started on ' + frozen + ' of ' + steps + ' frames'
+        : 'the board holds a box on ' + followed + ' of ' + steps + ' frames of a drag, and never one where the shape started, with ' + quiet + ' frames painting nothing'
+    }
+  })
+
+  await attempt('the selection box is drawn where the shape is on every frame of a pan', async () => {
+    if (!overlayNode) return { ok: false, note: 'the board draws no overlay canvas' }
+    await clear()
+    await scratch()
+    const one = rect({ x: 0, y: 0 }, { w: 200, h: 160 })
+    await settle()
+    editor.select(one)
+    await settle(4)
+    const steps = 20
+    let missed = 0
+    let lag = 0
+    openPaint()
+    for (let move = 1; move <= steps; move++) {
+      const drawn = await stepPaint(async () => {
+        surface.dispatchEvent(new WheelEvent('wheel', { bubbles: true, cancelable: true, deltaX: 14, deltaY: 9 }))
+      })
+      const off = nearest(boxesOf(drawn, 'strokeRect'), onScreen(one))
+      if (off === undefined) missed++
+      else lag = Math.max(lag, off)
+    }
+    shutPaint()
+    return {
+      ok: missed === 0 && lag <= 2,
+      note: missed
+        ? missed + ' of ' + steps + ' frames drew no box at all while the board moved under it'
+        : 'the furthest it sat from the shape was ' + round(lag) + 'px over ' + steps + ' frames'
+    }
+  })
+
+  stopPainting()
+  await clear()
+
   section = 'Speed'
 
   const MOVES = 60
