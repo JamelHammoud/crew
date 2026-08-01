@@ -14,10 +14,6 @@ const liveTitle = (title: string, agentLabel: string): string => {
   return clean.charAt(0).toUpperCase() + clean.slice(1)
 }
 
-// What counts as something happening in a thread: a run starting or ending in
-// it, and a message landing in it. A step is left out on purpose, since a run
-// already put its thread at the top and the next one is a few hundred
-// milliseconds away.
 const stirs = (event: SessionEvent): string | undefined => {
   switch (event.kind) {
     case 'agent.start':
