@@ -187,6 +187,9 @@ export function CrewCanvas({
     const stopMount = onMount?.(editor)
     return () => {
       observer.disconnect()
+      ownerWindow.removeEventListener('resize', size)
+      ownerDocument.removeEventListener('scroll', size, { capture: true })
+      ownerWindow.clearInterval(settle)
       element.removeEventListener('pointerdown', pointerDown)
       ownerDocument.removeEventListener('pointermove', pointerMove)
       element.removeEventListener('pointerup', pointerUp)
