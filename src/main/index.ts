@@ -574,6 +574,15 @@ app.whenReady().then(() => {
     tray.update({ waiting: count })
   })
   ipcMain.handle('app:version', () => app.getVersion())
+  ipcMain.handle(
+    'app:system',
+    (): SystemDetails => ({
+      version: app.getVersion(),
+      platform: process.platform,
+      release: os.release(),
+      arch: process.arch
+    })
+  )
   ipcMain.handle('app:theme', (_event, theme: IconTheme) => {
     nativeTheme.themeSource = theme === 'light' ? 'light' : 'dark'
     applyIcon(theme, chosenIcon)
