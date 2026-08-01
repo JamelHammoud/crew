@@ -103,13 +103,11 @@ export class CanvasEventBridge {
   }
 
   private doubleClick(event: MouseEvent): void {
-    const info = mouseInfo('double_click', event, this.editor, 'down')
-    this.dispatch({ ...info, ...resolveTarget(event, info.point, this.editor) })
+    this.dispatch(mouseInfo('double_click', event, this.editor, 'down'))
   }
 
   private contextMenu(event: MouseEvent): void {
-    const info = mouseInfo('right_click', event, this.editor)
-    this.dispatch({ ...info, ...resolveTarget(event, info.point, this.editor) })
+    this.dispatch(mouseInfo('right_click', event, this.editor))
   }
 
   private wheel(event: WheelEvent): void {
