@@ -120,14 +120,13 @@ export function RichTextToolbar({ editor, disabled = false }: RichTextToolbarPro
     const update = () => setVersion(value => value + 1)
     editor.on('selectionUpdate', update)
     editor.on('update', update)
-    const view = editor.view.dom.ownerDocument.defaultView
-    view?.addEventListener('resize', place)
-    view?.addEventListener('scroll', place, true)
+    window.addEventListener('resize', place)
+    window.addEventListener('scroll', place, true)
     return () => {
       editor.off('selectionUpdate', update)
       editor.off('update', update)
-      view?.removeEventListener('resize', place)
-      view?.removeEventListener('scroll', place, true)
+      window.removeEventListener('resize', place)
+      window.removeEventListener('scroll', place, true)
     }
   }, [editor, place])
 
@@ -137,7 +136,6 @@ export function RichTextToolbar({ editor, disabled = false }: RichTextToolbarPro
 
   useEffect(() => {
     if (!editor) return
-    const document = editor.view.dom.ownerDocument
     const keydown = (event: KeyboardEvent) => {
       if (!(event.metaKey || event.ctrlKey) || !event.shiftKey || event.key.toLowerCase() !== 'k') return
       event.preventDefault()
