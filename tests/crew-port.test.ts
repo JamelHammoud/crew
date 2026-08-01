@@ -77,6 +77,9 @@ describe('the port a crew takes', () => {
     expect(other.type).toBe('welcome')
   })
 
+  // What the rule is written against. Left to itself a second crew binds the
+  // same port on the narrower address, every loopback connection lands on it,
+  // and a window coming back to the first crew is turned away forever.
   it('says which crew answers when two take the same loopback port', async () => {
     const port = await freePort()
     const shared = await crewOn(port, '0.0.0.0')
@@ -87,9 +90,41 @@ describe('the port a crew takes', () => {
     } catch {
       stolen = null
     }
+    if (process.platform === 'darwin') expect(stolen).not.toBeNull()
     if (!stolen) return
     standing.push(stolen)
     const back = await firstReply(`ws://127.0.0.1:${port}/ws`, shared.session.code)
     expect(back).toEqual({ type: 'error', message: 'Wrong session code' })
   })
+})
+
+describe('two crews open in one app', () => {
+  const apps: Crews[] = []
+
+  afterEach(async () => {
+    await Promise.all(apps.splice(0).map(app => app.shutdownAll()))
+  })
+
+  it('leaves the one you opened first reachable when you come back to it', async () => {
+    const state = tmpDir('two-crews-state')
+    const app = new Crews()
+    app.setAgentsPath(path.join(state, 'agents.json'))
+    app.setSessionPath(path.join(state, 'session.json'))
+    app.setProjectsPath(path.join(state, 'projects'))
+    apps.push(app)
+    const hostedFolder = tmpDir('two-crews-hosted')
+    const localFolder = tmpDir('two-crews-local')
+    await initRepo(hostedFolder)
+    await initRepo(localFolder)
+
+    const hosted = await app.start(1, hostedFolder, 'Jamel', { home: 'folder', share: true })
+    const local = await app.start(1, localFolder, 'Jamel', { home: 'private', share: false })
+    expect(hosted.wsUrl).not.toBe(local.wsUrl)
+
+    const back = app.switchTo(1, projectPlace(hostedFolder))
+    expect(back).not.toBeNull()
+    expect((await firstReply(back!.wsUrl, back!.code)).type).toBe('welcome')
+    const away = app.switchTo(1, projectPlace(localFolder))
+    expect((await firstReply(away!.wsUrl, away!.code)).type).toBe('welcome')
+  }, 60000)
 })
