@@ -81,16 +81,22 @@ export class Crews {
     return this.open.get(first)?.current() ?? null
   }
 
+  // Two projects opened in the same breath, from two windows or from a window
+  // and the way in, would both find the preferred address free and both take
+  // it, and a crew is only reachable while that address is its own. Opening is
+  // one at a time, so whoever asks second is answered by whoever went first.
   async start(id: number, folder: string, name: string, opts: OpenOptions = {}): Promise<CurrentSession> {
-    const standing = this.standing(projectPlace(folder))
-    if (standing) {
-      this.look(id, standing.key)
-      return standing.current
-    }
-    const session = this.make()
-    const current = await session.startHost(folder, name, opts)
-    this.hold(id, session)
-    return current
+    return this.inTurn(async () => {
+      const standing = this.standing(projectPlace(folder))
+      if (standing) {
+        this.look(id, standing.key)
+        return standing.current
+      }
+      const session = this.make()
+      const current = await session.startHost(folder, name, opts)
+      this.hold(id, session)
+      return current
+    })
   }
 
   async join(id: number, link: string, folder: string, name: string): Promise<CurrentSession> {
@@ -220,6 +226,15 @@ export class Crews {
       throw new Error(`The ${provider.label} installer finished, but its CLI still was not found.`)
     }
     return this.capabilities()
+  }
+
+  private inTurn<T>(work: () => Promise<T>): Promise<T> {
+    const next = this.queue.then(work, work)
+    this.queue = next.then(
+      () => undefined,
+      () => undefined
+    )
+    return next
   }
 
   private standing(key: string): { key: string; current: CurrentSession } | null {

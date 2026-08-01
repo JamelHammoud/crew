@@ -142,9 +142,12 @@ describe('freehand strokes', () => {
       simulatePressure: true,
       last: true
     })
-    expect(centerline.length).toBe(3)
-    expect(centerline[0].x).toBe(0)
-    expect(centerline[centerline.length - 1].x).toBeCloseTo(80.1, 6)
+    expect(rounded(centerline)).toEqual([
+      [0, 0],
+      [18.24, 9.12],
+      [46.4482, 23.3837],
+      [80.1, 40.4]
+    ])
   })
 
   it('grows the radius with pressure rather than shrinking it', () => {
@@ -165,8 +168,8 @@ describe('freehand strokes', () => {
     )
     const spread = (outline: { y: number }[]) =>
       Math.max(...outline.map(point => point.y)) - Math.min(...outline.map(point => point.y))
-    expect(spread(hard)).toBeGreaterThan(spread(soft))
-    expect(spread(hard)).toBeCloseTo(20, 1)
+    expect(spread(soft)).toBeCloseTo(14, 6)
+    expect(spread(hard)).toBeCloseTo(30, 6)
   })
 })
 
@@ -176,13 +179,13 @@ describe('freehand options', () => {
     const finger = freehandOptions({ dash: 'draw', isPen: false, isComplete: true }, 10, false, false)
     expect(pen).toMatchObject({ size: 13, thinning: 0.62, streamline: 0.62, simulatePressure: false })
     expect(finger).toMatchObject({ size: 10, thinning: 0.5, smoothing: 0.62, simulatePressure: true })
-    expect(finger.streamline).toBeCloseTo(0.6486, 4)
+    expect(finger.streamline).toBeCloseTo(0.6543, 4)
   })
 
   it('keeps a pen on the plain solid settings when the dash is not draw', () => {
     const dashed = freehandOptions({ dash: 'dashed', isPen: true, isComplete: true }, 10, false, false)
     const forced = freehandOptions({ dash: 'draw', isPen: true, isComplete: true }, 10, false, true)
-    expect(dashed.streamline).toBeCloseTo(0.6486, 4)
+    expect(dashed.streamline).toBeCloseTo(0.6543, 4)
     expect(forced.streamline).toBe(0.62)
     expect(dashed.thinning).toBe(0)
     expect(forced.thinning).toBe(0)

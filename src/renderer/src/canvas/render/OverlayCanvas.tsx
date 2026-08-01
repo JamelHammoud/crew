@@ -1,6 +1,5 @@
 import { memo, useLayoutEffect, useRef } from 'react'
 import { computed, EffectScheduler } from '../signals'
-import { viewportLayerStyle } from './style'
 import type { CanvasRenderHost, CanvasShapeRecord } from './types'
 
 interface OverlayRenderInputs {
@@ -90,7 +89,5 @@ export const OverlayCanvas = memo(function OverlayCanvas<Shape extends CanvasSha
     }
   }, [host])
 
-  return (
-    <canvas ref={canvasRef} data-canvas-overlays="true" className="crew-canvas-overlays" style={viewportLayerStyle} />
-  )
+  return <canvas ref={canvasRef} data-canvas-overlays="true" className="crew-canvas-overlays" />
 })
