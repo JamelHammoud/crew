@@ -312,9 +312,11 @@ export class Editor {
     }
   }
 
-  setViewportScreenBounds(bounds: ViewportBounds): this {
-    this.camera.setScreenBounds(bounds)
+  setViewportScreenBounds(bounds: ViewportBounds | HTMLElement): this {
+    const next = bounds instanceof HTMLElement ? measureViewport(bounds) : bounds
+    if (!this.camera.setScreenBounds(next)) return this
     this.refreshInputPagePoint()
+    this.emit('resize', this.camera.getScreenBounds())
     return this
   }
 
