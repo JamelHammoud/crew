@@ -3,6 +3,8 @@ import {
   closeOne,
   focusAfterClose,
   isFull,
+  NEAR_RIGHT,
+  nearRight,
   openBeside,
   threadIdInHash,
   threadMenuActions,
@@ -85,5 +87,21 @@ describe('a thread in a window of its own', () => {
     expect(threadIdInHash('')).toBeNull()
     expect(threadIdInHash('#thread=')).toBeNull()
     expect(threadIdInHash('#thread=%20')).toBeNull()
+  })
+})
+
+describe('the way to another column', () => {
+  const RIGHT = 1200
+
+  it('stands only for a pointer already at the edge it hangs off', () => {
+    expect(nearRight(RIGHT, RIGHT)).toBe(true)
+    expect(nearRight(RIGHT - NEAR_RIGHT, RIGHT)).toBe(true)
+    expect(nearRight(RIGHT - NEAR_RIGHT - 1, RIGHT)).toBe(false)
+    expect(nearRight(0, RIGHT)).toBe(false)
+  })
+
+  it('reads the edge it is handed rather than the window, so a panel beside it moves the reach', () => {
+    expect(nearRight(700, 720)).toBe(true)
+    expect(nearRight(700, RIGHT)).toBe(false)
   })
 })
