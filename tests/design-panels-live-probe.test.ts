@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { EditorContext, createShapeId, createTLStore, type TLShapeId } from '../src/renderer/src/canvas'
@@ -105,7 +105,9 @@ describe('the design panels on a real board', () => {
     const card = node(editor, 'Card', 0)
     const view = inside(editor, createElement(DesignLeftPanel))
     expect(view.container.querySelector('[aria-label="Layers"]')).toBeTruthy()
-    editor.setSelectedShapes([card])
+    act(() => {
+      editor.setSelectedShapes([card])
+    })
     expect(view.container.querySelector('[aria-label="Design"]')).toBeTruthy()
   })
 
