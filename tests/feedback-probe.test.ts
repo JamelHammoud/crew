@@ -4,7 +4,7 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-li
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import About from '../src/renderer/src/components/settings/About'
-import { REPORT_LIMIT } from '../src/shared/bugReport'
+import { FEEDBACK_LIMIT } from '../src/shared/feedback'
 
 let opened: string[] = []
 let opens = true
@@ -98,7 +98,7 @@ describe('reporting a problem', () => {
 
   it('stops taking words where the shell stops reading them', async () => {
     await write('anything')
-    expect(within(card()).getByLabelText('Report').getAttribute('maxlength')).toBe(String(REPORT_LIMIT))
+    expect(within(card()).getByLabelText('Report').getAttribute('maxlength')).toBe(String(FEEDBACK_LIMIT))
   })
 
   it('holds no solid grey, since the card it stands on is glass', async () => {
