@@ -101,7 +101,7 @@ export class TextShapeUtil extends ShapeUtil<TextShape> {
     const editing = this.editor.getEditingShapeId?.() === shape.id
     return createElement('div', {
       className: 'crew-rich-text',
-      style: ({
+      style: withResolvedLineHeight({
         width: size.width,
         minHeight: size.height,
         transform: `scale(${shape.props.scale})`,
