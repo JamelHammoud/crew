@@ -38,7 +38,7 @@ export function usePanelOpens(): PanelOpen[] {
   const tickets = useCrew(s => (s.openThreadId ? Boolean(s.threads[s.openThreadId]?.tickets) : false))
   const events = useCrew(s => s.events)
   const helpers = useMemo(
-    () => Boolean(threadId) && events.some(e => e.kind === 'subagent.started' && e.parentThreadId === threadId),
+    () => Boolean(threadId) && eventIndex(events).helperParents.has(threadId ?? ''),
     [events, threadId]
   )
 
