@@ -6,6 +6,7 @@ const FLASH = 'message-flash'
 const FLASH_MS = 520
 const SETTLED_FRAMES = 2
 const GIVE_UP_FRAMES = 90
+const SHOWN = 0.6
 
 export function replyTargetLabel(authorName: string, toSelf: boolean, byMe: boolean): string {
   if (!toSelf) return `Replying to ${authorName}`
