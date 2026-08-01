@@ -33,10 +33,14 @@ function Line({
       >
         {gone ? '−' : row.changed ? '+' : ''}
       </span>
+      {/* What a wrapped line does with its second half is the whole of whether
+          wrapping is readable. Hung under the code it reads as one line that
+          ran on, where flush against it every wrap reads as a new line of the
+          file and a diff stops having a shape. */}
       <span
-        className={`pr-3 ${wrap ? 'min-w-0 flex-1 whitespace-pre-wrap break-words' : 'whitespace-pre'} ${
-          gone ? 'text-fg-muted' : 'text-fg-secondary'
-        }`}
+        className={`pr-3 ${
+          wrap ? 'min-w-0 flex-1 whitespace-pre-wrap break-words pl-4 -indent-4' : 'whitespace-pre'
+        } ${gone ? 'text-fg-muted' : 'text-fg-secondary'}`}
       >
         <LineText row={row} tokens={tokens} tint={gone ? 'bg-danger/25' : 'bg-positive/25'} />
       </span>
