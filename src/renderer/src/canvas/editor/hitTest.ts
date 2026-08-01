@@ -161,8 +161,7 @@ export function getShapesAtPoint(host: HitTestHost, point: Vec, opts: HitTestOpt
     .filter(shape => {
       if (host.isShapeHidden(shape)) return false
       if (candidates && !candidates.has(shape.id) && !host.isShapeFrameLike(shape)) return false
-      const geometry = host.getShapeGeometry(shape)
-      return geometry.hitTestPoint(host.getPointInShapeSpace(shape, point), margin, opts.hitInside ?? false)
+      return host.isPointInShape(shape, point, { margin, hitInside: opts.hitInside ?? false })
     })
     .reverse()
 }
