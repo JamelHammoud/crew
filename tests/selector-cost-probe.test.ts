@@ -115,8 +115,10 @@ const helperEvents = (at: number): SessionEvent[] =>
     kind: 'subagent.started' as const,
     threadId: helperThread(index),
     parentThreadId: THREAD,
-    promptId: PROMPT,
+    parentPromptId: PROMPT,
     agentId: AGENT.id,
+    agentLabel: AGENT.label,
+    byName: 'ALI',
     name: `Helper ${index}`,
     subject: `piece ${index}`
   }))
