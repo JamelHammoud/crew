@@ -183,12 +183,7 @@ export default function ReviewView() {
           className="relative min-h-0"
           style={open ? { height: listHeight, flex: '0 0 auto' } : { flex: '1 1 auto' }}
         >
-          <div
-            ref={scrollRef}
-            tabIndex={-1}
-            onKeyDown={keys}
-            className={`h-full overflow-y-auto focus:outline-none ${bar && !open ? 'pb-14' : ''}`}
-          >
+          <div ref={scrollRef} tabIndex={-1} onKeyDown={keys} className="h-full overflow-y-auto focus:outline-none">
             {loading && work.changes.length === 0 ? (
               <div className="space-y-1 p-2 pt-3">
                 <Skeleton className="h-7 w-full rounded-xl" />
