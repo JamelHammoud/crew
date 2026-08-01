@@ -45,7 +45,7 @@ describe('Home places', () => {
 
     await waitFor(() => expect(recent).toHaveBeenCalledOnce())
     expect(projects).toHaveBeenCalledOnce()
-    expect(screen.queryByRole('button', { name: /10\.0\.0\.2/ })).toBeNull()
+    expect(screen.queryByRole('button', { name: /192\.0\.2\.10/ })).toBeNull()
     expect(screen.getByRole('button', { name: /Open a folder/ })).toBeTruthy()
     expect(screen.getByRole('button', { name: /Join with a link/ })).toBeTruthy()
   })
@@ -73,7 +73,7 @@ describe('Home places', () => {
     const { join } = installBridge([saved])
     render(createElement(Home))
 
-    fireEvent.click(await screen.findByRole('button', { name: /10\.0\.0\.2:2739/ }))
+    fireEvent.click(await screen.findByRole('button', { name: /192\.0\.2\.10:2739/ }))
 
     await waitFor(() => expect(join).toHaveBeenCalledWith(saved.link, saved.folder, saved.name))
     expect(storage.getItem('crew.link')).toBe(saved.link)
@@ -93,7 +93,7 @@ describe('Home places', () => {
     const { forgetJoin, recent } = installBridge([saved])
     render(createElement(Home))
 
-    const row = await screen.findByRole('button', { name: /10\.0\.0\.2:2739/ })
+    const row = await screen.findByRole('button', { name: /192\.0\.2\.10:2739/ })
     expect(screen.queryByRole('button', { name: /Remove from the list/ })).toBeNull()
 
     fireEvent.contextMenu(row)
