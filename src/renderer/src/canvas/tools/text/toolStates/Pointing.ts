@@ -78,7 +78,12 @@ export class Pointing extends BoxStateNode {
     const shape = this.createTextShape(id, point, true, 20)
     if (!shape) return
     this.editor.select(id)
-    startEditingShapeWithRichText(this.editor, id)
+    startEditingShapeWithRichText(this.editor, id, { info: this.editInfo() })
+  }
+
+  private editInfo(): BoxPointerInfo | undefined {
+    if (!this.editor.getInstanceState().isToolLocked) return undefined
+    return { isCreatingTextWhileToolLocked: true }
   }
 
   private cancel(): void {
