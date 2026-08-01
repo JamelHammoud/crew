@@ -79,8 +79,8 @@ function Session() {
   // A thread lives in the chat, so opening one from anywhere goes there: a
   // banner, a toast, a call, a task.
   useEffect(() => {
-    if (openThreadId) setTab('chat')
-  }, [openThreadId])
+    if (openThreadIds.length > 0) setTab('chat')
+  }, [openThreadIds])
 
   useEffect(() => window.crew?.onNotificationOpen?.(threadId => openThread(threadId)), [openThread])
 
@@ -92,7 +92,7 @@ function Session() {
   )
 
   const switchTab = (next: Tab) => {
-    if (next === 'chat') closeThread()
+    if (next === 'chat') closeThreads()
     setTab(next)
   }
 
