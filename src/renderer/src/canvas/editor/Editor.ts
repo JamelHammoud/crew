@@ -543,11 +543,11 @@ export class Editor {
     return this.bindings.involvingShape(idOf(shapeOrId), type)
   }
 
-  deleteBinding(binding: TLBinding | TLBindingId, options?: { isolateShapes?: boolean }): this {
+  deleteBinding(binding: TLBinding | string, options?: { isolateShapes?: boolean }): this {
     return this.deleteBindings([binding], options)
   }
 
-  deleteBindings(bindings: readonly (TLBinding | TLBindingId)[], options?: { isolateShapes?: boolean }): this {
+  deleteBindings(bindings: readonly (TLBinding | string)[], options?: { isolateShapes?: boolean }): this {
     this.bindings.delete(
       bindings.map(binding => (typeof binding === 'string' ? binding : binding.id)),
       options
