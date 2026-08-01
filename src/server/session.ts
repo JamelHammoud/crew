@@ -2276,6 +2276,21 @@ export class CrewSession {
     this.send(ws, { type: 'history', events: chatEvents(older.events), more: older.more })
   }
 
+  // One thread, whole. A window holds the tail of the log, so a thread opened
+  // long after it ran is a row in the rail with nothing under it, and the way
+  // back into it is asking for that thread rather than reading the whole chat
+  // back a page at a time to reach it. It goes to the one who asked, and a
+  // ghost thread is that window's own or nobody's.
+  private sendThreadHistory(ws: WebSocket, threadId: string): void {
+    if (this.hiddenFrom(ws, threadId)) return
+    const own = eventsOfThread(this.eventsOf(threadId), threadId)
+    this.send(ws, {
+      type: 'thread.history',
+      threadId,
+      events: chatEvents(trimEvents(own, THREAD_HISTORY_LIMIT))
+    })
+  }
+
   private handleDeleteMessage(member: Member, messageId: string): void {
     const index = this.events.findIndex(e => e.kind === 'message' && e.id === messageId)
     if (index === -1) return
