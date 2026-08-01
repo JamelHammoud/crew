@@ -1,12 +1,19 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
+import { movedBy } from './movedBy'
 
 const CARD_WIDTH = 240
 
-let closeActive: (() => void) | null = null
+type Standing = { anchor: () => Element | null; hide: () => void }
 
-export function hoverCardOpen(): boolean {
-  return closeActive !== null
+let active: Standing | null = null
+
+// A scroller only holds still for a card it would take down itself. One being
+// read somewhere else in the app is no reason for a thread to stop following the
+// run in it.
+export function hoverCardIn(el: Element | null): boolean {
+  const anchor = active?.anchor()
+  return Boolean(el && anchor && el.contains(anchor))
 }
 
 function within(rect: DOMRect | undefined, x: number, y: number, pad: number): boolean {
