@@ -177,7 +177,10 @@ describe('dragging a project up the list', () => {
     fireEvent.pointerDown(groups[0]!.querySelector('button')!, { button: 0, clientX: 40, clientY: 30 })
 
     fireEvent.pointerMove(window, { clientX: 40, clientY: 130 })
-    expect(line(container)?.style.top).toBe(`${TOP + TALL + GAP / 2}px`)
+    expect(line(container)?.style.top).toBe(`${TOP + TALL + GAP + TALL + GAP / 2}px`)
+    act(() => {
+      fireEvent.keyDown(window, { key: 'Escape' })
+    })
 
     fireEvent.pointerDown(groups[1]!.querySelector('button')!, { button: 0, clientX: 40, clientY: 110 })
     fireEvent.pointerMove(window, { clientX: 40, clientY: 40 })
