@@ -14,7 +14,17 @@ const BIG = 10_000_000
 const WIDE = 2100
 const TALL = 1600
 
-const page = new JSDOM('').window
+interface Page {
+  File: typeof File
+  FileReader: typeof FileReader
+  Blob: typeof Blob
+}
+
+const { JSDOM } = createRequire(import.meta.url)('jsdom') as {
+  JSDOM: new (html: string) => { window: Page }
+}
+
+const page: Page = new JSDOM('').window
 
 const bytes = (size: number): Uint8Array => {
   const made = new Uint8Array(size)
