@@ -25,6 +25,7 @@ function statePaths(prefix: string): { agents: string; session: string; projects
 describe('several crews in one app', () => {
   const standing: Crews[] = []
   const uis: TestUi[] = []
+  const runners: Runner[] = []
 
   function crews(prefix: string): Crews {
     const made = crewsAt(statePaths(prefix))
