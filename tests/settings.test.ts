@@ -86,7 +86,7 @@ const show = (tab?: Parameters<typeof openSettings>[0]) => {
 
 describe('the settings', () => {
   it('is what your own face opens, with no menu in between', () => {
-    render(createElement(TopBar, { tab: 'chat' as const, onTab: vi.fn(), tasksOpen: false, onToggleTasks: () => {} }))
+    render(createElement(TopBar, { tab: 'chat' as const, onTab: vi.fn() }))
     render(createElement(Settings))
     expect(screen.queryByRole('dialog', { name: 'Settings' })).toBeNull()
 
@@ -96,7 +96,7 @@ describe('the settings', () => {
   })
 
   it('keeps the main navigation hidden', () => {
-    render(createElement(TopBar, { tab: 'chat' as const, onTab: vi.fn(), tasksOpen: false, onToggleTasks: () => {} }))
+    render(createElement(TopBar, { tab: 'chat' as const, onTab: vi.fn() }))
     const navigation = screen.getByRole('navigation', { name: 'Main navigation' })
     const labels = within(navigation)
       .getAllByRole('button')

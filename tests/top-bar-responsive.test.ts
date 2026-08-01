@@ -57,9 +57,7 @@ describe('responsive top bar', () => {
     render(
       createElement(TopBar, {
         tab: 'chat',
-        onTab,
-        tasksOpen: false,
-        onToggleTasks: () => {}
+        onTab
       })
     )
 
@@ -90,9 +88,7 @@ describe('responsive top bar', () => {
     render(
       createElement(TopBar, {
         tab: 'chat',
-        onTab: () => {},
-        tasksOpen: false,
-        onToggleTasks: () => {}
+        onTab: () => {}
       })
     )
 
@@ -119,9 +115,7 @@ describe('responsive top bar', () => {
     render(
       createElement(TopBar, {
         tab: 'chat',
-        onTab: () => {},
-        tasksOpen: false,
-        onToggleTasks: () => {}
+        onTab: () => {}
       })
     )
 
@@ -141,9 +135,7 @@ describe('responsive top bar', () => {
     render(
       createElement(TopBar, {
         tab: 'chat',
-        onTab: () => {},
-        tasksOpen: false,
-        onToggleTasks: () => {}
+        onTab: () => {}
       })
     )
 
@@ -161,9 +153,7 @@ describe('responsive top bar', () => {
     render(
       createElement(TopBar, {
         tab: 'docs',
-        onTab,
-        tasksOpen: false,
-        onToggleTasks: () => {}
+        onTab
       })
     )
 
@@ -189,9 +179,7 @@ describe('responsive top bar', () => {
     render(
       createElement(TopBar, {
         tab: 'chat',
-        onTab: () => {},
-        tasksOpen: false,
-        onToggleTasks: () => {}
+        onTab: () => {}
       })
     )
 

@@ -38,9 +38,7 @@ const topBar = () =>
   render(
     createElement(TopBar, {
       tab: 'chat',
-      onTab: () => {},
-      tasksOpen: false,
-      onToggleTasks: () => {}
+      onTab: () => {}
     })
   )
 

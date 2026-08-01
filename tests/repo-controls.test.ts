@@ -39,7 +39,7 @@ afterEach(() => {
 })
 
 const topBar = () =>
-  createElement(TopBar, { tab: 'chat' as const, onTab: () => {}, tasksOpen: false, onToggleTasks: () => {} })
+  createElement(TopBar, { tab: 'chat' as const, onTab: () => {} })
 
 describe('project sync controls', () => {
   it('sends the changes to the review tab rather than showing them twice', async () => {
