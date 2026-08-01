@@ -107,6 +107,12 @@ const updates = new Updates({
   windows: () => appWindows(),
   others: () => instances.count(),
   settle,
+  prepareQuit: () => {
+    quitting = true
+  },
+  cancelQuit: () => {
+    quitting = false
+  },
   log: path.join(stateDir, 'updates.log')
 })
 const said = new ScribeHistory()

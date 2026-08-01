@@ -32,6 +32,8 @@ export interface UpdatesHost {
   // Whatever quitting puts down, put down before the app is replaced under it.
   // It is the same one main quits through, so nothing is shut down twice.
   settle: () => Promise<void>
+  prepareQuit: () => void
+  cancelQuit: () => void
   log: string
 }
 
@@ -43,14 +45,17 @@ export class Updates {
   private landed = false
   private going = false
 
-  constructor(private readonly host: UpdatesHost) {}
+  constructor(
+    private readonly host: UpdatesHost,
+    private readonly updater: () => AppUpdater = autoUpdater
+  ) {}
 
   // A run from source has no release behind it and no signature to check one
   // against, so the pill never stands there and nothing is ever fetched.
   start(packaged: boolean): void {
     if (this.live || !packaged) return
     this.live = true
-    const up = autoUpdater()
+    const up = this.updater()
     up.logger = this.logger()
     up.autoDownload = false
     // Crew decides when the app may be replaced, so nothing installs itself on
@@ -92,7 +97,7 @@ export class Updates {
     }
     if (this.state.stage !== 'found' && this.state.stage !== 'failed') return
     this.say({ word: 'getting' })
-    void autoUpdater()
+    void this.updater()
       .downloadUpdate()
       .catch(() => this.say({ word: 'error' }))
   }
@@ -110,7 +115,7 @@ export class Updates {
 
   private check(): void {
     if (!worthChecking(this.state.stage)) return
-    void autoUpdater()
+    void this.updater()
       .checkForUpdates()
       .catch(() => this.say({ word: 'error' }))
   }
@@ -147,7 +152,8 @@ export class Updates {
     await this.host.settle().catch(() => {})
     if (!this.going) return
     try {
-      autoUpdater().quitAndInstall(true, true)
+      this.host.prepareQuit()
+      this.updater().quitAndInstall(true, true)
     } catch {
       this.gaveUp()
     }
@@ -158,6 +164,7 @@ export class Updates {
     if (this.gone) clearTimeout(this.gone)
     this.gone = null
     this.going = false
+    this.host.cancelQuit()
     this.say({ word: 'stuck', why: 'install' })
   }
 
