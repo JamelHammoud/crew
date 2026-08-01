@@ -774,9 +774,10 @@ export const useCrew = create<CrewState>((set, get) => {
           activePrompts,
           threads,
           threadPrompts,
-          openThreadId: threads[threadWanted ?? ''] ? threadWanted : null
+          openThreadIds: wanted,
+          openThreadId: wanted.at(-1) ?? null
         })
-        threadWanted = null
+        threadsWanted = []
         for (const listener of huddleListeners) {
           listener({ type: 'huddle.room', room: msg.snapshot.huddle ?? emptyRoom() })
         }
