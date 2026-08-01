@@ -101,6 +101,7 @@ const bridge = {
   popOutThread: (threadId: string, key?: string): Promise<void> =>
     ipcRenderer.invoke('window:pop-thread', threadId, key),
   appVersion: (): Promise<string> => ipcRenderer.invoke('app:version'),
+  systemInfo: (): Promise<SystemDetails> => ipcRenderer.invoke('app:system'),
   setTheme: (theme: 'dark' | 'light'): Promise<void> => ipcRenderer.invoke('app:theme', theme),
   setAppIcon: (icon: AppIconId): Promise<void> => ipcRenderer.invoke('app:icon', icon),
   keepAwake: (on: boolean): void => ipcRenderer.send('app:awake', on),
