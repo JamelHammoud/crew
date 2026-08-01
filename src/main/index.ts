@@ -499,6 +499,30 @@ app.whenReady().then(() => {
     if (info) warmTerminals()
     return info
   })
+  // A thread stood out into a window of its own. It opens on the crew the window
+  // that asked is looking at, and that is set the moment the window is made
+  // rather than once the page has loaded: loading is the slow half, and every
+  // handler the renderer reaches for asks which crew this window is in.
+  ipcMain.handle('window:pop-thread', (event, threadId: string) => {
+    const standing = popped.get(threadId)
+    if (standing && !standing.isDestroyed()) {
+      if (standing.isMinimized()) standing.restore()
+      standing.show()
+      standing.focus()
+      return
+    }
+    const asking = BrowserWindow.fromWebContents(event.sender)
+    const key = asking ? crews.keyInView(asking.webContents.id) : null
+    // A window looking at nothing has no thread to hand over, so nothing opens
+    // rather than a window landing on the way in with a thread named in its URL.
+    if (!key) return
+    const win = createWindow(threadId)
+    crews.switchTo(win.webContents.id, key)
+    popped.set(threadId, win)
+    win.on('closed', () => {
+      if (popped.get(threadId) === win) popped.delete(threadId)
+    })
+  })
   ipcMain.handle('session:close', async (_event, key: string) => {
     await crews.close(key)
     sharing()
