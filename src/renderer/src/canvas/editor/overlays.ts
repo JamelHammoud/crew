@@ -309,17 +309,7 @@ class SnapOverlayUtil implements ToolOverlayUtil {
   render(context: CanvasRenderingContext2D): void {
     const indicators = this.editor.snaps.getIndicators()
     if (indicators.length === 0) return
-    const zoom = this.editor.getZoomLevel()
-    const stroke = colorOf(this.editor, 'snap')
-    context.strokeStyle = stroke
-    context.fillStyle = stroke
-    context.lineWidth = 1 / zoom
-    context.setLineDash([4 / zoom, 4 / zoom])
-    for (const indicator of indicators) {
-      if (indicator.type === 'points') drawPointIndicator(context, indicator.points, zoom)
-      else drawGapIndicator(context, indicator, zoom)
-    }
-    context.setLineDash([])
+    drawSnapGuides(context, indicators, this.editor.getZoomLevel(), colorOf(this.editor, 'snap'))
   }
 }
 
