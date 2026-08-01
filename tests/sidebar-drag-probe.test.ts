@@ -149,7 +149,7 @@ describe('dragging a project up the list', () => {
     fireEvent.pointerDown(groups[1]!.querySelector('button')!, { button: 0, clientX: 40, clientY: 110 })
     fireEvent.pointerMove(window, { clientX: 60, clientY: 40 })
 
-    expect(groups[1]!.style.opacity).toBe('0.35')
+    expect(groups[1]!.style.opacity).toBe('0.2')
     expect(groups[1]!.style.translate).toBe('')
     expect(groups[0]!.style.translate).toBe('')
     expect(hand()?.textContent).toBe('two')
