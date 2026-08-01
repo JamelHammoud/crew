@@ -84,7 +84,7 @@ describe('the camera', () => {
     expect(subject.getZoomLevel()).toBe(1)
   })
 
-  it('reads a wheel the way tldraw does, clamped and negated', () => {
+  it('reads a wheel with clamped and negated deltas', () => {
     expect(normalizeWheel({ deltaX: 12, deltaY: 30 } as WheelEvent)).toEqual({ x: -12, y: -30, z: -0 })
     const zooming = normalizeWheel({ deltaX: 0, deltaY: 400, ctrlKey: true } as WheelEvent)
     expect(zooming.z).toBeCloseTo(-0.1, 6)
