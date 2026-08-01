@@ -475,7 +475,7 @@ describe('the sidebar', () => {
   })
 
   it('stands over the whole page, whatever the page stacks inside itself', () => {
-    const app = readFileSync(path.join(process.cwd(), 'src/renderer/src/App.tsx'), 'utf8')
+    const app = readFileSync(`${process.cwd()}/src/renderer/src/App.tsx`, 'utf8')
     const page = app.lastIndexOf('<div className="', app.indexOf('<main'))
     expect(app.slice(page, app.indexOf('<main'))).toContain('isolate')
   })
