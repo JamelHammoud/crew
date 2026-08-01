@@ -770,6 +770,15 @@ export class CrewSession {
       store.appendEvent(close)
     }
     for (const [page, doc] of Object.entries(store.loadDocs())) this.docs.set(page, doc)
+    if (!this.docs.has(ROOT_PAGE)) {
+      const welcome: DocPage = { title: ROOT_TITLE, text: ROOT_TEXT }
+      try {
+        store.saveDoc(ROOT_PAGE, welcome)
+        this.docs.set(ROOT_PAGE, welcome)
+      } catch {
+        this.docs.set(ROOT_PAGE, welcome)
+      }
+    }
     for (const [id, design] of Object.entries(store.loadDesigns())) {
       this.designs.set(id, { id, name: design.name, document: design.document, presence: new Map(), saveTimer: null })
     }

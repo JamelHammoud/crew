@@ -240,6 +240,87 @@ const driveSource = String.raw`(async () => {
   report.hasUngroup = ids.includes('ungroup')
   report.shapesUnder = shapesUnder(editor, page).map(shape => shape.type + ':' + shape.id)
 
+  const bounds = editor.getShapePageBounds(group)
+  const rightClickOptions = {
+    margin: editor.options.hitTestMargin / editor.getZoomLevel(),
+    hitInside: false,
+    hitLabels: true,
+    hitLocked: true,
+    hitFrameInside: true,
+    renderingOnly: true
+  }
+  const dead = []
+  const alive = []
+  const COLUMNS = 60
+  const ROWS = 36
+  for (let row = 0; row < ROWS; row++) {
+    for (let column = 0; column < COLUMNS; column++) {
+      const point = {
+        x: bounds.minX + (bounds.w * (column + 0.5)) / COLUMNS,
+        y: bounds.minY + (bounds.h * (row + 0.5)) / ROWS
+      }
+      const hit = editor.getShapeAtPoint(point, rightClickOptions)
+      if (hit) alive.push(point)
+      else dead.push(point)
+    }
+  }
+  report.deadZone = {
+    sampled: COLUMNS * ROWS,
+    hitsNothing: dead.length,
+    hitsSomething: alive.length,
+    share: round(dead.length / (COLUMNS * ROWS))
+  }
+
+  const onScreen = point => {
+    const at = viewport(point)
+    const frameBox = box()
+    return at.x > frameBox.left + 16 && at.x < frameBox.right - 16 && at.y > frameBox.top + 16 && at.y < frameBox.bottom - 16
+  }
+  const deadSpot = dead.find(onScreen)
+  if (deadSpot) {
+    const deadScreen = viewport(deadSpot)
+    report.deadSpot = { page: { x: round(deadSpot.x), y: round(deadSpot.y) } }
+
+    editor.selectNone()
+    await settle()
+    await rightClick(deadScreen)
+    const emptyIds = availableCommands({ ...ctx, point: pageAt(deadScreen) }).map(command => command.id)
+    report.rightClickDeadFromNothing = {
+      selection: selection(),
+      hasUngroup: emptyIds.includes('ungroup'),
+      shapesUnder: shapesUnder(editor, pageAt(deadScreen)).map(shape => shape.type + ':' + shape.id)
+    }
+
+    editor.selectNone()
+    await settle()
+    editor.setSelectedShapes([group.id])
+    await settle()
+    await rightClick(deadScreen)
+    const heldIds = availableCommands({ ...ctx, point: pageAt(deadScreen) }).map(command => command.id)
+    report.rightClickDeadWithGroupSelected = {
+      selection: selection(),
+      hasUngroup: heldIds.includes('ungroup')
+    }
+  }
+
+  editor.selectNone()
+  await settle()
+  editor.setFocusedGroupId(group.id)
+  editor.setSelectedShapes([spot.hit])
+  await settle()
+  const focusedIds = availableCommands({ ...ctx, point: pageAt(spot.screen) }).map(command => command.id)
+  report.insideTheGroup = {
+    focusedGroupId: editor.getFocusedGroupId(),
+    selectionBeforeRightClick: selection(),
+    hasUngroupBeforeRightClick: focusedIds.includes('ungroup')
+  }
+  await rightClick(spot.screen, childNode ?? undefined)
+  const afterFocusedIds = availableCommands({ ...ctx, point: pageAt(spot.screen) }).map(command => command.id)
+  report.insideTheGroup.selectionAfterRightClick = selection()
+  report.insideTheGroup.hasUngroupAfterRightClick = afterFocusedIds.includes('ungroup')
+  editor.setFocusedGroupId(editor.getCurrentPageId())
+  await settle()
+
   await rightClick(spot.screen, childNode ?? undefined)
   const afterSecond = selection()
   const secondIds = availableCommands({ ...ctx, point: pageAt(spot.screen) }).map(command => command.id)
