@@ -134,6 +134,20 @@ beforeEach(() => {
 afterEach(cleanup)
 
 describe('several threads open side by side', () => {
+  it('replaces the row when a task is opened from the task list', () => {
+    open(['thread-1'], 'thread-1')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Tasks' }))
+    const task = screen
+      .getAllByRole('button')
+      .find(button => button.textContent?.includes('look at the footer'))!
+    fireEvent.click(task)
+
+    expect(useCrew.getState().openThreadIds).toEqual(['thread-2'])
+    expect(useCrew.getState().openThreadId).toBe('thread-2')
+    expect(columns()).toHaveLength(1)
+  })
+
   it('draws a column each and takes the chat feed off the screen', () => {
     open(['thread-1', 'thread-2'], 'thread-1')
 
