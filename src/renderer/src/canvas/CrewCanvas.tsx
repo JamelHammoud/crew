@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { flushSync } from 'react-dom'
 import { Editor } from './editor'
 import { EditorContext } from './react'
 import { Canvas, type CanvasShapeRenderer } from './render'
@@ -101,6 +102,9 @@ export function CrewCanvas({
       element.focus({ preventScroll: true })
       handlers.onPointerDown(event)
     }
+    const pointerUp = (event: PointerEvent) => {
+      flushSync(() => handlers.onPointerUp(event))
+    }
     const contextMenu = (event: MouseEvent) => {
       event.preventDefault()
       handlers.onContextMenu(event)
@@ -111,7 +115,7 @@ export function CrewCanvas({
     }
     element.addEventListener('pointerdown', pointerDown)
     element.addEventListener('pointermove', handlers.onPointerMove)
-    element.addEventListener('pointerup', handlers.onPointerUp)
+    element.addEventListener('pointerup', pointerUp)
     element.addEventListener('pointercancel', handlers.onPointerCancel)
     element.addEventListener('dblclick', handlers.onDoubleClick)
     element.addEventListener('contextmenu', contextMenu)
@@ -135,7 +139,7 @@ export function CrewCanvas({
       observer.disconnect()
       element.removeEventListener('pointerdown', pointerDown)
       element.removeEventListener('pointermove', handlers.onPointerMove)
-      element.removeEventListener('pointerup', handlers.onPointerUp)
+      element.removeEventListener('pointerup', pointerUp)
       element.removeEventListener('pointercancel', handlers.onPointerCancel)
       element.removeEventListener('dblclick', handlers.onDoubleClick)
       element.removeEventListener('contextmenu', contextMenu)
