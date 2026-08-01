@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react'
 import { MenuItem, Popover } from '../../components/Popover'
 import Spinner from '../../components/Spinner'
-import { ArrowRightGlyph, TrashGlyph } from '../../icons'
+import { ArrowRightGlyph, CloseGlyph, TrashGlyph } from '../../icons'
 
 // One place you can be. A project on this machine and a session somebody
 // invited you to are the same row, because from here they are the same thing.
