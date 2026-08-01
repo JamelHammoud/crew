@@ -56,15 +56,16 @@ export function Canvas<Shape extends CanvasShapeRecord>({
     )
   }, [host])
 
-  const cameraMoving = useValue('canvas camera state', () => host.getCameraState() === 'moving', [host])
-
-  const assignRoot = (element: HTMLDivElement | null) => {
-    rootRef.current = element
-    if (typeof canvasRef === 'function') canvasRef(element)
-    else if (canvasRef) {
-      canvasRef.current = element
-    }
-  }
+  const assignRoot = useCallback(
+    (element: HTMLDivElement | null) => {
+      rootRef.current = element
+      if (typeof canvasRef === 'function') canvasRef(element)
+      else if (canvasRef) {
+        canvasRef.current = element
+      }
+    },
+    [canvasRef]
+  )
 
   return (
     <>
