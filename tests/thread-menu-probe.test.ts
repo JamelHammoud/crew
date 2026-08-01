@@ -55,7 +55,7 @@ describe('the right click on a thread in the rail', () => {
     useCrew.setState({ openThreadIds: ['thread-1', 'thread-2'], openThreadId: 'thread-2' })
     row(true)
 
-    fireEvent.click(screen.getByText('Open in its own window'))
+    fireEvent.click(screen.getByText('Open in window'))
     expect(popOutThread).toHaveBeenCalledWith('thread-2', HERE)
     expect(useCrew.getState().openThreadIds).toEqual(['thread-1'])
   })
@@ -63,8 +63,8 @@ describe('the right click on a thread in the rail', () => {
   it('names the crew a thread of another project belongs to, and leaves this row alone', () => {
     row(false, false, AWAY)
 
-    expect(rows()).toEqual(['Open', 'Open in its own window'])
-    fireEvent.click(screen.getByText('Open in its own window'))
+    expect(rows()).toEqual(['Open', 'Open in window'])
+    fireEvent.click(screen.getByText('Open in window'))
     expect(popOutThread).toHaveBeenCalledWith('thread-2', AWAY)
     expect(useCrew.getState().openThreadIds).toEqual(['thread-1'])
   })

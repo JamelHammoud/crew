@@ -314,7 +314,7 @@ describe('the right click on a card in the feed', () => {
   it('pops one out without it standing in both places at once', () => {
     open([], null)
     fireEvent.contextMenu(card('look at the footer'))
-    fireEvent.click(screen.getByText('Open in its own window'))
+    fireEvent.click(screen.getByText('Open in window'))
 
     expect(popOutThread).toHaveBeenLastCalledWith('thread-2', undefined)
     expect(useCrew.getState().openThreadIds).toEqual([])

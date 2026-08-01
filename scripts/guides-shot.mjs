@@ -63,7 +63,7 @@ createRoot(document.getElementById('root')).render(
 `
 }
 
-const driveSource = String.raw`(async (stage, zoom, look, still) => {
+const driveSource = `(async (stage, zoom, look, still) => {
   const editor = window.canvasEditor
   if (!editor) return { failed: 'the editor never mounted' }
   const surface = document.querySelector('[data-canvas="true"]')
