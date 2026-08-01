@@ -380,6 +380,51 @@ describe('canvas transforms', () => {
     expect(indicators).toEqual([])
   })
 
+  it('snaps a single rotated shape by its own corners rather than its bounding box', () => {
+    const shape = geoShape('rotated-snap', { rotation: PI / 4, props: { w: 100, h: 100 } })
+    let current = shape
+    let asked: { initialSelectionSnapPoints?: readonly { x: number; y: number }[] } | undefined
+    const editor = {
+      inputs: {
+        getCurrentPagePoint: () => new Vec(),
+        getOriginPagePoint: () => new Vec(),
+        getShiftKey: () => false,
+        getAccelKey: () => false
+      },
+      getShape: () => current,
+      getSelectedShapeIds: () => [shape.id],
+      getShapePageTransform: () => Mat.Rotate(PI / 4),
+      getShapeGeometry: () => ({ bounds: new Box(0, 0, 100, 100) }),
+      getSelectionPageBounds: () => new Box(-Math.SQRT1_2 * 100, 0, Math.SQRT2 * 100, Math.SQRT2 * 100),
+      updateShapes: (updates: Array<Partial<GeoShape>>) => {
+        current = { ...current, ...updates[0] }
+      },
+      getIsSnapMode: () => true,
+      snaps: {
+        snapTranslateBounds: (options: typeof asked) => {
+          asked = options
+          return { nudge: new Vec(), indicators: [] }
+        },
+        setIndicators: () => {},
+        clearIndicators: () => {}
+      }
+    } as unknown as TransformEditor<GeoShape>
+    const state = new Translating(editor)
+    state.enter({
+      snapshots: [{ shape, pagePoint: new Vec(), parentTransform: null }],
+      initialPageBounds: new Box(-Math.SQRT1_2 * 100, 0, Math.SQRT2 * 100, Math.SQRT2 * 100),
+      snappableShapes: []
+    })
+
+    const points = asked?.initialSelectionSnapPoints ?? []
+    expect(points).toHaveLength(5)
+    const has = (x: number, y: number) =>
+      points.some(point => Math.abs(point.x - x) < 1e-6 && Math.abs(point.y - y) < 1e-6)
+    expect(has(0, 0)).toBe(true)
+    expect(has(Math.SQRT1_2 * 100, Math.SQRT1_2 * 100)).toBe(true)
+    expect(has(-Math.SQRT1_2 * 100, 0)).toBe(false)
+  })
+
   it('drives resize snapping through the state and clears indicators on cancel', () => {
     const shape = geoShape('resize-snap', { y: 20, props: { w: 20, h: 20 } })
     let current = shape
