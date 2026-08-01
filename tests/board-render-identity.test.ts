@@ -38,7 +38,7 @@ describe('what keeping whole pixels hands the rendering list', () => {
     expect(after).toBe(before)
   })
 
-  it('reads a shape that only moved as the same thing to render', () => {
+  it('reads a shape whose position moved as the same thing to render', () => {
     const subject = board()
     const stop = keepWholePixels(subject)
     const id = geo(subject, 'rendered', 100, 100)
