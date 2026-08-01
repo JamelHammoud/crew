@@ -37,6 +37,8 @@ const thought = (text: string, streaming: boolean): ThreadItem => ({
   promptId: 'p1'
 })
 
+const REST = 'It reads the whole of the file before it says anything at all about what is in there.'
+
 describe('an answer arriving as it is written', () => {
   it('fades in only what just landed, and leaves the rest alone', () => {
     const { container, rerender } = render(md('The parser'))

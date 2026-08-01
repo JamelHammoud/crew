@@ -263,7 +263,7 @@ try {
 
   const said = await new Promise((resolve, reject) => {
     const child = spawn(electron, [path.join(dir, 'main.mjs')], {
-      env: { ...process.env, COVER_OUT: out, MARK_OUT: marksOut, ELECTRON_ENABLE_LOGGING: '0' },
+      env: { ...process.env, COVER_OUT: out, MARK_OUT: marksOut, FACE_OUT: facesOut, ELECTRON_ENABLE_LOGGING: '0' },
       stdio: ['ignore', 'pipe', 'pipe']
     })
     let text = ''
