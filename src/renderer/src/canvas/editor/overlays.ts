@@ -47,16 +47,50 @@ interface HitTarget {
   filled: boolean
 }
 
+class PaintPass {
+  private token = 0
+  private live = false
+
+  begin(): void {
+    this.token += 1
+    if (this.live) return
+    this.live = true
+    queueMicrotask(() => {
+      this.live = false
+      this.token += 1
+    })
+  }
+
+  key(): number {
+    return this.live ? this.token : 0
+  }
+}
+
+class PaintMemo<Value> {
+  private key = 0
+  private value: Value | undefined
+
+  read(pass: PaintPass, compute: () => Value): Value {
+    const key = pass.key()
+    if (key !== 0 && key === this.key) return this.value as Value
+    const value = compute()
+    this.key = key
+    this.value = value
+    return value
+  }
+}
+
 export class OverlayManager {
   private readonly values = new Map<string, ToolOverlayUtil>()
+  private readonly pass = new PaintPass()
   private hoveredId: string | null = null
 
   constructor(
     private readonly editor: OverlayEditor,
     constructors: readonly unknown[] = []
   ) {
-    this.register(new ShapeIndicatorOverlayUtil(editor))
-    this.register(new SelectionForegroundOverlayUtil(editor))
+    this.register(new ShapeIndicatorOverlayUtil(editor, this.pass))
+    this.register(new SelectionForegroundOverlayUtil(editor, this.pass))
     this.register(new BrushOverlayUtil(editor))
     this.register(new SnapOverlayUtil(editor))
     this.register(new ScribbleOverlayUtil(editor))
@@ -80,6 +114,7 @@ export class OverlayManager {
   }
 
   getActiveOverlayEntries(): CanvasOverlayEntry[] {
+    this.pass.begin()
     const entries: Array<CanvasOverlayEntry & { zIndex: number }> = []
     for (const value of this.values.values()) {
       if (!value.isActive()) continue
@@ -205,7 +240,12 @@ const BOX_PATHS = new Set([
 class SelectionForegroundOverlayUtil implements ToolOverlayUtil {
   static type = 'selection_foreground'
   readonly options = { zIndex: 100 }
-  constructor(private readonly editor: OverlayEditor) {}
+  private readonly memo = new PaintMemo<SelectionForegroundState | null>()
+
+  constructor(
+    private readonly editor: OverlayEditor,
+    private readonly pass: PaintPass
+  ) {}
 
   isActive(): boolean {
     const path = this.editor.getCurrentToolPath()
@@ -322,6 +362,10 @@ class SelectionForegroundOverlayUtil implements ToolOverlayUtil {
   }
 
   private state(): SelectionForegroundState | null {
+    return this.memo.read(this.pass, () => this.computeState())
+  }
+
+  private computeState(): SelectionForegroundState | null {
     const bounds = this.editor.getSelectionRotatedPageBounds()
     if (!bounds) return null
     const onlyShape = this.editor.getOnlySelectedShape()
@@ -383,11 +427,20 @@ class SelectionForegroundOverlayUtil implements ToolOverlayUtil {
   }
 }
 
+interface MarkedShapes {
+  indicated: TLShape[]
+  hinted: TLShape[]
+}
+
 class ShapeIndicatorOverlayUtil implements ToolOverlayUtil {
   static type = 'shape_indicator'
   readonly options = { zIndex: 50 }
+  private readonly memo = new PaintMemo<MarkedShapes>()
 
-  constructor(private readonly editor: OverlayEditor) {}
+  constructor(
+    private readonly editor: OverlayEditor,
+    private readonly pass: PaintPass
+  ) {}
 
   isActive(): boolean {
     const { indicated, hinted } = this.marked()
@@ -422,19 +475,28 @@ class ShapeIndicatorOverlayUtil implements ToolOverlayUtil {
 
   private stroke(context: CanvasRenderingContext2D, shapes: TLShape[]): void {
     for (const shape of shapes) {
-      const transform = this.editor.getShapePageTransform(shape)
       const geometry = this.editor.getShapeGeometry(shape)
-      const vertices = geometry.vertices.map(vertex => transform.applyToPoint(vertex))
-      if (vertices.length < 2) continue
+      const vertices = geometry.vertices
+      const count = vertices.length
+      if (count < 2) continue
+      const { a, b, c, d, e, f } = this.editor.getShapePageTransform(shape)
+      const first = vertices[0]
       context.beginPath()
-      context.moveTo(vertices[0].x, vertices[0].y)
-      for (const vertex of vertices.slice(1)) context.lineTo(vertex.x, vertex.y)
+      context.moveTo(a * first.x + c * first.y + e, b * first.x + d * first.y + f)
+      for (let index = 1; index < count; index++) {
+        const vertex = vertices[index]
+        context.lineTo(a * vertex.x + c * vertex.y + e, b * vertex.x + d * vertex.y + f)
+      }
       if (geometry.isClosed) context.closePath()
       context.stroke()
     }
   }
 
-  private marked(): { indicated: TLShape[]; hinted: TLShape[] } {
+  private marked(): MarkedShapes {
+    return this.memo.read(this.pass, () => this.computeMarked())
+  }
+
+  private computeMarked(): MarkedShapes {
     const editor = this.editor
     const path = editor.getCurrentToolPath()
     const instance = editor.getInstanceState()
@@ -453,7 +515,7 @@ class ShapeIndicatorOverlayUtil implements ToolOverlayUtil {
       }
     }
     const hinted: TLShape[] = []
-    for (const id of editor.getInstanceState().hintingShapeIds ?? []) {
+    for (const id of instance.hintingShapeIds ?? []) {
       const shape = editor.getShape(id)
       if (shape && !editor.isShapeHidden(shape)) hinted.push(shape)
     }
