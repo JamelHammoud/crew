@@ -802,10 +802,32 @@ const driveSource = String.raw`(async () => {
     await settle()
     editor.select(id)
     await settle()
-    await doubleClick(viewport(boundsOf(id).center), nodeOf(id) || surface)
-    if (editor.getEditingShapeId() !== id) return { ok: false, note: 'a double click did not open it for typing' }
+    const at = viewport(boundsOf(id).center)
+    pointer('pointermove', at.x, at.y, 0, nodeOf(id) || surface)
+    await settle()
+    await doubleClick(at, nodeOf(id) || surface)
+    if (editor.getEditingShapeId() !== id)
+      return { ok: false, note: 'a double click left the board in ' + editor.getCurrentToolPath() + ' with nothing being edited' }
     const caret = caretIn()
     return { ok: caret.ok, note: caret.ok ? caret.note : caret.why }
+  })
+
+  await attempt('clicking away from a text puts the board back', async () => {
+    await clear()
+    await scratch()
+    const id = build('text', { x: 0, y: 0 }, {})
+    await settle()
+    editor.select(id)
+    editor.startEditingShapeWithRichText(id)
+    await settle(6)
+    if (editor.getEditingShapeId() !== id) return { ok: false, note: 'it never opened for typing' }
+    await click(empty())
+    await settle(4)
+    const path = editor.getCurrentToolPath()
+    return {
+      ok: editor.getEditingShapeId() === null && path === 'select.idle',
+      note: 'editing ' + String(editor.getEditingShapeId()) + ', the board sits in ' + path
+    }
   })
 
   await attempt('an empty text has a caret', async () => {
