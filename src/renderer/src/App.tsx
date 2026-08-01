@@ -111,6 +111,12 @@ function Session() {
     setTasksOpen(false)
   }
 
+  const openFromTasksBeside = (threadId: string) => {
+    setTab('chat')
+    openThread(threadId)
+    setTasksOpen(false)
+  }
+
   return (
     <div className="h-full flex relative">
       <div
@@ -148,7 +154,12 @@ function Session() {
           </div>
           {tab !== 'design' && <div className="h-10 bg-gradient-to-b from-ink-900 to-transparent" />}
         </div>
-        <TasksPanel open={tasksOpen} onClose={() => setTasksOpen(false)} onOpenThread={openFromTasks} />
+        <TasksPanel
+          open={tasksOpen}
+          onClose={() => setTasksOpen(false)}
+          onOpenThread={openFromTasks}
+          onOpenThreadBeside={openFromTasksBeside}
+        />
       </div>
       <SidePanel visible={tab === 'chat'} />
       <WindowCorner />

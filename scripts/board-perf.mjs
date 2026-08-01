@@ -214,6 +214,38 @@ const driveSource = String.raw`(async () => {
     }
   }
 
+  const measureSelections = async targets => {
+    resetCounts()
+    const sync = []
+    const framed = []
+    for (let at = 0; at < ${MOVES}; at++) {
+      const target = targets[at % targets.length]
+      const bounds = editor.getShapePageBounds(target.id)
+      const point = viewport(bounds.center)
+      const began = performance.now()
+      pointer('pointerdown', point.x, point.y, 1, nodeOf(target.id))
+      pointer('pointerup', point.x, point.y, 0, nodeOf(target.id))
+      const dispatched = performance.now()
+      await frame()
+      const painted = performance.now()
+      sync.push(dispatched - began)
+      framed.push(painted - began)
+    }
+    const counts = {}
+    for (const [name, value] of Object.entries(perf.counts)) counts[name] = Math.round(value / ${MOVES})
+    const times = {}
+    for (const [name, value] of Object.entries(perf.times)) times[name] = Number((value / ${MOVES}).toFixed(3))
+    return {
+      label: 'select',
+      sync: summarise(sync),
+      frame: summarise(framed),
+      commitsPerMove: Number((perf.commits / ${MOVES}).toFixed(2)),
+      reactMsPerMove: Number((perf.duration / ${MOVES}).toFixed(2)),
+      perMove: counts,
+      msPerMove: times
+    }
+  }
+
   const viewport = point => editor.pageToViewport(point)
   const shapes = editor.getCurrentPageShapesSorted()
   const centre = editor.getViewportPageBounds().center
@@ -230,6 +262,12 @@ const driveSource = String.raw`(async () => {
   if (!near) return { failed: 'no resizable shape to drag' }
 
   const results = []
+
+  const selectionTargets = shapes
+    .filter(shape => shape.parentId === editor.getCurrentPageId() && editor.getShapePageBounds(shape))
+    .slice(0, 24)
+  if (selectionTargets.length < 2) return { failed: 'not enough top-level shapes to select' }
+  results.push(await measureSelections(selectionTargets))
 
   editor.selectNone()
   await settle()

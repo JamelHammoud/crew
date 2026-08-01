@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type MouseEvent, type ReactNode } from 'react'
 import type { Todo } from '../../../shared/events'
 import { mentionsIn, relabelMentions, type PooledAgent } from '../../../shared/llm'
 import {
@@ -32,6 +32,7 @@ import {
 } from './thread'
 import { formatFullTime, formatShortDay } from './time'
 import Tooltip from './Tooltip'
+import { ThreadOpenItems } from './threadMenu'
 
 interface Row {
   thread: ThreadMeta
@@ -140,11 +141,13 @@ function TodoEditor({
 export default function TasksPanel({
   open,
   onClose,
-  onOpenThread
+  onOpenThread,
+  onOpenThreadBeside
 }: {
   open: boolean
   onClose: () => void
   onOpenThread: (threadId: string) => void
+  onOpenThreadBeside: (threadId: string) => void
 }) {
   const events = useCrew(s => s.events)
   const threads = useCrew(s => s.threads)
@@ -164,6 +167,7 @@ export default function TasksPanel({
   const [adding, setAdding] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [picker, setPicker] = useState<{ todoId: string; at: { x: number; y: number } } | null>(null)
+  const [threadMenu, setThreadMenu] = useState<{ threadId: string; at: { x: number; y: number } } | null>(null)
   const [searching, setSearching] = useState(false)
   const [query, setQuery] = useState('')
   const scrollRef = useRef<HTMLDivElement>(null)
