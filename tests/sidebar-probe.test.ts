@@ -274,6 +274,44 @@ describe('the sidebar', () => {
     }
   })
 
+  it('holds the rail where it stands for the length of a pin, so nothing flickers', () => {
+    vi.useFakeTimers()
+    try {
+      const { container } = corner()
+      fireEvent.mouseEnter(toggleIn(container))
+      fireEvent.click(toggleIn(container))
+      expect(useSidebar.getState().pinned).toBe(true)
+      expect(useSidebar.getState().peeking).toBe(true)
+      act(() => {
+        vi.advanceTimersByTime(PIN_MS + 20)
+      })
+      expect(useSidebar.getState().peeking).toBe(false)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('does not let the pointer leaving cut that hold short', () => {
+    vi.useFakeTimers()
+    try {
+      const { container } = corner()
+      const box = container.firstElementChild as HTMLElement
+      fireEvent.mouseEnter(toggleIn(container))
+      fireEvent.click(toggleIn(container))
+      fireEvent.mouseLeave(box)
+      act(() => {
+        vi.advanceTimersByTime(PIN_MS - 40)
+      })
+      expect(useSidebar.getState().peeking).toBe(true)
+      act(() => {
+        vi.advanceTimersByTime(60)
+      })
+      expect(useSidebar.getState().peeking).toBe(false)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it('does not open the rail for a pointer resting on the mark beside it', () => {
     const { container } = corner()
     fireEvent.mouseEnter(container.firstElementChild as HTMLElement)
