@@ -1498,8 +1498,11 @@ const driveSource = String.raw`(async () => {
   await attempt('an arrow follows the shape it is bound to', async () => {
     const anchor = shapes.find(shape => shape.type === 'geo' || shape.type === 'design-node')
     if (!anchor) return null
-    editor.zoomToFit({ immediate: true })
+    const camera = editor.getCamera()
+    editor.selectNone()
+    editor.zoomToBounds(boundsOf(anchor.id), { targetZoom: 1, immediate: true })
     await settle()
+    await stillCamera()
     editor.setCurrentTool('arrow')
     await settle()
     if (editor.getCurrentToolId() !== 'arrow') return { ok: false, note: 'the arrow tool did not take' }
@@ -1511,19 +1514,23 @@ const driveSource = String.raw`(async () => {
     const arrow = editor.getCurrentPageShapes().filter(shape => shape.type === 'arrow').pop()
     if (!arrow) return { ok: false, note: 'the arrow tool made nothing' }
     const bindings = editor.getBindingsFromShape(arrow.id, 'arrow')
-    if (!bindings.length) {
+    const boundTo = bindings.map(one => one.toId).find(id => editor.getShape(id) !== undefined)
+    if (!boundTo) {
       editor.deleteShapes([arrow.id])
+      editor.setCamera(camera, { immediate: true })
       return { ok: false, note: 'the arrow did not bind to the shape under its end' }
     }
     const before = JSON.stringify(boundsOf(arrow.id))
-    const anchorNow = editor.getShape(anchor.id)
-    editor.updateShape({ id: anchor.id, type: anchorNow.type, x: anchorNow.x + 90 })
+    const anchorNow = editor.getShape(boundTo)
+    editor.updateShape({ id: boundTo, type: anchorNow.type, x: anchorNow.x + 90 })
     await settle()
     const after = JSON.stringify(boundsOf(arrow.id))
-    editor.updateShape({ id: anchor.id, type: anchorNow.type, x: anchorNow.x })
+    editor.updateShape({ id: boundTo, type: anchorNow.type, x: anchorNow.x })
     editor.deleteShapes([arrow.id])
+    editor.setCamera(camera, { immediate: true })
     await settle()
-    return { ok: before !== after, note: before !== after ? 'it followed' : 'it stayed where it was' }
+    const over = boundTo === anchor.id ? '' : ', which is the ' + anchorNow.type + ' over the one it was drawn at'
+    return { ok: before !== after, note: (before !== after ? 'it followed' : 'it stayed where it was') + over }
   })
 
   await attempt('the board exports to SVG', async () => {
