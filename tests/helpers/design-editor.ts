@@ -155,6 +155,20 @@ export function fakeBoard(list: FakeShape[]): FakeBoard {
     resetZoom: () => {
       calls.push('resetZoom()')
       return editor
+    },
+    getCanUndo: () => undos > 0,
+    getCanRedo: () => redos > 0,
+    undo: () => {
+      undos = Math.max(0, undos - 1)
+      redos += 1
+      calls.push('undo()')
+      return editor
+    },
+    redo: () => {
+      redos = Math.max(0, redos - 1)
+      undos += 1
+      calls.push('redo()')
+      return editor
     }
   } as unknown as Editor
 
