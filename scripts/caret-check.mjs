@@ -63,11 +63,15 @@ window.aimCaret = (where, side) => {
   if (where === 'doc') {
     const line = host.querySelector('.bn-inline-content')
     line.closest('[contenteditable]').focus()
+    // The caret goes in the text either side of the picture rather than at the
+    // element's own edge: a position on the boundary of a node is one the editor
+    // normalises somewhere else, and the caret is then nowhere near what is being
+    // read.
+    const before = mark.previousSibling
+    const after = mark.nextSibling
     const range = document.createRange()
-    const run = mark.previousSibling
-    if (side === 'plain') range.setStart(run && run.nodeType === 3 ? run : line.firstChild, 1)
-    else if (side === 'before') range.setStartBefore(mark)
-    else range.setStartAfter(mark)
+    if (side === 'after') range.setStart(after, 0)
+    else range.setStart(before, side === 'plain' ? 1 : before.length)
     range.collapse(true)
     const sel = getSelection()
     sel.removeAllRanges()
