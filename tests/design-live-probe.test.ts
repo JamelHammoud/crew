@@ -3,7 +3,18 @@ import { Editor } from '../src/renderer/src/canvas/editor'
 import { createShapeId, createTLStore, type TLShapeId } from '../src/renderer/src/canvas/schema'
 import { designShapeUtils } from '../src/renderer/src/design/shapeUtils'
 import { DesignNodeTool } from '../src/renderer/src/design/DesignNodeTool'
-import { SelectTool } from '../src/renderer/src/canvas/tools/select'
+import {
+  ArrowShapeTool,
+  DrawShapeTool,
+  EraserTool,
+  FrameShapeTool,
+  HandTool,
+  HighlightShapeTool,
+  LineShapeTool,
+  NoteShapeTool,
+  SelectTool,
+  TextShapeTool
+} from '../src/renderer/src/canvas/tools'
 import { DESIGN_COMMANDS, type CommandContext } from '../src/renderer/src/design/commands'
 import { ALL_TOOLS, activateTool, currentToolId } from '../src/renderer/src/design/tools'
 import { applyDesignDefaults } from '../src/renderer/src/design/defaults'
