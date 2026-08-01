@@ -51,6 +51,7 @@ export default function AgentIcon({
 }) {
   const pet = petOf(seed)
   const box = BOX[size]
+  const gap = eyeGapAt(pet, box)
   const mask = useId()
   const file = useCrew(state => state.agents.find(agent => agent.id === seed)?.avatar)
   const httpBase = useCrew(state => state.httpBase)
