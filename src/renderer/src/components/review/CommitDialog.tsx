@@ -38,6 +38,7 @@ export default function CommitDialog({
       <textarea
         ref={ref}
         rows={2}
+        autoFocus
         value={message}
         onChange={event => onMessage(event.target.value)}
         onKeyDown={keys}
