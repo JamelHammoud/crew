@@ -32,7 +32,11 @@ export default function ThreadColumns({ ids }: { ids: string[] }) {
         </div>
       ))}
       {chatColumn && room && (
-        <div style={{ minWidth: COLUMN_MIN }} className="h-full flex-1 relative border-l border-ink-700">
+        <div
+          data-column="chat"
+          style={{ minWidth: COLUMN_MIN }}
+          className="h-full flex-1 relative border-l border-ink-700"
+        >
           <Chat />
         </div>
       )}
