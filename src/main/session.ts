@@ -7,6 +7,7 @@ import { Runner } from '../runner'
 import { builtinProviders, detectProviders } from '../runner/providers/detect'
 import type { Provider } from '../runner/providers/types'
 import { createCrewServer, type CrewServer } from '../server/index'
+import { portToAsk } from '../server/port'
 import { cloneCrew, crewHere, crewRepoUrl, publishCrew } from '../server/crewRepo'
 import { GitSync } from '../server/git'
 import { CrewSession } from '../server/session'
@@ -309,7 +310,7 @@ export class AppSession {
       this.onEvent?.(event)
       if (RESHAPES_THREADS.has(event.kind)) this.onThreadsChanged?.()
     }
-    const server = await this.listen(session, shared, PREFERRED_PORT)
+    const server = await this.listen(session, shared, await portToAsk(PREFERRED_PORT))
     this.server = server
     this.git = git
     this.crewGit = crew
