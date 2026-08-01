@@ -210,7 +210,7 @@ export default function TasksPanel({
       // asked on the side, which was answered in the panel and is nobody's work.
       if (thread.parentThreadId || thread.aside) continue
       const promptId = threadPrompts[thread.id]
-      const working = threadWorking(thread.id, threadPrompts, queues, threads)
+      const working = busy.has(thread.id)
       const detail = promptId
         ? describeStep((steps[promptId] ?? []).at(-1))
         : endPreview(lastEnd(thread.id, ends))
