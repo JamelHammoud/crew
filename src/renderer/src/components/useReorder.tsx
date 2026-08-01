@@ -103,9 +103,11 @@ export function useReorder(onMove: (id: string, to: number) => void, options: Op
 
     const draw = () => {
       if (hand.current) hand.current.style.translate = `${at.x + HAND}px ${at.y}px`
-      if (!line.current) return
-      line.current.style.opacity = to === from ? '0' : '1'
-      line.current.style.top = `${Math.max(0, boundary(boxes, from, to))}px`
+      const mark = line.current
+      if (!mark) return
+      if (!half) half = mark.offsetHeight / 2
+      mark.style.opacity = to === from ? '0' : '1'
+      mark.style.top = `${Math.max(half, boundary(boxes, from, to))}px`
     }
 
     const tick = () => {
