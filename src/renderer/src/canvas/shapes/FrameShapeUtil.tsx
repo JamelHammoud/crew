@@ -1,11 +1,16 @@
 import { createElement, type ReactNode } from 'react'
-import { Rectangle2d } from '../geometry'
+import { Group2d, Rectangle2d, type Geometry2d } from '../geometry'
+import type { Vec } from '../math/Vec'
 import { frameShapeProps, type TLShape as CrewShape } from '../schema'
 import { BaseBoxShapeUtil } from './ShapeUtil'
 import { boxPath, shapeElement } from './shared'
 import { shapeColor } from './theme'
 
 export type FrameShape = CrewShape<'frame'>
+
+const HEADING_FONT_SIZE = 12
+const HEADING_HEIGHT = 20
+const HEADING_GAP = 4
 
 export class FrameShapeUtil extends BaseBoxShapeUtil<FrameShape> {
   static override type = 'frame' as const

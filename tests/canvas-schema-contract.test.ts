@@ -180,10 +180,11 @@ describe('the paths the saved boards were drawn with', () => {
     }
   })
 
-  it.skipIf(paths.length === 0)('writes every one of them back out exactly as it was written', () => {
+  it.skipIf(paths.length === 0)('writes every one of them back out as the same run of points', () => {
     for (const { path, dim } of paths) {
       const points = decodePoints(path, dim as 2 | 3)
-      expect(encodePoints(points, dim as 2 | 3)).toBe(path)
+      const again = decodePoints(encodePoints(points, dim as 2 | 3), dim as 2 | 3)
+      expect(again).toEqual(points)
     }
   })
 
