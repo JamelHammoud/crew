@@ -28,6 +28,10 @@ export type BrowserTab = {
   diff: string | null
   // What a terminal tab was opened to run, typed into the shell once it is up.
   command: string | null
+  // The folder a terminal was opened in. A shell has a cwd of its own and may
+  // have been walked anywhere since, so the folder it started in is the only
+  // thing that says which project it belongs to and tells two of them apart.
+  folder: string
   mime: string
   size: number
   // Which game a games tab is standing in, or null for the list of them. It
