@@ -171,12 +171,13 @@ const driveSource = `(async () => {
 
   const typeLine = async () => {
     const el = composer()
-    const sync = []
+    const flat = []
+    const grew = []
     const framed = []
     setter.call(el, '')
     el.dispatchEvent(new Event('input', { bubbles: true }))
     await settle()
-    const began = el.getBoundingClientRect().height
+    let held = el.clientHeight
     for (let at = 1; at <= ${JSON.stringify(LINE)}.length; at++) {
       const value = ${JSON.stringify(LINE)}.slice(0, at)
       const start = performance.now()
@@ -185,14 +186,15 @@ const driveSource = `(async () => {
       const dispatched = performance.now()
       await frame()
       const painted = performance.now()
-      sync.push(dispatched - start)
+      const now = el.clientHeight
+      ;(now === held ? flat : grew).push(dispatched - start)
       framed.push(painted - start)
+      held = now
     }
-    const ended = el.getBoundingClientRect().height
     setter.call(el, '')
     el.dispatchEvent(new Event('input', { bubbles: true }))
     await settle()
-    return { sync, framed, wrapped: ended > began }
+    return { flat, grew, framed }
   }
 
   const reflow = reads => {

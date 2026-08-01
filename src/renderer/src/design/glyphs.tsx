@@ -38,6 +38,7 @@ export {
   GroupGlyph,
   HandGlyph,
   LockGlyph,
+  PasteGlyph,
   PencilGlyph,
   RedoGlyph,
   SearchGlyph,
@@ -48,7 +49,7 @@ export {
   UnlockGlyph
 }
 
-export { CopyGlyph as PasteGlyph, PhotoGlyph as ImageGlyph }
+export { PhotoGlyph as ImageGlyph }
 
 export const CursorGlyph = glyph(<path d={ARROW_BODY} transform={ARROW_ON_GRID} />, 2.13)
 
