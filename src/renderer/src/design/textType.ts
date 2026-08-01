@@ -21,19 +21,18 @@ export function textShapeType(editor: Editor, shape: TLTextShape): TypeStyle {
   }
   const stored = shape.meta?.type
   if (!stored || typeof stored !== 'object') return base
-  const clean = cleanType({ ...base, ...(stored as object), align: base.align }) ?? base
-  return withTrim(clean, trimOf(stored as Partial<TrimmedType>))
+  return cleanType({ ...base, ...(stored as object), align: base.align }) ?? base
 }
 
-export function setTextShapeType(editor: Editor, shape: TLTextShape, patch: Partial<TrimmedType>): void {
+export function setTextShapeType(editor: Editor, shape: TLTextShape, patch: Partial<TypeStyle>): void {
   const live = (editor.getShape(shape.id) as TLTextShape | undefined) ?? shape
-  const { align, trim, ...rest } = { ...textShapeType(editor, live), ...patch }
+  const { align, ...type } = { ...textShapeType(editor, live), ...patch }
   editor.markHistoryStoppingPoint()
   editor.updateShape<TLTextShape>({
     id: live.id,
     type: 'text',
     props: { textAlign: labelAlign(align) as TLTextShape['props']['textAlign'] },
-    meta: { ...live.meta, type: withTrim(rest, trimOf({ trim })) }
+    meta: { ...live.meta, type }
   })
 }
 
