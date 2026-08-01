@@ -100,6 +100,13 @@ export default function ThreadView({
   )
   const inputRef = useAutoResize(text)
   const agentPresence = usePresence(thread?.agentLabel ?? '', thread?.agentId)
+  const onReply = useCallback(
+    (item: ThreadItem) => {
+      setReplyTo(item)
+      inputRef.current?.focus()
+    },
+    [inputRef]
+  )
 
   const threadEvents = useMemo(() => eventsOfThread(events, threadId), [events, threadId])
   const runningStart = threadEvents.find(e => e.kind === 'agent.start' && e.promptId === activePromptId)
