@@ -1,6 +1,6 @@
 import { memo, useLayoutEffect, useRef } from 'react'
 import { useQuickReactor, useValue } from '../signals'
-import { MountedShapeCullingProvider, useMountedShapeCulling } from './Culling'
+import { MountedShapeCullingProvider, useCullingReactor, useMountedShapeCulling } from './Culling'
 import { setStyle, shapeCssTransform, shapeStyle } from './style'
 import type { CanvasRenderHost, CanvasRenderingShape, CanvasShapeRecord, CanvasShapeRenderer } from './types'
 
