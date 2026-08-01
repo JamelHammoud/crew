@@ -67,7 +67,7 @@ function drawGaps(
     }
     context.stroke()
     const length = Math.abs(end - start)
-    if (length * zoom >= LABEL_HEIGHT)
+    if (length * zoom >= LABEL_ROOM)
       drawLabel(context, String(Math.round(length)), at((start + end) / 2), zoom, color)
   }
 }

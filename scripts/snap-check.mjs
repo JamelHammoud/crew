@@ -437,6 +437,43 @@ const probeSource = String.raw`(() => {
         }
       })
 
+      await attempt('a frame still snaps to a shape it does not own', async () => {
+        const centre = (await room(1)).center
+        const outer = put({
+          type: 'frame',
+          x: Math.round(centre.x + 40),
+          y: Math.round(centre.y - 260),
+          props: { w: 320, h: 220, name: '' }
+        })
+        if (!outer) return { ok: false, note: 'harness: no frame was created' }
+        const inner = box(3, 20, 140, 100, outer)
+        await settle(4)
+        if (!inner) return { ok: false, note: 'harness: no child was created' }
+        const frameAt = boundsOf(outer)
+        const stranger = box(Math.round(frameAt.minX - 300), Math.round(frameAt.minY + 400), 120, 90)
+        await settle(4)
+        if (!stranger) return { ok: false, note: 'harness: no stranger was created' }
+        const strangerAt = boundsOf(stranger)
+        const want = strangerAt.minX - frameAt.minX
+        const off = 4
+        const fair = fairness(frameAt, strangerAt, 'x', 'min', 'min', want - off)
+        if (!fair.fair)
+          return { ok: false, note: 'harness: the pair asked for is not the nearest, nearest is ' + fair.nearest }
+        editor.select(outer)
+        await settle(3)
+        const from = view(frameAt.center)
+        const to = view({ x: frameAt.center.x + want - off, y: frameAt.center.y })
+        await hold(from, to, { target: nodeOf(outer) })
+        const live = indicators()
+        await letGo(to)
+        const landed = boundsOf(outer)
+        const gap = round(landed.minX - strangerAt.minX)
+        return {
+          ok: Math.abs(gap) < 0.01 && live.length > 0,
+          note: 'off by ' + gap + ', unsnapped would be ' + -off + ', ' + live.length + ' indicators'
+        }
+      })
+
       await attempt('equal spacing snaps to the same gap', async () => {
         const centre = (await room(1)).center
         const left = Math.round(centre.x - 300)

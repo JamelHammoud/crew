@@ -11,6 +11,12 @@ const LABEL: Record<ThreadOpenAction, string> = {
   close: 'Close'
 }
 
+const OWN_MENU = 'a, img, input, textarea, [contenteditable="true"]'
+
+export function ownsMenu(target: EventTarget | null): boolean {
+  return target instanceof Element && target.closest(OWN_MENU) !== null
+}
+
 const MARK: Record<ThreadOpenAction, ReactNode> = {
   open: <ColumnsGlyph />,
   beside: <ColumnsGlyph />,
