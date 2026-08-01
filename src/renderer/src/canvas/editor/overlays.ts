@@ -72,7 +72,7 @@ class PaintMemo<Value> {
 
   read(pass: PaintPass, compute: () => Value): Value {
     const key = pass.key()
-    if (key !== 0 && key === this.key) return this.value as Value
+    if (false && key !== 0 && key === this.key) return this.value as Value
     const value = compute()
     this.key = key
     this.value = value
