@@ -519,6 +519,37 @@ export function getGeoTypeDefinition(name: GeoKind): GeoTypeDefinition | undefin
   return defaultGeoTypeDefinitions[name]
 }
 
+export function geoPath(kind: GeoKind, w: number, h: number, options: GeoPathOptions = {}): PathBuilder {
+  const definition = getGeoTypeDefinition(kind)
+  if (!definition) throw new Error(`Unknown geo type: ${kind}`)
+  const shape = {
+    id: options.id ?? 'shape:geo',
+    props: {
+      w,
+      h,
+      growY: 0,
+      geo: kind,
+      dash: options.dash ?? 'solid',
+      fill: options.fill ?? 'solid',
+      size: options.size ?? 'm',
+      scale: 1
+    }
+  } as unknown as GeoShape
+  return definition.getPath(Math.max(1, w), Math.max(1, h), shape, options.strokeWidth ?? 2)
+}
+
+export interface GeoPathOptions {
+  id?: string
+  dash?: CrewDashStyle
+  fill?: GeoShape['props']['fill']
+  size?: CrewSizeStyle
+  strokeWidth?: number
+}
+
+export function geoGeometry(kind: GeoKind, w: number, h: number, options: GeoPathOptions = {}) {
+  return geoPath(kind, w, h, options).toGeometry()
+}
+
 export function getGeoShapePath(shape: GeoShape, strokeWidth: number): PathBuilder {
   const w = Math.max(1, shape.props.w)
   const h = Math.max(1, shape.props.h + shape.props.growY)

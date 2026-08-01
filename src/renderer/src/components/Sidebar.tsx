@@ -18,6 +18,8 @@ function said(err: unknown): string {
   )
 }
 
+const EMPTY_THREADS: string[] = []
+
 export default function Sidebar({ overlay }: { overlay?: boolean }) {
   const places = usePlaces(s => s.places)
   const live = usePlaces(s => s.live)
