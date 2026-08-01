@@ -23,6 +23,7 @@ import {
   appendEvent,
   huddleRecordId,
   markDeletedReplies,
+  mergeEvents,
   trimEvents,
   type SessionEvent,
   type ThreadMode,
