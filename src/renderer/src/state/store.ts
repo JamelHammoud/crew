@@ -925,7 +925,7 @@ export const useCrew = create<CrewState>((set, get) => {
         }))
         break
       case 'agent.step':
-        set(state => ({ steps: { ...state.steps, [msg.promptId]: upsertStep(state.steps[msg.promptId], msg.step) } }))
+        stepBuffer.push(msg.promptId, msg.step)
         break
       case 'agent.usage':
         set(state => ({
