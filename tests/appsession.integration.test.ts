@@ -129,7 +129,7 @@ describe('app session', () => {
     ui.close()
     await guest.leave()
     expect(guest.current()).toBeNull()
-    expect(guest.recentJoins()).toHaveLength(1)
+    expect(crews.recentJoins()).toHaveLength(1)
     await host.leave()
   }, 25000)
 })
