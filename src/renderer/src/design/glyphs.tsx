@@ -11,6 +11,7 @@ import {
   HandGlyph,
   LinkGlyph,
   LockGlyph,
+  PasteGlyph,
   PencilGlyph,
   PhotoGlyph,
   RedoGlyph,
