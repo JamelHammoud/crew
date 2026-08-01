@@ -198,7 +198,7 @@ describe('SelectTool', () => {
     host.inputs.dragging = true
     tool.handleEvent({ name: 'pointer_move', target: 'selection' })
     expect(host.updateShapes).toHaveBeenCalled()
-    const [update] = host.updateShapes.mock.calls.at(-1)[0]
+    const [update] = host.updateShapes.mock.calls.at(-1)?.[0] ?? []
     expect(update).toMatchObject({ id: 'shape:a', x: 10, y: 10 })
   })
 
