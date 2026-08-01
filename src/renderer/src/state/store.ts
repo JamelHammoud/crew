@@ -1046,6 +1046,7 @@ export const useCrew = create<CrewState>((set, get) => {
       if (request !== transition) return
       useHuddle.getState().leave()
       threadsWanted = threadsWanted.length > 0 ? threadsWanted : (memory?.openThreadIds ?? [])
+      stepBuffer.drop()
       set({ connection: 'connecting', ...BLANK })
       get().connect(info)
       panel.restore(memory?.panel ?? null)
