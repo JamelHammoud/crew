@@ -1,7 +1,6 @@
 import { createElement, type ReactNode } from 'react'
 import { Group2d, Rectangle2d, type Geometry2d } from '../geometry'
 import { groupShapeProps, type TLShape as CrewShape } from '../schema'
-import { dashedBoxPath, getPerfectDashProps } from './dash'
 import { ShapeUtil } from './ShapeUtil'
 
 export type GroupShape = CrewShape<'group'>
