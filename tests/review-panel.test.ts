@@ -125,10 +125,10 @@ describe('the review tab', () => {
 
     // The word that moved is picked out inside the line, so a changed line is
     // several spans and only the whole row reads as the line.
-    await waitFor(() => expect(line('const made = 2')).not.toBeNull())
-    expect(line('const gone = 2')).not.toBeNull()
-    expect(screen.getByText('const before = 1')).not.toBeNull()
-    expect(screen.getByText('const after = 3')).not.toBeNull()
+    await waitFor(() => expect(line('const made = 2')).not.toBeUndefined())
+    expect(line('const gone = 2')).not.toBeUndefined()
+    expect(line('const before = 1')).not.toBeUndefined()
+    expect(line('const after = 3')).not.toBeUndefined()
   })
 
   // Every line carries where it really sits, so two stretches four hundred

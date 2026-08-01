@@ -949,16 +949,40 @@ export class Editor {
   }
 
   updateHoveredShapeId(): void {
-    this.setHoveredShape(
-      this.getShapeAtPoint(this.inputs.getCurrentPagePoint(), {
-        margin: this.hitTestMargin / this.getZoomLevel(),
-        hitInside: true,
-        renderingOnly: true
-      })?.id ?? null
-    )
+    if (this.getCameraState() !== 'moving') {
+      this.hoverLocked = false
+      this.setHoveredShape(this.shapeToHover())
+      return
+    }
+    if (this.hoverLocked) return
+    const current = this.getHoveredShapeId()
+    if (!current) {
+      this.hoverLocked = true
+      return
+    }
+    if (this.shapeToHover() === current) return
+    this.setHoveredShape(null)
+    this.hoverLocked = true
   }
 
-  cancelUpdateHoveredShapeId(): void {}
+  private shapeToHover(): TLShapeId | null {
+    const hit = this.getShapeAtPoint(this.inputs.getCurrentPagePoint(), {
+      hitInside: false,
+      hitLabels: false,
+      hitLocked: this.options.selectLockedShapes as boolean,
+      margin: this.hitTestMargin / this.getZoomLevel(),
+      renderingOnly: true
+    })
+    if (!hit) return null
+    const outermost = this.getOutermostSelectableShape(hit)
+    if (outermost === hit) return hit.id
+    if (outermost.id === this.getFocusedGroupId() || this.getSelectedShapeIds().includes(outermost.id)) return hit.id
+    return outermost.id
+  }
+
+  cancelUpdateHoveredShapeId(): void {
+    this.hoverLocked = false
+  }
 
   createShape<_Shape extends TLShape = TLShape>(partial: ShapeCreate): this {
     return this.createShapes([partial])
