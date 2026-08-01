@@ -40,8 +40,7 @@ export const threadWorking = (
   if (Boolean(threadPrompts[threadId]) || (queues[threadId]?.length ?? 0) > 0) return true
   return Object.values(threads).some(
     thread =>
-      thread.parentThreadId === threadId &&
-      (Boolean(threadPrompts[thread.id]) || (queues[thread.id]?.length ?? 0) > 0)
+      thread.parentThreadId === threadId && (Boolean(threadPrompts[thread.id]) || (queues[thread.id]?.length ?? 0) > 0)
   )
 }
 
@@ -60,11 +59,7 @@ export const eventsOfThread = (events: SessionEvent[], threadId: string): Sessio
 
 // Steps are held per run, so anything that wants a thread's own are gathered off
 // the runs that thread started, in the order they were started.
-const stepsOfRuns = (
-  ids: Set<string>,
-  events: SessionEvent[],
-  steps: Record<string, AgentStep[]>
-): AgentStep[] => {
+const stepsOfRuns = (ids: Set<string>, events: SessionEvent[], steps: Record<string, AgentStep[]>): AgentStep[] => {
   const out: AgentStep[] = []
   for (const event of events) {
     if (event.kind !== 'agent.start' || !event.threadId || !ids.has(event.threadId)) continue

@@ -24,13 +24,11 @@ const thought = (text: string, streaming: boolean, patch: Partial<ThreadItem> = 
   ...patch
 })
 
-const LONG = 'The panel reads the file off the disk itself, so the whole of it is work it can do rather than something described to it.'
+const LONG =
+  'The panel reads the file off the disk itself, so the whole of it is work it can do rather than something described to it.'
 
 const readStyles = (): string =>
-  (require('node:fs') as typeof import('node:fs')).readFileSync(
-    `${process.cwd()}/src/renderer/src/styles.css`,
-    'utf8'
-  )
+  (require('node:fs') as typeof import('node:fs')).readFileSync(`${process.cwd()}/src/renderer/src/styles.css`, 'utf8')
 
 const mark = (): SVGElement => {
   const el = document.querySelector('.thinking-mark')
@@ -107,9 +105,7 @@ describe('a thinking step', () => {
   })
 
   it('folds a run of thoughts into one that opens onto every one of them', () => {
-    const run = ['a', 'b', 'c'].map((key, index) =>
-      thought(`**Thought ${index + 1}**`, false, { key, promptId: 'p1' })
-    )
+    const run = ['a', 'b', 'c'].map((key, index) => thought(`**Thought ${index + 1}**`, false, { key, promptId: 'p1' }))
     expect(stepBlocks(run).map(block => block.items.length)).toEqual([3])
 
     render(createElement(StepGroup, { items: run }))

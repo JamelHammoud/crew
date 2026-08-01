@@ -148,11 +148,7 @@ export default function StepRow({ item, linked, inGroup }: { item: ThreadItem; l
         onClick={() => (opens ? opens() : expandable && setOpen(!expanded))}
         className={rowClass(Boolean(opens) || expandable)}
       >
-        {thinking ? (
-          <ThinkingMark running={item.streaming} />
-        ) : (
-          <Mark icon={action.icon} running={item.streaming} />
-        )}
+        {thinking ? <ThinkingMark running={item.streaming} /> : <Mark icon={action.icon} running={item.streaming} />}
         <Label action={action} running={item.streaming} swap={thinking} />
         {files.length > 0 && (
           <>
