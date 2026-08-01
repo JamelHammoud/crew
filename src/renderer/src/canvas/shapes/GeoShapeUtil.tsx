@@ -401,31 +401,26 @@ interface LabelMeasureOptions {
   lineHeight: number
   maxWidth: number
   minWidth: number
-  text: string
 }
 
-function measureLabel(
-  editor: ShapeEditor,
-  html: string,
-  options: LabelMeasureOptions
-): { w: number; h: number } {
-  const measure = editor.textMeasure?.measureHtml
-  if (measure) {
-    return editor.textMeasure!.measureHtml(html, {
+function measureLabel(editor: ShapeEditor, text: string, options: LabelMeasureOptions): { w: number; h: number } {
+  const measurer = editor.textMeasure
+  if (measurer?.measureText) {
+    return measurer.measureText(text, {
       fontFamily: options.fontFamily,
       fontSize: options.fontSize,
       lineHeight: options.lineHeight,
       maxWidth: options.maxWidth
     })
   }
-  const lines = options.text.split('\n')
+  const lines = text.split('\n')
   const widest = Math.max(options.minWidth, ...lines.map(line => line.length * options.fontSize * 0.58))
   const w = Math.min(widest, options.maxWidth || widest)
   const wrapped = lines.reduce((total, line) => {
     const width = line.length * options.fontSize * 0.58
     return total + Math.max(1, Math.ceil(width / Math.max(1, w)))
   }, 0)
-  return { w, h: wrapped * Math.round(options.fontSize * options.lineHeight) }
+  return { w, h: Math.max(1, wrapped) * Math.round(options.fontSize * options.lineHeight) }
 }
 
 function geoBody(shape: GeoShape, dv: GeoDisplayValues): ReactNode {
