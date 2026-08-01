@@ -231,7 +231,13 @@ describe('several threads open side by side', () => {
 })
 
 describe('the chat standing beside a thread', () => {
-  const slot = (): HTMLElement => screen.getByLabelText('The chat')
+  const reveal = (): void => {
+    fireEvent.pointerMove(columns()[0]!, { clientX: 5000 })
+  }
+  const slot = (): HTMLElement => {
+    reveal()
+    return screen.getByLabelText('The chat')
+  }
   const chatColumn = (): HTMLElement => document.querySelector<HTMLElement>('[data-column="chat"]')!
 
   it('stands the chat beside the thread and puts it away again', () => {
@@ -281,6 +287,18 @@ describe('the chat standing beside a thread', () => {
       Array.from({ length: VIEW_LIMIT }, (_, i) => `row-${i + 1}`),
       'row-1'
     )
+    reveal()
+    expect(screen.queryByLabelText('The chat')).toBeNull()
+  })
+
+  it('stands out of the way until the pointer comes near the right', () => {
+    open(['thread-1'], 'thread-1')
+    expect(screen.queryByLabelText('The chat')).toBeNull()
+
+    reveal()
+    expect(screen.getByLabelText('The chat')).toBeTruthy()
+
+    fireEvent.pointerLeave(columns()[0]!.parentElement!.parentElement!)
     expect(screen.queryByLabelText('The chat')).toBeNull()
   })
 
