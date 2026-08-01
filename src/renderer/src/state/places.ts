@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import type { LivePlace } from '../../../shared/places'
 import type { RecentJoin, RecentProject } from '../../../shared/recent'
+import type { LiveThread } from '../../../shared/threads'
 import { placesOf, type Place } from '../views/home/place'
 
 type PlacesState = {
@@ -23,6 +24,9 @@ export const usePlaces = create<PlacesState>(set => ({
 }))
 
 export const isLive = (live: LivePlace[], key: string): boolean => live.some(place => place.key === key)
+
+export const threadsIn = (live: LivePlace[], key: string): LiveThread[] =>
+  live.find(place => place.key === key)?.threads ?? []
 
 window.crew?.onLive?.(live => {
   usePlaces.setState({ live })
