@@ -103,7 +103,7 @@ export class OverlayManager {
       for (const overlay of entries[entryIndex].overlays) {
         const props = overlay.props as { point?: VecLike; radius?: number; hit?: HitTarget }
         if (props.hit) {
-          if (hitsTarget(props.hit, point, margin)) return overlay
+          if (hitsTarget(props.hit, point, props.hit.filled ? 0 : margin)) return overlay
           continue
         }
         if (!props.point) continue
@@ -223,7 +223,7 @@ class SelectionForegroundOverlayUtil implements ToolOverlayUtil {
             y: rect.y + rect.h / 2
           }),
         radius: 6 / state.zoom,
-        hit: { origin, rotation: state.rotation, rect }
+        hit: { origin, rotation: state.rotation, rect, filled: true }
       }
     })
     const result: CanvasOverlay[] = []
