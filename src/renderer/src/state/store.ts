@@ -195,6 +195,13 @@ interface CrewState {
   activePrompts: Record<string, string[]>
   threads: Record<string, ThreadMeta>
   threadPrompts: Record<string, string>
+  // A thread read back out of the log, and the steps its runs took. The window
+  // above holds the tail of the chat, so a thread opened long after it ran has
+  // none of its own left in it, and what comes back is kept here rather than
+  // folded in: the chat feed is drawn from the window, and a thread from months
+  // ago would stand at the head of today's.
+  readEvents: SessionEvent[]
+  readSteps: Record<string, AgentStep[]>
   todos: Todo[]
   // What the agents have said about their own work, kept apart from the chat's
   // events because a board is folded off these rather than scrolled past.
