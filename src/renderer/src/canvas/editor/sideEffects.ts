@@ -35,8 +35,8 @@ export function registerDefaultSideEffects(editor: SideEffectEditor): () => void
       if (shapeBefore.parentId !== shapeAfter.parentId) checkForEmptyGroup(editor, shapeBefore.parentId)
     }),
     sideEffects.registerBeforeDeleteHandler('shape', record => {
-      const shape = record as TLShape
-      editor.bindings.handleShapeDeleted(shape)
+      editor.bindings.handleShapeDeleted(record as TLShape)
+      return undefined
     }),
     sideEffects.registerAfterDeleteHandler('shape', record => {
       const shape = record as TLShape
