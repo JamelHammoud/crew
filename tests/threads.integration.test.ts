@@ -89,6 +89,21 @@ describe('threads', () => {
     expect(seen.size).toBe(2)
   })
 
+  it('includes the current prompt in a snapshot while a thread is working', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    await connectRunner('jamel', { FAKE_CLI_DELAY_MS: '500' })
+    await ui.waitForEvent(e => e.kind === 'agent.online')
+
+    ui.chat('keep working @Fake', [fake])
+    const start = (await ui.waitForEvent(e => e.kind === 'agent.start')) as Extract<
+      SessionEvent,
+      { kind: 'agent.start' }
+    >
+
+    expect(host.session.snapshot().threadPrompts?.[start.threadId!]).toBe(start.promptId)
+  })
+
   it('replays the thread transcript on a follow-up', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
