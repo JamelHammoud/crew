@@ -21,6 +21,7 @@ export default function ThreadRow({
     threadId: thread.id,
     here,
     placeKey,
+    status: here,
     onOpen: onOpenToRight
   })
 
