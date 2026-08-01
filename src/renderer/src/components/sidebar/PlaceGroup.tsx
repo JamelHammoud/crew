@@ -34,7 +34,7 @@ function PlaceGroup({
   return (
     <div
       data-reorder={place.key}
-      className={`pb-4 flex flex-col gap-0.5 transition-opacity duration-150 ${
+      className={`flex flex-col gap-0.5 transition-opacity duration-150 ${
         here ? 'opacity-100' : 'opacity-45 hover:opacity-100 focus-within:opacity-100'
       }`}
     >
