@@ -122,7 +122,7 @@ function RadiusHandles({
   return (
     <>
       {CORNERS.map(corner => {
-        const inset = Math.max(11, Math.min(props.radius[corner.at] * zoom, Math.min(rect.w, rect.h) / 2 - 6))
+        const inset = Math.max(GRAB_ROOM, props.radius[corner.at] * zoom)
         return (
           <button
             key={corner.at}

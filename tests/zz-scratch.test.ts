@@ -41,7 +41,7 @@ describe('scratch shapes', () => {
     const id = createShapeId('text') as TLShapeId
     subject.createShape({ id, type: 'text', x: 0, y: 0, props: {} })
     const shape = subject.getShape(id)!
-    subject.updateShape({ id, type: 'text', meta: { family: 'mono', size: 32, weight: 700 } })
+    subject.updateShape({ id, type: 'text', meta: { type: { family: 'mono', size: 32, weight: 700 } } })
     const util = subject.getShapeUtil(subject.getShape(id)!)
     const { container } = render(util.component(subject.getShape(id)! as never) as never)
     console.log('text html', container.innerHTML.slice(0, 500))
