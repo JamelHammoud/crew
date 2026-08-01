@@ -500,13 +500,16 @@ const driveSource = String.raw`(async () => {
       groupPageBox: boxOf(bounds),
       corners,
       edges,
+      dashProfile: profile,
       childEdges
     }
   })()
   report.painted = painted
 
-  const overlays = editor.overlays?.getOverlays?.() ?? []
-  report.overlays = overlays.map(one => one.type + ':' + one.id)
+  const entries = editor.overlays?.getActiveOverlayEntries?.() ?? []
+  report.overlays = entries.flatMap(entry =>
+    (entry.overlays ?? []).map(one => one.type + ':' + one.id)
+  )
 
   return report
 })()`
