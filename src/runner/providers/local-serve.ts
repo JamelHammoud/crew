@@ -58,11 +58,7 @@ function labelOf(url: string, kind: LocalRuntime['kind']): string {
 async function reaches(url: string, timeoutMs: number): Promise<boolean> {
   try {
     const answer = await fetch(url, { signal: AbortSignal.timeout(timeoutMs) })
-    try {
-      await answer.body?.cancel()
-    } catch {
-      /* nothing to give back */
-    }
+    await answer.body?.cancel().catch(() => undefined)
     return answer.ok
   } catch {
     return false
