@@ -54,6 +54,7 @@ export const samePlaceGroup = (a: PlaceGroupProps, b: PlaceGroupProps): boolean 
   a.onOpen === b.onOpen &&
   a.onOpenThread === b.onOpenThread &&
   a.onStop === b.onStop &&
+  a.onRename === b.onRename &&
   a.onForget === b.onForget &&
   a.take === b.take &&
   a.dragged === b.dragged &&
