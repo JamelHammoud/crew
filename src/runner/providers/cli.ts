@@ -117,32 +117,13 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       const stdout = child.stdout
       const stderr = child.stderr
       if (!stdout || !stderr) throw new Error(`${opts.label} could not open its output streams.`)
-      let text = ''
-      let aside = ''
+      const sink = makeSink(cwd, hooks)
       let errText = ''
       let buffer = ''
       let raw = ''
-      let blocks = 0
-      let rawOpen = false
       let killed = false
       let timedOut = false
       let parsedError = ''
-      let written = 0
-      // What the calls of the model have come to so far, and, once the run says
-      // so, what the whole turn came to. The second stands in place of the
-      // first rather than beside it, or every token is counted twice.
-      let spent: TokenUsage = NO_USAGE
-      let whole: ParsedUsage | null = null
-      let model = ''
-      let sent = 0
-      let priced: number | null = null
-      const streams = {
-        thinking: { ids: new Map<number, string>(), open: new Set<string>(), streamed: false },
-        text: { ids: new Map<number, string>(), open: new Set<string>(), streamed: false }
-      }
-      const asides = new Set<string>()
-      const toolNames = new Map<string, string>()
-      const tasks = taskLedger()
 
       const idleMs = opts.idleTimeoutMs ?? IDLE_TIMEOUT_MS
       let idleTimer: NodeJS.Timeout | null = null
