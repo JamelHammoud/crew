@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { createElement, useState } from 'react'
+import { createElement, useState, type ReactElement } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import ChatMessage from '../src/renderer/src/components/ChatMessage'
 import { useAutoResize } from '../src/renderer/src/components/useAutoResize'
@@ -84,25 +84,33 @@ describe('editing a message', () => {
 })
 
 const ROW = 22
-const OTHER = 900
+const ABOVE = 900
 const VIEW = 400
 
-// A scroller that clamps the way a browser does, over a box that is one row
-// tall while it is being measured.
 function stand(box: HTMLTextAreaElement, page: HTMLElement, full: number): void {
   Object.defineProperty(box, 'scrollHeight', { configurable: true, get: () => full })
+  let height = `${full}px`
   let top = 0
+  const max = (): number =>
+    Math.max(0, ABOVE + (height === 'auto' ? ROW : parseFloat(height) || 0) - VIEW)
+  Object.defineProperty(box.style, 'height', {
+    configurable: true,
+    get: () => height,
+    set: (asked: string) => {
+      height = asked
+      top = Math.min(top, max())
+    }
+  })
   Object.defineProperty(page, 'scrollTop', {
     configurable: true,
     get: () => top,
     set: (asked: number) => {
-      const held = box.style.height === 'auto' ? ROW : parseFloat(box.style.height || '0')
-      top = Math.max(0, Math.min(asked, OTHER + held - VIEW))
+      top = Math.max(0, Math.min(asked, max()))
     }
   })
 }
 
-function Grower({ text }: { text: string }): React.ReactElement {
+function Grower({ text }: { text: string }): ReactElement {
   const ref = useAutoResize(text, Number.POSITIVE_INFINITY)
   return createElement(
     'div',
@@ -111,7 +119,7 @@ function Grower({ text }: { text: string }): React.ReactElement {
   )
 }
 
-function Typing(): React.ReactElement {
+function Typing(): ReactElement {
   const [text, setText] = useState('one')
   return createElement(
     'div',
@@ -127,9 +135,9 @@ describe('a box that grows inside a scroller', () => {
     const page = container.querySelector('[data-page]') as HTMLElement
     const box = container.querySelector('textarea') as HTMLTextAreaElement
     stand(box, page, 500)
-    page.scrollTop = OTHER + 500 - VIEW
-
+    page.scrollTop = ABOVE + 500 - VIEW
     const stood = page.scrollTop
+
     fireEvent.click(screen.getByText('type'))
 
     expect(box.style.height).toBe('500px')
@@ -138,11 +146,7 @@ describe('a box that grows inside a scroller', () => {
 
   it('leaves a box with no scroller over it alone', () => {
     const { container } = render(
-      createElement(
-        'div',
-        { style: { overflowY: 'visible' } },
-        createElement(Grower, { text: 'one' })
-      )
+      createElement('div', { style: { overflowY: 'visible' } }, createElement(Grower, { text: 'one' }))
     )
     const box = container.querySelector('textarea') as HTMLTextAreaElement
 
