@@ -79,7 +79,7 @@ export default function NewPlace({
           className="w-full h-9 rounded-full flex items-center justify-center gap-2 text-sm font-medium bg-fg/[0.10] text-fg/70 transition-colors duration-150 hover:bg-fg/[0.14] hover:text-fg active:scale-[0.98]"
         >
           <PlusGlyph className="w-4 h-4" />
-          New crew
+          New project
         </button>
         <Popover open={ways} onClose={() => setWays(false)} align="center" side="top" className="min-w-44">
           <MenuItem
