@@ -35,6 +35,7 @@ import {
 import { useThreadRead } from '../components/useThreadRead'
 import { useFamilySteps } from '../components/useThreadSteps'
 import { useAutoResize } from '../components/useAutoResize'
+import { useComposerRoom } from '../components/useComposerRoom'
 import { useDrawnTail } from '../components/useDrawnTail'
 import { useFindQuery } from '../components/find'
 import { useStickToBottom } from '../components/useStickToBottom'
