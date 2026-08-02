@@ -20,6 +20,7 @@ import {
 import { describeStep, endPreview, lastEnd, sameRun, threadState, type ThreadItem } from '../components/thread'
 import { formatCost, formatElapsed, formatTokens, isNewDay } from '../components/time'
 import { useAutoResize } from '../components/useAutoResize'
+import { useComposerRoom } from '../components/useComposerRoom'
 import { useLoadOlder } from '../components/useLoadOlder'
 import { useNow } from '../components/useNow'
 import { useStickToBottom } from '../components/useStickToBottom'
