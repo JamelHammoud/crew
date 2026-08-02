@@ -19,7 +19,7 @@ const imported = (): Map<string, string> => {
 const table = (): Map<string, string> => {
   const rows = new Map<string, string>()
   const body = source.slice(source.indexOf('const MARKS'), source.indexOf('export default'))
-  for (const [, provider, name] of body.matchAll(/(\w+): \{ src: (\w+)/g)) rows.set(provider, name)
+  for (const [, provider, name] of body.matchAll(/^ {2}(\w+): (\w+)/gm)) rows.set(provider, name)
   return rows
 }
 
@@ -40,8 +40,17 @@ describe('provider marks', () => {
     }
   })
 
-  it('is one square with nothing drawn over it', () => {
-    expect(source).toContain('rounded-')
-    expect(source).not.toContain('InsetRing')
+  // The rim is the foreground at an opacity, so it is white over a dark icon in
+  // dark mode and near black over a light one in light mode, and it disappears
+  // into the icons that already stand away from the surface. A fixed white or
+  // black is one of those two cases drawn wrong.
+  it('rims every mark in the foreground at an opacity', () => {
+    expect(source).toContain('InsetRing')
+    expect(source).toMatch(/ring-inset ring-fg\/\d+/)
+    expect(source).not.toMatch(/ring-white|ring-black|ring-\[#/)
+  })
+
+  it('draws the artwork at the size it was given', () => {
+    expect(source).not.toContain('scale(')
   })
 })
