@@ -77,7 +77,15 @@ app.whenReady().then(async () => {
     win.webContents.sendInputEvent({ type: 'keyUp', keyCode: 'Shift' })
     await wait(300)
     const letGo = await read()
-    console.log('SEEN ' + JSON.stringify({ rest, hovered, held, letGo }))
+    // The key never arrives when another window has the keyboard, so the pointer
+    // has to carry it on its own.
+    win.webContents.sendInputEvent({ type: 'mouseMove', x: spot.x + 3, y: spot.y, modifiers: ['shift'] })
+    await wait(300)
+    const pointed = await read()
+    win.webContents.sendInputEvent({ type: 'mouseMove', x: spot.x + 6, y: spot.y })
+    await wait(300)
+    const bare = await read()
+    console.log('SEEN ' + JSON.stringify({ rest, hovered, held, letGo, pointed, bare }))
   } catch (e) {
     console.log('SEEN ' + JSON.stringify({ failed: String(e && e.message) }))
   }
