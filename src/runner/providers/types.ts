@@ -97,6 +97,10 @@ export interface Provider {
   steerable?: boolean
   fields(): AgentSettingField[]
   detect(): Promise<boolean>
+  // Why an agent made now would not run, for a provider that can be present
+  // and still have nothing to run: installed and not installed are not the two
+  // answers everywhere. Read after detect(), so it speaks for what was found.
+  note?(): Promise<string | undefined>
   start(prompt: string, cwd: string, hooks: RunHooks, settings?: AgentSettings, options?: RunOptions): RunningPrompt
   // Reads the account's rate-limit state from this machine (credentials,
   // session logs). null means the provider has no usage data to offer.
