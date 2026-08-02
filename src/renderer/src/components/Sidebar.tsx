@@ -34,6 +34,7 @@ export default function Sidebar({
   const live = usePlaces(s => s.live)
   const load = usePlaces(s => s.load)
   const move = usePlaces(s => s.move)
+  const rename = usePlaces(s => s.rename)
   const here = useCrew(s => s.place)
   const openThreadIds = useCrew(s => s.openThreadIds)
   const name = useCrew(s => s.selfName)
