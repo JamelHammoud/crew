@@ -123,7 +123,6 @@ function ChatMessage({
                 {item.author}
               </span>
             </MemberName>
-            {item.self && <Pill>You</Pill>}
             <div className="flex items-baseline gap-1.5">
               <Tooltip label={formatFullTime(item.ts)}>
                 <span className="text-sm text-fg-faint cursor-default">{formatTime(item.ts)}</span>
