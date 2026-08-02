@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { OpenRequest } from '../../../shared/cli'
 import type { OpenOptions, ProjectPlan } from '../../../shared/session'
+import { said } from '../api/said'
 import Avatar from '../components/Avatar'
 import ScreenSwap from '../components/ScreenSwap'
 import Tooltip from '../components/Tooltip'
@@ -30,10 +31,6 @@ const WIDTH: Record<Screen, string> = {
   where: 'max-w-lg',
   link: 'max-w-sm',
   away: 'max-w-sm'
-}
-
-function cleanError(err: unknown): string {
-  return String(err instanceof Error ? err.message : err).replace(/^Error invoking remote method '[^']+': (Error: )?/, '')
 }
 
 export default function Home() {
@@ -87,7 +84,7 @@ export default function Home() {
         setAway({ folder: target, share: opts?.share })
         setScreen('away')
       } else {
-        setError(cleanError(err))
+        setError(said(err))
         setScreen('places')
       }
     } finally {
@@ -151,7 +148,7 @@ export default function Home() {
       localStorage.setItem('crew.link', sessionLink)
       connect(await window.crew.join(sessionLink, sessionFolder, keep(who)))
     } catch (err) {
-      setError(cleanError(err))
+      setError(said(err))
       setScreen('places')
     } finally {
       setBusy(false)
