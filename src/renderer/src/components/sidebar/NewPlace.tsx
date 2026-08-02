@@ -1,15 +1,13 @@
 import { useState } from 'react'
 import type { CrewHome } from '../../../../shared/project'
 import { said } from '../../api/said'
-import { LinkGlyph, PlusGlyph } from '../../icons'
+import { FolderGlyph, LinkGlyph, PlusGlyph } from '../../icons'
 import { useSidebar } from '../../state/sidebar'
 import { useCrew } from '../../state/store'
 import JoinLink from '../../views/home/JoinLink'
 import WhereTo from '../../views/home/WhereTo'
 import Modal from '../Modal'
-
-const ROW =
-  'w-full h-9 rounded-full flex items-center justify-center gap-2 text-sm font-medium transition-colors duration-150 active:scale-[0.98]'
+import { MenuItem, Popover } from '../Popover'
 
 export default function NewPlace({
   busy,
