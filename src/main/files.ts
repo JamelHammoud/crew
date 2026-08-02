@@ -2,7 +2,8 @@ import { promises as fs } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { imageType, type FileEntry, type RepoFile, type RepoPathKind } from '../shared/files'
-import { runGit } from '../shared/git'
+
+export { listRepoFiles } from '../shared/repoFiles'
 
 const MAX_BYTES = 512 * 1024
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024
