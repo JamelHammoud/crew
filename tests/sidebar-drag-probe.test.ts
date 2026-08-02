@@ -234,7 +234,7 @@ describe('dragging a project up the list', () => {
     const { container } = render(Sidebar())
     const { groups } = lay(container)
     fireEvent.pointerDown(groups[1]!.querySelector('button')!, { button: 0, clientX: 40, clientY: 110 })
-    fireEvent.pointerMove(window, { clientX: 40, clientY: 40 })
+    fireEvent.pointerMove(window, { clientX: 40, clientY: 2 })
     act(() => {
       fireEvent.keyDown(window, { key: 'Escape' })
     })
