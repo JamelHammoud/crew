@@ -201,8 +201,8 @@ async function check(app, work) {
     },
     {
       name: 'a tool was named with real arguments in it',
-      ok: started_.length > 0 && silent.length === 0,
-      note: started_.length
+      ok: opened.length > 0 && silent.length === 0,
+      note: opened.length
         ? `${named.join(', ')}; ${argued.map(step => `${step.name} ${flat(step.detail ?? '').slice(0, 40)}`).join(' | ')}${silent.length ? `; ${silent.join(', ')} carried nothing` : ''}`
         : 'no tool was called at all'
     },

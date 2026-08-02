@@ -178,17 +178,21 @@ export async function chat(req: ChatRequest, emit: (out: ParsedOutput) => void):
 
   const reader = response.body.getReader()
   const decode = new TextDecoder()
-  for (;;) {
-    const { done, value } = await reader.read()
-    if (done) break
-    buffer += decode.decode(value, { stream: true })
-    const lines = buffer.split('\n')
-    buffer = lines.pop() ?? ''
-    for (const line of lines) take(line)
+  try {
+    for (;;) {
+      const { done, value } = await reader.read()
+      if (done) break
+      buffer += decode.decode(value, { stream: true })
+      const lines = buffer.split('\n')
+      buffer = lines.pop() ?? ''
+      for (const line of lines) take(line)
+    }
+    if (buffer.trim()) take(buffer)
+  } finally {
+    // A turn that was stopped or fell over mid-stream still has to close what
+    // it opened, or the thought and the answer stand as running forever.
+    emit({ blockStop: { index: thinkLane } })
+    emit({ blockStop: { index: textLane } })
   }
-  if (buffer.trim()) take(buffer)
-
-  emit({ blockStop: { index: thinkLane } })
-  emit({ blockStop: { index: textLane } })
   return { text, thinking, calls: calls.all(), usage }
 }
