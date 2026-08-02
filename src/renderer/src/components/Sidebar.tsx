@@ -153,14 +153,10 @@ export default function Sidebar({
 
   const forgetPlace = useCallback((place: Place) => void forget(place), [forget])
 
-  const pick = async () => {
-    const folder = await window.crew.pickFolder()
-    if (!folder) return
-    peek(false)
-    const plan = await window.crew.projectPlan(folder).catch(() => null)
-    if (plan?.known) return open(folder, projectPlace(folder))
-    setAsking(folder)
-  }
+  const addPlace = useCallback(
+    (folder: string, home?: CrewHome) => void open(folder, projectPlace(folder), home),
+    [open]
+  )
 
   return (
     <aside
