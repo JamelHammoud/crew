@@ -1,5 +1,5 @@
 import { memo, useCallback, useState } from 'react'
-import { PencilGlyph, StopGlyph, TrashGlyph } from '../../icons'
+import { PencilGlyph, TrashGlyph, XCircleGlyph } from '../../icons'
 import Spinner from '../Spinner'
 import { MenuItem, Popover } from '../Popover'
 import PlaceFace from './PlaceFace'
