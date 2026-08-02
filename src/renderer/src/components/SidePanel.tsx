@@ -1,5 +1,5 @@
 import { useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
-import { useBrowser } from '../state/browser'
+import { MINIMIZE_AT, useBrowser } from '../state/browser'
 import BrowserPanel from './BrowserPanel'
 
 const AGAIN_WITHIN = 400
