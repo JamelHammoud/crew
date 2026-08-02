@@ -93,6 +93,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
 
   const start = async () => {
     let list = caps
+    const held = list !== null
     if (!list) {
       setLoading(true)
       try {
@@ -109,7 +110,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
     setError('')
     selectProvider((list.find(c => c.installed) ?? list[0]).provider, list)
     setOpen(true)
-    void refresh().catch(() => {})
+    if (held) void refresh().catch(() => {})
   }
 
   const setSetting = (key: string, value: string) => {
