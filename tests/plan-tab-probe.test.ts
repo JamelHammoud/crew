@@ -164,13 +164,24 @@ describe('the plan in the browser', () => {
 
 describe('the way back to the panel', () => {
   const view = (id: string) =>
-    render(createElement('div', null, createElement(ThreadView, { threadId: id }), createElement(BrowserPanel)))
+    render(
+      createElement(
+        'div',
+        null,
+        createElement(PanelToggle),
+        createElement(ThreadView, { threadId: id }),
+        createElement(BrowserPanel)
+      )
+    )
 
-  it('stands in every thread, whatever the thread has', () => {
+  it('stands in the window rather than in the thread', () => {
     open('t1')
-    const { queryByLabelText } = view('t1')
+    const { container, queryByLabelText } = view('t1')
 
-    expect(queryByLabelText('Show panel')).not.toBeNull()
+    const button = queryByLabelText('Show panel')
+    expect(button).not.toBeNull()
+    expect(button!.closest('header')).toBeNull()
+    expect(container.querySelectorAll('[aria-label="Show panel"]')).toHaveLength(1)
   })
 
   it('puts the panel away and keeps what is in it', () => {
