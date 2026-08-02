@@ -81,6 +81,16 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
     if (chosen && !chosen.installed && chosen.installable && installing !== next) void install(chosen)
   }
 
+  // A CLI's models change about never, and a model on this computer changes
+  // the moment somebody pulls one, which they will very often be doing because
+  // this card just told them they had none. So the card asks again every time
+  // it opens, and what it already knows is what it opens on.
+  const refresh = async () => {
+    const fresh = await window.crew.agentCapabilities()
+    setCaps(fresh)
+    if (providerRef.current) selectProvider(providerRef.current, fresh)
+  }
+
   const start = async () => {
     let list = caps
     if (!list) {
@@ -99,6 +109,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
     setError('')
     selectProvider((list.find(c => c.installed) ?? list[0]).provider, list)
     setOpen(true)
+    void refresh().catch(() => {})
   }
 
   const setSetting = (key: string, value: string) => {
