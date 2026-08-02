@@ -345,6 +345,19 @@ describe('message reaction controls', () => {
     }
   })
 
+  it('takes shift off the pointer, since the key goes to whichever window has the keyboard', () => {
+    const stop = watchShift()
+    try {
+      fireEvent.pointerMove(window, { shiftKey: true })
+      expect(document.documentElement.hasAttribute('data-shift')).toBe(true)
+
+      fireEvent.pointerMove(window, { shiftKey: false })
+      expect(document.documentElement.hasAttribute('data-shift')).toBe(false)
+    } finally {
+      stop()
+    }
+  })
+
   it('keeps a reaction on the exact agent reply block it targets', () => {
     const events: SessionEvent[] = [
       {
