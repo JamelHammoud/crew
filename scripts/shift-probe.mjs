@@ -1,5 +1,6 @@
 import { spawn } from 'node:child_process'
-import { mkdtemp, readdir, readFile, realpath, rm, writeFile } from 'node:fs/promises'
+import { mkdtemp, realpath, rm, writeFile } from 'node:fs/promises'
+import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -7,64 +8,59 @@ import electron from 'electron'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
+const resolve = createRequire(path.join(root, 'package.json')).resolve
+const from = file => JSON.stringify(path.join(root, 'src/renderer/src', file))
+
+const PROBE = `import React from ${JSON.stringify(resolve('react'))}
+import { createRoot } from ${JSON.stringify(resolve('react-dom/client'))}
+import MessageReactions from ${from('components/MessageReactions.tsx')}
+import { watchShift } from ${from('state/shift.ts')}
+import './probe.css'
+
+watchShift()
+
+createRoot(document.getElementById('root')).render(
+  React.createElement('div', { className: 'group/message relative p-16', id: 'msg' },
+    React.createElement('p', { className: 'text-sm' }, 'a message somebody wrote'),
+    React.createElement(MessageReactions, {
+      targetId: 'm1',
+      reactions: [],
+      deletable: true,
+      onDelete: () => {},
+      onEdit: () => {},
+      onReply: () => {}
+    })
+  )
+)
+`
 
 const PAGE = `<!doctype html>
 <html><head><meta charset="utf-8"><script type="module" src="./probe.js"></script></head>
-<body class="bg-ink-900 text-fg font-sans"><div class="p-4">
-<button id="del" class="hidden h-7 w-7 shrink-0 items-center justify-center rounded-full text-danger shift:flex">x</button>
-</div></body></html>`
+<body class="bg-ink-900 text-fg font-sans"><div id="root"></div></body></html>`
 
 const MAIN = `const { app, BrowserWindow } = require('electron')
 const path = require('node:path')
 app.disableHardwareAcceleration()
 const wait = ms => new Promise(r => setTimeout(r, ms))
-const read = win => win.webContents.executeJavaScript(\`JSON.stringify({
-  attr: document.documentElement.hasAttribute('data-shift'),
-  display: getComputedStyle(document.getElementById('del')).display
-})\`)
+const read = win => win.webContents.executeJavaScript(\`(() => {
+  const del = document.querySelector('[aria-label="Delete message"]')
+  const tray = document.querySelector('[aria-label="More"]')?.closest('div')
+  const box = del && del.getBoundingClientRect()
+  return JSON.stringify({
+    attr: document.documentElement.hasAttribute('data-shift'),
+    found: !!del,
+    display: del && getComputedStyle(del).display,
+    w: box && Math.round(box.width),
+    trayOpacity: tray && getComputedStyle(tray).opacity
+  })
+})()\`)
 app.whenReady().then(async () => {
-  const win = new BrowserWindow({ width: 400, height: 300, show: true })
+  const win = new BrowserWindow({ width: 700, height: 400, show: true })
   try {
     await win.loadFile(path.join(__dirname, 'dist/index.html'))
-    await wait(600)
-    const rest = await read(win)
-    win.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'Shift', modifiers: ['shift'] })
-    await wait(200)
-    const held = await read(win)
-    win.webContents.sendInputEvent({ type: 'keyUp', keyCode: 'Shift' })
-    await wait(200)
-    const let_go = await read(win)
-    console.log('SEEN ' + JSON.stringify({ rest: JSON.parse(rest), held: JSON.parse(held), let_go: JSON.parse(let_go) }))
-  } catch (e) {
-    console.log('SEEN ' + JSON.stringify({ failed: String(e && e.message) }))
-  }
-  app.exit(0)
+    await wait(900)
+    const before = await read(win)
+    win.webContents.sendInputEvent({ type: 'mouseMove', x: 120, y: 90 })
+    await wait: 0
+  } catch (e) {}
 })`
-
-async function stage() {
-  const dir = await realpath(await mkdtemp(path.join(tmpdir(), 'crew-shift-')))
-  await writeFile(path.join(dir, 'index.html'), PAGE)
-  await writeFile(
-    path.join(dir, 'probe.css'),
-    `@import "${path.join(root, 'src/renderer/src/styles.css')}";\n@source "${path.join(root, 'src/renderer/src')}";\n`
-  )
-  await writeFile(
-    path.join(dir, 'probe.js'),
-    `import './probe.css'\nimport { watchShift } from '${path.join(root, 'src/renderer/src/state/shift.ts')}'\nwatchShift()\n`
-  )
-  await writeFile(path.join(dir, 'main.cjs'), MAIN)
-  return dir
-}
-
-const dir = await stage()
-const { build } = await import('vite')
-const tailwind = (await import('@tailwindcss/vite')).default
-await build({ root: dir, base: './', logLevel: 'silent', plugins: [tailwind()], build: { outDir: path.join(dir, 'dist'), emptyOutDir: true } })
-const child = spawn(electron, [path.join(dir, 'main.cjs')], { stdio: ['ignore', 'pipe', 'pipe'] })
-let out = ''
-child.stdout.on('data', d => (out += d))
-child.stderr.on('data', () => {})
-await new Promise(r => child.on('exit', r))
-const line = out.split('\n').find(l => l.startsWith('SEEN '))
-console.log(line ? JSON.stringify(JSON.parse(line.slice(5)), null, 2) : 'nothing came back\n' + out)
-await rm(dir, { recursive: true, force: true })
