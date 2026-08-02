@@ -85,7 +85,7 @@ export function startLoop(opts: LoopOptions): LocalRun {
     const result = await runTool(call.name, call.args, opts.cwd)
     opts.sink.apply({
       activity: {
-        id,
+        id: call.id,
         kind: 'tool',
         name: call.name,
         status: 'finished',
