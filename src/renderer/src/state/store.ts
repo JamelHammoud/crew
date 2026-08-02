@@ -1492,6 +1492,7 @@ export const useCrew = create<CrewState>((set, get) => {
       const clean = cleanMemberName(name)
       if (!clean || clean === get().selfName) return false
       set({ selfName: clean })
+      localStorage.setItem('crew.name', clean)
       socket.send({ type: 'member.rename', name: clean })
       void window.crew.rename(clean)
       return true
