@@ -221,7 +221,7 @@ async function check(app, work) {
     {
       name: 'the tokens came through with numbers in them',
       ok: tokens > 0,
-      note: `${tokens} tokens, price ${cost === null ? 'not worked out, since there is no rate for a local model' : cost}; the words alone would have put ${floor} under it, so the count ${tokens > floor ? 'is the server’s own' : 'may be that floor rather than the server’s own'}`
+      note: `${tokens} tokens, price ${cost === null ? 'not worked out, since there is no rate for a local model' : cost}; the words alone would have put ${floor} under it, so the count ${tokens > floor ? "is the server's own" : "may be that floor rather than the server's own"}`
     }
   ]
 
