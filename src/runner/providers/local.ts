@@ -63,11 +63,17 @@ export const localProvider: Provider = {
     await refreshModels(found)
     return found.length > 0 || commandExists('ollama')
   },
+  // The one state an agent can be made in and fail on its first word: a machine
+  // that can run models and has none. A server that is installed and not
+  // running is not one of them, since start() puts it up.
   note: async () => {
     if (cachedModels().length > 0) return undefined
-    return cachedRuntimes().length > 0
-      ? 'No models here yet. Pull one with ollama pull, then open this again.'
-      : 'Nothing is serving models on this computer. Start Ollama, then open this again.'
+    const runtimes = cachedRuntimes()
+    if (runtimes.some(runtime => runtime.kind === 'ollama') || commandExists('ollama')) {
+      return 'No models on this computer yet. Pull one with ollama pull.'
+    }
+    if (runtimes.length > 0) return `No models on this computer yet. Download one in ${runtimes[0].label}.`
+    return undefined
   },
   start: (prompt, cwd, hooks, settings = {}, options = {}): RunningPrompt => {
     const resolved = resolveSettings(localFields(), settings)
