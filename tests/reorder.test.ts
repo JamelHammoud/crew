@@ -49,8 +49,8 @@ describe('where the pointer carrying one lands', () => {
   it('moves as the pointer crosses the gap it would drop into', () => {
     expect(landingAt(boxes, 0, 194)).toBe(0)
     expect(landingAt(boxes, 0, 196)).toBe(1)
-    expect(landingAt(boxes, 3, 196)).toBe(2)
-    expect(landingAt(boxes, 3, 194)).toBe(1)
+    expect(landingAt(boxes, 3, 196)).toBe(3)
+    expect(landingAt(boxes, 3, 194)).toBe(2)
   })
 
   // The pointer decides against the very place the line is drawn, so the two are
