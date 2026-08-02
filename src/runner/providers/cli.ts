@@ -1,19 +1,15 @@
 import { spawn } from 'node:child_process'
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
-import { stripRoot, stripRootFromText } from '../../shared/files'
-import { isShellTool } from '../../shared/tools'
 import { resolveSettings, type AgentSettingField, type AgentSettingOption, type AgentUsage } from '../../shared/llm'
-import { addUsage, priceOf, NO_USAGE, type TokenUsage } from '../../shared/pricing'
 import { exitReason, failureText } from './failure'
 import { crewPath, resolveCommand } from './path'
-import { taskLedger } from './tasks'
+import { makeSink } from './run'
 import type {
   Dialog,
   InstallCommands,
   OutputParser,
   ParsedOutput,
-  ParsedUsage,
   Provider,
   RunOptions,
   RunParser,
