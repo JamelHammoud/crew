@@ -102,8 +102,6 @@ function Session() {
 
   useEffect(() => watchUpdates(), [])
 
-  useEffect(() => watchShift(), [])
-
   useEffect(
     () => window.crew?.onCrewTrouble?.(message => toast.fail(message, { key: 'crew-sync' })),
     []
