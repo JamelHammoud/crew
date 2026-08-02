@@ -53,6 +53,23 @@ export function boundary(boxes: Box[], from: number, to: number): number {
   return box.left - (before ? box.left - end(before) : box.left) / 2
 }
 
+// Where the pointer standing at a point in the row would drop. Nothing travels
+// with the pointer here: the row stands still and a copy of what was picked up
+// follows it, so the point is read against the line itself rather than against
+// the middle of the box beside it. A project carries its threads under it and is
+// as tall as all of them, and read from the middle the line lands at the far
+// edge of that box, a hundred pixels under a pointer that has not reached it
+// yet. Crossing the line is what moves it, so the mark arrives where the pointer
+// already is and stands still until the pointer has really gone past.
+export function landingAt(boxes: Box[], from: number, at: number): number {
+  let to = from
+  boxes.forEach((_, index) => {
+    if (index > from && at > boundary(boxes, from, index)) to = Math.max(to, index)
+    if (index < from && at < boundary(boxes, from, index)) to = Math.min(to, index)
+  })
+  return to
+}
+
 // How far the one standing at index steps aside while from is on its way to to.
 // Everything the held one has passed moves back by the room it left behind, and
 // every gap is the same width, so one number covers all of them.
