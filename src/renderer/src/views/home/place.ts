@@ -7,6 +7,8 @@ export interface Place {
   at: number
   title: string
   line: string
+  given: string
+  nickname: string | null
   project: RecentProject | null
   join: RecentJoin | null
 }
@@ -15,10 +17,14 @@ export function folderName(folder: string): string {
   return folder.split(/[\\/]/).filter(Boolean).at(-1) ?? folder
 }
 
+export function folderPath(folder: string): string {
+  return folder.replace(/^\/(Users|home)\/[^/]+/, '~')
+}
+
 // Where a folder sits, said the way it is said in a terminal. Home is the one
 // part of a path nobody reads, so it comes out as a tilde.
 export function folderLine(folder: string): string {
-  const short = folder.replace(/^\/(Users|home)\/[^/]+/, '~')
+  const short = folderPath(folder)
   const parts = short.split(/[\\/]/).filter(Boolean)
   return parts.slice(0, -1).join('/') || short
 }
