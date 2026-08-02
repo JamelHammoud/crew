@@ -42,4 +42,4 @@ export const TextArea = forwardRef<
 TextArea.displayName = 'TextArea'
 
 export default TextField
-export { FIELD }
+export { FIELD, GLASS as FIELD_GLASS }
