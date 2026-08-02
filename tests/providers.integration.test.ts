@@ -468,8 +468,8 @@ describe('provider install', () => {
 describe('capabilities list every builtin provider', () => {
   it('marks each one installed or not instead of hiding it', async () => {
     const caps = await new Crews().capabilities()
-    expect(caps.map(c => c.provider)).toEqual(['claude', 'codex', 'kimi', 'grok'])
-    expect(caps.map(c => c.label)).toEqual(['Claude', 'Codex', 'Kimi', 'Grok'])
+    expect(caps.map(c => c.provider)).toEqual(['claude', 'codex', 'kimi', 'grok', 'local'])
+    expect(caps.map(c => c.label)).toEqual(['Claude', 'Codex', 'Kimi', 'Grok', 'Local'])
     for (const cap of caps) {
       expect(typeof cap.installed).toBe('boolean')
       expect(cap.installable).toBe(true)
