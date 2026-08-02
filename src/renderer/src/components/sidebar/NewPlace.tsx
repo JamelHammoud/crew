@@ -56,25 +56,35 @@ export default function NewPlace({
 
   return (
     <>
-      <div className="app-no-drag shrink-0 px-4 pb-4 pt-2 flex flex-col gap-1">
+      <div className="app-no-drag shrink-0 px-4 pb-4 pt-2">
         <button
-          onClick={() => void pick()}
-          className={`${ROW} bg-fg/[0.10] text-fg/70 hover:bg-fg/[0.14] hover:text-fg`}
+          onClick={() => setWays(!ways)}
+          aria-expanded={ways}
+          className="w-full h-9 rounded-full flex items-center justify-center gap-2 text-sm font-medium bg-fg/[0.10] text-fg/70 transition-colors duration-150 hover:bg-fg/[0.14] hover:text-fg active:scale-[0.98]"
         >
           <PlusGlyph className="w-4 h-4" />
-          Open a folder
+          New crew
         </button>
-        <button
-          onClick={() => {
-            peek(false)
-            setError('')
-            setJoining(true)
-          }}
-          className={`${ROW} text-fg/45 hover:bg-fg/[0.06] hover:text-fg`}
-        >
-          <LinkGlyph className="w-4 h-4" />
-          Join with a link
-        </button>
+        <Popover open={ways} onClose={() => setWays(false)} align="center" side="top" className="min-w-44">
+          <MenuItem
+            icon={<FolderGlyph />}
+            label="Open a folder"
+            onClick={() => {
+              setWays(false)
+              void pick()
+            }}
+          />
+          <MenuItem
+            icon={<LinkGlyph />}
+            label="Join with a link"
+            onClick={() => {
+              setWays(false)
+              peek(false)
+              setError('')
+              setJoining(true)
+            }}
+          />
+        </Popover>
       </div>
       <Modal open={asking !== null} onClose={() => setAsking(null)} title="" width={520} flush>
         <div className="p-6">
