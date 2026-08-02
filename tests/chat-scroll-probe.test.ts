@@ -109,6 +109,36 @@ describe('chat scroll position', () => {
     scrollHeight = 2000
   })
 
+  it('holds a place per project, so a switch through an empty one comes back', () => {
+    const { feed } = boot('project:one')
+    feed.scrollTop = 300
+    fireEvent.scroll(feed)
+
+    act(() => useCrew.setState({ place: 'project:two', events: [] }))
+    scrollHeight = clientHeight
+    feed.scrollTop = 0
+    fireEvent.scroll(feed)
+    scrollHeight = 2000
+
+    act(() => useCrew.setState({ place: 'project:one', events: messages }))
+    expect(feed.scrollTop).toBe(300)
+  })
+
+  it('comes back to the bottom of a project that was left at the bottom', () => {
+    const { feed } = boot('project:one')
+    feed.scrollTop = scrollHeight - clientHeight
+    fireEvent.scroll(feed)
+
+    act(() => useCrew.setState({ place: 'project:two', events: [] }))
+    scrollHeight = clientHeight
+    feed.scrollTop = 0
+    fireEvent.scroll(feed)
+    scrollHeight = 2000
+
+    act(() => useCrew.setState({ place: 'project:one', events: messages }))
+    expect(feed.scrollTop).toBe(2000)
+  })
+
   it('fades the messages above the composer only while there is more below', () => {
     const { feed, fade } = boot()
     feed.scrollTop = 300
