@@ -95,6 +95,7 @@ window.crew = {
     return Promise.resolve(sessionFor(folder))
   },
   pickFolder: () => Promise.resolve(picked),
+  cloneRepo: () => Promise.resolve(null),
   projectPlan: () => Promise.resolve({ known: true, home: 'folder', crewRemote: null, crewHere: true }),
   closeProject: () => Promise.resolve(),
   warmTerminal: () => undefined
@@ -224,11 +225,49 @@ describe('the sidebar', () => {
     expect(action.parentElement?.className).toContain('pb-4')
   })
 
-  it('offers both ways to a new crew behind the one button, in the words the way in uses', async () => {
+  it('offers every way to a new crew behind the one button, in the words the way in uses', async () => {
     render(Sidebar())
     fireEvent.click(screen.getByRole('button', { name: 'New project' }))
     await waitFor(() => expect(screen.getByRole('button', { name: 'Join with a link' })).toBeTruthy())
     expect(screen.getByRole('button', { name: 'Open a folder' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Clone Git repo' })).toBeTruthy()
+  })
+
+  it('clones a Git repo, then opens its folder in Crew', async () => {
+    const cloned = '/Users/jamel/project'
+    const cloneRepo = vi.spyOn(window.crew, 'cloneRepo').mockResolvedValueOnce(cloned)
+    const start = vi.spyOn(window.crew, 'start')
+    render(Sidebar())
+    fireEvent.click(screen.getByRole('button', { name: 'New project' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Clone Git repo' }))
+    fireEvent.change(screen.getByLabelText('Repository URL'), {
+      target: { value: '  https://github.com/owner/project.git  ' }
+    })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Choose a folder' }))
+    })
+    expect(cloneRepo).toHaveBeenCalledWith('https://github.com/owner/project.git')
+    await waitFor(() => expect(start).toHaveBeenCalledWith(cloned, 'Jamel', undefined))
+    expect(screen.queryByLabelText('Repository URL')).toBeNull()
+  })
+
+  it('keeps the clone card open and says why cloning failed', async () => {
+    vi.spyOn(window.crew, 'cloneRepo').mockRejectedValueOnce(
+      new Error("Error invoking remote method 'repo:clone': Error: Repository not found.")
+    )
+    render(Sidebar())
+    fireEvent.click(screen.getByRole('button', { name: 'New project' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Clone Git repo' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Choose a folder' }))
+    expect(screen.getByText('Paste the repository URL first.')).toBeTruthy()
+    fireEvent.change(screen.getByLabelText('Repository URL'), {
+      target: { value: 'https://github.com/owner/missing.git' }
+    })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Choose a folder' }))
+    })
+    expect(screen.getByText('Repository not found.')).toBeTruthy()
+    expect(screen.getByLabelText('Repository URL')).toBeTruthy()
   })
 
   it('joins a crew from the sidebar, on the link and the folder the card was given', async () => {

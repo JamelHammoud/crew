@@ -46,6 +46,7 @@ import { CrewCommand } from './crew-command'
 import { Previews } from './preview'
 import { OtherInstances } from './instances'
 import { Crews } from './crews'
+import { cloneRepository } from './repository-clone'
 import type { LivePlace } from '../shared/places'
 import { popOutTarget, poppedKey } from '../shared/popOut'
 import { type NewAgent, type OpenOptions } from './session'
@@ -487,6 +488,14 @@ app.whenReady().then(() => {
   ipcMain.handle('folder:pick', async () => {
     const result = await dialog.showOpenDialog({ properties: ['openDirectory'] })
     return result.canceled ? null : result.filePaths[0]
+  })
+  ipcMain.handle('repo:clone', async (_event, remote: string) => {
+    const result = await dialog.showOpenDialog({
+      title: 'Choose where to clone',
+      buttonLabel: 'Clone',
+      properties: ['openDirectory', 'createDirectory']
+    })
+    return result.canceled ? null : cloneRepository(remote, result.filePaths[0])
   })
   ipcMain.handle('session:start', async (event, folder: string, name: string, opts?: OpenOptions) => {
     const info = await crews.start(event.sender.id, folder, name, opts ?? {})

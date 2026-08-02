@@ -25,6 +25,7 @@ import type { TerminalSize } from './terminal'
 
 const bridge = {
   pickFolder: (): Promise<string | null> => ipcRenderer.invoke('folder:pick'),
+  cloneRepo: (remote: string): Promise<string | null> => ipcRenderer.invoke('repo:clone', remote),
   start: (folder: string, name: string, opts?: OpenOptions): Promise<CurrentSession> =>
     ipcRenderer.invoke('session:start', folder, name, opts),
   join: (link: string, folder: string, name: string): Promise<CurrentSession> =>

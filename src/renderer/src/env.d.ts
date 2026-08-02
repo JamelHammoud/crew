@@ -20,6 +20,7 @@ import type { UpdateState } from '../../shared/update'
 declare global {
   interface CrewBridge {
     pickFolder(): Promise<string | null>
+    cloneRepo(remote: string): Promise<string | null>
     start(folder: string, name: string, opts?: OpenOptions): Promise<CurrentSession>
     join(link: string, folder: string, name: string): Promise<CurrentSession>
     leave(): Promise<void>

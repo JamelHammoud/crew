@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import type { CrewHome } from '../../../../shared/project'
 import { said } from '../../api/said'
-import { FolderGlyph, LinkGlyph, PlusGlyph } from '../../icons'
+import { BranchGlyph, FolderGlyph, LinkGlyph, PlusGlyph } from '../../icons'
 import { useSidebar } from '../../state/sidebar'
 import { useCrew } from '../../state/store'
 import JoinLink from '../../views/home/JoinLink'
+import CloneRepo from '../../views/home/CloneRepo'
 import WhereTo from '../../views/home/WhereTo'
 import Modal from '../Modal'
 import { MenuItem, Popover } from '../Popover'
@@ -38,18 +39,42 @@ export default function NewPlace({
   const [ways, setWays] = useState(false)
   const [asking, setAsking] = useState<string | null>(null)
   const [joining, setJoining] = useState(false)
+  const [cloneOpen, setCloneOpen] = useState(false)
+  const [remote, setRemote] = useState('')
+  const [cloning, setCloning] = useState(false)
   const [link, setLink] = useState('')
   const [folder, setFolder] = useState<string | null>(lastFolder)
   const [going, setGoing] = useState(false)
   const [error, setError] = useState('')
 
-  const pick = async () => {
-    const picked = await window.crew.pickFolder()
-    if (!picked) return
+  const prepare = async (picked: string) => {
     peek(false)
     const plan = await window.crew.projectPlan(picked).catch(() => null)
     if (plan?.known) return onOpen(picked)
     setAsking(picked)
+  }
+
+  const pick = async () => {
+    const picked = await window.crew.pickFolder()
+    if (picked) await prepare(picked)
+  }
+
+  const clone = async () => {
+    const source = remote.trim()
+    if (!source) return setError('Paste the repository URL first.')
+    setCloning(true)
+    setError('')
+    try {
+      const cloned = await window.crew.cloneRepo(source)
+      if (!cloned) return
+      setCloneOpen(false)
+      setRemote('')
+      await prepare(cloned)
+    } catch (err) {
+      setError(said(err))
+    } finally {
+      setCloning(false)
+    }
   }
 
   const join = async () => {
@@ -91,6 +116,16 @@ export default function NewPlace({
             }}
           />
           <MenuItem
+            icon={<BranchGlyph />}
+            label="Clone Git repo"
+            onClick={() => {
+              setWays(false)
+              peek(false)
+              setError('')
+              setCloneOpen(true)
+            }}
+          />
+          <MenuItem
             icon={<LinkGlyph />}
             label="Join with a link"
             onClick={() => {
@@ -112,6 +147,20 @@ export default function NewPlace({
               if (picked) onOpen(picked, home)
             }}
           />
+        </div>
+      </Modal>
+      <Modal
+        open={cloneOpen}
+        onClose={() => {
+          if (!cloning) setCloneOpen(false)
+        }}
+        title=""
+        width={420}
+        flush
+      >
+        <div className="p-6 space-y-4">
+          <CloneRepo remote={remote} busy={cloning} onRemote={setRemote} onClone={() => void clone()} />
+          {error && <p className="text-sm text-danger animate-pop">{error}</p>}
         </div>
       </Modal>
       <Modal open={joining} onClose={() => setJoining(false)} title="" width={420} flush>
