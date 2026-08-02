@@ -93,9 +93,9 @@ export const localProvider: Provider = {
         await ensureServing(url)
         runtime = await answering(url)
       }
-      if (!runtime) throw new Error('Nothing answered at that address. Start the model server and say it again.')
+      if (!runtime) throw new Error(`Nothing answered at ${url}. Start it and say that again.`)
       const model = resolved.model || cachedModels()[0]
-      if (!model) throw new Error('There is no model on this computer to run. Pull one and say it again.')
+      if (!model) throw new Error('No model to run. Pull one and say that again.')
       if (stopped) throw new Error('Stopped')
       const started = startLoop({
         runtime,

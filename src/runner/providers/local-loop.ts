@@ -132,7 +132,7 @@ export function startLoop(opts: LoopOptions): LocalRun {
       }
       opts.sink.report()
     }
-    return { text: said || `${opts.model} worked for ${ROUND_LIMIT} turns without finishing and was stopped.` }
+    return { text: said || 'Stopped after too many turns without finishing.' }
   }
 
   const done = work().finally(() => {
