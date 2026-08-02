@@ -124,8 +124,7 @@ export function createWindowOptions(
     height: 800,
     minWidth: 800,
     minHeight: 600,
-    ...windowShell(platform, preload, devTools),
-    ...(platform === 'darwin' ? { vibrancy: 'under-window' as const } : {})
+    ...windowShell(platform, preload, devTools)
   }
 }
 
