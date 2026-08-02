@@ -454,15 +454,6 @@ textarea:placeholder-shown {
   background: rgb(252 252 252 / 0.94);
 }
 
-.mac .sidebar-pinned {
-  background: rgb(24 24 24 / 0.62);
-  backdrop-filter: blur(32px) saturate(180%);
-}
-
-.mac.light .sidebar-pinned {
-  background: rgb(252 252 252 / 0.72);
-}
-
 .rail {
   transform: translateX(-100%);
   visibility: hidden;
