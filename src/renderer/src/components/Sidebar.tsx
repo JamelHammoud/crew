@@ -209,6 +209,7 @@ export default function Sidebar({
               onOpen={goToPlace}
               onOpenThread={goToThread}
               onStop={stop}
+              onRename={renamePlace}
               onForget={forgetPlace}
               take={take}
               dragged={dragged}
