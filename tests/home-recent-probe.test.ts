@@ -61,9 +61,10 @@ describe('Home places', () => {
     expect(screen.queryByRole('button', { name: /Open a folder/ })).toBeNull()
   })
 
-  // A place carries the name you were called there, and it is handed to the
-  // join rather than read back off state, which is a render behind.
-  it('rejoins a crew from its own row, under the name it was joined with', async () => {
+  // You are one person, so a row is opened under the name you go by rather
+  // than the one written down the last time you were there. It is handed to
+  // the join rather than read back off state, which is a render behind.
+  it('rejoins a crew from its own row, under the name you go by', async () => {
     const saved = {
       folder: 'C:\\work\\crew-project',
       name: 'Ali',
@@ -75,10 +76,27 @@ describe('Home places', () => {
 
     fireEvent.click(await screen.findByRole('button', { name: /192\.0\.2\.10:2739/ }))
 
-    await waitFor(() => expect(join).toHaveBeenCalledWith(saved.link, saved.folder, saved.name))
+    await waitFor(() => expect(join).toHaveBeenCalledWith(saved.link, saved.folder, 'Jamel'))
     expect(storage.getItem('crew.link')).toBe(saved.link)
     expect(storage.getItem('crew.folder')).toBe(saved.folder)
-    expect(storage.getItem('crew.name')).toBe(saved.name)
+    expect(storage.getItem('crew.name')).toBe('Jamel')
+  })
+
+  // Two Crews on one machine are two people only while each opens under its
+  // own name, so a row can never write an older one back over it.
+  it('asks for a name before a remembered crew with none set', async () => {
+    storage.clear()
+    const saved = {
+      folder: '/tmp/crew-project',
+      name: 'Ali',
+      link: 'crew://192.0.2.10:2739/abc123',
+      joinedAt: Date.now()
+    }
+    const { join } = installBridge([saved])
+    render(createElement(Home))
+
+    expect(await screen.findByRole('heading', { name: /What should we call you/ })).toBeTruthy()
+    expect(join).not.toHaveBeenCalled()
   })
 
   // Taking a row off the list is a right click on it, and the list is read
