@@ -212,14 +212,6 @@ export default function ThreadView({
   const [rowWidth, setRowWidth] = useState(Number.POSITIVE_INFINITY)
 
   useEffect(() => {
-    const el = overlayRef.current
-    if (!el) return
-    const observer = new ResizeObserver(() => setOverlayHeight(el.offsetHeight))
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [])
-
-  useEffect(() => {
     if (!headerRow || !headerStatus) return
     const measure = () => {
       const style = getComputedStyle(headerRow)
