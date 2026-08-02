@@ -209,7 +209,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
         {installing && (
           <p className="flex items-center gap-2 text-sm text-fg/45">
             <Spinner size={14} />
-            Installing the {caps?.find(c => c.provider === installing)?.label ?? installing} CLI…
+            Installing {caps?.find(c => c.provider === installing)?.label ?? installing}…
           </p>
         )}
         {!installing && cap?.note && <p className="text-sm text-fg/45">{cap.note}</p>}
