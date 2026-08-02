@@ -39,7 +39,7 @@ export default function NewPlace({
   const [asking, setAsking] = useState<string | null>(null)
   const [joining, setJoining] = useState(false)
   const [link, setLink] = useState('')
-  const [folder, setFolder] = useState<string | null>(() => localStorage.getItem('crew.folder'))
+  const [folder, setFolder] = useState<string | null>(lastFolder)
   const [going, setGoing] = useState(false)
   const [error, setError] = useState('')
 
@@ -59,8 +59,7 @@ export default function NewPlace({
     setGoing(true)
     setError('')
     try {
-      localStorage.setItem('crew.folder', folder)
-      localStorage.setItem('crew.link', at)
+      keep(folder, at)
       useCrew.getState().connect(await window.crew.join(at, folder, name))
       setLink('')
       setJoining(false)
