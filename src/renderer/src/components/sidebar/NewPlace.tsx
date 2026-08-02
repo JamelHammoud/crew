@@ -18,6 +18,7 @@ export default function NewPlace({
 }) {
   const name = useCrew(s => s.selfName)
   const peek = useSidebar(s => s.peek)
+  const [ways, setWays] = useState(false)
   const [asking, setAsking] = useState<string | null>(null)
   const [joining, setJoining] = useState(false)
   const [link, setLink] = useState('')
