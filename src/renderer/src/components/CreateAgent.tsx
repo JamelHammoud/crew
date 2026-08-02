@@ -3,6 +3,7 @@ import type { AgentSettings, ProviderCapability } from '../../../shared/llm'
 import { resolveSettings, visibleSettingFields } from '../../../shared/llm'
 import { PlusGlyph } from '../icons'
 import Modal from './Modal'
+import ProviderMark from './ProviderMark'
 import Select from './Select'
 import Spinner from './Spinner'
 
@@ -178,7 +179,12 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
           <Select
             label="Provider"
             value={provider}
-            options={(caps ?? []).map(c => ({ value: c.provider, label: c.label, hint: hintFor(c) }))}
+            options={(caps ?? []).map(c => ({
+              value: c.provider,
+              label: c.label,
+              hint: hintFor(c),
+              mark: <ProviderMark provider={c.provider} />
+            }))}
             onChange={pick}
           />
           {fields.map(field => (
