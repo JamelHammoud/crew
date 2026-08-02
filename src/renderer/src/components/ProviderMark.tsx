@@ -19,7 +19,7 @@ export default function ProviderMark({ provider, className = 'w-4 h-4' }: { prov
   return (
     <span className={`relative shrink-0 overflow-hidden rounded-[22%] ${className}`}>
       <img src={src} alt="" draggable={false} className="w-full h-full object-cover" />
-      <InsetRing className="ring-1 ring-inset ring-fg/15" />
+      <InsetRing className="ring-1 ring-inset ring-fg/5" />
     </span>
   )
 }
