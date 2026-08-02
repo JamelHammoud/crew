@@ -57,7 +57,7 @@ describe('where the pointer carrying one lands', () => {
   // never in different halves of the list.
   it('stands the line where the pointer crossed', () => {
     expect(boundary(boxes, 0, landingAt(boxes, 0, 196))).toBe(195)
-    expect(boundary(boxes, 3, landingAt(boxes, 3, 194))).toBe(95)
+    expect(boundary(boxes, 3, landingAt(boxes, 3, 94))).toBe(95)
   })
 
   // A tall one stands over several of the rows beside it, and its own far edge
