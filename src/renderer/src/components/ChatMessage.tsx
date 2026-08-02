@@ -50,7 +50,7 @@ function ChatMessage({
   const editMessage = useCrew(s => s.editMessage)
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
   const [draft, setDraft] = useState<string | null>(null)
-  const input = useRef<HTMLTextAreaElement>(null)
+  const input = useAutoResize(draft ?? '', WHOLE_MESSAGE)
   const deletable = item.kind === 'message' && item.self
   const canEdit = deletable && editable
   const editing = draft !== null
