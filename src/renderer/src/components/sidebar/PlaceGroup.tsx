@@ -70,6 +70,14 @@ function PlaceGroup({
         />
       ))}
       <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined} className="min-w-44">
+        <MenuItem
+          icon={<PencilGlyph className="w-4 h-4" />}
+          label="Rename"
+          onClick={() => {
+            setMenuAt(null)
+            setNaming(true)
+          }}
+        />
         {stoppable && (
           <MenuItem
             label="Stop this crew"
