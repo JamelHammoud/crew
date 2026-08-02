@@ -215,7 +215,7 @@ export default function Chat() {
               attachmentKey={CHAT_KEY}
               value={text}
               placeholder={
-                ghost ? 'Send a message nobody else will see' : 'Send a message, @ someone, or / for a command'
+                ghost ? 'Send a message nobody else will see' : 'Ask Crew'
               }
               inputRef={inputRef}
               onChange={mention.onChange}
