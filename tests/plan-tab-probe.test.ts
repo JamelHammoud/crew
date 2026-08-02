@@ -15,6 +15,7 @@ global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
 const { useBrowser } = await import('../src/renderer/src/state/browser')
 const { useCrew } = await import('../src/renderer/src/state/store')
 const BrowserPanel = (await import('../src/renderer/src/components/BrowserPanel')).default
+const PanelToggle = (await import('../src/renderer/src/components/PanelToggle')).default
 const ThreadView = (await import('../src/renderer/src/views/ThreadView')).default
 
 const thread = (id: string, plan?: string): ThreadMeta => ({
