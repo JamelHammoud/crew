@@ -205,8 +205,7 @@ export default function ThreadView({
     return { added, removed, files: paths.size }
   }, [threadSteps])
 
-  const overlayRef = useRef<HTMLDivElement>(null)
-  const [overlayHeight, setOverlayHeight] = useState(240)
+  const { ref: overlayRef, room } = useComposerRoom()
   const [headerRow, setHeaderRow] = useState<HTMLDivElement | null>(null)
   const [headerStatus, setHeaderStatus] = useState<HTMLDivElement | null>(null)
   const [nameWidth, setNameWidth] = useState(Number.POSITIVE_INFINITY)
