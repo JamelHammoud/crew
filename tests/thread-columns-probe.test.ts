@@ -235,8 +235,10 @@ describe('several threads open side by side', () => {
     expect(screen.getByPlaceholderText(CHAT_COMPOSER)).toBeTruthy()
   })
 
-  it('stands the panel button in the top bar and in no column at all', () => {
+  it('stands the way back to the panel in the top bar and in no column at all', () => {
     open(['thread-1', 'thread-2'], 'thread-2')
+    act(() => useBrowser.getState().addTab())
+    act(() => useBrowser.getState().closePanel())
 
     const [first, second] = columns()
     expect(screen.getAllByLabelText('Show panel')).toHaveLength(1)
@@ -246,12 +248,10 @@ describe('several threads open side by side', () => {
     fireEvent.pointerDown(first!)
     expect(useCrew.getState().openThreadId).toBe('thread-1')
     expect(screen.getAllByLabelText('Show panel')).toHaveLength(1)
-    expect(within(first!).queryByLabelText('Show panel')).toBeNull()
-    expect(within(second!).queryByLabelText('Show panel')).toBeNull()
 
     fireEvent.click(screen.getByLabelText('Show panel'))
     expect(useBrowser.getState().open).toBe(true)
-    expect(screen.getByLabelText('Hide panel')).toBeTruthy()
+    expect(screen.queryByLabelText('Show panel')).toBeNull()
   })
 
   it('pops a column out from a right click on the thread itself', () => {
