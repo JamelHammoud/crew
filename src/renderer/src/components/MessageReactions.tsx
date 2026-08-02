@@ -175,18 +175,6 @@ export default function MessageReactions({
             </Popover>
           </span>
         )}
-        {deletable && (
-          <Tooltip label="Delete">
-            <button
-              type="button"
-              aria-label="Delete message"
-              onClick={onDelete}
-              className="hidden h-7 w-7 shrink-0 items-center justify-center rounded-full text-danger transition-[transform,background-color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 hover:bg-danger/10 active:scale-90 shift:flex"
-            >
-              <TrashGlyph className="h-4 w-4" />
-            </button>
-          </Tooltip>
-        )}
       </div>
       {reactions.length > 0 && (
         <div className="mt-2 flex select-none flex-wrap items-center gap-1.5">
