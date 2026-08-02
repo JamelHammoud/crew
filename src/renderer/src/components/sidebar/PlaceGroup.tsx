@@ -97,6 +97,13 @@ function PlaceGroup({
           }}
         />
       </Popover>
+      <PlaceName
+        open={naming}
+        given={place.given}
+        name={place.nickname ?? ''}
+        onClose={() => setNaming(false)}
+        onSubmit={name => onRename(place, name)}
+      />
     </div>
   )
 }
