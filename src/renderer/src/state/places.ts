@@ -3,6 +3,7 @@ import type { LivePlace } from '../../../shared/places'
 import type { RecentJoin, RecentProject } from '../../../shared/recent'
 import type { LiveThread } from '../../../shared/threads'
 import { placesOf, type Place } from '../views/home/place'
+import { keepName, savedNames } from './placeNames'
 
 type PlacesState = {
   places: Place[]
