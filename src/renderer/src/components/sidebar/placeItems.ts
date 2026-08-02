@@ -14,6 +14,7 @@ export interface PlaceGroupProps {
   onOpen: (place: Place) => void
   onOpenThread: (place: Place, threadId: string, toRight: boolean) => void
   onStop: (place: Place) => void
+  onRename: (place: Place, name: string) => void
   onForget: (place: Place) => void
   take: (id: string) => (event: Press) => void
   dragged: () => boolean
