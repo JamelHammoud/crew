@@ -5,20 +5,26 @@ import kimiMark from '../media/providers/kimi.png'
 import ollamaMark from '../media/providers/ollama.png'
 import InsetRing from './InsetRing'
 
-const MARKS: Record<string, string> = {
-  claude: claudeMark,
-  codex: codexMark,
-  kimi: kimiMark,
-  grok: grokMark,
-  local: ollamaMark
+const MARKS: Record<string, { src: string; zoom?: number }> = {
+  claude: { src: claudeMark },
+  codex: { src: codexMark },
+  kimi: { src: kimiMark },
+  grok: { src: grokMark, zoom: 1.28 },
+  local: { src: ollamaMark }
 }
 
 export default function ProviderMark({ provider, className = 'w-4 h-4' }: { provider: string; className?: string }) {
-  const src = MARKS[provider]
-  if (!src) return null
+  const mark = MARKS[provider]
+  if (!mark) return null
   return (
     <span className={`relative shrink-0 overflow-hidden rounded-[22%] ${className}`}>
-      <img src={src} alt="" draggable={false} className="w-full h-full object-cover" />
+      <img
+        src={mark.src}
+        alt=""
+        draggable={false}
+        style={mark.zoom ? { transform: `scale(${mark.zoom})` } : undefined}
+        className="w-full h-full object-cover"
+      />
       <InsetRing className="ring-1 ring-inset ring-fg/10" />
     </span>
   )
