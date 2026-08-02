@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { joinPlace, projectPlace } from '../src/renderer/../shared/places'
+import { joinPlace, projectPlace } from '../src/shared/places'
 import type { RecentJoin, RecentProject } from '../src/shared/recent'
 import { installLocalStorage } from './helpers/local-storage'
 
