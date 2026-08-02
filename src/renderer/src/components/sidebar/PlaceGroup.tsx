@@ -1,8 +1,9 @@
 import { memo, useCallback, useState } from 'react'
-import { TrashGlyph } from '../../icons'
+import { PencilGlyph, TrashGlyph } from '../../icons'
 import Spinner from '../Spinner'
 import { MenuItem, Popover } from '../Popover'
 import PlaceFace from './PlaceFace'
+import PlaceName from './PlaceName'
 import ThreadRow from './ThreadRow'
 import { samePlaceGroup, type PlaceGroupProps } from './placeItems'
 
@@ -16,11 +17,13 @@ function PlaceGroup({
   onOpen,
   onOpenThread,
   onStop,
+  onRename,
   onForget,
   take,
   dragged
 }: PlaceGroupProps) {
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
+  const [naming, setNaming] = useState(false)
 
   const openThread = useCallback(
     (threadId: string) => onOpenThread(place, threadId, false),
