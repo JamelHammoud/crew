@@ -49,7 +49,8 @@ export function useStickToBottom(scrollRef: React.RefObject<HTMLDivElement | nul
     if (up && distance > UNPIN_SLOP) setPinned(false)
     else if (!up && distance <= REPIN_DISTANCE) setPinned(true)
     lastScrollTop.current = el.scrollTop
-    if (memoryKey) remembered.set(memoryKey, { top: el.scrollTop, pinned: pinnedRef.current })
+    if (memoryKey && restored.current && restoredKey.current === memoryKey)
+      remembered.set(memoryKey, { top: el.scrollTop, pinned: pinnedRef.current })
   }, [memoryKey, scrollRef, setPinned])
 
   const jumpToBottom = useCallback(() => {
