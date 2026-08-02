@@ -207,7 +207,7 @@ export default function Chat() {
         </div>
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 pointer-events-none">
+      <div ref={overlayRef} className="absolute inset-x-0 bottom-0 pointer-events-none">
         <div
           className={`h-14 bg-gradient-to-t from-ink-900 to-transparent transition-opacity duration-200 ${atBottom ? 'opacity-0' : 'opacity-100'}`}
         />
