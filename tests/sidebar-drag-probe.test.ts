@@ -188,6 +188,27 @@ describe('dragging a project up the list', () => {
     fireEvent.pointerUp(window)
   })
 
+  // A project with threads under it is taller than the row beside it, and its
+  // own bottom edge is a long way under the pointer carrying it.
+  it('waits for the pointer rather than the bottom of a tall one', () => {
+    const { container } = render(Sidebar())
+    const { groups } = lay(container)
+    groups[0]!.getBoundingClientRect = () => ({ top: 8, left: 0, height: 200, width: 240 }) as DOMRect
+    groups[1]!.getBoundingClientRect = () =>
+      ({ top: 224, left: 0, height: 80, width: 240 }) as DOMRect
+
+    fireEvent.pointerDown(groups[0]!.querySelector('button')!, { button: 0, clientX: 40, clientY: 100 })
+
+    fireEvent.pointerMove(window, { clientX: 40, clientY: 230 })
+    expect(line(container)?.style.opacity).toBe('0')
+
+    fireEvent.pointerMove(window, { clientX: 40, clientY: 270 })
+    expect(line(container)?.style.opacity).toBe('1')
+    act(() => {
+      fireEvent.keyDown(window, { key: 'Escape' })
+    })
+  })
+
   it('reorders on the drop and takes everything it wrote off with it', () => {
     const { container } = render(Sidebar())
     const { strip, groups } = lay(container)
