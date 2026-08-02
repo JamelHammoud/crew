@@ -228,7 +228,7 @@ export default function ThreadView({
 
   useLayoutEffect(() => {
     follow()
-  }, [items, overlayHeight, follow])
+  }, [items, room, follow])
 
   const send = () => {
     if (!text.trim() && pendingCount(threadId) === 0) return
