@@ -255,7 +255,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
           if (buffer.trim()) handleLine(buffer)
           buffer = ''
           finish()
-          if (rawOpen) hooks.onStep({ id: 'b0', kind: 'text', status: 'done' })
+          sink.close()
           // What the run itself said comes first, then what it printed on the
           // way out, and only a run that said nothing at all is described.
           const said = () => parsedError.trim() || failureText(errText)
@@ -265,7 +265,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
             const mins = Math.round(idleMs / 60000)
             reject(new Error(said() || `${opts.label} sent no output for ${mins}m and was stopped.`))
           } else if (code === 0) {
-            const result = text.trim() || aside.trim() || raw.trim()
+            const result = sink.answer() || raw.trim()
             if (!result && said()) reject(new Error(said()))
             else resolve({ text: result })
           } else {
