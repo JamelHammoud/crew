@@ -274,7 +274,7 @@ async function searchRoot(cwd: string, target: string): Promise<{ root: string; 
 }
 
 function ripgrep(pattern: string, target: string, glob: string, cwd: string): Promise<Ran> {
-  const rg = null as string | null
+  const rg = resolveCommand('rg')
   if (!rg) return Promise.resolve({ out: '', code: -1, timedOut: false })
   const args = ['--line-number', '--no-heading', '--color=never', ...(glob ? ['-g', glob] : []), '-e', pattern, target]
   return new Promise(resolve => {
