@@ -22,7 +22,8 @@ export function usageFrom(usage: unknown, model?: unknown): ParsedUsage | null {
     return { model: name, input: count(raw.input_tokens), output, cacheRead: read, cacheWrite: written }
   }
 
-  const input = count(raw.input_tokens) ?? count(raw.prompt_tokens) ?? count(raw.inputTokens)
+  const input =
+    count(raw.input_tokens) ?? count(raw.prompt_tokens) ?? count(raw.inputTokens) ?? count(raw.prompt_eval_count)
   const cached =
     count(raw.cached_input_tokens) ?? count(raw.prompt_tokens_details?.cached_tokens) ?? count(raw.cachedInputTokens)
   if (cached !== undefined && input !== undefined) {
