@@ -141,8 +141,20 @@ describe('the helpers a thread sent out', () => {
     expect(helperTab()!.threadId).toBe(CHILD)
   })
 
-  it('is reached through the one button the window has', () => {
-    const { getByLabelText, getByText } = render(
+  it('is one of the rows a panel standing on nothing offers', () => {
+    const { getByText } = render(
+      createElement('div', null, createElement(ThreadView, { threadId: PARENT }), createElement(BrowserPanel))
+    )
+    sent(spawned(CHILD, 'reading the schema'))
+
+    act(() => useBrowser.getState().openPanel())
+    fireEvent.click(getByText('Helpers'))
+
+    expect(helperTab()!.parentThreadId).toBe(PARENT)
+  })
+
+  it('brings the panel back with the helpers still in it', () => {
+    const { getByLabelText, queryByLabelText } = render(
       createElement(
         'div',
         null,
@@ -152,10 +164,14 @@ describe('the helpers a thread sent out', () => {
       )
     )
     sent(spawned(CHILD, 'reading the schema'))
+    act(() => useBrowser.getState().showSubagents(PARENT))
+
+    expect(queryByLabelText('Show panel')).toBeNull()
+    act(() => useBrowser.getState().closePanel())
 
     fireEvent.click(getByLabelText('Show panel'))
-    fireEvent.click(getByText('Helpers'))
 
+    expect(useBrowser.getState().open).toBe(true)
     expect(helperTab()!.parentThreadId).toBe(PARENT)
   })
 
