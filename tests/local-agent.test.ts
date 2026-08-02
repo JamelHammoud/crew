@@ -201,11 +201,11 @@ describe('a local agent', () => {
       [calls('Bash', { command: 'echo one' }), end()],
       [say('Heard you.'), end()]
     ])
-    fake!.hold(true)
+    fake!.hold(0)
     const { started } = run('do it')
-    await waitFor(() => fake!.asked.length === 1)
+    await waitFor(() => fake!.asked.length >= 1)
     expect(started.steer!('actually stop at one')).toBe(true)
-    fake!.hold(false)
+    fake!.hold(null)
     await started.done
     const second = fake!.asked[1]
     expect(second.messages.some((m: any) => m.role === 'user' && m.content === 'actually stop at one')).toBe(true)
@@ -216,10 +216,12 @@ describe('a local agent', () => {
       [calls('Write', { file_path: 'kept.txt', content: 'kept\n' }), end()],
       [say('Carried on.'), end()]
     ])
+    fake!.hold(1)
     const { started } = run('write it')
-    await waitFor(() => fake!.asked.length === 1)
+    await waitFor(() => fake!.asked.length >= 2)
     started.kill()
     await expect(started.done).rejects.toThrow()
+    fake!.hold(null)
     expect(readFileSync(join(cwd, 'kept.txt'), 'utf8')).toBe('kept\n')
   })
 
