@@ -80,7 +80,7 @@ function PlaceGroup({
         />
         {stoppable && (
           <MenuItem
-            icon={<StopGlyph className="w-4 h-4" />}
+            icon={<XCircleGlyph className="w-4 h-4" />}
             label="Stop project"
             onClick={() => {
               setMenuAt(null)
