@@ -230,7 +230,7 @@ async function check(app, work) {
 
   console.log(`\nruntime:  ${runtime.label} at ${runtime.url}`)
   console.log(`model:    ${model}`)
-  console.log(`steps:    ${steps.length}, ${tools.length} of them tools`)
+  console.log(`steps:    ${steps.length}, off ${opened.length} tool calls`)
   console.log(`answer:   ${flat(result.text).slice(0, 200)}`)
 
   const failed = checks.filter(one => !one.ok)
