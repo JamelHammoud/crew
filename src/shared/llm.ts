@@ -137,6 +137,9 @@ export interface ProviderCapability {
   installed: boolean
   // Whether crew knows how to install this CLI on this machine's platform.
   installable: boolean
+  // Standing in the way of an agent that would be made right now, where being
+  // installed is not the whole of whether one would run.
+  note?: string
 }
 
 // Mints an id for a new agent. Only ever called once per agent: the result is
