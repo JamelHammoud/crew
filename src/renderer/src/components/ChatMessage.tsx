@@ -63,10 +63,10 @@ function ChatMessage({
 
   useLayoutEffect(() => {
     const el = input.current
-    if (!el) return
-    el.style.height = 'auto'
-    el.style.height = `${el.scrollHeight}px`
-  }, [draft])
+    if (!editing || !el) return
+    el.focus({ preventScroll: true })
+    el.setSelectionRange(el.value.length, el.value.length)
+  }, [editing])
 
   const commit = () => {
     const text = (draft ?? '').trim()
