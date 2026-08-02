@@ -279,7 +279,7 @@ describe('message reaction controls', () => {
     expect(screen.queryByPlaceholderText('Search emoji')).toBeNull()
   })
 
-  it('stands a delete button at the end of the tray, drawn only while shift is held', () => {
+  it('turns the More button into a delete button while shift is held', () => {
     const onDelete = vi.fn()
     useCrew.setState({ reactToMessage: vi.fn() })
     render(
@@ -295,14 +295,38 @@ describe('message reaction controls', () => {
       )
     )
 
+    const more = screen.getByLabelText('More')
     const remove = screen.getByLabelText('Delete message')
     const tray = screen.getByLabelText('React with :tada:').parentElement as HTMLElement
+    expect(more.closest('span.relative')).toBe(remove.closest('span.relative'))
     expect([...tray.querySelectorAll('button')].at(-1)).toBe(remove)
+    expect(more.className).toContain('shift:hidden')
     expect(remove.className).toContain('hidden')
     expect(remove.className).toContain('shift:flex')
 
     fireEvent.click(remove)
     expect(onDelete).toHaveBeenCalled()
+  })
+
+  it('holds the More button in place while its menu is open, so the menu keeps the button it hangs off', () => {
+    useCrew.setState({ reactToMessage: vi.fn() })
+    render(
+      createElement(
+        'div',
+        { className: 'group/message' },
+        createElement(MessageReactions, {
+          targetId: 'message:m1',
+          reactions: [],
+          deletable: true,
+          onDelete: () => {},
+          onEdit: () => {}
+        })
+      )
+    )
+
+    fireEvent.click(screen.getByLabelText('More'))
+    expect(screen.getByLabelText('More').className).not.toContain('shift:hidden')
+    expect(screen.getByLabelText('Delete message').className).not.toContain('shift:flex')
   })
 
   it('says More on the button that opens the rest of them', () => {
