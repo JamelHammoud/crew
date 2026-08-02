@@ -221,20 +221,17 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       // has nothing left to arrive on, so the parser is asked once more when
       // the process has gone and there are no more lines coming.
       const finish = () => {
-        for (const out of made?.finish?.() ?? []) apply(out)
-        reportTokens()
+        for (const out of made?.finish?.() ?? []) feed(out)
+        sink.report()
       }
 
       stdout.on('data', data => {
         bump()
         const chunk = data.toString()
         if (!parse) {
-          text += chunk
           raw += chunk
-          written += chunk.length
-          rawOpen = true
-          hooks.onStep({ id: 'b0', kind: 'text', text: chunk, status: 'running' })
-          reportTokens()
+          sink.raw(chunk)
+          sink.report()
           return
         }
         buffer += chunk
