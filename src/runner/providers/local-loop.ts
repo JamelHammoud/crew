@@ -71,10 +71,9 @@ export function startLoop(opts: LoopOptions): LocalRun {
   ]
 
   const step = async (call: ToolCall): Promise<ChatMessage> => {
-    const id = `${call.id}`
     opts.sink.apply({
       activity: {
-        id,
+        id: call.id,
         kind: 'tool',
         name: call.name,
         status: 'started',
