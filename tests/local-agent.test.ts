@@ -55,7 +55,7 @@ async function fakeRuntime(turns: string[][]): Promise<Fake> {
         asked.push(parsed)
         res.writeHead(200, { 'content-type': 'application/x-ndjson' })
         for (const chunk of turns[at] ?? [end()]) {
-          while (held) await new Promise(resolve => setTimeout(resolve, 5))
+          while (heldFrom !== null && at >= heldFrom) await new Promise(resolve => setTimeout(resolve, 5))
           res.write(chunk)
         }
         res.end()
@@ -70,8 +70,8 @@ async function fakeRuntime(turns: string[][]): Promise<Fake> {
     url: `http://127.0.0.1:${port}`,
     turns,
     asked,
-    hold: (open: boolean) => {
-      held = open
+    hold: (round: number | null) => {
+      heldFrom = round
     },
     close: () => new Promise<void>(resolve => void server.close(() => resolve()))
   }
