@@ -257,7 +257,7 @@ describe('the sidebar', () => {
 
     act(() => {
       fireEvent.pointerDown(second, { button: 0, clientY: 145 })
-      fireEvent.pointerMove(window, { clientY: 45 })
+      fireEvent.pointerMove(window, { clientY: 40 })
       fireEvent.pointerUp(window)
     })
 
@@ -289,7 +289,7 @@ describe('the sidebar', () => {
 
     act(() => {
       fireEvent.pointerDown(second, { button: 0, clientY: 145 })
-      fireEvent.pointerMove(window, { clientY: 45 })
+      fireEvent.pointerMove(window, { clientY: 40 })
       fireEvent.pointerUp(window)
       fireEvent.click(second)
     })
