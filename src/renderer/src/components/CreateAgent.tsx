@@ -205,6 +205,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
             Installing the {caps?.find(c => c.provider === installing)?.label ?? installing} CLI…
           </p>
         )}
+        {!installing && cap?.note && <p className="text-sm text-fg/45">{cap.note}</p>}
         {error && <p className="text-sm text-danger">{error}</p>}
         <div className="flex items-center justify-end gap-2">
           <button
@@ -215,7 +216,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
           </button>
           <button
             onClick={create}
-            disabled={busy || !name.trim() || !cap?.installed}
+            disabled={busy || !name.trim() || !cap?.installed || Boolean(cap.note)}
             className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-2 transition-all duration-150 hover:scale-[1.03] active:scale-95 disabled:bg-fg/10 disabled:text-fg/45 disabled:scale-100"
           >
             {busy && <Spinner size={14} />}
