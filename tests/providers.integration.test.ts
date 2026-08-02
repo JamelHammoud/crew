@@ -435,7 +435,7 @@ describe('provider install', () => {
   })
 
   it('every builtin provider has an installer for the desktop platforms', () => {
-    expect(builtinProviders.map(p => p.name)).toEqual(['claude', 'codex', 'kimi', 'grok'])
+    expect(builtinProviders.map(p => p.name)).toEqual(['claude', 'codex', 'kimi', 'grok', 'local'])
     for (const provider of builtinProviders) {
       for (const platform of ['darwin', 'linux', 'win32']) {
         expect(installCommand(provider, platform), `${provider.name} on ${platform}`).toBeTruthy()
