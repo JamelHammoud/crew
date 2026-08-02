@@ -196,3 +196,27 @@ describe('responsive top bar', () => {
     expect(screen.queryByRole('button', { name: 'More' })).toBeNull()
   })
 })
+
+describe('the way back to the side panel', () => {
+  it('stands beside your own face and puts the panel away and back', () => {
+    render(createElement(TopBar, { tab: 'chat', onTab: () => {} }))
+
+    const button = screen.getByRole('button', { name: 'Show panel' })
+    expect(follows(button, screen.getByRole('button', { name: 'Settings' }))).toBe(true)
+
+    fireEvent.click(button)
+    expect(useBrowser.getState().open).toBe(true)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Hide panel' }))
+    expect(useBrowser.getState().open).toBe(false)
+  })
+
+  it('stands down where the panel cannot', () => {
+    render(createElement(TopBar, { tab: 'docs', onTab: () => {} }))
+    expect(screen.queryByRole('button', { name: 'Show panel' })).toBeNull()
+
+    cleanup()
+    render(createElement(TopBar, { tab: 'design', onTab: () => {} }))
+    expect(screen.queryByRole('button', { name: 'Show panel' })).toBeNull()
+  })
+})
