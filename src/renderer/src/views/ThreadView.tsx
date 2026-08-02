@@ -313,7 +313,7 @@ export default function ThreadView({
           <div
             ref={contentRef}
             className="max-w-[660px] mx-auto pt-28 space-y-5"
-            style={{ paddingBottom: Math.max(120, overlayHeight - 16) }}
+            style={{ paddingBottom: room }}
           >
             {thread.forkedFrom && !tail.more && <ForkedFrom threadId={thread.forkedFrom} />}
             <ThreadItems threadId={threadId} items={drawn} onReply={onReply} />
