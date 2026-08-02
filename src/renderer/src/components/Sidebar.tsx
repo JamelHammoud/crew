@@ -1,29 +1,21 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { projectPlace } from '../../../shared/places'
 import type { CrewHome } from '../../../shared/project'
-import { PlusGlyph } from '../icons'
+import { said } from '../api/said'
 import { playSound } from '../media/sounds'
 import { usePlaces } from '../state/places'
 import { SIDEBAR_W, useSidebar } from '../state/sidebar'
 import { useCrew } from '../state/store'
 import { toast } from '../state/toast'
-import WhereTo from '../views/home/WhereTo'
 import type { Place } from '../views/home/place'
-import Modal from './Modal'
 import TabIcon from './TabIcon'
 import { TABS, type Tab } from './navTabs'
+import NewPlace from './sidebar/NewPlace'
 import PlaceFace from './sidebar/PlaceFace'
 import PlaceGroup from './sidebar/PlaceGroup'
 import { NO_THREADS } from './sidebar/placeItems'
 import { useReorder } from './useReorder'
 import { useScrollFade } from './useScrollFade'
-
-function said(err: unknown): string {
-  return String(err instanceof Error ? err.message : err).replace(
-    /^Error invoking remote method '[^']+': (Error: )?/,
-    ''
-  )
-}
 
 const EMPTY_THREADS: string[] = []
 
