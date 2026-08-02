@@ -214,27 +214,7 @@ export default function Sidebar({
           ))}
         </div>
       </div>
-      <div className="app-no-drag shrink-0 px-4 pb-4 pt-2">
-        <button
-          onClick={() => void pick()}
-          className="w-full h-9 rounded-full flex items-center justify-center gap-2 text-sm font-medium bg-fg/[0.10] text-fg/70 transition-colors duration-150 hover:bg-fg/[0.14] hover:text-fg active:scale-[0.98]"
-        >
-          <PlusGlyph className="w-4 h-4" />
-          Open a folder
-        </button>
-      </div>
-      <Modal open={asking !== null} onClose={() => setAsking(null)} title="" width={520} flush>
-        <div className="p-6">
-          <WhereTo
-            busy={busyKey !== null}
-            onPick={home => {
-              const folder = asking
-              setAsking(null)
-              if (folder) void open(folder, projectPlace(folder), home)
-            }}
-          />
-        </div>
-      </Modal>
+      <NewPlace busy={busyKey !== null} onOpen={addPlace} />
     </aside>
   )
 }
