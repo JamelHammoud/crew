@@ -296,6 +296,29 @@ describe('the sidebar', () => {
     expect(screen.queryByText('one')).toBeNull()
   })
 
+  it('keeps the project menu actions short', async () => {
+    live = [
+      {
+        key: `project:${ONE}`,
+        folder: ONE,
+        name: 'Jamel',
+        hosting: true,
+        threads: []
+      }
+    ]
+    await act(async () => {
+      await usePlaces.getState().load()
+    })
+    render(Sidebar())
+
+    fireEvent.contextMenu(screen.getByText('one'))
+
+    expect(await screen.findByRole('button', { name: 'Stop' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Remove' })).toBeTruthy()
+    expect(screen.queryByRole('button', { name: 'Stop project' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Remove from the list' })).toBeNull()
+  })
+
   it('keeps that name after the list is read again, and gives it back when it is blanked', async () => {
     render(Sidebar())
     fireEvent.contextMenu(screen.getByText('one'))

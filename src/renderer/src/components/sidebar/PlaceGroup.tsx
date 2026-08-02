@@ -81,7 +81,7 @@ function PlaceGroup({
         {stoppable && (
           <MenuItem
             icon={<XCircleGlyph className="w-4 h-4" />}
-            label="Stop project"
+            label="Stop"
             onClick={() => {
               setMenuAt(null)
               onStop(place)
@@ -90,7 +90,7 @@ function PlaceGroup({
         )}
         <MenuItem
           icon={<TrashGlyph className="w-4 h-4" />}
-          label="Remove from the list"
+          label="Remove"
           danger
           onClick={() => {
             setMenuAt(null)
