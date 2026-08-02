@@ -41,22 +41,40 @@ function serverName(link: string): string {
 // Everywhere you can be, newest first. A project of your own and a session
 // somebody invited you to stand in one list, because picking one is the same
 // choice.
-export function placesOf(projects: RecentProject[], joins: RecentJoin[]): Place[] {
-  const fromProjects = projects.map<Place>(project => ({
-    key: projectPlace(project.folder),
-    at: project.openedAt,
-    title: folderName(project.folder),
-    line: folderLine(project.folder),
-    project,
-    join: null
-  }))
-  const fromJoins = joins.map<Place>(join => ({
-    key: joinPlace(join.link),
-    at: join.joinedAt,
-    title: serverName(join.link),
-    line: folderName(join.folder),
-    project: null,
-    join
-  }))
+export function placesOf(
+  projects: RecentProject[],
+  joins: RecentJoin[],
+  names: Record<string, string> = {}
+): Place[] {
+  const fromProjects = projects.map<Place>(project => {
+    const key = projectPlace(project.folder)
+    const nickname = names[key] ?? null
+    const given = folderName(project.folder)
+    return {
+      key,
+      at: project.openedAt,
+      title: nickname ?? given,
+      line: nickname ? folderPath(project.folder) : folderLine(project.folder),
+      given,
+      nickname,
+      project,
+      join: null
+    }
+  })
+  const fromJoins = joins.map<Place>(join => {
+    const key = joinPlace(join.link)
+    const nickname = names[key] ?? null
+    const given = serverName(join.link)
+    return {
+      key,
+      at: join.joinedAt,
+      title: nickname ?? given,
+      line: nickname ? given : folderName(join.folder),
+      given,
+      nickname,
+      project: null,
+      join
+    }
+  })
   return [...fromProjects, ...fromJoins].sort((a, b) => b.at - a.at)
 }
