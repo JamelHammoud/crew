@@ -81,6 +81,7 @@ export default function Chat() {
   const loadingHistory = useCrew(s => s.loadingHistory)
   const loadHistory = useCrew(s => s.loadHistory)
   const reachBack = useLoadOlder(scrollRef, { more: moreHistory, loading: loadingHistory, load: loadHistory })
+  const { ref: overlayRef, room } = useComposerRoom()
   const working = Object.keys(threadPrompts).length > 0
   const now = useNow(working)
 
@@ -91,7 +92,7 @@ export default function Chat() {
 
   useLayoutEffect(() => {
     follow(feed.length > 0)
-  }, [feed, steps, threadPrompts, follow])
+  }, [feed, steps, threadPrompts, room, follow])
 
   const resting = useMemo(() => {
     const ends = lastEnds(events)
