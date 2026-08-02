@@ -166,7 +166,7 @@ describe('dragging a project up the list', () => {
     fireEvent.pointerMove(window, { clientX: 40, clientY: 100 })
     expect(line(container)?.style.opacity).toBe('0')
 
-    fireEvent.pointerMove(window, { clientX: 40, clientY: 40 })
+    fireEvent.pointerMove(window, { clientX: 40, clientY: 2 })
     expect(line(container)?.style.opacity).toBe('1')
     fireEvent.pointerUp(window)
   })
@@ -176,34 +176,36 @@ describe('dragging a project up the list', () => {
     const { groups } = lay(container)
     fireEvent.pointerDown(groups[0]!.querySelector('button')!, { button: 0, clientX: 40, clientY: 30 })
 
-    fireEvent.pointerMove(window, { clientX: 40, clientY: 150 })
+    fireEvent.pointerMove(window, { clientX: 40, clientY: 200 })
     expect(line(container)?.style.top).toBe(`${TOP + TALL + GAP + TALL + GAP / 2}px`)
     act(() => {
       fireEvent.keyDown(window, { key: 'Escape' })
     })
 
     fireEvent.pointerDown(groups[1]!.querySelector('button')!, { button: 0, clientX: 40, clientY: 110 })
-    fireEvent.pointerMove(window, { clientX: 40, clientY: 40 })
+    fireEvent.pointerMove(window, { clientX: 40, clientY: 2 })
     expect(line(container)?.style.top).toBe(`${TOP / 2}px`)
     fireEvent.pointerUp(window)
   })
 
-  // A project with threads under it is taller than the row beside it, and its
-  // own bottom edge is a long way under the pointer carrying it.
-  it('waits for the pointer rather than the bottom of a tall one', () => {
+  // A project with threads under it is taller than the row beside it, so the
+  // middle of it is a hundred pixels above its own bottom edge, which is where
+  // the line stands. The pointer is what says when to move rather than that
+  // middle, or the mark lands well under a cursor that is still on its way.
+  it('waits for the pointer rather than the middle of a tall one', () => {
     const { container } = render(Sidebar())
     const { groups } = lay(container)
-    groups[0]!.getBoundingClientRect = () => ({ top: 8, left: 0, height: 200, width: 240 }) as DOMRect
     groups[1]!.getBoundingClientRect = () =>
-      ({ top: 224, left: 0, height: 80, width: 240 }) as DOMRect
+      ({ top: 104, left: 0, height: 200, width: 240 }) as DOMRect
 
-    fireEvent.pointerDown(groups[0]!.querySelector('button')!, { button: 0, clientX: 40, clientY: 100 })
+    fireEvent.pointerDown(groups[0]!.querySelector('button')!, { button: 0, clientX: 40, clientY: 40 })
 
-    fireEvent.pointerMove(window, { clientX: 40, clientY: 230 })
+    fireEvent.pointerMove(window, { clientX: 40, clientY: 250 })
     expect(line(container)?.style.opacity).toBe('0')
 
-    fireEvent.pointerMove(window, { clientX: 40, clientY: 270 })
+    fireEvent.pointerMove(window, { clientX: 40, clientY: 320 })
     expect(line(container)?.style.opacity).toBe('1')
+    expect(line(container)?.style.top).toBe('312px')
     act(() => {
       fireEvent.keyDown(window, { key: 'Escape' })
     })
