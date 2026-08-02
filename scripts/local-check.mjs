@@ -69,7 +69,7 @@ async function check(app, work) {
     line('')
     line('nothing on this computer is serving models, so there was no turn to run')
     line('start one and run this again: `ollama serve`, or LM Studio with its own server on')
-    line('name another address with CREW_LOCAL_URL and a model with CREW_LOCAL_MODEL')
+    line('an address off that list is reached by naming it in OLLAMA_HOST')
     return
   }
 
