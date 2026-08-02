@@ -1,6 +1,6 @@
 import { useRef, useState, type ReactNode, type PointerEvent as Press } from 'react'
 import { createPortal } from 'react-dom'
-import { boundary, landing, shift, type Box } from './reorder'
+import { boundary, landing, landingAt, shift, type Box } from './reorder'
 
 // How far the pointer travels before the row believes it is a drag rather than a
 // press, so a plain click still lands on whatever it was aimed at.
