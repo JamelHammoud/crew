@@ -224,6 +224,58 @@ describe('the sidebar', () => {
     expect(action.parentElement?.className).toContain('pb-4')
   })
 
+  it('offers both ways to a new crew behind the one button, in the words the way in uses', async () => {
+    render(Sidebar())
+    fireEvent.click(screen.getByRole('button', { name: 'New crew' }))
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Join with a link' })).toBeTruthy())
+    expect(screen.getByRole('button', { name: 'Open a folder' })).toBeTruthy()
+  })
+
+  it('joins a crew from the sidebar, on the link and the folder the card was given', async () => {
+    picked = TWO
+    render(Sidebar())
+    fireEvent.click(screen.getByRole('button', { name: 'New crew' }))
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Join with a link' }))
+    })
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: '  crew://192.0.2.10:2739/a1b2c3  ' } })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Choose a folder' }))
+    })
+    expect(screen.getByText(TWO)).toBeTruthy()
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Join' }))
+    })
+    expect(joined).toEqual([['crew://192.0.2.10:2739/a1b2c3', TWO, 'Jamel']])
+    await waitFor(() => expect(screen.queryByRole('textbox')).toBe(null))
+  })
+
+  it('says why a join did not happen on the card the link was typed on', async () => {
+    picked = TWO
+    vi.spyOn(window.crew, 'join').mockRejectedValueOnce(
+      new Error("Error invoking remote method 'crew:join': Error: No crew answered there.")
+    )
+    render(Sidebar())
+    fireEvent.click(screen.getByRole('button', { name: 'New crew' }))
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Join with a link' }))
+    })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Join' }))
+    })
+    expect(screen.getByText('Paste the link first.')).toBeTruthy()
+
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'crew://192.0.2.10:2739/a1b2c3' } })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Choose a folder' }))
+    })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Join' }))
+    })
+    expect(screen.getByText('No crew answered there.')).toBeTruthy()
+    expect(screen.getByRole('textbox')).toBeTruthy()
+  })
+
   it('holds every place the app knows, newest first', async () => {
     const { container } = render(Sidebar())
     await waitFor(() => expect(container.querySelectorAll('button[aria-current], button').length).toBeGreaterThan(1))
