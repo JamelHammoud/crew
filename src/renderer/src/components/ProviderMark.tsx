@@ -3,7 +3,6 @@ import codexMark from '../media/providers/codex.png'
 import grokMark from '../media/providers/grok.png'
 import kimiMark from '../media/providers/kimi.png'
 import ollamaMark from '../media/providers/ollama.png'
-import InsetRing from './InsetRing'
 
 const MARKS: Record<string, { src: string; zoom?: number }> = {
   claude: { src: claudeMark },
@@ -17,7 +16,7 @@ export default function ProviderMark({ provider, className = 'w-4 h-4' }: { prov
   const mark = MARKS[provider]
   if (!mark) return null
   return (
-    <span className={`relative shrink-0 overflow-hidden rounded-[22%] ${className}`}>
+    <span className={`shrink-0 overflow-hidden rounded-[22%] ${className}`}>
       <img
         src={mark.src}
         alt=""
@@ -25,7 +24,6 @@ export default function ProviderMark({ provider, className = 'w-4 h-4' }: { prov
         style={mark.zoom ? { transform: `scale(${mark.zoom})` } : undefined}
         className="w-full h-full object-cover"
       />
-      <InsetRing className="ring-1 ring-inset ring-fg/10" />
     </span>
   )
 }
