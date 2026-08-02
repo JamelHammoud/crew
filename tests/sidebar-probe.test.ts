@@ -253,11 +253,11 @@ describe('the sidebar', () => {
       group.getBoundingClientRect = () =>
         ({ top: index * 100, bottom: index * 100 + 90, height: 90, left: 0, right: 240, width: 240 }) as DOMRect
     })
-    const second = groups[1]!.querySelector('button')!
+    const first = groups[0]!.querySelector('button')!
 
     act(() => {
-      fireEvent.pointerDown(second, { button: 0, clientY: 145 })
-      fireEvent.pointerMove(window, { clientY: 40 })
+      fireEvent.pointerDown(first, { button: 0, clientY: 45 })
+      fireEvent.pointerMove(window, { clientY: 200 })
       fireEvent.pointerUp(window)
     })
 
