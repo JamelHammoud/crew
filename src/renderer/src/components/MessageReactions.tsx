@@ -133,9 +133,23 @@ export default function MessageReactions({
                   setPicker(null)
                   setActionsOpen(open => !open)
                 }}
-                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-fg-secondary transition-[transform,background-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 hover:bg-fg/8 hover:text-fg active:scale-90"
+                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-fg-secondary transition-[transform,background-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 hover:bg-fg/8 hover:text-fg active:scale-90 ${
+                  actionsOpen ? '' : 'shift:hidden'
+                }`}
               >
                 <MoreGlyph className="h-4 w-4" />
+              </button>
+            </Tooltip>
+            <Tooltip label="Delete">
+              <button
+                type="button"
+                aria-label="Delete message"
+                onClick={onDelete}
+                className={`hidden h-7 w-7 shrink-0 items-center justify-center rounded-full text-danger transition-[transform,background-color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 hover:bg-danger/10 active:scale-90 ${
+                  actionsOpen ? '' : 'shift:flex'
+                }`}
+              >
+                <TrashGlyph className="h-4 w-4" />
               </button>
             </Tooltip>
             <Popover open={actionsOpen} onClose={() => setActionsOpen(false)} side="top">
