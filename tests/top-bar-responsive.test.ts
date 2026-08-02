@@ -200,28 +200,34 @@ describe('responsive top bar', () => {
 })
 
 describe('the way back to the side panel', () => {
-  const withTab = () => act(() => useBrowser.getState().addTab())
+  const minimized = () =>
+    act(() => {
+      useBrowser.getState().addTab()
+      useBrowser.getState().closePanel()
+    })
 
-  it('stands at the end of the row, past your own face, and puts the panel away and back', () => {
+  it('stands at the end of the row, past your own face, and puts the panel back', () => {
     render(createElement(TopBar, { tab: 'chat', onTab: () => {} }))
-    withTab()
+    minimized()
 
-    const button = screen.getByRole('button', { name: 'Hide panel' })
+    const button = screen.getByRole('button', { name: 'Show panel' })
     expect(follows(screen.getByRole('button', { name: 'Settings' }), button)).toBe(true)
 
     fireEvent.click(button)
-    expect(useBrowser.getState().open).toBe(false)
 
-    fireEvent.click(screen.getByRole('button', { name: 'Show panel' }))
     expect(useBrowser.getState().open).toBe(true)
+    expect(screen.queryByRole('button', { name: 'Show panel' })).toBeNull()
   })
 
-  it('stands only while there is a tab to come back to', () => {
+  it('stands only while the panel is away with something in it', () => {
     render(createElement(TopBar, { tab: 'chat', onTab: () => {} }))
     expect(screen.queryByRole('button', { name: 'Show panel' })).toBeNull()
 
-    withTab()
-    expect(screen.getByRole('button', { name: 'Hide panel' })).toBeTruthy()
+    act(() => useBrowser.getState().addTab())
+    expect(screen.queryByRole('button', { name: 'Show panel' })).toBeNull()
+
+    minimized()
+    expect(screen.getByRole('button', { name: 'Show panel' })).toBeTruthy()
 
     act(() => useBrowser.getState().closeAll())
     expect(screen.queryByRole('button', { name: 'Show panel' })).toBeNull()
@@ -229,11 +235,11 @@ describe('the way back to the side panel', () => {
 
   it('stands down where the panel cannot', () => {
     render(createElement(TopBar, { tab: 'docs', onTab: () => {} }))
-    withTab()
-    expect(screen.queryByRole('button', { name: 'Hide panel' })).toBeNull()
+    minimized()
+    expect(screen.queryByRole('button', { name: 'Show panel' })).toBeNull()
 
     cleanup()
     render(createElement(TopBar, { tab: 'design', onTab: () => {} }))
-    expect(screen.queryByRole('button', { name: 'Hide panel' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Show panel' })).toBeNull()
   })
 })
