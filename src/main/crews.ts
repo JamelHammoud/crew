@@ -205,13 +205,20 @@ export class Crews {
 
   async capabilities(): Promise<ProviderCapability[]> {
     return Promise.all(
-      builtinProviders.map(async p => ({
-        provider: p.name,
-        label: p.label,
-        fields: p.fields(),
-        installed: await p.detect(),
-        installable: installCommand(p) !== null
-      }))
+      builtinProviders.map(async p => {
+        // What detect() finds is what fields() draws from, so the picker is
+        // built after the looking rather than beside it. Read together, a
+        // model list warmed by detect lands a beat too late to be in it.
+        const installed = await p.detect()
+        return {
+          provider: p.name,
+          label: p.label,
+          fields: p.fields(),
+          installed,
+          installable: installCommand(p) !== null,
+          note: await p.note?.()
+        }
+      })
     )
   }
 
