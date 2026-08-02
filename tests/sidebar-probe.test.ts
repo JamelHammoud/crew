@@ -167,7 +167,7 @@ describe('the sidebar', () => {
     expect(scroller.className).toContain('pt-2')
     expect(scroller.querySelector('.flex-col')?.className).toContain('gap-3')
     expect(container.querySelector('nav[aria-label="Main navigation"]')?.className).toContain('shrink-0')
-    expect(screen.getByRole('button', { name: 'Open a folder' }).parentElement?.className).toContain('shrink-0')
+    expect(screen.getByRole('button', { name: 'New crew' }).parentElement?.className).toContain('shrink-0')
   })
 
   it('fades only the end of the list that is really hiding something', async () => {
@@ -207,9 +207,9 @@ describe('the sidebar', () => {
     expect(nav().hasAttribute('data-away')).toBe(true)
   })
 
-  it('stands the folder action off the bottom edge by what it stands off the sides', () => {
+  it('stands the way to a new crew off the bottom edge by what it stands off the sides', () => {
     render(Sidebar())
-    const action = screen.getByRole('button', { name: 'Open a folder' })
+    const action = screen.getByRole('button', { name: 'New crew' })
     expect(action.parentElement?.className).toContain('px-4')
     expect(action.parentElement?.className).toContain('pb-4')
   })
