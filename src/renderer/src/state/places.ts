@@ -9,6 +9,7 @@ type PlacesState = {
   live: LivePlace[]
   load: () => Promise<void>
   move: (key: string, to: number) => void
+  rename: (key: string, name: string) => Promise<void>
 }
 
 const ORDER_KEY = 'crew.project-order'
