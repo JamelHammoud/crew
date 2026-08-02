@@ -44,13 +44,9 @@ export const localFields = (): AgentSettingField[] => {
 
 const OLLAMA_INSTALL_SH = 'curl -fsSL https://ollama.com/install.sh | sh'
 
-// Every model server on this machine speaks the same two shapes, so the
-// provider is Local rather than Ollama and the address is whichever one
-// answered. Ollama is the default and the one Install installs, which is what
-// gets somebody with nothing on their machine to a working agent in one press.
 export const localProvider: Provider = {
   name: 'local',
-  label: 'Local',
+  label: 'Ollama',
   steerable: true,
   fields: localFields,
   install: {
