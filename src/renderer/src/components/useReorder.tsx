@@ -111,14 +111,15 @@ export function useReorder(onMove: (id: string, to: number) => void, options: Op
     }
 
     const tick = () => {
-      const dx = pointer - start + scroll() - startAt
+      const point = pointer - start + scroll()
+      const dx = point - startAt
       if (!taken && Math.abs(dx) < TAKES) return
       if (!taken) {
         taken = true
         dragged.current = true
         if (carry) lift()
       }
-      const next = landing(boxes, from, dx)
+      const next = carry ? landingAt(boxes, from, point) : landing(boxes, from, dx)
       const moved = next !== to
       to = next
       if (carry) draw()
