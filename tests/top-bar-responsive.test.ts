@@ -4,6 +4,7 @@ import { act, cleanup, fireEvent, render, screen, within } from '@testing-librar
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import TopBar from '../src/renderer/src/components/TopBar'
+import { useBrowser } from '../src/renderer/src/state/browser'
 import { useCrew } from '../src/renderer/src/state/store'
 
 const observers = new Set<() => void>()
@@ -35,6 +36,7 @@ afterEach(() => {
   vi.unstubAllGlobals()
   vi.useRealTimers()
   useCrew.setState({ members: [], agents: [], activePrompts: {} })
+  useBrowser.setState({ tabs: [], activeTabId: null, open: false })
 })
 
 const follows = (first: Element, second: Element) =>
