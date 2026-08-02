@@ -141,12 +141,15 @@ describe('the helpers a thread sent out', () => {
     expect(helperTab()!.threadId).toBe(CHILD)
   })
 
-  // The one button in the thread's header shows and hides the panel. What is in
-  // it is picked in the panel, so a thread that has sent a helper out has the
-  // same button as one that has not.
-  it('is reached through the one button every thread has', () => {
+  it('is reached through the one button the window has', () => {
     const { getByLabelText, getByText } = render(
-      createElement('div', null, createElement(ThreadView, { threadId: PARENT }), createElement(BrowserPanel))
+      createElement(
+        'div',
+        null,
+        createElement(PanelToggle),
+        createElement(ThreadView, { threadId: PARENT }),
+        createElement(BrowserPanel)
+      )
     )
     sent(spawned(CHILD, 'reading the schema'))
 
