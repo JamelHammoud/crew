@@ -23,6 +23,7 @@ export default function JoinLink({
 }) {
   const quiet = glass ? 'text-fg/45' : 'text-fg-muted'
   const box = glass ? FIELD_GLASS : `${FIELD} hover:bg-ink-700`
+  const size = glass ? 'h-10 text-sm' : 'h-12 text-base'
 
   return (
     <div className="space-y-7">
