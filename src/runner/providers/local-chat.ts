@@ -95,7 +95,11 @@ class Calls {
 const body = (req: ChatRequest, think: boolean): string => {
   const common = { model: req.model, messages: req.messages, stream: true }
   const tools = req.tools.length ? { tools: req.tools } : {}
-  if (req.runtime.kind !== 'ollama') return JSON.stringify({ ...common, ...tools })
+  // A streamed OpenAI compatible answer carries no counts at all unless they
+  // are asked for, so a run would say nothing about what it cost.
+  if (req.runtime.kind !== 'ollama') {
+    return JSON.stringify({ ...common, ...tools, stream_options: { include_usage: true } })
+  }
   const options = req.context ? { options: { num_ctx: req.context } } : {}
   return JSON.stringify({ ...common, ...tools, ...options, ...(think ? { think: true } : {}) })
 }

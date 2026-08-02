@@ -167,10 +167,10 @@ async function check(app, work) {
   const thoughts = steps.filter(step => step.kind === 'thinking' && step.text)
   const words = steps.filter(step => step.kind === 'text' && step.text)
   const tools = steps.filter(step => step.name)
-  const started_ = tools.filter(step => step.status === 'running')
+  const opened = tools.filter(step => step.status === 'running')
   const named = [...new Set(tools.map(step => step.name))]
-  const argued = started_.filter(step => step.detail || step.files?.length)
-  const silent = started_.filter(step => !step.detail && !step.files?.length).map(step => step.name)
+  const argued = opened.filter(step => step.detail || step.files?.length)
+  const silent = opened.filter(step => !step.detail && !step.files?.length).map(step => step.name)
   const changed = tools.flatMap(step => step.files ?? [])
   const floor = Math.ceil(chars / 4)
 
