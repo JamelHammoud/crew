@@ -46,21 +46,35 @@ describe('where a dragged one lands', () => {
 })
 
 describe('where the pointer carrying one lands', () => {
-  it('lands in the half of the row the pointer is really in', () => {
-    expect(landingAt(boxes, 0, 140)).toBe(0)
-    expect(landingAt(boxes, 0, 146)).toBe(1)
-    expect(landingAt(boxes, 1, 46)).toBe(1)
-    expect(landingAt(boxes, 1, 44)).toBe(0)
+  it('moves as the pointer crosses the gap it would drop into', () => {
+    expect(landingAt(boxes, 0, 194)).toBe(0)
+    expect(landingAt(boxes, 0, 196)).toBe(1)
+    expect(landingAt(boxes, 3, 196)).toBe(2)
+    expect(landingAt(boxes, 3, 194)).toBe(1)
   })
 
-  // A tall one stands over several of the rows beside it, and its own edges are
-  // nowhere near the pointer. Taken by the middle and moved 60, the pointer is
-  // still inside the row it came out of, and read off the edges the line has
-  // already landed a row above it.
-  it('takes a tall one no further than the pointer has gone', () => {
-    expect(landing(boxes, 3, -60)).toBe(2)
-    expect(landingAt(boxes, 3, 330)).toBe(3)
-    expect(landingAt(boxes, 3, 240)).toBe(2)
+  // The pointer decides against the very place the line is drawn, so the two are
+  // never in different halves of the list.
+  it('stands the line where the pointer crossed', () => {
+    expect(boundary(boxes, 0, landingAt(boxes, 0, 196))).toBe(195)
+    expect(boundary(boxes, 3, landingAt(boxes, 3, 194))).toBe(95)
+  })
+
+  // A tall one stands over several of the rows beside it, and its own far edge
+  // is a long way under the pointer carrying it. Read from the middle of that
+  // box the line lands past the bottom of it while the pointer is still halfway
+  // up, so nothing moves until the pointer is really through the gap.
+  it('waits for the pointer rather than the middle of a tall one', () => {
+    const tall = [
+      { left: 0, width: 40 },
+      { left: 50, width: 200 },
+      { left: 260, width: 40 }
+    ]
+    expect(landingAt(tall, 0, 150)).toBe(0)
+    expect(landingAt(tall, 0, 249)).toBe(0)
+    expect(landingAt(tall, 0, 256)).toBe(1)
+    expect(landingAt(tall, 2, 150)).toBe(2)
+    expect(landingAt(tall, 2, 44)).toBe(1)
   })
 
   it('does not go past either end of the row', () => {
