@@ -41,7 +41,6 @@ export default function Sidebar({
   const closePlace = useCrew(s => s.closePlace)
   const peek = useSidebar(s => s.peek)
   const [busyKey, setBusyKey] = useState<string | null>(null)
-  const [asking, setAsking] = useState<string | null>(null)
   const order = useReorder((key, to) => move(key, to), {
     axis: 'vertical',
     carry: key => {
