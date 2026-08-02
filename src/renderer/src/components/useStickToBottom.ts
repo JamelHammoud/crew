@@ -27,6 +27,7 @@ export function useStickToBottom(scrollRef: React.RefObject<HTMLDivElement | nul
   const [atBottom, setAtBottom] = useState(true)
   const lastScrollTop = useRef(0)
   const restored = useRef(false)
+  const restoredKey = useRef<string | undefined>(undefined)
 
   const setPinned = useCallback((pinned: boolean) => {
     pinnedRef.current = pinned
