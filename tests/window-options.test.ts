@@ -105,9 +105,9 @@ describe('window options', () => {
     })
   })
 
-  it('stands on nothing but its own paint on macOS', () => {
-    expect(createWindowOptions('darwin', 'preload.mjs', true).vibrancy).toBeUndefined()
-    expect(createThreadWindowOptions('darwin', 'preload.mjs', true).vibrancy).toBeUndefined()
+  it('carries the material the pinned rail is a hole onto', () => {
+    expect(createWindowOptions('darwin', 'preload.mjs', true).vibrancy).toBe('under-window')
+    expect(createWindowOptions('win32', 'preload.mjs', true).vibrancy).toBeUndefined()
   })
 
   it('opens the dev tools where it was told it may', () => {
