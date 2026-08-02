@@ -199,105 +199,12 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         idleTimer.unref()
       }
 
-      const reportTokens = () => {
-        if (!hooks.onTokens) return
-        const counted = whole ? addUsage(NO_USAGE, whole) : spent
-        // A CLI that says nothing about tokens still has words on screen, and
-        // four characters to the token is close enough to say something is
-        // happening rather than nothing.
-        const tokens = Math.max(counted.output, Math.ceil(written / 4))
-        const cost = whole?.cost ?? (model ? priceOf(model, counted) : null)
-        if (tokens === sent && cost === priced) return
-        sent = tokens
-        priced = cost
-        hooks.onTokens(tokens, cost)
-      }
-
-      const openBlock = (kind: 'thinking' | 'text', index: number, apart = false) => {
-        const id = `b${blocks++}`
-        streams[kind].ids.set(index, id)
-        if (apart) asides.add(id)
-      }
-
-      const rail = (kind: 'thinking' | 'text', id: string) => (kind === 'text' && asides.has(id) ? 'thinking' : kind)
-
-      const streamBlock = (kind: 'thinking' | 'text', index: number, chunk: string) => {
-        const stream = streams[kind]
-        let id = stream.ids.get(index)
-        if (!id) {
-          id = `b${blocks++}`
-          stream.ids.set(index, id)
-        }
-        if (kind === 'text' && asides.has(id)) aside += (aside && !stream.open.has(id) ? '\n' : '') + chunk
-        else if (kind === 'text') text += (text && !stream.open.has(id) ? '\n' : '') + chunk
-        stream.streamed = true
-        stream.open.add(id)
-        written += chunk.length
-        hooks.onStep({ id, kind: rail(kind, id), text: chunk, status: 'running' })
-      }
-
-      const closeBlock = (index: number) => {
-        for (const kind of ['thinking', 'text'] as const) {
-          const stream = streams[kind]
-          const id = stream.ids.get(index)
-          if (!id) continue
-          stream.ids.delete(index)
-          if (stream.open.delete(id)) hooks.onStep({ id, kind: rail(kind, id), status: 'done' })
-        }
-      }
-
-      const apply = (out: ParsedOutput) => {
-        if (out.thinkingStart) openBlock('thinking', out.thinkingStart.index)
-        if (out.textStart) openBlock('text', out.textStart.index, out.textStart.aside)
-          // A model that is asked not to show its reasoning still sends the
-          // blocks, with an empty string where the words would be. Those are
-          // not steps: a run that thinks in silence should look like it is
-          // working, not open an empty card. Waiting for text is also what
-          // leaves the complete block at the end of the message free to stand
-          // in, on a CLI that only ever sends it that way.
-          if (out.thinkingDelta?.text) streamBlock('thinking', out.thinkingDelta.index, out.thinkingDelta.text)
-          if (out.textDelta?.text) streamBlock('text', out.textDelta.index, out.textDelta.text)
-          if (out.blockStop) closeBlock(out.blockStop.index)
-          if (out.thinking && !streams.thinking.streamed) {
-            written += out.thinking.length
-            hooks.onStep({ id: `b${blocks++}`, kind: 'thinking', text: out.thinking, status: 'done' })
-          }
-          if (out.text && !streams.text.streamed) {
-            text += (text ? '\n' : '') + out.text
-            written += out.text.length
-            hooks.onStep({ id: `b${blocks++}`, kind: 'text', text: out.text, status: 'done' })
-          }
-          if (out.activity) {
-            // Most tools hand back their whole result, and a file read or a
-            // search would fill the log the whole crew syncs. Only a command
-            // keeps what it printed, and the name it started under is what
-            // says so, since the result arrives unnamed.
-            const name = out.activity.name || toolNames.get(out.activity.id) || ''
-            if (out.activity.name) toolNames.set(out.activity.id, out.activity.name)
-            const output = isShellTool(name) ? out.activity.output : undefined
-            // A CLI with no whole-list tool says one task per call, so the list
-            // such a step carries is the run's own, folded as those land. The
-            // id of a new one is only ever in the result, which is read here
-            // rather than kept, since a result is not a step's to hold.
-            const todos = out.activity.todos ?? tasks.todos(name, out.activity)
-            hooks.onStep({
-              id: `t${out.activity.id}`,
-              kind: out.activity.kind,
-              name: out.activity.name,
-              detail: out.activity.detail ? stripRootFromText(cwd, out.activity.detail) : undefined,
-              output: output ? stripRootFromText(cwd, output) : undefined,
-              files: out.activity.files?.map(file => ({ ...file, path: stripRoot(cwd, file.path) })),
-              todos,
-              status: out.activity.status === 'started' ? 'running' : 'done'
-            })
-          }
-          if (out.usage) {
-            if (out.usage.model) model = out.usage.model
-            if (out.usage.total) whole = out.usage
-            else spent = addUsage(spent, out.usage)
-          }
-          if (out.error) parsedError = out.error
-          if (out.turnEnd && dialog && !reopened) onTurnEnd()
+      // How a run ended and whether the process may wind down are the
+      // transport's, so they stay here while the steps go to the sink.
+      const feed = (out: ParsedOutput) => {
+        sink.apply(out)
+        if (out.error) parsedError = out.error
+        if (out.turnEnd && dialog && !reopened) onTurnEnd()
       }
 
       const handleLine = (line: string) => {
@@ -305,8 +212,8 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         if (raw.length < RAW_LIMIT) raw += (raw ? '\n' : '') + line
         reopened = false
         if (dialog) for (const body of dialog.answer(line)) reopened = write(body) || reopened
-        for (const out of parse!(line)) apply(out)
-        reportTokens()
+        for (const out of parse!(line)) feed(out)
+        sink.report()
         reopened = false
       }
 
