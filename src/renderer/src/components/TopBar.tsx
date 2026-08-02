@@ -175,7 +175,6 @@ export default function TopBar({ tab, onTab }: { tab: Tab; onTab: (tab: Tab) => 
         </div>
         {!compact && <span className="w-px h-5 bg-fg/[0.07] mr-[9px]" />}
         <PresenceStack compact={compact} />
-        {tab === 'chat' && <PanelToggle />}
         {/* Your face is the way into the settings. Everything a menu here used
             to hold has a page of its own now, so the press goes straight to it
             rather than through a list of the same things. */}
