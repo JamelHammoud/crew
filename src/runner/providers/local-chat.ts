@@ -1,0 +1,190 @@
+import { usageFrom } from './tokens'
+import type { LocalRuntime } from './local-serve'
+import type { ToolSpec } from './local-tools'
+import type { ParsedOutput, ParsedUsage } from './types'
+
+export interface ToolCall {
+  id: string
+  name: string
+  args: Record<string, unknown>
+}
+
+export interface ChatMessage {
+  role: 'system' | 'user' | 'assistant' | 'tool'
+  content: string
+  thinking?: string
+  tool_calls?: Array<{ id: string; type: 'function'; function: { name: string; arguments: string } }>
+  tool_call_id?: string
+  name?: string
+  images?: string[]
+}
+
+export interface ChatTurn {
+  text: string
+  thinking: string
+  calls: ToolCall[]
+  usage: ParsedUsage | null
+}
+
+export interface ChatRequest {
+  runtime: LocalRuntime
+  model: string
+  messages: ChatMessage[]
+  tools: ToolSpec[]
+  context: number
+  lane: number
+  signal: AbortSignal
+}
+
+// A model that cannot think is refused outright when a run asks it to, and the
+// refusal is the whole request rather than the field, so the first turn simply
+// never happens. Which models those are is learned from the refusal and
+// remembered, since nothing on the wire says so beforehand.
+const noThinking = new Set<string>()
+
+const str = (value: unknown): string => (typeof value === 'string' ? value : '')
+
+const parseArgs = (raw: unknown): Record<string, unknown> => {
+  if (raw && typeof raw === 'object' && !Array.isArray(raw)) return raw as Record<string, unknown>
+  if (typeof raw !== 'string' || !raw.trim()) return {}
+  try {
+    const parsed = JSON.parse(raw)
+    return parsed && typeof parsed === 'object' ? (parsed as Record<string, unknown>) : {}
+  } catch {
+    return {}
+  }
+}
+
+// Reasoning is the one field nobody agrees on: Ollama's own chat says thinking,
+// and the OpenAI compatible runtimes say reasoning_content or reasoning or
+// nothing at all.
+const reasoningOf = (part: Record<string, any>): string =>
+  str(part.thinking) || str(part.reasoning_content) || str(part.reasoning)
+
+interface Pending {
+  id: string
+  name: string
+  args: string
+  whole: Record<string, unknown> | null
+}
+
+class Calls {
+  private readonly byIndex = new Map<number, Pending>()
+  private next = 0
+
+  add(index: number | undefined, raw: any, lane: number): void {
+    const at = typeof index === 'number' ? index : this.next++
+    const held = this.byIndex.get(at) ?? { id: '', name: '', args: '', whole: null }
+    if (str(raw?.id)) held.id = str(raw.id)
+    if (str(raw?.function?.name)) held.name = str(raw.function.name)
+    const args = raw?.function?.arguments
+    if (typeof args === 'string') held.args += args
+    else if (args && typeof args === 'object') held.whole = args as Record<string, unknown>
+    if (!held.id) held.id = `c${lane}_${at}`
+    this.byIndex.set(at, held)
+  }
+
+  all(): ToolCall[] {
+    return [...this.byIndex.entries()]
+      .sort((a, b) => a[0] - b[0])
+      .map(([, held]) => ({ id: held.id, name: held.name, args: held.whole ?? parseArgs(held.args) }))
+      .filter(call => call.name !== '')
+  }
+}
+
+const body = (req: ChatRequest, think: boolean): string => {
+  const common = { model: req.model, messages: req.messages, stream: true }
+  const tools = req.tools.length ? { tools: req.tools } : {}
+  if (req.runtime.kind !== 'ollama') return JSON.stringify({ ...common, ...tools })
+  const options = req.context ? { options: { num_ctx: req.context } } : {}
+  return JSON.stringify({ ...common, ...tools, ...options, ...(think ? { think: true } : {}) })
+}
+
+const endpoint = (req: ChatRequest): string =>
+  `${req.runtime.url}${req.runtime.kind === 'ollama' ? '/api/chat' : '/v1/chat/completions'}`
+
+const refusedThinking = (text: string): boolean => /think/i.test(text)
+
+async function open(req: ChatRequest): Promise<Response> {
+  const think = req.runtime.kind === 'ollama' && !noThinking.has(req.model)
+  const first = await fetch(endpoint(req), {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: body(req, think),
+    signal: req.signal
+  })
+  if (first.ok || !think) return first
+  const said = await first.text().catch(() => '')
+  if (!refusedThinking(said)) throw new Error(said.trim() || `The model server answered ${first.status}.`)
+  noThinking.add(req.model)
+  return fetch(endpoint(req), {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: body(req, false),
+    signal: req.signal
+  })
+}
+
+// One streamed call of the model, turned into the same output every other
+// provider here hands back. Ollama writes a JSON object a line and the OpenAI
+// compatible ones write server-sent events, so both are read a line at a time.
+export async function chat(req: ChatRequest, emit: (out: ParsedOutput) => void): Promise<ChatTurn> {
+  const response = await open(req)
+  if (!response.ok || !response.body) {
+    const said = await response.text().catch(() => '')
+    throw new Error(said.trim() || `The model server answered ${response.status}.`)
+  }
+
+  const thinkLane = req.lane * 2
+  const textLane = req.lane * 2 + 1
+  const calls = new Calls()
+  let text = ''
+  let thinking = ''
+  let usage: ParsedUsage | null = null
+  let buffer = ''
+
+  const take = (line: string) => {
+    const trimmed = line.trim()
+    if (!trimmed || trimmed === 'data: [DONE]') return
+    const payload = trimmed.startsWith('data:') ? trimmed.slice(5).trim() : trimmed
+    let frame: Record<string, any>
+    try {
+      frame = JSON.parse(payload)
+    } catch {
+      return
+    }
+    if (typeof frame.error === 'string') throw new Error(frame.error)
+    const part: Record<string, any> = frame.message ?? frame.choices?.[0]?.delta ?? frame.choices?.[0]?.message ?? {}
+    const thought = reasoningOf(part)
+    if (thought) {
+      thinking += thought
+      emit({ thinkingDelta: { index: thinkLane, text: thought } })
+    }
+    const said = str(part.content)
+    if (said) {
+      text += said
+      emit({ textDelta: { index: textLane, text: said } })
+    }
+    if (Array.isArray(part.tool_calls)) {
+      for (const call of part.tool_calls) calls.add(call?.index, call, req.lane)
+    }
+    const counted = usageFrom(frame.usage ?? frame, frame.model ?? req.model)
+    if (counted && (counted.input !== undefined || counted.output !== undefined)) usage = counted
+  }
+
+  const reader = response.body.getReader()
+  const decode = new TextDecoder()
+  for (;;) {
+    const { done, value } = await reader.read()
+    if (done) break
+    buffer += decode.decode(value, { stream: true })
+    const lines = buffer.split('\n')
+    buffer = lines.pop() ?? ''
+    for (const line of lines) take(line)
+  }
+  if (buffer.trim()) take(buffer)
+
+  emit({ blockStop: { index: thinkLane } })
+  emit({ blockStop: { index: textLane } })
+  return { text, thinking, calls: calls.all(), usage }
+}
