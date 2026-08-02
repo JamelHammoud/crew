@@ -189,6 +189,7 @@ export default function TopBar({ tab, onTab }: { tab: Tab; onTab: (tab: Tab) => 
             <Avatar name={selfName || '?'} presence={connection === 'online' ? 'online' : 'offline'} />
           </button>
         </Tooltip>
+        {tab === 'chat' && <PanelToggle />}
       </div>
     </header>
   )
