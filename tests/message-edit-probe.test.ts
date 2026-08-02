@@ -145,9 +145,7 @@ describe('a box that grows inside a scroller', () => {
   })
 
   it('leaves a box with no scroller over it alone', () => {
-    const { container } = render(
-      createElement('div', { style: { overflowY: 'visible' } }, createElement(Grower, { text: 'one' }))
-    )
+    const { container } = render(createElement(Grower, { text: 'one', over: 'visible' }))
     const box = container.querySelector('textarea') as HTMLTextAreaElement
 
     expect(box.style.overflowY).toBe('hidden')
