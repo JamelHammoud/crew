@@ -30,6 +30,21 @@ export function landing(boxes: Box[], from: number, dx: number): number {
   return to
 }
 
+// Where the pointer standing at a point in the row would drop. Nothing travels
+// with the pointer here: the row stands still and a copy of what was picked up
+// follows it, so the point itself is what decides rather than the edges of a box
+// that has not moved. A tall one read off its own edges reaches into the gap
+// well ahead of the pointer and the line lands before the cursor arrives, which
+// is worse the taller the thing being carried is.
+export function landingAt(boxes: Box[], from: number, at: number): number {
+  let to = from
+  boxes.forEach((box, index) => {
+    if (index > from && at > middle(box)) to = Math.max(to, index)
+    if (index < from && at < middle(box)) to = Math.min(to, index)
+  })
+  return to
+}
+
 export function gapOf(boxes: Box[]): number {
   for (let index = 1; index < boxes.length; index++) {
     const gap = boxes[index].left - end(boxes[index - 1])
