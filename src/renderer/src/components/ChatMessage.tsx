@@ -18,9 +18,12 @@ import Tooltip from './Tooltip'
 import MessageAttachments from './MessageAttachments'
 import { sameItem, type ThreadItem } from './thread'
 import { formatFullTime, formatTime } from './time'
+import { useAutoResize } from './useAutoResize'
 
 const QUOTE_ROW =
   'mt-1.5 flex w-fit max-w-full min-w-0 items-center rounded-full bg-fg/[0.05] py-1 pl-2.5 pr-3.5 select-none'
+
+const WHOLE_MESSAGE = Number.POSITIVE_INFINITY
 
 function ChatMessage({
   item,
