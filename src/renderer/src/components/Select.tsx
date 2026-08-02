@@ -29,6 +29,7 @@ export default function Select({
         } ${open ? 'bg-fg/[0.12] text-fg' : 'bg-fg/[0.07] text-fg/70 hover:bg-fg/[0.12] hover:text-fg'}`}
       >
         {label && <span className="text-fg/45">{label}</span>}
+        {current?.mark}
         <span className={full ? 'flex-1 min-w-0 truncate text-left' : ''}>{current?.label ?? value}</span>
         <ChevronDownGlyph
           className={`w-4 h-4 shrink-0 text-fg/45 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
@@ -48,6 +49,7 @@ export default function Select({
                 selected ? 'text-fg' : 'text-fg/70 hover:text-fg hover:bg-fg/5'
               }`}
             >
+              {option.mark}
               <span className="flex-1">{option.label}</span>
               {option.hint != null && <span className="text-xs text-fg/45">{option.hint}</span>}
               {selected && <CheckGlyph className="w-4 h-4 shrink-0" />}
