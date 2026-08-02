@@ -229,7 +229,7 @@ describe('a local agent', () => {
     await stand([])
     await fake!.close()
     const { started } = run('hello')
-    await expect(started.done).rejects.toThrow(/Start the model server/)
+    await expect(started.done).rejects.toThrow(/Nothing answered at/)
   })
 
   it('plans without changing anything when it is asked to', async () => {
