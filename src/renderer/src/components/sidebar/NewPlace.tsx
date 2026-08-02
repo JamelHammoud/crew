@@ -9,6 +9,23 @@ import WhereTo from '../../views/home/WhereTo'
 import Modal from '../Modal'
 import { MenuItem, Popover } from '../Popover'
 
+const lastFolder = (): string | null => {
+  try {
+    return globalThis.localStorage?.getItem('crew.folder') ?? null
+  } catch {
+    return null
+  }
+}
+
+const keep = (folder: string, link: string): void => {
+  try {
+    globalThis.localStorage?.setItem('crew.folder', folder)
+    globalThis.localStorage?.setItem('crew.link', link)
+  } catch {
+    return
+  }
+}
+
 export default function NewPlace({
   busy,
   onOpen
