@@ -26,6 +26,7 @@ export function useAutoResize(value: string, maxHeight = 200) {
     const full = el.scrollHeight
     el.style.height = `${Math.min(full, maxHeight)}px`
     el.style.overflowY = full > maxHeight ? 'auto' : 'hidden'
+    if (page && top !== undefined && page.scrollTop !== top) page.scrollTop = top
   }, [value, maxHeight])
 
   return ref
