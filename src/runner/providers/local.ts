@@ -84,7 +84,11 @@ export const localProvider: Provider = {
     let stopped = false
 
     const done = (async () => {
-      const url = resolved.address || candidateUrls()[0]
+      // What somebody picked beats what the picker can vouch for right now. A
+      // list warmed in one place and read in another can be cold, and
+      // resolveSettings drops a choice its options do not carry, which would
+      // quietly send a run to a different server than the one it was made for.
+      const url = settings['address'] || resolved.address || candidateUrls()[0]
       // A server that was up when the picker was drawn can be down by the time
       // somebody says something, so the address is asked again here, and only
       // a silent one is started.
