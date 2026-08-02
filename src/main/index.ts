@@ -70,6 +70,7 @@ app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const devUrl = process.env['ELECTRON_RENDERER_URL']
 const stateDir = runtimeStateDir(app.getPath('userData'), devUrl)
+app.setPath('userData', stateDir)
 const crews = new Crews()
 const terminals = new Map<number, Terminals>()
 const previews = new Map<number, Previews>()
