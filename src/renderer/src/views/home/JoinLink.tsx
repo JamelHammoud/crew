@@ -1,5 +1,5 @@
 import Spinner from '../../components/Spinner'
-import TextField, { FIELD } from '../../components/TextField'
+import TextField, { FIELD, FIELD_GLASS } from '../../components/TextField'
 import { FolderGlyph } from '../../icons'
 
 // Somebody else's session. It still needs a folder on this machine, because
@@ -8,6 +8,7 @@ export default function JoinLink({
   link,
   folder,
   busy,
+  glass,
   onLink,
   onPickFolder,
   onJoin
@@ -15,18 +16,25 @@ export default function JoinLink({
   link: string
   folder: string | null
   busy: boolean
+  // The same question asked on a card that floats, where a sunken field is a
+  // solid grey patch and the greys inside it vanish over whatever is behind.
+  glass?: boolean
   onLink: (link: string) => void
   onPickFolder: () => void
   onJoin: () => void
 }) {
+  const quiet = glass ? 'text-fg/45' : 'text-fg-muted'
+  const box = glass ? FIELD_GLASS : `${FIELD} hover:bg-ink-700`
+
   return (
     <div className="space-y-7">
       <h2 className="text-lg font-semibold text-fg text-center">Join a crew</h2>
       <div className="space-y-5">
         <div>
-          <label className="block text-sm text-fg-muted mb-2">Join link</label>
+          <label className={`block text-sm ${quiet} mb-2`}>Join link</label>
           <TextField
             autoFocus
+            glass={glass}
             value={link}
             onChange={e => onLink(e.target.value)}
             onKeyDown={e => {
@@ -36,10 +44,10 @@ export default function JoinLink({
           />
         </div>
         <div>
-          <label className="block text-sm text-fg-muted mb-2">Where your agents work</label>
-          <button onClick={onPickFolder} className={`${FIELD} flex items-center gap-2.5 text-left hover:bg-ink-700`}>
-            <FolderGlyph className="w-5 h-5 text-fg-muted shrink-0" />
-            <span className={`truncate ${folder ? 'text-fg' : 'text-fg-muted'}`}>{folder ?? 'Choose a folder'}</span>
+          <label className={`block text-sm ${quiet} mb-2`}>Where your agents work</label>
+          <button onClick={onPickFolder} className={`${box} flex items-center gap-2.5 text-left`}>
+            <FolderGlyph className={`w-5 h-5 ${quiet} shrink-0`} />
+            <span className={`truncate ${folder ? 'text-fg' : quiet}`}>{folder ?? 'Choose a folder'}</span>
           </button>
         </div>
       </div>
