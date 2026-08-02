@@ -46,11 +46,9 @@ import {
   ChevronLeftGlyph,
   CloseGlyph,
   EyeGlyph,
-  PanelRightGlyph,
   StopGlyph,
   WarningGlyph
 } from '../icons'
-import { useBrowser } from '../state/browser'
 import { pendingCount, useCrew } from '../state/store'
 
 const BACK_WIDTH = 40
@@ -93,7 +91,6 @@ export default function ThreadView({
   const text = useCrew(s => s.threadDrafts[threadId] ?? '')
   const setThreadDraft = useCrew(s => s.setThreadDraft)
   const agents = useCrew(s => s.agents)
-  const panelOpen = useBrowser(s => s.open)
   const [replyTo, setReplyTo] = useState<ThreadItem | null>(null)
 
   const scrollRef = useRef<HTMLDivElement>(null)
