@@ -41,6 +41,7 @@ else showTheme(storedTheme())
 if (hash === '#scribe') root.classList.add('bare')
 
 if (joins) {
+  watchShift()
   void useCrew.getState().boot()
   window.crew.onWindowShape(shape => {
     root.classList.toggle('square', shape.square)
