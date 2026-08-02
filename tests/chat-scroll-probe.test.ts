@@ -57,8 +57,9 @@ const messages: SessionEvent[] = Array.from({ length: 8 }, (_, i) => ({
   mentions: []
 }))
 
-function boot() {
+function boot(place = 'project:one') {
   useCrew.setState({
+    place,
     connection: 'online',
     selfId: 'jamel',
     selfName: 'Jamel',
