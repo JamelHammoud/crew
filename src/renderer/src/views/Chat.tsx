@@ -167,7 +167,7 @@ export default function Chat() {
         }}
         className="h-full overflow-y-auto overflow-x-hidden px-6"
       >
-        <div className="max-w-[660px] mx-auto pt-28 pb-48 space-y-8">
+        <div className="max-w-[660px] mx-auto pt-28 space-y-8" style={{ paddingBottom: room }}>
           {moreHistory && (
             <div className="h-6 flex items-center justify-center">
               {loadingHistory && <Spinner size={16} className="text-fg-faint" />}
