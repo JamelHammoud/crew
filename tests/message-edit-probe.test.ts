@@ -110,11 +110,11 @@ function stand(box: HTMLTextAreaElement, page: HTMLElement, full: number): void 
   })
 }
 
-function Grower({ text }: { text: string }): ReactElement {
+function Grower({ text, over = 'auto' }: { text: string; over?: string }): ReactElement {
   const ref = useAutoResize(text, Number.POSITIVE_INFINITY)
   return createElement(
     'div',
-    { style: { overflowY: 'auto' }, 'data-page': true },
+    { style: { overflowY: over }, 'data-page': true },
     createElement('textarea', { ref, value: text, rows: 1, readOnly: true })
   )
 }
