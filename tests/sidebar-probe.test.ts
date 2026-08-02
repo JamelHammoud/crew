@@ -60,6 +60,8 @@ const project = (folder: string) => ({
 })
 
 const asked: string[] = []
+const joined: Array<[string, string, string]> = []
+let picked: string | null = null
 let live: LivePlace[] = []
 
 const sessionFor = (folder: string): CurrentSession => ({
@@ -88,6 +90,12 @@ window.crew = {
     return Promise.resolve(sessionFor(key.replace('project:', '')))
   },
   start: (folder: string) => Promise.resolve(sessionFor(folder)),
+  join: (link: string, folder: string, name: string) => {
+    joined.push([link, folder, name])
+    return Promise.resolve(sessionFor(folder))
+  },
+  pickFolder: () => Promise.resolve(picked),
+  projectPlan: () => Promise.resolve({ known: true, home: 'folder', crewRemote: null, crewHere: true }),
   closeProject: () => Promise.resolve(),
   warmTerminal: () => undefined
 } as unknown as CrewBridge
@@ -114,6 +122,8 @@ const toggleIn = (root: HTMLElement) => root.querySelector('[aria-label="Project
 
 beforeEach(async () => {
   asked.length = 0
+  joined.length = 0
+  picked = null
   live = []
   localStorage.clear()
   useSidebar.setState({ pinned: false, peeking: false })
