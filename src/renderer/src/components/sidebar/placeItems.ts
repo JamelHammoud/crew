@@ -33,6 +33,7 @@ export const samePlace = (a: Place, b: Place): boolean =>
   a === b ||
   (a.key === b.key &&
     a.title === b.title &&
+    a.line === b.line &&
     a.project?.folder === b.project?.folder &&
     a.project?.home === b.project?.home &&
     a.join?.link === b.join?.link &&
