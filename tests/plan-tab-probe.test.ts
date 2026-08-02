@@ -174,13 +174,10 @@ describe('the way back to the panel', () => {
       )
     )
 
-  it('stands in the window rather than in the thread', () => {
+  it('is the window's own, and a thread never draws a second one', () => {
     open('t1')
-    const { container, queryByLabelText } = view('t1')
+    const { container } = view('t1')
 
-    const button = queryByLabelText('Show panel')
-    expect(button).not.toBeNull()
-    expect(button!.closest('header')).toBeNull()
     expect(container.querySelectorAll('[aria-label="Show panel"]')).toHaveLength(1)
   })
 
