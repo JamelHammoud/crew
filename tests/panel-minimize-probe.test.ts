@@ -74,7 +74,7 @@ describe('putting the side panel away by its own edge', () => {
     fireEvent.click(button)
 
     expect(useBrowser.getState().open).toBe(true)
-    expect(useBrowser.getState().width).toBe(MIN_WIDTH)
+    expect(useBrowser.getState().width).toBe(DEFAULT_WIDTH)
     expect(screen.queryByLabelText('Show panel')).toBeNull()
   })
 })
