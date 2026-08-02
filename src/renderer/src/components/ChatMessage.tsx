@@ -166,8 +166,7 @@ function ChatMessage({
                 }
                 if (e.key === 'Escape') setDraft(null)
               }}
-              autoFocus
-              className="w-full resize-none bg-ink-800 border border-ink-700 rounded-card px-4 py-3 text-base text-fg leading-[22px] outline-none transition-colors focus:border-ink-500"
+              className="w-full resize-none overflow-hidden bg-ink-800 border border-ink-700 rounded-card px-4 py-3 text-base text-fg leading-[22px] outline-none transition-colors focus:border-ink-500"
             />
             <div className="flex items-center gap-3 mt-2">
               <button
