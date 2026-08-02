@@ -174,7 +174,7 @@ describe('the way back to the panel', () => {
       )
     )
 
-  it('is the window own button, and a thread never draws a second one', () => {
+  it('belongs to the window, and a thread never draws a second one', () => {
     open('t1')
     const { container } = view('t1')
 
