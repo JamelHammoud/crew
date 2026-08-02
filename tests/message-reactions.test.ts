@@ -278,6 +278,72 @@ describe('message reaction controls', () => {
     expect(screen.queryByPlaceholderText('Search emoji')).toBeNull()
   })
 
+  it('stands a delete button at the end of the tray, drawn only while shift is held', () => {
+    const onDelete = vi.fn()
+    useCrew.setState({ reactToMessage: vi.fn() })
+    render(
+      createElement(
+        'div',
+        { className: 'group/message' },
+        createElement(MessageReactions, {
+          targetId: 'message:m1',
+          reactions: [],
+          deletable: true,
+          onDelete
+        })
+      )
+    )
+
+    const remove = screen.getByLabelText('Delete message')
+    const tray = screen.getByLabelText('React with :tada:').parentElement as HTMLElement
+    expect([...tray.querySelectorAll('button')].at(-1)).toBe(remove)
+    expect(remove.className).toContain('hidden')
+    expect(remove.className).toContain('shift:flex')
+
+    fireEvent.click(remove)
+    expect(onDelete).toHaveBeenCalled()
+  })
+
+  it('says More on the button that opens the rest of them', () => {
+    useCrew.setState({ reactToMessage: vi.fn() })
+    render(
+      createElement(
+        'div',
+        { className: 'group/message' },
+        createElement(MessageReactions, {
+          targetId: 'message:m1',
+          reactions: [],
+          deletable: true,
+          onDelete: () => {},
+          onEdit: () => {}
+        })
+      )
+    )
+
+    fireEvent.click(screen.getByLabelText('More'))
+    expect(screen.getByText('Edit message')).toBeTruthy()
+    expect(screen.getByText('Delete message')).toBeTruthy()
+  })
+
+  it('holds shift on the root and lets go of it when the window does', () => {
+    const stop = watchShift()
+    try {
+      expect(document.documentElement.hasAttribute('data-shift')).toBe(false)
+
+      fireEvent.keyDown(window, { key: 'Shift', shiftKey: true })
+      expect(document.documentElement.hasAttribute('data-shift')).toBe(true)
+
+      fireEvent.keyUp(window, { key: 'Shift', shiftKey: false })
+      expect(document.documentElement.hasAttribute('data-shift')).toBe(false)
+
+      fireEvent.keyDown(window, { key: 'Shift', shiftKey: true })
+      fireEvent.blur(window)
+      expect(document.documentElement.hasAttribute('data-shift')).toBe(false)
+    } finally {
+      stop()
+    }
+  })
+
   it('keeps a reaction on the exact agent reply block it targets', () => {
     const events: SessionEvent[] = [
       {
