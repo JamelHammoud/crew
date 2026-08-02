@@ -2,12 +2,15 @@ import { PanelRightGlyph } from '../icons'
 import { useBrowser } from '../state/browser'
 import Tooltip from './Tooltip'
 
-export default function PanelToggle({ className = '' }: { className?: string }) {
+export default function PanelToggle() {
   const open = useBrowser(s => s.open)
+  const any = useBrowser(s => s.tabs.length > 0)
   const label = open ? 'Hide panel' : 'Show panel'
 
+  if (!any) return null
+
   return (
-    <Tooltip label={label} className={className}>
+    <Tooltip label={label}>
       <button
         onClick={() => useBrowser.getState().togglePanel()}
         aria-label={label}
