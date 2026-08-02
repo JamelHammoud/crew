@@ -97,8 +97,9 @@ function fromList(said: unknown): Served[] {
   const listed = (said as { data?: unknown })?.data
   if (!Array.isArray(listed)) return []
   return listed
-    .map(one => ({ name: typeof (one as { id?: unknown })?.id === 'string' ? ((one as { id: string }).id) : '' }))
-    .filter(one => one.name.length > 0)
+    .map(one => (one as { id?: unknown })?.id)
+    .filter((id): id is string => typeof id === 'string' && id.length > 0)
+    .map(name => ({ name }))
 }
 
 async function servedOn(runtime: LocalRuntime): Promise<Served[]> {
