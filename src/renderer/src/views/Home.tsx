@@ -156,19 +156,17 @@ export default function Home() {
     }
   }
 
-  // A place you have been before carries the name you were called there, so
-  // going back in never waits on a render to catch up with the row you pressed.
   const openPlace = async (place: Place) => {
+    if (missingName()) return
+    const who = name.trim()
     if (place.join) {
-      setName(place.join.name)
       setLink(place.join.link)
       setFolder(place.join.folder)
-      return joinSession(place.join.link, place.join.folder, place.key, place.join.name)
+      return joinSession(place.join.link, place.join.folder, place.key, who)
     }
     if (place.project) {
-      if (missingName()) return
       const plan = await window.crew.projectPlan(place.project.folder).catch(() => null)
-      return open(place.project.folder, place.key, name.trim(), undefined, fetching(plan))
+      return open(place.project.folder, place.key, who, undefined, fetching(plan))
     }
   }
 
