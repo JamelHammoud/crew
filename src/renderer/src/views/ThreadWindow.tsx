@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import PanelToggle from '../components/PanelToggle'
 import SidePanel from '../components/SidePanel'
 import Spinner from '../components/Spinner'
 import Toaster from '../components/Toaster'
@@ -29,7 +30,9 @@ export default function ThreadWindow() {
             with the same fade under it the chat wears, or the thread would be
             read right up to the top edge of the window and under the lights. */}
         <div className="absolute top-0 inset-x-0 z-30 pointer-events-none">
-          <div className="app-drag pointer-events-auto h-14 bg-ink-900" />
+          <div className="app-drag pointer-events-auto h-14 bg-ink-900 flex items-center justify-end px-4">
+            <PanelToggle />
+          </div>
           <div className="h-10 bg-gradient-to-b from-ink-900 to-transparent" />
         </div>
         {threadId && thread ? (
