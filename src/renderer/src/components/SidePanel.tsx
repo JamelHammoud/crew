@@ -24,7 +24,14 @@ export default function SidePanel({ visible }: { visible: boolean }) {
     let moved = false
     const move = (e: PointerEvent) => {
       if (Math.abs(e.clientX - startX) > STILL_WITHIN) moved = true
-      useBrowser.getState().setWidth(startWidth + startX - e.clientX)
+      const asked = startWidth + startX - e.clientX
+      const browser = useBrowser.getState()
+      if (asked < MINIMIZE_AT) {
+        if (browser.open) browser.closePanel()
+        return
+      }
+      if (!browser.open) browser.openPanel()
+      browser.setWidth(asked)
     }
     const stop = (e: PointerEvent) => {
       setDragging(false)
