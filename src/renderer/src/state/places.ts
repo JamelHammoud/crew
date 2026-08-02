@@ -55,7 +55,7 @@ function keepOrder(places: Place[]): void {
   }
 }
 
-export const usePlaces = create<PlacesState>(set => ({
+export const usePlaces = create<PlacesState>((set, get) => ({
   places: [],
   live: [],
   load: async () => {
@@ -64,7 +64,11 @@ export const usePlaces = create<PlacesState>(set => ({
       window.crew?.recentJoins?.().catch(() => [] as RecentJoin[]) ?? [],
       window.crew?.liveProjects?.().catch(() => [] as LivePlace[]) ?? []
     ])
-    set({ places: arranged(placesOf(projects, joins)), live })
+    set({ places: arranged(placesOf(projects, joins, savedNames())), live })
+  },
+  rename: async (key, name) => {
+    keepName(key, name)
+    await get().load()
   },
   move: (key, to) =>
     set(state => {
