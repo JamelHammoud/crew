@@ -13,7 +13,8 @@ export function usageFrom(usage: unknown, model?: unknown): ParsedUsage | null {
   if (!usage || typeof usage !== 'object') return null
   const raw = usage as Record<string, any>
   const name = typeof model === 'string' && model.trim() ? model : undefined
-  const output = count(raw.output_tokens) ?? count(raw.completion_tokens) ?? count(raw.outputTokens)
+  const output =
+    count(raw.output_tokens) ?? count(raw.completion_tokens) ?? count(raw.outputTokens) ?? count(raw.eval_count)
 
   const read = count(raw.cache_read_input_tokens)
   const written = count(raw.cache_creation_input_tokens)
