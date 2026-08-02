@@ -174,19 +174,22 @@ describe('the way back to the panel', () => {
       )
     )
 
-  it('belongs to the window, and a thread never draws a second one', () => {
-    open('t1')
-    const { container } = view('t1')
+  it('stands only while the panel is away, and never in the thread', () => {
+    open('t1', 'Step one')
+    const { container, queryByLabelText } = view('t1')
 
+    expect(useBrowser.getState().open).toBe(true)
+    expect(queryByLabelText('Show panel')).toBeNull()
+
+    act(() => useBrowser.getState().closePanel())
     expect(container.querySelectorAll('[aria-label="Show panel"]')).toHaveLength(1)
   })
 
-  it('puts the panel away and keeps what is in it', () => {
+  it('puts the panel back with everything still in it', () => {
     open('t1', 'Step one')
-    const { getByLabelText } = view('t1')
+    const { getByLabelText, queryByLabelText } = view('t1')
 
-    expect(useBrowser.getState().open).toBe(true)
-    fireEvent.click(getByLabelText('Hide panel'))
+    fireEvent.click(getByLabelText('Close'))
 
     expect(useBrowser.getState().open).toBe(false)
     expect(planTab()!.threadId).toBe('t1')
@@ -195,6 +198,7 @@ describe('the way back to the panel', () => {
 
     expect(useBrowser.getState().open).toBe(true)
     expect(planTab()!.threadId).toBe('t1')
+    expect(queryByLabelText('Show panel')).toBeNull()
   })
 
   // Nothing left in it is nothing to stand on, and opening it again lands on
@@ -202,11 +206,11 @@ describe('the way back to the panel', () => {
   // showed it.
   it('offers the plan again on a panel opened empty', () => {
     open('t1', 'Step one')
-    const { getByText, getByLabelText } = view('t1')
+    const { getByText } = view('t1')
     act(() => useBrowser.getState().closeAll())
 
     expect(useBrowser.getState().open).toBe(false)
-    fireEvent.click(getByLabelText('Show panel'))
+    act(() => useBrowser.getState().openPanel())
 
     expect(getByText('Start')).not.toBeNull()
     fireEvent.click(getByText('Plan'))
