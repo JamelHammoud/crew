@@ -58,6 +58,8 @@ export type BrowserTab = {
 }
 
 export const DEFAULT_WIDTH = 480
+export const MIN_WIDTH = 360
+export const MINIMIZE_AT = 240
 
 export type PanelMemory = {
   tabs: BrowserTab[]
@@ -171,8 +173,8 @@ const sameAddress = (a: string, b: string): boolean =>
   Boolean(a) && a.replace(/\/+$/, '') === b.replace(/\/+$/, '')
 
 function clampWidth(width: number): number {
-  const max = Math.max(360, window.innerWidth - 440)
-  return Math.min(Math.max(width, 360), max)
+  const max = Math.max(MIN_WIDTH, window.innerWidth - 440)
+  return Math.min(Math.max(width, MIN_WIDTH), max)
 }
 
 // Taking tabs out of the row and standing on whatever is left where they were.
