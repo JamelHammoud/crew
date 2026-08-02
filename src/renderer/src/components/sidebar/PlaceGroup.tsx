@@ -80,7 +80,8 @@ function PlaceGroup({
         />
         {stoppable && (
           <MenuItem
-            label="Stop this crew"
+            icon={<StopGlyph className="w-4 h-4" />}
+            label="Stop project"
             onClick={() => {
               setMenuAt(null)
               onStop(place)
