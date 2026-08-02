@@ -74,11 +74,11 @@ async function check(app, work) {
   }
 
   const kept = await app.refreshModels(runtimes)
-  const lists = await Promise.all(
-    runtimes.map(async runtime => ({ runtime, served: await app.servedModels(runtime) }))
-  )
+  const lists = await Promise.all(runtimes.map(async runtime => ({ runtime, served: await app.servedModels(runtime) })))
   for (const { runtime, served } of lists) {
-    line(`${at()} models    ${runtime.label} serves ${served.length ? served.map(one => one.name).join(', ') : 'nothing'}`)
+    line(
+      `${at()} models    ${runtime.label} serves ${served.length ? served.map(one => one.name).join(', ') : 'nothing'}`
+    )
   }
   const offered = [...new Set(lists.flatMap(one => one.served.map(model => model.name)))]
   const dropped = offered.filter(name => !kept.includes(name))
@@ -93,7 +93,9 @@ async function check(app, work) {
 
   const found = await app.localProvider.detect()
   const note = await app.localProvider.note()
-  line(`${at()} detect    ${found ? 'the provider found this machine' : 'the provider found nothing'}${note ? `, saying "${note}"` : ''}`)
+  line(
+    `${at()} detect    ${found ? 'the provider found this machine' : 'the provider found nothing'}${note ? `, saying "${note}"` : ''}`
+  )
 
   const wantedUrl = process.env.CREW_LOCAL_URL?.trim()
   const runtime = runtimes.find(one => one.url === wantedUrl) ?? runtimes[0]
@@ -187,7 +189,9 @@ async function check(app, work) {
     },
     {
       name: 'thinking arrived while the work was going, or this model plainly has none',
-      ok: thoughts.length === 0 || (firstThought > 0 && firstThought < ended && (firstTool === 0 || firstThought < firstTool)),
+      ok:
+        thoughts.length === 0 ||
+        (firstThought > 0 && firstThought < ended && (firstTool === 0 || firstThought < firstTool)),
       note: thoughts.length
         ? `${thoughts.length} chunks, ${thoughts.reduce((all, one) => all + one.text.length, 0)} characters, first at ${secs(firstThought)}s with the first tool at ${firstTool ? `${secs(firstTool)}s` : 'never'} and the run ending at ${secs(ended)}s`
         : 'no reasoning at all, which is the model rather than the transport'
@@ -210,7 +214,9 @@ async function check(app, work) {
       name: 'the change carried the file and its counted lines',
       ok: changed.some(file => file.added > 0 && file.diff),
       note: changed.length
-        ? changed.map(file => `${file.path} +${file.added}/-${file.removed}${file.diff ? ' with a diff' : ' with no diff'}`).join(', ')
+        ? changed
+            .map(file => `${file.path} +${file.added}/-${file.removed}${file.diff ? ' with a diff' : ' with no diff'}`)
+            .join(', ')
         : 'no step carried a file change'
     },
     {
