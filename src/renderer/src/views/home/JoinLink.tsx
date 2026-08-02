@@ -16,8 +16,6 @@ export default function JoinLink({
   link: string
   folder: string | null
   busy: boolean
-  // The same question asked on a card that floats, where a sunken field is a
-  // solid grey patch and the greys inside it vanish over whatever is behind.
   glass?: boolean
   onLink: (link: string) => void
   onPickFolder: () => void
