@@ -152,6 +152,8 @@ export default function Sidebar({
 
   const forgetPlace = useCallback((place: Place) => void forget(place), [forget])
 
+  const renamePlace = useCallback((place: Place, name: string) => void rename(place.key, name), [rename])
+
   const addPlace = useCallback(
     (folder: string, home?: CrewHome) => void open(folder, projectPlace(folder), home),
     [open]
