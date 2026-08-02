@@ -28,13 +28,13 @@ interface Fake {
   url: string
   turns: string[][]
   asked: Array<Record<string, any>>
-  hold: (open: boolean) => void
+  hold: (round: number | null) => void
   close: () => Promise<void>
 }
 
 async function fakeRuntime(turns: string[][]): Promise<Fake> {
   const asked: Array<Record<string, any>> = []
-  let held = false
+  let heldFrom: number | null = null
   const server: Server = createServer((req, res) => {
     let body = ''
     req.on('data', chunk => (body += chunk))
