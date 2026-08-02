@@ -45,6 +45,28 @@ describe('where a dragged one lands', () => {
   })
 })
 
+describe('where the pointer carrying one lands', () => {
+  it('lands in the half of the row the pointer is really in', () => {
+    expect(landingAt(boxes, 0, 140)).toBe(0)
+    expect(landingAt(boxes, 0, 146)).toBe(1)
+    expect(landingAt(boxes, 1, 46)).toBe(1)
+    expect(landingAt(boxes, 1, 44)).toBe(0)
+  })
+
+  // A tall one stands over several of the rows beside it, and its own edges are
+  // nowhere near the pointer. Read off them the line lands a whole row early.
+  it('takes a tall one no further than the pointer has gone', () => {
+    expect(landingAt(boxes, 3, 340)).toBe(3)
+    expect(landingAt(boxes, 3, 240)).toBe(2)
+    expect(landing(boxes, 3, -60)).toBe(2)
+  })
+
+  it('does not go past either end of the row', () => {
+    expect(landingAt(boxes, 0, -400)).toBe(0)
+    expect(landingAt(boxes, 3, 900)).toBe(3)
+  })
+})
+
 describe('the room a dragged one leaves behind', () => {
   it('is its own width and the gap beside it', () => {
     expect(room(boxes, 0)).toBe(100)
