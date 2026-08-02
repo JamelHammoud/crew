@@ -12,7 +12,7 @@ export default function Select({
 }: {
   label?: string
   value: string
-  options: Array<{ value: string; label: string; hint?: ReactNode }>
+  options: Array<{ value: string; label: string; hint?: ReactNode; mark?: ReactNode }>
   onChange: (value: string) => void
   side?: 'top' | 'bottom'
   full?: boolean
