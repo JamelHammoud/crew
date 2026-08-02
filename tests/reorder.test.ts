@@ -54,11 +54,13 @@ describe('where the pointer carrying one lands', () => {
   })
 
   // A tall one stands over several of the rows beside it, and its own edges are
-  // nowhere near the pointer. Read off them the line lands a whole row early.
+  // nowhere near the pointer. Taken by the middle and moved 60, the pointer is
+  // still inside the row it came out of, and read off the edges the line has
+  // already landed a row above it.
   it('takes a tall one no further than the pointer has gone', () => {
-    expect(landingAt(boxes, 3, 340)).toBe(3)
-    expect(landingAt(boxes, 3, 240)).toBe(2)
     expect(landing(boxes, 3, -60)).toBe(2)
+    expect(landingAt(boxes, 3, 330)).toBe(3)
+    expect(landingAt(boxes, 3, 240)).toBe(2)
   })
 
   it('does not go past either end of the row', () => {
