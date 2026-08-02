@@ -283,6 +283,60 @@ describe('the sidebar', () => {
     expect(titles.slice(0, 2)).toEqual(['one', 'two'])
   })
 
+  it('takes a name of your own for a project, from the row it stands on', async () => {
+    render(Sidebar())
+    fireEvent.contextMenu(screen.getByText('one'))
+    fireEvent.click(await screen.findByRole('button', { name: 'Rename' }))
+    fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Wallet' } })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Rename' }))
+    })
+
+    expect(screen.getByText('Wallet')).toBeTruthy()
+    expect(screen.queryByText('one')).toBeNull()
+  })
+
+  it('keeps that name after the list is read again, and gives it back when it is blanked', async () => {
+    render(Sidebar())
+    fireEvent.contextMenu(screen.getByText('one'))
+    fireEvent.click(await screen.findByRole('button', { name: 'Rename' }))
+    fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Wallet' } })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Rename' }))
+    })
+
+    await act(async () => {
+      await usePlaces.getState().load()
+    })
+    expect(usePlaces.getState().places.map(place => place.title)).toEqual(['Wallet', 'two'])
+
+    fireEvent.contextMenu(screen.getByText('Wallet'))
+    fireEvent.click(await screen.findByRole('button', { name: 'Rename' }))
+    fireEvent.change(screen.getByLabelText('Name'), { target: { value: '  ' } })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Rename' }))
+    })
+
+    expect(screen.getByText('one')).toBeTruthy()
+    expect(usePlaces.getState().places[0]?.nickname).toBe(null)
+  })
+
+  it('opens that card on the name already standing, so it is edited rather than typed again', async () => {
+    render(Sidebar())
+    fireEvent.contextMenu(screen.getByText('one'))
+    fireEvent.click(await screen.findByRole('button', { name: 'Rename' }))
+    expect((screen.getByLabelText('Name') as HTMLInputElement).value).toBe('')
+    expect((screen.getByLabelText('Name') as HTMLInputElement).placeholder).toBe('one')
+    fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Wallet' } })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Rename' }))
+    })
+
+    fireEvent.contextMenu(screen.getByText('Wallet'))
+    fireEvent.click(await screen.findByRole('button', { name: 'Rename' }))
+    expect((screen.getByLabelText('Name') as HTMLInputElement).value).toBe('Wallet')
+  })
+
   it('draws folders for local projects and a globe for remote projects', () => {
     const local = usePlaces.getState().places[0]!
     const privateLocal = { ...local, project: { ...local.project!, home: 'private' as const } }
