@@ -136,6 +136,10 @@ describe('plan mode', () => {
     sam.chat('rename the tabs', [], undefined, ['plan'])
     const asked = (await sam.waitFor(m => m.type === 'notice')) as Notice
     expect(asked.text).toContain('Mention an agent')
+    // Nothing happened, so the words are the window's to put back. The chat has
+    // no id of its own, which is what an absent `where` says.
+    expect(asked.unsent).toBe(true)
+    expect(asked.where).toBeUndefined()
     await new Promise(r => setTimeout(r, 200))
     expect(sam.events.filter(e => e.kind === 'thread.started').length).toBe(1)
     expect(sam.events.some(e => e.kind === 'message' && e.authorId === 'crew')).toBe(false)
