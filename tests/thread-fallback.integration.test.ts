@@ -218,6 +218,10 @@ describe('a fallback agent', () => {
     sam.chat('@Flaky', [flaky], thread.threadId, ['fallback'])
     const notice = (await sam.waitFor(msg => msg.type === 'notice')) as Notice
     expect(notice.text).toBe('This thread is already on them. Mention somebody else to take over.')
+    // The message never happened, so it goes back in the composer it was typed
+    // in, which is this thread's.
+    expect(notice.unsent).toBe(true)
+    expect(notice.where).toBe(thread.threadId)
     await settle()
     expect(pat.messages.some(m => m.type === 'notice')).toBe(false)
     expect(sam.events.some(e => e.kind === 'thread.fallback')).toBe(false)
