@@ -76,12 +76,14 @@ try {
     .join('\n')
 
   const missing = []
+  if (prompt.length <= 4000) missing.push('the prompt is short enough that this check never tries the case that broke')
   if (/limited to \d+ characters/i.test(said)) missing.push('the CLI read the whole prompt as the condition and refused it')
-  if (!/goal/i.test(said)) missing.push('nothing in the run mentions a goal, so the condition never landed')
-  if (!notes.includes('third')) missing.push('the file was never really changed')
+  if (!notes.includes('third')) missing.push('what the prompt asked for never happened')
+  if (!notes.includes('fourth')) missing.push('the run stopped without meeting the condition, so the goal never landed')
 
   console.log(`\nprompt:    ${prompt.length} characters`)
-  console.log(`condition: ${ASK.length} characters`)
+  console.log(`condition: ${CONDITION.length} characters`)
+  console.log(`notes.txt: ${JSON.stringify(notes)}`)
   console.log(`answer:    ${(result.text ?? '').trim().slice(0, 200)}`)
 
   if (missing.length) {
