@@ -105,6 +105,19 @@ describe('goal runs', () => {
     expect(condition).not.toContain('/agents/spawn')
   })
 
+  it('sets the goal as a message of its own, so the prompt is never read as the condition', () => {
+    const said = 'finish the migration'
+    const prompt = `You are an agent here.\n\n${said}\n\n${'curl -s -X POST /agents/spawn '.repeat(200)}`
+    const lines = claudeDialog(prompt, said)
+      .begin()
+      .map(line => JSON.parse(line).message.content[0].text)
+
+    expect(lines).toEqual([`/goal ${said}`, prompt])
+    expect(lines[0].length).toBeLessThanOrEqual(GOAL_LIMIT)
+    expect(prompt.length).toBeGreaterThan(GOAL_LIMIT)
+    expect(claudeDialog(prompt).begin()).toHaveLength(1)
+  })
+
   it('cuts a condition longer than the CLI will take, and keeps the whole ask in the prompt', () => {
     const said = `${'work '.repeat(1200)}and stop`
     const condition = goalCondition(said)
