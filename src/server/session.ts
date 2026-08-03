@@ -1493,7 +1493,7 @@ export class CrewSession {
     attachments: Attachment[]
   ): void {
     if (!text) {
-      this.notice('Ask a question to go with it.', ws)
+      this.refuse('Ask a question to go with it.', ws, parent.id)
       return
     }
     // A ghost only ever runs on your own machine, so a thread somebody else's
