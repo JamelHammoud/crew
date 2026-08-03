@@ -1070,6 +1070,7 @@ export const useCrew = create<CrewState>((set, get) => {
       // The same thing said twice is one row said again rather than a second
       // one under the first.
       case 'notice':
+        if (msg.unsent) putBack(msg.where ?? CHAT_KEY)
         toast(msg.text, { key: `notice:${msg.text}` })
         break
     }
