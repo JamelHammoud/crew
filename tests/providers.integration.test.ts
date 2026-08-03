@@ -123,11 +123,19 @@ describe('fake provider contract', () => {
         '-e',
         'let body = ""; process.stdin.setEncoding("utf8"); process.stdin.on("data", chunk => body += chunk); process.stdin.on("end", () => process.stdout.write(body))'
       ],
-      stdinPrompt: true,
-      goalCommand: true
+      stdinPrompt: true
     })
-    const run = provider.start('finish the migration', repo, { onStep: () => {} }, {}, { goal: true })
-    await expect(run.done).resolves.toEqual({ text: '/goal finish the migration' })
+    const run = provider.start(
+      'You are an agent here.\n\nfinish the migration',
+      repo,
+      { onStep: () => {} },
+      {},
+      { goal: 'finish the migration' }
+    )
+    const { text } = await run.done
+    expect(text).toContain('Keep working until this is done')
+    expect(text).toContain('finish the migration')
+    expect(text).toContain('You are an agent here.')
   })
 
   it('kill stops the run and rejects with Stopped', async () => {
