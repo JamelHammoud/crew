@@ -232,18 +232,22 @@ describe('a local agent', () => {
     await expect(started.done).rejects.toThrow(/Nothing answered at/)
   })
 
-  it('plans without changing anything when it is asked to', async () => {
+  it('keeps going toward the goal it was given, with the whole ask still in front of it', async () => {
     await stand([[say('Here is how.'), end()]])
     const steps: RunStep[] = []
     const started = localProvider.start(
-      'ship the thing',
+      'You are an agent here.\n\nship the thing',
       cwd,
       { onStep: step => steps.push(step) },
       { address: fake!.url, model: 'thinker:8b' },
-      { goal: true }
+      { goal: 'ship the thing' }
     )
     await started.done
-    expect(fake!.asked[0].messages[1].content).toMatch(/change nothing/i)
+    const asked = String(fake!.asked[0].messages[1].content)
+    expect(asked).toMatch(/keep working until/i)
+    expect(asked).toContain('ship the thing')
+    expect(asked).toContain('You are an agent here.')
+    expect(asked).not.toMatch(/change nothing/i)
   })
 })
 
