@@ -32,7 +32,12 @@ describe('the codex handshake', () => {
   })
 
   it('sets a goal before starting its turn', () => {
-    const dialog = codexDialog('finish the migration', '/repo', reader(), { goal: true })
+    const dialog = codexDialog(
+      'You are an agent here.\n\nfinish the migration\n\ncurl -s -X POST http://127.0.0.1:1/agents/spawn',
+      '/repo',
+      reader(),
+      { goal: 'finish the migration' }
+    )
     const sent = [...dialog.begin()]
     sent.push(...dialog.answer(reply(1, { userAgent: 'crew' })))
     sent.push(...dialog.answer(reply(2, { thread: { id: 'thread-1' } })))
