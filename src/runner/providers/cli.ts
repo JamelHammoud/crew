@@ -110,7 +110,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       const dialog = opts.dialog?.(body, cwd, read, run)
       const made = opts.makeParser?.()
       const parse = made?.parse ?? opts.parser
-      const invocation = commandInvocation(resolveCommand(opts.command) ?? opts.command, opts.args(body, read, options))
+      const invocation = commandInvocation(resolveCommand(opts.command) ?? opts.command, opts.args(body, read, run))
       const child = spawn(invocation.command, invocation.args, {
         cwd,
         env: { ...process.env, PATH: crewPath(), ...opts.env },
