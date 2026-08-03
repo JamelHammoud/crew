@@ -1536,7 +1536,7 @@ export class CrewSession {
     )
     const agent = this.agents.get(named[0] ?? '') ?? this.agents.get(parent.agentId)
     if (!agent) {
-      this.notice('Mention an agent with @ to say who should take it.', ws)
+      this.refuse('Mention an agent with @ to say who should take it.', ws, parent.id)
       return
     }
     this.startThread(member, agent, text, attachments, {
