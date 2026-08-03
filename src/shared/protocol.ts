@@ -275,6 +275,9 @@ export type ServerMessage =
   | { type: 'cancel'; promptId: string }
   | { type: 'ping' }
   // A word to the one person it is about, and nothing anybody has to scroll past
-  // later: it is never written down and never reaches anyone else.
-  | { type: 'notice'; text: string }
+  // later: it is never written down and never reaches anyone else. `unsent` says
+  // the message it is about never happened, so what was typed goes back in the
+  // box it was typed in, which `where` names the way typing does: a thread's id
+  // or a board's id, and absent for the chat itself.
+  | { type: 'notice'; text: string; unsent?: true; where?: string }
   | { type: 'error'; message: string }
