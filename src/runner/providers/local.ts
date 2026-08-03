@@ -74,7 +74,7 @@ export const localProvider: Provider = {
   start: (prompt, cwd, hooks, settings = {}, options = {}): RunningPrompt => {
     const resolved = resolveSettings(localFields(), settings)
     const sink = makeSink(cwd, hooks)
-    const body = options.goal ? `${prompt}\n\n${PLAN_BRIEF}` : prompt
+    const body = options.goal ? `${goalBrief(goalCondition(options.goal))}\n\n${prompt}` : prompt
     const early: string[] = []
     let run: LocalRun | null = null
     let stopped = false

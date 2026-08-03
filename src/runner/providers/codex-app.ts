@@ -58,7 +58,7 @@ export function codexDialog(prompt: string, cwd: string, get: SettingReader, opt
   const startGoal = () =>
     ask('goal', 'thread/goal/set', {
       threadId,
-      objective: prompt,
+      objective: options.goal ?? prompt,
       status: 'active'
     })
 
