@@ -197,8 +197,8 @@ export const claudeArgs = (_prompt: string, get: SettingReader): string[] => [
 const userMessage = (text: string): string =>
   JSON.stringify({ type: 'user', message: { role: 'user', content: [{ type: 'text', text }] } })
 
-export const claudeDialog = (prompt: string): Dialog => ({
-  begin: () => [userMessage(prompt)],
+export const claudeDialog = (prompt: string, goal?: string): Dialog => ({
+  begin: () => (goal ? [userMessage(`/goal ${goal}`), userMessage(prompt)] : [userMessage(prompt)]),
   answer: () => [],
   steer: text => userMessage(text)
 })
