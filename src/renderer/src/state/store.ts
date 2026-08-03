@@ -538,6 +538,17 @@ let threadsWanted: string[] = []
 // come back up is one nothing has been read out of yet.
 let threadsRead = new Set<string>()
 
+// What a composer sent and has not been refused for. A message the host would
+// not take is a message that never happened, so the words, the chip and the
+// files are kept until it is either taken or handed back.
+interface HeldSend {
+  text: string
+  commands: CommandName[]
+  attachments: PendingAttachment[]
+}
+
+const heldSends = new Map<string, HeldSend>()
+
 export const useCrew = create<CrewState>((set, get) => {
   const stepBuffer = makeStepBuffer(deltas => {
     set(state => {
