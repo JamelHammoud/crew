@@ -133,7 +133,7 @@ describe('fake provider contract', () => {
       { goal: 'finish the migration' }
     )
     const { text } = await run.done
-    expect(text).toContain('Keep working until this is done')
+    expect(text).toContain('Keep working until it is met')
     expect(text).toContain('finish the migration')
     expect(text).toContain('You are an agent here.')
   })

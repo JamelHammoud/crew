@@ -9,5 +9,5 @@ export function goalCondition(text: string): string {
 }
 
 export function goalBrief(condition: string): string {
-  return `Keep working until this is done, and do not stop before it is: ${condition}\n\nDecide what to do next yourself rather than stopping to ask.`
+  return `Your goal: ${condition}\n\nKeep working until it is met. Decide what to do next yourself rather than stopping to ask.`
 }
