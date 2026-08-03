@@ -1325,7 +1325,7 @@ export class CrewSession {
     const id = named[0]
     if (!id) {
       if (mentions.length > 0) {
-        this.notice('Mention an agent with @ to say who takes over.', ws)
+        this.refuse('Mention an agent with @ to say who takes over.', ws, thread.id)
         return
       }
       if (thread.fallbackId === undefined) return
