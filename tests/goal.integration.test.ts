@@ -21,7 +21,8 @@ describe('goal runs', () => {
   })
 
   it('starts a fresh goal run from chat or a live thread', async () => {
-    const goals: boolean[] = []
+    const goals: (string | undefined)[] = []
+    const prompts: string[] = []
     let steers = 0
     const provider: Provider = {
       name: 'watcher',
@@ -29,8 +30,9 @@ describe('goal runs', () => {
       steerable: true,
       fields: () => [],
       detect: async () => true,
-      start: (_prompt, _cwd, _hooks, _settings, options) => {
-        goals.push(options?.goal === true)
+      start: (prompt, _cwd, _hooks, _settings, options) => {
+        prompts.push(prompt)
+        goals.push(options?.goal)
         return {
           done: new Promise(resolve => setTimeout(() => resolve({ text: 'done' }), 180)),
           kill: () => {},
