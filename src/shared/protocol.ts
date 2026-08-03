@@ -257,7 +257,9 @@ export type ServerMessage =
       // about one for the same reason: the board is reached over http, and only
       // that side knows the address.
       tickets?: boolean
-      goal?: boolean
+      // What the person wrote, on its own. It is the condition a goal run is
+      // held to, so it carries none of the prompt built around it.
+      goal?: string
       memories?: CrewMemory[]
     }
   | {
