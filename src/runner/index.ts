@@ -432,7 +432,7 @@ export class Runner {
     settings: AgentSettings,
     attachments: Attachment[],
     ghost = false,
-    goal = false
+    goal?: string
   ): Promise<void> {
     await this.opts.onBeforeRun?.().catch(() => {})
     const local = await this.attachments.ensure(attachments, this.httpBase, ghost ? promptId : undefined)
