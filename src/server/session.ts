@@ -1342,11 +1342,11 @@ export class CrewSession {
     // A hidden thread only ever goes to an agent of your own, so the one that
     // would take it over is held to the same rule as the one on it now.
     if (hidden && !this.ownAgent(member, id)) {
-      this.notice("That agent runs on somebody else's machine. Mention one of your own.", ws)
+      this.refuse("That agent runs on somebody else's machine. Mention one of your own.", ws, thread.id)
       return
     }
     if (id === thread.agentId) {
-      this.notice('This thread is already on them. Mention somebody else to take over.', ws)
+      this.refuse('This thread is already on them. Mention somebody else to take over.', ws, thread.id)
       return
     }
     const agent = this.agents.get(id)!
