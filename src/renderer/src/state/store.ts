@@ -1288,7 +1288,12 @@ export const useCrew = create<CrewState>((set, get) => {
     },
     sendChat: (text, threadId, boardId, replyTo, aimedAt, commands) => {
       const key = threadId ?? boardId ?? CHAT_KEY
-      const attachments = (get().pending[key] ?? []).map(({ name, mime, data }) => ({ name, mime, data }))
+      const carried = get().pending[key] ?? []
+      const attachments = carried.map(({ name, mime, data }) => ({ name, mime, data }))
+      // The box is emptied on the way out rather than once the host has taken
+      // it, so what was in it is held here until a refusal arrives or nothing
+      // does.
+      heldSends.set(key, { text, commands: commands ?? [], attachments: carried })
       // A message typed in a composer says who it is for by naming them. One
       // sent from a control that already knows the agent says so by id, so it
       // cannot be lost to a rename, a duplicate name or a fumbled spelling.
