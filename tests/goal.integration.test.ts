@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { Runner } from '../src/runner'
+import { claudeDialog } from '../src/runner/providers/claude'
 import type { Provider } from '../src/runner/providers/types'
 import { GOAL_LIMIT, goalBrief, goalCondition } from '../src/shared/goal'
 import { agentId } from '../src/shared/llm'
