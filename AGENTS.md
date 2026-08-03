@@ -16,6 +16,7 @@ Pool LLMs with friends. Open a project and you are in, share it when you want so
 - `yarn preview-check` — stand a page up in a real window and see what it reached
 - `yarn codex-check` — run a real Codex turn and read what came back off it
 - `yarn kimi-check` — run a real Kimi turn and read what came back off it
+- `yarn goal-check` — run a real goal turn and see whether the condition really held it open
 - `yarn dist` — build a mac dmg
 - `crew` opens a crew on a folder from a terminal. It ships inside the app, and the This computer page in the settings puts it on PATH. `npm link` in this checkout does the same from here
 
