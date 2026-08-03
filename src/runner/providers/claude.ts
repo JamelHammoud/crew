@@ -212,7 +212,7 @@ export const claudeProvider: Provider = makeCliProvider({
   fields: claudeFields,
   args: claudeArgs,
   parser: parseClaudeLine,
-  dialog: prompt => claudeDialog(prompt),
+  dialog: (prompt, _cwd, _get, run) => claudeDialog(prompt, run.goal),
   goalCommand: true,
   usage: claudeUsage,
   install: { darwin: INSTALL_SH, linux: INSTALL_SH, win32: 'irm https://claude.ai/install.ps1 | iex' }
