@@ -88,6 +88,7 @@ import {
   type CrewMemory
 } from '../shared/memory'
 import { cleanCommands, type CommandName } from '../shared/commands'
+import { goalCondition } from '../shared/goal'
 import { IMPLEMENT_PROMPT, PLAN_INSTRUCTIONS } from '../shared/plan'
 import {
   ASK_LIMIT,
