@@ -309,7 +309,7 @@ export class Runner {
           msg.spawnRoom ?? 0,
           msg.spawnProviders ?? [],
           msg.tickets === true,
-          msg.goal === true,
+          msg.goal,
           msg.memories
         )
         break
@@ -393,7 +393,7 @@ export class Runner {
     spawnRoom = 0,
     spawnProviders: string[] = [],
     tickets = false,
-    goal = false,
+    goal?: string,
     memories?: CrewMemory[]
   ): void {
     const agent = this.agents.get(forAgentId)
