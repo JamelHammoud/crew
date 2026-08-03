@@ -106,6 +106,7 @@
     "scribe-caret-check": "node scripts/scribe-caret-check.mjs",
     "preview-check": "node scripts/preview-check.mjs",
     "codex-check": "node scripts/codex-check.mjs",
+    "goal-check": "node scripts/goal-check.mjs",
     "kimi-check": "node scripts/kimi-check.mjs",
     "local-check": "node scripts/local-check.mjs",
     "dist": "electron-vite build && electron-builder",
