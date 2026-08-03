@@ -90,7 +90,7 @@ try {
     console.error(`\n${missing.join('\n')}`)
     process.exit(1)
   }
-  console.log('\nthe goal was set from what the person wrote, the run did the work, off the real CLI')
+  console.log('\nthe condition landed as a live goal beside a prompt well past the limit, off the real CLI')
 } catch (error) {
   console.error(`the run fell over: ${error.message}`)
   process.exit(1)
