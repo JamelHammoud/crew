@@ -60,7 +60,7 @@ describe('goal runs', () => {
     )
     if (goalStart.kind !== 'agent.start') throw new Error('The goal run did not start.')
     await ui.waitForEvent(event => event.kind === 'agent.end' && event.promptId === goalStart.promptId)
-    expect(goals).toEqual([false, true])
+    expect(goals).toEqual([undefined, 'finish the migration'])
     expect(steers).toBe(0)
 
     ui.chat('verify it @Watcher', [watcher], undefined, ['goal'])
@@ -69,6 +69,47 @@ describe('goal runs', () => {
     )
     if (chatGoal.kind !== 'agent.start') throw new Error('The chat goal did not start.')
     await ui.waitForEvent(event => event.kind === 'agent.end' && event.promptId === chatGoal.promptId)
-    expect(goals).toEqual([false, true, true])
+    expect(goals).toEqual([undefined, 'finish the migration', 'verify it @Watcher'])
+  })
+
+  it('holds the goal to what the person wrote, whatever the prompt around it grew to', async () => {
+    let condition = ''
+    let prompt = ''
+    const provider: Provider = {
+      name: 'watcher',
+      label: 'Watcher',
+      steerable: true,
+      fields: () => [],
+      detect: async () => true,
+      start: (text, _cwd, _hooks, _settings, options) => {
+        prompt = text
+        condition = options?.goal ?? ''
+        return { done: Promise.resolve({ text: 'done' }), kill: () => {} }
+      }
+    }
+    ui = await TestUi.connect(host.url, 'sam', host.code)
+    runner = testRunner({ name: 'sam', code: host.code, repoPath: host.repoPath, providers: [provider] })
+    runner.connect(host.url)
+    await ui.waitForEvent(event => event.kind === 'agent.online')
+
+    const said = 'finish the migration and leave the tests green'
+    ui.chat(`${said} @Watcher`, [agentId('sam', 'watcher')], undefined, ['goal'])
+    const start = await ui.waitForEvent(event => event.kind === 'agent.start')
+    if (start.kind !== 'agent.start') throw new Error('The goal run did not start.')
+    await ui.waitForEvent(event => event.kind === 'agent.end' && event.promptId === start.promptId)
+
+    expect(condition).toBe(`${said} @Watcher`)
+    expect(condition.length).toBeLessThanOrEqual(GOAL_LIMIT)
+    expect(prompt.length).toBeGreaterThan(condition.length)
+    expect(condition).not.toContain('/agents/spawn')
+  })
+
+  it('cuts a condition longer than the CLI will take, and keeps the whole ask in the prompt', () => {
+    const said = `${'work '.repeat(1200)}and stop`
+    const condition = goalCondition(said)
+    expect(said.length).toBeGreaterThan(GOAL_LIMIT)
+    expect(condition.length).toBeLessThanOrEqual(GOAL_LIMIT)
+    expect(condition.endsWith(' ')).toBe(false)
+    expect(goalBrief(condition)).toContain(condition)
   })
 })
