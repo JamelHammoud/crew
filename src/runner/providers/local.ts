@@ -1,3 +1,4 @@
+import { goalBrief, goalCondition } from '../../shared/goal'
 import { resolveSettings, type AgentSettingField } from '../../shared/llm'
 import { commandExists } from './cli'
 import { startLoop, type LocalRun } from './local-loop'
@@ -13,9 +14,6 @@ const CONTEXT_SIZES: Array<[string, string]> = [
   ['32768', '32K'],
   ['65536', '64K']
 ]
-
-const PLAN_BRIEF =
-  'Work out how you would do this and say so. Read whatever you need to read, and change nothing: no Write, no Edit, no command that writes.'
 
 export const localFields = (): AgentSettingField[] => {
   const runtimes = cachedRuntimes()
