@@ -8,6 +8,7 @@ const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
 
 const ASK = 'Add a line saying "third" to the end of notes.txt, then reply with the single word Done.'
+const CONDITION = 'notes.txt ends with a line saying "fourth"'
 
 async function bundled(dir, from, name) {
   const file = path.join(dir, name)
@@ -64,7 +65,7 @@ try {
       onTokens: () => {}
     },
     {},
-    { goal: ASK }
+    { goal: CONDITION }
   )
 
   const result = await run.done
