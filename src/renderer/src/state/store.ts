@@ -812,6 +812,31 @@ export const useCrew = create<CrewState>((set, get) => {
     })
   }
 
+  // A send the host refused puts the words, the chip and the files back in the
+  // composer they were typed in. Only into one nothing has been put in since:
+  // what somebody is writing now beats what is being handed back.
+  const putBack = (key: string) => {
+    const held = heldSends.get(key)
+    if (!held) return
+    heldSends.delete(key)
+    const state = get()
+    const draft = key === CHAT_KEY ? state.chatDraft : (state.threadDrafts[key] ?? '')
+    if (draft || (state.pending[key] ?? []).length > 0) return
+    set(current =>
+      key === CHAT_KEY
+        ? {
+            chatDraft: held.text,
+            chatCommands: held.commands,
+            pending: { ...current.pending, [key]: held.attachments }
+          }
+        : {
+            threadDrafts: { ...current.threadDrafts, [key]: held.text },
+            threadCommands: { ...current.threadCommands, [key]: held.commands },
+            pending: { ...current.pending, [key]: held.attachments }
+          }
+    )
+  }
+
   const handleMessage = (msg: ServerMessage) => {
     switch (msg.type) {
       case 'welcome': {
