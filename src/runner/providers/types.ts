@@ -75,7 +75,7 @@ export interface RunHooks {
 }
 
 export interface RunOptions {
-  goal?: boolean
+  goal?: string
 }
 
 export interface RunningPrompt {
