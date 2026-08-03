@@ -1257,15 +1257,15 @@ export class CrewSession {
         return
       }
       if (ghosting) {
-        this.notice('No agent of yours is here to take it.', ws)
+        this.refuse('No agent of yours is here to take it.', ws, boardId)
         return
       }
       if (planning) {
-        this.notice('Mention an agent with @ to say who should write the plan.', ws)
+        this.refuse('Mention an agent with @ to say who should write the plan.', ws, boardId)
         return
       }
       if (goal) {
-        this.notice('Mention an agent with @ to say who should take this.', ws)
+        this.refuse('Mention an agent with @ to say who should take this.', ws, boardId)
         return
       }
       this.emit({
