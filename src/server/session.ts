@@ -3924,7 +3924,7 @@ export class CrewSession {
       spawnRoom: canSend ? room : 0,
       spawnProviders: canSend ? this.spawnProviders() : undefined,
       tickets: thread.tickets,
-      goal: entry.goal,
+      goal: entry.goal ? goalCondition(entry.text) || undefined : undefined,
       memories: this.memoryEnabled ? [...this.memories.values()] : undefined
     }
   }
