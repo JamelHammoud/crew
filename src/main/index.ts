@@ -486,7 +486,7 @@ app.whenReady().then(() => {
     return asked
   })
   ipcMain.handle('folder:pick', async () => {
-    const result = await dialog.showOpenDialog({ properties: ['openDirectory'] })
+    const result = await dialog.showOpenDialog({ properties: ['openDirectory', 'createDirectory'] })
     return result.canceled ? null : result.filePaths[0]
   })
   ipcMain.handle('repo:clone', async (_event, remote: string) => {
