@@ -1505,7 +1505,7 @@ export class CrewSession {
       (this.ownAgent(member, parent.agentId) ? this.agents.get(parent.agentId) : undefined) ??
       mine[0]
     if (!agent) {
-      this.notice('No agent of yours is here to take it.', ws)
+      this.refuse('No agent of yours is here to take it.', ws, parent.id)
       return
     }
     this.startThread(member, agent, text, attachments, { ghost: ws, aside: parent.id })
@@ -1527,7 +1527,7 @@ export class CrewSession {
     forkId?: string
   ): void {
     if (!text) {
-      this.notice('Say what to carry on with.', ws)
+      this.refuse('Say what to carry on with.', ws, parent.id)
       return
     }
     const ghost = this.ghostOf(parent.id)?.ws
