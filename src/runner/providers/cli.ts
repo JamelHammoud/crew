@@ -103,8 +103,10 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
     start: (prompt, cwd, hooks, settings = {}, options = {}): RunningPrompt => {
       const resolved = resolveSettings(fields(), settings)
       const read: SettingReader = key => resolved[key] ?? ''
-      const body = options.goal && opts.goalCommand ? `/goal ${prompt}` : prompt
-      const dialog = opts.dialog?.(body, cwd, read, options)
+      const condition = options.goal ? goalCondition(options.goal) : ''
+      const run: RunOptions = { ...options, goal: condition || undefined }
+      const body = condition && !opts.goalCommand ? `${goalBrief(condition)}\n\n${prompt}` : prompt
+      const dialog = opts.dialog?.(body, cwd, read, run)
       const made = opts.makeParser?.()
       const parse = made?.parse ?? opts.parser
       const invocation = commandInvocation(resolveCommand(opts.command) ?? opts.command, opts.args(body, read, options))
