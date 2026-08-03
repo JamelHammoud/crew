@@ -56,7 +56,9 @@ describe('the codex handshake', () => {
       objective: 'finish the migration',
       status: 'active'
     })
-    expect(messages[4].params.input).toEqual([{ type: 'text', text: 'finish the migration' }])
+    expect(messages[4].params.input).toEqual([
+      { type: 'text', text: 'You are an agent here.\n\nfinish the migration\n\ncurl -s -X POST http://127.0.0.1:1/agents/spawn' }
+    ])
   })
 
   it('steers the live turn and holds the message back once the turn is over', () => {
