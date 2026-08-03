@@ -1,6 +1,7 @@
 import { spawn } from 'node:child_process'
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
+import { goalBrief, goalCondition } from '../../shared/goal'
 import { resolveSettings, type AgentSettingField, type AgentSettingOption, type AgentUsage } from '../../shared/llm'
 import { exitReason, failureText } from './failure'
 import { crewPath, resolveCommand } from './path'
