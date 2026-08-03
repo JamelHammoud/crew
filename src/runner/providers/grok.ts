@@ -96,6 +96,5 @@ export const grokProvider: Provider = makeCliProvider({
   fields: grokFields,
   args: grokArgs,
   parser: parseGrokLine,
-  goalCommand: true,
   install: { darwin: INSTALL_SH, linux: INSTALL_SH, win32: 'irm https://x.ai/cli/install.ps1 | iex' }
 })
