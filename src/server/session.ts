@@ -4542,6 +4542,13 @@ export class CrewSession {
     this.send(to, { type: 'notice', text })
   }
 
+  // A message the host would not take is a message that never happened, so the
+  // words go back in the box they were typed in rather than being spent on a
+  // refusal. `where` is that box, the way typing names one.
+  private refuse(text: string, to: WebSocket, where?: string): void {
+    this.send(to, { type: 'notice', text, unsent: true, where })
+  }
+
   private systemMessage(text: string, threadId?: string, to?: WebSocket): void {
     this.emit(
       {
