@@ -114,7 +114,7 @@ describe('fake provider contract', () => {
     await expect(run.done).resolves.toEqual({ text: prompt })
   })
 
-  it('hands native slash-command providers a goal prompt', async () => {
+  it('says the goal in words to a CLI that has no command for one', async () => {
     const provider = makeCliProvider({
       name: 'goal',
       label: 'Goal',
