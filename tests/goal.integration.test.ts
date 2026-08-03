@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { Runner } from '../src/runner'
 import type { Provider } from '../src/runner/providers/types'
+import { GOAL_LIMIT, goalBrief, goalCondition } from '../src/shared/goal'
 import { agentId } from '../src/shared/llm'
 import { startHost, TestUi, type TestHost } from './helpers/session'
 import { testRunner } from './helpers/runner'
