@@ -266,7 +266,8 @@ export class Crews {
     const session = new AppSession({
       agents: this.agentsPath ?? undefined,
       session: this.sessionPath ?? undefined,
-      projects: this.projectsPath ?? undefined
+      projects: this.projectsPath ?? undefined,
+      doors: this.doors
     })
     session.onTrouble = message => this.onTrouble(message)
     session.onThreadsChanged = () => this.onLive(this.places())
