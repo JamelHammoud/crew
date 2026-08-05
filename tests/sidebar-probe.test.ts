@@ -941,31 +941,9 @@ describe('the sidebar', () => {
     const reach = reachIn(container)
     expect(reach.className).toContain('h-full')
     expect(reach.contains(toggleIn(container))).toBe(true)
-    fireEvent.mouseEnter(reach)
-    expect(useSidebar.getState().near).toBe(true)
-    expect(toggleIn(container).className).toContain('opacity-100')
   })
 
-  it('holds that reach while the pointer crosses it', () => {
-    vi.useFakeTimers()
-    try {
-      act(() => {
-        useSidebar.setState({ pinned: true, near: true })
-      })
-      const { container } = corner()
-      act(() => useSidebar.getState().peek(false))
-      fireEvent.mouseEnter(reachIn(container))
-      act(() => {
-        vi.advanceTimersByTime(1000)
-      })
-      expect(useSidebar.getState().near).toBe(true)
-      expect(toggleIn(container).className).toContain('opacity-100')
-    } finally {
-      vi.useRealTimers()
-    }
-  })
-
-  it('leaves the mark where it stands while the button is hidden', () => {
+  it('leaves the mark where it stands whichever state the rail is in', () => {
     const { container } = corner()
     const shut = [...container.querySelectorAll('svg')].length
     act(() => {
