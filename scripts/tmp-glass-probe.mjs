@@ -19,7 +19,7 @@ const PAGE = `<!doctype html>
       <div style="flex:1;background:linear-gradient(to right,#000 0 200px,#fff 200px 100%)"></div>
     </div>
   </div>
-  <div id="overRail" class="glass fixed rounded-2xl" style="left:100px;top:60px;width:200px;height:120px"></div>
+  <div id="overRail" class="glass app-no-drag fixed z-[70] rounded-2xl animate-pop overscroll-contain p-1.5 min-w-44" style="left:100px;top:60px;width:200px;height:120px;max-height:384px;overflow-y:auto;overflow-x:hidden"></div>
   <div id="overPlain" class="glass fixed rounded-2xl" style="left:520px;top:60px;width:200px;height:120px"></div>
 </body></html>`
 
@@ -47,11 +47,14 @@ app.whenReady().then(async () => {
     await win.webContents.executeJavaScript("document.getElementById('root').classList.add('railed')")
     await wait(400)
     const railed = await read()
-    await win.webContents.executeJavaScript("for (const id of ['overRail','overPlain']) document.getElementById(id).style.backdropFilter = 'none'")
+    await win.webContents.executeJavaScript("document.getElementById('overRail').style.overflow = 'visible'")
     await wait(500)
-    const cardsUnblurred = await read()
+    const noScroller = await read()
+    await win.webContents.executeJavaScript("document.getElementById('overRail').style.animation = 'none'")
+    await wait(500)
+    const noPop = await read()
     const where = await win.webContents.executeJavaScript("JSON.stringify(['overRail','overPlain'].map(id => { const r = document.getElementById(id).getBoundingClientRect(); return [r.left, r.top, r.width, r.height] }))")
-    console.log('SEEN ' + JSON.stringify({ normal, cardsUnblurred, where: JSON.parse(where) }))
+    console.log('SEEN ' + JSON.stringify({ realPopover: normal, noScroller, noPop, where: JSON.parse(where) }))
   } catch (e) { console.log('SEEN ' + JSON.stringify({ failed: String(e && e.message) })) }
   app.exit(0)
 })`
