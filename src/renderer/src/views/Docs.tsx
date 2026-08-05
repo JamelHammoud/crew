@@ -8,11 +8,15 @@ import {
   slugify,
   splitPageCode
 } from '../../../shared/docs'
+import { docInset, docLeft, PAGE_LIST_W, trailInset } from '../components/doc/docsLayout'
 import DocEditor, { type DocEditorHandle } from '../components/DocEditor'
 import FindBar from '../components/FindBar'
+import HeaderSlot from '../components/HeaderSlot'
 import { MenuItem, Popover } from '../components/Popover'
 import Tooltip from '../components/Tooltip'
 import { ChevronRightGlyph, DocGlyph, PlusGlyph, TrashGlyph } from '../icons'
+import { cornerRoom, useHeaderSlot } from '../state/headerSlot'
+import { SIDEBAR_W, useSidebar } from '../state/sidebar'
 import { useCrew } from '../state/store'
 
 const COLUMN_TOP = 'var(--page-rest)'
