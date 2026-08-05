@@ -44,7 +44,8 @@ const CASES = [
   ['design lit', BAND, LIT],
   ['today scrolled', TODAY, SCROLLED],
   ['scrim scrolled', SCRIM, SCROLLED],
-  ['scrim resting', SCRIM, RESTING]
+  ['scrim resting', SCRIM, RESTING],
+  ['light lit', SCRIM, LIT]
 ]
 
 const PAGE = `<!doctype html>
@@ -165,7 +166,9 @@ try {
 
   for (const { say, rows } of seen.columns) {
     const lit = say.endsWith('lit')
-    const alpha = rows.map(v => Math.max(0, Math.min(1, (PAPER - v) / (PAPER - INK))))
+    const back = say.startsWith('light') ? INK : PAPER
+    const over = say.startsWith('light') ? PAPER : INK
+    const alpha = rows.map(v => Math.max(0, Math.min(1, (back - v) / (back - over))))
     let step = { d: 0, y: 0 }
     let kink = { d: 0, y: 0 }
     for (let y = 1; y < rows.length; y++) {
