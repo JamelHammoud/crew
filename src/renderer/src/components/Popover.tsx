@@ -11,6 +11,7 @@ import {
 } from 'react'
 import { createPortal } from 'react-dom'
 import { CheckGlyph, ChevronRightGlyph } from '../icons'
+import { useHoverMenu } from './useHoverMenu'
 
 // A popover opened from inside a popover is a sibling of it in the body rather
 // than a child, so the one underneath counts every click on it as a click
