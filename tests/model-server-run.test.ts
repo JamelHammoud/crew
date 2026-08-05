@@ -86,7 +86,7 @@ describe('a server written down by hand', () => {
   it('is asked under the path it was written with, rather than under a second one', async () => {
     fake = await fakeServer(false)
     holding([{ url: fake.url }])
-    const started = localProvider.start('hello', cwd, {}, { address: fake.url, model: 'far/model' })
+    const started = localProvider.start('hello', cwd, { onStep: () => {} }, { address: fake.url, model: 'far/model' })
     await started.done
     expect(fake.asked.map(one => one.path)).toContain('/v1/chat/completions')
     expect(fake.asked.some(one => one.path.includes('/v1/v1'))).toBe(false)
@@ -95,7 +95,7 @@ describe('a server written down by hand', () => {
   it('carries the key this machine holds, which the settings never do', async () => {
     fake = await fakeServer(true)
     holding([{ url: fake.url, key: KEY }])
-    const started = localProvider.start('hello', cwd, {}, { address: fake.url, model: 'far/model' })
+    const started = localProvider.start('hello', cwd, { onStep: () => {} }, { address: fake.url, model: 'far/model' })
     await started.done
     expect(fake.asked.every(one => one.key === KEY)).toBe(true)
   })
@@ -120,7 +120,7 @@ describe('a server written down by hand', () => {
     await fake.close()
     fake = null
     holding([{ url }])
-    const started = localProvider.start('hello', cwd, {}, { address: url, model: 'far/model' })
+    const started = localProvider.start('hello', cwd, { onStep: () => {} }, { address: url, model: 'far/model' })
     await expect(started.done).rejects.toThrow(/Nothing answered at 127\.0\.0\.1:\d+/)
     await expect(started.done).rejects.not.toThrow(/Start it/)
   })
