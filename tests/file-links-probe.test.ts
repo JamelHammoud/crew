@@ -26,6 +26,8 @@ const repo: Record<string, RepoFile> = {
     ]
   },
   src: { kind: 'dir', path: 'src', entries: [{ name: 'app.ts', dir: false }] },
+  'src/renderer': { kind: 'dir', path: 'src/renderer', entries: [{ name: 'app.tsx', dir: false }] },
+  'src/renderer/app.tsx': { kind: 'file', path: 'src/renderer/app.tsx', text: 'export const app = 1', truncated: false },
   'src/app.ts': {
     kind: 'file',
     path: 'src/app.ts',
