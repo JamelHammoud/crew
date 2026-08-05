@@ -105,9 +105,8 @@ export default function Toolbox({ open, onClose }: { open: boolean; onClose: () 
     }
   ]
 
-  const press = (run: (() => void) | undefined, panel: boolean) => {
+  const press = (run?: () => void) => {
     run?.()
-    if (panel) onChat()
     onClose()
   }
 
@@ -121,7 +120,7 @@ export default function Toolbox({ open, onClose }: { open: boolean; onClose: () 
     runTool(tool.action, answers)
     setFilling(null)
     const word = saidAfter(tool.action)
-    if (!word) return press(undefined, opensPanel(tool.action))
+    if (!word) return press()
     setSaid({ toolId: tool.id, word })
     clearTimeout(timer.current)
     timer.current = setTimeout(() => setSaid(null), SAID)
