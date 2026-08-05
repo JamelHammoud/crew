@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState, type KeyboardEvent, type RefObject } from 'react'
+import { Fragment, useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { canPreview, isImageUrl } from '../../../shared/files'
 import { gameFor } from '../../../shared/games'
 import { normalizeUrl } from '../../../shared/urls'
