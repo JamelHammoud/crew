@@ -148,7 +148,7 @@ export default function SidebarDocs({ open }: { open: boolean }) {
         open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr] pointer-events-none'
       }`}
     >
-      <div className={`min-h-0 ${open ? 'overflow-visible' : 'overflow-hidden'}`}>
+      <div className="min-h-0 overflow-hidden">
         <div {...dropProps('')} className="pt-0.5 flex flex-col gap-0.5">
           <div
             className={`rounded-xl transition-colors duration-150 ${
@@ -158,31 +158,31 @@ export default function SidebarDocs({ open }: { open: boolean }) {
             {tree.map(node => renderNode(node, 0))}
           </div>
         </div>
-      </div>
-      <Popover open={menu !== null} onClose={() => setMenu(null)} at={menu ?? undefined} align="start">
-        <MenuItem
-          icon={<PlusGlyph />}
-          label="New sub-page"
-          onClick={() => {
-            if (menu) addPage(menu.slug)
-            setMenu(null)
-          }}
-        />
-        {menu?.slug !== ROOT_PAGE && (
+        <Popover open={menu !== null} onClose={() => setMenu(null)} at={menu ?? undefined} align="start">
           <MenuItem
-            icon={<TrashGlyph />}
-            label="Delete page"
-            danger
+            icon={<PlusGlyph />}
+            label="New sub-page"
             onClick={() => {
-              if (menu) {
-                if (current === menu.slug || current.startsWith(`${menu.slug}/`)) useDocs.getState().editor?.discard()
-                deleteDoc(menu.slug)
-              }
+              if (menu) addPage(menu.slug)
               setMenu(null)
             }}
           />
-        )}
-      </Popover>
+          {menu?.slug !== ROOT_PAGE && (
+            <MenuItem
+              icon={<TrashGlyph />}
+              label="Delete page"
+              danger
+              onClick={() => {
+                if (menu) {
+                  if (current === menu.slug || current.startsWith(`${menu.slug}/`)) useDocs.getState().editor?.discard()
+                  deleteDoc(menu.slug)
+                }
+                setMenu(null)
+              }}
+            />
+          )}
+        </Popover>
+      </div>
     </div>
   )
 }
