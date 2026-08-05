@@ -113,23 +113,23 @@ const READ = \`(() => {
     return { left: Math.round(r.left), right: Math.round(r.right), top: Math.round(r.top), width: Math.round(r.width) }
   }
   const sel = q => box(document.querySelector(q))
-  const rowOf = name => box([...document.querySelectorAll('[data-look-list] button')].find(b => (b.textContent || '').trim() === name))
+  const rowOf = name => box([...document.querySelectorAll('[data-docs-list] button')].find(b => (b.textContent || '').trim() === name))
   const paint = q => {
     const el = document.querySelector(q)
     return el ? getComputedStyle(el).backgroundColor : null
   }
-  const lit = [...document.querySelectorAll('[data-look-list] [data-lit="true"]')].map(box)[0] || null
+  const litRow = document.querySelector('[data-docs-list] [aria-current="page"]')
   return {
     rail: sel('[data-look-rail]'),
-    list: sel('[data-look-list]'),
-    lit,
-    litPaint: paint('[data-look-list] [data-lit="true"]'),
+    list: sel('[data-docs-list]'),
+    lit: box(litRow && litRow.parentElement),
+    litPaint: litRow ? getComputedStyle(litRow.parentElement).backgroundColor : null,
     railPaint: paint('[data-look-rail]'),
     firstRow: rowOf('Ideas'),
     newPage: rowOf('New page'),
-    title: sel('[data-look-title]'),
+    title: sel('input[placeholder="Untitled"]'),
     body: sel('.bn-editor'),
-    trail: sel('[data-look-trail]'),
+    trail: sel('[data-docs-trail]'),
     header: sel('header.top-bar')
   }
 })()\`
