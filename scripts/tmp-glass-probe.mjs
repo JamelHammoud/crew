@@ -75,7 +75,9 @@ const seen = await new Promise((res, rej) => {
 })
 if (seen.failed) throw new Error(seen.failed)
 const ramp = v => { const lo = Math.min(...v), hi = Math.max(...v); return v.filter(n => n > lo + (hi-lo)*0.15 && n < hi - (hi-lo)*0.15).length }
+console.log('card boxes:', JSON.stringify(seen.where))
 for (const [name, o] of Object.entries(seen)) {
+  if (!o || !o.overRail) continue
   console.log(name.padEnd(14), 'overRail ramp=' + String(ramp(o.overRail)).padStart(2), ' overPlain ramp=' + String(ramp(o.overPlain)).padStart(2))
   console.log('   rail :', o.overRail.join(','))
   console.log('   plain:', o.overPlain.join(','))

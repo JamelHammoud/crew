@@ -486,7 +486,7 @@ export class CrewSession {
     this.resumeGraceMs = opts.resumeGraceMs ?? RESUME_GRACE_MS
     this.stepFlushMs = opts.stepFlushMs ?? STEP_FLUSH_MS
     const persisted = store.loadSession()
-    this.code = persisted?.code ?? randomBytes(3).toString('hex')
+    this.code = persisted?.code ?? randomBytes(CODE_BYTES).toString('hex')
     this.createdAt = persisted?.createdAt ?? Date.now()
     for (const m of persisted?.members ?? []) {
       this.members.set(m.name.toLowerCase(), { id: m.id, name: m.name, avatar: m.avatar, connections: new Set() })
