@@ -102,10 +102,11 @@ export class AppSession {
   onEvent: ((event: SessionEvent) => void) | null = null
   onThreadsChanged: (() => void) | null = null
 
-  constructor(paths: { agents?: string; session?: string; projects?: string } = {}) {
+  constructor(paths: { agents?: string; session?: string; projects?: string; doors?: Doors } = {}) {
     this.agentsPath = paths.agents ?? null
     this.sessionPath = paths.session ?? null
     this.projectsPath = paths.projects ?? null
+    this.doors = paths.doors ?? new Doors()
   }
 
   setAgentsPath(path: string): void {
