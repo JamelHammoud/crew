@@ -23,7 +23,7 @@ const tint = (body: string): number[] => {
 
 const surfaces = (): { selector: string; alpha: number }[] =>
   blocks()
-    .filter(block => /glass|sidebar-/.test(block.selector))
+    .filter(block => /glass|sidebar-/.test(block.selector) || block.body.includes('--glass-bg'))
     .flatMap(block => tint(block.body).map(alpha => ({ selector: block.selector, alpha })))
 
 const alphaOf = (selector: string): number => surfaces().find(one => one.selector === selector)?.alpha ?? 0
