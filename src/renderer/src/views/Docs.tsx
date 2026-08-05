@@ -11,12 +11,11 @@ import {
 import DocEditor, { type DocEditorHandle } from '../components/DocEditor'
 import FindBar from '../components/FindBar'
 import { MenuItem, Popover } from '../components/Popover'
-import { TOP_BAR_H } from '../components/TopBar'
 import Tooltip from '../components/Tooltip'
 import { ChevronRightGlyph, DocGlyph, PlusGlyph, TrashGlyph } from '../icons'
 import { useCrew } from '../state/store'
 
-const COLUMN_TOP = TOP_BAR_H + 40
+const COLUMN_TOP = 'var(--page-scrim)'
 const ROW = 'h-8 text-sm font-medium'
 
 interface PageNode {
