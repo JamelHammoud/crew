@@ -87,13 +87,14 @@ export default function MediaView({ path, src, video }: { path: string; src: str
     >
       {!failed && !video && (
         <div className="absolute inset-0 flex items-center justify-center p-6 pb-24">
-          <Cover
-            item={{ id: path, colors: paletteFor(path) }}
-            size={COVER}
-            playing={playing}
-            className="w-full aspect-square rounded-card"
-            style={{ maxWidth: COVER }}
-          />
+          <div className="w-full" style={{ maxWidth: COVER }}>
+            <Cover
+              item={{ id: path, colors: paletteFor(path) }}
+              size={COVER}
+              playing={playing}
+              className="w-full aspect-square rounded-card"
+            />
+          </div>
         </div>
       )}
 

@@ -12,7 +12,8 @@ import {
   writeRepoFile
 } from '../src/main/files'
 import { locatePath } from '../src/main/locate'
-import { stripRoot, stripRootFromText } from '../src/shared/files'
+import { Media } from '../src/main/media-file'
+import { mediaType, stripRoot, stripRootFromText } from '../src/shared/files'
 import { tmpDir } from './helpers/session'
 
 function makeRepo(): string {
