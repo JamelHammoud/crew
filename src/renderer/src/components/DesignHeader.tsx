@@ -18,6 +18,7 @@ export default function DesignHeader({
   const own = useHeaderSlot(s => s.own)
   const open = { left: panels.left && !!editor, right: panels.right && !!editor }
   const columns = bandColumns(open)
+  const offset = pinned ? SIDEBAR_W : 0
 
   return (
     <>
