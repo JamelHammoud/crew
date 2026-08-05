@@ -5,7 +5,6 @@ import linearMark from '../../media/plugins/linear.png'
 import notionMark from '../../media/plugins/notion.png'
 import playwrightMark from '../../media/plugins/playwright.png'
 import sentryMark from '../../media/plugins/sentry.png'
-import slackMark from '../../media/plugins/slack.png'
 
 export const PLUGIN_ART: Record<string, string> = {
   figma: figmaMark,
