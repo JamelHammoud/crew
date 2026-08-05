@@ -1,0 +1,29 @@
+import { badgeText } from '../../../../shared/presence'
+import { reviewCount } from '../../state/alerts'
+import { useSidebar } from '../../state/sidebar'
+import { useCrew } from '../../state/store'
+import { tasksShowing, useTasks } from '../../state/tasks'
+import Pill from '../Pill'
+import { TasksTabIcon } from '../TabIcon'
+import NavRow from './NavRow'
+
+export default function SidebarTasks() {
+  const waiting = useCrew(reviewCount)
+  const open = useTasks(tasksShowing)
+  const toggle = useTasks(s => s.toggle)
+  const peek = useSidebar(s => s.peek)
+
+  return (
+    <NavRow
+      icon={<TasksTabIcon size={18} />}
+      label="Tasks"
+      lit={open}
+      expanded={open}
+      after={waiting > 0 && <Pill solid>{badgeText(waiting)}</Pill>}
+      onClick={() => {
+        peek(false)
+        toggle()
+      }}
+    />
+  )
+}
