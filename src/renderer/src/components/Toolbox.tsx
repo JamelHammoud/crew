@@ -137,7 +137,7 @@ export default function Toolbox({
   }
 
   return (
-    <Popover open={open} onClose={onClose} align="center" flush className="w-[262px]">
+    <Popover open={open} onClose={onClose} align="center" at={at} anchor={anchor} flush className="w-[262px]">
       {building ? (
         <ToolBuilder tool={building.tool} onDone={() => setBuilding(null)} />
       ) : filling ? (
