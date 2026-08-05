@@ -19,6 +19,7 @@ import { useFileMenu } from './fileMenu'
 import HtmlView from './HtmlView'
 import ImageView from './ImageView'
 import MarkdownView from './MarkdownView'
+import { bringInto, centerIn } from './scrollInto'
 import Spinner from './Spinner'
 
 const MAX_LINES = 5000

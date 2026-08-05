@@ -72,7 +72,7 @@ function Leaf({ tab, path, name, depth }: { tab: BrowserTab; path: string; name:
   const { onContextMenu, menu } = useFileMenu(path)
 
   useEffect(() => {
-    if (showing) ref.current?.scrollIntoView?.({ block: 'nearest' })
+    if (showing && ref.current) bringInto(ref.current)
   }, [showing])
 
   return (
