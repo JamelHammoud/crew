@@ -9,6 +9,7 @@ import type { PathLocation, RepoFile } from '../../shared/files'
 import type { MachineDir } from '../../shared/machinePath'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../../shared/llm'
 import type { MediaAccess, MediaKind, ScreenSource } from '../../shared/media'
+import type { ModelServer } from '../../shared/modelServers'
 import type { LivePlace } from '../../shared/places'
 import type { Present, PresenceSnapshot } from '../../shared/presence'
 import type { RepoActionResult, RepoChange, RepoCommand, RepoStatus, RepoWork } from '../../shared/repository'
@@ -42,6 +43,9 @@ declare global {
     setShared(shared: boolean): Promise<CurrentSession | null>
     agentCapabilities(): Promise<ProviderCapability[]>
     installProvider(provider: string): Promise<ProviderCapability[]>
+    modelServers(): Promise<ModelServer[]>
+    addModelServer(input: { url: string; key?: string }): Promise<ProviderCapability[]>
+    forgetModelServer(url: string): Promise<ProviderCapability[]>
     createAgent(input: { provider: string; name: string; settings: AgentSettings }): Promise<AgentDef>
     removeAgent(instanceId: string): Promise<void>
     repoStatus(): Promise<RepoStatus>
