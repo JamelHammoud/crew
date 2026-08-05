@@ -66,7 +66,7 @@ export default function DesignToolbar({
     <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 pointer-events-none">
       {!panels.left && (
         <DesignPanelBack label="Layers" onOpen={() => onPanels(value => ({ ...value, left: true }))}>
-          <StackGlyph className="w-[18px] h-[18px]" />
+          <StackGlyph className="w-6 h-6" />
         </DesignPanelBack>
       )}
       <div
@@ -170,6 +170,6 @@ function Group({
 function BoardChatMark({ boardId }: { boardId: string }): ReactNode {
   const threads = useBoardThreads(boardId)
   const last = threads[threads.length - 1]
-  if (!last) return <SparkGlyph className="w-[18px] h-[18px]" />
+  if (!last) return <SparkGlyph className="w-6 h-6" />
   return <AgentIcon seed={last.agentId} size="sm" />
 }
