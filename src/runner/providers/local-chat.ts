@@ -92,8 +92,34 @@ class Calls {
   }
 }
 
+// What a conversation is written down as here and what goes over the wire are
+// two different things, and the runtime is what decides the second. Ollama's
+// own chat takes a call's arguments as the object they are and refuses a string
+// outright, where an OpenAI compatible one takes the string its own spec asks
+// for, and the tool that answered is read off tool_name there and off name here.
+// The same conversation goes to both, so it is shaped once, on the way out.
+const wire = (message: ChatMessage, kind: LocalRuntime['kind']): Record<string, unknown> => {
+  const ollama = kind === 'ollama'
+  const out: Record<string, unknown> = { role: message.role, content: message.content }
+  if (message.thinking) out.thinking = message.thinking
+  if (message.images?.length) out.images = message.images
+  if (message.calls?.length) {
+    out.tool_calls = message.calls.map(call => ({
+      id: call.id,
+      type: 'function',
+      function: { name: call.name, arguments: ollama ? call.args : JSON.stringify(call.args) }
+    }))
+  }
+  if (message.role === 'tool') {
+    if (message.name) out[ollama ? 'tool_name' : 'name'] = message.name
+    if (message.callId) out.tool_call_id = message.callId
+  }
+  return out
+}
+
 const body = (req: ChatRequest, think: boolean): string => {
-  const common = { model: req.model, messages: req.messages, stream: true }
+  const messages = req.messages.map(message => wire(message, req.runtime.kind))
+  const common = { model: req.model, messages, stream: true }
   const tools = req.tools.length ? { tools: req.tools } : {}
   // A streamed OpenAI compatible answer carries no counts at all unless they
   // are asked for, so a run would say nothing about what it cost.
