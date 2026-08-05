@@ -111,33 +111,66 @@ const drag = (item: HTMLElement, from: number, by: number) => {
 
 describe('the tab strip', () => {
   it('brings a newly opened tab into view', () => {
-    useBrowser.getState().openUrl('https://example.com/one')
+    laidOutRow()
+    openFour()
     const { container } = render(createElement(BrowserPanel))
     scrolled.length = 0
 
-    act(() => useBrowser.getState().openUrl('https://example.com/two'))
-    const opened = useBrowser.getState().tabs[1]!
+    act(() => useBrowser.getState().openUrl('https://example.com/five'))
 
-    expect(scrolled).toContain(pillFor(container, opened.id))
+    expect(scrolled).toHaveLength(1)
+    expect(scrolled[0]!.el).toBe(rowOf(container))
+    expect(scrolled[0]!.left).toBe(190)
   })
 
   it('brings a tab that was picked from somewhere else into view', () => {
-    openTwo()
+    laidOutRow()
+    openFour()
     const { container } = render(createElement(BrowserPanel))
     const first = useBrowser.getState().tabs[0]!
     scrolled.length = 0
 
     act(() => useBrowser.getState().selectTab(first.id))
 
-    expect(scrolled).toContain(pillFor(container, first.id))
+    expect(scrolled).toHaveLength(1)
+    expect(scrolled[0]!.el).toBe(rowOf(container))
+    expect(scrolled[0]!.left).toBe(0)
   })
 
-  it('leaves a tab that is not the active one alone', () => {
+  it('leaves a tab that is already standing in the row where it is', () => {
+    laidOutRow()
     openTwo()
-    const { container } = render(createElement(BrowserPanel))
-    const first = useBrowser.getState().tabs[0]!
+    render(createElement(BrowserPanel))
+    scrolled.length = 0
 
-    expect(scrolled).not.toContain(pillFor(container, first.id))
+    act(() => useBrowser.getState().selectTab(useBrowser.getState().tabs[0]!.id))
+
+    expect(scrolled).toEqual([])
+  })
+
+  // The row is the only box a tab may move. scrollIntoView moves every scroller
+  // between the pill and the document, and the panel stands in two that show no
+  // scrollbar, so anything it shifts can never be put back by hand.
+  it('never asks the page to bring a tab into view', () => {
+    laidOutRow()
+    openFour()
+    render(createElement(BrowserPanel))
+
+    act(() => useBrowser.getState().openUrl('https://example.com/five'))
+
+    expect(askedIntoView).toEqual([])
+    expect(scrolled.every(one => strip(one.el as HTMLElement))).toBe(true)
+  })
+
+  it('never scrolls the row the way it does not go', () => {
+    laidOutRow()
+    openFour()
+    render(createElement(BrowserPanel))
+    scrolled.length = 0
+
+    act(() => useBrowser.getState().openUrl('https://example.com/five'))
+
+    expect(scrolled.map(one => one.top)).toEqual([0])
   })
 
   it('closes one tab from its own menu', () => {
