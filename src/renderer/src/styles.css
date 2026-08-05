@@ -1546,6 +1546,15 @@ textarea:placeholder-shown {
   border-bottom-right-radius: 11px;
 }
 
+.doc .bn-editor [data-content-type='table'] .selectedCell::after {
+  background: var(--color-selection);
+}
+
+.doc .bn-editor .column-resize-handle,
+.doc .bn-table-drop-cursor {
+  background-color: var(--color-fg);
+}
+
 .doc .bn-editor .bn-visual-media {
   border-radius: 12px;
 }
