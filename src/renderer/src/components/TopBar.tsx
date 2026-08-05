@@ -46,7 +46,7 @@ export default function TopBar() {
     <header
       ref={headerRef}
       style={{ height: TOP_BAR_H, paddingLeft: HEADER_EDGE, paddingRight: HEADER_EDGE }}
-      className="top-bar app-drag relative grid grid-cols-[1fr_auto_1fr] items-center shrink-0"
+      className="top-bar app-drag relative grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center shrink-0"
     >
       <div ref={hold.backdrop} className="absolute inset-0 pointer-events-none" />
 
