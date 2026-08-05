@@ -44,7 +44,10 @@ export default function DesignHeader({
       <HeaderSlot place="left">
         <div
           data-design-name
-          style={{ paddingLeft: nameInset(open, cornerRoom(corner, pinned ? SIDEBAR_W : 0)) }}
+          style={{
+            marginLeft: -NAME_PAD,
+            paddingLeft: nameInset(open, cornerRoom(corner, pinned ? SIDEBAR_W : 0))
+          }}
           className="flex items-center min-w-0"
         >
           <BoardSwitcher />
