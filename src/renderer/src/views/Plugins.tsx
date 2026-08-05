@@ -26,7 +26,7 @@ export default function Plugins() {
 
   return (
     <div className="h-full overflow-y-auto px-6">
-      <div className="max-w-[720px] mx-auto pt-28 pb-24">
+      <div className="max-w-[720px] mx-auto pt-24 pb-24">
         <div className="flex items-end justify-between gap-6">
           <div>
             <h1 className="text-2xl font-semibold text-fg">Plugins</h1>

@@ -101,12 +101,12 @@ describe('the toolbox', () => {
     for (const grid of grids) expect(grid.className).toContain('grid-cols-3')
   })
 
-  it('opens the games, and takes you to where they opened', () => {
+  it('opens the games in the panel, and leaves you on the page you were on', () => {
     toolbox()
     fireEvent.click(screen.getByText('Games'))
 
     expect(useBrowser.getState().tabs).toEqual([expect.objectContaining({ kind: 'game' })])
-    expect(switched).toBe(1)
+    expect(useBrowser.getState().open).toBe(true)
   })
 
   it('opens Review in the Browser', () => {
@@ -115,7 +115,6 @@ describe('the toolbox', () => {
 
     expect(useBrowser.getState().tabs).toEqual([expect.objectContaining({ kind: 'review' })])
     expect(useBrowser.getState().open).toBe(true)
-    expect(switched).toBe(1)
   })
 
   it('ends on an empty slot that opens the builder, with no tools built yet', () => {
@@ -125,24 +124,24 @@ describe('the toolbox', () => {
     expect(screen.getByPlaceholderText('What to call it')).toBeTruthy()
   })
 
-  it('opens the project files, and takes you to where they opened', () => {
+  it('opens the project files in the panel', () => {
     toolbox()
     fireEvent.click(screen.getByText('Files'))
 
     const tabs = useBrowser.getState().tabs
     expect(tabs).toHaveLength(1)
     expect(tabs[0]).toMatchObject({ kind: 'file', path: '', tree: true })
-    expect(switched).toBe(1)
+    expect(useBrowser.getState().open).toBe(true)
   })
 
-  it('opens a terminal, and takes you to where it opened', () => {
+  it('opens a terminal in the panel', () => {
     toolbox()
     fireEvent.click(screen.getByText('Terminal'))
 
     const tabs = useBrowser.getState().tabs
     expect(tabs).toHaveLength(1)
     expect(tabs[0]).toMatchObject({ kind: 'terminal', command: null })
-    expect(switched).toBe(1)
+    expect(useBrowser.getState().open).toBe(true)
   })
 
   it('runs a built tool: a page opens in the side panel, a command opens a terminal', () => {
@@ -170,7 +169,7 @@ describe('the toolbox', () => {
     expect(useBrowser.getState().tabs.at(-1)).toMatchObject({ kind: 'terminal', command: 'yarn build\ryarn dist' })
   })
 
-  it('asks the agent a tool names, and takes you to the chat rather than the panel', () => {
+  it('asks the agent a tool names, and opens nothing in the panel for it', () => {
     toolbox([tool({ id: 'tool-5', name: 'Tests', mark: 'chat', action: { kind: 'prompt', text: 'Run the tests', agentId: 'a2' } })], [
       agent('a1', 'Fable'),
       agent('a2', 'Bubbles')
@@ -179,7 +178,6 @@ describe('the toolbox', () => {
     fireEvent.click(screen.getByText('Tests'))
     expect(asked).toEqual([{ text: '@Bubbles Run the tests', aimedAt: ['a2'] }])
     expect(useBrowser.getState().tabs).toHaveLength(0)
-    expect(switched).toBe(0)
   })
 
   it('asks whoever is here when the agent a tool names has gone', () => {
@@ -396,7 +394,6 @@ describe('the toolbox', () => {
     expect(written).toEqual([{ page: 'journal', text: 'Monday\n\nShipped' }])
     expect(screen.getByText('Written')).toBeTruthy()
     // Everything here leaves you where you were.
-    expect(switched).toBe(0)
     expect(useBrowser.getState().tabs).toHaveLength(0)
   })
 
@@ -414,7 +411,6 @@ describe('the toolbox', () => {
     // A track named on its own belongs to no list.
     fireEvent.click(screen.getByText('That one'))
     expect(played[1]).toEqual({ trackId: 'slow-morning', playlistId: null })
-    expect(switched).toBe(0)
   })
 
   it('runs a chain in the order it was built, and a pair that name each other stops', () => {
@@ -430,8 +426,8 @@ describe('the toolbox', () => {
     expect(copied).toEqual(['crew://join'])
     expect(useBrowser.getState().tabs).toHaveLength(1)
     expect(useBrowser.getState().tabs[0]).toMatchObject({ kind: 'terminal', command: 'yarn dev' })
-    // A chain that opens something takes you to where it opened.
-    expect(switched).toBe(1)
+    // A chain that opens something opens the panel it opened in.
+    expect(useBrowser.getState().open).toBe(true)
 
     cleanup()
     useBrowser.setState({ tabs: [], activeTabId: null })

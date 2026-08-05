@@ -69,7 +69,7 @@ describe('the design header', () => {
 
     for (const control of [layers, name, zoom, chat]) expect(held.contains(control)).toBe(true)
 
-    const order = [...held.querySelectorAll('button')]
+    const order = [...held.querySelectorAll<HTMLElement>('button')]
     expect(order.indexOf(layers)).toBeLessThan(order.indexOf(name))
     expect(order.indexOf(name)).toBeLessThan(order.indexOf(zoom))
     expect(order.indexOf(zoom)).toBeLessThan(order.indexOf(chat))
