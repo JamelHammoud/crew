@@ -17,7 +17,6 @@ export default function SidebarTasks() {
     <NavRow
       icon={<CheckCircleGlyph className={TAB_ICON} />}
       label="Tasks"
-      lit={open}
       expanded={open}
       after={<Badge count={waiting} rim={false} />}
       onClick={() => {
