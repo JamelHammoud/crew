@@ -158,23 +158,55 @@ app.whenReady().then(async () => {
     })()\`)
     await wait(80)
 
-    // D. force real vertical overflow on #root and see whether it can be moved.
+    // D. real vertical overflow on #root: a tall sibling beside the app row, so
+    // #root's own content really is taller than #root.
     await js(\`(() => {
       const tall = document.createElement('div')
       tall.id = 'tall'
-      tall.style.cssText = 'width:0;flex:0 0 auto;min-height:110%'
-      document.getElementById('approw').appendChild(tall)
+      tall.style.cssText = 'height:400px'
+      document.getElementById('root').appendChild(tall)
     })()\`)
     await wait(80)
     await js(RESET)
     const dBefore = await js(READ)
     await js(\`\${LAST}.scrollIntoView({ block: 'nearest', inline: 'nearest' })\`)
     const dAfter = await js(READ)
-    // and a second, blunter ask: can it be scrolled by hand at all?
-    await js(\`document.getElementById('root').scrollTop = 50\`)
+    // Can it be moved by hand at all, now that it has somewhere to go?
+    await js(\`document.getElementById('root').scrollTop = 200\`)
     const dForced = await js(\`document.getElementById('root').scrollTop\`)
-    cases.D = { before: dBefore, after: dAfter, forcedRootScrollTop: dForced }
+    // And the decisive one: with it already scrolled down, does scrollIntoView
+    // on the pill drag it back? That is the only way block:'nearest' ever moves
+    // a box, since a pill already in view is left alone.
+    const dScrolled = await js(READ)
+    await js(\`\${LAST}.scrollIntoView({ block: 'nearest', inline: 'nearest' })\`)
+    cases.D = {
+      before: dBefore,
+      after: dAfter,
+      forcedRootScrollTop: dForced,
+      scrolled: dScrolled,
+      pulledBack: await js(READ),
+    }
     await js(\`document.getElementById('tall').remove()\`)
+    await wait(80)
+
+    // F. the same question of the one box between the pill and #root that really
+    // clips: SidePanel outer. Give the column inside it more height than it has,
+    // scroll it down by hand, and see what scrollIntoView does about it.
+    await js(\`(() => {
+      document.getElementById('col').style.height = '1200px'
+    })()\`)
+    await wait(80)
+    await js(RESET)
+    const fBefore = await js(READ)
+    await js(\`\${LAST}.scrollIntoView({ block: 'nearest', inline: 'nearest' })\`)
+    const fAfter = await js(READ)
+    await js(\`document.getElementById('outer').scrollTop = 120\`)
+    const fScrolled = await js(READ)
+    await js(\`\${LAST}.scrollIntoView({ block: 'nearest', inline: 'nearest' })\`)
+    const fPulled = await js(READ)
+    await wait(400)
+    cases.F = { before: fBefore, after: fAfter, scrolled: fScrolled, pulledBack: fPulled, rested: await js(READ) }
+    await js(\`document.getElementById('col').style.height = ''\`)
     await wait(80)
 
     // E. the real call, which is behavior: 'smooth'.
