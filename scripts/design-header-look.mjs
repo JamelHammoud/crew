@@ -265,11 +265,12 @@ try {
     const nameOn = read.name && read.canvas && read.name.left === read.canvas.left
     const zoomOn = read.zoom && read.canvas && read.zoom.right === read.canvas.right
     console.log(`  name on the canvas edge: ${nameOn ? 'yes' : 'NO'}   zoom on the canvas edge: ${zoomOn ? 'yes' : 'NO'}`)
-    if (read.letters && read.canvas && read.corner && read.face) {
-      const floor = Math.max(read.canvas.left, read.corner.right)
-      const front = read.letters.left - floor
+    const [, left] = CASES[i]
+    const onCanvas = read.canvas && read.corner && read.canvas.left >= read.corner.right
+    if (!left && onCanvas && read.letters && read.face) {
+      const front = read.letters.left - read.canvas.left
       const back = read.width - read.face.right
-      console.log(`  name letters ${front} past the floor, face ${back} from the window edge: ${front === back ? 'level' : 'OFF BY ' + (front - back)}`)
+      console.log(`  name letters ${front} from the canvas edge, face ${back} from the window edge: ${front === back ? 'level' : 'OFF BY ' + (front - back)}`)
     }
     console.log(`  band matches the canvas colour: ${read.bandCanvas === read.canvasPaint ? 'yes' : 'NO'}`)
   })
