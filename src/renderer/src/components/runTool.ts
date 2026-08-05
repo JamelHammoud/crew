@@ -79,15 +79,6 @@ export function runTool(action: ToolAction, answers: Record<string, string> = {}
   for (const step of steps(action)) runStep(fillSlots(step, answers))
 }
 
-// Where pressing it leaves you: a page, a file and a terminal are all things the
-// side panel holds. An ask is a message in the chat, and a doc and a board take
-// you to their own tab, so all three are somewhere else already.
-export function opensPanel(action: ToolAction): boolean {
-  return steps(action).some(step =>
-    step.kind === 'web' ? !step.external : step.kind === 'terminal' || step.kind === 'file'
-  )
-}
-
 // What the tile says instead of closing. Copying, saying something, putting a
 // track on and writing a line down all leave you where you are, so the toolbox
 // stays up and the tile says what happened rather than a panel closing over
