@@ -263,9 +263,6 @@ export type ServerMessage =
       tickets?: boolean
       goal?: string
       memories?: CrewMemory[]
-      // What the crew has plugged in. The machine running the agent is what
-      // turns these into an MCP config, because the keys they need are that
-      // machine's own and never leave it.
       plugins?: CrewPlugin[]
     }
   | {

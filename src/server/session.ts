@@ -419,9 +419,6 @@ export class CrewSession {
   private todos = new Map<string, Todo>()
   private tools = new Map<string, CrewTool>()
   private memories = new Map<string, CrewMemory>()
-  // What the crew has plugged in, folded off the log the way the memories are.
-  // The key one needs is never in here: that is the machine's own and stays on
-  // the machine running the agent.
   private plugins = new Map<string, CrewPlugin>()
   // How big a file may be, in megabytes. The crew's own, folded off the log the
   // way the toolbox is.
