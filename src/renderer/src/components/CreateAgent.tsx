@@ -139,7 +139,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
     setAdding(true)
     setAddError('')
     try {
-      const url = address.trim()
+      const url = serverUrl(address) ?? address.trim()
       const fresh = await window.crew.addModelServer({ url, ...(serverKey.trim() ? { key: serverKey.trim() } : {}) })
       setServers(await window.crew.modelServers())
       landOn(url, fresh)
