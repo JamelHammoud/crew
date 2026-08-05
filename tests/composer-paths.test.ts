@@ -190,11 +190,16 @@ describe('what is marked out in the box', () => {
   })
 })
 
+const row = (path: string): HTMLElement | null => document.querySelector(`[data-path="${path}"]`)
+
+const rows = (): string[] =>
+  [...document.querySelectorAll('[data-path]')].map(node => node.getAttribute('data-path') ?? '')
+
 describe('picking a path in the composer', () => {
   it('writes the whole path and leaves the caret past it', async () => {
     const input = boot()
     type(input, 'look at src/shared/fi')
-    await waitFor(() => expect(screen.getByText('files.ts')).toBeTruthy())
+    await waitFor(() => expect(row('src/shared/files.ts')).toBeTruthy())
     fireEvent.keyDown(input, { key: 'Tab' })
     expect(input.value).toBe('look at src/shared/files.ts ')
     expect(input.selectionStart).toBe(input.value.length)
@@ -203,26 +208,26 @@ describe('picking a path in the composer', () => {
   it('writes what was clicked rather than what was highlighted', async () => {
     const input = boot()
     type(input, 'src/renderer/src/components/')
-    await waitFor(() => expect(screen.getByText('MentionAutocomplete.tsx')).toBeTruthy())
-    fireEvent.click(screen.getByText('MentionAutocomplete.tsx'))
+    await waitFor(() => expect(row('src/renderer/src/components/MentionAutocomplete.tsx')).toBeTruthy())
+    fireEvent.click(row('src/renderer/src/components/MentionAutocomplete.tsx') as HTMLElement)
     expect(input.value).toBe('src/renderer/src/components/MentionAutocomplete.tsx ')
   })
 
   it('carries on inside a folder rather than ending on it', async () => {
     const input = boot()
     type(input, 'src/rend')
-    await waitFor(() => expect(screen.getByText('renderer')).toBeTruthy())
+    await waitFor(() => expect(rows()[0]).toBe('src/renderer'))
     fireEvent.keyDown(input, { key: 'Tab' })
     expect(input.value).toBe('src/renderer/')
     expect(input.selectionStart).toBe(input.value.length)
-    expect(screen.getByText('components')).toBeTruthy()
+    expect(rows()[0]).toBe('src/renderer/src')
   })
 
   it('says nothing about files while a command still answers to the slash', async () => {
     const input = boot()
     type(input, '/g')
     await waitFor(() => expect(screen.getByText('/goal')).toBeTruthy())
-    expect(screen.queryByText('index.ts')).toBeNull()
+    expect(rows()).toEqual([])
   })
 
   it('marks the path it wrote in the box it was written in', async () => {
