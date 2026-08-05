@@ -197,17 +197,32 @@ export const PromptGlyph = glyph(
   </>
 )
 
-// The tail hangs off the bottom left corner and turns at its point like every
-// other corner in the set. The three dots are filled because a 1.5 ring that
-// small closes into a smudge, and they are what tells a bubble from a rounded
-// box at 16px.
+// Two bubbles, because a chat is two people and one bubble is a message. The
+// one in front is whole and carries the tail, and the one behind keeps only what
+// is not hidden by it, which is the rule the pair of figures is already drawn
+// under. Its two ends stand 2.25 clear of the front bubble on both sides: closer
+// than that and the gap is under a pixel at the size this is worn, so the two
+// shapes close into one blob with a notch in it.
+//
+// The dots inside are what came off. Three of them is the typing indicator and
+// the same mark a thought already wears, so the tab for the place the crew talks
+// was drawing somebody in the middle of a sentence. Both bubbles are one path,
+// or the four places their strokes cross would lay the color down twice.
 export const ChatGlyph = glyph(
-  <>
-    <path d="M6.75 4.25h10.5A3.5 3.5 0 0 1 20.75 7.75V13a3.5 3.5 0 0 1-3.5 3.5H9.75l-2.35 2.85q-.65.8-.65-.25V16.5A3.5 3.5 0 0 1 3.25 13V7.75a3.5 3.5 0 0 1 3.5-3.5Z" />
-    <circle cx="8" cy="10.4" r=".95" fill="currentColor" stroke="none" />
-    <circle cx="12" cy="10.4" r=".95" fill="currentColor" stroke="none" />
-    <circle cx="16" cy="10.4" r=".95" fill="currentColor" stroke="none" />
-  </>
+  <path d="M9 7.2V5.95A2.75 2.75 0 0 1 11.75 3.2H18.25A2.75 2.75 0 0 1 21 5.95V8.95A2.75 2.75 0 0 1 18.25 11.7H17.25M5.75 9.45H12.25A2.75 2.75 0 0 1 15 12.2v3A2.75 2.75 0 0 1 12.25 17.95H8.9l-2.15 2.45q-1 .85-1-.3V17.95A2.75 2.75 0 0 1 3 15.2v-3A2.75 2.75 0 0 1 5.75 9.45Z" />
+)
+
+// The book is the Docs tab, where a page is one document. The tab is the place
+// the crew's writing lives and DocGlyph is a file with words in it, which is why
+// this is a second drawing rather than a change to that one: that mark stands on
+// a changed file in the review, on an attachment and on a mention, and every one
+// of those is a document rather than a shelf of them.
+//
+// Both leaves and the spine are one path. The spine runs the whole height and
+// meets the outline at both ends, which is the join that would have laid itself
+// twice drawn as a mark of its own.
+export const BookGlyph = glyph(
+  <path d="M12 6.5C10.15 4.9 7.75 4.1 4.8 4.1A1.9 1.9 0 0 0 2.9 6v9.75a1.9 1.9 0 0 0 1.9 1.9c2.95 0 5.35.8 7.2 2.4 1.85-1.6 4.25-2.4 7.2-2.4a1.9 1.9 0 0 0 1.9-1.9V6a1.9 1.9 0 0 0-1.9-1.9c-2.95 0-5.35.8-7.2 2.4ZM12 6.5V20.05" />
 )
 
 // A pad, held. The shoulders are square across the top and the grips hang off
