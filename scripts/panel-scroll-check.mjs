@@ -382,6 +382,23 @@ try {
       console.log(table(one.rested, one.opened))
     }
   }
+
+  console.log('\n=== G: can the SidePanel outer ever gain vertical overflow on its own? ===')
+  console.log('  window  toolbar  outer client/scroll H   outer top/left   #root client/scroll H  #root top  header top')
+  for (const s of seen.sweep) {
+    console.log(
+      '  ' +
+        String(s.asked).padEnd(8) +
+        String(s.toolbar).padEnd(9) +
+        `${s.outerClientH}/${s.outerScrollH}`.padEnd(22) +
+        `${s.outerTop}/${s.outerLeft}`.padEnd(17) +
+        `${s.rootClientH}/${s.rootScrollH}`.padEnd(22) +
+        String(s.rootTop).padEnd(11) +
+        String(s.headerTop) +
+        (s.outerScrollH > s.outerClientH || s.rootScrollH > s.rootClientH ? '   <== OVERFLOW' : '') +
+        (s.headerTop !== 0 ? '   <== HEADER MOVED' : '')
+    )
+  }
 } finally {
   await rm(dir, { recursive: true, force: true })
 }

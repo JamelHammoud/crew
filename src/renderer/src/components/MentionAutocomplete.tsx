@@ -109,8 +109,10 @@ export function useMentionAutocomplete(
     setValue(next)
     const mention = MENTION_QUERY.exec(head)
     const emoji = EMOJI_QUERY.exec(head)
+    const path = pathQuery(next, caret, commands)
     if (mention) setQuery({ trigger: mention[1] as Query['trigger'], text: mention[2] })
-    else setQuery(emoji ? { trigger: ':', text: emoji[1] } : null)
+    else if (emoji) setQuery({ trigger: ':', text: emoji[1] })
+    else setQuery(path === null ? null : { trigger: '/', text: path })
     setActive(0)
   }
 
