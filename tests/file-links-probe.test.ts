@@ -125,6 +125,76 @@ describe('file refs', () => {
   })
 })
 
+describe('folder links', () => {
+  const paths = (text: string): string[] =>
+    fileTokens(text).flatMap(token => (token.kind === 'file' ? [token.path] : []))
+
+  const labels = (text: string): string[] =>
+    fileTokens(text).flatMap(token => (token.kind === 'file' ? [token.text] : []))
+
+  it('reads a folder written with a trailing slash', () => {
+    expect(paths('look at src/renderer/ for the rest')).toEqual(['src/renderer'])
+    expect(labels('look at src/renderer/ for the rest')).toEqual(['src/renderer/'])
+    expect(parseFileRef('src/renderer/')).toEqual({ path: 'src/renderer', line: null })
+    expect(parseFileRef(`${ROOT}/src/renderer/`)).toEqual({ path: `${ROOT}/src/renderer`, line: null })
+  })
+
+  it('reads a folder written without one the same way', () => {
+    expect(paths('look at src/renderer for the rest')).toEqual(['src/renderer'])
+    expect(parseFileRef('src/renderer')).toEqual({ path: 'src/renderer', line: null })
+  })
+
+  it('leaves files and line numbers as they were', () => {
+    expect(paths('fixed src/app.ts:3 and AGENTS.md today')).toEqual(['src/app.ts', 'AGENTS.md'])
+    expect(parseFileRef('src/app.ts:12')).toEqual({ path: 'src/app.ts', line: 12 })
+    expect(parseFileRef('src/renderer/')?.line).toBeNull()
+  })
+
+  it('keeps a longer path over the folder it starts with', () => {
+    expect(paths('open src/renderer/app.tsx now')).toEqual(['src/renderer/app.tsx'])
+    expect(paths('open src/renderer/app.tsx:4 now')).toEqual(['src/renderer/app.tsx'])
+    expect(parseFileRef('src/renderer/app.tsx')).toEqual({ path: 'src/renderer/app.tsx', line: null })
+  })
+
+  it('leaves a link and a domain alone', () => {
+    const tokens = fileTokens('see https://roxie.com/film/backrooms/ and example.com/ tonight')
+    expect(tokens.flatMap(t => (t.kind === 'url' ? [t.text] : []))).toEqual([
+      'https://roxie.com/film/backrooms/'
+    ])
+    expect(tokens.flatMap(t => (t.kind === 'file' ? [t.path] : []))).toEqual([])
+    expect(parseFileRef('https://example.com/a/')).toBeNull()
+  })
+
+  it('opens the folder named in a message and shows what is in it', async () => {
+    render(createElement(TextWithFileLinks, { text: 'have a look at src/renderer/ when you can' }))
+    const chip = await screen.findByText('src/renderer/')
+    fireEvent.click(chip)
+    const tab = useBrowser.getState().tabs[0]
+    expect(tab.kind).toBe('file')
+    expect(tab.path).toBe('src/renderer')
+    render(createElement(BrowserPanel))
+    await screen.findByText('app.tsx')
+  })
+
+  it('opens a folder written in a code span, keeping the slash on the link', async () => {
+    render(createElement(Markdown, { text: 'Everything moved into `src/renderer/` today' }))
+    await waitFor(() => expect(document.querySelectorAll('a.file-link').length).toBe(1))
+    const link = document.querySelector('a.file-link') as HTMLAnchorElement
+    expect(link.textContent).toBe('src/renderer/')
+    expect(link.dataset.path).toBe('src/renderer')
+    fireEvent.click(link)
+    expect(useBrowser.getState().tabs[0].path).toBe('src/renderer')
+  })
+
+  it('shortens a folder from another computer onto the one here', async () => {
+    render(createElement(TextWithFileLinks, { text: 'wrote it into /Users/ali/projects/crew/src/renderer/ today' }))
+    const chip = await screen.findByText('src/renderer/')
+    expect(document.body.textContent).not.toContain('/Users/ali')
+    fireEvent.click(chip)
+    expect(useBrowser.getState().tabs[0].path).toBe('src/renderer')
+  })
+})
+
 describe('markdown file links', () => {
   it('links mentions of real files and leaves unknown paths as text', async () => {
     render(createElement(Markdown, { text: 'Edited `src/app.ts:2` and touched src/other.ts today' }))
