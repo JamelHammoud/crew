@@ -167,8 +167,6 @@ const STRIKES: Record<StrikeName, Strike[]> = {
       rasp: { hz: 6200, q: 1.4, gain: 0.3, length: 0.008 }
     }
   ],
-  // A piece seating: one strike, a quick bend up into it, and a little grain on
-  // the front. Short, because the thing it says is over the moment it happens.
   'tab.plugins': [
     {
       hz: 520,

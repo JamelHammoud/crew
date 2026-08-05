@@ -88,6 +88,13 @@ import {
   shortId,
   type CrewMemory
 } from '../shared/memory'
+import {
+  cleanPlugin,
+  pluginKey,
+  PLUGIN_FULL,
+  PLUGIN_LIMIT,
+  type CrewPlugin
+} from '../shared/plugins'
 import { cleanCommands, type CommandName } from '../shared/commands'
 import { goalCondition } from '../shared/goal'
 import { IMPLEMENT_PROMPT, PLAN_INSTRUCTIONS } from '../shared/plan'
