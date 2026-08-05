@@ -193,7 +193,7 @@ describe('the way back to the panel', () => {
 
   it('puts the panel back with everything still in it', () => {
     open('t1', 'Step one')
-    const { getByLabelText, queryByLabelText } = view('t1')
+    const { container, getByLabelText } = view('t1')
     act(() => useBrowser.getState().openPanel())
 
     fireEvent.click(getByLabelText('Close'))
