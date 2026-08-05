@@ -9,6 +9,7 @@ import CloneRepo from '../../views/home/CloneRepo'
 import WhereTo from '../../views/home/WhereTo'
 import Modal from '../Modal'
 import { MenuItem, Popover } from '../Popover'
+import Tooltip from '../Tooltip'
 
 const lastFolder = (): string | null => {
   try {
