@@ -217,8 +217,9 @@ describe('where the design controls stand', () => {
     expect(box).toBe(LEFT_PANEL_W - HEADER_EDGE)
   })
 
-  it('leaves the name where the header put it once the layers are away', () => {
+  it('stands the name the header edge past the canvas once the layers are away', () => {
     useHeaderSlot.setState({ corner: 206 })
+    useSidebar.setState({ pinned: true })
     const held = slots()
     render(stand(board(), NEITHER))
 
