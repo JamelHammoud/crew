@@ -1,12 +1,8 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { promises as fs } from 'node:fs'
-import os from 'node:os'
-import path from 'node:path'
 import { createElement } from 'react'
-import { afterAll, afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { commandsIn } from '../src/shared/commands'
-import { readMachineDirs } from '../src/main/files'
 import {
   machineCandidates,
   machineDirQuery,

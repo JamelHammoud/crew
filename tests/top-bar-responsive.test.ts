@@ -48,32 +48,19 @@ const setHeaderWidth = (width: number) => {
   act(() => observers.forEach(notify => notify()))
 }
 
-const hover = (element: Element) => {
-  fireEvent.mouseEnter(element.parentElement!)
-  act(() => vi.advanceTimersByTime(400))
-}
-
 describe('responsive top bar', () => {
-  it('shows the main navigation and keeps the controls at the end of the bar', () => {
-    const onTab = vi.fn()
+  it('leaves the pages to the rail and keeps the controls at the end of the bar', () => {
     render(
       createElement(TopBar, {
         tab: 'chat',
-        onTab
+        onTab: () => {}
       })
     )
 
-    const navigation = screen.getByRole('navigation', { name: 'Main navigation' })
-    const tabs = within(navigation).getAllByRole('button')
-
-    expect(navigation.classList.contains('flex')).toBe(true)
-    expect(document.querySelector('.top-bar > div')?.classList.contains('col-start-3')).toBe(true)
-    expect(tabs.map(tab => tab.getAttribute('aria-label'))).toEqual(['Chat', 'Docs', 'Design'])
-    expect(navigation.querySelectorAll('.tab-icon')).toHaveLength(3)
-    expect(navigation.querySelectorAll('.top-bar-tab-label')).toHaveLength(3)
-
-    fireEvent.click(screen.getByRole('button', { name: 'Docs' }))
-    expect(onTab).toHaveBeenCalledWith('docs')
+    expect(screen.queryByRole('navigation')).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Docs' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Design' })).toBeNull()
+    expect(document.querySelector('.top-bar > div')?.classList.contains('ml-auto')).toBe(true)
   })
 
   it('keeps the faces together at the end of the bar, after the tasks button', () => {
