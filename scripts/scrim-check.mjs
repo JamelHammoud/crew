@@ -41,10 +41,10 @@ const RESTING = `<div class="absolute inset-x-0 px-6 space-y-2" style="top:var(-
 const CASES = [
   ['today lit', TODAY, LIT],
   ['scrim lit', SCRIM, LIT],
+  ['design lit', BAND, LIT],
   ['today scrolled', TODAY, SCROLLED],
   ['scrim scrolled', SCRIM, SCROLLED],
-  ['scrim resting', SCRIM, RESTING],
-  ['design band', BAND, SCROLLED]
+  ['scrim resting', SCRIM, RESTING]
 ]
 
 const PAGE = `<!doctype html>
