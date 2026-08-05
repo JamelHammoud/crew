@@ -62,8 +62,6 @@ export function useMentionAutocomplete(
     useProjectFiles.getState().read(place)
   }, [place, query?.trigger])
 
-  // A folder off this machine is read once and kept, so walking down it is the
-  // menu filtering a listing it already holds rather than a read a keystroke.
   const dirQuery = query?.trigger === '/' ? machineDirQuery(query.text) : null
   useEffect(() => {
     if (dirQuery !== null) useMachineFiles.getState().read(place, dirQuery)
@@ -79,8 +77,10 @@ export function useMentionAutocomplete(
       ]
     if (query?.trigger === '#')
       return refCandidates(crewRefs(docs, boards), query.text).map(ref => ({ kind: 'ref', ref }))
-    if (query?.trigger === '/')
-      return pathCandidates(files, query.text, PATH_MATCHES).map(match => ({ kind: 'path', match }))
+    if (query?.trigger === '/') {
+      const dirs = dirQuery === null ? [] : (machine[dirQuery] ?? [])
+      return pathMenu(files, dirs, query.text, PATH_MATCHES).map(match => ({ kind: 'path', match }))
+    }
     if (query?.trigger === ':') {
       // The menu is as long as it ever was, so the crew's own take the places at
       // the head of it rather than adding rows underneath the sheet's.
