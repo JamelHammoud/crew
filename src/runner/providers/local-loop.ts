@@ -116,15 +116,7 @@ export function startLoop(opts: LoopOptions): LocalRun {
       opts.sink.report()
       if (turn.text.trim()) said = turn.text.trim()
       if (!turn.calls.length) return { text: said }
-      messages.push({
-        role: 'assistant',
-        content: turn.text,
-        tool_calls: turn.calls.map(call => ({
-          id: call.id,
-          type: 'function' as const,
-          function: { name: call.name, arguments: JSON.stringify(call.args) }
-        }))
-      })
+      messages.push({ role: 'assistant', content: turn.text, calls: turn.calls })
       for (const call of turn.calls) {
         if (stopped) throw new Error('Stopped')
         messages.push(await step(call))
