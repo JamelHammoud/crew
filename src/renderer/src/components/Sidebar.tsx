@@ -177,7 +177,7 @@ export default function Sidebar({
         {TABS.map(one => (
           <NavRow
             key={one.id}
-            icon={<TabIcon tab={one.id} size={18} />}
+            icon={<one.Icon className={TAB_ICON} />}
             label={one.label}
             lit={tab === one.id}
             current={tab === one.id}
