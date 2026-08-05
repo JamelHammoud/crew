@@ -13,6 +13,8 @@ import { mediaType } from '../src/shared/files'
 // that says where it has got to gets out of the way of a picture that is
 // playing.
 
+Element.prototype.getAnimations ??= () => []
+
 let length = 0
 let paused = true
 
