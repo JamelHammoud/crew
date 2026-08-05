@@ -246,7 +246,7 @@ export default function Docs() {
             <button
               onClick={() => createPage(node.slug)}
               aria-label="Add sub-page"
-              className="w-6 h-6 mr-1 rounded-full flex items-center justify-center text-fg-muted opacity-0 group-hover/row:opacity-100 hover:text-fg hover:bg-fg/[0.08] transition-opacity shrink-0"
+              className="w-6 h-6 rounded-lg flex items-center justify-center text-fg/45 opacity-0 group-hover/row:opacity-100 hover:text-fg hover:bg-fg/[0.10] transition-opacity shrink-0"
             >
               <PlusGlyph className="w-3.5 h-3.5" />
             </button>
