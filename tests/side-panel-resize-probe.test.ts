@@ -19,7 +19,7 @@ afterEach(() => {
 })
 
 const open = () => {
-  const { container } = render(createElement(SidePanel, { visible: true }))
+  const { container } = render(createElement(SidePanel))
   return container.querySelector('.cursor-col-resize')!
 }
 

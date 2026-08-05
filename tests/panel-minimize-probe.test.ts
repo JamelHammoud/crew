@@ -15,7 +15,7 @@ const { DEFAULT_WIDTH, MINIMIZE_AT, MIN_WIDTH, useBrowser } = await import('../s
 const PanelToggle = (await import('../src/renderer/src/components/PanelToggle')).default
 const SidePanel = (await import('../src/renderer/src/components/SidePanel')).default
 
-const view = () => render(createElement('div', null, createElement(PanelToggle), createElement(SidePanel, { visible: true })))
+const view = () => render(createElement('div', null, createElement(PanelToggle), createElement(SidePanel)))
 
 const handle = () => document.querySelector('.cursor-col-resize') as Element
 
