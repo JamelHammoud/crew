@@ -35,7 +35,8 @@ import {
   readRepoFile,
   repoPathOf,
   writeLocalFile,
-  writeRepoFile
+  writeRepoFile,
+  type MediaHost
 } from './files'
 import { locatePath } from './locate'
 import { SavedSessionStore } from './saved-session'
