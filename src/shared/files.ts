@@ -81,7 +81,7 @@ export interface Playable {
 // format the browser would refuse falls through to the file having no preview,
 // which is the honest answer: a player standing there doing nothing is worse
 // than a line saying there is nothing to show.
-const MEDIA_TYPES: Record<string, MediaKind> = {
+const MEDIA_TYPES: Record<string, Playable> = {
   mp3: { type: 'audio/mpeg', video: false },
   m4a: { type: 'audio/mp4', video: false },
   aac: { type: 'audio/aac', video: false },
