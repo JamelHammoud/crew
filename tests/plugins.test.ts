@@ -1,7 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import WebSocket from 'ws'
 import { agentId } from '../src/shared/llm'
-import { PLUGIN_FULL, PLUGIN_LIMIT, type CrewPlugin } from '../src/shared/plugins'
+import {
+  cleanPlugin,
+  cleanPluginName,
+  mcpServersOf,
+  PLUGIN_BLURB_LIMIT,
+  PLUGIN_FULL,
+  PLUGIN_LIMIT,
+  PLUGIN_OFFERS,
+  type CrewPlugin
+} from '../src/shared/plugins'
 import type { RegisteredLlm, ServerMessage } from '../src/shared/protocol'
 import { CrewSession } from '../src/server/session'
 import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
@@ -229,5 +238,46 @@ describe('what the crew has plugged in', () => {
     await waitUntil(() => runner.messages.some(m => m.type === 'prompt'))
     const prompt = runner.messages.find(m => m.type === 'prompt') as Prompt
     expect(prompt.plugins).toBeUndefined()
+  })
+})
+
+describe('what the store offers', () => {
+  it('offers nothing that wants a key typed in', () => {
+    for (const offer of PLUGIN_OFFERS) expect(offer.keys ?? []).toEqual([])
+  })
+
+  it('names each one once', () => {
+    const names = PLUGIN_OFFERS.map(one => one.name)
+    expect(new Set(names).size).toBe(names.length)
+    for (const name of names) expect(cleanPluginName(name)).toBe(name)
+  })
+
+  it('holds every offer to what a plugin may be', () => {
+    for (const offer of PLUGIN_OFFERS) {
+      const clean = cleanPlugin(offer)
+      expect(clean, offer.name).not.toBeNull()
+      expect(clean?.name).toBe(offer.name)
+      expect(clean?.transport).toBe(offer.transport)
+      expect(offer.blurb.length).toBeLessThanOrEqual(PLUGIN_BLURB_LIMIT)
+    }
+  })
+
+  it('reaches every remote over https, and this computer over loopback', () => {
+    for (const offer of PLUGIN_OFFERS) {
+      if (offer.transport !== 'http') {
+        expect(offer.command, offer.name).toBeTruthy()
+        continue
+      }
+      const url = new URL(offer.url!)
+      if (url.protocol === 'http:') expect(url.hostname).toBe('127.0.0.1')
+      else expect(url.protocol).toBe('https:')
+    }
+  })
+
+  it('runs every one of them, since none of them wants a key', () => {
+    const held = PLUGIN_OFFERS.map((offer, i) => ({ ...offer, id: `${i}`, by: 'Jamel', ts: i }))
+    expect(Object.keys(mcpServersOf(held.slice(0, PLUGIN_LIMIT)))).toHaveLength(
+      Math.min(held.length, PLUGIN_LIMIT)
+    )
   })
 })
