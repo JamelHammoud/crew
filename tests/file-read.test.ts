@@ -87,6 +87,42 @@ describe('readRepoFile', () => {
     expect(result).toEqual({ kind: 'binary', path: 'app.bin', size: 3 })
   })
 
+  it('hands back a track to play rather than reading it as text', async () => {
+    const root = makeRepo()
+    writeFileSync(path.join(root, 'theme.mp3'), Buffer.from([0x49, 0x44, 0x33, 0x00]))
+    const media = new Media()
+
+    const result = await readRepoFile(root, 'theme.mp3', media)
+
+    expect(result).toEqual({
+      kind: 'media',
+      path: 'theme.mp3',
+      url: media.url(path.join(root, 'theme.mp3')),
+      size: 4,
+      type: 'audio/mpeg',
+      video: false
+    })
+  })
+
+  it('says a film is a film', async () => {
+    const root = makeRepo()
+    writeFileSync(path.join(root, 'demo.mp4'), Buffer.from([0x00, 0x00, 0x00, 0x18]))
+
+    const result = await readRepoFile(root, 'demo.mp4', new Media())
+
+    expect(result.kind).toBe('media')
+    if (result.kind !== 'media') return
+    expect(result.type).toBe('video/mp4')
+    expect(result.video).toBe(true)
+  })
+
+  it('reads a track as it always did where there is nowhere to play it from', async () => {
+    const root = makeRepo()
+    writeFileSync(path.join(root, 'theme.mp3'), Buffer.from([0x49, 0x44, 0x33, 0x00]))
+
+    expect(await readRepoFile(root, 'theme.mp3')).toEqual({ kind: 'binary', path: 'theme.mp3', size: 4 })
+  })
+
   it('truncates very large files', async () => {
     const root = makeRepo()
     writeFileSync(path.join(root, 'big.txt'), 'a'.repeat(600 * 1024))
