@@ -139,38 +139,25 @@ describe('the design header', () => {
   })
 })
 
-describe('the band behind the design header', () => {
-  it('takes the columns of the page under it', () => {
+describe('what stands behind the design header', () => {
+  it('is the page itself, so the header paints no ground of its own', () => {
     const held = slots()
     render(stand(board(), BOTH))
 
-    const band = held.backdrop.querySelector('[data-design-band]')!
-    const left = band.querySelector<HTMLElement>('[data-design-band-left]')!
-    const right = band.querySelector<HTMLElement>('[data-design-band-right]')!
-
-    expect(left.style.width).toBe(`${LEFT_PANEL_W}px`)
-    expect(right.style.width).toBe(`${RIGHT_PANEL_W}px`)
-    expect(left.className).toContain('border-r')
-    expect(right.className).toContain('border-l')
+    expect(held.backdrop.children.length).toBe(0)
+    expect(app).not.toContain('data-design-band')
   })
 
-  it('is the canvas alone once both panels are away', () => {
-    const held = slots()
-    render(stand(board(), NEITHER))
-
-    const band = held.backdrop.querySelector('[data-design-band]')!
-    expect(band.querySelector('[data-design-band-left]')).toBeNull()
-    expect(band.querySelector('[data-design-band-right]')).toBeNull()
-    expect(band.children.length).toBe(1)
+  it('runs the panels and the canvas to the window edge rather than a band standing in for them', () => {
+    expect(page).not.toContain('paddingTop: TOP_BAR_H')
+    for (const panel of [left, right]) expect(panel).toContain('paddingTop: TOP_BAR_H')
+    expect(app).not.toContain("tab === 'design' ? 'bg-ink-900'")
   })
 
-  it('reads the canvas colour from the design tokens rather than the chrome', () => {
-    const held = slots()
-    render(stand(board(), NEITHER))
-
-    const band = held.backdrop.querySelector<HTMLElement>('[data-design-band]')!
-    expect(band.className).toContain('design')
-    expect(band.querySelector('.bg-\\[var\\(--design-canvas\\)\\]')).toBeTruthy()
+  it('fades the canvas under the header, in the canvas colour and in the stage that owns it', () => {
+    expect(stage).toContain('design design-scrim')
+    expect(styles).toMatch(/\.design-scrim \{\n\s+height: var\(--design-scrim\);\n\s+background: var\(--design-canvas\);/)
+    expect(styles).toContain('.page-scrim,\n.design-scrim {')
   })
 })
 
