@@ -44,7 +44,9 @@ export default function WindowCorner() {
             aria-label="Projects"
             aria-expanded={pinned}
             className={`app-no-drag w-10 h-10 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
-              pinned ? 'bg-fg/[0.10] text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
+              pinned
+                ? 'bg-fg/[0.10] text-fg opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto focus-visible:opacity-100 focus-visible:pointer-events-auto'
+                : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
             }`}
           >
             <PanelLeftGlyph className="w-[18px] h-[18px]" />
