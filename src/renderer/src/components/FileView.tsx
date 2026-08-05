@@ -194,7 +194,8 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
     const at = toShown(rows, want)
     last.current = at
     area.setSelectionRange(at, at)
-    bodyRef.current?.querySelector(`[data-row="${rowAt(rows, at).index}"]`)?.scrollIntoView?.({ block: 'nearest' })
+    const row = bodyRef.current?.querySelector(`[data-row="${rowAt(rows, at).index}"]`)
+    if (row instanceof HTMLElement) bringInto(row, bodyRef.current)
   }, [tick, shown, rows])
 
   useEffect(() => {
