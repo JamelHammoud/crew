@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { PanelLeftGlyph } from '../icons'
 import { useHeaderSlot } from '../state/headerSlot'
-import { useSidebar } from '../state/sidebar'
+import { SIDEBAR_W, useSidebar } from '../state/sidebar'
 import { useFullScreen } from '../state/windowShape'
 import CrewLogo from './CrewLogo'
 import Tooltip from './Tooltip'
