@@ -58,6 +58,13 @@ const openThree = () => {
   useBrowser.getState().openUrl('https://example.com/three')
 }
 
+const openFour = () => {
+  openThree()
+  useBrowser.getState().openUrl('https://example.com/four')
+}
+
+const rowOf = (root: HTMLElement) => root.querySelector('.overflow-x-auto')
+
 const order = () => useBrowser.getState().tabs.map(t => t.id)
 
 // jsdom lays nothing out, so the row is given one: pills 90 wide with a gap of
