@@ -146,7 +146,6 @@ export function DesignZoom() {
 
   return (
     <div className="flex items-center gap-1 shrink-0">
-      <span className="w-px h-5 bg-fg/10 mx-1.5 shrink-0" />
       <HeaderButton label="Undo" disabled={!canUndo} onClick={() => editor.undo()}>
         <UndoGlyph className="w-4 h-4" />
       </HeaderButton>
