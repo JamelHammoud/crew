@@ -802,6 +802,19 @@ export const useCrew = create<CrewState>((set, get) => {
           return { events, memories: state.memories.filter(one => one.id !== event.memoryId) }
         case 'memory.setting':
           return { events, memoryEnabled: event.enabled }
+        case 'plugin.added': {
+          if (state.plugins.some(one => one.id === event.pluginId)) return { events }
+          const plugin: CrewPlugin = {
+            ...event.plugin,
+            id: event.pluginId,
+            by: event.byName,
+            byAgentId: event.agentId,
+            ts: event.ts
+          }
+          return { events, plugins: [...state.plugins, plugin] }
+        }
+        case 'plugin.removed':
+          return { events, plugins: state.plugins.filter(one => one.id !== event.pluginId) }
         case 'attachment.limit':
           return { events, attachmentMb: event.mb }
       }
