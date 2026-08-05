@@ -166,13 +166,6 @@ export const FlagGlyph = glyph(
   <path d="M5.8 20.5V4.6c3.6-1.7 6.8 1.7 10.4 0v8.9c-3.6 1.7-6.8-1.7-10.4 0" />
 )
 
-export const PlugGlyph = glyph(
-  <>
-    <path d="M9 3.5v4.2M15 3.5v4.2" />
-    <path d="M6.5 7.7h11v3.6a5.5 5.5 0 0 1-11 0Z" />
-    <path d="M12 16.8v3.7" />
-  </>
-)
 
 export const BoxGlyph = glyph(
   <>

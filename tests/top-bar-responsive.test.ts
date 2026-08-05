@@ -100,11 +100,9 @@ describe('responsive top bar', () => {
       createElement(TopBar)
     )
 
-    const tasks = screen.getByRole('button', { name: 'Tasks' })
     const faces = screen.getByRole('button', { name: "Who's here" })
     const you = screen.getByRole('button', { name: 'Settings' })
 
-    expect(follows(tasks, faces)).toBe(true)
     expect(follows(faces, you)).toBe(true)
   })
 

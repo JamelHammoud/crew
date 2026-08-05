@@ -446,14 +446,14 @@ export const StyleGlyph = glyph(
   </>
 )
 
-// Sheets seen edge on, the near one solid and the two behind it drawn as bare
-// runs. Two closed boxes cross twice and the crossing is all you see at 16, the
-// same reason the copy mark keeps an open corner behind its sheet.
+// Two sheets, the near one whole and the one behind it an open corner rather
+// than a second closed box, since two full rectangles cross twice and the
+// crossing is all you see at 16. It runs the other diagonal from the copy mark,
+// which is the same drawing with the sheets the other way round.
 export const StackGlyph = glyph(
   <>
-    <path d="M8 4.5h8" />
-    <path d="M6 9h12" />
-    <rect x="4" y="13" width="16" height="6.5" rx="2" />
+    <rect x="4" y="9" width="12" height="11" rx="2.5" />
+    <path d="M8 9V6.5A2.5 2.5 0 0 1 10.5 4h7A2.5 2.5 0 0 1 20 6.5v7A2.5 2.5 0 0 1 17.5 16H16" />
   </>
 )
 
