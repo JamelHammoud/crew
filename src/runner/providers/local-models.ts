@@ -125,7 +125,7 @@ async function toolsOf(runtime: LocalRuntime, model: Served): Promise<boolean> {
   if (runtime.kind !== 'ollama') return true
   const held = model.digest ? toolsSaid.get(model.digest) : undefined
   if (held !== undefined) return held
-  const able = readsTools(await asked(`${runtime.url}/api/show`, { model: model.name }))
+  const able = readsTools(await asked(`${runtime.url}/api/show`, { model: model.name }, runtime.key))
   if (model.digest) toolsSaid.set(model.digest, able)
   return able
 }
