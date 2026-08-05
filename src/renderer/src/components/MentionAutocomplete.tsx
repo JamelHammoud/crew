@@ -127,6 +127,20 @@ export function useMentionAutocomplete(
 
   const pick = (item: MentionItem) => {
     const caret = inputRef.current?.selectionStart ?? value.length
+    if (item.kind === 'path') {
+      const token = pathToken(item.match)
+      const before = value.slice(0, caret).replace(PATH_TAIL, token)
+      const after = value.slice(caret)
+      // A folder is somewhere to keep going from, so nothing is written after it
+      // and the menu carries on with what is inside it.
+      const gap = item.match.dir || after.startsWith(' ') ? '' : ' '
+      caretTarget.current = before.length + (item.match.dir ? 0 : 1)
+      setValue(before + gap + after)
+      setQuery(item.match.dir ? { trigger: '/', text: token } : null)
+      setActive(0)
+      inputRef.current?.focus()
+      return
+    }
     // One of the crew's own goes in as the name it is written with, since that is
     // what draws the picture wherever the message ends up.
     const emoji = item.kind === 'emoji' || item.kind === 'custom'
