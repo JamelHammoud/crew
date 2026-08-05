@@ -311,7 +311,7 @@ export default function Docs() {
           {tree.map(node => renderNode(node, 0))}
           <button
             onClick={() => createPage('')}
-            className={`w-full flex items-center gap-1.5 pl-5 text-left ${ROW} rounded-full text-fg-muted transition-colors hover:text-fg-secondary hover:bg-fg/[0.04]`}
+            className={`w-full flex items-center gap-1.5 pl-6 text-left ${ROW} rounded-xl text-fg/45 transition-colors hover:text-fg/70 hover:bg-fg/[0.06]`}
           >
             <PlusGlyph className="w-4 h-4 shrink-0" />
             New page
