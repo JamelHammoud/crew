@@ -916,7 +916,7 @@ export const useCrew = create<CrewState>((set, get) => {
           openThreadIds: wanted,
           openThreadId: wanted.at(-1) ?? null
         })
-        threadsWanted = []
+        threadsWanted = null
         threadsRead = new Set()
         for (const listener of huddleListeners) {
           listener({ type: 'huddle.room', room: msg.snapshot.huddle ?? emptyRoom() })
@@ -1169,7 +1169,7 @@ export const useCrew = create<CrewState>((set, get) => {
       const { useHuddle } = await import('./huddle')
       if (request !== transition) return
       useHuddle.getState().leave()
-      threadsWanted = threadsWanted.length > 0 ? threadsWanted : (memory?.openThreadIds ?? [])
+      threadsWanted = threadsWanted ?? memory?.openThreadIds ?? []
       stepBuffer.drop()
       set({ connection: 'connecting', ...BLANK })
       get().connect(info)
