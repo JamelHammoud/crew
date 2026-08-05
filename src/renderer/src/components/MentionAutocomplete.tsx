@@ -395,6 +395,16 @@ export function MentionMenu({
               onMouseEnter={() => onHover(index)}
             />
           )
+        if (item.kind === 'path')
+          return (
+            <PathRow
+              key={item.match.path}
+              match={item.match}
+              active={index === activeIndex}
+              onClick={() => onPick(item)}
+              onMouseEnter={() => onHover(index)}
+            />
+          )
         if (item.kind === 'custom')
           return (
             <EmojiRow
