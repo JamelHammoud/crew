@@ -1729,6 +1729,56 @@ export class CrewSession {
     this.emit({ id: randomUUID(), ts: Date.now(), kind: 'memory.removed', memoryId, byName: member.name })
   }
 
+  private pluginLike(name: string): CrewPlugin | null {
+    const key = pluginKey(name)
+    for (const plugin of this.plugins.values()) {
+      if (pluginKey(plugin.name) === key) return plugin
+    }
+    return null
+  }
+
+  private writePlugin(
+    said: NonNullable<ReturnType<typeof cleanPlugin>>,
+    byName: string,
+    agentId?: string
+  ): string {
+    const plugin: CrewPlugin = {
+      id: shortId(new Set(this.plugins.keys())),
+      ...said,
+      by: byName.slice(0, BY_LIMIT),
+      byAgentId: agentId,
+      ts: Date.now()
+    }
+    this.plugins.set(plugin.id, plugin)
+    this.emit({
+      id: randomUUID(),
+      ts: plugin.ts,
+      kind: 'plugin.added',
+      pluginId: plugin.id,
+      plugin: said,
+      agentId,
+      byName: plugin.by
+    })
+    return plugin.id
+  }
+
+  private handlePluginAdd(ws: WebSocket, member: Member, raw: unknown): void {
+    const said = cleanPlugin(raw)
+    if (!said) return
+    const already = this.pluginLike(said.name)
+    if (already) return
+    if (this.plugins.size >= PLUGIN_LIMIT) {
+      this.notice(PLUGIN_FULL, ws)
+      return
+    }
+    this.writePlugin(said, member.name)
+  }
+
+  private handlePluginRemove(member: Member, pluginId: string): void {
+    if (!this.plugins.delete(pluginId)) return
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'plugin.removed', pluginId, byName: member.name })
+  }
+
   private handleMemorySetting(member: Member, enabled: boolean): void {
     if (enabled === this.memoryEnabled) return
     this.memoryEnabled = enabled
