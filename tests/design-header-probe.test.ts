@@ -1,6 +1,5 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { readFileSync } from 'node:fs'
 import { createElement, type ReactNode } from 'react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { EditorContext, createTLStore } from '../src/renderer/src/canvas'
