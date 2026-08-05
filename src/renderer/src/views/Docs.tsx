@@ -8,7 +8,7 @@ import {
   slugify,
   splitPageCode
 } from '../../../shared/docs'
-import { docInset, DOC_MAX_W, PAGE_LIST_W, trailInset } from '../components/doc/docsLayout'
+import { docInset, DOC_MAX_W, DOC_TOP, PAGE_LIST_W, trailInset } from '../components/doc/docsLayout'
 import DocEditor, { type DocEditorHandle } from '../components/DocEditor'
 import FindBar from '../components/FindBar'
 import HeaderSlot from '../components/HeaderSlot'
