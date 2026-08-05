@@ -123,21 +123,49 @@ function PluginsIcon({ size }: { size: number }) {
       <path
         className="tab-icon-draw"
         pathLength={1}
-        d="M6 5.2H10.2A2.2 2.2 0 0 1 12.4 7.4V12.6A2.2 2.2 0 0 1 10.2 14.8H6A2.2 2.2 0 0 1 3.8 12.6V7.4A2.2 2.2 0 0 1 6 5.2Z"
+        d="M6.6 3.4H13.4A3.2 3.2 0 0 1 16.6 6.6V13.4A3.2 3.2 0 0 1 13.4 16.6H6.6A3.2 3.2 0 0 1 3.4 13.4V6.6A3.2 3.2 0 0 1 6.6 3.4Z"
         style={{ '--draw-dur': '340ms' } as React.CSSProperties}
       />
-      {[8.4, 11.6].map((y, i) => (
+      {[7.9, 12.1].map((x, i) => (
         <path
-          key={y}
+          key={x}
           className="tab-icon-draw"
           pathLength={1}
-          d={`M12.4 ${y}H16.4`}
+          d={`M${x} 7.4V10.6`}
           style={
-            { '--draw-dur': '150ms', '--draw-delay': `${300 + i * 70}ms` } as React.CSSProperties
+            { '--draw-dur': '160ms', '--draw-delay': `${300 + i * 70}ms` } as React.CSSProperties
           }
         />
       ))}
+      <path
+        className="tab-icon-draw"
+        pathLength={1}
+        strokeWidth={1.56}
+        d="M7.4 13.3H12.6"
+        style={{ '--draw-dur': '150ms', '--draw-delay': '440ms' } as React.CSSProperties}
+      />
     </Mark>
+  )
+}
+
+export function MoreTabIcon({ size = 18 }: { size?: number }) {
+  return (
+    <span className="tab-icon" aria-hidden="true">
+      <Mark size={size}>
+        {[4.6, 10, 15.4].map((cx, i) => (
+          <circle
+            key={cx}
+            className="tab-icon-pop"
+            cx={cx}
+            cy={10}
+            r={1.2}
+            fill="currentColor"
+            stroke="none"
+            style={{ '--pop-delay': `${i * 70}ms` } as React.CSSProperties}
+          />
+        ))}
+      </Mark>
+    </span>
   )
 }
 
