@@ -149,8 +149,8 @@ describe('what the menu offers', () => {
 
 describe('what gets written down', () => {
   it('takes the slash with a folder and stops at a file', () => {
-    expect(pathToken({ path: 'src/shared', hits: [], dir: true })).toBe('src/shared/')
-    expect(pathToken({ path: 'src/shared/files.ts', hits: [], dir: false })).toBe('src/shared/files.ts')
+    expect(pathToken({ path: 'src/shared', dir: true })).toBe('src/shared/')
+    expect(pathToken({ path: 'src/shared/files.ts', dir: false })).toBe('src/shared/files.ts')
   })
 })
 
