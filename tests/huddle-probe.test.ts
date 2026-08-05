@@ -8,6 +8,7 @@ import { closeSettings } from '../src/renderer/src/state/settings'
 import { useCrew } from '../src/renderer/src/state/store'
 import type { HuddlePeer } from '../src/shared/huddle'
 import type { ScreenSource } from '../src/shared/media'
+import { NO_UPDATE } from '../src/shared/update'
 import { landed } from './helpers/boot'
 import { installLocalStorage } from './helpers/local-storage'
 
