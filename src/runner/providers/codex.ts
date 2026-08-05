@@ -1,5 +1,6 @@
 import type { AgentSettingField } from '../../shared/llm'
-import { choices, makeCliProvider } from './cli'
+import type { McpServer } from '../../shared/plugins'
+import { choices, makeCliProvider, type SettingReader } from './cli'
 import { codexDialog } from './codex-app'
 import { codexModels } from './codex-models'
 import { itemActivity } from './codex-items'
