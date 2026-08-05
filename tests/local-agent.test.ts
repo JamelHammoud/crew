@@ -41,24 +41,30 @@ interface Fake {
   close: () => Promise<void>
 }
 
-async function fakeRuntime(turns: string[][]): Promise<Fake> {
+async function fakeRuntime(turns: string[][], kind: 'ollama' | 'openai' = 'ollama'): Promise<Fake> {
   const asked: Array<Record<string, any>> = []
   let heldFrom: number | null = null
+  const ollama = kind === 'ollama'
   const server: Server = createServer((req, res) => {
     let body = ''
     req.on('data', chunk => (body += chunk))
     req.on('end', async () => {
-      if (req.url === '/api/tags') {
+      if (ollama && req.url === '/api/tags') {
         res.writeHead(200, { 'content-type': 'application/json' })
         res.end(JSON.stringify({ models: [{ name: 'thinker:8b', digest: 'sha256:one' }] }))
         return
       }
-      if (req.url === '/api/show') {
+      if (ollama && req.url === '/api/show') {
         res.writeHead(200, { 'content-type': 'application/json' })
         res.end(JSON.stringify({ capabilities: ['completion', 'tools', 'thinking'] }))
         return
       }
-      if (req.url === '/api/chat') {
+      if (!ollama && req.url === '/v1/models') {
+        res.writeHead(200, { 'content-type': 'application/json' })
+        res.end(JSON.stringify({ data: [{ id: 'thinker:8b' }] }))
+        return
+      }
+      if (req.url === (ollama ? '/api/chat' : '/v1/chat/completions')) {
         const parsed = JSON.parse(body || '{}')
         const at = asked.length
         asked.push(parsed)
