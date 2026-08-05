@@ -141,7 +141,7 @@ export default function ThreadView({
     setThreadDraft(threadId, '')
   }
 
-  const mention = useMentionAutocomplete(text, write, inputRef)
+  const mention = useMentionAutocomplete(text, write, inputRef, { commands: offered })
   const slash = useSlashCommands(text, write, takeCommand, inputRef, offered)
   const items = useMemo(() => buildThread(threadEvents, steps, selfId, agents), [threadEvents, steps, selfId, agents])
   const tail = useDrawnTail(items.length, THREAD_PAGE, scrollRef)
