@@ -47,34 +47,54 @@ const landed = (): void => {
   settling = null
 }
 
-export const useSidebar = create<SidebarState>((set, get) => ({
-  pinned: held(),
-  peeking: false,
-  toggle: () => {
-    hold()
-    landed()
-    const pinned = !get().pinned
-    keep(pinned)
-    if (pinned && get().peeking) {
-      set({ pinned })
-      settling = setTimeout(() => {
-        settling = null
-        set({ peeking: false })
-      }, PIN_MS)
-      return
-    }
-    set({ pinned, peeking: false })
-  },
-  peek: on => {
-    hold()
-    if (on) {
-      if (!get().pinned) set({ peeking: true })
-      return
-    }
-    if (get().pinned) return
-    closing = setTimeout(() => {
-      closing = null
-      set({ peeking: false })
-    }, GRACE_MS)
+export const useSidebar = create<SidebarState>((set, get) => {
+  const settle = (): void => {
+    const { pinned, near, over } = get()
+    if (pinned) return
+    set({ peeking: near || over })
   }
-}))
+
+  return {
+    pinned: held(),
+    peeking: false,
+    near: false,
+    over: false,
+    toggle: () => {
+      stay()
+      landed()
+      const pinned = !get().pinned
+      keep(pinned)
+      if (pinned && get().peeking) {
+        set({ pinned })
+        settling = setTimeout(() => {
+          settling = null
+          set({ peeking: false, near: false, over: false })
+        }, PIN_MS)
+        return
+      }
+      set({ pinned, peeking: false, near: false, over: false })
+    },
+    peek: on => {
+      stay()
+      if (on) {
+        set({ near: true })
+        settle()
+        return
+      }
+      if (get().pinned) {
+        set({ near: false })
+        return
+      }
+      closing = setTimeout(() => {
+        closing = null
+        set({ near: false })
+        settle()
+      }, GRACE_MS)
+    },
+    hold: on => {
+      if (on) stay()
+      set({ over: on })
+      settle()
+    }
+  }
+})
