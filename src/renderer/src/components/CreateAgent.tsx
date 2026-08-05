@@ -302,7 +302,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
                   onKeyDown={e => {
                     if (e.key === 'Enter' && address.trim()) void addServer()
                   }}
-                  placeholder="llm.example.com:8000/v1"
+                  placeholder="Address"
                 />
                 <TextField
                   glass
@@ -312,7 +312,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
                   onKeyDown={e => {
                     if (e.key === 'Enter' && address.trim()) void addServer()
                   }}
-                  placeholder="Key, if it wants one"
+                  placeholder="Key"
                 />
                 <p className="text-sm text-fg/45">The key stays on this computer.</p>
               </div>
