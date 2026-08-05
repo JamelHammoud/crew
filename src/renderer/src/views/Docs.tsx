@@ -19,7 +19,7 @@ import { cornerRoom, useHeaderSlot } from '../state/headerSlot'
 import { SIDEBAR_W, useSidebar } from '../state/sidebar'
 import { useCrew } from '../state/store'
 
-const COLUMN_TOP = 'var(--page-rest)'
+const COLUMN_TOP = DOC_TOP
 const ROW = 'h-8 text-sm font-medium'
 
 interface PageNode {
