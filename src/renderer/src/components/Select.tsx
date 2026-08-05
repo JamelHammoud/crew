@@ -68,7 +68,6 @@ export default function Select({
               }}
               className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-left whitespace-nowrap text-fg/70 transition-colors hover:text-fg hover:bg-fg/5"
             >
-              <PlusGlyph className="w-4 h-4 shrink-0" />
               <span className="flex-1">{add.label}</span>
             </button>
           </>
