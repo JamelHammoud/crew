@@ -133,7 +133,7 @@ export default function BrowserPanel() {
       <header className="app-drag h-[70px] px-4 flex items-center gap-1.5 shrink-0">
         <div
           ref={row.ref}
-          className="app-no-drag flex-1 min-w-0 flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none]"
+          className="app-no-drag flex-1 min-w-0 flex items-center gap-1.5 overflow-x-auto overflow-y-hidden no-scrollbar"
         >
           {tabs.length === 0 && <StartPill />}
           {tabs.map(tab => (
