@@ -660,6 +660,18 @@ export class CrewSession {
       if (event.kind === 'memory.setting') {
         this.memoryEnabled = event.enabled
       }
+      if (event.kind === 'plugin.added') {
+        this.plugins.set(event.pluginId, {
+          id: event.pluginId,
+          ...event.plugin,
+          by: event.byName,
+          byAgentId: event.agentId,
+          ts: event.ts
+        })
+      }
+      if (event.kind === 'plugin.removed') {
+        this.plugins.delete(event.pluginId)
+      }
       if (event.kind === 'attachment.limit') {
         this.attachmentMb = cleanAttachmentMb(event.mb) ?? this.attachmentMb
       }
