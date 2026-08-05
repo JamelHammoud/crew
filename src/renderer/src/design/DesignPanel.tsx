@@ -44,15 +44,16 @@ function SelectionHeader({ shapes, onClose }: { shapes: TLShape[]; onClose: () =
 
   if (!only) {
     return (
-      <div className="h-12 shrink-0 flex items-center px-4">
-        <span className="text-sm font-semibold text-fg">{shapes.length} layers</span>
+      <div className="h-12 shrink-0 flex items-center gap-2 pl-4 pr-2">
+        <span className="flex-1 text-sm font-semibold text-fg">{shapes.length} layers</span>
+        <HidePanel onClose={onClose} />
       </div>
     )
   }
 
   const Glyph = glyphForShape(only)
   return (
-    <div className="h-12 shrink-0 flex items-center gap-2 px-4 min-w-0">
+    <div className="h-12 shrink-0 flex items-center gap-2 pl-4 pr-2 min-w-0">
       <Glyph className="w-4 h-4 shrink-0 text-fg-muted" />
       {canRename(only) ? (
         <input
@@ -65,6 +66,7 @@ function SelectionHeader({ shapes, onClose }: { shapes: TLShape[]; onClose: () =
       ) : (
         <span className="flex-1 min-w-0 truncate text-sm font-semibold text-fg capitalize">{layerName(only)}</span>
       )}
+      <HidePanel onClose={onClose} />
     </div>
   )
 }
