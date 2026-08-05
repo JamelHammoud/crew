@@ -111,7 +111,9 @@ const TopBar = (await import('../src/renderer/src/components/TopBar')).default
 const WindowCorner = (await import('../src/renderer/src/components/WindowCorner')).default
 const { FolderGlyph, GlobeGlyph } = await import('../src/renderer/src/icons')
 
-const Sidebar = (props: { overlay?: boolean; strong?: boolean; onTab?: (tab: 'chat' | 'docs' | 'design') => void } = {}) =>
+const Sidebar = (
+  props: { overlay?: boolean; strong?: boolean; onTab?: (tab: 'chat' | 'docs' | 'design' | 'plugins') => void } = {}
+) =>
   createElement(SidebarView, { tab: 'chat' as const, onTab: () => {}, ...props })
 
 const corner = () => render(createElement(WindowCorner))
