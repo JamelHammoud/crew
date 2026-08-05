@@ -1,9 +1,11 @@
 import { goalBrief, goalCondition } from '../../shared/goal'
 import { resolveSettings, type AgentSettingField } from '../../shared/llm'
+import { serverUrl } from '../../shared/modelServers'
 import { commandExists } from './cli'
 import { startLoop, type LocalRun } from './local-loop'
 import { cachedModels, refreshModels } from './local-models'
-import { answering, cachedRuntimes, candidateUrls, ensureServing, findRuntimes } from './local-serve'
+import { cachedRuntimes, candidateUrls, ensureServing, findRuntimes, probeServer } from './local-serve'
+import { serverKey } from './local-servers'
 import { makeSink } from './run'
 import type { Provider, RunningPrompt } from './types'
 

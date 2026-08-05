@@ -590,6 +590,11 @@ app.whenReady().then(() => {
   ipcMain.handle('session:recent', () => crews.recentJoins())
   ipcMain.handle('agents:capabilities', () => crews.capabilities())
   ipcMain.handle('agents:install', (_event, provider: string) => crews.installProvider(provider))
+  ipcMain.handle('agents:servers', () => crews.modelServers())
+  ipcMain.handle('agents:addServer', (_event, input: { url: string; key?: string }) =>
+    crews.addModelServer(input)
+  )
+  ipcMain.handle('agents:forgetServer', (_event, url: string) => crews.forgetModelServer(url))
   ipcMain.handle('agents:create', (event, input: NewAgent) => crews.inView(event.sender.id).createAgent(input))
   ipcMain.handle('agents:remove', (event, instanceId: string) =>
     crews.inView(event.sender.id).removeAgent(instanceId)
