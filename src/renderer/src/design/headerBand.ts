@@ -1,5 +1,5 @@
 import type { DesignPanelsOpen } from '../components/designPanelsOpen'
-import { HEADER_EDGE } from '../state/headerSlot'
+import { cornerRoom, HEADER_EDGE } from '../state/headerSlot'
 
 export const LEFT_PANEL_W = 256
 export const RIGHT_PANEL_W = 340
