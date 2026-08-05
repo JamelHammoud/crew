@@ -28,7 +28,7 @@ const path = require('node:path')
 const wait = ms => new Promise(r => setTimeout(r, ms))
 
 app.whenReady().then(async () => {
-  const win = new BrowserWindow({ width: 900, height: 400, show: true, frame: false, transparent: true, backgroundColor: '#00000000', vibrancy: 'under-window' })
+  const win = new BrowserWindow({ width: 900, height: 400, x: 60, y: 120, show: true, frame: false, transparent: true, backgroundColor: '#00000000', vibrancy: 'under-window' })
   const read = async () => {
     const shot = await win.webContents.capturePage()
     const bmp = shot.toBitmap(); const size = shot.getSize()
@@ -42,7 +42,10 @@ app.whenReady().then(async () => {
   }
   try {
     await win.loadFile(path.join(__dirname, 'dist/index.html'))
-    await wait(800)
+    win.setBounds({ x: 60, y: 120, width: 900, height: 400 })
+    win.focus()
+    await wait(1500)
+    require('node:child_process').execFileSync('screencapture', ['-x', '-R60,120,900,400', '/tmp/glass-screen.png'])
     const normal = await read()
     await win.webContents.executeJavaScript("document.getElementById('root').classList.add('railed')")
     await wait(400)

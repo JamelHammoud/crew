@@ -565,7 +565,7 @@ export class AppSession {
     this.crewGit = null
     await git?.quiet()
     await crew?.quiet()
-    await this.server?.close()
-    this.server = null
+    await this.seat?.leave()
+    this.seat = null
   }
 }
