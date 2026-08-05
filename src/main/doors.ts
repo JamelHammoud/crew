@@ -31,7 +31,7 @@ export class Doors {
       if (door.hold(session)) return this.seatOn(door, session, shared)
       // A code two crews answer to is the one thing a door refuses, so that crew
       // stands on a door of its own rather than being answered for by another.
-      const alone = await openDoor(this.where(shared, true))
+      const alone = await openDoor({ host: shared ? '0.0.0.0' : '127.0.0.1', port: 0 })
       alone.hold(session)
       return { host: alone.host(), port: alone.port(), leave: () => alone.close() }
     })
