@@ -59,7 +59,7 @@ function boot(value: string) {
 describe('the composer overlay', () => {
   it('keeps the scrollbar out of the text column so both layers wrap alike', () => {
     const { textarea, overlay } = boot('a long line\n'.repeat(40))
-    expect(textarea.className).toContain('[scrollbar-width:none]')
+    expect(textarea.className).toContain('no-scrollbar')
     expect(overlay.className).not.toContain('pr-')
   })
 
