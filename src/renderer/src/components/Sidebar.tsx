@@ -223,7 +223,6 @@ export default function Sidebar({
           ))}
         </div>
       </div>
-      <NewPlace busy={busyKey !== null} onOpen={addPlace} />
     </aside>
   )
 }
