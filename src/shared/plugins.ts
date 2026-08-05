@@ -155,6 +155,14 @@ export const PLUGIN_OFFERS: readonly PluginOffer[] = [
     url: 'http://127.0.0.1:3845/mcp'
   },
   {
+    group: 'Design',
+    name: 'canva',
+    label: 'Canva',
+    blurb: 'Open a design, or start a new one',
+    transport: 'http',
+    url: 'https://mcp.canva.com/mcp'
+  },
+  {
     group: 'Code',
     name: 'github',
     label: 'GitHub',
