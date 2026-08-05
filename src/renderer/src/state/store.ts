@@ -874,7 +874,7 @@ export const useCrew = create<CrewState>((set, get) => {
         Object.assign(threadPrompts, msg.snapshot.threadPrompts ?? {})
         // A thread that has gone since is not one to come back to, so the row is
         // read against what the welcome really holds.
-        const wanted = threadsWanted.filter(id => threads[id])
+        const wanted = (threadsWanted ?? []).filter(id => threads[id])
         for (const agent of msg.snapshot.agents) {
           for (const [promptId, run] of Object.entries(agent.runs)) {
             for (const step of run.steps) gather(promptId, step)
