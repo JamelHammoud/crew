@@ -5,35 +5,36 @@ import { useSidebar } from '../../state/sidebar'
 import { MORE_TABS, MoreIcon, TAB_ICON, type Tab } from '../navTabs'
 import { MenuItem, Popover } from '../Popover'
 import Toolbox from '../Toolbox'
-import { useHoverMenu } from '../useHoverMenu'
+import { useHoverMenu, type Spot } from '../useHoverMenu'
 import NavRow from './NavRow'
 
 export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab) => void }) {
   const rowRef = useRef<HTMLDivElement>(null)
   const menu = useHoverMenu(rowRef)
   const holdRail = useSidebar(s => s.hold)
-  const [toolbox, setToolbox] = useState(false)
+  const [toolbox, setToolbox] = useState<Spot | null>(null)
   const here = MORE_TABS.some(one => one.id === tab)
   const open = menu.open
 
   useEffect(() => {
-    holdRail(open || toolbox)
+    holdRail(open || toolbox !== null)
   }, [holdRail, open, toolbox])
 
   useEffect(() => () => holdRail(false), [holdRail])
 
   const press = () => {
     if (toolbox) {
-      setToolbox(false)
+      setToolbox(null)
       return
     }
     menu.press()
   }
 
   const openToolbox = () => {
+    const at = menu.at
     menu.close()
     playSound('toolbox.open')
-    setToolbox(true)
+    setToolbox(at)
   }
 
   return (
