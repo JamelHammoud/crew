@@ -1,24 +1,26 @@
 import { spawn } from 'node:child_process'
 import { mkdtemp, readdir, readFile, realpath, rm, writeFile } from 'node:fs/promises'
-import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 import electron from 'electron'
 
-const here = path.dirname(fileURLToPath(import.meta.url))
 const root = '/Users/jamel/Documents/Repositories/crew'
 
-// A hard black/white edge under a glass card. Blurred, the edge smears across
-// the card. Unblurred, it stays a step.
 const PAGE = `<!doctype html>
-<html><head><meta charset="utf-8"><script type="module" src="./probe.js"></script></head>
+<html class="mac"><head><meta charset="utf-8"><script type="module" src="./probe.js"></script></head>
 <body class="bg-ink-900 text-fg font-sans">
   <div id="root">
-    <div style="position:fixed;inset:0;background:linear-gradient(to right,#000 0 300px,#fff 300px 100%)"></div>
+    <div class="flex h-screen">
+      <!-- the pinned rail: its own backdrop-filter, with a hard edge inside it -->
+      <aside id="rail" class="sidebar-pinned bg-ink-800" style="width:420px">
+        <div style="height:100%;background:linear-gradient(to right,#000 0 200px,#fff 200px 100%)"></div>
+      </aside>
+      <!-- a plain column, same hard edge, no backdrop-filter of its own -->
+      <div style="flex:1;background:linear-gradient(to right,#000 0 200px,#fff 200px 100%)"></div>
+    </div>
   </div>
-  <div id="card" class="glass fixed rounded-2xl" style="left:200px;top:100px;width:200px;height:120px"></div>
-  <div id="strong" class="glass glass-strong fixed rounded-2xl" style="left:200px;top:260px;width:200px;height:120px"></div>
+  <div id="overRail" class="glass fixed rounded-2xl" style="left:100px;top:60px;width:200px;height:120px"></div>
+  <div id="overPlain" class="glass fixed rounded-2xl" style="left:520px;top:60px;width:200px;height:120px"></div>
 </body></html>`
 
 const MAIN = `const { app, BrowserWindow } = require('electron')
@@ -26,34 +28,30 @@ const path = require('node:path')
 const wait = ms => new Promise(r => setTimeout(r, ms))
 
 app.whenReady().then(async () => {
-  const win = new BrowserWindow({ width: 600, height: 500, show: true })
-  const read = async label => {
+  const win = new BrowserWindow({ width: 900, height: 400, show: true })
+  const read = async () => {
     const shot = await win.webContents.capturePage()
     const bmp = shot.toBitmap(); const size = shot.getSize()
-    const scale = size.width / 600
-    // walk a row through the middle of each card, left to right
-    const row = y => {
-      const yy = Math.round(y * scale)
-      const out = []
-      for (let x = 205; x < 395; x += 5) {
-        const at = (yy * size.width + Math.round(x * scale)) * 4
-        out.push(bmp[at])
-      }
+    const scale = size.width / 900
+    const row = (x0, x1, y) => {
+      const yy = Math.round(y * scale); const out = []
+      for (let x = x0; x < x1; x += 5) out.push(bmp[(yy * size.width + Math.round(x * scale)) * 4])
       return out
     }
-    return { label, card: row(160), strong: row(320) }
+    return { overRail: row(105, 295, 120), overPlain: row(525, 715, 120) }
   }
   try {
     await win.loadFile(path.join(__dirname, 'dist/index.html'))
-    await wait(700)
-    const withFilter = await read('body filter: blur(0)')
-    await win.webContents.executeJavaScript("document.body.style.filter = 'none'")
-    await wait(500)
-    const without = await read('body filter: none')
-    console.log('SEEN ' + JSON.stringify({ withFilter, without }))
-  } catch (e) {
-    console.log('SEEN ' + JSON.stringify({ failed: String(e && e.message) }))
-  }
+    await wait(800)
+    const normal = await read()
+    await win.webContents.executeJavaScript("document.getElementById('root').classList.add('railed')")
+    await wait(400)
+    const railed = await read()
+    await win.webContents.executeJavaScript("document.getElementById('rail').style.backdropFilter = 'none'")
+    await wait(400)
+    const noRailFilter = await read()
+    console.log('SEEN ' + JSON.stringify({ normal, railed, noRailFilter }))
+  } catch (e) { console.log('SEEN ' + JSON.stringify({ failed: String(e && e.message) })) }
   app.exit(0)
 })`
 
@@ -66,33 +64,19 @@ await writeFile(path.join(dir, 'main.cjs'), MAIN)
 const { build } = await import('vite')
 const tailwind = (await import('@tailwindcss/vite')).default
 await build({ root: dir, base: './', logLevel: 'silent', plugins: [tailwind()], build: { outDir: path.join(dir, 'dist'), emptyOutDir: true } })
-const assets = path.join(dir, 'dist/assets')
-const sheet = (await readdir(assets)).find(n => n.endsWith('.css'))
-const css = await readFile(path.join(assets, sheet), 'utf8')
-console.log('backdrop-filter in sheet:', css.includes('backdrop-filter'))
 
 const seen = await new Promise((res, rej) => {
   const child = spawn(electron, [path.join(dir, 'main.cjs')], { stdio: ['ignore', 'pipe', 'pipe'] })
   let out = ''
-  child.stdout.on('data', c => (out += c))
-  child.stderr.on('data', () => {})
-  child.on('exit', () => {
-    const line = out.split('\n').find(r => r.startsWith('SEEN '))
-    line ? res(JSON.parse(line.slice(5))) : rej(new Error('nothing back'))
-  })
+  child.stdout.on('data', c => (out += c)); child.stderr.on('data', () => {})
+  child.on('exit', () => { const l = out.split('\n').find(r => r.startsWith('SEEN ')); l ? res(JSON.parse(l.slice(5))) : rej(new Error('nothing back')) })
   child.on('error', rej)
 })
-
-const show = (o) => {
-  for (const key of ['card','strong']) {
-    const v = o[key]
-    // how many samples sit strictly between the two plateaus = how wide the edge is
-    const lo = Math.min(...v), hi = Math.max(...v)
-    const mid = v.filter(n => n > lo + (hi-lo)*0.15 && n < hi - (hi-lo)*0.15).length
-    console.log(`  ${key.padEnd(7)} lo=${lo} hi=${hi} samples-in-ramp=${mid}  ${v.join(',')}`)
-  }
+if (seen.failed) throw new Error(seen.failed)
+const ramp = v => { const lo = Math.min(...v), hi = Math.max(...v); return v.filter(n => n > lo + (hi-lo)*0.15 && n < hi - (hi-lo)*0.15).length }
+for (const [name, o] of Object.entries(seen)) {
+  console.log(name.padEnd(14), 'overRail ramp=' + String(ramp(o.overRail)).padStart(2), ' overPlain ramp=' + String(ramp(o.overPlain)).padStart(2))
+  console.log('   rail :', o.overRail.join(','))
+  console.log('   plain:', o.overPlain.join(','))
 }
-console.log('=== ' + seen.withFilter.label); show(seen.withFilter)
-console.log('=== ' + seen.without.label); show(seen.without)
-
 await rm(dir, { recursive: true, force: true })
