@@ -2,7 +2,7 @@
 
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
-import { afterEach, beforeAll, describe, expect, it } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import MediaView from '../src/renderer/src/components/MediaView'
 import { clock } from '../src/renderer/src/components/music/say'
 import { mediaSound, setMediaMuted, setMediaVolume } from '../src/renderer/src/state/mediaVolume'
