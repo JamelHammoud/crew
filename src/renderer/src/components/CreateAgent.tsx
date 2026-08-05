@@ -43,6 +43,12 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
   const [loading, setLoading] = useState(false)
   const [installing, setInstalling] = useState<string | null>(null)
   const [error, setError] = useState('')
+  const [screen, setScreen] = useState<'agent' | 'server'>('agent')
+  const [servers, setServers] = useState<ModelServer[]>([])
+  const [address, setAddress] = useState('')
+  const [key, setKey] = useState('')
+  const [adding, setAdding] = useState(false)
+  const [addError, setAddError] = useState('')
   const providerRef = useRef('')
 
   useEffect(() => {
