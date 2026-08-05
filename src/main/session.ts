@@ -32,6 +32,7 @@ import {
   absolutePathOf,
   listRepoFiles,
   readLocalFile,
+  readMachineDirs,
   readRepoFile,
   repoPathOf,
   writeLocalFile,
@@ -41,6 +42,7 @@ import {
 import { locatePath } from './locate'
 import { SavedSessionStore } from './saved-session'
 import type { PathLocation, RepoFile } from '../shared/files'
+import type { MachineDir } from '../shared/machinePath'
 import { cleanMemberName } from '../shared/people'
 
 export type { CurrentSession, OpenOptions, ProjectPlan } from '../shared/session'
