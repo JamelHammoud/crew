@@ -234,9 +234,11 @@ try {
   seen.forEach((read, i) => {
     const [say, width] = CASES[i]
     console.log(`\n${say} (${width} wide)`)
-    console.log(`  rail ends at ${read.rail?.right}, list ${read.list?.left} to ${read.list?.right}`)
-    console.log(`  first row ${read.firstRow?.left} to ${read.firstRow?.right}, top ${read.firstRow?.top}`)
-    console.log(`  lit row paint ${read.litPaint} against the rail's own ${read.railPaint}`)
+    console.log(`  rail ends at ${read.rail?.right}`)
+    console.log(`  Docs row ${read.navRow?.height} tall, painted ${read.navPaint}`)
+    console.log(`  a page row ${read.firstRow?.height} tall, ${read.firstRow?.left} to ${read.firstRow?.right}`)
+    console.log(`  lit row paint ${read.litPaint}`)
+    console.log(`  rule ${read.rule ? `${read.rule.left} to ${read.rule.right}` : 'none'} against the rail 0 to ${read.rail?.right}`)
     console.log(`  title ${read.title?.left} to ${read.title?.right}, top ${read.title?.top}`)
     console.log(`  body ${read.body?.left} to ${read.body?.right} (${read.body?.width} across)`)
     const page = read.rail ? width - read.rail.right : width
