@@ -491,11 +491,11 @@ export const useBrowser = create<BrowserState>((write, get) => {
       const closedBoards = get().closedBoards.filter(id => id !== threadId)
       const existing = get().tabs.find(t => t.kind === 'work')
       if (existing?.threadId === threadId) {
-        set({ activeTabId: existing.id, closedBoards })
+        write({ activeTabId: existing.id, closedBoards })
         return
       }
       const tab = { ...makeTab(), kind: 'work' as const, threadId }
-      set(s => ({ tabs: [tab, ...s.tabs.filter(t => t.kind !== 'work')], activeTabId: tab.id, closedBoards }))
+      write(s => ({ tabs: [tab, ...s.tabs.filter(t => t.kind !== 'work')], activeTabId: tab.id, closedBoards }))
     },
     hideWork: () => {
       set(s => without(s, t => t.kind === 'work') ?? {})
