@@ -190,7 +190,10 @@ export default function Sidebar({
         ))}
         <SidebarMore tab={tab} onTab={goToTab} />
       </nav>
-      <h2 className="app-no-drag shrink-0 px-4 pt-5 pb-1 text-xs font-medium text-fg/45">Projects</h2>
+      <div className="app-no-drag group shrink-0 pl-4 pr-2 pt-5 pb-1 flex items-center justify-between">
+        <h2 className="text-xs font-medium text-fg/45">Projects</h2>
+        <NewPlace busy={busyKey !== null} onOpen={addPlace} />
+      </div>
       <div
         ref={node => {
           scroller.current = node
