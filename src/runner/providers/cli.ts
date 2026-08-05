@@ -9,6 +9,7 @@ import { makeSink } from './run'
 import type {
   Dialog,
   InstallCommands,
+  McpHandover,
   OutputParser,
   ParsedOutput,
   Provider,

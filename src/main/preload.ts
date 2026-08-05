@@ -74,6 +74,7 @@ const bridge = {
   copyImage: (src: string): Promise<boolean> => ipcRenderer.invoke('clipboard:image', src),
   readFile: (path: string): Promise<RepoFile | null> => ipcRenderer.invoke('file:read', path),
   listFiles: (): Promise<string[]> => ipcRenderer.invoke('file:list'),
+  readDirs: (query: string): Promise<MachineDir[]> => ipcRenderer.invoke('file:dirs', query),
   writeFile: (path: string, text: string): Promise<RepoFile | null> =>
     ipcRenderer.invoke('file:write', path, text),
   locatePath: (path: string): Promise<PathLocation> => ipcRenderer.invoke('file:locate', path),
