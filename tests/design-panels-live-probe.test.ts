@@ -199,4 +199,32 @@ describe('the design panels on a real board', () => {
     fireEvent.keyDown(window, { key: 'v' })
     expect(editor.getCurrentToolId()).toBe('select')
   })
+
+  it('is put away from its own top corner, whichever side of it is showing', () => {
+    const editor = board()
+    node(editor, 'Card', 0)
+    let away = 0
+    inside(editor, createElement(DesignLeftPanel, { onClose: () => (away += 1) }))
+
+    const layers = screen.getByLabelText('Layers').querySelector('[data-design-layers]')!
+    const hide = screen.getAllByLabelText('Hide panel')
+    expect(hide.some(button => layers.contains(button))).toBe(true)
+
+    fireEvent.click(hide.find(button => layers.contains(button))!)
+    expect(away).toBe(1)
+  })
+
+  it('keeps that corner once a shape is picked and the panel turns over', () => {
+    const editor = board()
+    const card = node(editor, 'Card', 0)
+    let away = 0
+    inside(editor, createElement(DesignLeftPanel, { onClose: () => (away += 1) }))
+
+    act(() => editor.select(card))
+    const inspector = document.querySelector('[data-design-inspector]')!
+    const hide = screen.getAllByLabelText('Hide panel').find(button => inspector.contains(button))!
+
+    fireEvent.click(hide)
+    expect(away).toBe(1)
+  })
 })
