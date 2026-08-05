@@ -35,6 +35,7 @@ export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: 
       dictionary: docDictionary,
       extensions: [docEmoji],
       dropCursor: { width: 2, color: false },
+      tables: { headers: true },
       links: {
         onClick: (event: MouseEvent) => {
           const href = (event.target as HTMLElement).closest('a')?.getAttribute('href')
