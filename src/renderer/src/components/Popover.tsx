@@ -178,11 +178,12 @@ export function Popover({
 
   useEffect(() => {
     if (!open) return
-    const anchor = holderRef.current?.parentElement
+    const own = holderRef.current?.parentElement
     const onPointerDown = (event: PointerEvent) => {
       const target = event.target as Node
       if (within(target)) return
-      if (at || !anchor?.contains(target)) onClose()
+      const from = at ? anchor?.current : own
+      if (!from?.contains(target)) onClose()
     }
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose()
