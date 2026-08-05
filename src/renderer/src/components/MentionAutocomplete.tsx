@@ -62,6 +62,13 @@ export function useMentionAutocomplete(
     useProjectFiles.getState().read(place)
   }, [place, query?.trigger])
 
+  // A folder off this machine is read once and kept, so walking down it is the
+  // menu filtering a listing it already holds rather than a read a keystroke.
+  const dirQuery = query?.trigger === '/' ? machineDirQuery(query.text) : null
+  useEffect(() => {
+    if (dirQuery !== null) useMachineFiles.getState().read(place, dirQuery)
+  }, [dirQuery, place])
+
   const matches = useMemo<MentionItem[]>(() => {
     if (query?.trigger === '@')
       return [
