@@ -25,6 +25,7 @@ const PAGE = `<!doctype html>
 
 const MAIN = `const { app, BrowserWindow } = require('electron')
 const path = require('node:path')
+if (process.env.SOFTWARE) app.disableHardwareAcceleration()
 const wait = ms => new Promise(r => setTimeout(r, ms))
 
 app.whenReady().then(async () => {
@@ -43,11 +44,7 @@ app.whenReady().then(async () => {
   try {
     await win.loadFile(path.join(__dirname, 'dist/index.html'))
     win.setBounds({ x: 60, y: 120, width: 900, height: 400 })
-    win.setAlwaysOnTop(true, 'screen-saver')
-    win.moveTop(); win.focus()
-    await wait(2500)
-    require('node:child_process').execFileSync('screencapture', ['-x', '-R60,120,900,400', '/tmp/glass-screen.png'])
-    await wait(200)
+    await wait(600)
     const normal = await read()
     await win.webContents.executeJavaScript("document.getElementById('root').classList.add('railed')")
     await wait(400)
@@ -75,7 +72,7 @@ const tailwind = (await import('@tailwindcss/vite')).default
 await build({ root: dir, base: './', logLevel: 'silent', plugins: [tailwind()], build: { outDir: path.join(dir, 'dist'), emptyOutDir: true } })
 
 const seen = await new Promise((res, rej) => {
-  const child = spawn(electron, [path.join(dir, 'main.cjs')], { stdio: ['ignore', 'pipe', 'pipe'] })
+  const child = spawn(electron, [path.join(dir, 'main.cjs')], { stdio: ['ignore', 'pipe', 'pipe'], env: process.env })
   let out = ''
   child.stdout.on('data', c => (out += c)); child.stderr.on('data', () => {})
   child.on('exit', () => { const l = out.split('\n').find(r => r.startsWith('SEEN ')); l ? res(JSON.parse(l.slice(5))) : rej(new Error('nothing back')) })
