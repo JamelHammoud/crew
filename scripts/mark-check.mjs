@@ -50,9 +50,6 @@ const PAGE = `<!doctype html>
   #root { display:flex; flex-wrap:wrap; }
   .cell { width:${AT}px; height:${AT}px; display:grid; place-items:center;
           color: rgba(255,255,255,${ALPHA}) !important; }
-  /* The wrapper opens a fixed slot and clips: the mark's own paint is what is
-     being read here, so it is let out of it for the length of the check. */
-  .cell .tab-icon { width:auto !important; height:auto !important; overflow:visible !important; }
 </style></head>
 <body><div id="root"></div></body></html>`
 
