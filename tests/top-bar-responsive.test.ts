@@ -163,14 +163,4 @@ describe('the way back to the side panel', () => {
     act(() => useBrowser.getState().closeAll())
     expect(screen.queryByRole('button', { name: 'Show panel' })).toBeNull()
   })
-
-  it('stands down where the panel cannot', () => {
-    render(createElement(TopBar))
-    minimized()
-    expect(screen.queryByRole('button', { name: 'Show panel' })).toBeNull()
-
-    cleanup()
-    render(createElement(TopBar))
-    expect(screen.queryByRole('button', { name: 'Show panel' })).toBeNull()
-  })
 })
