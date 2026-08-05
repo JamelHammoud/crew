@@ -86,7 +86,7 @@ const show = (tab?: Parameters<typeof openSettings>[0]) => {
 
 describe('the settings', () => {
   it('is what your own face opens, with no menu in between', () => {
-    render(createElement(TopBar, { tab: 'chat' as const, onTab: vi.fn() }))
+    render(createElement(TopBar))
     render(createElement(Settings))
     expect(screen.queryByRole('dialog', { name: 'Settings' })).toBeNull()
 
@@ -96,7 +96,7 @@ describe('the settings', () => {
   })
 
   it('leaves the three pages to the rail, so the header names none of them', () => {
-    render(createElement(TopBar, { tab: 'chat' as const, onTab: vi.fn() }))
+    render(createElement(TopBar))
     expect(screen.queryByRole('navigation', { name: 'Main navigation' })).toBeNull()
     expect(screen.queryByRole('button', { name: 'Docs' })).toBeNull()
     expect(screen.queryByRole('button', { name: 'Design' })).toBeNull()

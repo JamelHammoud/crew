@@ -150,7 +150,7 @@ describe('the way back to the side panel', () => {
     })
 
   it('stands at the end of the row, past your own face, and puts the panel back', () => {
-    render(createElement(TopBar, { tab: 'chat', onTab: () => {} }))
+    render(createElement(TopBar))
     minimized()
 
     const button = screen.getByRole('button', { name: 'Show panel' })
@@ -163,7 +163,7 @@ describe('the way back to the side panel', () => {
   })
 
   it('stands only while the panel is away with something in it', () => {
-    render(createElement(TopBar, { tab: 'chat', onTab: () => {} }))
+    render(createElement(TopBar))
     expect(screen.queryByRole('button', { name: 'Show panel' })).toBeNull()
 
     act(() => useBrowser.getState().addTab())
@@ -177,12 +177,12 @@ describe('the way back to the side panel', () => {
   })
 
   it('stands down where the panel cannot', () => {
-    render(createElement(TopBar, { tab: 'docs', onTab: () => {} }))
+    render(createElement(TopBar))
     minimized()
     expect(screen.queryByRole('button', { name: 'Show panel' })).toBeNull()
 
     cleanup()
-    render(createElement(TopBar, { tab: 'design', onTab: () => {} }))
+    render(createElement(TopBar))
     expect(screen.queryByRole('button', { name: 'Show panel' })).toBeNull()
   })
 })

@@ -354,7 +354,7 @@ describe('the tasks button', () => {
   it('shows the same number the app badge is given', () => {
     const threads = { t1: thread('t1'), t2: thread('t2'), t3: thread('t3', { status: 'done' }) }
     useCrew.setState({ threads, threadPrompts: {}, queues: {} })
-    render(createElement(TopBar, { tab: 'chat', onTab: () => {} }))
+    render(createElement(TopBar))
 
     const count = reviewCount(useCrew.getState())
     expect(count).toBe(2)
