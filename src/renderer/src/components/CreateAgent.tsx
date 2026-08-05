@@ -46,7 +46,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
   const [screen, setScreen] = useState<'agent' | 'server'>('agent')
   const [servers, setServers] = useState<ModelServer[]>([])
   const [address, setAddress] = useState('')
-  const [key, setKey] = useState('')
+  const [serverKey, setServerKey] = useState('')
   const [adding, setAdding] = useState(false)
   const [addError, setAddError] = useState('')
   const providerRef = useRef('')
@@ -140,11 +140,11 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
     setAddError('')
     try {
       const url = address.trim()
-      const fresh = await window.crew.addModelServer({ url, ...(key.trim() ? { key: key.trim() } : {}) })
+      const fresh = await window.crew.addModelServer({ url, ...(serverKey.trim() ? { key: serverKey.trim() } : {}) })
       setServers(await window.crew.modelServers())
       landOn(url, fresh)
       setAddress('')
-      setKey('')
+      setServerKey('')
       setScreen('agent')
     } catch (err) {
       setAddError(String(err instanceof Error ? err.message : err))
@@ -307,8 +307,8 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
                 <TextField
                   glass
                   type="password"
-                  value={key}
-                  onChange={e => setKey(e.target.value)}
+                  value={serverKey}
+                  onChange={e => setServerKey(e.target.value)}
                   onKeyDown={e => {
                     if (e.key === 'Enter' && address.trim()) void addServer()
                   }}
