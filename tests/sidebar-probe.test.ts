@@ -166,13 +166,14 @@ describe('the sidebar', () => {
     expect(container.querySelector('aside')?.className).toContain('sidebar-pinned')
   })
 
-  it('holds the three pages at its head, in the order the header holds them, and More under them', () => {
+  it('holds the three pages at its head, then the tasks, then More under them', () => {
     const { container } = render(Sidebar())
     const nav = container.querySelector('nav[aria-label="Main navigation"]') as HTMLElement
     expect([...nav.querySelectorAll('button')].map(one => one.textContent)).toEqual([
       'Chat',
       'Docs',
       'Design',
+      'Tasks',
       'More'
     ])
     expect(nav.querySelector('button[aria-current="page"]')?.textContent).toBe('Chat')
