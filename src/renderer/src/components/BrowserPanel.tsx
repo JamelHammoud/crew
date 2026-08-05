@@ -28,6 +28,7 @@ import {
 import { useBrowser, type BrowserTab } from '../state/browser'
 import { useCrew } from '../state/store'
 import { markFor } from './attachmentMark'
+import { bringInto } from './scrollInto'
 import { usePanelOpens, type PanelOpen } from './panelOpens'
 import { useReorder, type Reorder } from './useReorder'
 import AsideView from './AsideView'
