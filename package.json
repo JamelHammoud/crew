@@ -106,6 +106,7 @@
     "scribe-check": "node scripts/scribe-check.mjs",
     "scribe-caret-check": "node scripts/scribe-caret-check.mjs",
     "preview-check": "node scripts/preview-check.mjs",
+    "scrim-check": "node scripts/scrim-check.mjs",
     "codex-check": "node scripts/codex-check.mjs",
     "goal-check": "node scripts/goal-check.mjs",
     "kimi-check": "node scripts/kimi-check.mjs",

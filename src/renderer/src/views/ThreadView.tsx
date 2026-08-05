@@ -313,8 +313,8 @@ export default function ThreadView({
         >
           <div
             ref={contentRef}
-            className="max-w-[660px] mx-auto pt-28 space-y-5"
-            style={{ paddingBottom: room }}
+            className="max-w-[660px] mx-auto space-y-5"
+            style={{ paddingTop: 'var(--page-scrim)', paddingBottom: room }}
           >
             {thread.forkedFrom && !tail.more && <ForkedFrom threadId={thread.forkedFrom} />}
             <ThreadItems threadId={threadId} items={drawn} onReply={onReply} />

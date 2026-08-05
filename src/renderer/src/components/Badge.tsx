@@ -12,7 +12,12 @@ export default function Badge({
 }): ReactElement | null {
   if (count !== undefined && count <= 0) return null
   const ring = rim ? 'ring-2 ring-ink-900' : ''
-  if (count === undefined) return <span className={`w-2 h-2 rounded-full bg-fg ${ring} ${className}`} />
+  if (count === undefined)
+    return (
+      <span className={`w-3.5 h-3.5 rounded-full bg-fg flex items-center justify-center ${ring} ${className}`}>
+        <span className="w-1.5 h-1.5 rounded-full bg-ink-900" />
+      </span>
+    )
   return (
     <span
       className={`min-w-[18px] h-[18px] px-1 rounded-full bg-fg text-ink-900 text-xs font-bold flex items-center justify-center ${ring} ${className}`}
