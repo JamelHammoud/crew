@@ -7,6 +7,7 @@ import { projectPlace, type LivePlace } from '../shared/places'
 import { projectKey, readCrewRemote } from '../shared/project'
 import type { RecentJoin, RecentProject } from '../shared/recent'
 import type { CurrentSession, OpenOptions, ProjectPlan } from '../shared/session'
+import { Doors } from './doors'
 import { SavedSessionStore } from './saved-session'
 import { AppSession, isGitRepo } from './session'
 
