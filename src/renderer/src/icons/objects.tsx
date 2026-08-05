@@ -198,18 +198,23 @@ export const PromptGlyph = glyph(
 )
 
 // A round bubble with a mouth in it. The body is a true circle rather than a
-// rounded box, r 8.8 about (12.4, 11.8), and the tail is a wedge cut into its
-// lower left: the outline leaves the circle at 166 degrees, runs out to a point
-// at 143 and comes back at 100. Said as three angles and a reach rather than as
-// a hand fitted triangle, because every one of those numbers has to land back on
-// the circle exactly or the join reads as a dent.
+// rounded box, r 8.8 about (12.4, 11.8), and the tail is a corner squared off
+// out of its lower left: the outline leaves the circle at 170 degrees, turns a
+// right angle, and comes back at 96.
+//
+// That corner is a right angle by construction rather than by eye. The two joins
+// are fixed on the circle, so the point where the edges meet square is the one
+// standing on the circle that has those two joins as its diameter, which is
+// Thales, taken on the far side from the body. Nudged by hand instead it comes
+// out at 85 or 95 degrees, and a corner that is nearly square reads as a corner
+// drawn wrong where a real one reads as a decision. It is left as a plain corner
+// and the round join is what softens it, since a right angle is already blunt:
+// the rule about turning every corner is there to keep spikes out of the set.
 //
 // The tail is wide and it points away to the left. A tail is the one thing that
 // tells a bubble from a plain circle, so it is the last mark here to draw small:
 // hung off a short flat and dropped a little it reads as a chip out of the edge
-// at the 18 this is worn at in the rail. Taken across a third of the circle and
-// carried out past its edge, to 1.35 of the radius, it reads as a bubble
-// pointing at somebody.
+// at the 18 this is worn at in the rail.
 //
 // The three dots are what came off. Three of them is the typing indicator and
 // the same mark a thought already wears, so the tab for the place the crew talks
@@ -223,7 +228,7 @@ export const PromptGlyph = glyph(
 // circle, which puts it low in the face the way a mouth sits.
 export const ChatGlyph = glyph(
   <>
-    <path d="M10.87 20.47A8.8 8.8 0 1 0 3.86 13.93L2.91 18.95Z" />
+    <path d="M11.48 20.55A8.8 8.8 0 1 0 3.73 13.33L4 20.81Z" />
     <path d="M8.15 11.8a4.25 4.25 0 0 0 8.5 0" />
   </>
 )
