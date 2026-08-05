@@ -16,7 +16,7 @@ export default function SidebarTasks() {
 
   return (
     <NavRow
-      icon={<TasksTabIcon size={18} />}
+      icon={<CheckCircleGlyph className={TAB_ICON} />}
       label="Tasks"
       lit={open}
       expanded={open}
