@@ -259,23 +259,25 @@ export default function Docs() {
 
   return (
     <div className="h-full flex relative">
-      <aside {...dropProps('')} className="w-64 shrink-0 flex flex-col min-h-0 pt-24 pb-6 pl-6 pr-2">
-          <span className="text-sm font-semibold text-fg-muted px-3.5 mb-2">Pages</span>
+      <aside
+        {...dropProps('')}
+        style={{ paddingTop: COLUMN_TOP }}
+        className="w-64 shrink-0 flex flex-col min-h-0 pb-4 px-4"
+      >
           <div
-            className={`flex-1 min-h-0 overflow-y-auto space-y-0.5 rounded-card transition-all duration-150 ${
+            className={`flex-1 min-h-0 overflow-y-auto space-y-0.5 rounded-card transition-colors duration-150 ${
               dragged && dropTarget === '' ? 'bg-fg/[0.06] ring-1 ring-fg/20' : ''
             }`}
           >
             {tree.map(node => renderNode(node, 0))}
-            <div className="h-10" />
+            <button
+              onClick={() => createPage('')}
+              className={`w-full flex items-center gap-1.5 pl-5 text-left ${ROW} rounded-full text-fg-muted transition-colors hover:text-fg-secondary hover:bg-fg/[0.04]`}
+            >
+              <PlusGlyph className="w-4 h-4 shrink-0" />
+              New page
+            </button>
           </div>
-          <button
-            onClick={() => createPage('')}
-            className="mt-1 w-full flex items-center gap-2 text-left px-3.5 py-2 rounded-full text-sm font-semibold text-fg-muted transition-colors hover:text-fg-secondary hover:bg-fg/[0.04]"
-          >
-            <PlusGlyph className="w-4 h-4 shrink-0" />
-            New page
-          </button>
           <Popover open={menu !== null} onClose={() => setMenu(null)} at={menu ?? undefined} align="start">
             <MenuItem
               icon={<PlusGlyph />}
