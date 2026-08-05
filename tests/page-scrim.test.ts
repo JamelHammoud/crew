@@ -77,8 +77,10 @@ describe('the scrim over the top of a page', () => {
   it('is off the design board, which fades its own canvas in its own colour', () => {
     expect(app).toContain("tab !== 'design' && <div className=\"page-scrim")
     expect(app).not.toContain("'bg-ink-900'")
-    expect(styles).toContain('.page-scrim,\n.design-scrim {')
-    expect(block('.design-scrim {')).toContain('background: var(--design-canvas)')
+    const own = block('.design-scrim {')
+    expect(own).toContain('background: var(--design-canvas)')
+    expect(own).toContain('mask-image: var(--scrim-ramp)')
+    expect(block('.page-scrim {')).toContain('mask-image: var(--scrim-ramp)')
   })
 })
 
