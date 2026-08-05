@@ -52,6 +52,12 @@ export interface AgentSettingField {
   label: string
   options: AgentSettingOption[]
   default: string
+  // A value may be written into this one rather than only picked from the
+  // list. What is offered is what this machine has found, and what somebody
+  // wrote is still theirs: dropped for not being in the options, a server
+  // written down here would quietly become a different server on the way to
+  // the run.
+  free?: boolean
   visibleWhen?: {
     key: string
     value: string
@@ -63,7 +69,7 @@ export function resolveSettings(fields: AgentSettingField[], settings: AgentSett
   for (const field of fields) {
     const chosen = settings[field.key]
     const valid = field.options.some(option => option.value === chosen)
-    out[field.key] = valid ? chosen : field.default
+    out[field.key] = valid || (field.free && chosen) ? chosen : field.default
   }
   return out
 }
