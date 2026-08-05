@@ -131,7 +131,12 @@ const body = (req: ChatRequest, think: boolean): string => {
 }
 
 const endpoint = (req: ChatRequest): string =>
-  `${req.runtime.url}${req.runtime.kind === 'ollama' ? '/api/chat' : '/v1/chat/completions'}`
+  req.runtime.kind === 'ollama' ? `${req.runtime.url}/api/chat` : openaiUrl(req.runtime.url, '/chat/completions')
+
+const headers = (req: ChatRequest): Record<string, string> => ({
+  'content-type': 'application/json',
+  ...(req.runtime.key ? { authorization: `Bearer ${req.runtime.key}` } : {})
+})
 
 const refusedThinking = (text: string): boolean => /think/i.test(text)
 
@@ -139,7 +144,7 @@ async function open(req: ChatRequest): Promise<Response> {
   const think = req.runtime.kind === 'ollama' && !noThinking.has(req.model)
   const first = await fetch(endpoint(req), {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: headers(req),
     body: body(req, think),
     signal: req.signal
   })
@@ -149,7 +154,7 @@ async function open(req: ChatRequest): Promise<Response> {
   noThinking.add(req.model)
   return fetch(endpoint(req), {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: headers(req),
     body: body(req, false),
     signal: req.signal
   })
