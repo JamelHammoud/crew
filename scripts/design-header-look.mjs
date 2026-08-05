@@ -85,7 +85,7 @@ function Page({ panels, pinned }) {
             { value: { current: 'b1', select: () => {} } },
             React.createElement(
               'div',
-              { className: 'h-full flex flex-col design', style: { paddingTop: TOP_BAR_H } },
+              { className: 'h-full flex flex-col design' },
               React.createElement(DesignHeader, { editor, panels }),
               React.createElement(
                 'div',
@@ -94,18 +94,26 @@ function Page({ panels, pinned }) {
                   React.createElement('aside', {
                     'data-look-left': 'true',
                     className: 'shrink-0 bg-ink-900 border-r border-ink-700',
-                    style: { width: LEFT_PANEL_W }
+                    style: { width: LEFT_PANEL_W, paddingTop: TOP_BAR_H }
                   }),
-                React.createElement('div', {
-                  'data-look-canvas': 'true',
-                  className: 'flex-1 min-w-0',
-                  style: { background: 'var(--design-canvas)' }
-                }),
+                React.createElement(
+                  'div',
+                  { className: 'flex-1 min-w-0 relative' },
+                  React.createElement('div', {
+                    'data-look-canvas': 'true',
+                    className: 'absolute inset-0',
+                    style: { background: 'var(--design-canvas)' }
+                  }),
+                  React.createElement('div', {
+                    'data-design-scrim': 'true',
+                    className: 'design design-scrim absolute inset-x-0 top-0 z-10 pointer-events-none'
+                  })
+                ),
                 panels.right &&
                   React.createElement('aside', {
                     'data-look-right': 'true',
                     className: 'shrink-0 bg-ink-900 border-l border-ink-700',
-                    style: { width: RIGHT_PANEL_W }
+                    style: { width: RIGHT_PANEL_W, paddingTop: TOP_BAR_H }
                   })
               )
             )
@@ -117,7 +125,7 @@ function Page({ panels, pinned }) {
         { className: 'absolute top-0 inset-x-0 z-40 pointer-events-none' },
         React.createElement(
           'div',
-          { className: 'top-bar-container pointer-events-auto bg-ink-900' },
+          { className: 'top-bar-container pointer-events-auto' },
           React.createElement(TopBar)
         )
       )
