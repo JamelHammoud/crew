@@ -71,8 +71,11 @@ describe('the plugins store', () => {
     plugins()
     expect(screen.queryByText('Installed')).toBeNull()
     for (const offer of PLUGIN_OFFERS) expect(screen.getByText(offer.label)).toBeTruthy()
-    expect(screen.getByText('Design')).toBeTruthy()
-    expect(screen.getByText('Code')).toBeTruthy()
+    for (const group of PLUGIN_GROUPS) expect(screen.getByText(group)).toBeTruthy()
+  })
+
+  it('wears the service own mark rather than a drawing of ours', () => {
+    for (const offer of PLUGIN_OFFERS) expect(PLUGIN_ART[offer.name], offer.name).toBeTruthy()
   })
 
   it('adds the one a row names', () => {
