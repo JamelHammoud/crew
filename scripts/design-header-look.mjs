@@ -218,9 +218,17 @@ app.whenReady().then(async () => {
     for (let i = 0; i < CASES.length; i += 1) {
       await win.webContents.executeJavaScript('window.__step(' + i + ')')
       await wait(350)
-      seen.push(await win.webContents.executeJavaScript(READ))
+      const read = await win.webContents.executeJavaScript(READ)
       const shot = await win.webContents.capturePage()
       await writeFile(OUT + '-' + i + '.png', shot.toPNG())
+      await win.webContents.executeJavaScript(OPEN)
+      await wait(250)
+      const menu = await win.webContents.executeJavaScript(MENU)
+      const open = await win.webContents.capturePage()
+      await writeFile(OUT + '-' + i + '-menu.png', open.toPNG())
+      await win.webContents.executeJavaScript(SHUT)
+      await wait(150)
+      seen.push({ ...read, menu })
     }
     console.log('SEEN ' + JSON.stringify(seen))
   } catch (e) {
