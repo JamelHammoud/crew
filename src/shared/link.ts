@@ -21,6 +21,9 @@ export function parseLink(raw: string): JoinTarget {
   return { host: match[1], port: Number(match[2]), code: match[3].toLowerCase() }
 }
 
+// Every address into a crew names it, the socket and the http both, so the http
+// base a runner and a window read off this carries the code with nothing else
+// having to be handed around for it.
 export function wsUrl(target: JoinTarget): string {
-  return `ws://${target.host}:${target.port}/ws`
+  return `ws://${target.host}:${target.port}/${target.code}/ws`
 }

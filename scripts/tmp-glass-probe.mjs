@@ -47,10 +47,11 @@ app.whenReady().then(async () => {
     await win.webContents.executeJavaScript("document.getElementById('root').classList.add('railed')")
     await wait(400)
     const railed = await read()
-    await win.webContents.executeJavaScript("document.getElementById('scroller').style.maskImage = 'none'")
-    await wait(400)
-    const noMask = await read()
-    console.log('SEEN ' + JSON.stringify({ withMask: normal, railedWithMask: railed, noMask }))
+    await win.webContents.executeJavaScript("for (const id of ['overRail','overPlain']) document.getElementById(id).style.backdropFilter = 'none'")
+    await wait(500)
+    const cardsUnblurred = await read()
+    const where = await win.webContents.executeJavaScript("JSON.stringify(['overRail','overPlain'].map(id => { const r = document.getElementById(id).getBoundingClientRect(); return [r.left, r.top, r.width, r.height] }))")
+    console.log('SEEN ' + JSON.stringify({ normal, cardsUnblurred, where: JSON.parse(where) }))
   } catch (e) { console.log('SEEN ' + JSON.stringify({ failed: String(e && e.message) })) }
   app.exit(0)
 })`
