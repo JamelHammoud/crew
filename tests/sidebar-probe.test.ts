@@ -105,6 +105,7 @@ const { usePlaces } = await import('../src/renderer/src/state/places')
 const { PIN_MS, SIDEBAR_W, useSidebar } = await import('../src/renderer/src/state/sidebar')
 const { useCrew } = await import('../src/renderer/src/state/store')
 const { useBrowser } = await import('../src/renderer/src/state/browser')
+const { useTasks } = await import('../src/renderer/src/state/tasks')
 const SidebarView = (await import('../src/renderer/src/components/Sidebar')).default
 const { markOf } = await import('../src/renderer/src/components/sidebar/PlaceFace')
 const TopBar = (await import('../src/renderer/src/components/TopBar')).default
@@ -149,6 +150,7 @@ beforeEach(async () => {
 
 afterEach(() => {
   cleanup()
+  useTasks.setState({ pinned: false, peeking: false })
   vi.restoreAllMocks()
 })
 
