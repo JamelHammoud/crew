@@ -7,7 +7,7 @@ import { itemActivity } from './codex-items'
 import { activityDetail, stepTodos } from './detail'
 import { usageFrom } from './tokens'
 import { codexUsage } from './usage'
-import type { OutputParser, ParsedOutput, Provider } from './types'
+import type { OutputParser, ParsedOutput, Provider, RunOptions } from './types'
 
 const TEXT = 0
 const PLAN_ID = 'plan'
