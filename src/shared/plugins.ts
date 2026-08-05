@@ -102,6 +102,14 @@ export function cleanPlugin(raw: unknown): Omit<CrewPlugin, 'id' | 'by' | 'ts'> 
 
 export const pluginKey = (name: string): string => cleanPluginName(name)
 
+export function pluginFrom(label: string, where: string): Partial<CrewPlugin> {
+  const said = where.trim()
+  const name = cleanPluginName(label) || cleanPluginName(said.split(/[\s/]+/).pop() ?? '')
+  if (/^https?:\/\//i.test(said)) return { name, label: label.trim(), url: said }
+  const [command, ...args] = said.split(/\s+/)
+  return { name, label: label.trim(), command, args }
+}
+
 export function mcpServersOf(
   plugins: readonly CrewPlugin[],
   secrets: Readonly<Record<string, string>> = {}
