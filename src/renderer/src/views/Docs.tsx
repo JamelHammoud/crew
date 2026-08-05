@@ -321,7 +321,7 @@ export default function Docs() {
                 ))}
               </nav>
             )}
-            <div className="px-[54px] pb-2">
+            <div className="px-[54px] pb-3">
               <input
                 ref={titleRef}
                 value={title}

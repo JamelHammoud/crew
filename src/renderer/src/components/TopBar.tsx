@@ -22,7 +22,7 @@ export const TOP_BAR_H = 70
 
 const COMPACT_WIDTH = 760
 
-export default function TopBar({ tab, onTab }: { tab: Tab; onTab: (tab: Tab) => void }) {
+export default function TopBar() {
   const connection = useCrew(s => s.connection)
   const selfName = useCrew(s => s.selfName)
   const waiting = useCrew(reviewCount)
@@ -74,13 +74,7 @@ export default function TopBar({ tab, onTab }: { tab: Tab; onTab: (tab: Tab) => 
                 <ToolboxMark open={toolboxOpen} />
               </button>
             </Tooltip>
-            <Toolbox
-              open={toolboxOpen}
-              onClose={() => setToolboxOpen(false)}
-              onChat={() => {
-                if (tab !== 'chat') onTab('chat')
-              }}
-            />
+            <Toolbox open={toolboxOpen} onClose={() => setToolboxOpen(false)} />
           </div>
           <Tooltip label="Tasks" disabled={tasksOpen}>
             <button
@@ -114,7 +108,7 @@ export default function TopBar({ tab, onTab }: { tab: Tab; onTab: (tab: Tab) => 
             <Avatar name={selfName || '?'} presence={connection === 'online' ? 'online' : 'offline'} />
           </button>
         </Tooltip>
-        {tab === 'chat' && <PanelToggle className="-mr-2" />}
+        <PanelToggle className="-mr-2" />
       </div>
     </header>
   )
