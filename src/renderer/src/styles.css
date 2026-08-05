@@ -1592,6 +1592,22 @@ textarea:placeholder-shown {
   font-size: var(--text-base);
 }
 
+.doc .bn-editor [data-file-block] .bn-file-name-with-icon {
+  border-radius: 8px;
+  padding: 6px 10px;
+  color: var(--color-fg-secondary);
+}
+
+.doc .bn-editor [data-file-block] .bn-file-name-with-icon:hover,
+.doc .bn-editor .ProseMirror-selectednode .bn-file-name-with-icon {
+  background-color: var(--color-ink-800);
+  color: var(--color-fg);
+}
+
+.doc .bn-editor [data-show-selection] {
+  background-color: var(--color-selection);
+}
+
 .doc .bn-editor .bn-block-content:has(.ProseMirror-trailingBreak:only-child)::after {
   font-style: normal;
   color: var(--color-fg-faint);
