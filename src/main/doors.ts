@@ -65,18 +65,19 @@ export class Doors {
     }
   }
 
+  // Only the open door asks for the preferred port, because it is the only one a
+  // link is ever written from. Another Crew already answering there is a second
+  // app on this machine, and that one takes a port of its own the way every crew
+  // used to, which is the one case a guest's address still moves.
   private async standing(shared: boolean): Promise<Door> {
     const held = shared ? this.open : this.house
     if (held) return held
-    const door = await openDoor(this.where(shared, false))
+    const door = shared
+      ? await openDoor({ host: '0.0.0.0', port: await portToAsk(PREFERRED_PORT) })
+      : await openDoor({ host: '127.0.0.1', port: 0 })
     if (shared) this.open = door
     else this.house = door
     return door
-  }
-
-  private where(shared: boolean, alone: boolean): { host: string; port: number } {
-    const host = shared ? '0.0.0.0' : '127.0.0.1'
-    return { host, port: alone || !shared ? 0 : 0 }
   }
 
   private inTurn<T>(work: () => Promise<T>): Promise<T> {
