@@ -8,7 +8,7 @@ export default function PluginMark({ seed, box = 40 }: { seed: string; box?: num
       style={{ width: box, height: box }}
     >
       <GeneratedField seed={seed} box={box} />
-      <InsetRing className="ring-1 ring-inset ring-fg/5 rounded-[22%]" />
+      <InsetRing className="ring-1 ring-inset ring-fg/5" />
     </span>
   )
 }
