@@ -51,6 +51,7 @@ export function useMentionAutocomplete(
   const boards = useCrew(s => s.boards)
   const place = useCrew(s => s.place)
   const files = useProjectFiles(s => s.index)
+  const machine = useMachineFiles(s => s.dirs)
   const [query, setQuery] = useState<Query | null>(null)
   const [active, setActive] = useState(0)
   const caretTarget = useRef<number | null>(null)

@@ -146,7 +146,7 @@ const tomlText = (value: string): string => JSON.stringify(value)
 const tomlList = (values: string[]): string => `[${values.map(tomlText).join(', ')}]`
 
 const tomlTable = (entries: Array<[string, string]>): string =>
-  `{${entries.map(([key, value]) => `${key} = ${value}`).join(', ')}}`
+  `{${entries.map(([key, value]) => `${key}=${value}`).join(',')}}`
 
 const serverToml = (server: McpServer): string => {
   if ('url' in server) return tomlTable([['url', tomlText(server.url)]])
