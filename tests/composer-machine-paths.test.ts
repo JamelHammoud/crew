@@ -103,8 +103,12 @@ describe('what counts as a path on this machine', () => {
 })
 
 describe('what the menu offers off this machine', () => {
-  it('takes what was typed as the head of a name', () => {
-    expect(offers([HOME], '/Users/jamel/Do')).toEqual(['/Users/jamel/Documents', '/Users/jamel/Downloads'])
+  it('takes what was typed as the head of a name, whatever case it was typed in', () => {
+    expect(offers([HOME], '/Users/jamel/Do')).toEqual([
+      '/Users/jamel/Documents',
+      '/Users/jamel/Downloads',
+      '/Users/jamel/donate.pdf'
+    ])
   })
 
   it('reads a trailing slash as opening the folder, folders first', () => {
