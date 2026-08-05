@@ -179,9 +179,9 @@ const READ = \`(() => {
     leftPanel: box('[data-look-left]'),
     canvas: box('[data-look-canvas]'),
     rightPanel: box('[data-look-right]'),
-    bandLeft: box('[data-design-band-left]'),
-    bandRight: box('[data-design-band-right]'),
-    bandCanvas: paint('[data-design-band] > div:not([data-design-band-left]):not([data-design-band-right])'),
+    band: document.querySelector('[data-design-band]') ? 'still there' : 'none',
+    scrim: box('[data-design-scrim]'),
+    scrimPaint: paint('[data-design-scrim]'),
     canvasPaint: paint('[data-look-canvas]')
   }
 })()\`
@@ -291,8 +291,8 @@ try {
     console.log(`  canvas ${read.canvas?.left} to ${read.canvas?.right}`)
     console.log(`  board name ${read.name?.left} to ${read.name?.right}`)
     console.log(`  undo at ${read.undo?.left}, zoom ends at ${read.zoom?.right}, your face ${read.face?.left} to ${read.face?.right}`)
-    console.log(`  band left ${read.bandLeft ? `${read.bandLeft.left} to ${read.bandLeft.right}` : 'none'}, band right ${read.bandRight ? `${read.bandRight.left} to ${read.bandRight.right}` : 'none'}`)
-    console.log(`  band over the canvas ${read.bandCanvas} against the canvas itself ${read.canvasPaint}`)
+    console.log(`  band behind the header ${read.band}, fade ${read.scrim ? `${read.scrim.left} to ${read.scrim.right}` : 'none'}`)
+    console.log(`  fade over the canvas ${read.scrimPaint} against the canvas itself ${read.canvasPaint}`)
     const nameOn = read.name && read.canvas && read.name.left === read.canvas.left
     const zoomOn = read.zoom && read.canvas && read.zoom.right === read.canvas.right
     console.log(`  name on the canvas edge: ${nameOn ? 'yes' : 'NO'}   zoom on the canvas edge: ${zoomOn ? 'yes' : 'NO'}`)
@@ -314,7 +314,7 @@ try {
         }`
       )
     }
-    console.log(`  band matches the canvas colour: ${read.bandCanvas === read.canvasPaint ? 'yes' : 'NO'}`)
+    console.log(`  fade matches the canvas colour: ${read.scrimPaint === read.canvasPaint ? 'yes' : 'NO'}`)
   })
   console.log(`\nwrote ${CASES.length} shots to ${shots}`)
 } finally {
