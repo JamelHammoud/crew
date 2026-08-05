@@ -97,8 +97,9 @@ describe('the port a crew takes', () => {
     if (process.platform === 'darwin') expect(stolen).not.toBeNull()
     if (!stolen) return
     standing.push(stolen)
-    const back = await firstReply(`ws://127.0.0.1:${port}/ws`, shared.session.code)
-    expect(back).toEqual({ type: 'error', message: 'Wrong session code' })
+    await expect(
+      firstReply(`ws://127.0.0.1:${port}/${shared.session.code}/ws`, shared.session.code)
+    ).rejects.toThrow()
   })
 })
 
