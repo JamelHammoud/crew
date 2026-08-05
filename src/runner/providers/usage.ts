@@ -149,12 +149,13 @@ export async function claudeUsage(): Promise<AgentUsage | null> {
   if (now < claudeNextFetchAt && claudeLastGood) return claudeLastGood
   const base: AgentUsage = { provider: 'claude', fetchedAt: now, windows: [], ...claudeAccount() }
   const creds = await claudeCredentials()
-  if (!creds?.accessToken) {
+  const signIn = claudeSignIn(creds, now)
+  if (!creds?.accessToken || signIn === 'out') {
     return { ...base, error: 'Not signed in to Claude Code on this machine.' }
   }
   base.plan = typeof creds.subscriptionType === 'string' ? creds.subscriptionType : undefined
-  if (typeof creds.expiresAt === 'number' && creds.expiresAt < now) {
-    return { ...base, error: 'Claude sign-in expired. Run claude once to refresh it.' }
+  if (signIn === 'stale') {
+    return claudeLastGood ?? { ...base, error: 'Appears after this Claude runs again.' }
   }
   let body: any
   try {
