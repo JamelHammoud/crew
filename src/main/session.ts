@@ -406,19 +406,21 @@ export class AppSession {
     })
   }
 
-  // Inviting people is the listener moving, and nothing else. The session, its
-  // code and everything in it stay where they are, so the only thing anyone
+  // Inviting people is the crew moving from the door that only answers this
+  // machine to the one that answers the network, and nothing else. The session,
+  // its code and everything in it stay where they are, so the only thing anyone
   // here sees is their own socket coming back a moment later.
   async setShared(shared: boolean): Promise<CurrentSession | null> {
     const hosted = this.hosted
     const live = this.live
-    if (!hosted || !live || !this.server || live.shared === shared) return this.live
-    const held = this.server
-    this.server = null
-    await held.close()
-    this.server = await this.listen(hosted.session, shared, held.port())
-    const port = this.server.port()
-    const url = `ws://127.0.0.1:${port}/ws`
+    if (!hosted || !live || !this.seat || live.shared === shared) return this.live
+    const held = this.seat
+    this.seat = null
+    await held.leave()
+    const seat = await this.doors.seat(hosted.session, shared)
+    this.seat = seat
+    const port = seat.port
+    const url = wsUrl({ host: '127.0.0.1', port, code: hosted.session.code })
     this.live = {
       ...live,
       wsUrl: url,
