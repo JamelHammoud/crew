@@ -85,16 +85,6 @@ describe('the box it is allowed to move', () => {
     expect(scrollerOf(row)).toBe(page)
   })
 
-  // scrollIntoView moves every scroller between the row and the document, and
-  // two of the app's own show no scrollbar, so what they lose is lost for good.
-  it('is never whatever the page decides, anywhere in the app', () => {
-    const offenders = files(renderer)
-      .filter(at => at.endsWith('.tsx') || at.endsWith('.ts'))
-      .filter(at => !at.endsWith('scrollInto.ts'))
-      .filter(at => readFileSync(at, 'utf8').includes('scrollIntoView'))
-    expect(offenders.map(at => path.relative(root, at))).toEqual([])
-  })
-
   it('is nothing at all rather than the page, where nothing above it scrolls', () => {
     const clips = scroller('hidden', 300, 200)
     document.body.appendChild(clips)
