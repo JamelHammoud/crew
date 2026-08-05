@@ -408,6 +408,7 @@ describe('a page an agent shows', () => {
 describe('the board on screen', () => {
   it('is the board being looked at and nothing standing behind something else', () => {
     useBrowser.getState().showWork('t1')
+    useBrowser.getState().openPanel()
     expect(boardOnScreen()).toBe('t1')
 
     useBrowser.getState().openUrl('https://example.com/one')
