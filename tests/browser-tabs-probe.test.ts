@@ -60,7 +60,35 @@ const order = () => useBrowser.getState().tabs.map(t => t.id)
 
 // jsdom lays nothing out, so the row is given one: pills 90 wide with a gap of
 // 10, in a strip that shows all of them.
-const box = (left: number, width: number) => ({ left, width, right: left + width }) as DOMRect
+const box = (left: number, width: number) =>
+  ({ left, width, right: left + width, top: 0, height: TALL, bottom: TALL }) as DOMRect
+
+// The same row, laid out for whatever pills exist at the time rather than the
+// ones that happened to be there when it was called, so a tab opened later has
+// a box of its own to be brought into view by.
+const strip = (el: HTMLElement): boolean => el.classList.contains('overflow-x-auto')
+
+const laidOutRow = () => {
+  HTMLElement.prototype.getBoundingClientRect = function (this: HTMLElement) {
+    if (this.dataset.reorder !== undefined) {
+      const at = Array.prototype.indexOf.call(this.parentElement?.children ?? [], this)
+      return box(at * 100, 90)
+    }
+    return strip(this) ? box(0, VIEW) : box(0, 0)
+  }
+  Object.defineProperty(HTMLElement.prototype, 'clientWidth', {
+    configurable: true,
+    get(this: HTMLElement) {
+      return strip(this) ? VIEW : 0
+    }
+  })
+  Object.defineProperty(HTMLElement.prototype, 'clientHeight', {
+    configurable: true,
+    get(this: HTMLElement) {
+      return strip(this) ? TALL : 0
+    }
+  })
+}
 
 const laidOut = (root: HTMLElement) => {
   const items = Array.from(root.querySelectorAll<HTMLElement>('[data-reorder]'))
