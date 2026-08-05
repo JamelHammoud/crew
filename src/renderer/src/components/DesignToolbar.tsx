@@ -81,6 +81,13 @@ export default function DesignToolbar({
         <span className="w-px h-5 bg-fg/10 mx-1 shrink-0" />
         <DesignActions onAsk={onAsk} onRename={onRename} />
       </div>
+      {!panels.right && (
+        <DesignPanelBack
+          side="right"
+          label="Board chat"
+          onOpen={() => onPanels(value => ({ ...value, right: true }))}
+        />
+      )}
     </div>
   )
 }
