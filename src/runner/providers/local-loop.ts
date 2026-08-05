@@ -92,7 +92,7 @@ export function startLoop(opts: LoopOptions): LocalRun {
         output: commandOutput(result.output)
       }
     })
-    return answerOf(call.name, call, result.output || (result.ok ? 'Done.' : 'That tool failed and said nothing.'))
+    return answerOf(call, result.output || (result.ok ? 'Done.' : 'That tool failed and said nothing.'))
   }
 
   const work = async (): Promise<{ text: string }> => {
