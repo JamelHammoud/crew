@@ -166,8 +166,7 @@ describe('the doors this machine holds', () => {
   it('gives a crew whose code is already answered a door of its own', async () => {
     const doors = machine()
     const one = crew('same-one')
-    const two = crew('same-two')
-    two.code = one.code
+    const two = twinOf(one, 'same-two')
     const first = await seat(doors, one, true)
     const second = await seat(doors, two, true)
     expect(second.port).not.toBe(first.port)
