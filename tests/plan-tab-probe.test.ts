@@ -205,7 +205,7 @@ describe('the way back to the panel', () => {
 
     expect(useBrowser.getState().open).toBe(true)
     expect(planTab()!.threadId).toBe('t1')
-    expect(queryByLabelText('Show panel')).toBeNull()
+    expect(standing(container)).toBe(false)
   })
 
   // Nothing left in it is nothing to stand on, and opening it again lands on
