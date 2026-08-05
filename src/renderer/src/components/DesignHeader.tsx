@@ -17,31 +17,10 @@ export default function DesignHeader({
   const corner = useHeaderSlot(s => s.corner)
   const own = useHeaderSlot(s => s.own)
   const open = { left: panels.left && !!editor, right: panels.right && !!editor }
-  const columns = bandColumns(open)
   const offset = pinned ? SIDEBAR_W : 0
 
   return (
     <>
-      <HeaderSlot place="backdrop">
-        <div data-design-band className="design flex h-full w-full">
-          {columns.left > 0 && (
-            <div
-              data-design-band-left
-              style={{ width: columns.left }}
-              className="shrink-0 h-full bg-ink-900 border-r border-ink-700"
-            />
-          )}
-          <div className="flex-1 min-w-0 h-full bg-[var(--design-canvas)]" />
-          {columns.right > 0 && (
-            <div
-              data-design-band-right
-              style={{ width: columns.right }}
-              className="shrink-0 h-full bg-ink-900 border-l border-ink-700"
-            />
-          )}
-        </div>
-      </HeaderSlot>
-
       <HeaderSlot place="left">
         <div
           data-design-name
