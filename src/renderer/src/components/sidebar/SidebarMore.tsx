@@ -72,7 +72,12 @@ export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab
           </div>
         </Popover>
       )}
-      <Toolbox open={toolbox} onClose={() => setToolbox(false)} />
+      <Toolbox
+        open={toolbox !== null}
+        at={toolbox ?? undefined}
+        anchor={rowRef}
+        onClose={() => setToolbox(null)}
+      />
     </div>
   )
 }
