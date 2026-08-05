@@ -153,9 +153,7 @@ function Session() {
         </main>
         <div className="absolute top-0 inset-x-0 z-40 pointer-events-none">
           {tab !== 'design' && <div className="page-scrim absolute inset-x-0 top-0" />}
-          <div
-            className={`top-bar-container relative pointer-events-auto ${tab === 'design' ? 'bg-ink-900' : ''}`}
-          >
+          <div className="top-bar-container relative pointer-events-auto">
             <TopBar />
           </div>
         </div>
