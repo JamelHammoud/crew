@@ -30,14 +30,17 @@ export default function WindowCorner() {
   return (
     <div
       ref={box}
-      onMouseEnter={() => {
-        if (pinned || peeking) peek(true)
-      }}
-      onMouseLeave={() => peek(false)}
       style={{ height: TOP_BAR_H, width: pinned ? SIDEBAR_W : undefined }}
-      className={`${pinned ? 'app-no-drag' : 'app-drag'} absolute top-0 left-0 z-[55] flex items-center px-6`}
+      className="app-drag absolute top-0 left-0 z-[55] flex items-center px-6"
     >
-      <span className={`flex items-center gap-2 ${full ? '' : 'mac:pl-[64px]'}`}>
+      <span className={`flex h-full items-center ${full ? '' : 'mac:pl-[64px]'}`}>
+        <span
+          onMouseEnter={() => {
+            if (pinned || peeking) peek(true)
+          }}
+          onMouseLeave={() => peek(false)}
+          className="app-no-drag flex h-full items-center gap-2"
+        >
         <CrewLogo />
         <Tooltip label={pinned ? 'Hide projects' : 'Projects'}>
           <button
