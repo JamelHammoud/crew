@@ -213,6 +213,10 @@ export class AppSession {
     return this.folder ? listRepoFiles(this.folder) : []
   }
 
+  async readDirs(query: string): Promise<MachineDir[]> {
+    return readMachineDirs(this.folder, query)
+  }
+
   async writeFile(target: string, text: string): Promise<RepoFile | null> {
     const inRepo = this.folder ? repoPathOf(this.folder, target) : null
     if (this.folder && inRepo !== null) return writeRepoFile(this.folder, inRepo, text)
