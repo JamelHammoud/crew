@@ -1,6 +1,18 @@
 // @vitest-environment jsdom
+import { readFileSync, readdirSync } from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { bringInto, centerIn, scrollerOf } from '../src/renderer/src/components/scrollInto'
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const renderer = path.join(root, 'src/renderer/src')
+
+const files = (dir: string): string[] =>
+  readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
+    const at = path.join(dir, entry.name)
+    return entry.isDirectory() ? files(at) : [at]
+  })
 
 const scroller = (overflow: string, w: number, h: number): HTMLElement => {
   const el = document.createElement('div')
