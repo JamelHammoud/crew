@@ -16,10 +16,14 @@ function combo(shortcut: string): { key: string; shift: boolean } | null {
 
 export default function DesignToolbar({
   onAsk,
-  onRename
+  onRename,
+  panels,
+  onPanels
 }: {
   onAsk: () => void
   onRename: (shape: TLShape) => void
+  panels: DesignPanelsOpen
+  onPanels: (next: (value: DesignPanelsOpen) => DesignPanelsOpen) => void
 }) {
   const editor = useEditor()
   const [defaults, setDefaults] = useState<Record<string, string>>(FIRST)
