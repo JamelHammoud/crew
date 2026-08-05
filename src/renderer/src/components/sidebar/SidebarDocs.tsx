@@ -1,22 +1,20 @@
 import { useEffect, useState, type DragEvent } from 'react'
-import { fallbackTitle, pageCode, pageCodeOf, pageSlug, ROOT_PAGE, splitPageCode } from '../../../../shared/docs'
+import { fallbackTitle, ROOT_PAGE, splitPageCode } from '../../../../shared/docs'
 import { ChevronRightGlyph, PlusGlyph, TrashGlyph } from '../../icons'
 import { useDocs } from '../../state/docs'
 import { useCrew } from '../../state/store'
+import { createDocPage, freshSlug } from '../doc/docsPages'
 import { buildTree, lastSegment, parentOf, type PageNode } from '../doc/docsTree'
 import { EmojiText } from '../Emoji'
 import { MenuItem, Popover } from '../Popover'
 import Tooltip from '../Tooltip'
 
-const ROW = 'w-full rounded-xl pr-1 py-1.5 flex items-center gap-1.5 text-left text-sm transition-colors duration-150'
-
-export default function SidebarDocs() {
+export default function SidebarDocs({ open }: { open: boolean }) {
   const docs = useCrew(s => s.docs)
-  const updateDoc = useCrew(s => s.updateDoc)
   const renameDoc = useCrew(s => s.renameDoc)
   const deleteDoc = useCrew(s => s.deleteDoc)
   const page = useDocs(s => s.page)
-  const open = useDocs(s => s.open)
+  const go = useDocs(s => s.open)
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
   const [dragged, setDragged] = useState<string | null>(null)
   const [dropTarget, setDropTarget] = useState<string | null>(null)
@@ -34,18 +32,9 @@ export default function SidebarDocs() {
     })
   }, [current])
 
-  const freshSlug = (parent: string, base: string): string => {
-    const taken = new Set(Object.keys(docs).map(pageCodeOf))
-    let code = pageCode()
-    while (taken.has(code)) code = pageCode()
-    return pageSlug(parent, base, code)
-  }
-
-  const createPage = (parent: string) => {
-    const slug = freshSlug(parent, 'untitled')
-    updateDoc(slug, '', '')
+  const addPage = (parent: string) => {
+    createDocPage(parent)
     if (parent) setExpanded(prev => new Set(prev).add(parent))
-    open(slug, true)
   }
 
   const canDrop = (target: string): boolean => {
@@ -58,11 +47,11 @@ export default function SidebarDocs() {
     if (!dragged || !canDrop(target)) return
     const segment = lastSegment(dragged)
     const kept = target ? `${target}/${segment}` : segment
-    const to = docs[kept] !== undefined ? freshSlug(target, splitPageCode(segment).base) : kept
+    const to = docs[kept] !== undefined ? freshSlug(docs, target, splitPageCode(segment).base) : kept
     useDocs.getState().editor?.flush()
     renameDoc(dragged, to)
     if (target) setExpanded(prev => new Set(prev).add(target))
-    if (current === dragged || current.startsWith(`${dragged}/`)) open(to + current.slice(dragged.length))
+    if (current === dragged || current.startsWith(`${dragged}/`)) go(to + current.slice(dragged.length))
   }
 
   const dropProps = (target: string) => ({
@@ -108,10 +97,10 @@ export default function SidebarDocs() {
             e.preventDefault()
             setMenu({ slug: node.slug, x: e.clientX, y: e.clientY })
           }}
-          className={`group/page ${ROW} ${dropTarget === node.slug ? 'ring-1 ring-fg/25' : ''} ${
-            here ? 'bg-fg/[0.10] text-fg' : 'text-fg/70 hover:bg-fg/[0.06] hover:text-fg'
-          }`}
-          style={{ paddingLeft: 8 + depth * 12 }}
+          className={`group/page w-full rounded-xl pr-1 py-1.5 flex items-center gap-1.5 text-left text-sm transition-colors duration-150 ${
+            dropTarget === node.slug ? 'ring-1 ring-fg/25' : ''
+          } ${here ? 'bg-fg/[0.10] text-fg' : 'text-fg/70 hover:bg-fg/[0.06] hover:text-fg'}`}
+          style={{ paddingLeft: 12 + depth * 12 }}
         >
           <button
             onClick={() =>
@@ -130,7 +119,7 @@ export default function SidebarDocs() {
             <ChevronRightGlyph className={`w-3.5 h-3.5 transition-transform duration-150 ${shown ? 'rotate-90' : ''}`} />
           </button>
           <button
-            onClick={() => open(node.slug)}
+            onClick={() => go(node.slug)}
             aria-current={here ? 'page' : undefined}
             className="flex-1 min-w-0 truncate text-left"
           >
@@ -138,9 +127,9 @@ export default function SidebarDocs() {
           </button>
           <Tooltip label="Add sub-page">
             <button
-              onClick={() => createPage(node.slug)}
+              onClick={() => addPage(node.slug)}
               aria-label="Add sub-page"
-              className="w-5 h-5 rounded-md flex items-center justify-center text-fg/45 opacity-0 group-hover/page:opacity-100 hover:text-fg hover:bg-fg/[0.10] transition-opacity shrink-0"
+              className="w-5 h-5 rounded-md flex items-center justify-center text-fg/45 opacity-0 group-hover/page:opacity-100 focus-visible:opacity-100 hover:text-fg hover:bg-fg/[0.10] transition-opacity shrink-0"
             >
               <PlusGlyph className="w-3.5 h-3.5" />
             </button>
@@ -152,23 +141,30 @@ export default function SidebarDocs() {
   }
 
   return (
-    <div {...dropProps('')} className="flex flex-col gap-0.5 pb-3">
-      <div className={`rounded-xl transition-colors duration-150 ${dragged && dropTarget === '' ? 'bg-fg/[0.06]' : ''}`}>
-        {tree.map(node => renderNode(node, 0))}
+    <div
+      data-docs-tree
+      aria-hidden={!open}
+      className={`grid transition-[grid-template-rows] duration-200 ease-out ${
+        open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr] pointer-events-none'
+      }`}
+    >
+      <div className={`min-h-0 ${open ? 'overflow-visible' : 'overflow-hidden'}`}>
+        <div {...dropProps('')} className="pt-0.5 flex flex-col gap-0.5">
+          <div
+            className={`rounded-xl transition-colors duration-150 ${
+              dragged && dropTarget === '' ? 'bg-fg/[0.06]' : ''
+            }`}
+          >
+            {tree.map(node => renderNode(node, 0))}
+          </div>
+        </div>
       </div>
-      <button
-        onClick={() => createPage('')}
-        className={`${ROW} pl-8 text-fg/45 hover:text-fg/70 hover:bg-fg/[0.06]`}
-      >
-        <PlusGlyph className="w-4 h-4 shrink-0" />
-        New page
-      </button>
       <Popover open={menu !== null} onClose={() => setMenu(null)} at={menu ?? undefined} align="start">
         <MenuItem
           icon={<PlusGlyph />}
           label="New sub-page"
           onClick={() => {
-            if (menu) createPage(menu.slug)
+            if (menu) addPage(menu.slug)
             setMenu(null)
           }}
         />
