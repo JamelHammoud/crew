@@ -7,7 +7,7 @@ export default function DesignRightPanel({ boardId, onClose }: { boardId: string
     <aside
       aria-label="Board chat"
       {...{ [BOARD_CHAT_MARK]: '' }}
-      style={{ width: RIGHT_PANEL_W }}
+      style={{ width: RIGHT_PANEL_W, paddingTop: TOP_BAR_H }}
       className="shrink-0 flex flex-col min-w-0 min-h-0 overflow-hidden bg-ink-900 border-l border-ink-700"
     >
       <DesignChat key={boardId} boardId={boardId} onClose={onClose} />
