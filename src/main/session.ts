@@ -69,11 +69,11 @@ function lanAddress(): string {
   return '127.0.0.1'
 }
 
-const PREFERRED_PORT = 2739
 const AUTO_SYNC_MS = 5000
 
 export class AppSession {
-  private server: CrewServer | null = null
+  private seat: Seat | null = null
+  private doors: Doors
   private runner: Runner | null = null
   private git: GitSync | null = null
   private crewGit: GitSync | null = null
