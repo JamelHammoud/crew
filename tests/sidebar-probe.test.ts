@@ -170,7 +170,7 @@ describe('the sidebar', () => {
     await waitFor(() => expect(useSidebar.getState().peeking).toBe(false))
   })
 
-  it('scrolls its projects on their own, under a heading and over the folder action', () => {
+  it('scrolls its projects on their own, under a heading that holds still', () => {
     const { container } = render(Sidebar())
     const scroller = container.querySelector('.overflow-y-auto') as HTMLElement
     expect(scroller.className).toContain('scroll-fade')
@@ -178,7 +178,7 @@ describe('the sidebar', () => {
     expect(scroller.className).toContain('pt-2')
     expect(scroller.querySelector('.flex-col')?.className).toContain('gap-3')
     expect(container.querySelector('nav[aria-label="Main navigation"]')?.className).toContain('shrink-0')
-    expect(screen.getByRole('button', { name: 'New project' }).parentElement?.className).toContain('shrink-0')
+    expect(container.querySelector('h2')?.parentElement?.className).toContain('shrink-0')
   })
 
   it('fades only the end of the list that is really hiding something', async () => {
