@@ -4,8 +4,8 @@ import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { alertToast } from '../src/renderer/src/components/alertToast'
+import SidebarTasks from '../src/renderer/src/components/sidebar/SidebarTasks'
 import Toaster from '../src/renderer/src/components/Toaster'
-import TopBar from '../src/renderer/src/components/TopBar'
 import {
   finishedAlert,
   memberMentionAlert,
