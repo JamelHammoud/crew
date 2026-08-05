@@ -98,7 +98,7 @@ const MEDIA_TYPES: Record<string, Playable> = {
   ogv: { type: 'video/ogg', video: true }
 }
 
-export function mediaType(name: string): MediaKind | null {
+export function mediaType(name: string): Playable | null {
   const extension = extensionOf(name)
   return extension ? (MEDIA_TYPES[extension] ?? null) : null
 }
