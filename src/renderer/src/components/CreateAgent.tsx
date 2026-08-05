@@ -222,62 +222,148 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
           </span>
         </button>
       )}
-      <Modal open={open} onClose={() => setOpen(false)} title="Add an agent" className="space-y-5">
-        <div className="flex flex-wrap gap-2">
-          <Select
-            label="Provider"
-            value={provider}
-            options={(caps ?? []).map(c => ({
-              value: c.provider,
-              label: c.label,
-              hint: hintFor(c),
-              mark: <ProviderMark provider={c.provider} />
-            }))}
-            onChange={pick}
-          />
-          {fields.map(field => (
-            <Select
-              key={field.key}
-              label={field.label}
-              value={settings[field.key] ?? field.default}
-              options={field.options}
-              onChange={value => setSetting(field.key, value)}
-            />
-          ))}
-        </div>
-        <input
-          value={name}
-          onChange={e => {
-            setName(e.target.value)
-            setNameEdited(true)
-          }}
-          placeholder="Agent name"
-          className="w-full bg-fg/[0.06] border border-fg/10 rounded-xl px-4 py-2.5 text-base text-fg placeholder:text-fg/40 outline-none transition-colors focus:border-fg/30"
-        />
-        {installing && (
-          <p className="flex items-center gap-2 text-sm text-fg/45">
-            <Spinner size={14} />
-            Installing {caps?.find(c => c.provider === installing)?.label ?? installing}…
-          </p>
-        )}
-        {!installing && cap?.note && <p className="text-sm text-fg/45">{cap.note}</p>}
-        {error && <p className="text-sm text-danger">{error}</p>}
-        <div className="flex items-center justify-end gap-2">
-          <button
-            onClick={() => setOpen(false)}
-            className="h-10 px-4 rounded-full text-sm font-semibold text-fg/45 transition-colors hover:text-fg"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={create}
-            disabled={busy || !name.trim() || !cap?.installed || Boolean(cap.note)}
-            className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-2 transition-all duration-150 hover:scale-[1.03] active:scale-95 disabled:bg-fg/10 disabled:text-fg/45 disabled:scale-100"
-          >
-            {busy && <Spinner size={14} />}
-            Create
-          </button>
-        </div>
+      <Modal
+        open={open}
+        onClose={() => setOpen(false)}
+        title={screen === 'agent' ? 'Add an agent' : 'Add a server'}
+        flush
+      >
+        <ScreenSwap screen={screen} depth={screen === 'agent' ? 0 : 1}>
+          {screen === 'agent' ? (
+            <div className="p-6 space-y-5">
+              <h3 className="text-base font-semibold text-fg">Add an agent</h3>
+              <div className="flex flex-wrap gap-2">
+                <Select
+                  label="Provider"
+                  value={provider}
+                  options={(caps ?? []).map(c => ({
+                    value: c.provider,
+                    label: c.label,
+                    hint: hintFor(c),
+                    mark: <ProviderMark provider={c.provider} />
+                  }))}
+                  onChange={pick}
+                />
+                {fields.map(field => (
+                  <Select
+                    key={field.key}
+                    label={field.label}
+                    value={settings[field.key] ?? field.default}
+                    options={field.options}
+                    onChange={value => setSetting(field.key, value)}
+                    add={
+                      field.free
+                        ? { label: `Add a ${field.label.toLowerCase()}`, onPick: () => setScreen('server') }
+                        : undefined
+                    }
+                  />
+                ))}
+              </div>
+              <input
+                value={name}
+                onChange={e => {
+                  setName(e.target.value)
+                  setNameEdited(true)
+                }}
+                placeholder="Agent name"
+                className="w-full bg-fg/[0.06] border border-fg/10 rounded-xl px-4 py-2.5 text-base text-fg placeholder:text-fg/40 outline-none transition-colors focus:border-fg/30"
+              />
+              {installing && (
+                <p className="flex items-center gap-2 text-sm text-fg/45">
+                  <Spinner size={14} />
+                  Installing {caps?.find(c => c.provider === installing)?.label ?? installing}…
+                </p>
+              )}
+              {!installing && cap?.note && <p className="text-sm text-fg/45">{cap.note}</p>}
+              {error && <p className="text-sm text-danger">{error}</p>}
+              <div className="flex items-center justify-end gap-2">
+                <button
+                  onClick={() => setOpen(false)}
+                  className="h-10 px-4 rounded-full text-sm font-semibold text-fg/45 transition-colors hover:text-fg"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={create}
+                  disabled={busy || !name.trim() || !cap?.installed || Boolean(cap.note)}
+                  className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-2 transition-all duration-150 hover:scale-[1.03] active:scale-95 disabled:bg-fg/10 disabled:text-fg/45 disabled:scale-100"
+                >
+                  {busy && <Spinner size={14} />}
+                  Create
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="p-6 space-y-5">
+              <h3 className="text-base font-semibold text-fg">Add a server</h3>
+              <div className="space-y-2">
+                <TextField
+                  glass
+                  autoFocus
+                  value={address}
+                  onChange={e => setAddress(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && address.trim()) void addServer()
+                  }}
+                  placeholder="llm.example.com:8000/v1"
+                />
+                <TextField
+                  glass
+                  type="password"
+                  value={key}
+                  onChange={e => setKey(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && address.trim()) void addServer()
+                  }}
+                  placeholder="Key, if it wants one"
+                />
+                <p className="text-sm text-fg/45">The key stays on this computer.</p>
+              </div>
+              {servers.length > 0 && (
+                <div className="space-y-1">
+                  {servers.map(server => (
+                    <div
+                      key={server.url}
+                      className="group flex items-center gap-2 h-9 pl-3 pr-1.5 rounded-full bg-fg/[0.04]"
+                    >
+                      <span className="flex-1 min-w-0 truncate text-sm text-fg/70">
+                        {serverLabel(server.url)}
+                      </span>
+                      <Tooltip label="Take out">
+                        <button
+                          onClick={() => void forgetServer(server.url)}
+                          className="w-6 h-6 rounded-full flex items-center justify-center text-fg/45 opacity-0 transition-all duration-150 hover:bg-fg/10 hover:text-fg group-hover:opacity-100 active:scale-95"
+                        >
+                          <CloseGlyph className="w-3.5 h-3.5" />
+                        </button>
+                      </Tooltip>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {addError && <p className="text-sm text-danger">{addError}</p>}
+              <div className="flex items-center justify-end gap-2">
+                <button
+                  onClick={() => {
+                    setAddError('')
+                    setScreen('agent')
+                  }}
+                  className="h-10 px-4 rounded-full text-sm font-semibold text-fg/45 transition-colors hover:text-fg"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => void addServer()}
+                  disabled={adding || !address.trim()}
+                  className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-2 transition-all duration-150 hover:scale-[1.03] active:scale-95 disabled:bg-fg/10 disabled:text-fg/45 disabled:scale-100"
+                >
+                  {adding && <Spinner size={14} />}
+                  Add
+                </button>
+              </div>
+            </div>
+          )}
+        </ScreenSwap>
       </Modal>
     </>
   )
