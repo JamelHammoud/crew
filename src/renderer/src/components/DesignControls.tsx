@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { PanelLeftGlyph, PanelRightGlyph } from '../icons'
 import Tooltip from './Tooltip'
 
 export function HeaderButton({
