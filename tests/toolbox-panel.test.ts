@@ -33,8 +33,6 @@ const tool = (extra: Partial<CrewTool> = {}): CrewTool => ({
 const agent = (id: string, label: string): PooledAgent =>
   ({ id, label, provider: 'claude', ownerId: 'o', ownerName: 'Jamel', status: 'idle', runs: {} }) as PooledAgent
 
-let switched = 0
-
 const toolbox = (
   tools: CrewTool[] = [],
   agents: PooledAgent[] = [],
@@ -52,7 +50,7 @@ const toolbox = (
     addTodo: (text, agentId) => tasks.push({ text, agentId }),
     updateDoc: (page, text) => void written.push({ page, text })
   })
-  return render(createElement(Toolbox, { open: true, onClose: () => {}, onChat: () => void (switched += 1) }))
+  return render(createElement(Toolbox, { open: true, onClose: () => {} }))
 }
 
 beforeEach(() => {
@@ -62,7 +60,6 @@ beforeEach(() => {
   written.length = 0
   played.length = 0
   copied = []
-  switched = 0
   useBrowser.setState({ tabs: [], activeTabId: null })
   useMusic.setState({ uploads: [], playlists: [], put: (trackId, playlistId = null) => void played.push({ trackId, playlistId }) })
   useHuddle.setState({ joined: false })
