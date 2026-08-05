@@ -197,19 +197,25 @@ export const PromptGlyph = glyph(
   </>
 )
 
-// Two bubbles, because a chat is two people and one bubble is a message. The
-// one in front is whole and carries the tail, and the one behind keeps only what
-// is not hidden by it, which is the rule the pair of figures is already drawn
-// under. Its two ends stand 2.25 clear of the front bubble on both sides: closer
-// than that and the gap is under a pixel at the size this is worn, so the two
-// shapes close into one blob with a notch in it.
+// A bubble drawn round rather than square, with a mouth in it. The body is two
+// half circles on a two unit waist, which is as close to a circle as a bubble
+// gets while still having somewhere flat for the tail to hang off, and the tail
+// hangs just left of centre and turns at its point like every other corner here.
 //
-// The dots inside are what came off. Three of them is the typing indicator and
+// The three dots are what came off. Three of them is the typing indicator and
 // the same mark a thought already wears, so the tab for the place the crew talks
-// was drawing somebody in the middle of a sentence. Both bubbles are one path,
-// or the four places their strokes cross would lay the color down twice.
+// was drawing somebody who had not said anything yet.
+//
+// A mouth on its own is a face, and it only reads as one if it is deep. The
+// curve is held well off a half circle, which is a cup rather than a smile, and
+// well off flat, which is a line: 2.6 of sag across a 6.6 chord is the band
+// where it stays a mouth at the 18 this is worn at in the rail. It is centred on
+// the body rather than sat low, because there are no eyes above it to sit under.
 export const ChatGlyph = glyph(
-  <path d="M9 7.2V5.95A2.75 2.75 0 0 1 11.75 3.2H18.25A2.75 2.75 0 0 1 21 5.95V8.95A2.75 2.75 0 0 1 18.25 11.7H17.25M5.75 9.45H12.25A2.75 2.75 0 0 1 15 12.2v3A2.75 2.75 0 0 1 12.25 17.95H8.9l-2.15 2.45q-1 .85-1-.3V17.95A2.75 2.75 0 0 1 3 15.2v-3A2.75 2.75 0 0 1 5.75 9.45Z" />
+  <>
+    <path d="M11 3H13A7.5 7.5 0 0 1 20.5 10.5A7.5 7.5 0 0 1 13 18h-.6l-2.4 2.7q-.6.75-.6-.3V18A7.5 7.5 0 0 1 3.5 10.5A7.5 7.5 0 0 1 11 3Z" />
+    <path d="M8.7 9.15a3.4 3.4 0 0 0 6.6 0" />
+  </>
 )
 
 // The book is the Docs tab, where a page is one document. The tab is the place
