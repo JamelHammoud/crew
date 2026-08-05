@@ -60,7 +60,7 @@ beforeEach(() => {
   written.length = 0
   played.length = 0
   copied = []
-  useBrowser.setState({ tabs: [], activeTabId: null })
+  useBrowser.setState({ tabs: [], activeTabId: null, open: false })
   useMusic.setState({ uploads: [], playlists: [], put: (trackId, playlistId = null) => void played.push({ trackId, playlistId }) })
   useHuddle.setState({ joined: false })
   Object.assign(navigator, { clipboard: { writeText: (text: string) => void copied.push(text) } })
@@ -430,7 +430,7 @@ describe('the toolbox', () => {
     expect(useBrowser.getState().open).toBe(true)
 
     cleanup()
-    useBrowser.setState({ tabs: [], activeTabId: null })
+    useBrowser.setState({ tabs: [], activeTabId: null, open: false })
     toolbox([
       dev,
       tool({ id: 'one', name: 'One', mark: 'group', action: { kind: 'chain', toolIds: ['two'] } }),

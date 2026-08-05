@@ -38,7 +38,9 @@ function slot(): HTMLElement {
   return node
 }
 
-function stand(editor: Editor, panels: { left: boolean; right: boolean }, onPanels = () => {}): ReactNode {
+type Panels = { left: boolean; right: boolean }
+
+function stand(editor: Editor, panels: Panels, onPanels: (next: (value: Panels) => Panels) => void = () => {}): ReactNode {
   useCrew.setState({ boards: [{ id: 'b1', name: 'App design' }] })
   return createElement(
     EditorContext.Provider,
