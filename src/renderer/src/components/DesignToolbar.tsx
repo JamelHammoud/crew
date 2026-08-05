@@ -56,7 +56,10 @@ export default function DesignToolbar({
   const activeGroup = TOOL_GROUPS.find(group => group.tools.some(tool => tool.id === current))
 
   return (
-    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 pointer-events-none">
+      {!panels.left && (
+        <DesignPanelBack side="left" label="Layers" onOpen={() => onPanels(value => ({ ...value, left: true }))} />
+      )}
       <div
         role="toolbar"
         aria-label="Design tools"
