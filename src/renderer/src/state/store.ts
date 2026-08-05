@@ -376,6 +376,7 @@ const EMPTY = {
   tools: [],
   memories: [],
   memoryEnabled: false,
+  plugins: [],
   emoji: [],
   scores: [],
   boards: [],
