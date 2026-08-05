@@ -249,6 +249,24 @@ export class Crews {
     return this.capabilities()
   }
 
+  modelServers(): ModelServer[] {
+    return knownServers().map(({ url }) => ({ url }))
+  }
+
+  async addModelServer(input: { url: string; key?: string }): Promise<ProviderCapability[]> {
+    const url = serverUrl(input.url)
+    if (!url) throw new Error('That is not an address.')
+    const answer = await checkServer({ url, key: input.key })
+    if (!answer.ok) throw new Error(answer.why)
+    rememberServer({ url, key: input.key })
+    return this.capabilities()
+  }
+
+  async forgetModelServer(url: string): Promise<ProviderCapability[]> {
+    forgetServer(url)
+    return this.capabilities()
+  }
+
   private inTurn<T>(work: () => Promise<T>): Promise<T> {
     const next = this.queue.then(work, work)
     this.queue = next.then(

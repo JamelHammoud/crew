@@ -23,7 +23,8 @@ export const localFields = (): AgentSettingField[] => {
       key: 'address',
       label: 'Server',
       options: runtimes.map(runtime => ({ value: runtime.url, label: runtime.label })),
-      default: runtimes[0]?.url ?? ''
+      default: runtimes[0]?.url ?? '',
+      free: true
     },
     {
       key: 'model',
