@@ -9,7 +9,7 @@ export type TabRow = { id: NavTab; label: string; Icon: Glyph }
 
 export const TABS: TabRow[] = [
   { id: 'chat', label: 'Chat', Icon: ChatGlyph },
-  { id: 'docs', label: 'Docs', Icon: DocGlyph },
+  { id: 'docs', label: 'Docs', Icon: BookGlyph },
   { id: 'design', label: 'Design', Icon: FrameGlyph }
 ]
 
