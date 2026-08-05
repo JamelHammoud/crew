@@ -28,7 +28,8 @@ export function pathQuery(value: string, caret: number, offered: readonly SlashC
   if (slashCandidates(value, offered).length > 0) return null
   const run = RUN.exec(value.slice(0, caret))?.[1] ?? ''
   if (!run.includes('/') || run.includes('//')) return null
-  if (run.startsWith('#') || run.startsWith('~') || run.includes('@')) return null
+  if (run.startsWith('#') || run.includes('@')) return null
+  if (run.startsWith('~') && !run.startsWith('~/')) return null
   return run.replace(LEADING_SLASH, '') ? run : null
 }
 
@@ -62,7 +63,7 @@ export function pathCandidates(index: PathIndex, query: string, limit: number): 
   for (const path of index.paths) {
     if (!path.toLowerCase().startsWith(lower)) continue
     taken.add(path)
-    under.push({ path, hits, dir: index.dirs.has(path) })
+    under.push({ path, hits, dir: index.dirs.has(path), head: true })
   }
   under.sort(
     (a, b) =>
