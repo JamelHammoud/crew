@@ -66,11 +66,14 @@ export function diskModels(home = homedir(), env: NodeJS.ProcessEnv = process.en
   return [...new Set([...ollamaDisk(home, env), ...lmStudioDisk(home)])]
 }
 
-async function asked(url: string, body?: unknown): Promise<unknown> {
+async function asked(url: string, body?: unknown, key?: string): Promise<unknown> {
   try {
     const answer = await fetch(url, {
       method: body === undefined ? 'GET' : 'POST',
-      headers: body === undefined ? undefined : { 'content-type': 'application/json' },
+      headers: {
+        ...(body === undefined ? {} : { 'content-type': 'application/json' }),
+        ...(key ? { authorization: `Bearer ${key}` } : {})
+      },
       body: body === undefined ? undefined : JSON.stringify(body),
       signal: AbortSignal.timeout(READ_MS)
     })
