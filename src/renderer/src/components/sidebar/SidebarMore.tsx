@@ -22,10 +22,6 @@ export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab
 
   useEffect(() => () => holdRail(false), [holdRail])
 
-  // The toolbox stands off this row, so the row is the way in and the way back
-  // out: hovering it while the toolbox is up would open a menu over the panel it
-  // just opened, and pressing it puts that panel away rather than standing a
-  // second card on top of it.
   const press = () => {
     if (toolbox) {
       setToolbox(false)
