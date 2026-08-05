@@ -10,6 +10,7 @@ import {
   EyeGlyph,
   EyeOffGlyph,
   LockGlyph,
+  PanelLeftGlyph,
   SearchGlyph,
   UnlockGlyph
 } from '../icons'
