@@ -53,6 +53,7 @@ export default function DesignStage({
   return (
     <div className="flex-1 min-w-0 relative">
       <DesignCanvas key={boardId} boardId={boardId} asking={asking} onEditor={onEditor} />
+      <div data-design-scrim className="design design-scrim absolute inset-x-0 top-0 z-10 pointer-events-none" />
       {editor && (
         <>
           <DesignToolbar boardId={boardId} onAsk={ask} onRename={onRename} panels={panels} onPanels={onPanels} />
