@@ -143,12 +143,12 @@ export async function readRepoFile(root: string, target: string, media?: MediaHo
 // Somewhere else on this computer: a screenshot in /tmp, a log in a home
 // folder. It keeps the path it was written with, since there is nothing to
 // shorten it against.
-export async function readLocalFile(target: string): Promise<RepoFile> {
+export async function readLocalFile(target: string, media?: MediaHost): Promise<RepoFile> {
   const absolute = expandHome(target)
   if (!path.isAbsolute(absolute)) return { kind: 'missing', path: target }
   const label = target.replace(/\/+$/, '') || '/'
   try {
-    return await readAt(label, path.resolve(absolute))
+    return await readAt(label, path.resolve(absolute), media)
   } catch {
     return { kind: 'missing', path: label }
   }
