@@ -340,24 +340,24 @@ describe('an alert in the app', () => {
   })
 })
 
-describe('the tasks button', () => {
-  beforeEach(() => {
-    vi.stubGlobal(
-      'ResizeObserver',
-      class {
-        observe() {}
-        disconnect() {}
-      }
-    )
-  })
-
-  it('shows the same number the app badge is given', () => {
+describe('the tasks row', () => {
+  it('wears the same number the app badge is given, in a pill at the end of the row', () => {
     const threads = { t1: thread('t1'), t2: thread('t2'), t3: thread('t3', { status: 'done' }) }
     useCrew.setState({ threads, threadPrompts: {}, queues: {} })
-    render(createElement(TopBar))
+    render(createElement(SidebarTasks))
 
     const count = reviewCount(useCrew.getState())
+    const row = screen.getByRole('button', { name: /Tasks/ })
+
     expect(count).toBe(2)
-    expect(screen.getByRole('button', { name: 'Tasks' }).textContent).toBe(String(count))
+    expect(row.textContent).toBe(`Tasks${count}`)
+    expect(row.lastElementChild?.textContent).toBe(String(count))
+  })
+
+  it('says nothing where there is nothing to review', () => {
+    useCrew.setState({ threads: {}, threadPrompts: {}, queues: {} })
+    render(createElement(SidebarTasks))
+
+    expect(screen.getByRole('button', { name: 'Tasks' }).textContent).toBe('Tasks')
   })
 })
