@@ -2,6 +2,7 @@ import { promises as fs } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { imageType, mediaType, type FileEntry, type RepoFile, type RepoPathKind } from '../shared/files'
+import type { MachineDir } from '../shared/machinePath'
 
 export { listRepoFiles } from '../shared/repoFiles'
 
@@ -11,6 +12,7 @@ export interface MediaHost {
 
 const MAX_BYTES = 512 * 1024
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024
+const DIR_LIMIT = 4000
 const CASELESS = process.platform === 'darwin' || process.platform === 'win32'
 
 export function expandHome(target: string): string {
