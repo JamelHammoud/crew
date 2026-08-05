@@ -64,17 +64,24 @@ export default function Design() {
       <DesignRenameContext.Provider value={renameContext}>
         <EditorContext.Provider value={editor}>
           <div className="h-full flex flex-col" style={{ paddingTop: TOP_BAR_H }}>
-            <DesignHeader editor={editor} panels={panels} onPanels={setPanels} />
+            <DesignHeader editor={editor} />
             <div className="flex-1 min-h-0 flex">
-              {panels.left && editor && <DesignLeftPanel />}
+              {panels.left && editor && <DesignLeftPanel onClose={() => setPanels(value => ({ ...value, left: false }))} />}
               <DesignStage
                 boardId={current}
                 editor={editor}
                 onEditor={setEditor}
                 onRename={askRename}
                 onAsked={showChat}
+                panels={panels}
+                onPanels={setPanels}
               />
-              {panels.right && editor && <DesignRightPanel boardId={current} />}
+              {panels.right && editor && (
+                <DesignRightPanel
+                  boardId={current}
+                  onClose={() => setPanels(value => ({ ...value, right: false }))}
+                />
+              )}
             </div>
           </div>
         </EditorContext.Provider>

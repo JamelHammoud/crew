@@ -5,19 +5,24 @@ import DesignAskBar from './DesignAskBar'
 import DesignCanvas from './DesignCanvas'
 import DesignContextMenu, { useContextMenu } from './DesignContextMenu'
 import DesignToolbar from './DesignToolbar'
+import type { DesignPanelsOpen } from './designPanelsOpen'
 
 export default function DesignStage({
   boardId,
   editor,
   onEditor,
   onRename,
-  onAsked
+  onAsked,
+  panels,
+  onPanels
 }: {
   boardId: string
   editor: Editor | null
   onEditor: (editor: Editor | null) => void
   onRename: (shape: TLShape) => void
   onAsked: () => void
+  panels: DesignPanelsOpen
+  onPanels: (next: (value: DesignPanelsOpen) => DesignPanelsOpen) => void
 }) {
   const [asking, setAsking] = useState(false)
   const { spot, close } = useContextMenu(editor)
@@ -50,7 +55,7 @@ export default function DesignStage({
       <DesignCanvas key={boardId} boardId={boardId} asking={asking} onEditor={onEditor} />
       {editor && (
         <>
-          <DesignToolbar onAsk={ask} onRename={onRename} />
+          <DesignToolbar onAsk={ask} onRename={onRename} panels={panels} onPanels={onPanels} />
           <DesignContextMenu spot={spot} onClose={close} onAsk={ask} onRename={onRename} />
           <DesignAskBar boardId={boardId} open={asking} onClose={stopAsking} onSent={onAsked} />
         </>
