@@ -129,7 +129,7 @@ export default function SidebarDocs({ open }: { open: boolean }) {
             <button
               onClick={() => addPage(node.slug)}
               aria-label="Add sub-page"
-              className="h-6 w-6 -my-0.5 rounded-lg flex items-center justify-center text-fg/45 opacity-0 group-hover/page:opacity-100 focus-visible:opacity-100 hover:text-fg hover:bg-fg/[0.10] transition-opacity shrink-0"
+              className="h-6 w-6 rounded-lg flex items-center justify-center text-fg/45 opacity-0 group-hover/page:opacity-100 focus-visible:opacity-100 hover:text-fg hover:bg-fg/[0.10] transition-opacity shrink-0"
             >
               <PlusGlyph className="w-4 h-4" />
             </button>
