@@ -146,7 +146,7 @@ describe('the way back into the panel', () => {
     expect(useBrowser.getState().open).toBe(true)
     expect(kinds()).toEqual(['plan', 'work', 'agent'])
     expect(activeKind()).toBe('plan')
-    expect(button()).toBeNull()
+    expect(standing()).toBe(false)
   })
 
   it('holds the helpers it put in beside what was already there', () => {
