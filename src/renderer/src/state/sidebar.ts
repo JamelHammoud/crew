@@ -81,10 +81,6 @@ export const useSidebar = create<SidebarState>((set, get) => {
         settle()
         return
       }
-      if (get().pinned) {
-        set({ near: false })
-        return
-      }
       closing = setTimeout(() => {
         closing = null
         set({ near: false })
