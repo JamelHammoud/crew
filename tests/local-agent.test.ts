@@ -24,6 +24,15 @@ const calls = (name: string, args: Record<string, unknown>) =>
 const end = (counts: Frame = { prompt_eval_count: 120, eval_count: 44 }) =>
   line({ message: { role: 'assistant', content: '' }, done: true, done_reason: 'stop', ...counts })
 
+const event = (delta: Frame) => `data: ${JSON.stringify({ choices: [{ delta }] })}\n\n`
+
+const sseSay = (content: string) => event({ content })
+
+const sseCalls = (name: string, args: Record<string, unknown>) =>
+  event({ tool_calls: [{ index: 0, id: 'call_1', type: 'function', function: { name, arguments: JSON.stringify(args) } }] })
+
+const sseEnd = () => 'data: [DONE]\n\n'
+
 interface Fake {
   url: string
   turns: string[][]
