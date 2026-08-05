@@ -74,7 +74,7 @@ export function pathCandidates(index: PathIndex, query: string, limit: number): 
   if (under.length >= limit) return under.slice(0, limit)
   const rest = matchFiles(index.paths, needle, limit + taken.size)
     .filter(match => !taken.has(match.path))
-    .map(match => ({ path: match.path, hits: match.hits, dir: index.dirs.has(match.path) }))
+    .map(match => ({ path: match.path, hits: match.hits, dir: index.dirs.has(match.path), head: false }))
   return [...under, ...rest].slice(0, limit)
 }
 
