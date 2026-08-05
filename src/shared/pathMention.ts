@@ -89,14 +89,16 @@ const TRIMMABLE = new Set(['.', ',', ';', ':', '!', '?', ')', ']', '}', "'", '"'
 
 // A sentence ends after a path too, so what the run is really pointing at is the
 // longest of it this project holds.
-function heldPath(run: string, index: PathIndex): string | null {
+function heldPath(run: string, index: PathIndex, known: ReadonlySet<string>): string | null {
   if (!run.includes('/')) return null
+  const holds = (path: string): boolean => index.all.has(path) || known.has(path)
   const bare = run.replace(LINE_TAIL, '')
-  if (bare !== run && index.all.has(bare)) return run
+  if (bare !== run && holds(bare)) return run
   let candidate = run
   while (candidate) {
-    if (index.all.has(candidate)) return candidate
-    if (candidate.endsWith('/') && index.dirs.has(candidate.slice(0, -1))) return candidate
+    if (holds(candidate)) return candidate
+    if (candidate.endsWith('/') && (index.dirs.has(candidate.slice(0, -1)) || known.has(candidate.slice(0, -1))))
+      return candidate
     const last = candidate[candidate.length - 1]
     if (!TRIMMABLE.has(last)) return null
     candidate = candidate.slice(0, -1)
