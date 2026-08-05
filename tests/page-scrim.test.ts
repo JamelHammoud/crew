@@ -74,9 +74,11 @@ describe('the scrim over the top of a page', () => {
     expect(alphaAt(TOP_BAR / 2)).toBeLessThan(0.7)
   })
 
-  it('is off the design board, which runs its panels to the header', () => {
+  it('is off the design board, which fades its own canvas in its own colour', () => {
     expect(app).toContain("tab !== 'design' && <div className=\"page-scrim")
-    expect(app).toMatch(/tab === 'design' \? 'bg-ink-900' : ''/)
+    expect(app).not.toContain("'bg-ink-900'")
+    expect(styles).toContain('.page-scrim,\n.design-scrim {')
+    expect(block('.design-scrim {')).toContain('background: var(--design-canvas)')
   })
 })
 
