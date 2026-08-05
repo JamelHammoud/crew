@@ -24,11 +24,11 @@ const linear = (hold, end) => `linear-gradient(to bottom, #000 0 ${hold}px, rgb(
 
 const CANDIDATES = [
   ['today', 110, linear(70, 110)],
-  ['linear 56 to 132', 132, linear(56, 132)],
-  ['eased 56 to 120', 120, smooth(56, 120)],
-  ['eased 56 to 132', 132, smooth(56, 132)],
-  ['eased 56 to 144', 144, smooth(56, 144)],
-  ['eased 70 to 150', 150, smooth(70, 150)]
+  ['linear 48 to 112', 112, linear(48, 112)],
+  ['eased 56 to 112', 112, smooth(56, 112)],
+  ['eased 48 to 112', 112, smooth(48, 112)],
+  ['eased 40 to 112', 112, smooth(40, 112)],
+  ['eased 48 to 128', 128, smooth(48, 128)]
 ]
 
 const WIDE = 236
