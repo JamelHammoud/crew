@@ -36,13 +36,6 @@ export default function DesignLeftPanel({ onClose }: { onClose: () => void }) {
   )
 }
 
-export function HidePanel({ onClose }: { onClose: () => void }) {
-  return (
-    <PanelButton label="Hide panel" onClick={onClose}>
-      <PanelLeftGlyph className="w-4 h-4" />
-    </PanelButton>
-  )
-}
 
 interface LayerRow {
   shape: TLShape
