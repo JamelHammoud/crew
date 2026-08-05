@@ -187,17 +187,18 @@ export default function Sidebar({
         <SidebarTasks />
         <SidebarMore tab={tab} onTab={goToTab} />
       </nav>
-      <div className="app-no-drag group shrink-0 pl-4 pr-2 pt-5 pb-1 flex items-center justify-between">
-        <h2 className="text-xs font-medium text-fg/45">Projects</h2>
-        <NewPlace busy={busyKey !== null} onOpen={addPlace} />
-      </div>
       <div
         ref={node => {
           scroller.current = node
           order.ref(node)
         }}
-        className="scroll-fade relative flex-1 min-h-0 overflow-y-auto app-no-drag px-2 pt-2 pb-3"
+        className="scroll-fade relative flex-1 min-h-0 overflow-y-auto app-no-drag px-2 pb-3"
       >
+        {tab === 'docs' && <SidebarDocs />}
+        <div className="group pl-2 pt-2 pb-1 flex items-center justify-between">
+          <h2 className="text-xs font-medium text-fg/45">Projects</h2>
+          <NewPlace busy={busyKey !== null} onOpen={addPlace} />
+        </div>
         {order.view}
         <div className="flex flex-col gap-3">
           {places.map(place => (
