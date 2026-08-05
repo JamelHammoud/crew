@@ -1,5 +1,5 @@
 import type { Editor } from '../canvas'
-import { bandColumns, nameInset, namePull, toolsInset } from '../design/headerBand'
+import { nameInset, namePull, toolsInset } from '../design/headerBand'
 import { cornerRoom, useHeaderSlot } from '../state/headerSlot'
 import { SIDEBAR_W, useSidebar } from '../state/sidebar'
 import type { DesignPanelsOpen } from './designPanelsOpen'
