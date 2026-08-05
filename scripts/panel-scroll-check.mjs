@@ -336,6 +336,13 @@ try {
   for (const [name, one] of Object.entries(seen.cases)) {
     console.log(`\n=== ${name}: ${SAYS[name]} ===`)
     console.log(table(one.before, one.after))
+    if (one.forcedRootScrollTop !== undefined) {
+      console.log(`\n  #root.scrollTop written by hand to 200, read back: ${one.forcedRootScrollTop}`)
+    }
+    if (one.scrolled && one.pulledBack) {
+      console.log('\n  scrolled down by hand, then scrollIntoView on the last pill again:')
+      console.log(table(one.scrolled, one.pulledBack))
+    }
     if (one.rested) {
       console.log('\n  400ms later, on its own:')
       console.log(table(one.pulledBack || one.after, one.rested))
@@ -343,13 +350,6 @@ try {
     if (one.opened) {
       console.log('\n  and after the outer box finishes opening to 380:')
       console.log(table(one.rested, one.opened))
-    }
-    if (one.forcedRootScrollTop !== undefined) {
-      console.log(`\n  #root.scrollTop written by hand to 200, read back: ${one.forcedRootScrollTop}`)
-    }
-    if (one.scrolled && one.pulledBack) {
-      console.log('\n  scrolled down by hand, then scrollIntoView on the last pill again:')
-      console.log(table(one.scrolled, one.pulledBack))
     }
   }
 } finally {
