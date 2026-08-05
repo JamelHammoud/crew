@@ -215,6 +215,9 @@ export const useBrowser = create<BrowserState>((write, get) => {
   // than on each of the dozen ways in, so a thirteenth cannot open a tab into a
   // panel nobody can see. It counts what arrived rather than what is there: a
   // page that finished loading while the panel was put away is not a way in.
+  // The thread's own things are the one exception, and they write straight
+  // through this: a plan and a board arrive because you opened a thread rather
+  // than because you put them there, so they stand in the row and wait.
   const set: typeof write = (patch, replace) => {
     const before = get().tabs.length
     write(patch as never, replace as never)
