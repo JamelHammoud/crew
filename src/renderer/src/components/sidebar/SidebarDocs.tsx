@@ -97,7 +97,7 @@ export default function SidebarDocs({ open }: { open: boolean }) {
             e.preventDefault()
             setMenu({ slug: node.slug, x: e.clientX, y: e.clientY })
           }}
-          className={`group/page w-full rounded-xl pr-1 py-1.5 flex items-center gap-1.5 text-left text-sm transition-colors duration-150 ${
+          className={`group/page w-full rounded-xl pr-2 py-1.5 flex items-center gap-1.5 text-left text-sm transition-colors duration-150 ${
             dropTarget === node.slug ? 'ring-1 ring-fg/25' : ''
           } ${here ? 'bg-fg/[0.10] text-fg' : 'text-fg/70 hover:bg-fg/[0.06] hover:text-fg'}`}
           style={{ paddingLeft: 12 + depth * 12 }}
