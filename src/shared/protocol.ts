@@ -72,6 +72,10 @@ export interface SessionSnapshot {
   tools?: CrewTool[]
   memories?: CrewMemory[]
   memoryEnabled?: boolean
+  // What the crew has plugged in. A plugin is everyone's, so it rides here the
+  // way the toolbox does, and the key one needs never does: that is the
+  // machine's own and is never written down.
+  plugins?: CrewPlugin[]
   // How big a file the crew may send, in megabytes. Absent from a host running
   // an older build, whose limit is the one this shipped with.
   attachmentMb?: number
