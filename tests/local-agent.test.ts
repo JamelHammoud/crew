@@ -68,8 +68,8 @@ async function fakeRuntime(turns: string[][], kind: 'ollama' | 'openai' = 'ollam
         const parsed = JSON.parse(body || '{}')
         const at = asked.length
         asked.push(parsed)
-        res.writeHead(200, { 'content-type': 'application/x-ndjson' })
-        for (const chunk of turns[at] ?? [end()]) {
+        res.writeHead(200, { 'content-type': ollama ? 'application/x-ndjson' : 'text/event-stream' })
+        for (const chunk of turns[at] ?? [ollama ? end() : sseEnd()]) {
           while (heldFrom !== null && at >= heldFrom) await new Promise(resolve => setTimeout(resolve, 5))
           res.write(chunk)
         }
@@ -105,8 +105,8 @@ let fake: Fake | null = null
 let cwd = ''
 const wasHost = process.env.OLLAMA_HOST
 
-const stand = async (turns: string[][]) => {
-  fake = await fakeRuntime(turns)
+const stand = async (turns: string[][], kind: 'ollama' | 'openai' = 'ollama') => {
+  fake = await fakeRuntime(turns, kind)
   process.env.OLLAMA_HOST = fake.url
   cwd = mkdtempSync(join(tmpdir(), 'crew-local-'))
   expect(await localProvider.detect()).toBe(true)
