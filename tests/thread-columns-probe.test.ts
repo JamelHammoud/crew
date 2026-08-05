@@ -172,7 +172,7 @@ describe('several threads open side by side', () => {
   it('replaces the row when a task is opened from the task list', () => {
     open(['thread-1'], 'thread-1')
 
-    fireEvent.click(screen.getByRole('button', { name: 'Tasks' }))
+    openTasks()
     const task = screen.getAllByRole('button').find(button => button.textContent?.includes('look at the footer'))!
     fireEvent.click(task)
 
@@ -184,7 +184,7 @@ describe('several threads open side by side', () => {
   it('opens a task to the right from its right-click menu', () => {
     open(['thread-1'], 'thread-1')
 
-    fireEvent.click(screen.getByRole('button', { name: 'Tasks' }))
+    openTasks()
     const task = screen.getAllByRole('button').find(button => button.textContent?.includes('look at the footer'))!
     fireEvent.contextMenu(task)
 
