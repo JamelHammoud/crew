@@ -212,7 +212,7 @@ export default function Docs() {
             e.preventDefault()
             setMenu({ slug: node.slug, x: e.clientX, y: e.clientY })
           }}
-          className={`group/row flex items-center rounded-full transition-all duration-150 ${
+          className={`group/row flex items-center ${ROW} rounded-full transition-colors duration-150 ${
             dropTarget === node.slug ? 'bg-fg/[0.08] ring-1 ring-fg/25' : ''
           } ${active ? 'bg-ink-800' : 'hover:bg-fg/[0.04]'}`}
           style={{ paddingLeft: depth * 14 }}
@@ -227,7 +227,7 @@ export default function Docs() {
               })
             }
             aria-label={open ? 'Collapse' : 'Expand'}
-            className={`w-5 h-7 flex items-center justify-center shrink-0 text-fg-faint hover:text-fg-muted ${
+            className={`w-5 h-full flex items-center justify-center shrink-0 text-fg-faint hover:text-fg-secondary ${
               node.children.length === 0 ? 'invisible' : ''
             }`}
           >
@@ -235,8 +235,8 @@ export default function Docs() {
           </button>
           <button
             onClick={() => setPage(node.slug)}
-            className={`flex-1 min-w-0 flex items-center gap-1.5 text-left py-1.5 text-sm font-semibold ${
-              active ? 'text-fg' : 'text-fg-muted hover:text-fg-secondary'
+            className={`flex-1 min-w-0 h-full flex items-center gap-1.5 text-left ${
+              active ? 'text-fg' : 'text-fg-secondary hover:text-fg'
             }`}
           >
             <DocGlyph className="w-4 h-4 shrink-0 opacity-60" />
@@ -246,7 +246,7 @@ export default function Docs() {
             <button
               onClick={() => createPage(node.slug)}
               aria-label="Add sub-page"
-              className="w-6 h-6 mr-1 rounded-full flex items-center justify-center text-fg-muted opacity-0 group-hover/row:opacity-100 hover:text-fg hover:bg-fg/[0.08] transition-all shrink-0"
+              className="w-6 h-6 mr-1 rounded-full flex items-center justify-center text-fg-muted opacity-0 group-hover/row:opacity-100 hover:text-fg hover:bg-fg/[0.08] transition-opacity shrink-0"
             >
               <PlusGlyph className="w-3.5 h-3.5" />
             </button>

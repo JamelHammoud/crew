@@ -168,8 +168,8 @@ export function DesignZoom() {
         </Tooltip>
         <Popover open={open} onClose={() => setOpen(false)} align="center">
           <div className="w-48">
-            <MenuItem label="Zoom in" hint="⌘ +" onClick={() => jump(() => editor.zoomIn())} />
-            <MenuItem label="Zoom out" hint="⌘ −" onClick={() => jump(() => editor.zoomOut())} />
+            <MenuItem label="Zoom in" onClick={() => jump(() => editor.zoomIn())} />
+            <MenuItem label="Zoom out" onClick={() => jump(() => editor.zoomOut())} />
             <MenuDivider />
             <MenuItem label="Zoom to fit" hint="Shift 1" onClick={() => jump(() => editor.zoomToFit())} />
             <MenuItem label="Zoom to selection" hint="Shift 2" onClick={() => jump(() => editor.zoomToSelection())} />
