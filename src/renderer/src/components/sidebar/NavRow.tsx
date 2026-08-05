@@ -28,9 +28,15 @@ export default function NavRow({
         aria-haspopup={menu ? 'menu' : undefined}
         className={`w-full rounded-xl py-1.5 pl-2 flex items-center gap-2 text-left text-sm font-medium transition-[color,background-color,scale] duration-150 active:scale-[0.99] ${
           after ? 'pr-9' : 'pr-2'
-        } ${lit ? 'bg-fg/[0.08] text-fg' : 'text-fg/70 hover:bg-fg/[0.06] hover:text-fg'}`}
+        } ${
+          lit
+            ? 'bg-fg/[0.08] text-fg'
+            : current
+              ? 'text-fg hover:bg-fg/[0.06]'
+              : 'text-fg/70 hover:bg-fg/[0.06] hover:text-fg'
+        }`}
       >
-        <span className={lit ? 'text-fg/70' : 'text-fg/45'}>{icon}</span>
+        <span className={lit || current ? 'text-fg/70' : 'text-fg/45'}>{icon}</span>
         <span className="flex-1 truncate">{label}</span>
       </button>
       {after && <span className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">{after}</span>}
