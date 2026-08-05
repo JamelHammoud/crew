@@ -226,7 +226,7 @@ export default function Docs() {
               })
             }
             aria-label={open ? 'Collapse' : 'Expand'}
-            className={`w-5 h-full flex items-center justify-center shrink-0 text-fg-faint hover:text-fg-secondary ${
+            className={`w-5 h-full flex items-center justify-center shrink-0 text-fg/35 hover:text-fg/70 ${
               node.children.length === 0 ? 'invisible' : ''
             }`}
           >
@@ -234,11 +234,12 @@ export default function Docs() {
           </button>
           <button
             onClick={() => setPage(node.slug)}
+            aria-current={active ? 'page' : undefined}
             className={`flex-1 min-w-0 h-full flex items-center gap-1.5 text-left ${
-              active ? 'text-fg' : 'text-fg-secondary hover:text-fg'
+              active ? 'text-fg' : 'text-fg/70 hover:text-fg'
             }`}
           >
-            <DocGlyph className="w-4 h-4 shrink-0 opacity-60" />
+            <DocGlyph className={`w-4 h-4 shrink-0 ${active ? 'text-fg/70' : 'text-fg/45'}`} />
             <span className="truncate">{titleOf(node.slug) || 'Untitled'}</span>
           </button>
           <Tooltip label="Add sub-page">
