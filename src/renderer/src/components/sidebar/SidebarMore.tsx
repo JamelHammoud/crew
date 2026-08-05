@@ -40,14 +40,14 @@ export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab
   return (
     <div
       ref={rowRef}
-      onPointerEnter={() => !toolbox && menu.show()}
+      onPointerEnter={() => toolbox === null && menu.show()}
       onPointerLeave={menu.leave}
       className="relative"
     >
       <NavRow
         icon={<MoreIcon className={TAB_ICON} />}
         label="More"
-        lit={here || open || toolbox}
+        lit={here || open || toolbox !== null}
         current={here}
         expanded={open}
         menu
