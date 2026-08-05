@@ -51,7 +51,7 @@ const CASES = [
 const PAGE = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><script type="module" src="./probe.js"></script></head>
 <body class="bg-ink-900 font-sans">
-  <div id="root"><div class="flex flex-wrap" style="width:${WIDE * 2}px">${CASES.map(one => page(...one)).join('')}</div></div>
+  <div id="root"><div class="flex flex-wrap" style="width:${WIDE * 3}px">${CASES.map(one => page(...one)).join('')}</div></div>
 </body></html>`
 
 const MAIN = `const { app, BrowserWindow } = require('electron')
@@ -61,7 +61,7 @@ app.disableHardwareAcceleration()
 const wait = ms => new Promise(r => setTimeout(r, ms))
 
 app.whenReady().then(async () => {
-  const win = new BrowserWindow({ width: ${WIDE * 2}, height: 1280, show: true })
+  const win = new BrowserWindow({ width: ${WIDE * 3}, height: 1000, show: true })
   try {
     await win.loadFile(path.join(__dirname, 'dist/index.html'))
     await wait(800)
