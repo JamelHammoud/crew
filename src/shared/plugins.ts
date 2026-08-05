@@ -196,6 +196,55 @@ export const PLUGIN_OFFERS: readonly PluginOffer[] = [
     args: ['-y', '@playwright/mcp@latest']
   },
   {
+    group: 'Code',
+    name: 'chrome-devtools',
+    label: 'Chrome DevTools',
+    blurb: 'The console, the network and what made the page slow',
+    transport: 'stdio',
+    command: 'npx',
+    args: ['-y', 'chrome-devtools-mcp@latest']
+  },
+  {
+    group: 'Code',
+    name: 'deepwiki',
+    label: 'DeepWiki',
+    blurb: 'How a public repo on GitHub works',
+    transport: 'http',
+    url: 'https://mcp.deepwiki.com/mcp'
+  },
+  {
+    group: 'Hosting',
+    name: 'vercel',
+    label: 'Vercel',
+    blurb: 'The deployments, and why one failed',
+    transport: 'http',
+    url: 'https://mcp.vercel.com'
+  },
+  {
+    group: 'Hosting',
+    name: 'netlify',
+    label: 'Netlify',
+    blurb: 'What is up, and the settings behind it',
+    transport: 'http',
+    url: 'https://netlify-mcp.netlify.app/mcp'
+  },
+  {
+    group: 'Hosting',
+    name: 'cloudflare',
+    label: 'Cloudflare',
+    blurb: 'Workers, DNS and what the logs say',
+    transport: 'http',
+    url: 'https://mcp.cloudflare.com/mcp'
+  },
+  {
+    group: 'Hosting',
+    name: 'supabase',
+    label: 'Supabase',
+    blurb: 'The tables, the rows and what the logs say',
+    transport: 'http',
+    url: 'https://mcp.supabase.com/mcp'
+  },
+  {
     group: 'Work',
     name: 'linear',
     label: 'Linear',
@@ -210,6 +259,54 @@ export const PLUGIN_OFFERS: readonly PluginOffer[] = [
     blurb: 'Read and write the pages',
     transport: 'http',
     url: 'https://mcp.notion.com/mcp'
+  },
+  {
+    group: 'Work',
+    name: 'slack',
+    label: 'Slack',
+    blurb: 'Read a channel and say something in it',
+    transport: 'http',
+    url: 'https://mcp.slack.com/mcp'
+  },
+  {
+    group: 'Work',
+    name: 'atlassian',
+    label: 'Atlassian',
+    blurb: 'The Jira tickets and the Confluence pages',
+    transport: 'http',
+    url: 'https://mcp.atlassian.com/v1/mcp'
+  },
+  {
+    group: 'Work',
+    name: 'asana',
+    label: 'Asana',
+    blurb: 'The tasks and who they are on',
+    transport: 'http',
+    url: 'https://mcp.asana.com/mcp'
+  },
+  {
+    group: 'Work',
+    name: 'intercom',
+    label: 'Intercom',
+    blurb: 'The conversations people are having with support',
+    transport: 'http',
+    url: 'https://mcp.intercom.com/mcp'
+  },
+  {
+    group: 'Work',
+    name: 'airtable',
+    label: 'Airtable',
+    blurb: 'The bases, and the rows in them',
+    transport: 'http',
+    url: 'https://mcp.airtable.com/mcp'
+  },
+  {
+    group: 'Work',
+    name: 'stripe',
+    label: 'Stripe',
+    blurb: 'Payments, customers and what they were charged',
+    transport: 'http',
+    url: 'https://mcp.stripe.com'
   }
 ]
 
