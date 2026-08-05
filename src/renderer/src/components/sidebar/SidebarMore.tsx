@@ -33,7 +33,7 @@ export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab
         }`}
       >
         <span className={here || open ? 'text-fg/70' : 'text-fg/45'}>
-          <MoreGlyph className="w-[18px] h-[18px]" />
+          <MoreTabIcon size={18} />
         </span>
         More
       </button>
