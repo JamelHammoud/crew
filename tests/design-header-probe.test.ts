@@ -145,20 +145,15 @@ describe('what stands behind the design header', () => {
     render(stand(board(), BOTH))
 
     expect(held.backdrop.children.length).toBe(0)
-    expect(app).not.toContain('data-design-band')
   })
 
-  it('runs the panels and the canvas to the window edge rather than a band standing in for them', () => {
-    expect(page).not.toContain('paddingTop: TOP_BAR_H')
-    for (const panel of [left, right]) expect(panel).toContain('paddingTop: TOP_BAR_H')
-    expect(app).not.toContain("tab === 'design' ? 'bg-ink-900'")
-  })
-
-  it('fades the canvas under the header, in the canvas colour and in the stage that owns it', () => {
-    expect(stage).toContain('design design-scrim')
-    expect(styles).toMatch(
-      /\.design-scrim \{\n\s+height: var\(--design-scrim\);\n\s+background: var\(--design-canvas\);\n\s+mask-image: var\(--scrim-ramp\);/
-    )
+  it('paints nothing over either panel, whichever of them is open', () => {
+    for (const panels of [BOTH, NEITHER]) {
+      const held = slots()
+      render(stand(board(), panels))
+      expect(held.backdrop.querySelector('[data-design-band]')).toBeNull()
+      cleanup()
+    }
   })
 })
 
