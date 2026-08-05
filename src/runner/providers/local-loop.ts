@@ -52,10 +52,10 @@ export function fitWindow(messages: ChatMessage[], context: number): ChatMessage
   return [...head, ...rest]
 }
 
-const answerOf = (name: string, call: ToolCall, output: string): ChatMessage => ({
+const answerOf = (call: ToolCall, output: string): ChatMessage => ({
   role: 'tool',
-  name,
-  tool_call_id: call.id,
+  name: call.name,
+  callId: call.id,
   content: output
 })
 
