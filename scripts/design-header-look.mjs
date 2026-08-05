@@ -168,7 +168,9 @@ const READ = \`(() => {
     return el ? getComputedStyle(el).backgroundColor : null
   }
   return {
+    width: window.innerWidth,
     name: named('App design'),
+    letters: box('[data-design-name] button > span'),
     zoom: named('Zoom'),
     undo: named('Undo'),
     face: named('Settings'),
