@@ -22,7 +22,7 @@ function toolbar(tool = 'select') {
     createElement(
       EditorContext.Provider,
       { value: editor },
-      createElement(DesignToolbar, { onAsk: () => {}, onRename: () => {} })
+      createElement(DesignToolbar, { onAsk: () => {}, onRename: () => {}, panels: { left: true, right: true }, onPanels: () => {} })
     )
   )
 }

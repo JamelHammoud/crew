@@ -69,7 +69,7 @@ describe('the design panels on a real board', () => {
     const editor = board()
     node(editor, 'Card', 0)
     node(editor, 'Label', 200)
-    inside(editor, createElement(DesignLeftPanel))
+    inside(editor, createElement(DesignLeftPanel, { onClose: () => {} }))
     expect(screen.getByText('Card')).toBeTruthy()
     expect(screen.getByText('Label')).toBeTruthy()
   })
@@ -78,7 +78,7 @@ describe('the design panels on a real board', () => {
     const editor = board()
     const card = node(editor, 'Card', 0)
     node(editor, 'Label', 200)
-    inside(editor, createElement(DesignLeftPanel))
+    inside(editor, createElement(DesignLeftPanel, { onClose: () => {} }))
     fireEvent.click(screen.getByText('Card'))
     expect(editor.getSelectedShapeIds()).toEqual([card])
   })
@@ -86,7 +86,7 @@ describe('the design panels on a real board', () => {
   it('hides a layer from the row and the canvas together', () => {
     const editor = board()
     const card = node(editor, 'Card', 0)
-    inside(editor, createElement(DesignLeftPanel))
+    inside(editor, createElement(DesignLeftPanel, { onClose: () => {} }))
     fireEvent.click(screen.getByLabelText('Hide'))
     expect(editor.getShape(card)!.meta.hidden).toBe(true)
     expect(editor.isShapeHidden(card)).toBe(true)
@@ -95,7 +95,7 @@ describe('the design panels on a real board', () => {
   it('locks a layer from the row', () => {
     const editor = board()
     const card = node(editor, 'Card', 0)
-    inside(editor, createElement(DesignLeftPanel))
+    inside(editor, createElement(DesignLeftPanel, { onClose: () => {} }))
     fireEvent.click(screen.getByLabelText('Lock'))
     expect(editor.getShape(card)!.isLocked).toBe(true)
   })
@@ -103,7 +103,7 @@ describe('the design panels on a real board', () => {
   it('scrolls the layers rather than growing past the panel', () => {
     const editor = board()
     for (let at = 0; at < 60; at += 1) node(editor, `Layer ${at}`, at * 4)
-    const view = inside(editor, createElement(DesignLeftPanel))
+    const view = inside(editor, createElement(DesignLeftPanel, { onClose: () => {} }))
     const scroller = view.container.querySelector('[data-design-layers] .overflow-y-auto') as HTMLElement
     expect(scroller).toBeTruthy()
     expect(scroller.className).toContain('min-h-0')
@@ -122,7 +122,7 @@ describe('the design panels on a real board', () => {
     const editor = board()
     const card = node(editor, 'Card', 0)
     editor.setSelectedShapes([card])
-    const view = inside(editor, createElement(DesignLeftPanel))
+    const view = inside(editor, createElement(DesignLeftPanel, { onClose: () => {} }))
     const scroller = view.container.querySelector('[data-design-inspector] .overflow-y-auto') as HTMLElement
     expect(scroller).toBeTruthy()
     expect(scroller.className).toContain('min-h-0')
@@ -138,7 +138,7 @@ describe('the design panels on a real board', () => {
   it('turns the layers over for the inspector once something is picked', () => {
     const editor = board()
     const card = node(editor, 'Card', 0)
-    const view = inside(editor, createElement(DesignLeftPanel))
+    const view = inside(editor, createElement(DesignLeftPanel, { onClose: () => {} }))
     const layers = view.container.querySelector('[data-design-layers]') as HTMLElement
     const inspector = view.container.querySelector('[data-design-inspector]') as HTMLElement
     expect(layers.hidden).toBe(false)
@@ -159,7 +159,7 @@ describe('the design panels on a real board', () => {
     const card = node(editor, 'Card', 0)
     const label = node(editor, 'Label', 260)
     editor.setSelectedShapes([card, label])
-    inside(editor, createElement(DesignLeftPanel))
+    inside(editor, createElement(DesignLeftPanel, { onClose: () => {} }))
     fireEvent.click(screen.getByLabelText('Align left'))
     expect(editor.getShape(label)!.x).toBe(editor.getShape(card)!.x)
   })
@@ -168,7 +168,7 @@ describe('the design panels on a real board', () => {
     const editor = board()
     const card = node(editor, 'Card', 0)
     editor.setSelectedShapes([card])
-    inside(editor, createElement(DesignLeftPanel))
+    inside(editor, createElement(DesignLeftPanel, { onClose: () => {} }))
     const x = screen.getByLabelText('X') as HTMLInputElement
     fireEvent.change(x, { target: { value: '48' } })
     fireEvent.blur(x)
@@ -181,7 +181,7 @@ describe('the design panels on a real board', () => {
 
   it('follows the tool the toolbar was clicked on', () => {
     const editor = board()
-    inside(editor, createElement(DesignToolbar, { onAsk: () => {}, onRename: () => {} }))
+    inside(editor, createElement(DesignToolbar, { onAsk: () => {}, onRename: () => {}, panels: { left: true, right: true }, onPanels: () => {} }))
     fireEvent.click(screen.getByLabelText('Frame'))
     expect(editor.getCurrentToolId()).toBe('frame')
     expect(screen.getByLabelText('Frame').getAttribute('aria-pressed')).toBe('true')
@@ -189,7 +189,7 @@ describe('the design panels on a real board', () => {
 
   it('takes the letter each tool names', () => {
     const editor = board()
-    inside(editor, createElement(DesignToolbar, { onAsk: () => {}, onRename: () => {} }))
+    inside(editor, createElement(DesignToolbar, { onAsk: () => {}, onRename: () => {}, panels: { left: true, right: true }, onPanels: () => {} }))
     fireEvent.keyDown(window, { key: 'f' })
     expect(editor.getCurrentToolId()).toBe('frame')
     fireEvent.keyDown(window, { key: 't' })
