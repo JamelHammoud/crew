@@ -138,7 +138,7 @@ async function compile(dir) {
   const sheet = (await readdir(assets)).find(name => name.endsWith('.css'))
   if (!sheet) throw new Error('the probe came out with no stylesheet')
   const css = await readFile(path.join(assets, sheet), 'utf8')
-  if (!css.includes('tab-icon')) throw new Error('the stylesheet came out without the icon rules in it')
+  if (!css.includes('--color-ink-900')) throw new Error('the stylesheet came out without the app\'s own tokens in it')
 }
 
 const dir = await stage()
