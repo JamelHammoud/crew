@@ -111,7 +111,6 @@ describe('a table in a doc', () => {
 
   it('is built with the header setting the menu row hangs off', () => {
     expect(editor().settings.tables.headers).toBe(true)
-    const source = readFileSync(path.join(root, 'src/renderer/src/components/DocEditor.tsx'), 'utf8')
-    expect(source).toContain('tables: { headers: true }')
+    expect(editorSource).toContain('tables: { headers: true }')
   })
 })
