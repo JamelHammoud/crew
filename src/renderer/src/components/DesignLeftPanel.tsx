@@ -10,11 +10,10 @@ import {
   EyeGlyph,
   EyeOffGlyph,
   LockGlyph,
-  PanelLeftGlyph,
   SearchGlyph,
   UnlockGlyph
 } from '../icons'
-import { PanelButton } from './DesignControls'
+import { HidePanel, PanelButton } from './DesignControls'
 import Pill from './Pill'
 import Tooltip from './Tooltip'
 
