@@ -81,7 +81,7 @@ export default function SidebarDocs({ open }: { open: boolean }) {
     const shown = expanded.has(node.slug)
     const here = node.slug === current
     return (
-      <div key={node.slug}>
+      <div key={node.slug} className="flex flex-col gap-0.5">
         <div
           draggable={node.slug !== ROOT_PAGE}
           onDragStart={e => {
@@ -151,7 +151,7 @@ export default function SidebarDocs({ open }: { open: boolean }) {
       <div className="min-h-0 -mx-2 overflow-hidden">
         <div {...dropProps('')} className="px-2 pt-0.5 flex flex-col gap-0.5">
           <div
-            className={`rounded-xl transition-colors duration-150 ${
+            className={`flex flex-col gap-0.5 rounded-xl transition-colors duration-150 ${
               dragged && dropTarget === '' ? 'bg-fg/[0.06]' : ''
             }`}
           >
