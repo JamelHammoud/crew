@@ -449,21 +449,21 @@ textarea:placeholder-shown {
 }
 
 .sidebar-glass {
-  background: rgb(24 24 24 / 0.72);
+  background: rgb(24 24 24 / 0.92);
   backdrop-filter: blur(32px) saturate(180%);
 }
 
 .sidebar-glass.glass-strong {
-  background: rgb(24 24 24 / 0.92);
+  background: rgb(24 24 24 / 0.96);
   backdrop-filter: blur(48px) saturate(180%);
 }
 
 .light .sidebar-glass {
-  background: rgb(252 252 252 / 0.8);
+  background: rgb(252 252 252 / 0.93);
 }
 
 .light .sidebar-glass.glass-strong {
-  background: rgb(252 252 252 / 0.94);
+  background: rgb(252 252 252 / 0.97);
 }
 
 .mac .sidebar-pinned {
