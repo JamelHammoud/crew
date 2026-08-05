@@ -381,6 +381,14 @@ textarea:placeholder-shown {
   background-clip: padding-box;
 }
 
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 .light ::-webkit-scrollbar-thumb {
   background: rgb(0 0 0 / 0.14);
   border: 2px solid transparent;
