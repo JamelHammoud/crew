@@ -114,6 +114,8 @@ const { REACH_MS } = await import('../src/renderer/src/components/useHoverMenu')
 
 const rest = (ms: number) => new Promise(done => setTimeout(done, ms))
 
+const CROSSING_MS = 60
+
 const Sidebar = (
   props: {
     overlay?: boolean
