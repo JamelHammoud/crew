@@ -157,6 +157,16 @@ A card with a rail of pages down the side, opened by your own face in the top ri
 - A machine with no mail app set up fails exactly the way one with a mail app succeeds, so `shell:openExternal` answers whether it really opened. Silence there is somebody's feedback that nobody ever receives, which is the same rule the music holds about a track that will not load. Refused, the card stays where it is with the words still in it, says the address, and copies the whole of it on one press.
 - `FEEDBACK_LIMIT` is well under what a shell will read, because every space is three characters by the time the shell sees it and prose comes out around a quarter longer than it was written. The field stops taking words at the limit rather than the end being cut off on the way out, and anything past what a shell will take is caught by the copy either way.
 
+## What a plan has left
+
+The bars on an agent card: how much of the five hour window and of the week has gone. Every number on them comes from the provider, and none of them is worked out here.
+
+- Claude's are read off the same endpoint Claude Code's own usage screen reads, with the sign-in the CLI already holds on this machine. Codex writes its rate limits into its session rollouts as it runs, so those are read off the disk.
+- **An access token that has run out is not a machine that has been signed out.** It lasts eight hours and the CLI refreshes it out of its own refresh token whenever it runs, so a laptop nobody has run Claude on since the morning has an expired one sitting in the keychain while its agents work perfectly. Read as a sign-out, it stood the line "Claude sign-in expired. Run claude once to refresh it." over a working agent, which is both untrue and a job handed to somebody that was never theirs. `claudeSignIn` in `src/runner/providers/usage.ts` is the rule: the refresh token is the sign-in, and only that one running out is worth asking anybody to sign in again.
+- A stale token is served the last good numbers with their own "updated Xm ago", which is what every other failure here already does. The poll comes round every minute, so the bars come back on their own the next time an agent runs.
+- Nothing is fetched on a token already known to have run out. The endpoint rate limits hard, which is the whole reason for the backoff and the last good snapshot, and a request that can only answer 401 costs the same as one that can answer.
+- The refresh is never done here. The credentials belong to the CLI, the refresh token rotates when it is spent, and a second thing spending it is one of the two ends holding a token the other has already invalidated: the cost of getting that wrong is somebody signed out of Claude Code altogether, against a few minutes of a stale bar.
+
 ## Toasts
 
 A word from the app about what just happened, standing under the header on the right for a few seconds. `toast()` in `src/renderer/src/state/toast.ts` raises one from anywhere, in the renderer or out of a handler, and `Toaster` is the one stack, mounted once in `App` and standing in the body.
