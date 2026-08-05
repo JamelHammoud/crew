@@ -130,11 +130,11 @@ export async function statRepoFile(root: string, target: string): Promise<RepoPa
   }
 }
 
-export async function readRepoFile(root: string, target: string): Promise<RepoFile> {
+export async function readRepoFile(root: string, target: string, media?: MediaHost): Promise<RepoFile> {
   const absolute = resolveRepoPath(root, target)
   if (!absolute) return { kind: 'missing', path: trimPath(target) }
   try {
-    return await readAt(repoRelative(root, absolute), absolute)
+    return await readAt(repoRelative(root, absolute), absolute, media)
   } catch {
     return { kind: 'missing', path: trimPath(target) }
   }
