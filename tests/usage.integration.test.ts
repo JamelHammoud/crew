@@ -151,6 +151,35 @@ describe('claude usage parsing', () => {
   })
 })
 
+describe('claude sign-in', () => {
+  const now = Date.parse('2026-08-04T12:00:00Z')
+  const hour = 3600_000
+
+  it('reads a live token as signed in', () => {
+    const creds = { accessToken: 'a', expiresAt: now + hour, refreshTokenExpiresAt: now + 200 * hour }
+    expect(claudeSignIn(creds, now)).toBe('ok')
+  })
+
+  it('reads an access token that has run out as stale rather than signed out', () => {
+    const creds = { accessToken: 'a', expiresAt: now - hour, refreshTokenExpiresAt: now + 200 * hour }
+    expect(claudeSignIn(creds, now)).toBe('stale')
+  })
+
+  it('is signed out once the refresh token has run out', () => {
+    const creds = { accessToken: 'a', expiresAt: now - hour, refreshTokenExpiresAt: now - hour }
+    expect(claudeSignIn(creds, now)).toBe('out')
+  })
+
+  it('is signed out with no credentials at all', () => {
+    expect(claudeSignIn(null, now)).toBe('out')
+    expect(claudeSignIn({}, now)).toBe('out')
+  })
+
+  it('takes credentials that say nothing about either expiry', () => {
+    expect(claudeSignIn({ accessToken: 'a' }, now)).toBe('ok')
+  })
+})
+
 describe('codex usage parsing', () => {
   it('labels primary and secondary windows by their duration', () => {
     const at = Date.parse('2026-07-20T12:00:00Z')
