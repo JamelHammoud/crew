@@ -186,6 +186,15 @@ describe('where the design controls stand', () => {
     expect(name.style.marginLeft).toBe(`-${NAME_PAD}px`)
   })
 
+  it('holds the name off the window corner rather than tucking its pill under the drag band', () => {
+    useHeaderSlot.setState({ corner: 206 })
+    const held = slots()
+    render(stand(board(), NEITHER))
+
+    const name = held.left.querySelector<HTMLElement>('[data-design-name]')!
+    expect(name.style.marginLeft).toBe('0px')
+  })
+
   it('takes the corner for nothing once it stands over the rail', () => {
     useHeaderSlot.setState({ corner: 206 })
     useSidebar.setState({ pinned: true })
