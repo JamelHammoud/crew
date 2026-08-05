@@ -148,8 +148,8 @@ export default function SidebarDocs({ open }: { open: boolean }) {
         open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr] pointer-events-none'
       }`}
     >
-      <div className="min-h-0 overflow-hidden">
-        <div {...dropProps('')} className="pt-0.5 flex flex-col gap-0.5">
+      <div className="min-h-0 -mx-2 overflow-hidden">
+        <div {...dropProps('')} className="px-2 pt-0.5 flex flex-col gap-0.5">
           <div
             className={`rounded-xl transition-colors duration-150 ${
               dragged && dropTarget === '' ? 'bg-fg/[0.06]' : ''
@@ -158,7 +158,7 @@ export default function SidebarDocs({ open }: { open: boolean }) {
             {tree.map(node => renderNode(node, 0))}
           </div>
         </div>
-        <div data-docs-rule className="h-px bg-fg/[0.08] mt-2 mb-1 -mx-2" />
+        <div data-docs-rule className="h-px bg-fg/[0.08] mt-2 mb-1" />
         <Popover open={menu !== null} onClose={() => setMenu(null)} at={menu ?? undefined} align="start">
           <MenuItem
             icon={<PlusGlyph />}
