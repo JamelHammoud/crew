@@ -3,7 +3,7 @@ import { relabelMentions, stripMention, type PooledAgent } from '../../../shared
 import { ChevronDownGlyph, PlusGlyph } from '../icons'
 import { useCrew, type ThreadMeta } from '../state/store'
 import AgentIcon from './AgentIcon'
-import { PanelButton } from './DesignControls'
+import { HidePanel, PanelButton } from './DesignControls'
 import { MenuItem, Popover } from './Popover'
 
 const ROW = 'h-8 flex items-center gap-2 pl-1 pr-2.5'
@@ -19,12 +19,14 @@ export default function DesignThreadBar({
   threads,
   current,
   onPick,
-  onNew
+  onNew,
+  onClose
 }: {
   threads: ThreadMeta[]
   current: string | null
   onPick: (id: string) => void
   onNew: () => void
+  onClose: () => void
 }) {
   const agents = useCrew(s => s.agents)
   const [open, setOpen] = useState(false)
@@ -78,6 +80,7 @@ export default function DesignThreadBar({
       <PanelButton label="New thread" onClick={onNew}>
         <PlusGlyph className="w-4 h-4" />
       </PanelButton>
+      <HidePanel side="right" onClose={onClose} />
     </div>
   )
 }

@@ -3,6 +3,7 @@ import { mentionsIn } from '../../../shared/llm'
 import { pendingCount, useCrew, type ThreadMeta } from '../state/store'
 import Composer from './Composer'
 import TypingLine from './TypingLine'
+import { HidePanel } from './DesignControls'
 import DesignThreadBar from './DesignThreadBar'
 import { MentionMenu, useMentionAutocomplete } from './MentionAutocomplete'
 import RunEnded from './RunEnded'
@@ -20,7 +21,7 @@ export function useBoardThreads(boardId: string): ThreadMeta[] {
   return useMemo(() => Object.values(threads).filter(thread => thread.boardId === boardId), [threads, boardId])
 }
 
-export default function DesignChat({ boardId }: { boardId: string }) {
+export default function DesignChat({ boardId, onClose }: { boardId: string; onClose: () => void }) {
   const selfId = useCrew(s => s.selfId)
   const threads = useCrew(s => s.threads)
   const agents = useCrew(s => s.agents)
@@ -99,7 +100,7 @@ export default function DesignChat({ boardId }: { boardId: string }) {
 
   return (
     <div className="flex-1 min-w-0 min-h-0 flex flex-col">
-      {boardThreads.length > 0 && (
+      {boardThreads.length > 0 ? (
         <DesignThreadBar
           threads={boardThreads}
           current={threadId}
@@ -108,7 +109,12 @@ export default function DesignChat({ boardId }: { boardId: string }) {
             setComposeNew(false)
           }}
           onNew={() => setComposeNew(true)}
+          onClose={onClose}
         />
+      ) : (
+        <div className="h-12 shrink-0 flex items-center justify-end px-2">
+          <HidePanel side="right" onClose={onClose} />
+        </div>
       )}
       <div className="relative flex-1 min-w-0 min-h-0">
         <div ref={scrollRef} onScroll={onScroll} className="h-full overflow-y-auto overflow-x-hidden px-4">
