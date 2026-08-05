@@ -57,6 +57,11 @@ const bridge = {
   setShared: (shared: boolean): Promise<CurrentSession | null> => ipcRenderer.invoke('session:share', shared),
   agentCapabilities: (): Promise<ProviderCapability[]> => ipcRenderer.invoke('agents:capabilities'),
   installProvider: (provider: string): Promise<ProviderCapability[]> => ipcRenderer.invoke('agents:install', provider),
+  modelServers: (): Promise<ModelServer[]> => ipcRenderer.invoke('agents:servers'),
+  addModelServer: (input: { url: string; key?: string }): Promise<ProviderCapability[]> =>
+    ipcRenderer.invoke('agents:addServer', input),
+  forgetModelServer: (url: string): Promise<ProviderCapability[]> =>
+    ipcRenderer.invoke('agents:forgetServer', url),
   createAgent: (input: { provider: string; name: string; settings: AgentSettings }): Promise<AgentDef> =>
     ipcRenderer.invoke('agents:create', input),
   removeAgent: (instanceId: string): Promise<void> => ipcRenderer.invoke('agents:remove', instanceId),
