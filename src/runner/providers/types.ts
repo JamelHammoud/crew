@@ -75,8 +75,19 @@ export interface RunHooks {
   onTokens?: (tokens: number, cost: number | null) => void
 }
 
+// How a CLI takes the crew's MCP servers. 'file' reads a config file off the
+// disk, 'inline' is handed them on the command line or over its own protocol.
+// A CLI that takes none says nothing, and is handed nothing.
+export type McpHandover = 'file' | 'inline'
+
+export interface McpRun {
+  servers: Record<string, McpServer>
+  file: string
+}
+
 export interface RunOptions {
   goal?: string
+  mcp?: McpRun
 }
 
 export interface RunningPrompt {
