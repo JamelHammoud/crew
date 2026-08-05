@@ -30,6 +30,17 @@ export function HeaderButton({
   )
 }
 
+// A panel is put away from inside itself, and the mark says which side it
+// stands on, so the same button reads as the way out of either one.
+export function HidePanel({ side, onClose }: { side: 'left' | 'right'; onClose: () => void }) {
+  const Glyph = side === 'left' ? PanelLeftGlyph : PanelRightGlyph
+  return (
+    <PanelButton label="Hide panel" onClick={onClose}>
+      <Glyph className="w-4 h-4" />
+    </PanelButton>
+  )
+}
+
 export function PanelButton({
   label,
   active,
