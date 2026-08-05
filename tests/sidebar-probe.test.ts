@@ -585,6 +585,31 @@ describe('the sidebar', () => {
     expect(useCrew.getState().openThreadId).toBe('t9')
   })
 
+  it('leaves the thread it was reading for the project itself', async () => {
+    live = [
+      {
+        key: `project:${ONE}`,
+        folder: ONE,
+        name: 'Jamel',
+        hosting: true,
+        threads: [{ id: 't9', title: 'Fix tracked files', working: false }]
+      }
+    ]
+    await act(async () => {
+      await usePlaces.getState().load()
+    })
+    useCrew.setState({ openThreadIds: ['t9'], openThreadId: 't9' })
+    render(Sidebar())
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'one' }))
+    })
+
+    expect(asked).toEqual([])
+    expect(useCrew.getState().openThreadIds).toEqual([])
+    expect(useCrew.getState().openThreadId).toBe(null)
+  })
+
   it('opens a thread to the right from its menu', async () => {
     live = [
       {
