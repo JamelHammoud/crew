@@ -55,7 +55,7 @@ export default function DesignStage({
       <DesignCanvas key={boardId} boardId={boardId} asking={asking} onEditor={onEditor} />
       {editor && (
         <>
-          <DesignToolbar onAsk={ask} onRename={onRename} panels={panels} onPanels={onPanels} />
+          <DesignToolbar boardId={boardId} onAsk={ask} onRename={onRename} panels={panels} onPanels={onPanels} />
           <DesignContextMenu spot={spot} onClose={close} onAsk={ask} onRename={onRename} />
           <DesignAskBar boardId={boardId} open={asking} onClose={stopAsking} onSent={onAsked} />
         </>

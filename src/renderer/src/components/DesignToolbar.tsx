@@ -1,7 +1,10 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { useEditor, useValue, type Editor, type TLShape } from '../canvas'
+import { LayersGlyph } from '../design/glyphs'
 import { activateTool, ALL_TOOLS, currentToolId, TOOL_GROUPS, type DesignToolGroup } from '../design/tools'
-import { ChevronDownGlyph } from '../icons'
+import { ChatGlyph, ChevronDownGlyph } from '../icons'
+import AgentIcon from './AgentIcon'
+import { useBoardThreads } from './DesignChat'
 import DesignActions from './DesignActions'
 import DesignPanelBack from './DesignPanelBack'
 import DesignToolMenu from './DesignToolMenus'
@@ -17,11 +20,13 @@ function combo(shortcut: string): { key: string; shift: boolean } | null {
 }
 
 export default function DesignToolbar({
+  boardId,
   onAsk,
   onRename,
   panels,
   onPanels
 }: {
+  boardId: string
   onAsk: () => void
   onRename: (shape: TLShape) => void
   panels: DesignPanelsOpen
@@ -60,7 +65,9 @@ export default function DesignToolbar({
   return (
     <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 pointer-events-none">
       {!panels.left && (
-        <DesignPanelBack side="left" label="Layers" onOpen={() => onPanels(value => ({ ...value, left: true }))} />
+        <DesignPanelBack label="Layers" onOpen={() => onPanels(value => ({ ...value, left: true }))}>
+          <LayersGlyph className="w-[18px] h-[18px]" />
+        </DesignPanelBack>
       )}
       <div
         role="toolbar"
@@ -84,11 +91,9 @@ export default function DesignToolbar({
         <DesignActions onAsk={onAsk} onRename={onRename} />
       </div>
       {!panels.right && (
-        <DesignPanelBack
-          side="right"
-          label="Board chat"
-          onOpen={() => onPanels(value => ({ ...value, right: true }))}
-        />
+        <DesignPanelBack label="Board chat" onOpen={() => onPanels(value => ({ ...value, right: true }))}>
+          <BoardChatMark boardId={boardId} />
+        </DesignPanelBack>
       )}
     </div>
   )
@@ -156,4 +161,14 @@ function Group({
       />
     </span>
   )
+}
+
+// The board chat is somebody in particular, so the way back to it is their own
+// pet rather than a mark for a panel. Nobody has been asked yet on a board with
+// no thread on it, so that one wears the chat.
+function BoardChatMark({ boardId }: { boardId: string }): ReactNode {
+  const threads = useBoardThreads(boardId)
+  const last = threads[threads.length - 1]
+  if (!last) return <ChatGlyph className="w-[18px] h-[18px]" />
+  return <AgentIcon seed={last.agentId} size="sm" />
 }
