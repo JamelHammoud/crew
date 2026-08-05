@@ -105,7 +105,7 @@ export function kimiDialog(prompt: string, cwd: string, get: SettingReader, opti
   }
 
   const answered = (stage: Stage, result: any): string[] => {
-    if (stage === 'init') return [ask('session', 'session/new', { cwd, mcpServers: [] })]
+    if (stage === 'init') return [ask('session', 'session/new', { cwd, mcpServers: acpServers(options.mcp?.servers) })]
     if (stage === 'session') {
       sessionId = str(result?.sessionId)
       if (!sessionId) return []
