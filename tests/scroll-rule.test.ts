@@ -54,6 +54,22 @@ describe('a scroller that means to have no bar', () => {
   })
 })
 
+describe('what may be scrolled', () => {
+  it('is the box that was named, never whatever the page decides', () => {
+    const offenders = sources
+      .filter(at => !at.endsWith('scrollInto.ts'))
+      .filter(at => readFileSync(at, 'utf8').includes('scrollIntoView'))
+    expect(offenders.map(at => path.relative(root, at))).toEqual([])
+  })
+
+  it('is written down once, beside the rule for the two boxes it may never touch', () => {
+    const source = readFileSync(path.join(renderer, 'components/scrollInto.ts'), 'utf8')
+    expect(source).toContain('export function bringInto')
+    expect(source).toContain('export function centerIn')
+    expect(source).toMatch(/auto\|scroll/)
+  })
+})
+
 describe('the row a tab stands in', () => {
   it('wears it, so a bar never eats the height the pills are drawn at', () => {
     expect(classOf('components/BrowserPanel.tsx', 'overflow-x-auto')).toContain('no-scrollbar')
