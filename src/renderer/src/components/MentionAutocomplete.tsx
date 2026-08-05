@@ -97,7 +97,7 @@ export function useMentionAutocomplete(
       ]
     }
     return []
-  }, [agents, boards, docs, files, includeMembers, members, query])
+  }, [agents, boards, dirQuery, docs, files, includeMembers, machine, members, query])
   const activeIndex = Math.min(active, Math.max(matches.length - 1, 0))
 
   const onChange = (next: string) => {

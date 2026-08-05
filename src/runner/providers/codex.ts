@@ -176,6 +176,7 @@ export const codexProvider: Provider = makeCliProvider({
   args: codexArgs,
   parser: parseCodexLine,
   dialog: codexDialog,
+  mcp: 'inline',
   usage: codexUsage,
   install: { darwin: INSTALL_NPM, linux: INSTALL_NPM, win32: INSTALL_NPM }
 })
