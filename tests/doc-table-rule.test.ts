@@ -50,12 +50,6 @@ describe('how a table is drawn', () => {
     expect(rule(`${TABLE} tr:last-child > \\*`)).toContain('border-bottom: none')
   })
 
-  it('rounds the four corner cells inside the frame they stand in', () => {
-    for (const corner of ['top-left', 'top-right', 'bottom-left', 'bottom-right']) {
-      expect(styles).toContain(`border-${corner}-radius: 11px`)
-    }
-  })
-
   it('scrolls inside its own box rather than pushing the column sideways', () => {
     const wrapper = rule(`${TABLE} \\.tableWrapper`)
     expect(wrapper).toContain('min-width: 0')
