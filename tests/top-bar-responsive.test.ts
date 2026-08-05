@@ -62,6 +62,13 @@ describe('responsive top bar', () => {
     expect(document.querySelector('.top-bar > .col-start-3')).not.toBeNull()
   })
 
+  it('leaves the toolbox and the tasks to the rail as well', () => {
+    render(createElement(TopBar))
+
+    expect(screen.queryByRole('button', { name: 'Toolbox' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Tasks' })).toBeNull()
+  })
+
   it('holds the middle of the bar open for whatever page is up', () => {
     render(
       createElement(TopBar)
