@@ -1459,6 +1459,18 @@ export const useCrew = create<CrewState>((set, get) => {
     setMemoryEnabled: enabled => {
       socket.send({ type: 'memory.set', enabled })
     },
+    addPlugin: plugin => {
+      const clean = cleanPlugin(plugin)
+      if (!clean) return 'Say where it runs'
+      const held = get().plugins
+      if (held.some(one => pluginKey(one.name) === pluginKey(clean.name))) return 'The crew already has that one'
+      if (held.length >= PLUGIN_LIMIT) return PLUGIN_FULL
+      socket.send({ type: 'plugin.add', plugin: clean })
+      return null
+    },
+    removePlugin: pluginId => {
+      socket.send({ type: 'plugin.remove', pluginId })
+    },
     // A picture the whole crew will have. The host keeps it beside the session
     // and says so to everyone, so nothing is written down here on the way out.
     // What comes back is the one line to say where it did not go: the name is

@@ -8,7 +8,7 @@ const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
 
 const TASK =
-  'Read notes.txt. Then add a line saying "third" to the end of it, keeping the two lines that are already there. Then reply with the single word Done.'
+  'Read notes.txt. Then add a line saying "third" to the end of it, keeping the two lines that are already there. Then reply with a sentence or two saying what you did.'
 
 const NOTES = 'first\nsecond\n'
 const LIMIT = 300000
