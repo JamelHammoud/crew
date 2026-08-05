@@ -1,8 +1,7 @@
 import { useRef, useState } from 'react'
-import { MoreGlyph } from '../../icons'
 import { MORE_TABS, type Tab } from '../navTabs'
 import { MenuItem, Popover } from '../Popover'
-import TabIcon from '../TabIcon'
+import TabIcon, { MoreTabIcon } from '../TabIcon'
 
 export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab) => void }) {
   const rowRef = useRef<HTMLDivElement>(null)
