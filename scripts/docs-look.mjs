@@ -123,10 +123,19 @@ const READ = \`(() => {
   const box = el => {
     if (!el) return null
     const r = el.getBoundingClientRect()
-    return { left: Math.round(r.left), right: Math.round(r.right), top: Math.round(r.top), width: Math.round(r.width) }
+    return {
+      left: Math.round(r.left),
+      right: Math.round(r.right),
+      top: Math.round(r.top),
+      width: Math.round(r.width),
+      height: Math.round(r.height)
+    }
   }
   const sel = q => box(document.querySelector(q))
-  const rowOf = name => box([...document.querySelectorAll('[data-docs-list] button')].find(b => (b.textContent || '').trim() === name))
+  const rowOf = name => {
+    const at = [...document.querySelectorAll('[data-docs-tree] button')].find(b => (b.textContent || '').trim() === name)
+    return box(at && at.parentElement)
+  }
   const paint = q => {
     const el = document.querySelector(q)
     return el ? getComputedStyle(el).backgroundColor : null
