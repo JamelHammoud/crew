@@ -304,7 +304,7 @@ export default function Docs() {
           </Popover>
       </aside>
       <FindBar containerRef={contentRef} scrollerRef={scrollerRef} />
-      <div ref={scrollerRef} className="flex-1 min-w-0 overflow-y-auto px-6">
+      <div ref={scrollerRef} className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden px-6">
         <div ref={contentRef} style={{ paddingTop: COLUMN_TOP }} className="max-w-[760px] mx-auto">
             {trail.length > 0 && (
               <nav className="px-[54px] pb-1.5 flex items-center gap-1 text-xs font-medium text-fg-muted">
