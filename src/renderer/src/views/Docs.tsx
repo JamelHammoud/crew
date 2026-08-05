@@ -211,10 +211,10 @@ export default function Docs() {
             e.preventDefault()
             setMenu({ slug: node.slug, x: e.clientX, y: e.clientY })
           }}
-          className={`group/row flex items-center ${ROW} rounded-full transition-colors duration-150 ${
+          className={`group/row flex items-center px-1 ${ROW} rounded-xl transition-colors duration-150 ${
             dropTarget === node.slug ? 'bg-fg/[0.08] ring-1 ring-fg/25' : ''
-          } ${active ? 'bg-ink-800' : 'hover:bg-fg/[0.04]'}`}
-          style={{ paddingLeft: depth * 14 }}
+          } ${active ? 'bg-fg/[0.08]' : 'hover:bg-fg/[0.06]'}`}
+          style={{ paddingLeft: 4 + depth * 14 }}
         >
           <button
             onClick={() =>
