@@ -264,44 +264,44 @@ export default function Docs() {
         style={{ paddingTop: COLUMN_TOP }}
         className="w-64 shrink-0 flex flex-col min-h-0 pb-4 px-4"
       >
-          <div
-            className={`flex-1 min-h-0 overflow-y-auto space-y-0.5 rounded-card transition-colors duration-150 ${
-              dragged && dropTarget === '' ? 'bg-fg/[0.06] ring-1 ring-fg/20' : ''
-            }`}
+        <div
+          className={`flex-1 min-h-0 overflow-y-auto space-y-0.5 rounded-card transition-colors duration-150 ${
+            dragged && dropTarget === '' ? 'bg-fg/[0.06] ring-1 ring-fg/20' : ''
+          }`}
+        >
+          {tree.map(node => renderNode(node, 0))}
+          <button
+            onClick={() => createPage('')}
+            className={`w-full flex items-center gap-1.5 pl-5 text-left ${ROW} rounded-full text-fg-muted transition-colors hover:text-fg-secondary hover:bg-fg/[0.04]`}
           >
-            {tree.map(node => renderNode(node, 0))}
-            <button
-              onClick={() => createPage('')}
-              className={`w-full flex items-center gap-1.5 pl-5 text-left ${ROW} rounded-full text-fg-muted transition-colors hover:text-fg-secondary hover:bg-fg/[0.04]`}
-            >
-              <PlusGlyph className="w-4 h-4 shrink-0" />
-              New page
-            </button>
-          </div>
-          <Popover open={menu !== null} onClose={() => setMenu(null)} at={menu ?? undefined} align="start">
+            <PlusGlyph className="w-4 h-4 shrink-0" />
+            New page
+          </button>
+        </div>
+        <Popover open={menu !== null} onClose={() => setMenu(null)} at={menu ?? undefined} align="start">
+          <MenuItem
+            icon={<PlusGlyph />}
+            label="New sub-page"
+            onClick={() => {
+              if (menu) createPage(menu.slug)
+              setMenu(null)
+            }}
+          />
+          {menu?.slug !== ROOT_PAGE && (
             <MenuItem
-              icon={<PlusGlyph />}
-              label="New sub-page"
+              icon={<TrashGlyph />}
+              label="Delete page"
+              danger
               onClick={() => {
-                if (menu) createPage(menu.slug)
+                if (menu) {
+                  if (current === menu.slug || current.startsWith(`${menu.slug}/`)) editorRef.current?.discard()
+                  deleteDoc(menu.slug)
+                }
                 setMenu(null)
               }}
             />
-            {menu?.slug !== ROOT_PAGE && (
-              <MenuItem
-                icon={<TrashGlyph />}
-                label="Delete page"
-                danger
-                onClick={() => {
-                  if (menu) {
-                    if (current === menu.slug || current.startsWith(`${menu.slug}/`)) editorRef.current?.discard()
-                    deleteDoc(menu.slug)
-                  }
-                  setMenu(null)
-                }}
-              />
-            )}
-          </Popover>
+          )}
+        </Popover>
       </aside>
       <FindBar containerRef={contentRef} scrollerRef={scrollerRef} />
       <div ref={scrollerRef} className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden px-6">
