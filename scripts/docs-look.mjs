@@ -131,15 +131,18 @@ const READ = \`(() => {
     const el = document.querySelector(q)
     return el ? getComputedStyle(el).backgroundColor : null
   }
-  const litRow = document.querySelector('[data-docs-list] [aria-current="page"]')
+  const litRow = document.querySelector('[data-docs-tree] [aria-current="page"]')
+  const navRow = [...document.querySelectorAll('nav button')].find(b => (b.textContent || '').trim() === 'Docs')
   return {
     rail: sel('[data-look-rail]'),
-    list: sel('[data-docs-list]'),
+    tree: sel('[data-docs-tree]'),
+    rule: sel('[data-docs-rule]'),
+    navRow: box(navRow),
+    navPaint: navRow ? getComputedStyle(navRow).backgroundColor : null,
     lit: box(litRow && litRow.parentElement),
     litPaint: litRow ? getComputedStyle(litRow.parentElement).backgroundColor : null,
     railPaint: paint('[data-look-rail]'),
     firstRow: rowOf('Ideas'),
-    newPage: rowOf('New page'),
     title: sel('input[placeholder="Untitled"]'),
     body: sel('.bn-editor'),
     trail: sel('[data-docs-trail]'),
