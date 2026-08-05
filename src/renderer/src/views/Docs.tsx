@@ -275,11 +275,33 @@ export default function Docs() {
   }
 
   return (
-    <div className="h-full flex relative">
+    <div ref={pageRef} className="h-full flex relative">
+      {trail.length > 0 && (
+        <HeaderSlot place="left">
+          <nav
+            data-docs-trail
+            style={{ paddingLeft: trailInset(width, cornerRoom(corner, pinned ? SIDEBAR_W : 0)) }}
+            className="flex items-center gap-1 min-w-0 text-xs font-medium text-fg/45"
+          >
+            {trail.map((slug, index) => (
+              <span key={slug} className="flex items-center gap-1 min-w-0">
+                {index > 0 && <span className="text-fg/25">/</span>}
+                <button
+                  onClick={() => setPage(slug)}
+                  className="truncate max-w-44 transition-colors hover:text-fg"
+                >
+                  {titleOf(slug) || 'Untitled'}
+                </button>
+              </span>
+            ))}
+          </nav>
+        </HeaderSlot>
+      )}
       <aside
         {...dropProps('')}
-        style={{ paddingTop: COLUMN_TOP }}
-        className="w-64 shrink-0 flex flex-col min-h-0 pb-4 px-4"
+        data-docs-list
+        style={{ paddingTop: COLUMN_TOP, width: PAGE_LIST_W }}
+        className="shrink-0 flex flex-col min-h-0 pb-4 px-3"
       >
         <div
           className={`flex-1 min-h-0 overflow-y-auto space-y-0.5 rounded-card transition-colors duration-150 ${
