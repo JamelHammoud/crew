@@ -3,8 +3,10 @@ import { useEditor, useValue, type Editor, type TLShape } from '../canvas'
 import { activateTool, ALL_TOOLS, currentToolId, TOOL_GROUPS, type DesignToolGroup } from '../design/tools'
 import { ChevronDownGlyph } from '../icons'
 import DesignActions from './DesignActions'
+import DesignPanelBack from './DesignPanelBack'
 import DesignToolMenu from './DesignToolMenus'
 import Tooltip from './Tooltip'
+import type { DesignPanelsOpen } from './designPanelsOpen'
 
 const FIRST: Record<string, string> = Object.fromEntries(TOOL_GROUPS.map(group => [group.id, group.tools[0].id]))
 
