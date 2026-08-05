@@ -70,19 +70,53 @@ describe('responsive top bar', () => {
   })
 
   it('holds the middle of the bar open for whatever page is up', () => {
-    render(
-      createElement(TopBar)
-    )
+    render(createElement(TopBar))
     render(createElement(HeaderSlot, { children: createElement('button', null, 'Untitled') }))
 
-    const slot = useHeaderSlot.getState().node!
+    const slot = useHeaderSlot.getState().nodes.center!
     const centre = screen.getByRole('button', { name: 'Untitled' })
 
     expect(slot.className).toContain('justify-center')
     expect(slot.className).toContain('app-no-drag')
     expect(slot.contains(centre)).toBe(true)
-    expect(follows(document.querySelector('.top-bar > span')!, slot)).toBe(true)
+    expect(follows(useHeaderSlot.getState().nodes.left!, slot)).toBe(true)
     expect(follows(slot, document.querySelector('.top-bar > .col-start-3')!)).toBe(true)
+  })
+
+  it('opens both ends of the bar to a page as well as the middle', () => {
+    render(createElement(TopBar))
+    render(createElement(HeaderSlot, { place: 'left', children: createElement('button', null, 'Board') }))
+    render(createElement(HeaderSlot, { place: 'right', children: createElement('button', null, 'Zoom') }))
+
+    const { left, right } = useHeaderSlot.getState().nodes
+
+    expect(left!.contains(screen.getByRole('button', { name: 'Board' }))).toBe(true)
+    expect(right!.contains(screen.getByRole('button', { name: 'Zoom' }))).toBe(true)
+    expect(follows(left!, right!)).toBe(true)
+    expect(follows(right!, screen.getByRole('button', { name: 'Settings' }))).toBe(true)
+  })
+
+  it('paints a page band behind everything it holds rather than over it', () => {
+    render(createElement(TopBar))
+
+    const band = useHeaderSlot.getState().nodes.backdrop!
+
+    expect(band.className).toContain('absolute')
+    expect(band.className).toContain('pointer-events-none')
+    for (const place of ['left', 'center', 'right'] as const) {
+      expect(follows(band, useHeaderSlot.getState().nodes[place]!)).toBe(true)
+    }
+  })
+
+  it('starts the left of the bar where the window corner ends, and takes it back over the rail', () => {
+    render(createElement(TopBar))
+    act(() => useHeaderSlot.getState().measure('corner', 206))
+
+    expect(useHeaderSlot.getState().nodes.left!.style.paddingLeft).toBe('182px')
+
+    act(() => useSidebar.setState({ pinned: true }))
+    expect(useHeaderSlot.getState().nodes.left!.style.paddingLeft).toBe('0px')
+    act(() => useSidebar.setState({ pinned: false }))
   })
 
   it('keeps the faces together at the end of the bar, in front of your own', () => {
