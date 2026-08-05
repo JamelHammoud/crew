@@ -305,9 +305,9 @@ export default function Docs() {
       </aside>
       <FindBar containerRef={contentRef} scrollerRef={scrollerRef} />
       <div ref={scrollerRef} className="flex-1 min-w-0 overflow-y-auto px-6">
-        <div ref={contentRef} className="max-w-[760px] mx-auto pt-24">
+        <div ref={contentRef} style={{ paddingTop: COLUMN_TOP }} className="max-w-[760px] mx-auto">
             {trail.length > 0 && (
-              <nav className="px-[54px] pb-1 flex items-center gap-1 text-xs font-semibold text-fg-muted">
+              <nav className="px-[54px] pb-1.5 flex items-center gap-1 text-xs font-medium text-fg-muted">
                 {trail.map((slug, index) => (
                   <span key={slug} className="flex items-center gap-1 min-w-0">
                     {index > 0 && <span className="text-fg-faint">/</span>}

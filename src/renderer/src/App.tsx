@@ -157,7 +157,7 @@ function Session() {
         </div>
         <TasksPanel onOpenThread={openFromTasks} onOpenThreadBeside={openFromTasksBeside} />
       </div>
-      <SidePanel visible={tab === 'chat'} />
+      <SidePanel />
       {(!pinned || peeking) && (
         <div
           onMouseEnter={() => peek(true)}

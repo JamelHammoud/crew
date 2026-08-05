@@ -47,7 +47,7 @@ export default function ThreadWindow() {
           </p>
         )}
       </div>
-      <SidePanel visible />
+      <SidePanel />
       <Toaster />
     </div>
   )

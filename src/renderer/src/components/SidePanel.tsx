@@ -5,8 +5,8 @@ import BrowserPanel from './BrowserPanel'
 const AGAIN_WITHIN = 400
 const STILL_WITHIN = 3
 
-export default function SidePanel({ visible }: { visible: boolean }) {
-  const open = useBrowser(s => s.open) && visible
+export default function SidePanel() {
+  const open = useBrowser(s => s.open)
   const width = useBrowser(s => s.width)
   const [dragging, setDragging] = useState(false)
   const lastRelease = useRef(0)
