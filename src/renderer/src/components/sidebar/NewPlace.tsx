@@ -97,16 +97,23 @@ export default function NewPlace({
 
   return (
     <>
-      <div className="app-no-drag shrink-0 px-4 pb-4 pt-2">
-        <button
-          onClick={() => setWays(!ways)}
-          aria-expanded={ways}
-          className="w-full h-9 rounded-full flex items-center justify-center gap-2 text-sm font-medium bg-fg/[0.10] text-fg/70 transition-colors duration-150 hover:bg-fg/[0.14] hover:text-fg active:scale-[0.98]"
-        >
-          <PlusGlyph className="w-4 h-4" />
-          New project
-        </button>
-        <Popover open={ways} onClose={() => setWays(false)} align="center" side="top" className="min-w-44">
+      <div className="app-no-drag -my-1 flex">
+        <Tooltip label="New project" disabled={ways}>
+          <button
+            onClick={() => setWays(!ways)}
+            aria-expanded={ways}
+            aria-haspopup="menu"
+            aria-label="New project"
+            className={`h-6 w-6 rounded-lg flex items-center justify-center transition-[color,background-color,opacity] duration-150 active:scale-[0.95] focus-visible:opacity-100 ${
+              ways
+                ? 'opacity-100 bg-fg/[0.08] text-fg'
+                : 'opacity-0 text-fg/45 group-hover:opacity-100 hover:bg-fg/[0.06] hover:text-fg'
+            }`}
+          >
+            <PlusGlyph className="w-4 h-4" />
+          </button>
+        </Tooltip>
+        <Popover open={ways} onClose={() => setWays(false)} className="min-w-44">
           <MenuItem
             icon={<FolderGlyph />}
             label="Open a folder"
