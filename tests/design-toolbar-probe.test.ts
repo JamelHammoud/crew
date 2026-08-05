@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { EditorContext, type Editor } from '../src/renderer/src/canvas'
@@ -11,7 +11,7 @@ const { CursorGlyph, RectangleGlyph } = await import('../src/renderer/src/design
 
 afterEach(cleanup)
 
-function toolbar(tool = 'select') {
+function toolbar(tool = 'select', panels = { left: true, right: true }, onPanels: (next: (value: Panels) => Panels) => void = () => {}) {
   const board = fakeBoard([])
   const editor = {
     ...board.editor,
@@ -22,10 +22,12 @@ function toolbar(tool = 'select') {
     createElement(
       EditorContext.Provider,
       { value: editor },
-      createElement(DesignToolbar, { boardId: 'b1', onAsk: () => {}, onRename: () => {}, panels: { left: true, right: true }, onPanels: () => {} })
+      createElement(DesignToolbar, { boardId: 'b1', onAsk: () => {}, onRename: () => {}, panels, onPanels })
     )
   )
 }
+
+type Panels = { left: boolean; right: boolean }
 
 const drawn = (Icon: typeof CursorGlyph): SVGGraphicsElement => {
   const view = render(createElement(Icon, { className: 'w-6 h-6' }))
@@ -96,5 +98,35 @@ describe('the design toolbar', () => {
     const bar = screen.getByRole('toolbar')
     const pill = screen.getByLabelText('Move tools options').parentElement!
     expect(step(bar.className, 'px')).toBe((step(bar.className, 'h')! - step(pill.className, 'h')!) / 2)
+  })
+})
+
+describe('the way back to a panel', () => {
+  it('stands nothing beside the tools while both panels are up', () => {
+    toolbar()
+    expect(screen.queryByRole('button', { name: 'Layers' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Board chat' })).toBeNull()
+  })
+
+  it('asks a panel back from the side it comes in from', () => {
+    let panels: Panels = { left: false, right: false }
+    toolbar('select', panels, next => (panels = next(panels)))
+
+    const bar = screen.getByRole('toolbar')
+    const layers = screen.getByRole('button', { name: 'Layers' })
+    const chat = screen.getByRole('button', { name: 'Board chat' })
+
+    expect(Boolean(layers.compareDocumentPosition(bar) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true)
+    expect(Boolean(bar.compareDocumentPosition(chat) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true)
+
+    fireEvent.click(layers)
+    expect(panels.left).toBe(true)
+    fireEvent.click(chat)
+    expect(panels.right).toBe(true)
+  })
+
+  it('leaves the sticky note off the tools', () => {
+    toolbar()
+    expect(screen.queryByLabelText('Note')).toBeNull()
   })
 })
