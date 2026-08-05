@@ -60,7 +60,26 @@ describe('responsive top bar', () => {
     expect(screen.queryByRole('navigation')).toBeNull()
     expect(screen.queryByRole('button', { name: 'Docs' })).toBeNull()
     expect(screen.queryByRole('button', { name: 'Design' })).toBeNull()
-    expect(document.querySelector('.top-bar > div')?.classList.contains('ml-auto')).toBe(true)
+    expect(document.querySelector('.top-bar > .col-start-3')).not.toBeNull()
+  })
+
+  it('holds the middle of the bar open for whatever page is up', () => {
+    render(
+      createElement(TopBar, {
+        tab: 'design',
+        onTab: () => {}
+      })
+    )
+    render(createElement(HeaderSlot, {}, createElement('button', null, 'Untitled')))
+
+    const slot = useHeaderSlot.getState().node!
+    const centre = screen.getByRole('button', { name: 'Untitled' })
+
+    expect(slot.className).toContain('justify-center')
+    expect(slot.className).toContain('app-no-drag')
+    expect(slot.contains(centre)).toBe(true)
+    expect(follows(document.querySelector('.top-bar > span')!, slot)).toBe(true)
+    expect(follows(slot, document.querySelector('.top-bar > .col-start-3')!)).toBe(true)
   })
 
   it('keeps the faces together at the end of the bar, after the tasks button', () => {
@@ -89,7 +108,7 @@ describe('responsive top bar', () => {
     expect(follows(faces, you)).toBe(true)
   })
 
-  it('collapses the presence faces into a count with the tab labels', () => {
+  it('collapses the presence faces into a count when the bar runs short', () => {
     useCrew.setState({
       selfId: 'self',
       selfName: 'Jamel',
