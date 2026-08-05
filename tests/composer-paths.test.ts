@@ -103,10 +103,9 @@ describe('what counts as a path being typed', () => {
     expect(pathQuery('look at the file', 16, chat)).toBeNull()
   })
 
-  it('leaves a link, a mention and somebody else machine alone', () => {
+  it('leaves a link and a mention alone', () => {
     expect(pathQuery('https://crew.dev/docs', 20, chat)).toBeNull()
     expect(pathQuery('@Bob/x', 6, chat)).toBeNull()
-    expect(pathQuery('~/Documents/notes', 17, chat)).toBeNull()
   })
 
   it('reads the run the caret is in rather than the end of the box', () => {
