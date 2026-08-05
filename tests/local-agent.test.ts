@@ -211,6 +211,37 @@ describe('a local agent', () => {
     expect(second.messages.some((m: any) => m.role === 'assistant' && m.tool_calls?.length)).toBe(true)
   })
 
+  it('gives Ollama a call back as the object it takes, and names the tool that answered', async () => {
+    await stand([
+      [calls('Bash', { command: 'echo pebble' }), end()],
+      [say('Saw it.'), end()]
+    ])
+    const { started } = run('run it')
+    await started.done
+    const sent = fake!.asked[1].messages
+    expect(sent.find((m: any) => m.tool_calls?.length).tool_calls[0].function.arguments).toEqual({
+      command: 'echo pebble'
+    })
+    expect(sent.find((m: any) => m.role === 'tool').tool_name).toBe('Bash')
+  })
+
+  it('gives an OpenAI compatible server the same call as the string its own spec asks for', async () => {
+    await stand(
+      [
+        [sseCalls('Bash', { command: 'echo pebble' }), sseEnd()],
+        [sseSay('Saw it.'), sseEnd()]
+      ],
+      'openai'
+    )
+    const { started } = run('run it')
+    expect((await started.done).text).toBe('Saw it.')
+    const sent = fake!.asked[1].messages
+    expect(sent.find((m: any) => m.tool_calls?.length).tool_calls[0].function.arguments).toBe(
+      '{"command":"echo pebble"}'
+    )
+    expect(sent.find((m: any) => m.role === 'tool').name).toBe('Bash')
+  })
+
   it('takes a steer between one round and the next', async () => {
     await stand([
       [calls('Bash', { command: 'echo one' }), end()],
