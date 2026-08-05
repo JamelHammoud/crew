@@ -7,7 +7,7 @@ import { pathIndex, type PathIndex } from '../../../shared/pathMention'
 // and asking git for it there is a menu that arrives after the word is typed.
 
 const FRESH_MS = 20_000
-const EMPTY: PathIndex = { paths: [], dirs: new Set() }
+const EMPTY: PathIndex = { paths: [], dirs: new Set(), all: new Set() }
 
 interface ProjectFiles {
   index: PathIndex
