@@ -194,7 +194,7 @@ export function Popover({
       window.removeEventListener('pointerdown', onPointerDown)
       window.removeEventListener('keydown', onKeyDown)
     }
-  }, [open, onClose, at])
+  }, [open, onClose, at, anchor])
 
   return (
     <>
