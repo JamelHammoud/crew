@@ -86,12 +86,24 @@ async function readTextFile(label: string, absolute: string, size: number): Prom
   }
 }
 
-async function readAt(label: string, absolute: string): Promise<RepoFile> {
+async function readAt(label: string, absolute: string, media?: MediaHost): Promise<RepoFile> {
   const stat = await fs.stat(absolute)
   if (stat.isDirectory()) return listDir(label, absolute)
   if (!stat.isFile()) return { kind: 'missing', path: label }
   const type = imageType(absolute)
   if (type) return readImage(label, absolute, stat.size, type)
+  if (media) {
+    const playable = mediaType(absolute)
+    if (playable)
+      return {
+        kind: 'media',
+        path: label,
+        url: media.url(absolute),
+        size: stat.size,
+        type: playable.type,
+        video: playable.video
+      }
+  }
   return readTextFile(label, absolute, stat.size)
 }
 
