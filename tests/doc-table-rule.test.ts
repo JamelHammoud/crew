@@ -19,11 +19,26 @@ describe('how a table is drawn', () => {
   })
 
   it('is one rounded frame rather than a grid of boxed cells', () => {
-    const frame = rule(`${TABLE} table`)
-    expect(frame).toContain('border-collapse: separate')
-    expect(frame).toContain('border-spacing: 0')
-    expect(frame).toMatch(/border-radius:\s*12px/)
+    const frame = rule(`${TABLE} \\.tableWrapper`)
     expect(frame).toMatch(/border:\s*1px solid/)
+    expect(frame).toMatch(/border-radius:\s*12px/)
+
+    const inside = rule(`${TABLE} table`)
+    expect(inside).toContain('border-collapse: separate')
+    expect(inside).toContain('border-spacing: 0')
+    expect(inside).toContain('border: none')
+  })
+
+  it('hangs that frame off the box that scrolls, so it is whole however far the table runs', () => {
+    const frame = rule(`${TABLE} \\.tableWrapper`)
+    expect(frame).toContain('overflow-x: auto')
+    expect(frame).toContain('border')
+    expect(rule(`${TABLE} table`)).not.toContain('border-radius')
+  })
+
+  it('fills the measure it stands in rather than sitting short of it', () => {
+    expect(rule(`${TABLE} table`)).toContain('width: 100% !important')
+    expect(rule(`${TABLE} \\.tableWrapper`)).toContain('padding: 0')
   })
 
   it('draws one hairline between cells and none at the outside', () => {
