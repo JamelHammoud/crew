@@ -293,6 +293,8 @@ interface CrewState {
   editMemory: (memoryId: string, text: string) => string | null
   removeMemory: (memoryId: string) => void
   setMemoryEnabled: (enabled: boolean) => void
+  addPlugin: (plugin: unknown) => string | null
+  removePlugin: (pluginId: string) => void
   // What comes back is the line to say about a picture that never made it, and
   // nothing at all where it did.
   addCustomEmoji: (name: string, file: File) => Promise<string | null>
