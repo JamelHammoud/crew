@@ -1,35 +1,25 @@
 import { describe, expect, it } from 'vitest'
-import {
-  DOC_GAP,
-  DOC_GUTTER,
-  DOC_MAX_W,
-  PAGE_LIST_W,
-  docInset,
-  docLeft,
-  trailInset
-} from '../src/renderer/src/components/doc/docsLayout'
+import { DOC_EDGE, DOC_GUTTER, DOC_MAX_W, DOC_TOP, docLeft, trailInset } from '../src/renderer/src/components/doc/docsLayout'
 import { HEADER_EDGE } from '../src/renderer/src/state/headerSlot'
 
 const RAIL = 264
+const TOP_BAR = 70
 
 describe('where the writing stands', () => {
-  it('never runs under the list of pages, however tight the window is', () => {
-    for (const page of [600, 800, 1000, 1120 - RAIL, 1440 - RAIL]) {
-      expect(docLeft(page)).toBeGreaterThanOrEqual(PAGE_LIST_W + DOC_GAP)
-      expect(docInset(page)).toBeGreaterThanOrEqual(DOC_GAP)
+  it('takes the middle of the page, whether or not the rail is pinned', () => {
+    for (const page of [1440, 1440 - RAIL, 1920 - RAIL]) {
+      expect(docLeft(page)).toBe((page - DOC_MAX_W) / 2)
+      expect(docLeft(page) + DOC_MAX_W).toBe(page - docLeft(page))
     }
   })
 
-  it('takes the middle of the page once there is room for it there', () => {
-    const page = 1900
-    expect(docLeft(page)).toBe((page - DOC_MAX_W) / 2)
-    expect(docLeft(page) + DOC_MAX_W).toBe(page - docLeft(page))
+  it('keeps an edge to itself once the page is too narrow to centre it', () => {
+    for (const page of [400, 700, 780]) expect(docLeft(page)).toBe(DOC_EDGE)
   })
 
-  it('holds its measure rather than shrinking to sit in the middle', () => {
-    const page = 1440 - RAIL
-    expect(docLeft(page)).toBe(PAGE_LIST_W + DOC_GAP)
-    expect(page - docLeft(page)).toBeGreaterThan(DOC_MAX_W)
+  it('comes to rest under the bar rather than a scrim below it', () => {
+    expect(DOC_TOP).toBeGreaterThan(TOP_BAR)
+    expect(DOC_TOP - TOP_BAR).toBeLessThan(TOP_BAR / 2)
   })
 })
 
