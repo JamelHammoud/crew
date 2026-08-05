@@ -1,6 +1,7 @@
 import { useMemo, useRef, type ReactNode, type RefObject } from 'react'
 import { pathRuns, type PathIndex } from '../../../shared/pathMention'
 import { ArrowUpGlyph, StopGlyph } from '../icons'
+import { useMachineFiles } from '../state/machineFiles'
 import { useProjectFiles } from '../state/projectFiles'
 import { useCrew } from '../state/store'
 import AddMenu from './AddMenu'
@@ -137,6 +138,7 @@ function MentionHighlights({
             text={token.text}
             at={start}
             files={files}
+            known={known}
             selection={selection}
             surface={surface}
           />

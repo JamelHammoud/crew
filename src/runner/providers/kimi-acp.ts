@@ -56,7 +56,19 @@ const allowed = (options: unknown): string => {
   return str((pick as any)?.optionId)
 }
 
-export function kimiDialog(prompt: string, cwd: string, get: SettingReader): Dialog {
+export const acpServers = (servers: Record<string, McpServer> = {}): unknown[] =>
+  Object.entries(servers).map(([name, server]) =>
+    'url' in server
+      ? { name, type: 'http', url: server.url, headers: [] }
+      : {
+          name,
+          command: server.command,
+          args: server.args ?? [],
+          env: Object.entries(server.env ?? {}).map(([key, value]) => ({ name: key, value }))
+        }
+  )
+
+export function kimiDialog(prompt: string, cwd: string, get: SettingReader, options: RunOptions = {}): Dialog {
   const model = get('model')
   const pending = new Map<number, Stage>()
   // There is no flag to start a session on, so what a run is set to is said
