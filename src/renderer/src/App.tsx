@@ -127,8 +127,6 @@ function Session() {
   return (
     <div className="h-full flex relative">
       <div
-        onMouseEnter={() => peek(true)}
-        onMouseLeave={() => peek(false)}
         className="shrink-0 overflow-hidden transition-[width]"
         style={{ width: pinned ? SIDEBAR_W : 0, transitionDuration: `${PIN_MS}ms` }}
       >
