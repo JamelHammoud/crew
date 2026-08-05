@@ -202,10 +202,10 @@ export class AppSession {
     }
   }
 
-  async readFile(target: string): Promise<RepoFile | null> {
+  async readFile(target: string, media?: MediaHost): Promise<RepoFile | null> {
     const inRepo = this.folder ? repoPathOf(this.folder, target) : null
-    if (this.folder && inRepo !== null) return readRepoFile(this.folder, inRepo)
-    return readLocalFile(target)
+    if (this.folder && inRepo !== null) return readRepoFile(this.folder, inRepo, media)
+    return readLocalFile(target, media)
   }
 
   async listFiles(): Promise<string[]> {
