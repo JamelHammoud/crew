@@ -16,6 +16,7 @@ export interface PathMatch {
   path: string
   hits: number[]
   dir: boolean
+  head: boolean
 }
 
 const RUN = /(?:^|\s)(\S*)$/
