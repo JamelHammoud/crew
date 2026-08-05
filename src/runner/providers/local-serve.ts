@@ -1,11 +1,14 @@
 import { spawn } from 'node:child_process'
+import { openaiUrl, serverLabel, type ModelServer } from '../../shared/modelServers'
 import { detachCliProcess } from './cli'
+import { knownServers, serverKey } from './local-servers'
 import { resolveCommand } from './path'
 
 export interface LocalRuntime {
   url: string
   label: string
   kind: 'ollama' | 'openai'
+  key?: string
 }
 
 const OLLAMA_PORT = 11434
