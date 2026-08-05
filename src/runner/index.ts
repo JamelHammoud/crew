@@ -11,6 +11,7 @@ import { MAX_FRAME_BYTES } from '../shared/protocol'
 import type { ClientMessage, RegisteredLlm, ServerMessage } from '../shared/protocol'
 import type { Provider, RunningPrompt } from './providers/types'
 import { AttachmentCache, promptWithAttachments } from './attachments'
+import { closeMcp, openMcp } from './plugins'
 
 export interface RunnerOptions {
   name: string
