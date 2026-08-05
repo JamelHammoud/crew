@@ -117,6 +117,11 @@ const open = (ids: string[], focused: string | null): void => {
   render(createElement(App))
 }
 
+const openTasks = (): void => {
+  const rows = screen.getAllByRole('button', { name: /^Tasks/ })
+  fireEvent.click(rows[rows.length - 1])
+}
+
 const columns = (): HTMLElement[] => Array.from(document.querySelectorAll<HTMLElement>('[data-column]'))
 
 const background = (box: ParentNode): HTMLElement => box.querySelector<HTMLElement>('.overflow-y-auto')!
