@@ -138,6 +138,8 @@ createRoot(document.getElementById('root')).render(React.createElement(Look))
 `
 }
 
+const shots = await realpath(await mkdtemp(path.join(tmpdir(), 'crew-design-header-shots-')))
+
 const MAIN = `const { app, BrowserWindow } = require('electron')
 const { writeFile } = require('node:fs/promises')
 const path = require('node:path')
@@ -145,7 +147,7 @@ app.disableHardwareAcceleration()
 
 const wait = ms => new Promise(r => setTimeout(r, ms))
 const CASES = ${JSON.stringify(CASES)}
-const OUT = ${JSON.stringify(path.join(root, 'design-header-look'))}
+const OUT = ${JSON.stringify(path.join(shots, 'design-header'))}
 
 const READ = \`(() => {
   const box = sel => {
@@ -262,7 +264,7 @@ try {
     console.log(`  name on the canvas edge: ${nameOn ? 'yes' : 'NO'}   zoom on the canvas edge: ${zoomOn ? 'yes' : 'NO'}`)
     console.log(`  band matches the canvas colour: ${read.bandCanvas === read.canvasPaint ? 'yes' : 'NO'}`)
   })
-  console.log(`\nwrote ${CASES.length} shots to ${path.join(root, 'design-header-look-N.png')}`)
+  console.log(`\nwrote ${CASES.length} shots to ${shots}`)
 } finally {
   await rm(dir, { recursive: true, force: true })
 }
