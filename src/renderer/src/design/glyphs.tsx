@@ -7,6 +7,7 @@ import {
   EyeGlyph,
   EyeOffGlyph,
   FilmGlyph,
+  FrameGlyph,
   GroupGlyph,
   HandGlyph,
   LinkGlyph,
