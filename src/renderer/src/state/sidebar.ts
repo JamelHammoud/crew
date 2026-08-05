@@ -25,14 +25,17 @@ const keep = (pinned: boolean): void => {
 type SidebarState = {
   pinned: boolean
   peeking: boolean
+  near: boolean
+  over: boolean
   toggle(): void
   peek(on: boolean): void
+  hold(on: boolean): void
 }
 
 let closing: ReturnType<typeof setTimeout> | null = null
 let settling: ReturnType<typeof setTimeout> | null = null
 
-const hold = (): void => {
+const stay = (): void => {
   if (closing === null) return
   clearTimeout(closing)
   closing = null
