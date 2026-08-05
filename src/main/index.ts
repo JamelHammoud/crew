@@ -462,6 +462,7 @@ function openThreadIn(win: BrowserWindow, threadId: string, place: string | null
 }
 
 app.whenReady().then(() => {
+  serveMediaScheme()
   applyIcon(iconTheme, chosenIcon)
   installMenu()
   tray.install()
@@ -731,7 +732,9 @@ app.whenReady().then(() => {
     }
   })
   ipcMain.handle('clipboard:image', (_event, src: string) => copyImage(src))
-  ipcMain.handle('file:read', (event, target: string) => crews.inView(event.sender.id).readFile(target))
+  ipcMain.handle('file:read', (event, target: string) =>
+    crews.inView(event.sender.id).readFile(target, mediaFor(event.sender))
+  )
   ipcMain.handle('file:list', event => crews.inView(event.sender.id).listFiles())
   ipcMain.handle('file:write', (event, target: string, text: string) =>
     crews.inView(event.sender.id).writeFile(target, text)

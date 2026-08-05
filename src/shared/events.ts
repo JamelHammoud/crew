@@ -313,6 +313,8 @@ const EPHEMERAL_KINDS = new Set([
   'memory.edited',
   'memory.removed',
   'memory.setting',
+  'plugin.added',
+  'plugin.removed',
   // The size limit rides in the snapshot the same way, so a number somebody
   // picked months ago is still the number after its event has fallen off the
   // window.
