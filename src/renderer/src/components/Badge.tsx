@@ -14,8 +14,8 @@ export default function Badge({
   const ring = rim ? 'ring-2 ring-ink-900' : ''
   if (count === undefined)
     return (
-      <span className={`w-3 h-3 rounded-full bg-fg flex items-center justify-center ${ring} ${className}`}>
-        <span className="w-1 h-1 rounded-full bg-ink-900" />
+      <span className={`w-3.5 h-3.5 rounded-full bg-fg flex items-center justify-center ${ring} ${className}`}>
+        <span className="w-1.5 h-1.5 rounded-full bg-ink-900" />
       </span>
     )
   return (
