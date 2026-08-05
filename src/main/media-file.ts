@@ -9,18 +9,10 @@ export const MEDIA_SCHEME = 'crew-media'
 
 const PLAIN_BYTES = 'application/octet-stream'
 
-// The key says nothing about where the file is, so the only files this can ever
-// hand over are ones the app really opened for somebody. A url anything could
-// build out of a path would be a way to read the whole disk, and the side panel
-// holds a real browser.
 const opened = new Map<string, string>()
 
 const urlFor = (key: string): string => `${MEDIA_SCHEME}://m/${key}`
 
-// A file a window is playing, the way a page it is reading belongs to the window
-// that stood it up. The same file asked for twice keeps the url it already had:
-// one that changed on every render would have the video tag fetch again and lose
-// where somebody had got to.
 export class Media implements MediaHost {
   private keys = new Map<string, string>()
 
@@ -46,8 +38,6 @@ function keyOf(url: string): string {
 
 const nothingThere = (): Response => new Response(null, { status: 404 })
 
-// Never the whole file: these run to hundreds of megabytes, and what a scrubber
-// asks for is a few seconds in the middle of one.
 function slice(absolute: string, start: number, end: number): ReadableStream<Uint8Array> {
   return Readable.toWeb(createReadStream(absolute, { start, end })) as unknown as ReadableStream<Uint8Array>
 }
