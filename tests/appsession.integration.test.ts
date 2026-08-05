@@ -100,7 +100,7 @@ describe('app session', () => {
 
     const target = parseLink(linkOf(info))
     expect(target.port).toBeGreaterThan(0)
-    expect(target.code).toMatch(/^[a-f0-9]{6}$/)
+    expect(target.code).toMatch(new RegExp(`^[a-f0-9]{${CODE_BYTES * 2}}$`))
 
     const ui = await TestUi.connect(info.wsUrl, 'sam', target.code)
     // An installed CLI is not an agent. Nothing joins the pool on its own.

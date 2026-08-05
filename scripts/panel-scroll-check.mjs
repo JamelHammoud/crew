@@ -277,8 +277,9 @@ const SAYS = {
   A: 'settled 380 wide, no file toolbar, scrollIntoView instant',
   B: 'the same with the file toolbar row standing (column ~48px taller)',
   C: 'mid animation: outer 40 wide holding an inner 380 wide',
-  D: '#root given real vertical overflow (a 110% child in the app row)',
+  D: '#root given real vertical overflow (a 400px sibling inside it)',
   E: 'the same as A but behavior: smooth, read 500ms later',
+  F: 'SidePanel outer given real vertical overflow (the column forced to 1200)',
 }
 
 function table(before, after) {
@@ -344,7 +345,11 @@ try {
       console.log(table(one.rested, one.opened))
     }
     if (one.forcedRootScrollTop !== undefined) {
-      console.log(`\n  #root.scrollTop written by hand to 50, read back: ${one.forcedRootScrollTop}`)
+      console.log(`\n  #root.scrollTop written by hand to 200, read back: ${one.forcedRootScrollTop}`)
+    }
+    if (one.scrolled && one.pulledBack) {
+      console.log('\n  scrolled down by hand, then scrollIntoView on the last pill again:')
+      console.log(table(one.scrolled, one.pulledBack))
     }
   }
 } finally {
