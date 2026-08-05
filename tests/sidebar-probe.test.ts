@@ -230,23 +230,9 @@ describe('the sidebar', () => {
     expect(scroller.hasAttribute('data-fade-bottom')).toBe(false)
   })
 
-  it('stands the pages in the header down while it is pinned, and only while pinned', () => {
-    const { container, rerender } = topBar()
-    const nav = () => container.querySelector('nav[aria-label="Main navigation"]') as HTMLElement
-    expect(nav().className).toContain('top-bar-nav')
-    expect(nav().hasAttribute('data-away')).toBe(false)
-
-    act(() => {
-      useSidebar.setState({ pinned: false, peeking: true })
-    })
-    rerender(createElement(TopBar, { tab: 'chat' as const, onTab: () => {} }))
-    expect(nav().hasAttribute('data-away')).toBe(false)
-
-    act(() => {
-      useSidebar.setState({ pinned: true, peeking: false })
-    })
-    rerender(createElement(TopBar, { tab: 'chat' as const, onTab: () => {} }))
-    expect(nav().hasAttribute('data-away')).toBe(true)
+  it('holds the pages on its own, so the header carries none of them', () => {
+    const { container } = topBar()
+    expect(container.querySelector('nav[aria-label="Main navigation"]')).toBeNull()
   })
 
   it('stands the way to a new crew beside the heading, out of sight until the row is hovered', () => {
