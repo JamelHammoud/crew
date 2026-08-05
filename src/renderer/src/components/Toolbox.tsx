@@ -76,21 +76,18 @@ export default function Toolbox({ open, onClose }: { open: boolean; onClose: () 
       id: 'review',
       name: 'Review',
       mark: BranchGlyph,
-      panel: true,
       run: () => useBrowser.getState().openReview()
     },
     {
       id: 'terminal',
       name: 'Terminal',
       mark: TerminalGlyph,
-      panel: true,
       run: () => useBrowser.getState().addTerminal(undefined, useCrew.getState().folder)
     },
     {
       id: 'files',
       name: 'Files',
       mark: FolderGlyph,
-      panel: true,
       run: () => useBrowser.getState().openFiles()
     },
     {
@@ -98,14 +95,12 @@ export default function Toolbox({ open, onClose }: { open: boolean; onClose: () 
       name: 'Music',
       mark: MusicGlyph,
       on: playing,
-      panel: true,
       run: () => useBrowser.getState().openMusic()
     },
     {
       id: 'game',
       name: 'Games',
       mark: GameGlyph,
-      panel: true,
       run: () => useBrowser.getState().openGame()
     }
   ]
