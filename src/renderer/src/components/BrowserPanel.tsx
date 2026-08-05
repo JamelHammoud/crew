@@ -393,15 +393,25 @@ function PanelOpens({ opens }: { opens: PanelOpen[] }) {
   )
 }
 
-function TabPill({ tab, active, row }: { tab: BrowserTab; active: boolean; row: Reorder }) {
+function TabPill({
+  tab,
+  active,
+  row,
+  strip
+}: {
+  tab: BrowserTab
+  active: boolean
+  row: Reorder
+  strip: RefObject<HTMLDivElement | null>
+}) {
   const pillRef = useRef<HTMLButtonElement>(null)
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
   const others = useBrowser(s => s.tabs.length > 1)
   const FileMark = markFor(tab.mime)
 
   useEffect(() => {
-    if (active) pillRef.current?.scrollIntoView?.({ block: 'nearest', inline: 'nearest', behavior: 'smooth' })
-  }, [active])
+    if (active && pillRef.current) bringInto(pillRef.current, strip.current, 'smooth')
+  }, [active, strip])
 
   return (
     <>
