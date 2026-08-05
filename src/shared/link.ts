@@ -4,6 +4,11 @@ export interface JoinTarget {
   code: string
 }
 
+// The port is the machine's now rather than the crew's, so the code is the whole
+// of what says which crew a guest is reaching and the only thing standing between
+// somebody on the network and one they were never sent.
+export const CODE_BYTES = 8
+
 export function makeLink(host: string, port: number, code: string): string {
   return `crew://${host}:${port}/${code}`
 }

@@ -140,6 +140,7 @@ const SAYS = {
   g: 'a FIXED height (h-9) row, overflow-x-auto, no scrollbar-width',
   h: 'the same fixed height row + [scrollbar-width:none]',
   i: 'the same fixed height row + overflow-y-hidden, no scrollbar-width',
+  j: 'fixed height, items-start so the pill overflows the bottom edge only',
 }
 
 const dir = await stage()
