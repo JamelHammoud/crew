@@ -18,18 +18,31 @@ window.matchMedia = ((query: string) => ({
 const { boardOnScreen, DEFAULT_WIDTH, useBrowser } = await import('../src/renderer/src/state/browser')
 const BrowserPanel = (await import('../src/renderer/src/components/BrowserPanel')).default
 
-const scrolled: Element[] = []
+const scrolled: { el: Element; left: number; top: number }[] = []
+const askedIntoView: Element[] = []
+
+const VIEW = 300
+const TALL = 36
 
 beforeEach(() => {
   scrolled.length = 0
+  askedIntoView.length = 0
   Element.prototype.scrollIntoView = vi.fn(function (this: Element) {
-    scrolled.push(this)
+    askedIntoView.push(this)
   })
+  Element.prototype.scrollTo = vi.fn(function (this: Element, to: ScrollToOptions) {
+    scrolled.push({ el: this, left: to.left ?? 0, top: to.top ?? 0 })
+  }) as unknown as Element['scrollTo']
   window.crew = { warmTerminal: () => undefined } as unknown as CrewBridge
   useBrowser.setState({ tabs: [], activeTabId: null })
 })
 
-afterEach(cleanup)
+afterEach(() => {
+  cleanup()
+  Reflect.deleteProperty(HTMLElement.prototype, 'getBoundingClientRect')
+  Reflect.deleteProperty(HTMLElement.prototype, 'clientWidth')
+  Reflect.deleteProperty(HTMLElement.prototype, 'clientHeight')
+})
 
 const pillFor = (root: HTMLElement, id: string) => root.querySelector(`[data-tab="${id}"]`)
 
