@@ -80,7 +80,7 @@ export function pathCandidates(index: PathIndex, query: string, limit: number): 
 
 // A folder takes the slash with it, so the menu stays open on what is inside it
 // and the next press picks one. A file is the end of it.
-export function pathToken(match: PathMatch): string {
+export function pathToken(match: Pick<PathMatch, 'path' | 'dir'>): string {
   return match.dir ? `${match.path}/` : match.path
 }
 
