@@ -153,41 +153,45 @@ export function DesignZoom() {
   }
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1 shrink-0">
+      <span className="w-px h-5 bg-fg/10 mx-1.5 shrink-0" />
       <HeaderButton label="Undo" disabled={!canUndo} onClick={() => editor.undo()}>
         <UndoGlyph className="w-4 h-4" />
       </HeaderButton>
       <HeaderButton label="Redo" disabled={!canRedo} onClick={() => editor.redo()}>
         <RedoGlyph className="w-4 h-4" />
       </HeaderButton>
-      <span className="w-px h-5 bg-fg/10 mx-1.5 shrink-0" />
-      <HeaderButton label="Zoom out" onClick={() => editor.zoomOut()}>
-        <MinusGlyph className="w-4 h-4" />
-      </HeaderButton>
-      <button
-        onClick={() => setOpen(value => !value)}
-        aria-label="Zoom"
-        className="app-no-drag h-9 min-w-14 px-2 rounded-full text-sm font-semibold tabular-nums text-fg-secondary transition-colors hover:text-fg hover:bg-fg/[0.04]"
-      >
-        {Math.round(zoom * 100)}%
-      </button>
-      <Popover open={open} onClose={() => setOpen(false)}>
-        <div className="w-48">
-          <MenuItem label="Zoom to fit" hint="Shift 1" onClick={() => jump(() => editor.zoomToFit())} />
-          <MenuItem label="Zoom to selection" hint="Shift 2" onClick={() => jump(() => editor.zoomToSelection())} />
-          <MenuDivider />
-          {ZOOM_STEPS.map(step => (
-            <MenuItem
-              key={step}
-              label={`${step * 100}%`}
-              onClick={() => jump(() => editor.setCamera({ ...editor.getCamera(), z: step }, { immediate: true }))}
-            />
-          ))}
-        </div>
-      </Popover>
-      <HeaderButton label="Zoom in" onClick={() => editor.zoomIn()}>
-        <PlusGlyph className="w-4 h-4" />
-      </HeaderButton>
+      <span className="relative flex items-center">
+        <Tooltip label="Zoom" disabled={open}>
+          <button
+            onClick={() => setOpen(value => !value)}
+            aria-label="Zoom"
+            aria-expanded={open}
+            className={`app-no-drag h-9 min-w-14 px-2 rounded-full text-sm font-semibold tabular-nums transition-colors ${
+              open ? 'bg-fg/[0.06] text-fg' : 'text-fg-secondary hover:text-fg hover:bg-fg/[0.04]'
+            }`}
+          >
+            {Math.round(zoom * 100)}%
+          </button>
+        </Tooltip>
+        <Popover open={open} onClose={() => setOpen(false)} align="center">
+          <div className="w-48">
+            <MenuItem label="Zoom in" hint="⌘ +" onClick={() => jump(() => editor.zoomIn())} />
+            <MenuItem label="Zoom out" hint="⌘ −" onClick={() => jump(() => editor.zoomOut())} />
+            <MenuDivider />
+            <MenuItem label="Zoom to fit" hint="Shift 1" onClick={() => jump(() => editor.zoomToFit())} />
+            <MenuItem label="Zoom to selection" hint="Shift 2" onClick={() => jump(() => editor.zoomToSelection())} />
+            <MenuDivider />
+            {ZOOM_STEPS.map(step => (
+              <MenuItem
+                key={step}
+                label={`${step * 100}%`}
+                onClick={() => jump(() => editor.setCamera({ ...editor.getCamera(), z: step }, { immediate: true }))}
+              />
+            ))}
+          </div>
+        </Popover>
+      </span>
     </div>
   )
 }
