@@ -880,6 +880,7 @@ export class CrewSession {
       tools: [...this.tools.values()],
       memories: [...this.memories.values()],
       memoryEnabled: this.memoryEnabled,
+      plugins: [...this.plugins.values()],
       attachmentMb: this.attachmentMb,
       boards: this.boardList(),
       huddle: this.huddleRoom(),
