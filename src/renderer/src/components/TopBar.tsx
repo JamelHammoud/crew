@@ -48,14 +48,8 @@ export default function TopBar() {
       style={{ height: TOP_BAR_H, paddingLeft: HEADER_EDGE, paddingRight: HEADER_EDGE }}
       className="top-bar app-drag relative grid grid-cols-[1fr_auto_1fr] items-center shrink-0"
     >
-      {/* A page can paint the band itself, so the header takes the shape of what
-          is under it rather than laying one surface across the whole width. It
-          is written first and out of flow, so everything else stands over it. */}
       <div ref={hold.backdrop} className="absolute inset-0 pointer-events-none" />
 
-      {/* The mark and the way into the projects stand in the window's own
-          corner rather than in this row, so the left cell starts where they
-          end. Pinned, they stand over the rail and take nothing from here. */}
       <div
         ref={hold.left}
         style={{ paddingLeft: cornerRoom(corner, pinned ? SIDEBAR_W : 0) }}
