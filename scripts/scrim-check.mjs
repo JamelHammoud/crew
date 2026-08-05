@@ -84,7 +84,7 @@ app.whenReady().then(async () => {
       return (bitmap[i] + bitmap[i + 1] + bitmap[i + 2]) / 3
     }
     const columns = read.boxes.map(box => {
-      const x = box.x + box.w / 2
+      const x = box.x + box.w - 24
       const rows = []
       for (let y = 0; y < 200; y++) rows.push(Math.round(lit(x, box.y + y + 0.5)))
       return { say: box.say, rows }
