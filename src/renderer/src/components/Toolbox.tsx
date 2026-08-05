@@ -43,7 +43,17 @@ const SAID = 1200
 // other way round.
 const GRID = 'p-2.5 grid grid-cols-3 gap-1.5'
 
-export default function Toolbox({ open, onClose }: { open: boolean; onClose: () => void }) {
+export default function Toolbox({
+  open,
+  onClose,
+  at,
+  anchor
+}: {
+  open: boolean
+  onClose: () => void
+  at?: { x: number; y: number }
+  anchor?: { current: HTMLElement | null }
+}) {
   const tools = useCrew(s => s.tools)
   const joined = useHuddle(s => s.joined)
   const playing = useMusic(s => s.room.playing)
