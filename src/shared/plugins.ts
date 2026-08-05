@@ -202,19 +202,6 @@ export const PLUGIN_OFFERS: readonly PluginOffer[] = [
     blurb: 'Read and write the pages',
     transport: 'http',
     url: 'https://mcp.notion.com/mcp'
-  },
-  {
-    group: 'Work',
-    name: 'slack',
-    label: 'Slack',
-    blurb: 'Read a channel and post to it',
-    transport: 'stdio',
-    command: 'npx',
-    args: ['-y', '@modelcontextprotocol/server-slack'],
-    keys: [
-      { name: 'SLACK_BOT_TOKEN', label: 'Bot token' },
-      { name: 'SLACK_TEAM_ID', label: 'Team id' }
-    ]
   }
 ]
 

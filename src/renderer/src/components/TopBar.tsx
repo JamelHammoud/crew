@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { CheckCircleGlyph } from '../icons'
 import { playSound } from '../media/sounds'
 import { reviewCount } from '../state/alerts'
+import { useHeaderSlot } from '../state/headerSlot'
 import { openSettings, useSettings } from '../state/settings'
 import { useCrew } from '../state/store'
 import { tasksShowing, useTasks } from '../state/tasks'
@@ -29,6 +30,7 @@ export default function TopBar({ tab, onTab }: { tab: Tab; onTab: (tab: Tab) => 
   const tasksOpen = useTasks(tasksShowing)
   const toggleTasks = useTasks(s => s.toggle)
   const peekTasks = useTasks(s => s.peek)
+  const hold = useHeaderSlot(s => s.hold)
   const [toolboxOpen, setToolboxOpen] = useState(false)
   const headerRef = useRef<HTMLElement>(null)
   const [compact, setCompact] = useState(false)
@@ -45,9 +47,13 @@ export default function TopBar({ tab, onTab }: { tab: Tab; onTab: (tab: Tab) => 
     <header
       ref={headerRef}
       style={{ height: TOP_BAR_H }}
-      className="top-bar app-drag relative flex items-center px-6 shrink-0"
+      className="top-bar app-drag relative grid grid-cols-[1fr_auto_1fr] items-center px-6 shrink-0"
     >
-      <div className={`app-no-drag ml-auto flex items-center justify-end ${compact ? 'gap-1' : 'gap-2'}`}>
+      <span />
+
+      <div ref={hold} className="app-no-drag flex items-center justify-center" />
+
+      <div className={`app-no-drag col-start-3 flex items-center justify-end ${compact ? 'gap-1' : 'gap-2'}`}>
         {connection === 'reconnecting' && (
           <span className="text-xs text-fg-muted animate-pulse mr-1">Connection lost. Trying again…</span>
         )}
