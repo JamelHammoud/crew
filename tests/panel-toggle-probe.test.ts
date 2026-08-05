@@ -78,11 +78,22 @@ beforeEach(() => {
 afterEach(cleanup)
 
 describe('the way back into the panel', () => {
-  it('is not there with nothing in the panel and nothing in the thread', () => {
+  it('does not stand with nothing in the panel and nothing in the thread', () => {
     view()
     inThread()
 
-    expect(button()).toBeNull()
+    expect(standing()).toBe(false)
+  })
+
+  // It is never taken out of the tree, so it has somewhere to travel from and
+  // somewhere to travel to. Unmounted it can only appear, and a control that
+  // appears in a row pushes everything beside it without saying why.
+  it('stays in the tree while it is away, so it can come and go', () => {
+    view()
+    inThread()
+
+    expect(button()).not.toBeNull()
+    expect(button()!.getAttribute('tabindex')).toBe('-1')
   })
 
   it('stands with no dot for what the panel holds of its own', () => {
@@ -91,7 +102,8 @@ describe('the way back into the panel', () => {
     act(() => useBrowser.getState().openUrl('https://example.com/one'))
     act(() => useBrowser.getState().closePanel())
 
-    expect(button()).not.toBeNull()
+    expect(standing()).toBe(true)
+    expect(button()!.getAttribute('tabindex')).toBeNull()
     expect(dot()).toBeNull()
   })
 
@@ -100,8 +112,20 @@ describe('the way back into the panel', () => {
     inThread({ plan: 'Step one' })
 
     expect(useBrowser.getState().open).toBe(false)
-    expect(button()).not.toBeNull()
+    expect(standing()).toBe(true)
     expect(dot()).not.toBeNull()
+  })
+
+  // The dot is about the mark rather than about the button's own corner, which
+  // is a hit area with nothing drawn in it. Hung off the button it stood a badge
+  // clear of the mark with a gap between the two.
+  it('hangs the dot off the mark rather than off the button', () => {
+    view()
+    inThread({ plan: 'Step one' })
+
+    const hung = dot()!.parentElement!
+    expect(hung.contains(mark()!)).toBe(true)
+    expect(hung.className).toContain('relative')
   })
 
   it('wears one for a thread that has sent helpers, with nothing in the panel at all', () => {
@@ -109,7 +133,7 @@ describe('the way back into the panel', () => {
     inThread({}, [spawned()])
 
     expect(useBrowser.getState().tabs).toEqual([])
-    expect(button()).not.toBeNull()
+    expect(standing()).toBe(true)
     expect(dot()).not.toBeNull()
   })
 
