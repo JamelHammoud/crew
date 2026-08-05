@@ -187,6 +187,68 @@ describe('the sidebar', () => {
     await waitFor(() => expect(useSidebar.getState().peeking).toBe(false))
   })
 
+  it('holds the More menu up while the pointer crosses the gap to it', async () => {
+    useSidebar.setState({ pinned: true })
+    render(Sidebar())
+    const row = screen.getByRole('button', { name: 'More' }).parentElement as HTMLElement
+    fireEvent.pointerEnter(row)
+    const plugins = await screen.findByRole('button', { name: 'Plugins' })
+    fireEvent.pointerLeave(row)
+    fireEvent.pointerEnter(plugins.parentElement as HTMLElement)
+    await rest(REACH_MS + 80)
+    expect(screen.queryByRole('button', { name: 'Plugins' })).not.toBeNull()
+  })
+
+  it('puts the More menu away once the pointer has left both it and the row', async () => {
+    useSidebar.setState({ pinned: true })
+    render(Sidebar())
+    const row = screen.getByRole('button', { name: 'More' }).parentElement as HTMLElement
+    fireEvent.pointerEnter(row)
+    await screen.findByRole('button', { name: 'Plugins' })
+    fireEvent.pointerLeave(row)
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Plugins' })).toBeNull())
+  })
+
+  it('pins the More menu on a press, so the pointer leaving no longer takes it', async () => {
+    useSidebar.setState({ pinned: true })
+    render(Sidebar())
+    const more = screen.getByRole('button', { name: 'More' })
+    const row = more.parentElement as HTMLElement
+    fireEvent.pointerEnter(row)
+    await screen.findByRole('button', { name: 'Plugins' })
+    fireEvent.pointerDown(more)
+    fireEvent.click(more)
+    fireEvent.pointerLeave(row)
+    await rest(REACH_MS + 80)
+    expect(screen.queryByRole('button', { name: 'Plugins' })).not.toBeNull()
+    expect(more.getAttribute('aria-expanded')).toBe('true')
+  })
+
+  it('puts a pinned More menu away on a second press', async () => {
+    useSidebar.setState({ pinned: true })
+    render(Sidebar())
+    const more = screen.getByRole('button', { name: 'More' })
+    fireEvent.pointerEnter(more.parentElement as HTMLElement)
+    await screen.findByRole('button', { name: 'Plugins' })
+    fireEvent.click(more)
+    fireEvent.click(more)
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Plugins' })).toBeNull())
+  })
+
+  it('holds a hovered rail open for as long as the menu it opened stands', async () => {
+    useSidebar.setState({ pinned: false, peeking: true, near: true })
+    render(Sidebar({ overlay: true }))
+    const row = screen.getByRole('button', { name: 'More' }).parentElement as HTMLElement
+    fireEvent.pointerEnter(row)
+    const plugins = await screen.findByRole('button', { name: 'Plugins' })
+    fireEvent.pointerEnter(plugins.parentElement as HTMLElement)
+    act(() => useSidebar.getState().peek(false))
+    await rest(REACH_MS + 80)
+    expect(useSidebar.getState().peeking).toBe(true)
+    fireEvent.pointerLeave(plugins.parentElement as HTMLElement)
+    await waitFor(() => expect(useSidebar.getState().peeking).toBe(false))
+  })
+
   it('lights More while the page it holds is the one showing', () => {
     render(Sidebar({ tab: 'plugins' }))
     expect(screen.getByRole('button', { name: 'More' }).getAttribute('aria-current')).toBe('page')
