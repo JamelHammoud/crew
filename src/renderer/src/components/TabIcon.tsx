@@ -117,7 +117,6 @@ function DesignIcon({ size }: { size: number }) {
   )
 }
 
-/** The body strokes itself, then the two pins reach out and seat. */
 function PluginsIcon({ size }: { size: number }) {
   return (
     <Mark size={size}>
