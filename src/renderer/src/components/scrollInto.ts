@@ -40,12 +40,12 @@ export function bringInto(target: HTMLElement, scroller?: HTMLElement | null, be
   const left = nearest(at.left, at.width, page.scrollLeft, page.clientWidth)
   const top = nearest(at.top, at.height, page.scrollTop, page.clientHeight)
   if (left === page.scrollLeft && top === page.scrollTop) return
-  page.scrollTo({ left, top, behavior })
+  move(page, left, top, behavior)
 }
 
 export function centerIn(target: HTMLElement, scroller?: HTMLElement | null, behavior: Behavior = 'auto'): void {
   const page = scroller ?? scrollerOf(target)
   if (!page) return
   const at = placeIn(page, target)
-  page.scrollTo({ top: at.top - (page.clientHeight - at.height) / 2, behavior })
+  move(page, page.scrollLeft, at.top - (page.clientHeight - at.height) / 2, behavior)
 }
