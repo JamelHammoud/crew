@@ -210,6 +210,7 @@ interface CrewState {
   tools: CrewTool[]
   memories: CrewMemory[]
   memoryEnabled: boolean
+  plugins: CrewPlugin[]
   // The emoji the crew drew themselves. They are everyone's here, so they come
   // off the host rather than out of this window's own storage.
   emoji: CustomEmoji[]
