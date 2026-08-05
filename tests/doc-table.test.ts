@@ -93,8 +93,6 @@ describe('a table in a doc', () => {
     const wrapper = rule(`.doc .bn-editor \\[data-content-type='table'\\] .tableWrapper`)
     expect(wrapper).toContain('min-width: 0')
     expect(wrapper).toContain('max-width: 100%')
-
-    const view = readFileSync(path.join(root, 'src/renderer/src/views/Docs.tsx'), 'utf8')
     expect(view).toContain('overflow-x-hidden')
   })
 
