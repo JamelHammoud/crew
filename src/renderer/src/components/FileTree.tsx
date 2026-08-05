@@ -14,18 +14,6 @@ const picked = 'bg-fg/[0.06] text-fg'
 
 const indent = (depth: number): string => `${8 + depth * 14}px`
 
-function Marked({ text, hits }: { text: string; hits: number[] }) {
-  return (
-    <>
-      {markRuns(text, hits).map((run, index) => (
-        <span key={index} className={run.hit ? 'text-fg' : undefined}>
-          {run.text}
-        </span>
-      ))}
-    </>
-  )
-}
-
 function Loading({ depth }: { depth: number }) {
   return (
     <div className="py-1 space-y-1.5" style={{ paddingLeft: indent(depth), paddingRight: 16 }}>
