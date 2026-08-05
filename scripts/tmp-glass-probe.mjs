@@ -28,7 +28,7 @@ const path = require('node:path')
 const wait = ms => new Promise(r => setTimeout(r, ms))
 
 app.whenReady().then(async () => {
-  const win = new BrowserWindow({ width: 900, height: 400, show: true })
+  const win = new BrowserWindow({ width: 900, height: 400, show: true, frame: false, transparent: true, backgroundColor: '#00000000', vibrancy: 'under-window' })
   const read = async () => {
     const shot = await win.webContents.capturePage()
     const bmp = shot.toBitmap(); const size = shot.getSize()
