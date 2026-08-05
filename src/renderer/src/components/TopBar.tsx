@@ -1,72 +1,45 @@
 import { useEffect, useRef, useState } from 'react'
-import { CheckCircleGlyph, MoreGlyph } from '../icons'
+import { CheckCircleGlyph } from '../icons'
 import { playSound } from '../media/sounds'
 import { reviewCount } from '../state/alerts'
 import { openSettings, useSettings } from '../state/settings'
-import { useSidebar } from '../state/sidebar'
 import { useCrew } from '../state/store'
 import { tasksShowing, useTasks } from '../state/tasks'
 import Avatar from './Avatar'
 import Badge from './Badge'
 import PanelToggle from './PanelToggle'
 import PresenceStack from './PresenceStack'
-import TabIcon from './TabIcon'
 import Toolbox from './Toolbox'
 import ToolboxMark from './ToolboxMark'
 import Tooltip from './Tooltip'
 import UpdatePill from './UpdatePill'
-import { tabsShowing, type NavTab, type Tab } from './navTabs'
-import { MenuItem, Popover } from './Popover'
+import type { NavTab, Tab } from './navTabs'
 
 export type { NavTab, Tab }
 
 export const TOP_BAR_H = 70
 
 const COMPACT_WIDTH = 760
-const COLLAPSED_NAV_WIDTH = 560
 
 export default function TopBar({ tab, onTab }: { tab: Tab; onTab: (tab: Tab) => void }) {
   const connection = useCrew(s => s.connection)
-  const pinned = useSidebar(s => s.pinned)
   const selfName = useCrew(s => s.selfName)
   const waiting = useCrew(reviewCount)
   const settingsOpen = useSettings() !== null
   const tasksOpen = useTasks(tasksShowing)
   const toggleTasks = useTasks(s => s.toggle)
   const peekTasks = useTasks(s => s.peek)
-  const [moreOpen, setMoreOpen] = useState(false)
   const [toolboxOpen, setToolboxOpen] = useState(false)
   const headerRef = useRef<HTMLElement>(null)
   const [compact, setCompact] = useState(false)
-  const [collapsedNav, setCollapsedNav] = useState(false)
 
   useEffect(() => {
     const el = headerRef.current
     if (!el) return
-    const observer = new ResizeObserver(() => {
-      setCompact(el.clientWidth <= COMPACT_WIDTH)
-      setCollapsedNav(el.clientWidth <= COLLAPSED_NAV_WIDTH)
-    })
+    const observer = new ResizeObserver(() => setCompact(el.clientWidth <= COMPACT_WIDTH))
     observer.observe(el)
     return () => observer.disconnect()
   }, [])
-
-  useEffect(() => {
-    if (!collapsedNav) setMoreOpen(false)
-  }, [collapsedNav])
-
-  useEffect(() => {
-    if (pinned) setMoreOpen(false)
-  }, [pinned])
-
-  const selectTab = (next: NavTab) => {
-    if (next !== tab) playSound(`tab.${next}`)
-    onTab(next)
-  }
-
-  const shown = tabsShowing(tab)
-  const visibleTabs = collapsedNav ? shown.filter(item => item.id === tab) : shown
-  const hiddenTabs = collapsedNav ? shown.filter(item => item.id !== tab) : []
 
   return (
     <header
