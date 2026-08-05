@@ -95,14 +95,11 @@ describe('the settings', () => {
     expect(document.querySelector('.glass.fixed')).toBeNull()
   })
 
-  it('leaves the three pages standing in the header, each named', () => {
+  it('leaves the three pages to the rail, so the header names none of them', () => {
     render(createElement(TopBar, { tab: 'chat' as const, onTab: vi.fn() }))
-    const navigation = screen.getByRole('navigation', { name: 'Main navigation' })
-    const labels = within(navigation)
-      .getAllByRole('button')
-      .map(tab => tab.getAttribute('aria-label'))
-    expect(navigation.hasAttribute('data-away')).toBe(false)
-    expect(labels).toEqual(['Chat', 'Docs', 'Design'])
+    expect(screen.queryByRole('navigation', { name: 'Main navigation' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Docs' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Design' })).toBeNull()
   })
 
   it('stands your own pages beside the crew’s, and opens on you by name', () => {
