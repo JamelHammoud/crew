@@ -273,8 +273,10 @@ describe('a run that carries the crew plugins', () => {
   const drive = async (how: 'file' | 'inline' | undefined, plugins: CrewPlugin[]) => {
     const held: Held[] = []
     const provider = holder(how, held)
-    host = new WebSocketServer({ host: '127.0.0.1', port: 0 })
-    const port = (host.address() as { port: number }).port
+    const standing = new WebSocketServer({ host: '127.0.0.1', port: 0 })
+    host = standing
+    await new Promise<void>(resolve => standing.once('listening', () => resolve()))
+    const port = (standing.address() as { port: number }).port
     const ended: string[] = []
     const socket = new Promise<WebSocket>(resolve => host!.on('connection', ws => resolve(ws)))
     const runner = testRunner({
