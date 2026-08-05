@@ -72,7 +72,7 @@ function extensionOf(name: string): string | null {
   return /\.([a-z0-9]+)$/i.exec(file)?.[1]?.toLowerCase() ?? null
 }
 
-export interface MediaKind {
+export interface Playable {
   type: string
   video: boolean
 }
