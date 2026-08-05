@@ -190,6 +190,7 @@ export default function Sidebar({
                 lit={tab === one.id}
                 current={tab === one.id}
                 expanded={one.id === 'docs' ? tab === 'docs' : undefined}
+                after={one.id === 'docs' ? <NewPage onClick={newPage} /> : undefined}
                 onClick={() => goToTab(one.id)}
               />
               {one.id === 'docs' && <SidebarDocs open={tab === 'docs'} />}
