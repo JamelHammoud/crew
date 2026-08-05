@@ -330,14 +330,14 @@ export class AppSession {
       onForget: instanceId => this.forgetAgent(instanceId),
       onRename: (instanceId, agentName) => this.renameAgent(instanceId, agentName)
     })
-    const url = `ws://127.0.0.1:${server.port()}/ws`
+    const url = wsUrl({ host: '127.0.0.1', port: seat.port, code: session.code })
     this.runner.connect(url)
     this.live = {
       wsUrl: url,
       place: projectPlace(repoPath),
       name,
       code: session.code,
-      link: shared ? makeLink(lanAddress(), server.port(), session.code) : null,
+      link: shared ? makeLink(lanAddress(), seat.port, session.code) : null,
       folder: repoPath,
       home,
       shared,
