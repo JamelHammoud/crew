@@ -112,7 +112,12 @@ const WindowCorner = (await import('../src/renderer/src/components/WindowCorner'
 const { FolderGlyph, GlobeGlyph } = await import('../src/renderer/src/icons')
 
 const Sidebar = (
-  props: { overlay?: boolean; strong?: boolean; onTab?: (tab: 'chat' | 'docs' | 'design' | 'plugins') => void } = {}
+  props: {
+    overlay?: boolean
+    strong?: boolean
+    tab?: 'chat' | 'docs' | 'design' | 'plugins'
+    onTab?: (tab: 'chat' | 'docs' | 'design' | 'plugins') => void
+  } = {}
 ) =>
   createElement(SidebarView, { tab: 'chat' as const, onTab: () => {}, ...props })
 
