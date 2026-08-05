@@ -81,7 +81,7 @@ const laidOutRow = () => {
   HTMLElement.prototype.getBoundingClientRect = function (this: HTMLElement) {
     if (this.dataset.reorder !== undefined) {
       const at = Array.prototype.indexOf.call(this.parentElement?.children ?? [], this)
-      return box(at * 100, 90)
+      return box(at * 100 - (this.parentElement?.scrollLeft ?? 0), 90)
     }
     return strip(this) ? box(0, VIEW) : box(0, 0)
   }
