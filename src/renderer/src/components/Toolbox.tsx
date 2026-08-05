@@ -31,7 +31,6 @@ interface Builtin {
   name: string
   mark: Glyph
   on?: boolean
-  panel?: boolean
   run: () => void
 }
 
