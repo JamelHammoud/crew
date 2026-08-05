@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import Emoji from '../Emoji'
 import { searchEmoji, type EmojiEntry } from '../emojiData'
 import { rememberEmoji } from '../emojiRecents'
+import { bringInto } from '../scrollInto'
 
 const MATCHES = 9
 

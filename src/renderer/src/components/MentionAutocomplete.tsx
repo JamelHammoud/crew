@@ -17,6 +17,7 @@ import Emoji from './Emoji'
 import { emojiForShortcode, searchEmoji, type EmojiEntry } from './emojiData'
 import { rememberEmoji } from './emojiRecents'
 import Marked from './Marked'
+import { bringInto } from './scrollInto'
 
 export type MentionItem =
   | { kind: 'agent'; agent: PooledAgent }

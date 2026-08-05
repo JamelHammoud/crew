@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import { slashCandidates, type CommandName, type SlashCommand } from '../../../shared/commands'
 import { COMMAND_MARKS } from './CommandChip'
+import { bringInto } from './scrollInto'
 
 export function useSlashCommands(
   value: string,

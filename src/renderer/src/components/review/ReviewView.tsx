@@ -16,6 +16,7 @@ import { clampSplit, defaultSplit, loadSplit, saveSplit } from './split'
 import SplitGrip from './SplitGrip'
 import { useRepoWork } from './useRepoWork'
 import { groupsOf, keyOf, readingAt, reviewWalk, stepTo } from './walk'
+import { bringInto } from '../scrollInto'
 
 type Ask = { kind: 'discard'; paths: string[]; what: string } | { kind: 'drop'; ref: string }
 

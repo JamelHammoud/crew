@@ -4,6 +4,7 @@ import { actionRows, searchActions, type ActionRow } from '../design/actionSearc
 import type { CommandContext } from '../design/commands'
 import { SearchGlyph } from '../design/glyphs'
 import { Popover } from './Popover'
+import { bringInto } from './scrollInto'
 
 export default function DesignActions({
   onAsk,

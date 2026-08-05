@@ -1,6 +1,7 @@
 import type { Attachment } from '../../../shared/attachments'
 import type { SessionEvent } from '../../../shared/events'
 import { eventIndex } from './eventIndex'
+import { centerIn } from './scrollInto'
 
 const FLASH = 'message-flash'
 const FLASH_MS = 520

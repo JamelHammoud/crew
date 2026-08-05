@@ -4,6 +4,7 @@ import type { SuggestionMenuProps } from '@blocknote/react'
 import { useEffect, useRef } from 'react'
 import type { Glyph } from '../glyph'
 import { DOC_BLOCKS, shortcutLabel } from './docBlocks'
+import { bringInto } from '../scrollInto'
 
 export interface DocSlashItem {
   title: string
