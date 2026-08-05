@@ -1,8 +1,16 @@
 import path from 'node:path'
 import { builtinProviders } from '../runner/providers/detect'
 import { installCommand, runInstall } from '../runner/providers/install'
+import { checkServer } from '../runner/providers/local-serve'
+import {
+  forgetServer,
+  knownServers,
+  rememberServer,
+  setServersPath as holdServersAt
+} from '../runner/providers/local-servers'
 import { crewHere } from '../server/crewRepo'
 import type { ProviderCapability } from '../shared/llm'
+import { serverUrl, type ModelServer } from '../shared/modelServers'
 import { projectPlace, type LivePlace } from '../shared/places'
 import { projectKey, readCrewRemote } from '../shared/project'
 import type { RecentJoin, RecentProject } from '../shared/recent'
