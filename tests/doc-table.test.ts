@@ -12,8 +12,9 @@ window.matchMedia = ((query: string) => ({
   dispatchEvent: () => false
 })) as typeof window.matchMedia
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const styles = readFileSync(path.join(root, 'src/renderer/src/styles.css'), 'utf8')
+const styles = (await import('../src/renderer/src/styles.css?raw')).default as string
+const view = (await import('../src/renderer/src/views/Docs.tsx?raw')).default as string
+const editorSource = (await import('../src/renderer/src/components/DocEditor.tsx?raw')).default as string
 
 const { BlockNoteEditor } = await import('@blocknote/core')
 const { DOC_BLOCKS } = await import('../src/renderer/src/components/doc/docBlocks')
