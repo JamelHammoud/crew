@@ -338,7 +338,7 @@ try {
     console.log(table(one.before, one.after))
     if (one.rested) {
       console.log('\n  400ms later, on its own:')
-      console.log(table(one.after, one.rested))
+      console.log(table(one.pulledBack || one.after, one.rested))
     }
     if (one.opened) {
       console.log('\n  and after the outer box finishes opening to 380:')
