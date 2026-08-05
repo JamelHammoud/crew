@@ -32,6 +32,8 @@ beforeEach(() => {
   })
   Element.prototype.scrollTo = vi.fn(function (this: Element, to: ScrollToOptions) {
     scrolled.push({ el: this, left: to.left ?? 0, top: to.top ?? 0 })
+    Object.defineProperty(this, 'scrollLeft', { value: to.left ?? 0, configurable: true })
+    Object.defineProperty(this, 'scrollTop', { value: to.top ?? 0, configurable: true })
   }) as unknown as Element['scrollTo']
   window.crew = { warmTerminal: () => undefined } as unknown as CrewBridge
   useBrowser.setState({ tabs: [], activeTabId: null })
