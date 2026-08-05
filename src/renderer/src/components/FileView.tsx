@@ -177,7 +177,8 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
     const fresh = seen.load !== loadKey
     scrolled.current = { load: loadKey, target }
     if (data.kind === 'file' && target) {
-      bodyRef.current?.querySelector(`[data-line="${target}"]`)?.scrollIntoView?.({ block: 'center' })
+      const row = bodyRef.current?.querySelector(`[data-line="${target}"]`)
+      if (row instanceof HTMLElement) centerIn(row, bodyRef.current)
       return
     }
     if (fresh && bodyRef.current) bodyRef.current.scrollTop = 0
