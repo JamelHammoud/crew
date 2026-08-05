@@ -120,8 +120,46 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
     if (list.length === 0) return
     setError('')
     selectProvider((list.find(c => c.installed) ?? list[0]).provider, list)
+    setScreen('agent')
     setOpen(true)
+    void window.crew.modelServers().then(setServers).catch(() => {})
     if (held) void refresh().catch(() => {})
+  }
+
+  // What was written stands as the one that is picked, whatever the picker
+  // found on its own: somebody who has just added a server is adding it to
+  // run on.
+  const landOn = (url: string, fresh: ProviderCapability[]) => {
+    setCaps(fresh)
+    const chosen = fresh.find(c => c.provider === providerRef.current)
+    if (!chosen) return
+    const next = resolveSettings(chosen.fields, { ...settings, address: url })
+    setSettings(next)
+    if (!nameEdited) setName(defaultName(chosen, next))
+  }
+
+  const addServer = async () => {
+    setAdding(true)
+    setAddError('')
+    try {
+      const url = address.trim()
+      const fresh = await window.crew.addModelServer({ url, ...(key.trim() ? { key: key.trim() } : {}) })
+      setServers(await window.crew.modelServers())
+      landOn(url, fresh)
+      setAddress('')
+      setKey('')
+      setScreen('agent')
+    } catch (err) {
+      setAddError(String(err instanceof Error ? err.message : err))
+    } finally {
+      setAdding(false)
+    }
+  }
+
+  const forgetServer = async (url: string) => {
+    const fresh = await window.crew.forgetModelServer(url)
+    setServers(await window.crew.modelServers())
+    landOn(settings['address'] === url ? '' : settings['address'] ?? '', fresh)
   }
 
   const setSetting = (key: string, value: string) => {
