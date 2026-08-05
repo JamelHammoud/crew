@@ -1,19 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { EditorContext, type Editor, type TLShape } from '../canvas'
-import { HeaderButton } from '../components/DesignControls'
+import DesignHeader from '../components/DesignHeader'
 import DesignLeftPanel from '../components/DesignLeftPanel'
-import { BoardSwitcher, DesignBoardContext, DesignRenameContext, DesignZoom } from '../components/DesignPanels'
+import { DesignBoardContext, DesignRenameContext } from '../components/DesignPanels'
 import DesignRightPanel from '../components/DesignRightPanel'
 import DesignStage from '../components/DesignStage'
-import HeaderSlot from '../components/HeaderSlot'
 import { firstBoard } from '../design/firstBoard'
 import { lastBoard, lastPanels, rememberBoard, rememberPanels } from '../design/viewMemory'
-import { PanelLeftGlyph, PanelRightGlyph } from '../icons'
 import { TOP_BAR_H } from '../components/TopBar'
 import { useCrew } from '../state/store'
-
-const HEADER_LIFT = 10
-const GLYPH = 'w-[18px] h-[18px] transition-transform duration-200'
 
 export default function Design() {
   const boards = useCrew(s => s.boards)
