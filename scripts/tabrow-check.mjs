@@ -14,6 +14,7 @@ const ROWS = [
   ['a', 'flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none]'],
   ['b', 'flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'],
   ['c', 'flex items-center gap-1.5 overflow-x-auto overflow-y-hidden [scrollbar-width:none]'],
+  ['e', 'flex items-center gap-1.5 overflow-x-auto'],
 ]
 
 const BARE = `<div id="row" style="width:380px;display:flex;align-items:center;gap:6px;overflow-x:auto;scrollbar-width:none">${PILLS.replace(/class="[^"]*"/g, 'style="flex:0 0 auto;height:36px;padding:0 12px;display:flex;align-items:center;background:#222;color:#fff"')}</div>`

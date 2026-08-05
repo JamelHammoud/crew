@@ -80,7 +80,7 @@ function Pick({
       {children.length === 0 ? (
         <Empty>{empty}</Empty>
       ) : (
-        <div className="max-h-[168px] overflow-y-auto overscroll-contain [scrollbar-width:none]">{children}</div>
+        <div className="max-h-[168px] overflow-y-auto overscroll-contain no-scrollbar">{children}</div>
       )}
     </div>
   )

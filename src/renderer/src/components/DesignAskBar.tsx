@@ -213,7 +213,7 @@ export default function DesignAskBar({
                 onPaste={event => void attach(key, event.clipboardData.files)}
                 placeholder="Ask for a change"
                 aria-label="Ask for a change"
-                className="flex-1 min-w-0 py-1 bg-transparent text-sm leading-5 text-fg placeholder:text-fg/40 outline-none resize-none [scrollbar-width:none]"
+                className="flex-1 min-w-0 py-1 bg-transparent text-sm leading-5 text-fg placeholder:text-fg/40 outline-none resize-none no-scrollbar"
               />
               <AttachButton attachmentKey={key} size="sm" />
               <Tooltip label="Send" className="shrink-0">

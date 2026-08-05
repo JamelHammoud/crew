@@ -9,7 +9,7 @@ export const FIELD =
   'w-full h-9 px-3 rounded-field bg-fg/[0.06] text-sm text-fg placeholder:text-fg/25 outline-none transition-colors focus:bg-fg/[0.09]'
 
 export const AREA =
-  'w-full px-3 py-2 rounded-field bg-fg/[0.06] text-sm leading-5 text-fg placeholder:text-fg/25 outline-none transition-colors resize-none focus:bg-fg/[0.09] [scrollbar-width:none]'
+  'w-full px-3 py-2 rounded-field bg-fg/[0.06] text-sm leading-5 text-fg placeholder:text-fg/25 outline-none transition-colors resize-none focus:bg-fg/[0.09] no-scrollbar'
 
 export function Rule() {
   return <div className="h-px bg-fg/[0.06]" />

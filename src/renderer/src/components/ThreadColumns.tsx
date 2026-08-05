@@ -24,7 +24,7 @@ export default function ThreadColumns({ ids }: { ids: string[] }) {
 
   return (
     <div className="h-full relative" onPointerMove={watch} onPointerLeave={() => setNear(false)}>
-      <div className="h-full flex overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="h-full flex overflow-x-auto overflow-y-hidden no-scrollbar">
         {ids.map(id => (
           <div
             key={id}

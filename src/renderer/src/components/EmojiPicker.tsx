@@ -176,7 +176,7 @@ export default function EmojiPicker({
         </div>
       </div>
       <div className="flex min-h-0 flex-1">
-        <div className="flex w-11 shrink-0 flex-col items-center gap-0.5 overflow-y-auto py-1 [scrollbar-width:none]">
+        <div className="flex w-11 shrink-0 flex-col items-center gap-0.5 overflow-y-auto py-1 no-scrollbar">
           {sections.map(section => (
             <Tooltip key={section.id} label={section.label}>
               <button

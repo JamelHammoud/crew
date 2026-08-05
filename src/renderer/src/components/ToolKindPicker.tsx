@@ -16,7 +16,7 @@ export default function ToolKindPicker({
   return (
     <>
       <SheetHeader title="What it does" onBack={onBack} />
-      <div className="p-1.5 max-h-[352px] overflow-y-auto overscroll-contain [scrollbar-width:none]">
+      <div className="p-1.5 max-h-[352px] overflow-y-auto overscroll-contain no-scrollbar">
         {TOOL_KINDS.map(entry => (
           <Row
             key={entry.kind}

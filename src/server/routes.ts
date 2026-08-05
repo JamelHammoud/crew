@@ -338,3 +338,48 @@ function servePage(session: CrewSession, raw: string, req: http.IncomingMessage,
   })
   return true
 }
+
+// Every address into a crew names it, so what reaches here is the rest of the
+// path with the code already read off it.
+export function routeCrew(
+  session: CrewSession,
+  raw: string,
+  req: http.IncomingMessage,
+  res: http.ServerResponse
+): boolean {
+  if (req.method === 'POST' && raw === '/attachments') {
+    receiveAttachment(session, req, res)
+    return true
+  }
+  const attachment = /^\/attachments\/([^/?#]+)$/.exec(raw)
+  if (attachment) {
+    serveAttachment(session, decodeURIComponent(attachment[1]), res)
+    return true
+  }
+  const music = /^\/music\/([^/?#]+)$/.exec(raw)
+  if (music) {
+    serveMusic(session, decodeURIComponent(music[1]), res)
+    return true
+  }
+  const emoji = /^\/emoji\/([^/?#]+)$/.exec(raw)
+  if (emoji) {
+    serveCustomEmoji(session, decodeURIComponent(emoji[1]), res)
+    return true
+  }
+  if (serveAgents(session, raw, req, res)) return true
+  if (serveTickets(session, raw, req, res)) return true
+  if (serveMemory(session, raw, req, res)) return true
+  if (servePage(session, raw, req, res)) return true
+  const designOps = /^\/design\/([a-z0-9][a-z0-9-]*)\/ops$/.exec(raw)
+  if (req.method === 'POST' && designOps) {
+    receiveDesignOps(session, designOps[1], req, res)
+    return true
+  }
+  const designRead = /^\/design\/([a-z0-9][a-z0-9-]*)$/.exec(raw)
+  if (req.method === 'GET' && designRead) {
+    const summary = session.designBoardSummary(designRead[1])
+    sendJson(res, summary ? 200 : 404, summary ?? { error: 'No board with that id' })
+    return true
+  }
+  return false
+}

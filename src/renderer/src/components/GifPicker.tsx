@@ -173,7 +173,7 @@ export default function GifPicker({
       <div
         ref={scrollRef}
         onScroll={onScroll}
-        className="min-h-0 flex-1 overflow-y-auto p-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="min-h-0 flex-1 overflow-y-auto p-2.5 no-scrollbar"
       >
         {note ? (
           <p className="flex h-full items-center justify-center text-sm text-fg/40">{note}</p>
