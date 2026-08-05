@@ -25,7 +25,7 @@ const BAR = `
   </div>`
 
 const page = (say, chrome, content) => `
-  <div data-say="${say}" class="relative shrink-0 h-[300px] overflow-hidden bg-ink-900" style="width:${WIDE}px">
+  <div data-say="${say}" class="${say.startsWith('light') ? 'light ' : ''}relative shrink-0 h-[300px] overflow-hidden bg-ink-900" style="width:${WIDE}px">
     <div class="absolute inset-0 overflow-hidden">${content}</div>
     <div class="absolute top-0 inset-x-0 z-40 pointer-events-none">${chrome}</div>
   </div>`
