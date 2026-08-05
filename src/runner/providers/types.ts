@@ -104,7 +104,6 @@ export interface Provider {
   install?: InstallCommands
   // Whether start() returns a run that accepts steer().
   steerable?: boolean
-  // How this CLI takes the crew's MCP servers, if it takes them at all.
   mcp?: McpHandover
   fields(): AgentSettingField[]
   detect(): Promise<boolean>
