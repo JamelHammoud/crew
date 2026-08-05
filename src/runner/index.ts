@@ -5,6 +5,7 @@ import { agentId, type AgentDef, type AgentSettings, type AgentUsage } from '../
 import { pagePreamble } from '../shared/showPage'
 import { subagentPreamble } from '../shared/subagents'
 import { memoryPreamble, type CrewMemory } from '../shared/memory'
+import type { CrewPlugin } from '../shared/plugins'
 import { ticketPreamble } from '../shared/tickets'
 import { MAX_FRAME_BYTES } from '../shared/protocol'
 import type { ClientMessage, RegisteredLlm, ServerMessage } from '../shared/protocol'
