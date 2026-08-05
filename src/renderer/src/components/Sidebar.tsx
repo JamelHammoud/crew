@@ -194,7 +194,7 @@ export default function Sidebar({
               <NavRow
                 icon={<one.Icon className={TAB_ICON} />}
                 label={one.label}
-                lit={tab === one.id}
+                lit={tab === one.id && one.id !== 'docs'}
                 current={tab === one.id}
                 expanded={one.id === 'docs' ? tab === 'docs' : undefined}
                 after={one.id === 'docs' ? <NewPage onClick={newPage} /> : undefined}
