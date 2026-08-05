@@ -84,6 +84,25 @@ describe('the scrim over the top of a page', () => {
   })
 })
 
+describe('the design board under its own header', () => {
+  const stage = read('components/DesignStage.tsx')
+  const page = read('views/Design.tsx')
+  const left = read('components/DesignLeftPanel.tsx')
+  const right = read('components/DesignRightPanel.tsx')
+
+  it('runs the canvas and both panels to the window edge rather than a band standing in for them', () => {
+    expect(page).not.toContain('paddingTop: TOP_BAR_H')
+    for (const panel of [left, right]) expect(panel).toContain('paddingTop: TOP_BAR_H')
+    expect(read('components/DesignHeader.tsx')).not.toContain('data-design-band')
+  })
+
+  it('fades the canvas in the stage that owns it, under everything the stage floats', () => {
+    expect(stage).toContain('design design-scrim')
+    expect(stage.indexOf('design-scrim')).toBeLessThan(stage.indexOf('DesignToolbar boardId'))
+    expect(Number(/--design-scrim:\s*(\d+)px/.exec(styles)?.[1])).toBeGreaterThan(TOP_BAR)
+  })
+})
+
 describe('where a page comes to rest', () => {
   it('is its own number, written once and read by both columns of the chat', () => {
     expect(chat).toContain("paddingTop: 'var(--page-rest)'")
