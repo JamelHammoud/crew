@@ -232,7 +232,7 @@ export const PLUGIN_OFFERS: readonly PluginOffer[] = [
     group: 'Hosting',
     name: 'cloudflare',
     label: 'Cloudflare',
-    blurb: 'Workers, DNS and what the logs say',
+    blurb: 'Workers, DNS, R2 and the rest of the account',
     transport: 'http',
     url: 'https://mcp.cloudflare.com/mcp'
   },
