@@ -105,7 +105,11 @@ export async function probeServer(
   if (guarded(models.status) || guarded(tags.status)) {
     return { runtime: null, why: key ? 'That server did not take the key.' : 'That server wants a key.' }
   }
-  return { runtime: null, why: `Nothing answered at ${serverLabel(url)}.` }
+  const mine = here(parse(url)?.hostname ?? '')
+  return {
+    runtime: null,
+    why: `Nothing answered at ${serverLabel(url)}.${mine ? ' Start it and say that again.' : ''}`
+  }
 }
 
 export async function answering(
