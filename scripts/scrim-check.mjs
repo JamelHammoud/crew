@@ -61,7 +61,7 @@ app.disableHardwareAcceleration()
 const wait = ms => new Promise(r => setTimeout(r, ms))
 
 app.whenReady().then(async () => {
-  const win = new BrowserWindow({ width: ${WIDE * 2}, height: 940, show: true })
+  const win = new BrowserWindow({ width: ${WIDE * 2}, height: 1280, show: true })
   try {
     await win.loadFile(path.join(__dirname, 'dist/index.html'))
     await wait(800)
