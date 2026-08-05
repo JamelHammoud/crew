@@ -256,14 +256,14 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
                   />
                 ))}
               </div>
-              <input
+              <TextField
+                glass
                 value={name}
                 onChange={e => {
                   setName(e.target.value)
                   setNameEdited(true)
                 }}
                 placeholder="Agent name"
-                className="w-full bg-fg/[0.06] border border-fg/10 rounded-xl px-4 py-2.5 text-base text-fg placeholder:text-fg/40 outline-none transition-colors focus:border-fg/30"
               />
               {installing && (
                 <p className="flex items-center gap-2 text-sm text-fg/45">
@@ -319,11 +319,8 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
               {servers.length > 0 && (
                 <div className="space-y-1">
                   {servers.map(server => (
-                    <div
-                      key={server.url}
-                      className="group flex items-center gap-2 h-9 pl-3 pr-1.5 rounded-full bg-fg/[0.04]"
-                    >
-                      <span className="flex-1 min-w-0 truncate text-sm text-fg/70">
+                    <div key={server.url} className="group flex items-center gap-2 h-9">
+                      <span className="flex-1 min-w-0 truncate text-sm text-fg/45">
                         {serverLabel(server.url)}
                       </span>
                       <Tooltip label="Take out">
