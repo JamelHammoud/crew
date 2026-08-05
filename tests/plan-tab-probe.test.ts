@@ -178,16 +178,17 @@ describe('the way back to the panel', () => {
     open('t1', 'Step one')
     const { container, queryByLabelText } = view('t1')
 
-    expect(useBrowser.getState().open).toBe(true)
-    expect(queryByLabelText('Show panel')).toBeNull()
-
-    act(() => useBrowser.getState().closePanel())
+    expect(useBrowser.getState().open).toBe(false)
     expect(container.querySelectorAll('[aria-label="Show panel"]')).toHaveLength(1)
+
+    act(() => useBrowser.getState().openPanel())
+    expect(queryByLabelText('Show panel')).toBeNull()
   })
 
   it('puts the panel back with everything still in it', () => {
     open('t1', 'Step one')
     const { getByLabelText, queryByLabelText } = view('t1')
+    act(() => useBrowser.getState().openPanel())
 
     fireEvent.click(getByLabelText('Close'))
 
