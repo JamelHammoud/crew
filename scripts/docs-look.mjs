@@ -212,7 +212,10 @@ try {
     console.log(`  lit row paint ${read.litPaint} against the rail's own ${read.railPaint}`)
     console.log(`  title ${read.title?.left} to ${read.title?.right}, top ${read.title?.top}`)
     console.log(`  body ${read.body?.left} to ${read.body?.right} (${read.body?.width} across)`)
-    console.log(`  trail ${read.trail ? `${read.trail.left} to ${read.trail.right}, top ${read.trail.top}` : 'none'}`)
+    const page = read.rail ? width - read.rail.right : width
+    const middle = read.body ? Math.round(read.body.left + read.body.width / 2 - (read.rail?.right ?? 0) - page / 2) : null
+    console.log(`  writing sits ${middle} off the middle of the page`)
+    console.log(`  trail ${read.trail ? `starts at ${read.trailAt}, title at ${read.title?.left}` : 'none'}`)
   })
   console.log(`\nwrote ${CASES.length} shots to ${shots}`)
 } finally {

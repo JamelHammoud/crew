@@ -16,6 +16,7 @@ import {
 } from '../icons'
 import { HidePanel, PanelButton } from './DesignControls'
 import Pill from './Pill'
+import { TOP_BAR_H } from './TopBar'
 import Tooltip from './Tooltip'
 
 export default function DesignLeftPanel({ onClose }: { onClose: () => void }) {
