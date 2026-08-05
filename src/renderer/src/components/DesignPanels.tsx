@@ -90,7 +90,7 @@ export function BoardSwitcher() {
           className={`w-4 h-4 shrink-0 text-fg-muted transition-transform duration-150 ${open ? 'rotate-180' : ''}`}
         />
       </button>
-      <Popover open={open} onClose={() => setOpen(false)} align="start">
+      <Popover open={open} onClose={() => setOpen(false)} align="center">
         <div className="w-56">
           {boards.map(b => (
             <div key={b.id} className="group flex items-center gap-0.5 pr-1 rounded-xl transition-colors hover:bg-fg/5">
