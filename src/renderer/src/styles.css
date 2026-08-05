@@ -691,6 +691,23 @@ textarea:placeholder-shown {
   container-type: inline-size;
 }
 
+.page-scrim {
+  height: var(--page-scrim);
+  background: var(--color-ink-900);
+  mask-image: linear-gradient(
+    to bottom,
+    #000 0 42.857%,
+    rgb(0 0 0 / 0.957) 50%,
+    rgb(0 0 0 / 0.844) 57.143%,
+    rgb(0 0 0 / 0.684) 64.286%,
+    rgb(0 0 0 / 0.5) 71.429%,
+    rgb(0 0 0 / 0.316) 78.571%,
+    rgb(0 0 0 / 0.156) 85.714%,
+    rgb(0 0 0 / 0.043) 92.857%,
+    rgb(0 0 0 / 0) 100%
+  );
+}
+
 /* None of the mark's paint may take the pointer. The light travelling under the
    cursor would otherwise count as arriving at the button and leaving it again,
    over and over, for as long as it travels. The button's own box is the whole
