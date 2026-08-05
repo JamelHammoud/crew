@@ -143,7 +143,7 @@ export const codexFields = (): AgentSettingField[] => {
 
 const tomlText = (value: string): string => JSON.stringify(value)
 
-const tomlList = (values: string[]): string => `[${values.map(tomlText).join(', ')}]`
+const tomlList = (values: string[]): string => `[${values.map(tomlText).join(',')}]`
 
 const tomlTable = (entries: Array<[string, string]>): string =>
   `{${entries.map(([key, value]) => `${key}=${value}`).join(',')}}`
