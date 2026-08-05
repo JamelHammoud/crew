@@ -87,8 +87,12 @@ app.whenReady().then(async () => {
       const rows = []
       for (let y = 0; y < 210; y++) {
         let sum = 0
-        for (let x = 12; x < box.w - 12; x += 4) sum += lit(box.x + x, box.y + y + 0.5)
-        rows.push(Math.round((sum / Math.floor((box.w - 24) / 4)) * 10) / 10)
+        let seen = 0
+        for (let x = 170; x < box.w - 90; x += 4) {
+          sum += lit(box.x + x, box.y + y + 0.5)
+          seen++
+        }
+        rows.push(Math.round((sum / seen) * 10) / 10)
       }
       return { say: box.say, rows }
     })
