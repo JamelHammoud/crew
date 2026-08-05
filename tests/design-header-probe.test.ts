@@ -168,8 +168,9 @@ describe('what stands behind the design header', () => {
 
   it('fades the canvas under the header, in the canvas colour and in the stage that owns it', () => {
     expect(stage).toContain('design design-scrim')
-    expect(styles).toMatch(/\.design-scrim \{\n\s+height: var\(--design-scrim\);\n\s+background: var\(--design-canvas\);/)
-    expect(styles).toContain('.page-scrim,\n.design-scrim {')
+    expect(styles).toMatch(
+      /\.design-scrim \{\n\s+height: var\(--design-scrim\);\n\s+background: var\(--design-canvas\);\n\s+mask-image: var\(--scrim-ramp\);/
+    )
   })
 })
 
