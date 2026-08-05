@@ -100,6 +100,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
     label: opts.label,
     install: opts.install,
     steerable: opts.steerable ?? opts.dialog !== undefined,
+    mcp: opts.mcp,
     fields,
     detect: async () => commandExists(opts.command),
     usage: opts.usage,

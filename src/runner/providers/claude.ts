@@ -5,7 +5,7 @@ import { resultText } from './output'
 import { taskCall } from './tasks'
 import { usageFrom } from './tokens'
 import { claudeUsage } from './usage'
-import type { Dialog, OutputParser, ParsedOutput, Provider } from './types'
+import type { Dialog, OutputParser, ParsedOutput, Provider, RunOptions } from './types'
 
 const SUBAGENT_TOOLS = new Set(['Task'])
 const CLAUDE_MODELS = [
