@@ -158,7 +158,7 @@ export const PLUGIN_OFFERS: readonly PluginOffer[] = [
     group: 'Design',
     name: 'canva',
     label: 'Canva',
-    blurb: 'Open a design, or start a new one',
+    blurb: 'Read a design, or start a new one',
     transport: 'http',
     url: 'https://mcp.canva.com/mcp'
   },
@@ -224,7 +224,7 @@ export const PLUGIN_OFFERS: readonly PluginOffer[] = [
     group: 'Hosting',
     name: 'netlify',
     label: 'Netlify',
-    blurb: 'What is up, and the settings behind it',
+    blurb: 'The sites, and what each one is set to',
     transport: 'http',
     url: 'https://netlify-mcp.netlify.app/mcp'
   },
@@ -240,7 +240,7 @@ export const PLUGIN_OFFERS: readonly PluginOffer[] = [
     group: 'Hosting',
     name: 'supabase',
     label: 'Supabase',
-    blurb: 'The tables, the rows and what the logs say',
+    blurb: 'The database, and what is in it',
     transport: 'http',
     url: 'https://mcp.supabase.com/mcp'
   },
@@ -288,7 +288,7 @@ export const PLUGIN_OFFERS: readonly PluginOffer[] = [
     group: 'Work',
     name: 'intercom',
     label: 'Intercom',
-    blurb: 'The conversations people are having with support',
+    blurb: 'What people asked support, and what was said back',
     transport: 'http',
     url: 'https://mcp.intercom.com/mcp'
   },
