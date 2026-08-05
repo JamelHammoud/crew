@@ -38,9 +38,7 @@ function slot(): HTMLElement {
   return node
 }
 
-type Panels = { left: boolean; right: boolean }
-
-function stand(editor: Editor, panels: Panels, onPanels: (next: (value: Panels) => Panels) => void = () => {}): ReactNode {
+function stand(editor: Editor | null): ReactNode {
   useCrew.setState({ boards: [{ id: 'b1', name: 'App design' }] })
   return createElement(
     EditorContext.Provider,
@@ -48,7 +46,7 @@ function stand(editor: Editor, panels: Panels, onPanels: (next: (value: Panels) 
     createElement(
       DesignBoardContext.Provider,
       { value: { current: 'b1', select: () => {} } },
-      createElement(DesignHeader, { editor, panels, onPanels })
+      createElement(DesignHeader, { editor })
     )
   )
 }
@@ -60,43 +58,52 @@ afterEach(() => {
 })
 
 describe('the design header', () => {
-  it('stands the board and its two panels in the app header, with no bar of its own', () => {
+  it('stands the board and what it is being looked at with in the app header', () => {
     const held = slot()
-    render(stand(board(), { left: true, right: true }))
+    render(stand(board()))
 
-    const layers = screen.getByRole('button', { name: 'Hide layers' })
     const name = screen.getByRole('button', { name: /App design/ })
+    const undo = screen.getByRole('button', { name: 'Undo' })
+    const redo = screen.getByRole('button', { name: 'Redo' })
     const zoom = screen.getByRole('button', { name: 'Zoom' })
-    const chat = screen.getByRole('button', { name: 'Hide board panel' })
 
-    for (const control of [layers, name, zoom, chat]) expect(held.contains(control)).toBe(true)
+    for (const control of [name, undo, redo, zoom]) expect(held.contains(control)).toBe(true)
 
     const order = [...held.querySelectorAll<HTMLElement>('button')]
-    expect(order.indexOf(layers)).toBeLessThan(order.indexOf(name))
-    expect(order.indexOf(name)).toBeLessThan(order.indexOf(zoom))
-    expect(order.indexOf(zoom)).toBeLessThan(order.indexOf(chat))
+    expect(order.indexOf(name)).toBeLessThan(order.indexOf(undo))
+    expect(order.indexOf(undo)).toBeLessThan(order.indexOf(redo))
+    expect(order.indexOf(redo)).toBeLessThan(order.indexOf(zoom))
   })
 
-  it('says which panel is away and asks for it back', () => {
+  it('holds no way to a panel, since a panel is asked back from the board itself', () => {
     slot()
-    let panels = { left: false, right: false }
-    const { rerender } = render(stand(board(), panels, next => (panels = next(panels))))
+    render(stand(board()))
 
-    fireEvent.click(screen.getByRole('button', { name: 'Show layers' }))
-    expect(panels.left).toBe(true)
+    expect(screen.queryByRole('button', { name: /layers/i })).toBeNull()
+    expect(screen.queryByRole('button', { name: /panel/i })).toBeNull()
+  })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Show board panel' }))
-    expect(panels.right).toBe(true)
+  it('rules the history off from the zoom', () => {
+    const held = slot()
+    render(stand(board()))
 
-    rerender(stand(board(), panels))
-    expect(screen.getByRole('button', { name: 'Hide layers' })).toBeTruthy()
-    expect(screen.getByRole('button', { name: 'Hide board panel' })).toBeTruthy()
+    const marks = [...held.querySelectorAll<HTMLElement>('span')].filter(span =>
+      span.className.includes('w-px')
+    )
+    const redo = screen.getByRole('button', { name: 'Redo' })
+    const zoom = screen.getByRole('button', { name: 'Zoom' })
+    const between = marks.filter(
+      mark =>
+        redo.compareDocumentPosition(mark) & Node.DOCUMENT_POSITION_FOLLOWING &&
+        zoom.compareDocumentPosition(mark) & Node.DOCUMENT_POSITION_PRECEDING
+    )
+    expect(between.length).toBe(1)
   })
 
   it('reads the zoom off the board and opens the way to change it', () => {
     const editor = board()
     slot()
-    render(stand(editor, { left: true, right: true }))
+    render(stand(editor))
 
     expect(screen.getByRole('button', { name: 'Zoom' }).textContent).toBe('100%')
 
@@ -107,20 +114,10 @@ describe('the design header', () => {
   })
 
   it('waits for the board before it draws the view controls', () => {
-    const held = slot()
-    render(stand(board(), { left: true, right: true }))
-    expect(screen.queryByRole('button', { name: 'Zoom' })).not.toBeNull()
+    slot()
+    render(stand(null))
 
-    cleanup()
-    useHeaderSlot.setState({ node: held })
-    render(
-      createElement(
-        DesignBoardContext.Provider,
-        { value: { current: 'b1', select: () => {} } },
-        createElement(DesignHeader, { editor: null, panels: { left: true, right: true }, onPanels: () => {} })
-      )
-    )
     expect(screen.queryByRole('button', { name: 'Zoom' })).toBeNull()
-    expect(screen.getByRole('button', { name: 'Hide layers' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: /App design/ })).toBeTruthy()
   })
 })
