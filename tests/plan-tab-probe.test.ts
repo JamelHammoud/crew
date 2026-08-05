@@ -174,15 +174,21 @@ describe('the way back to the panel', () => {
       )
     )
 
+  const standing = (root: ParentNode) => {
+    const found = root.querySelector('[aria-label="Show panel"]')
+    return !!found && !found.closest('[aria-hidden="true"]')
+  }
+
   it('stands only while the panel is away, and never in the thread', () => {
     open('t1', 'Step one')
-    const { container, queryByLabelText } = view('t1')
+    const { container } = view('t1')
 
     expect(useBrowser.getState().open).toBe(false)
     expect(container.querySelectorAll('[aria-label="Show panel"]')).toHaveLength(1)
+    expect(standing(container)).toBe(true)
 
     act(() => useBrowser.getState().openPanel())
-    expect(queryByLabelText('Show panel')).toBeNull()
+    expect(standing(container)).toBe(false)
   })
 
   it('puts the panel back with everything still in it', () => {
