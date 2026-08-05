@@ -1666,9 +1666,27 @@ textarea:placeholder-shown {
 }
 
 .doc .bn-container .mantine-Menu-item {
-  padding: 6px 12px;
+  padding: 8px 12px;
   border-radius: 12px;
   font-size: var(--text-sm);
+  background: transparent;
+  color: rgb(255 255 255 / 0.7);
+}
+
+.doc .bn-container .mantine-Menu-item:hover,
+.doc .bn-container .mantine-Menu-item[data-hovered] {
+  background: rgb(255 255 255 / 0.05);
+  color: var(--color-fg);
+}
+
+.light .doc .bn-container .mantine-Menu-item {
+  color: rgb(0 0 0 / 0.7);
+}
+
+.light .doc .bn-container .mantine-Menu-item:hover,
+.light .doc .bn-container .mantine-Menu-item[data-hovered] {
+  background: rgb(0 0 0 / 0.05);
+  color: var(--color-fg);
 }
 
 .doc .bn-container .bn-toolbar .mantine-Button-root,
