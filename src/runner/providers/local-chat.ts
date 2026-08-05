@@ -1,3 +1,4 @@
+import { openaiUrl } from '../../shared/modelServers'
 import { usageFrom } from './tokens'
 import type { LocalRuntime } from './local-serve'
 import type { ToolSpec } from './local-tools'
