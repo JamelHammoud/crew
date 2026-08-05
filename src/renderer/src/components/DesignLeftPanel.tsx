@@ -71,7 +71,7 @@ function buildRows(shapes: TLShape[], collapsed: Set<string>): LayerRow[] {
   return rows
 }
 
-function Layers({ editor }: { editor: Editor }) {
+function Layers({ editor, onClose }: { editor: Editor; onClose: () => void }) {
   const [query, setQuery] = useState('')
   const [searching, setSearching] = useState(false)
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
