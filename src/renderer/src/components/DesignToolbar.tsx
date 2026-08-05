@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { useEditor, useValue, type Editor, type TLShape } from '../canvas'
-import { LayersGlyph } from '../design/glyphs'
+import { StackGlyph } from '../design/glyphs'
 import { activateTool, ALL_TOOLS, currentToolId, TOOL_GROUPS, type DesignToolGroup } from '../design/tools'
-import { ChatGlyph, ChevronDownGlyph } from '../icons'
+import { ChevronDownGlyph, SparkGlyph } from '../icons'
 import AgentIcon from './AgentIcon'
 import { useBoardThreads } from './DesignChat'
 import DesignActions from './DesignActions'
@@ -66,7 +66,7 @@ export default function DesignToolbar({
     <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 pointer-events-none">
       {!panels.left && (
         <DesignPanelBack label="Layers" onOpen={() => onPanels(value => ({ ...value, left: true }))}>
-          <LayersGlyph className="w-[18px] h-[18px]" />
+          <StackGlyph className="w-[18px] h-[18px]" />
         </DesignPanelBack>
       )}
       <div
@@ -164,11 +164,12 @@ function Group({
 }
 
 // The board chat is somebody in particular, so the way back to it is their own
-// pet rather than a mark for a panel. Nobody has been asked yet on a board with
-// no thread on it, so that one wears the chat.
+// pet rather than a mark for a panel. A board nobody has been asked about yet
+// wears the same mark as asking one, since that is the whole of what is behind
+// the button until somebody has.
 function BoardChatMark({ boardId }: { boardId: string }): ReactNode {
   const threads = useBoardThreads(boardId)
   const last = threads[threads.length - 1]
-  if (!last) return <ChatGlyph className="w-[18px] h-[18px]" />
+  if (!last) return <SparkGlyph className="w-[18px] h-[18px]" />
   return <AgentIcon seed={last.agentId} size="sm" />
 }
