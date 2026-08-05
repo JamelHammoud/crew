@@ -1,6 +1,7 @@
 import { BOARD_CHAT_MARK } from '../design/designKeys'
 import { RIGHT_PANEL_W } from '../design/headerBand'
 import DesignChat from './DesignChat'
+import { TOP_BAR_H } from './TopBar'
 
 export default function DesignRightPanel({ boardId, onClose }: { boardId: string; onClose: () => void }) {
   return (
