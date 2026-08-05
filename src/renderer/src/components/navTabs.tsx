@@ -1,4 +1,5 @@
-import { ChatGlyph, DocGlyph, FrameGlyph, MoreGlyph, PlugGlyph, type Glyph } from '../icons'
+import { FrameGlyph } from '../design/glyphs'
+import { ChatGlyph, DocGlyph, MoreGlyph, PlugGlyph, type Glyph } from '../icons'
 
 export type Tab = 'chat' | 'docs' | 'design' | 'plugins'
 

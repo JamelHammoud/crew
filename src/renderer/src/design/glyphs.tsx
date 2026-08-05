@@ -53,6 +53,13 @@ export { PhotoGlyph as ImageGlyph }
 
 export const CursorGlyph = glyph(<path d={ARROW_BODY} transform={ARROW_ON_GRID} />, 2.13)
 
+export const FrameGlyph = glyph(
+  <>
+    <path d="M8.25 3v18M15.75 3v18" />
+    <path d="M3 8.25h18M3 15.75h18" />
+  </>
+)
+
 export const RectangleGlyph = glyph(<rect x="4" y="4" width="16" height="16" rx="2.5" />)
 
 export const EllipseGlyph = glyph(<circle cx="12" cy="12" r="8" />)
