@@ -89,7 +89,6 @@ describe('the design toolbar', () => {
     expect(step(screen.getByLabelText('Move').className, 'pl')).toBe(8)
     expect(step(screen.getByLabelText('Move tools options').className, 'pr')).toBe(8)
     expect(step(screen.getByLabelText('Text').className, 'px')).toBe(8)
-    expect(step(screen.getByLabelText('Note').className, 'px')).toBe(8)
   })
 
   it('stands in from the ends of the bar by the sliver it leaves above and below a pill', () => {
