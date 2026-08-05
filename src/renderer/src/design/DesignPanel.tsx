@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef } from 'react'
 import { useEditor, type TLShape } from '../canvas'
-import { HidePanel } from '../components/DesignLeftPanel'
+import { HidePanel } from '../components/DesignControls'
 import { DesignRenameContext } from '../components/DesignPanels'
 import Appearance from './Appearance'
 import { glyphForShape } from './glyphs'
@@ -47,7 +47,7 @@ function SelectionHeader({ shapes, onClose }: { shapes: TLShape[]; onClose: () =
     return (
       <div className="h-12 shrink-0 flex items-center gap-2 pl-4 pr-2">
         <span className="flex-1 text-sm font-semibold text-fg">{shapes.length} layers</span>
-        <HidePanel onClose={onClose} />
+        <HidePanel side="left" onClose={onClose} />
       </div>
     )
   }
@@ -67,7 +67,7 @@ function SelectionHeader({ shapes, onClose }: { shapes: TLShape[]; onClose: () =
       ) : (
         <span className="flex-1 min-w-0 truncate text-sm font-semibold text-fg capitalize">{layerName(only)}</span>
       )}
-      <HidePanel onClose={onClose} />
+      <HidePanel side="left" onClose={onClose} />
     </div>
   )
 }
