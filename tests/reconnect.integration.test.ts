@@ -196,7 +196,7 @@ describe('reconnect', () => {
       session,
       store,
       code: session.code,
-      url: `ws://127.0.0.1:${server.port()}/ws`,
+      url: `ws://127.0.0.1:${server.port()}/${session.code}/ws`,
       repoPath,
       close: () => server.close()
     }

@@ -91,7 +91,7 @@ describe('runs that would stick on Working', () => {
   it('stop closes the run even when the runner never reports the kill', async () => {
     const session = new CrewSession(new Store(tmpDir('deaf')), { cancelTimeoutMs: 300 })
     const server = await createCrewServer(session, { port: 0, host: '127.0.0.1' })
-    const url = `ws://127.0.0.1:${server.port()}/ws`
+    const url = `ws://127.0.0.1:${server.port()}/${session.code}/ws`
     const runner = new WebSocket(url)
     runner.on('open', () =>
       runner.send(
