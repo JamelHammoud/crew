@@ -134,6 +134,8 @@ const topBar = () =>
 
 const toggleIn = (root: HTMLElement) => root.querySelector('[aria-label="Projects"]') as HTMLElement
 
+const reachIn = (root: HTMLElement) => root.querySelector('.app-no-drag') as HTMLElement
+
 beforeEach(async () => {
   asked.length = 0
   joined.length = 0
