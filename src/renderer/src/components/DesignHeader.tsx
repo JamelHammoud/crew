@@ -46,8 +46,8 @@ export default function DesignHeader({
         <div
           data-design-name
           style={{
-            marginLeft: -NAME_PAD,
-            paddingLeft: nameInset(open, cornerRoom(corner, pinned ? SIDEBAR_W : 0))
+            marginLeft: -namePull(open, corner, offset),
+            paddingLeft: nameInset(open, cornerRoom(corner, offset))
           }}
           className="flex items-center min-w-0"
         >
