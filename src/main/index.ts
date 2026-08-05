@@ -78,6 +78,7 @@ app.setPath('userData', stateDir)
 const crews = new Crews()
 const terminals = new Map<number, Terminals>()
 const previews = new Map<number, Previews>()
+const playing = new Map<number, Media>()
 // One window a thread. Asked for a thread that already has one, the window that
 // is standing is brought forward rather than a second one opened onto the same
 // conversation.
@@ -322,6 +323,18 @@ function previewsFor(sender: WebContents): Previews {
   sender.once('destroyed', () => {
     made.clear()
     previews.delete(sender.id)
+  })
+  return made
+}
+
+function mediaFor(sender: WebContents): Media {
+  const open = playing.get(sender.id)
+  if (open) return open
+  const made = new Media()
+  playing.set(sender.id, made)
+  sender.once('destroyed', () => {
+    made.clear()
+    playing.delete(sender.id)
   })
   return made
 }
