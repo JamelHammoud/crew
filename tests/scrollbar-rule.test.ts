@@ -24,41 +24,42 @@ const classOf = (file: string, mark: string): string => {
   return line
 }
 
-describe('the scrollbar the app draws for itself', () => {
-  it('takes ten pixels of whatever it stands in', () => {
-    const at = styles.indexOf('::-webkit-scrollbar {')
-    expect(at).toBeGreaterThan(-1)
-    expect(styles.slice(at, styles.indexOf('}', at))).toMatch(/height:\s*10px/)
-  })
+const block = (selector: string): string => {
+  const at = styles.indexOf(selector)
+  expect(at).toBeGreaterThan(-1)
+  return styles.slice(at, styles.indexOf('}', at))
+}
 
-  it('is a custom one, which is what takes the standard property out of the argument', () => {
-    expect(styles).toContain('::-webkit-scrollbar-thumb {')
+describe('the scrollbar the app draws for itself', () => {
+  it('is a real one that takes ten pixels off whatever it stands in', () => {
+    expect(block('::-webkit-scrollbar {')).toMatch(/height:\s*10px/)
+    expect(block('::-webkit-scrollbar {')).toMatch(/width:\s*10px/)
   })
 })
 
 describe('a scroller that means to have no bar', () => {
-  it('says it twice, since the drawn bar is what a browser reads first', () => {
-    const at = styles.indexOf('.no-scrollbar {')
-    expect(at).toBeGreaterThan(-1)
-    expect(styles.slice(at, styles.indexOf('}', at))).toMatch(/scrollbar-width:\s*none/)
-    const pseudo = styles.indexOf('.no-scrollbar::-webkit-scrollbar {')
-    expect(pseudo).toBeGreaterThan(-1)
-    expect(styles.slice(pseudo, styles.indexOf('}', pseudo))).toMatch(/display:\s*none/)
+  it('is one class rather than a pair of utilities written out at each one', () => {
+    expect(block('.no-scrollbar {')).toMatch(/scrollbar-width:\s*none/)
+    expect(block('.no-scrollbar::-webkit-scrollbar {')).toMatch(/display:\s*none/)
   })
 
-  it('is written down once, so nothing says half of it by hand', () => {
+  it('is written down once, so nothing says it by hand', () => {
     const offenders = sources.filter(at => readFileSync(at, 'utf8').includes('scrollbar-width:none'))
     expect(offenders.map(at => path.relative(root, at))).toEqual([])
+  })
+
+  it('leaves the two that want a bar alone', () => {
+    const thin = sources.filter(at => readFileSync(at, 'utf8').includes('scrollbar-width:thin'))
+    expect(thin.length).toBeGreaterThan(0)
   })
 })
 
 describe('the row a tab stands in', () => {
-  it('reserves nothing for a bar, so a pill is never taller than the row that holds it', () => {
-    const row = classOf('components/BrowserPanel.tsx', 'overflow-x-auto')
-    expect(row).toContain('no-scrollbar')
+  it('wears it, so a bar never eats the height the pills are drawn at', () => {
+    expect(classOf('components/BrowserPanel.tsx', 'overflow-x-auto')).toContain('no-scrollbar')
   })
 
-  it('pins the axis it never scrolls, so a tab opening cannot push the row up', () => {
+  it('says outright that it never scrolls the other way', () => {
     expect(classOf('components/BrowserPanel.tsx', 'overflow-x-auto')).toContain('overflow-y-hidden')
   })
 
