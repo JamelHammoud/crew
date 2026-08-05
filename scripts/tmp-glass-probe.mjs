@@ -82,5 +82,17 @@ const seen = await new Promise((res, rej) => {
   })
   child.on('error', rej)
 })
-console.log(JSON.stringify(seen, null, 1))
+
+const show = (o) => {
+  for (const key of ['card','strong']) {
+    const v = o[key]
+    // how many samples sit strictly between the two plateaus = how wide the edge is
+    const lo = Math.min(...v), hi = Math.max(...v)
+    const mid = v.filter(n => n > lo + (hi-lo)*0.15 && n < hi - (hi-lo)*0.15).length
+    console.log(`  ${key.padEnd(7)} lo=${lo} hi=${hi} samples-in-ramp=${mid}  ${v.join(',')}`)
+  }
+}
+console.log('=== ' + seen.withFilter.label); show(seen.withFilter)
+console.log('=== ' + seen.without.label); show(seen.without)
+
 await rm(dir, { recursive: true, force: true })
