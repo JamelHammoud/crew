@@ -931,6 +931,19 @@ describe('the sidebar', () => {
     expect(app.slice(opened, rail)).toContain('onMouseLeave={() => peek(false)}')
   })
 
+  it('gives the head of an expanded rail back to the pointer, since a drag band reports none', () => {
+    const { container } = corner()
+    expect((container.firstElementChild as HTMLElement).className).toContain('app-drag')
+    act(() => {
+      useSidebar.setState({ pinned: true })
+    })
+    const box = container.firstElementChild as HTMLElement
+    expect(box.className).toContain('app-no-drag')
+    fireEvent.mouseEnter(box)
+    expect(useSidebar.getState().near).toBe(true)
+    expect(toggleIn(container).className).toContain('opacity-100')
+  })
+
   it('holds the head of an expanded rail while the pointer crosses it', () => {
     vi.useFakeTimers()
     try {
