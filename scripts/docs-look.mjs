@@ -33,8 +33,10 @@ function probeSource() {
   return `import React from ${JSON.stringify(resolve('react'))}
 import { createRoot } from ${JSON.stringify(resolve('react-dom/client'))}
 import Docs from ${from('views/Docs.tsx')}
+import Sidebar from ${from('components/Sidebar.tsx')}
 import TopBar from ${from('components/TopBar.tsx')}
 import WindowCorner from ${from('components/WindowCorner.tsx')}
+import { useDocs } from ${from('state/docs.ts')}
 import { SIDEBAR_W, useSidebar } from ${from('state/sidebar.ts')}
 import { useCrew } from ${from('state/store.ts')}
 import './probe.css'
@@ -53,18 +55,27 @@ useCrew.setState({
 })
 
 function Page({ pinned, page }) {
+  const [tab, setTab] = React.useState('docs')
   React.useEffect(() => {
     useSidebar.setState({ pinned })
-    useCrew.setState({ docsTarget: page })
+    useDocs.getState().open(page)
   }, [pinned, page])
   return React.createElement(
     'div',
     { className: 'h-full flex relative' },
-    React.createElement('div', {
-      'data-look-rail': 'true',
-      className: 'shrink-0 h-full bg-ink-800 border-r border-[var(--glass-line)]',
-      style: { width: pinned ? SIDEBAR_W : 0 }
-    }),
+    React.createElement(
+      'div',
+      {
+        'data-look-rail': 'true',
+        className: 'shrink-0 h-full overflow-hidden',
+        style: { width: pinned ? SIDEBAR_W : 0 }
+      },
+      React.createElement(
+        'div',
+        { className: 'h-full', style: { width: SIDEBAR_W } },
+        React.createElement(Sidebar, { tab, onTab: setTab })
+      )
+    ),
     React.createElement(
       'div',
       { className: 'flex-1 min-w-0 relative isolate bg-ink-900' },
