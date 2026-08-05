@@ -134,7 +134,7 @@ beforeEach(async () => {
   picked = null
   live = []
   localStorage.clear()
-  useSidebar.setState({ pinned: false, peeking: false })
+  useSidebar.setState({ pinned: false, peeking: false, near: false, over: false })
   useCrew.setState({ place: `project:${ONE}`, folder: ONE, selfName: 'Jamel' })
   useBrowser.setState({ tabs: [], activeTabId: null, open: false })
   await act(async () => {
