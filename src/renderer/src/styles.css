@@ -692,8 +692,8 @@ textarea:placeholder-shown {
   container-type: inline-size;
 }
 
-.page-scrim {
-  height: var(--page-scrim);
+.page-scrim,
+.design-scrim {
   background: var(--color-ink-900);
   mask-image: linear-gradient(
     to bottom,
