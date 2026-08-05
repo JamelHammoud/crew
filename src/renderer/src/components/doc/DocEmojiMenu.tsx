@@ -29,7 +29,8 @@ export function DocEmojiMenu({ items, selectedIndex, onItemClick }: SuggestionMe
   const listRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    listRef.current?.querySelector('[data-selected="true"]')?.scrollIntoView({ block: 'nearest' })
+    const row = listRef.current?.querySelector('[data-selected="true"]')
+    if (row instanceof HTMLElement) bringInto(row, listRef.current)
   }, [selectedIndex])
 
   // Tab takes the one standing under the pointer, which is the first until

@@ -111,7 +111,7 @@ export default function ReviewView() {
     setReading(key)
     requestAnimationFrame(() => {
       const rows = scrollRef.current?.querySelectorAll<HTMLElement>('[data-row]') ?? []
-      for (const row of rows) if (row.dataset.row === key) row.scrollIntoView?.({ block: 'nearest' })
+      for (const row of rows) if (row.dataset.row === key) bringInto(row, scrollRef.current)
     })
   }
 

@@ -356,7 +356,8 @@ export function MentionMenu({
   const listRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    listRef.current?.children[activeIndex]?.scrollIntoView({ block: 'nearest' })
+    const row = listRef.current?.children[activeIndex]
+    if (row instanceof HTMLElement) bringInto(row, listRef.current)
   }, [activeIndex])
 
   if (matches.length === 0) return null

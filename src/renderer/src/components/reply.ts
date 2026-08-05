@@ -24,7 +24,7 @@ export function jumpToMessage(targetId: string): boolean {
   const rows = Array.from(document.querySelectorAll<HTMLElement>('[data-message]'))
   const row = rows.find(node => node.dataset.message === targetId)
   if (!row) return false
-  row.scrollIntoView?.({ block: 'center', behavior: 'smooth' })
+  centerIn(row, null, 'smooth')
   whenArrived(row, () => flash(row))
   return true
 }

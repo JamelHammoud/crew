@@ -65,7 +65,8 @@ function ActionsPalette({ ctx, onClose }: { ctx: CommandContext; onClose: () => 
   }, [])
 
   useEffect(() => {
-    listRef.current?.querySelector('[data-active]')?.scrollIntoView({ block: 'nearest' })
+    const row = listRef.current?.querySelector('[data-active]')
+    if (row instanceof HTMLElement) bringInto(row, listRef.current)
   }, [at, query])
 
   const pick = (row: ActionRow) => {
