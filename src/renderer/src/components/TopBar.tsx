@@ -45,64 +45,9 @@ export default function TopBar({ tab, onTab }: { tab: Tab; onTab: (tab: Tab) => 
     <header
       ref={headerRef}
       style={{ height: TOP_BAR_H }}
-      className="top-bar app-drag relative grid grid-cols-[1fr_auto_1fr] items-center px-6 shrink-0"
+      className="top-bar app-drag relative flex items-center px-6 shrink-0"
     >
-      <span />
-
-      <nav
-        aria-label="Main navigation"
-        data-away={pinned || undefined}
-        className="top-bar-nav app-no-drag flex items-center gap-2"
-      >
-        {visibleTabs.map(t => (
-          <Tooltip key={t.id} label={t.label} disabled={!compact}>
-            <button
-              onClick={() => selectTab(t.id)}
-              aria-label={t.label}
-              className={`top-bar-tab flex items-center justify-center h-10 px-4 rounded-full text-base font-semibold transition-all duration-150 active:scale-95 ${
-                tab === t.id
-                  ? 'is-active bg-ink-800 text-fg'
-                  : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
-              }`}
-            >
-              <TabIcon tab={t.id} />
-              <span className="top-bar-tab-label">{t.label}</span>
-            </button>
-          </Tooltip>
-        ))}
-        {collapsedNav && (
-          <div className="relative">
-            <Tooltip label="More" disabled={moreOpen}>
-              <button
-                onClick={() => setMoreOpen(open => !open)}
-                aria-label="More"
-                aria-expanded={moreOpen}
-                aria-haspopup="menu"
-                className={`top-bar-tab flex h-10 w-10 items-center justify-center rounded-full transition-all duration-150 active:scale-95 ${
-                  moreOpen ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:bg-fg/[0.04] hover:text-fg-secondary'
-                }`}
-              >
-                <MoreGlyph className="h-5 w-5" />
-              </button>
-            </Tooltip>
-            <Popover open={moreOpen} onClose={() => setMoreOpen(false)} align="center" className="min-w-40">
-              {hiddenTabs.map(item => (
-                <MenuItem
-                  key={item.id}
-                  icon={<TabIcon tab={item.id} />}
-                  label={item.label}
-                  onClick={() => {
-                    setMoreOpen(false)
-                    selectTab(item.id)
-                  }}
-                />
-              ))}
-            </Popover>
-          </div>
-        )}
-      </nav>
-
-      <div className={`app-no-drag col-start-3 flex items-center justify-end ${compact ? 'gap-1' : 'gap-2'}`}>
+      <div className={`app-no-drag ml-auto flex items-center justify-end ${compact ? 'gap-1' : 'gap-2'}`}>
         {connection === 'reconnecting' && (
           <span className="text-xs text-fg-muted animate-pulse mr-1">Connection lost. Trying again…</span>
         )}
