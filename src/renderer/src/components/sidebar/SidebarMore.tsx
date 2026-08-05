@@ -48,7 +48,7 @@ export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab
       className="relative"
     >
       <NavRow
-        icon={<MoreTabIcon size={18} />}
+        icon={<MoreIcon className={TAB_ICON} />}
         label="More"
         lit={here || open || toolbox}
         current={here}
@@ -62,7 +62,7 @@ export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab
             {MORE_TABS.map(one => (
               <MenuItem
                 key={one.id}
-                icon={<TabIcon tab={one.id} size={16} />}
+                icon={<one.Icon />}
                 label={one.label}
                 active={tab === one.id}
                 onClick={() => {
