@@ -105,10 +105,12 @@ export async function probeServer(
   if (guarded(models.status) || guarded(tags.status)) {
     return { runtime: null, why: key ? 'That server did not take the key.' : 'That server wants a key.' }
   }
-  const mine = here(parse(url)?.hostname ?? '')
+  // The move is only offered where there is one. Crew starts Ollama where
+  // Ollama was told to stand and nothing else, so anywhere else is a fact and
+  // no instruction.
   return {
     runtime: null,
-    why: `Nothing answered at ${serverLabel(url)}.${mine ? ' Start it and say that again.' : ''}`
+    why: `Nothing answered at ${serverLabel(url)}.${startable(url) ? ' Start it and say that again.' : ''}`
   }
 }
 
