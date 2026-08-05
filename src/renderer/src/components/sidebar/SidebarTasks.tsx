@@ -1,10 +1,11 @@
 import { badgeText } from '../../../../shared/presence'
+import { CheckCircleGlyph } from '../../icons'
 import { reviewCount } from '../../state/alerts'
 import { useSidebar } from '../../state/sidebar'
 import { useCrew } from '../../state/store'
 import { tasksShowing, useTasks } from '../../state/tasks'
+import { TAB_ICON } from '../navTabs'
 import Pill from '../Pill'
-import { TasksTabIcon } from '../TabIcon'
 import NavRow from './NavRow'
 
 export default function SidebarTasks() {
