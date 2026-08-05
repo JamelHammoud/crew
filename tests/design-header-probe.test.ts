@@ -130,6 +130,21 @@ describe('the design header', () => {
     expect(screen.getByText('50%')).toBeTruthy()
   })
 
+  it('opens the boards on the nameit stands under rather than centred on it', () => {
+    const held = slots()
+    render(stand(board()))
+
+    const name = screen.getByRole('button', { name: /App design/ })
+    const anchor = name.parentElement!
+    anchor.getBoundingClientRect = () => new DOMRect(200, 70, 122, 36)
+
+    fireEvent.click(name)
+
+    const card = document.querySelector<HTMLElement>('.glass.fixed')!
+    expect(card.style.left).toBe('200px')
+    expect(held.left.contains(name)).toBe(true)
+  })
+
   it('waits for the board before it draws the view controls', () => {
     const held = slots()
     render(stand(null))
