@@ -344,11 +344,7 @@ export default function Docs() {
       </aside>
       <FindBar containerRef={contentRef} scrollerRef={scrollerRef} />
       <div ref={scrollerRef} className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden pr-6">
-        <div
-          ref={contentRef}
-          style={{ paddingTop: COLUMN_TOP, marginLeft: docInset(width), maxWidth: docLeft(0) * 0 + 760 }}
-          className="max-w-[760px]"
-        >
+        <div ref={contentRef} style={{ paddingTop: COLUMN_TOP, marginLeft: docInset(width), maxWidth: DOC_MAX_W }}>
           <div className="px-[54px] pb-3">
             <input
               ref={titleRef}
