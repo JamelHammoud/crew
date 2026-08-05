@@ -1,4 +1,5 @@
 import type { AgentSettingField, AgentSettings, AgentUsage, FileChange, RunStep, StepTodo } from '../../shared/llm'
+import type { McpServer } from '../../shared/plugins'
 
 // What one call of the model cost in tokens, as the CLI reports it. Every field
 // is optional because no two CLIs report the same set.
