@@ -218,11 +218,23 @@ describe('the sidebar', () => {
     expect(nav().hasAttribute('data-away')).toBe(true)
   })
 
-  it('stands the way to a new crew off the bottom edge by what it stands off the sides', () => {
+  it('stands the way to a new crew beside the heading, out of sight until the row is hovered', () => {
+    const { container } = render(Sidebar())
+    const head = container.querySelector('h2')?.parentElement as HTMLElement
+    const action = screen.getByRole('button', { name: 'New project' })
+    expect(head.contains(action)).toBe(true)
+    expect(head.className).toContain('group')
+    expect(action.className).toContain('opacity-0')
+    expect(action.className).toContain('group-hover:opacity-100')
+  })
+
+  it('holds it on screen while the menu it opened is standing', async () => {
     render(Sidebar())
     const action = screen.getByRole('button', { name: 'New project' })
-    expect(action.parentElement?.className).toContain('px-4')
-    expect(action.parentElement?.className).toContain('pb-4')
+    fireEvent.click(action)
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Open a folder' })).toBeTruthy())
+    expect(action.className).toContain('opacity-100')
+    expect(action.className).not.toContain('opacity-0')
   })
 
   it('offers every way to a new crew behind the one button, in the words the way in uses', async () => {
