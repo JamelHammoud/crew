@@ -103,8 +103,8 @@ describe('one door in front of every crew', () => {
 
   it('holds one crew per code and lets the second one go elsewhere', async () => {
     const one = crew('twin-one')
-    const two = crew('twin-two')
-    two.code = one.code
+    const two = twinOf(one, 'twin-two')
+    expect(two.code).toBe(one.code)
     const door = await doorWith(one)
     expect(door.hold(two)).toBe(false)
     expect(door.count()).toBe(1)

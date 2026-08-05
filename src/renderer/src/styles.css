@@ -419,7 +419,7 @@ textarea:placeholder-shown {
 }
 
 .light {
-  --glass-bg: rgb(255 255 255 / 0.85);
+  --glass-bg: rgb(255 255 255 / 0.93);
   --glass-line: rgb(0 0 0 / 0.08);
   --glass-shadow:
     0 16px 48px rgb(0 0 0 / 0.14),
