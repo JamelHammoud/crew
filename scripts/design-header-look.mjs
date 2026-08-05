@@ -18,7 +18,8 @@ const CASES = [
   ['layers away', false, true, false],
   ['chat away', true, false, false],
   ['both away', false, false, false],
-  ['both, rail pinned', true, true, true]
+  ['both, rail pinned', true, true, true],
+  ['both away, rail pinned', false, false, true]
 ]
 
 function probeSource() {
