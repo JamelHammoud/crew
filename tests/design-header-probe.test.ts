@@ -23,8 +23,7 @@ global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
 const { default: DesignHeader } = await import('../src/renderer/src/components/DesignHeader')
 const { DesignBoardContext } = await import('../src/renderer/src/components/DesignPanels')
 
-const renderer = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../src/renderer/src')
-const read = (at: string): string => readFileSync(path.join(renderer, at), 'utf8')
+const read = (at: string): string => readFileSync(`${process.cwd()}/src/renderer/src/${at}`, 'utf8')
 const app = read('App.tsx')
 const page = read('views/Design.tsx')
 const left = read('components/DesignLeftPanel.tsx')
