@@ -63,29 +63,8 @@ export default function Design() {
     <DesignBoardContext.Provider value={boardContext}>
       <DesignRenameContext.Provider value={renameContext}>
         <EditorContext.Provider value={editor}>
-          <div className="h-full flex flex-col" style={{ paddingTop: TOP_BAR_H - HEADER_LIFT }}>
-            <div className="app-drag relative z-50 h-10 shrink-0 flex items-center gap-1 px-2">
-              <HeaderButton
-                label={panels.left ? 'Hide layers' : 'Show layers'}
-                pressed={panels.left}
-                onClick={() => setPanels(value => ({ ...value, left: !value.left }))}
-              >
-                <PanelLeftGlyph className={`${GLYPH} ${panels.left ? '' : 'scale-x-[-1]'}`} />
-              </HeaderButton>
-              <HeaderSlot>
-                <BoardSwitcher />
-              </HeaderSlot>
-              <div className="ml-auto flex items-center gap-1">
-                {editor && <DesignZoom />}
-                <HeaderButton
-                  label={panels.right ? 'Hide board panel' : 'Show board panel'}
-                  pressed={panels.right}
-                  onClick={() => setPanels(value => ({ ...value, right: !value.right }))}
-                >
-                  <PanelRightGlyph className={`${GLYPH} ${panels.right ? '' : 'scale-x-[-1]'}`} />
-                </HeaderButton>
-              </div>
-            </div>
+          <div className="h-full flex flex-col" style={{ paddingTop: TOP_BAR_H }}>
+            <DesignHeader editor={editor} panels={panels} onPanels={setPanels} />
             <div className="flex-1 min-h-0 flex">
               {panels.left && editor && <DesignLeftPanel />}
               <DesignStage
