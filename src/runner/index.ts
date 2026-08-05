@@ -448,10 +448,11 @@ export class Runner {
       this.send({ type: 'agent.error', promptId, message: 'Stopped' })
       return
     }
+    const mcp = openMcp(plugins, provider.mcp, promptId)
     const run = provider.start(promptWithAttachments(text, local), this.opts.repoPath, {
       onStep: step => this.send({ type: 'agent.step', promptId, step }),
       onTokens: (tokens, cost) => this.send({ type: 'agent.tokens', promptId, tokens, cost: cost ?? undefined })
-    }, settings, { goal })
+    }, settings, { goal, mcp: mcp ?? undefined })
     this.running.set(promptId, run)
     try {
       const { text: reply } = await run.done
@@ -459,6 +460,7 @@ export class Runner {
     } catch (err) {
       this.send({ type: 'agent.error', promptId, message: err instanceof Error ? err.message : String(err) })
     } finally {
+      closeMcp(mcp)
       this.running.delete(promptId)
       this.cancelled.delete(promptId)
     }
