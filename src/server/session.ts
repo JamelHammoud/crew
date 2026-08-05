@@ -1,5 +1,6 @@
 import { randomBytes, randomUUID } from 'node:crypto'
 import type { WebSocket } from 'ws'
+import { CODE_BYTES } from '../shared/link'
 import {
   attachmentBytes,
   cleanAttachmentMb,
