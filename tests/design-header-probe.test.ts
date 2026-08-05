@@ -182,7 +182,8 @@ describe('where the design controls stand', () => {
 
     const room = 206 - HEADER_EDGE
     const name = held.left.querySelector<HTMLElement>('[data-design-name]')!
-    expect(name.style.paddingLeft).toBe(`${LEFT_PANEL_W - HEADER_EDGE - room}px`)
+    expect(name.style.paddingLeft).toBe(`${LEFT_PANEL_W + NAME_PAD - HEADER_EDGE - room}px`)
+    expect(name.style.marginLeft).toBe(`-${NAME_PAD}px`)
   })
 
   it('takes the corner for nothing once it stands over the rail', () => {
@@ -193,7 +194,18 @@ describe('where the design controls stand', () => {
 
     const name = held.left.querySelector<HTMLElement>('[data-design-name]')!
     expect(SIDEBAR_W).toBeGreaterThan(206)
-    expect(name.style.paddingLeft).toBe(`${LEFT_PANEL_W - HEADER_EDGE}px`)
+    expect(name.style.paddingLeft).toBe(`${LEFT_PANEL_W + NAME_PAD - HEADER_EDGE}px`)
+  })
+
+  it('places the name by its letters rather than by the pill they stand in', () => {
+    useHeaderSlot.setState({ corner: 206 })
+    useSidebar.setState({ pinned: true })
+    const held = slots()
+    render(stand(board(), BOTH))
+
+    const name = held.left.querySelector<HTMLElement>('[data-design-name]')!
+    const box = -NAME_PAD + Number.parseInt(name.style.paddingLeft, 10)
+    expect(box).toBe(LEFT_PANEL_W - HEADER_EDGE)
   })
 
   it('leaves the name where the header put it once the layers are away', () => {
@@ -203,6 +215,7 @@ describe('where the design controls stand', () => {
 
     const name = held.left.querySelector<HTMLElement>('[data-design-name]')!
     expect(name.style.paddingLeft).toBe('0px')
+    expect(name.style.marginLeft).toBe(`-${NAME_PAD}px`)
   })
 
   it('stands the view controls at the canvas edge, in front of the faces', () => {
