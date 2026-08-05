@@ -141,7 +141,29 @@ export const codexFields = (): AgentSettingField[] => {
   ]
 }
 
-export const codexArgs = (): string[] => ['app-server']
+const tomlText = (value: string): string => JSON.stringify(value)
+
+const tomlList = (values: string[]): string => `[${values.map(tomlText).join(', ')}]`
+
+const tomlTable = (entries: Array<[string, string]>): string =>
+  `{${entries.map(([key, value]) => `${key} = ${value}`).join(', ')}}`
+
+const serverToml = (server: McpServer): string => {
+  if ('url' in server) return tomlTable([['url', tomlText(server.url)]])
+  const entries: Array<[string, string]> = [['command', tomlText(server.command)]]
+  if (server.args?.length) entries.push(['args', tomlList(server.args)])
+  const env = Object.entries(server.env ?? {})
+  if (env.length) entries.push(['env', tomlTable(env.map(([key, value]) => [key, tomlText(value)]))])
+  return tomlTable(entries)
+}
+
+export const codexMcpArgs = (servers: Record<string, McpServer> = {}): string[] =>
+  Object.entries(servers).flatMap(([name, server]) => ['-c', `mcp_servers.${name} = ${serverToml(server)}`])
+
+export const codexArgs = (_prompt: string, _get: SettingReader, run: RunOptions = {}): string[] => [
+  'app-server',
+  ...codexMcpArgs(run.mcp?.servers)
+]
 
 // Codex has no standalone installer script; npm is its documented install path.
 const INSTALL_NPM = 'npm install -g @openai/codex'
