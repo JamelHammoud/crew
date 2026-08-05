@@ -88,11 +88,10 @@ export default function Sidebar({
     async (place: Place): Promise<boolean> => {
       if (busyRef.current) return false
       peek(false)
-      if (usePlaces.getState().live.some(one => one.key === place.key)) {
+      if (place.key === here || usePlaces.getState().live.some(one => one.key === place.key)) {
         await switchTo(place.key)
         return true
       }
-      if (place.key === here) return true
       if (place.join) {
         setBusy(place.key)
         try {
