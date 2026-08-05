@@ -106,11 +106,11 @@ export function targetFor(path: string): string {
   return location?.kind === 'repo' ? location.path : path
 }
 
-function toRef(rawPath: string, suffix: string | undefined): FileRef | null {
-  const path = rawPath.replace(/^\.\//, '')
+function toRef(rawPath: string, tail: string | undefined): FileRef | null {
+  const path = rawPath.replace(/^\.\//, '').replace(/\/$/, '')
   if (path.startsWith('../') || path.includes('//')) return null
   if (!path.includes('/') && DOMAINS.has(path.split('.').pop() ?? '')) return null
-  const line = suffix ? parseInt(suffix.slice(1), 10) : null
+  const line = tail?.startsWith(':') ? parseInt(tail.slice(1), 10) : null
   return { path, line }
 }
 
