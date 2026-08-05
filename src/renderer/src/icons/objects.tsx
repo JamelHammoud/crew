@@ -197,30 +197,34 @@ export const PromptGlyph = glyph(
   </>
 )
 
-// A bubble drawn round rather than square, with a mouth in it. The body is two
-// half circles on a four unit waist, which is as close to a circle as a bubble
-// gets while still leaving a flat for the tail to stand on.
+// A round bubble with a mouth in it. The body is a true circle rather than a
+// rounded box, r 8.8 about (12.4, 11.8), and the tail is a wedge cut into its
+// lower left: the outline leaves the circle at 166 degrees, runs out to a point
+// at 143 and comes back at 100. Said as three angles and a reach rather than as
+// a hand fitted triangle, because every one of those numbers has to land back on
+// the circle exactly or the join reads as a dent.
 //
-// The tail takes the whole of that flat rather than a nick out of the middle of
-// it. A tail is the one thing that tells a bubble from a rounded box, so it is
-// the last thing to draw small: hung off three units and dropped two it reads as
-// a chip out of the corner at the 18 this is worn at in the rail, where the same
-// shape across the full waist and dropped four reads as a bubble pointing at
-// something. It turns at its point like every other corner in the set.
+// The tail is wide and it points away to the left. A tail is the one thing that
+// tells a bubble from a plain circle, so it is the last mark here to draw small:
+// hung off a short flat and dropped a little it reads as a chip out of the edge
+// at the 18 this is worn at in the rail. Taken across a third of the circle and
+// carried out past its edge, to 1.35 of the radius, it reads as a bubble
+// pointing at somebody.
 //
 // The three dots are what came off. Three of them is the typing indicator and
 // the same mark a thought already wears, so the tab for the place the crew talks
 // was drawing somebody who had not said anything yet.
 //
-// A mouth on its own is a face, and it only reads as one if it is deep. The
-// curve is held well off a half circle, which is a cup rather than a smile, and
-// well off flat, which is a line: 2.6 of sag across a 6.6 chord is the band
-// where it stays a mouth at 18. It sits a little under the middle of the body,
-// where a mouth goes, rather than centred on it.
+// The mouth is a half circle, which is deeper than the smile the face in the set
+// wears, and it has to be: that one sits under two eyes that have already said
+// the shape is a face, and this one is alone in the round and has nothing to be
+// read against. Its ends come up vertical, so it stays a mouth rather than
+// settling into the curve of the body behind it. It hangs off the middle of the
+// circle, which puts it low in the face the way a mouth sits.
 export const ChatGlyph = glyph(
   <>
-    <path d="M10 3H14A7 7 0 0 1 21 10A7 7 0 0 1 14 17l-3.2 3.8q-.8.95-.8-.45V17A7 7 0 0 1 3 10A7 7 0 0 1 10 3Z" />
-    <path d="M8.7 10.2a3.4 3.4 0 0 0 6.6 0" />
+    <path d="M10.87 20.47A8.8 8.8 0 1 0 3.86 13.93L2.91 18.95Z" />
+    <path d="M8.15 11.8a4.25 4.25 0 0 0 8.5 0" />
   </>
 )
 

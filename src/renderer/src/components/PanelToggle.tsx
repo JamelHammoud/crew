@@ -23,8 +23,10 @@ export default function PanelToggle({ className = '' }: { className?: string }) 
         aria-label="Show panel"
         className="app-no-drag relative w-10 h-10 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg-secondary hover:bg-fg/[0.04] active:scale-95"
       >
-        <PanelRightGlyph className="w-[18px] h-[18px]" />
-        {waiting.length > 0 && <Badge className="absolute top-0.5 right-0.5" />}
+        <span className="relative flex">
+          <PanelRightGlyph className="w-[18px] h-[18px]" />
+          {waiting.length > 0 && <Badge className="absolute -top-[7px] -right-[7px]" />}
+        </span>
       </button>
     </Tooltip>
   )
