@@ -1,11 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { AgentSettings, ProviderCapability } from '../../../shared/llm'
 import { resolveSettings, visibleSettingFields } from '../../../shared/llm'
-import { PlusGlyph } from '../icons'
+import { serverLabel, type ModelServer } from '../../../shared/modelServers'
+import { CloseGlyph, PlusGlyph } from '../icons'
 import Modal from './Modal'
 import ProviderMark from './ProviderMark'
+import ScreenSwap from './ScreenSwap'
 import Select from './Select'
 import Spinner from './Spinner'
+import TextField from './TextField'
+import Tooltip from './Tooltip'
 
 function titleCase(value: string): string {
   return value ? value[0].toUpperCase() + value.slice(1) : value
