@@ -82,16 +82,14 @@ describe('the scrim over the top of a page', () => {
 })
 
 describe('where a page comes to rest under it', () => {
-  it('is the scrim itself, written once and read by both columns', () => {
+  it('is the scrim itself, written once and read by every column', () => {
     expect(chat).toContain("paddingTop: 'var(--page-scrim)'")
     expect(docs).toContain("const COLUMN_TOP = 'var(--page-scrim)'")
-    expect(chat).not.toContain('pt-28')
+    expect(thread).toContain("paddingTop: 'var(--page-scrim)'")
+    for (const column of [chat, docs, thread]) expect(column).not.toContain('pt-28')
   })
 
   it('clears the scrim, so the first message never reads as sitting in fog', () => {
     expect(alphaAt(HEIGHT)).toBe(0)
-    const column = /max-w-\[660px\] mx-auto pt-(\d+)/.exec(thread)
-    expect(column).not.toBeNull()
-    expect(Number(column![1]) * 4).toBe(HEIGHT)
   })
 })
