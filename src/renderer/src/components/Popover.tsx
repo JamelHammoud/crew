@@ -33,6 +33,7 @@ export function Popover({
   align = 'end',
   side = 'bottom',
   at,
+  anchor,
   flush,
   maxHeight,
   className = '',
@@ -43,6 +44,10 @@ export function Popover({
   align?: 'start' | 'center' | 'end'
   side?: 'top' | 'bottom'
   at?: { x: number; y: number }
+  // A popover placed at a point has no anchor of its own, so whatever opened it
+  // says where it stands. Without that the very press that opens one is a press
+  // outside it, and it closes under the finger that asked for it.
+  anchor?: { current: HTMLElement | null }
   flush?: boolean
   maxHeight?: number
   className?: string
