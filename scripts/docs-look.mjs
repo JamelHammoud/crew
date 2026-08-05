@@ -132,6 +132,10 @@ const READ = \`(() => {
     title: sel('input[placeholder="Untitled"]'),
     body: sel('.bn-editor'),
     trail: sel('[data-docs-trail]'),
+    trailAt: (() => {
+      const nav = document.querySelector('[data-docs-trail] button')
+      return nav ? Math.round(nav.getBoundingClientRect().left) : null
+    })(),
     header: sel('header.top-bar')
   }
 })()\`
