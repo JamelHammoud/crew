@@ -32,7 +32,7 @@ export interface LocalRun {
 }
 
 const weigh = (message: ChatMessage): number =>
-  Math.ceil((message.content.length + JSON.stringify(message.tool_calls ?? '').length) / PER_TOKEN)
+  Math.ceil((message.content.length + JSON.stringify(message.calls ?? '').length) / PER_TOKEN)
 
 // A run that quietly forgets what it was asked reads as a bad model and is
 // usually a full window. The brief and the first thing the person said are
