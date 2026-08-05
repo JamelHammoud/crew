@@ -72,9 +72,15 @@ describe('the port a crew takes', () => {
     expect(shared.port()).toBe(preferred)
     expect(local.port()).not.toBe(shared.port())
 
-    const back = await firstReply(`ws://127.0.0.1:${shared.port()}/ws`, shared.session.code)
+    const back = await firstReply(
+      `ws://127.0.0.1:${shared.port()}/${shared.session.code}/ws`,
+      shared.session.code
+    )
     expect(back.type).toBe('welcome')
-    const other = await firstReply(`ws://127.0.0.1:${local.port()}/ws`, local.session.code)
+    const other = await firstReply(
+      `ws://127.0.0.1:${local.port()}/${local.session.code}/ws`,
+      local.session.code
+    )
     expect(other.type).toBe('welcome')
   })
 
