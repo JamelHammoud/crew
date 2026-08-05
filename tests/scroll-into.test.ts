@@ -4,7 +4,8 @@ import { bringInto, centerIn, scrollerOf } from '../src/renderer/src/components/
 
 const scroller = (overflow: string, w: number, h: number): HTMLElement => {
   const el = document.createElement('div')
-  el.style.overflow = overflow
+  el.style.overflowX = overflow
+  el.style.overflowY = overflow
   Object.defineProperty(el, 'clientWidth', { value: w, configurable: true })
   Object.defineProperty(el, 'clientHeight', { value: h, configurable: true })
   Object.defineProperty(el, 'scrollLeft', { value: 0, writable: true, configurable: true })
