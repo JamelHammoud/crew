@@ -10,6 +10,8 @@ import { TOP_BAR_H } from './TopBar'
 export default function WindowCorner() {
   const pinned = useSidebar(s => s.pinned)
   const peeking = useSidebar(s => s.peeking)
+  const near = useSidebar(s => s.near)
+  const over = useSidebar(s => s.over)
   const peek = useSidebar(s => s.peek)
   const toggle = useSidebar(s => s.toggle)
   const full = useFullScreen()
