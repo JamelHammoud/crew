@@ -175,5 +175,6 @@ export type RepoFile =
   | { kind: 'file'; path: string; text: string; truncated: boolean }
   | { kind: 'dir'; path: string; entries: FileEntry[] }
   | { kind: 'image'; path: string; url: string; size: number }
+  | { kind: 'media'; path: string; url: string; size: number; type: string; video: boolean }
   | { kind: 'binary'; path: string; size: number }
   | { kind: 'missing'; path: string }
