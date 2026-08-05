@@ -53,12 +53,13 @@ export { PhotoGlyph as ImageGlyph }
 
 export const CursorGlyph = glyph(<path d={ARROW_BODY} transform={ARROW_ON_GRID} />, 2.13)
 
-export const FrameGlyph = glyph(
-  <>
-    <path d="M8.25 3v18M15.75 3v18" />
-    <path d="M3 8.25h18M3 15.75h18" />
-  </>
-)
+// The four rules are one path rather than a pair of them, and that is the whole
+// of what keeps the mark one drawing. A stroke is composited per element, so
+// verticals on one path and horizontals on another lay their alpha twice at the
+// four places they cross: handed a color at 45% the crossings arrive at 70%, and
+// the mark reads as a grid with a bright dot at every junction. Self-crossings
+// inside one path cost nothing, because one element's stroke is painted once.
+export const FrameGlyph = glyph(<path d="M8.25 3v18M15.75 3v18M3 8.25h18M3 15.75h18" />)
 
 export const RectangleGlyph = glyph(<rect x="4" y="4" width="16" height="16" rx="2.5" />)
 
