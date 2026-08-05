@@ -9,7 +9,7 @@ import { canRename, layerName, renameShape } from './tools'
 import Transform from './Transform'
 import { useNodeView } from './useNodeView'
 
-export default function DesignPanel() {
+export default function DesignPanel({ onClose }: { onClose: () => void }) {
   const editor = useEditor()
   const shapes = useSelectedLayerShapes(editor)
   const view = useNodeView()
@@ -17,7 +17,7 @@ export default function DesignPanel() {
   return (
     <div className="flex-1 min-h-0 flex flex-col">
       <div className="design-style-panel flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
-        <SelectionHeader shapes={shapes} />
+        <SelectionHeader shapes={shapes} onClose={onClose} />
         <Transform />
         <Appearance view={view} />
         {view && <Inspector view={view} />}
