@@ -109,7 +109,7 @@ function heldPath(run: string, index: PathIndex, known: ReadonlySet<string>): st
 // Only a path this project really holds is marked out in the box somebody is
 // typing in. A guess at one would dress a line up as a link and then send it as
 // plain words, which is the app promising something it cannot keep.
-export function pathRuns(text: string, index: PathIndex): PathRun[] {
+export function pathRuns(text: string, index: PathIndex, known: ReadonlySet<string> = new Set()): PathRun[] {
   const runs: PathRun[] = []
   const push = (part: string, path: boolean): void => {
     if (!part) return
@@ -121,7 +121,7 @@ export function pathRuns(text: string, index: PathIndex): PathRun[] {
   for (const match of text.matchAll(/\S+/g)) {
     const start = match.index ?? 0
     if (start < cursor) continue
-    const held = heldPath(match[0], index)
+    const held = heldPath(match[0], index, known)
     if (!held) continue
     push(text.slice(cursor, start), false)
     push(held, true)

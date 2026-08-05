@@ -143,6 +143,11 @@ function Session() {
               <Design />
             </Suspense>
           )}
+          {tab === 'plugins' && (
+            <Suspense fallback={<Loading />}>
+              <Plugins />
+            </Suspense>
+          )}
         </main>
         <div className="absolute top-0 inset-x-0 z-40 pointer-events-none">
           <div className="top-bar-container pointer-events-auto bg-ink-900">

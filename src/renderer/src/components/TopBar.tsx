@@ -64,8 +64,9 @@ export default function TopBar({ tab, onTab }: { tab: Tab; onTab: (tab: Tab) => 
     onTab(next)
   }
 
-  const visibleTabs = collapsedNav ? TABS.filter(item => item.id === tab) : TABS
-  const hiddenTabs = collapsedNav ? TABS.filter(item => item.id !== tab) : []
+  const shown = tabsShowing(tab)
+  const visibleTabs = collapsedNav ? shown.filter(item => item.id === tab) : shown
+  const hiddenTabs = collapsedNav ? shown.filter(item => item.id !== tab) : []
 
   return (
     <header
