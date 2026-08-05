@@ -186,6 +186,29 @@ const READ = \`(() => {
   }
 })()\`
 
+const OPEN = \`(() => {
+  const el = [...document.querySelectorAll('button')].find(b => (b.textContent || '').includes('App design'))
+  if (!el) return false
+  el.click()
+  return true
+})()\`
+
+const MENU = \`(() => {
+  const box = el => {
+    if (!el) return null
+    const r = el.getBoundingClientRect()
+    return { left: Math.round(r.left), right: Math.round(r.right) }
+  }
+  const card = document.querySelector('.glass.fixed')
+  const row = card && card.querySelector('button span')
+  return { card: box(card), row: box(row) }
+})()\`
+
+const SHUT = \`(() => {
+  window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+  return true
+})()\`
+
 app.whenReady().then(async () => {
   const win = new BrowserWindow({ width: ${WIDTH}, height: ${HEIGHT}, show: true, backgroundColor: '#141414' })
   const seen = []
