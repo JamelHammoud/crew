@@ -900,36 +900,25 @@ describe('the sidebar', () => {
     expect(toggleIn(container).className).not.toContain('opacity-0')
   })
 
-  it('keeps the button off an expanded rail until the pointer is on it', () => {
+  it('stands the button there while the rail is open too, since the band it sits in reports no pointer', () => {
     act(() => {
       useSidebar.setState({ pinned: true })
     })
     const { container } = corner()
     const button = toggleIn(container)
-    expect(button.className).toContain('opacity-0')
-    expect(button.className).toContain('pointer-events-none')
-    expect(button.className).toContain('focus-visible:opacity-100')
-    act(() => useSidebar.getState().peek(true))
-    expect(toggleIn(container).className).toContain('opacity-100')
-    expect(toggleIn(container).className).not.toContain('opacity-0')
+    expect(button.className).not.toContain('opacity-0')
+    expect(button.className).not.toContain('pointer-events-none')
   })
 
-  it('holds it while a menu the rail opened is standing', () => {
+  it('wears the same weight in both states, quiet until it is reached', () => {
+    const { container } = corner()
+    const away = toggleIn(container).className
     act(() => {
       useSidebar.setState({ pinned: true })
     })
-    const { container } = corner()
-    act(() => useSidebar.getState().hold(true))
-    expect(toggleIn(container).className).toContain('opacity-100')
-  })
-
-  it('reads the pointer anywhere on an expanded rail rather than only on its head', async () => {
-    const app = (await import('../src/renderer/src/App.tsx?raw')).default as string
-    const rail = app.indexOf(`width: pinned ? SIDEBAR_W : 0`)
-    expect(rail).toBeGreaterThan(-1)
-    const opened = app.lastIndexOf('<div', rail)
-    expect(app.slice(opened, rail)).toContain('onMouseEnter={() => peek(true)}')
-    expect(app.slice(opened, rail)).toContain('onMouseLeave={() => peek(false)}')
+    expect(toggleIn(container).className).toBe(away)
+    expect(away).toContain('text-fg-muted')
+    expect(away).toContain('hover:text-fg-secondary')
   })
 
   it('leaves the head of an expanded rail draggable', () => {
