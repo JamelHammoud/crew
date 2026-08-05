@@ -118,6 +118,40 @@ async function writeAt(absolute: string, text: string): Promise<boolean> {
   }
 }
 
+async function dirEntries(absolute: string): Promise<FileEntry[] | null> {
+  const dirents = await fs.readdir(absolute, { withFileTypes: true }).catch(() => null)
+  if (!dirents) return null
+  const entries = await Promise.all(
+    dirents.slice(0, DIR_LIMIT).map(async dirent => ({
+      name: dirent.name,
+      dir: dirent.isSymbolicLink()
+        ? await fs
+            .stat(path.join(absolute, dirent.name))
+            .then(stat => stat.isDirectory())
+            .catch(() => false)
+        : dirent.isDirectory()
+    }))
+  )
+  return entries.sort((a, b) => (a.dir === b.dir ? a.name.localeCompare(b.name) : a.dir ? -1 : 1))
+}
+
+export async function readMachineDirs(root: string | null, query: string): Promise<MachineDir[]> {
+  const base = root ? path.resolve(root) : null
+  const tries = query.startsWith('~')
+    ? [expandHome(query)]
+    : [query, path.join(os.homedir(), query.replace(/^\/+/, ''))]
+  const dirs: MachineDir[] = []
+  const seen = new Set<string>()
+  for (const candidate of tries) {
+    const absolute = path.resolve(candidate)
+    if (seen.has(absolute)) continue
+    seen.add(absolute)
+    const entries = await dirEntries(absolute)
+    if (entries) dirs.push({ dir: absolute, repoDir: base ? insideRoot(base, absolute) : null, entries })
+  }
+  return dirs
+}
+
 export async function statRepoFile(root: string, target: string): Promise<RepoPathKind> {
   const absolute = resolveRepoPath(root, target)
   if (!absolute) return 'missing'
