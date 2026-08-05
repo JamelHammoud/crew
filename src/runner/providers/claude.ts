@@ -177,7 +177,7 @@ function claudeModel(get: SettingReader): string {
 // it is thinking out loud and says nothing. The interactive CLI asks for the
 // summary; a headless one does not, and crew is headless. Asking for it here is
 // the whole of what puts the thinking on screen.
-export const claudeArgs = (_prompt: string, get: SettingReader): string[] => [
+export const claudeArgs = (_prompt: string, get: SettingReader, run: RunOptions = {}): string[] => [
   '-p',
   '--input-format',
   'stream-json',
@@ -189,6 +189,7 @@ export const claudeArgs = (_prompt: string, get: SettingReader): string[] => [
   'summarized',
   ...flag('--model', claudeModel(get)),
   ...flag('--effort', get('effort')),
+  ...flag('--mcp-config', run.mcp?.file ?? ''),
   '--permission-mode',
   'bypassPermissions',
   '--dangerously-skip-permissions'
