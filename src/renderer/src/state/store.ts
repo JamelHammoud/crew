@@ -904,6 +904,7 @@ export const useCrew = create<CrewState>((set, get) => {
           tools: msg.snapshot.tools ?? [],
           memories: msg.snapshot.memories ?? [],
           memoryEnabled: msg.snapshot.memoryEnabled ?? false,
+          plugins: msg.snapshot.plugins ?? [],
           emoji: msg.snapshot.emoji ?? [],
           attachmentMb: msg.snapshot.attachmentMb ?? DEFAULT_ATTACHMENT_MB,
           scores: msg.snapshot.gameScores ?? [],

@@ -1765,8 +1765,7 @@ export class CrewSession {
   private handlePluginAdd(ws: WebSocket, member: Member, raw: unknown): void {
     const said = cleanPlugin(raw)
     if (!said) return
-    const already = this.pluginLike(said.name)
-    if (already) return
+    if (this.pluginLike(said.name)) return
     if (this.plugins.size >= PLUGIN_LIMIT) {
       this.notice(PLUGIN_FULL, ws)
       return
