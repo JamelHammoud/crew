@@ -150,10 +150,12 @@ function Session() {
           )}
         </main>
         <div className="absolute top-0 inset-x-0 z-40 pointer-events-none">
-          <div className="top-bar-container pointer-events-auto bg-ink-900">
+          {tab !== 'design' && <div className="page-scrim absolute inset-x-0 top-0" />}
+          <div
+            className={`top-bar-container relative pointer-events-auto ${tab === 'design' ? 'bg-ink-900' : ''}`}
+          >
             <TopBar />
           </div>
-          {tab !== 'design' && <div className="h-10 bg-gradient-to-b from-ink-900 to-transparent" />}
         </div>
         <TasksPanel onOpenThread={openFromTasks} onOpenThreadBeside={openFromTasksBeside} />
       </div>
