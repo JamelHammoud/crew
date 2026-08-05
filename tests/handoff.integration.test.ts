@@ -36,7 +36,7 @@ describe('handoff', () => {
     expect(sessionB.code).toBe(code)
 
     const serverB = await createCrewServer(sessionB, { port: 0, host: '127.0.0.1' })
-    const urlB = `ws://127.0.0.1:${serverB.port()}/ws`
+    const urlB = `ws://127.0.0.1:${serverB.port()}/${sessionB.code}/ws`
     const ui2 = await TestUi.connect(urlB, 'sam', code)
     const welcome = ui2.messages.find(m => m.type === 'welcome') as Extract<ServerMessage, { type: 'welcome' }>
 
