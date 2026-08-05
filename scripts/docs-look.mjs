@@ -16,7 +16,9 @@ const CASES = [
   ['rail pinned', 1440, true, 'ideas'],
   ['rail away', 1440, false, 'ideas'],
   ['a sub-page, rail pinned', 1440, true, 'handbook-a1b2/setup-c3d4'],
-  ['narrow, rail pinned', 1120, true, 'ideas']
+  ['a sub-page, rail away', 1440, false, 'handbook-a1b2/setup-c3d4'],
+  ['narrow, rail pinned', 1120, true, 'ideas'],
+  ['wide, rail pinned', 1920, true, 'ideas']
 ]
 
 const DOCS = {

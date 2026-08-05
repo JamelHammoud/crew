@@ -24,7 +24,7 @@ export default function DesignLeftPanel({ onClose }: { onClose: () => void }) {
   return (
     <aside
       aria-label={selection > 0 ? 'Design' : 'Layers'}
-      style={{ width: LEFT_PANEL_W }}
+      style={{ width: LEFT_PANEL_W, paddingTop: TOP_BAR_H }}
       className="shrink-0 flex flex-col min-w-0 min-h-0 overflow-hidden bg-ink-900 border-r border-ink-700"
     >
       <div data-design-layers hidden={selection > 0} className="flex-1 min-h-0 flex flex-col">
