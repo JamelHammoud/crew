@@ -1,6 +1,7 @@
 import { readdirSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
+import { openaiUrl } from '../../shared/modelServers'
 import type { LocalRuntime } from './local-serve'
 
 export interface LocalModel {
