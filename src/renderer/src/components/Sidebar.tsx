@@ -116,15 +116,10 @@ export default function Sidebar({
   // the chat rather than on whatever thread was open in it.
   const goToPlace = useCallback(
     (place: Place) => {
-      if (place.key === here) {
-        peek(false)
-        useCrew.getState().closeThreads()
-        return
-      }
       useCrew.getState().wantThread(null)
       void go(place)
     },
-    [go, here, peek]
+    [go]
   )
 
   const goToThread = useCallback(
