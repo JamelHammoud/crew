@@ -1,11 +1,10 @@
-import { badgeText } from '../../../../shared/presence'
 import { CheckCircleGlyph } from '../../icons'
 import { reviewCount } from '../../state/alerts'
 import { useSidebar } from '../../state/sidebar'
 import { useCrew } from '../../state/store'
 import { tasksShowing, useTasks } from '../../state/tasks'
+import Badge from '../Badge'
 import { TAB_ICON } from '../navTabs'
-import Pill from '../Pill'
 import NavRow from './NavRow'
 
 export default function SidebarTasks() {
@@ -20,7 +19,7 @@ export default function SidebarTasks() {
       label="Tasks"
       lit={open}
       expanded={open}
-      after={waiting > 0 && <Pill solid>{badgeText(waiting)}</Pill>}
+      after={<Badge count={waiting} rim={false} />}
       onClick={() => {
         peek(false)
         toggle()
