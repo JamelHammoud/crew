@@ -21,10 +21,10 @@ const ROOMY_END = String.raw`(?:[\w.-][\w .-]*)?\w`
 const ROOMY_ABS = String.raw`~?\/(?:${ROOMY_PART}\/)*${ROOMY_END}`
 const ROOMY_SLASH = String.raw`(?:\.\/)?(?:${ROOMY_PART}\/)+${ROOMY_END}`
 
-const FULL_RE = new RegExp(`^(${ROOMY_ABS}|${ROOMY_SLASH}|${BARE_FILE})(${LINE_SUFFIX})?$`)
-const SUFFIX_RE = new RegExp(`(${LINE_SUFFIX})$`)
+const FULL_RE = new RegExp(`^(${ROOMY_ABS}|${ROOMY_SLASH}|${BARE_FILE})(${TAIL})?$`)
+const SUFFIX_RE = new RegExp(`(${TAIL})$`)
 const PROSE_RE = new RegExp(
-  String.raw`(?<![\w/.@:~-])(${ABS_PATH}|${SLASH_PATH}|${BARE_FILE})(${LINE_SUFFIX})?(?![\w/])`,
+  String.raw`(?<![\w/.@:~-])(${ABS_PATH}|${SLASH_PATH}|${BARE_FILE})(${TAIL})?(?![\w/])`,
   'g'
 )
 
