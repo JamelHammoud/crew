@@ -1,15 +1,10 @@
 import fs from 'node:fs'
 import http from 'node:http'
-import { WebSocketServer, WebSocket } from 'ws'
 import { isAttachmentFile, mimeForFile } from '../shared/attachments'
 import { mimeForCustomEmoji } from '../shared/customEmoji'
 import { mimeForMusic } from '../shared/music'
-import { MAX_FRAME_BYTES } from '../shared/protocol'
 import type { DesignOp } from '../shared/design'
 import type { CrewSession } from './session'
-type LiveSocket = WebSocket & { isAlive: boolean }
-
-const HEARTBEAT_MS = 20000
 
 // A picture in a message is drawn by an img tag, which the browser will take
 // from anywhere. A track is read with fetch, and the answer to a fetch is not
