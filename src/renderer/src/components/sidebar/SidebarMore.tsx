@@ -1,30 +1,27 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
+import { useSidebar } from '../../state/sidebar'
 import { MORE_TABS, type Tab } from '../navTabs'
 import { MenuItem, Popover } from '../Popover'
 import TabIcon, { MoreTabIcon } from '../TabIcon'
+import { useHoverMenu } from '../useHoverMenu'
 
 export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab) => void }) {
   const rowRef = useRef<HTMLDivElement>(null)
-  const [open, setOpen] = useState(false)
-  const [at, setAt] = useState<{ x: number; y: number } | null>(null)
+  const menu = useHoverMenu(rowRef)
+  const holdRail = useSidebar(s => s.hold)
   const here = MORE_TABS.some(one => one.id === tab)
+  const open = menu.open
 
-  const show = () => {
-    const rect = rowRef.current?.getBoundingClientRect()
-    if (!rect) return
-    setAt({ x: rect.right + 6, y: rect.top - 6 })
-    setOpen(true)
-  }
+  useEffect(() => {
+    holdRail(open)
+  }, [holdRail, open])
+
+  useEffect(() => () => holdRail(false), [holdRail])
 
   return (
-    <div
-      ref={rowRef}
-      onPointerEnter={show}
-      onPointerLeave={() => setOpen(false)}
-      className="relative"
-    >
+    <div ref={rowRef} onPointerEnter={menu.show} onPointerLeave={menu.leave} className="relative">
       <button
-        onClick={show}
+        onClick={menu.press}
         aria-current={here ? 'page' : undefined}
         aria-expanded={open}
         aria-haspopup="menu"
@@ -37,20 +34,22 @@ export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab
         </span>
         More
       </button>
-      {open && at && (
-        <Popover open onClose={() => setOpen(false)} at={at} className="min-w-44">
-          {MORE_TABS.map(one => (
-            <MenuItem
-              key={one.id}
-              icon={<TabIcon tab={one.id} size={16} />}
-              label={one.label}
-              active={tab === one.id}
-              onClick={() => {
-                setOpen(false)
-                onTab(one.id)
-              }}
-            />
-          ))}
+      {open && menu.at && (
+        <Popover open onClose={menu.close} at={menu.at} anchor={rowRef} flush className="min-w-44">
+          <div className="p-1.5" onPointerEnter={menu.hold} onPointerLeave={menu.leave}>
+            {MORE_TABS.map(one => (
+              <MenuItem
+                key={one.id}
+                icon={<TabIcon tab={one.id} size={16} />}
+                label={one.label}
+                active={tab === one.id}
+                onClick={() => {
+                  menu.close()
+                  onTab(one.id)
+                }}
+              />
+            ))}
+          </div>
         </Popover>
       )}
     </div>
