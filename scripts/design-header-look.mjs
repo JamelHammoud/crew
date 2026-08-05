@@ -303,6 +303,17 @@ try {
       const back = read.width - read.face.right
       console.log(`  name letters ${front} from the canvas edge, face ${back} from the window edge: ${front === back ? 'level' : 'OFF BY ' + (front - back)}`)
     }
+    const menu = read.menu
+    if (menu?.card && read.name && read.letters) {
+      const onBox = menu.card.left - read.name.left
+      const onLetters = menu.row ? menu.row.left - read.letters.left : null
+      console.log(`  menu card ${menu.card.left} to ${menu.card.right}, its first row at ${menu.row?.left}`)
+      console.log(
+        `  card on the button's own edge: ${onBox === 0 ? 'yes' : `OFF BY ${onBox}`}   its words under the name's: ${
+          onLetters === 0 ? 'yes' : `OFF BY ${onLetters}`
+        }`
+      )
+    }
     console.log(`  band matches the canvas colour: ${read.bandCanvas === read.canvasPaint ? 'yes' : 'NO'}`)
   })
   console.log(`\nwrote ${CASES.length} shots to ${shots}`)
