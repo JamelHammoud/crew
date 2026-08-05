@@ -823,10 +823,10 @@ describe('the sidebar', () => {
     vi.useFakeTimers()
     try {
       const { container } = corner()
-      const box = container.firstElementChild as HTMLElement
+      const reach = reachIn(container)
       fireEvent.mouseEnter(toggleIn(container))
-      fireEvent.mouseLeave(box)
-      fireEvent.mouseEnter(box)
+      fireEvent.mouseLeave(reach)
+      fireEvent.mouseEnter(reach)
       act(() => {
         vi.advanceTimersByTime(1000)
       })
