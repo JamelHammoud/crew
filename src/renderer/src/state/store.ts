@@ -1152,7 +1152,17 @@ export const useCrew = create<CrewState>((set, get) => {
     // unmounts and what the window holds for itself stays where it is.
     switchTo: async key => {
       const from = get().place
-      if (destination === key || (destination === null && from === key)) return
+      if (destination === key) return
+      // The project already on screen with nothing in flight. No welcome is
+      // coming, so what was asked of it is answered here rather than waited for.
+      if (destination === null && from === key) {
+        const wanted = threadsWanted
+        threadsWanted = null
+        if (!wanted) return
+        const open = wanted.filter(id => get().threads[id])
+        set({ openThreadIds: open, openThreadId: open.at(-1) ?? null, chatColumn: false })
+        return
+      }
       destination = key
       const request = ++transition
       const panel = useBrowser.getState()
