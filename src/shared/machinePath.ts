@@ -32,7 +32,8 @@ function asMatch(dir: MachineDir, entry: FileEntry, nameHits: number[]): PathMat
 }
 
 function inDir(dir: MachineDir, tail: string, limit: number): PathMatch[] {
-  const shown = tail.startsWith('.') ? dir.entries : dir.entries.filter(entry => !entry.name.startsWith('.'))
+  const hidden = tail.startsWith('.')
+  const shown = dir.entries.filter(entry => entry.name.startsWith('.') === hidden)
   if (!tail) return shown.slice(0, limit).map(entry => asMatch(dir, entry, []))
   const lower = tail.toLowerCase()
   const hits = [...tail].map((_, at) => at)

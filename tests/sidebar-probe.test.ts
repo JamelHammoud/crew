@@ -156,11 +156,35 @@ describe('the sidebar', () => {
     expect(container.querySelector('aside')?.className).toContain('sidebar-pinned')
   })
 
-  it('holds the three pages at its head, in the order the header holds them', () => {
+  it('holds the three pages at its head, in the order the header holds them, and More under them', () => {
     const { container } = render(Sidebar())
     const nav = container.querySelector('nav[aria-label="Main navigation"]') as HTMLElement
-    expect([...nav.querySelectorAll('button')].map(one => one.textContent)).toEqual(['Chat', 'Docs', 'Design'])
+    expect([...nav.querySelectorAll('button')].map(one => one.textContent)).toEqual([
+      'Chat',
+      'Docs',
+      'Design',
+      'More'
+    ])
     expect(nav.querySelector('button[aria-current="page"]')?.textContent).toBe('Chat')
+  })
+
+  it('opens More to the side on hover and goes to the page a row in it names', async () => {
+    const went: string[] = []
+    useSidebar.setState({ pinned: false, peeking: true })
+    render(Sidebar({ onTab: tab => went.push(tab) }))
+    const more = screen.getByRole('button', { name: 'More' })
+    expect(screen.queryByRole('button', { name: 'Plugins' })).toBeNull()
+    fireEvent.pointerEnter(more.parentElement as HTMLElement)
+    const row = await screen.findByRole('button', { name: 'Plugins' })
+    expect(row.getBoundingClientRect().left).toBeGreaterThanOrEqual(more.getBoundingClientRect().right)
+    fireEvent.click(row)
+    expect(went).toEqual(['plugins'])
+    await waitFor(() => expect(useSidebar.getState().peeking).toBe(false))
+  })
+
+  it('lights More while the page it holds is the one showing', () => {
+    render(Sidebar({ tab: 'plugins' }))
+    expect(screen.getByRole('button', { name: 'More' }).getAttribute('aria-current')).toBe('page')
   })
 
   it('goes to the page a row names and puts a hovered sidebar away with it', async () => {

@@ -160,7 +160,7 @@ const serverToml = (server: McpServer): string => {
 export const codexMcpArgs = (servers: Record<string, McpServer> = {}): string[] =>
   Object.entries(servers).flatMap(([name, server]) => ['-c', `mcp_servers.${name}=${serverToml(server)}`])
 
-export const codexArgs = (_prompt: string, _get: SettingReader, run: RunOptions = {}): string[] => [
+export const codexArgs = (_prompt?: string, _get?: SettingReader, run: RunOptions = {}): string[] => [
   'app-server',
   ...codexMcpArgs(run.mcp?.servers)
 ]
