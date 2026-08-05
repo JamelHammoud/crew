@@ -15,6 +15,7 @@ Pool LLMs with friends. Open a project and you are in, share it when you want so
 - `yarn selection-check` — select everything in a real window and see what it painted
 - `yarn preview-check` — stand a page up in a real window and see what it reached
 - `yarn design-header-look` — stand the design header up in a real window and read where every control landed
+- `yarn docs-look` — stand the docs page up in a real window and read where the list, the writing and the trail landed
 - `yarn scrim-check` — stand the chrome over a real column in a real window and read the pixels down it
 - `yarn codex-check` — run a real Codex turn and read what came back off it
 - `yarn kimi-check` — run a real Kimi turn and read what came back off it
