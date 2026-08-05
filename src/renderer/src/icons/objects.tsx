@@ -174,6 +174,14 @@ export const ToolboxGlyph = glyph(
   </>
 )
 
+export const PlugGlyph = glyph(
+  <>
+    <path d="M5.9 7.75H18.1A1.5 1.5 0 0 1 19.6 9.25V13.25A4 4 0 0 1 15.6 17.25H8.4A4 4 0 0 1 4.4 13.25V9.25A1.5 1.5 0 0 1 5.9 7.75Z" />
+    <path d="M8.5 7.75V2.5M15.5 7.75V2.5" />
+    <path d="M12 17.25v4.25" />
+  </>
+)
+
 // One ticket, and the whole of it is the silhouette. The two bites out of the
 // sides are what tell it from every other rounded box in the set, so they are
 // deep: a notch small enough to be tasteful at 48 is gone by 16, and what is
