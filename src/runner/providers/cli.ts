@@ -77,6 +77,7 @@ interface CliProviderOptions {
   dialog?: (prompt: string, cwd: string, get: SettingReader, run: RunOptions) => Dialog
   goalCommand?: boolean
   steerable?: boolean
+  mcp?: McpHandover
   usage?: () => Promise<AgentUsage | null>
 }
 
