@@ -145,6 +145,11 @@ export default function Sidebar({
     [onTab, peek, tab]
   )
 
+  const newPage = useCallback(() => {
+    goToTab('docs')
+    createDocPage('')
+  }, [goToTab])
+
   const stop = useCallback((place: Place) => void closePlace(place.key), [closePlace])
 
   const forget = useCallback(
