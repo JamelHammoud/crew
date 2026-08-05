@@ -106,8 +106,8 @@ function fromList(said: unknown): Served[] {
 }
 
 async function servedOn(runtime: LocalRuntime): Promise<Served[]> {
-  if (runtime.kind === 'ollama') return fromTags(await asked(`${runtime.url}/api/tags`))
-  return fromList(await asked(`${runtime.url}/v1/models`))
+  if (runtime.kind === 'ollama') return fromTags(await asked(`${runtime.url}/api/tags`, undefined, runtime.key))
+  return fromList(await asked(openaiUrl(runtime.url, '/models'), undefined, runtime.key))
 }
 
 export async function servedModels(runtime: LocalRuntime): Promise<LocalModel[]> {
