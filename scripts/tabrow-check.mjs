@@ -61,10 +61,13 @@ app.whenReady().then(async () => {
         el.lastElementChild.scrollIntoView({ block: 'nearest', inline: 'nearest' })
         rows[el.dataset.say] = { ...before, scrollTop: el.scrollTop, scrollLeft: el.scrollLeft }
       }
-      const bare = document.getElementById('bare').contentDocument.getElementById('row')
-      const bareBefore = read(bare)
-      bare.lastElementChild.scrollIntoView({ block: 'nearest', inline: 'nearest' })
-      rows.d = { ...bareBefore, scrollTop: bare.scrollTop, scrollLeft: bare.scrollLeft }
+      const doc = document.getElementById('bare').contentDocument
+      for (const [say, id] of [['d', 'row'], ['f', 'row2']]) {
+        const bare = doc.getElementById(id)
+        const before = read(bare)
+        bare.lastElementChild.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+        rows[say] = { ...before, scrollTop: bare.scrollTop, scrollLeft: bare.scrollLeft }
+      }
       return JSON.stringify({ drawn: document.getElementById('root').innerHTML.length, rows })
     })()\`)
     console.log('SEEN ' + seen)
