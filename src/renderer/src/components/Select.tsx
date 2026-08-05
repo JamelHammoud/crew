@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react'
-import { CheckGlyph, ChevronDownGlyph, PlusGlyph } from '../icons'
+import { CheckGlyph, ChevronDownGlyph } from '../icons'
 import { MenuDivider, Popover } from './Popover'
 
 export default function Select({
