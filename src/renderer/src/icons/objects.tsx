@@ -198,9 +198,15 @@ export const PromptGlyph = glyph(
 )
 
 // A bubble drawn round rather than square, with a mouth in it. The body is two
-// half circles on a two unit waist, which is as close to a circle as a bubble
-// gets while still having somewhere flat for the tail to hang off, and the tail
-// hangs just left of centre and turns at its point like every other corner here.
+// half circles on a four unit waist, which is as close to a circle as a bubble
+// gets while still leaving a flat for the tail to stand on.
+//
+// The tail takes the whole of that flat rather than a nick out of the middle of
+// it. A tail is the one thing that tells a bubble from a rounded box, so it is
+// the last thing to draw small: hung off three units and dropped two it reads as
+// a chip out of the corner at the 18 this is worn at in the rail, where the same
+// shape across the full waist and dropped four reads as a bubble pointing at
+// something. It turns at its point like every other corner in the set.
 //
 // The three dots are what came off. Three of them is the typing indicator and
 // the same mark a thought already wears, so the tab for the place the crew talks
@@ -209,12 +215,12 @@ export const PromptGlyph = glyph(
 // A mouth on its own is a face, and it only reads as one if it is deep. The
 // curve is held well off a half circle, which is a cup rather than a smile, and
 // well off flat, which is a line: 2.6 of sag across a 6.6 chord is the band
-// where it stays a mouth at the 18 this is worn at in the rail. It is centred on
-// the body rather than sat low, because there are no eyes above it to sit under.
+// where it stays a mouth at 18. It sits a little under the middle of the body,
+// where a mouth goes, rather than centred on it.
 export const ChatGlyph = glyph(
   <>
-    <path d="M11 3H13A7.5 7.5 0 0 1 20.5 10.5A7.5 7.5 0 0 1 13 18h-.6l-2.4 2.7q-.6.75-.6-.3V18A7.5 7.5 0 0 1 3.5 10.5A7.5 7.5 0 0 1 11 3Z" />
-    <path d="M8.7 9.15a3.4 3.4 0 0 0 6.6 0" />
+    <path d="M10 3H14A7 7 0 0 1 21 10A7 7 0 0 1 14 17l-3.2 3.8q-.8.95-.8-.45V17A7 7 0 0 1 3 10A7 7 0 0 1 10 3Z" />
+    <path d="M8.7 10.2a3.4 3.4 0 0 0 6.6 0" />
   </>
 )
 
