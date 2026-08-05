@@ -894,6 +894,44 @@ describe('the sidebar', () => {
     expect(useSidebar.getState().peeking).toBe(false)
   })
 
+  it('stands the button there whenever the rail is away', () => {
+    const { container } = corner()
+    expect(toggleIn(container).className).not.toContain('opacity-0')
+  })
+
+  it('keeps the button off the head of an expanded rail until the head is hovered', () => {
+    act(() => {
+      useSidebar.setState({ pinned: true })
+    })
+    const { container } = corner()
+    const button = toggleIn(container)
+    expect(button.className).toContain('opacity-0')
+    expect(button.className).toContain('pointer-events-none')
+    expect(button.className).toContain('group-hover:opacity-100')
+    expect(button.className).toContain('group-hover:pointer-events-auto')
+    expect(button.className).toContain('focus-visible:opacity-100')
+  })
+
+  it('makes the whole head of an expanded rail what the button is reached from', () => {
+    act(() => {
+      useSidebar.setState({ pinned: true })
+    })
+    const { container } = corner()
+    const box = container.firstElementChild as HTMLElement
+    expect(box.className).toContain('group')
+    expect(box.style.width).toBe(`${SIDEBAR_W}px`)
+  })
+
+  it('leaves the mark where it stands while the button is hidden', () => {
+    const { container } = corner()
+    const shut = [...container.querySelectorAll('svg')].length
+    act(() => {
+      useSidebar.setState({ pinned: true })
+    })
+    expect([...container.querySelectorAll('svg')].length).toBe(shut)
+    expect(toggleIn(container)).not.toBeNull()
+  })
+
   it('stands over the whole page, whatever the page stacks inside itself', async () => {
     const app = (await import('../src/renderer/src/App.tsx?raw')).default as string
     const main = app.indexOf('<main')
