@@ -15,7 +15,7 @@ import Tooltip from '../components/Tooltip'
 import { ChevronRightGlyph, DocGlyph, PlusGlyph, TrashGlyph } from '../icons'
 import { useCrew } from '../state/store'
 
-const COLUMN_TOP = 'var(--page-scrim)'
+const COLUMN_TOP = 'var(--page-rest)'
 const ROW = 'h-8 text-sm font-medium'
 
 interface PageNode {
