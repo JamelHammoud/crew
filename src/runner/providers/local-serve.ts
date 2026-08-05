@@ -151,11 +151,15 @@ async function waitsFor(url: string): Promise<boolean> {
   return false
 }
 
+// Only a server on this machine is one there is anything to do about. A
+// written address somewhere else is somebody else's to start, and the command
+// here would try to bind their host on this one.
 export async function ensureServing(url: string): Promise<boolean> {
+  const at = parse(url)
+  if (!at || !here(at.hostname)) return false
   if (await answering(url)) return true
   const command = resolveCommand('ollama')
   if (!command) return false
-  const at = parse(url)
   try {
     const child = spawn(command, ['serve'], {
       detached: detachCliProcess(),

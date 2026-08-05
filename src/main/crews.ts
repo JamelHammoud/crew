@@ -45,6 +45,10 @@ export class Crews {
     this.projectsPath = at
   }
 
+  setServersPath(at: string): void {
+    holdServersAt(at)
+  }
+
   places(): LivePlace[] {
     const live: LivePlace[] = []
     for (const [key, session] of this.open) {
