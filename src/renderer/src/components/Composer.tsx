@@ -59,6 +59,37 @@ function EmojiHighlight({
   )
 }
 
+// A path arrives as a link for everyone who reads it, so it says so in the box
+// it is written in, the way a name somebody is about to be handed does.
+function PathHighlight({
+  text,
+  at,
+  files,
+  selection,
+  surface
+}: {
+  text: string
+  at: number
+  files: PathIndex
+  selection: SelectedRange | null
+  surface: string
+}) {
+  const runs = useMemo(() => spanned(pathRuns(text, files), at), [at, files, text])
+  return (
+    <>
+      {runs.map(({ token, start }, index) =>
+        token.path ? (
+          <span key={index} className="rounded-md pl-0.5 -ml-0.5 py-0.5 bg-fg/10">
+            {token.text}
+          </span>
+        ) : (
+          <EmojiHighlight key={index} text={token.text} at={start} selection={selection} surface={surface} />
+        )
+      )}
+    </>
+  )
+}
+
 function MentionHighlights({
   value,
   selection,
@@ -72,6 +103,7 @@ function MentionHighlights({
   const members = useCrew(s => s.members)
   const docs = useCrew(s => s.docs)
   const boards = useCrew(s => s.boards)
+  const files = useProjectFiles(s => s.index)
   const tokens = useMemo(
     () => spanned(tokenizeMentions(value, agents, members, writtenRefs(value, docs, boards)), 0),
     [agents, boards, docs, members, value]
@@ -96,7 +128,16 @@ function MentionHighlights({
             </span>
           )
         }
-        return <EmojiHighlight key={index} text={token.text} at={start} selection={selection} surface={surface} />
+        return (
+          <PathHighlight
+            key={index}
+            text={token.text}
+            at={start}
+            files={files}
+            selection={selection}
+            surface={surface}
+          />
+        )
       })}
       {'\u200b'}
     </>
