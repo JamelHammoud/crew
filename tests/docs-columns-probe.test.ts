@@ -43,6 +43,8 @@ const header = (): HTMLElement => {
   return node
 }
 
+afterEach(cleanup)
+
 describe('the docs page under the header', () => {
   it('says which page you are in on the header row rather than over the writing', () => {
     const left = header()
