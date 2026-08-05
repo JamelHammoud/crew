@@ -270,6 +270,45 @@ function RefRow({
   )
 }
 
+// The name leads and the folders above it stand behind, the way the Files
+// filter already draws one, so a row is read by what it is rather than by where
+// it is. The letters that landed are picked out in both halves.
+function PathRow({
+  match,
+  active,
+  onClick,
+  onMouseEnter
+}: {
+  match: PathMatch
+  active: boolean
+  onClick: () => void
+  onMouseEnter: () => void
+}) {
+  const start = match.path.lastIndexOf('/') + 1
+  const name = match.path.slice(start)
+  const folder = start ? match.path.slice(0, start - 1) : ''
+  const Icon = match.dir ? FolderGlyph : FileGlyph
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      className={`w-full text-left px-2.5 py-2 rounded-xl text-sm flex items-center gap-2.5 transition-colors ${
+        active ? 'bg-fg/[0.08] text-fg' : 'text-fg/70 hover:bg-fg/[0.08] hover:text-fg'
+      }`}
+    >
+      <Icon className="w-4 h-4 shrink-0 text-fg/45" />
+      <span className="shrink-0 max-w-[70%] truncate">
+        <Marked text={name} hits={match.hits.filter(hit => hit >= start).map(hit => hit - start)} />
+      </span>
+      {folder && (
+        <span className="min-w-0 truncate text-xs text-fg/45">
+          <Marked text={folder} hits={match.hits.filter(hit => hit < start)} on="text-fg/70" />
+        </span>
+      )}
+    </button>
+  )
+}
+
 // One row for both, since a character and a `:name:` are the same two things to
 // draw: the picture, and the name somebody would type to reach it.
 function EmojiRow({
