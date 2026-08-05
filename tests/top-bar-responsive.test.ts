@@ -3,8 +3,10 @@
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import HeaderSlot from '../src/renderer/src/components/HeaderSlot'
 import TopBar from '../src/renderer/src/components/TopBar'
 import { useBrowser } from '../src/renderer/src/state/browser'
+import { useHeaderSlot } from '../src/renderer/src/state/headerSlot'
 import { useCrew } from '../src/renderer/src/state/store'
 
 const observers = new Set<() => void>()
