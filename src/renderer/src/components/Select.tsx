@@ -62,6 +62,21 @@ export default function Select({
             </button>
           )
         })}
+        {add && (
+          <>
+            {options.length > 0 && <MenuDivider />}
+            <button
+              onClick={() => {
+                setOpen(false)
+                add.onPick()
+              }}
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-left whitespace-nowrap text-fg/70 transition-colors hover:text-fg hover:bg-fg/5"
+            >
+              <PlusGlyph className="w-4 h-4 shrink-0" />
+              <span className="flex-1">{add.label}</span>
+            </button>
+          </>
+        )}
       </Popover>
     </div>
   )
