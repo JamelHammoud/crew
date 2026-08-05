@@ -289,30 +289,37 @@ export function SubMenu({
   children: ReactNode
 }) {
   const rowRef = useRef<HTMLDivElement>(null)
-  const [open, setOpen] = useState(false)
-  const [at, setAt] = useState<{ x: number; y: number } | null>(null)
-
-  const show = () => {
-    const rect = rowRef.current?.getBoundingClientRect()
-    if (!rect) return
-    setAt({ x: rect.right + 6, y: rect.top - 6 })
-    setOpen(true)
-  }
+  const menu = useHoverMenu(rowRef)
 
   return (
-    <div ref={rowRef} onPointerEnter={show} onPointerLeave={() => setOpen(false)} className="relative">
+    <div
+      ref={rowRef}
+      onPointerEnter={menu.show}
+      onPointerLeave={menu.leave}
+      className="relative"
+    >
       <div
+        onClick={menu.press}
         className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm whitespace-nowrap transition-colors ${
-          open ? 'text-fg bg-fg/5' : 'text-fg/70'
+          menu.open ? 'text-fg bg-fg/5' : 'text-fg/70'
         }`}
       >
         {icon && <span className="w-4 h-4 shrink-0 [&>svg]:w-4 [&>svg]:h-4">{icon}</span>}
         <span className="flex-1 truncate">{label}</span>
         <ChevronRightGlyph className="w-3.5 h-3.5 shrink-0 text-fg/40" />
       </div>
-      {open && at && (
-        <Popover open onClose={() => setOpen(false)} at={at} maxHeight={maxHeight}>
-          {children}
+      {menu.open && menu.at && (
+        <Popover
+          open
+          onClose={menu.close}
+          at={menu.at}
+          anchor={rowRef}
+          maxHeight={maxHeight}
+          flush
+        >
+          <div className="p-1.5" onPointerEnter={menu.hold} onPointerLeave={menu.leave}>
+            {children}
+          </div>
         </Popover>
       )}
     </div>
