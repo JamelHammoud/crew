@@ -274,8 +274,24 @@ describe('a local agent', () => {
   it('says so rather than hanging when the server answers nothing', async () => {
     await stand([])
     await fake!.close()
+    delete process.env.OLLAMA_HOST
     const { started } = run('hello')
     await expect(started.done).rejects.toThrow(/Nothing answered at/)
+  })
+
+  it('reaches a server written down by hand, path, key and all', async () => {
+    const written = await fakeRuntime([[sseSay('Reached you.'), sseEnd()]], 'openai', '/v1')
+    const asked: Array<Record<string, string>> = written.headers
+    const started = localProvider.start(
+      'hello',
+      cwd,
+      {},
+      { address: `${written.url}/v1`, model: 'thinker:8b' }
+    )
+    await started.done
+    expect(written.asked.length).toBe(1)
+    expect(asked.every(head => head.authorization === undefined)).toBe(true)
+    await written.close()
   })
 
   it('keeps going toward the goal it was given, with the whole ask still in front of it', async () => {
