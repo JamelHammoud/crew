@@ -136,6 +136,9 @@ const SAYS = {
   d: 'control: an iframe with no app stylesheet, scrollbar-width:none',
   e: 'control: overflow-x-auto with NO scrollbar-width, global ::-webkit-scrollbar in the sheet',
   f: 'control: an iframe with no app stylesheet, no scrollbar-width either',
+  g: 'a FIXED height (h-9) row, overflow-x-auto, no scrollbar-width',
+  h: 'the same fixed height row + [scrollbar-width:none]',
+  i: 'the same fixed height row + overflow-y-hidden, no scrollbar-width',
 }
 
 const dir = await stage()
