@@ -1,5 +1,5 @@
 import { matchFiles, type FileEntry } from './files'
-import type { PathMatch } from './pathMention'
+import { pathCandidates, type PathIndex, type PathMatch } from './pathMention'
 
 export interface MachineDir {
   dir: string

@@ -15,7 +15,7 @@ import Toolbox from './Toolbox'
 import ToolboxMark from './ToolboxMark'
 import Tooltip from './Tooltip'
 import UpdatePill from './UpdatePill'
-import { TABS, type NavTab, type Tab } from './navTabs'
+import { tabsShowing, type NavTab, type Tab } from './navTabs'
 import { MenuItem, Popover } from './Popover'
 
 export type { NavTab, Tab }
