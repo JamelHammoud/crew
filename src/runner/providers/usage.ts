@@ -30,7 +30,17 @@ const parseWhen = (value: unknown): number | undefined => {
 interface ClaudeCreds {
   accessToken?: string
   expiresAt?: number
+  refreshTokenExpiresAt?: number
   subscriptionType?: string
+}
+
+export type ClaudeSignIn = 'out' | 'stale' | 'ok'
+
+export function claudeSignIn(creds: ClaudeCreds | null, now: number): ClaudeSignIn {
+  if (!creds?.accessToken) return 'out'
+  if (typeof creds.refreshTokenExpiresAt === 'number' && creds.refreshTokenExpiresAt < now) return 'out'
+  if (typeof creds.expiresAt === 'number' && creds.expiresAt < now) return 'stale'
+  return 'ok'
 }
 
 async function claudeCredentials(): Promise<ClaudeCreds | null> {
