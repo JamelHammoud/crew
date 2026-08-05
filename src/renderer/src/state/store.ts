@@ -529,8 +529,10 @@ let forkWanted: string | null = null
 
 // The thread this window was reading in the project it is going back to. The
 // welcome is what opens it, since it is the welcome that says which threads
-// there are to open.
-let threadsWanted: string[] = []
+// there are to open. Null is nothing asked for, which is what falls back to
+// where the project was left, and an empty list is somebody asking for the
+// project itself rather than for any thread in it.
+let threadsWanted: string[] | null = null
 
 // The threads whose own history has been asked for. A thread is opened, closed
 // and opened again all day, and the log does not move under it, so one asked
