@@ -216,7 +216,37 @@ app.whenReady().then(async () => {
     await wait(500)
     cases.E = { before: eBefore, after: await js(READ) }
 
-    console.log('SEEN ' + JSON.stringify({ drawn, cases }))
+    // G. is F reachable at all? Sweep real window heights, with and without the
+    // file toolbar, and read whether the outer ever has anywhere to scroll to.
+    const sweep = []
+    for (const h of [900, 899, 901, 875, 768, 700, 601, 500, 401, 300, 200, 160, 140]) {
+      for (const toolbar of [false, true]) {
+        win.setSize(1440, h)
+        await wait(90)
+        await js(\`document.getElementById('toolbar').style.display = '\${toolbar ? 'flex' : 'none'}'\`)
+        await wait(90)
+        await js(RESET)
+        await js(\`\${LAST}.scrollIntoView({ block: 'nearest', inline: 'nearest' })\`)
+        sweep.push(
+          await js(\`(() => {
+            const outer = document.getElementById('outer')
+            const root = document.getElementById('root')
+            const head = document.getElementById('head').getBoundingClientRect()
+            return {
+              asked: \${h}, toolbar: \${toolbar},
+              outerClientH: outer.clientHeight, outerScrollH: outer.scrollHeight,
+              outerTop: outer.scrollTop, outerLeft: outer.scrollLeft,
+              rootClientH: root.clientHeight, rootScrollH: root.scrollHeight, rootTop: root.scrollTop,
+              headerTop: head.top,
+            }
+          })()\`)
+        )
+      }
+    }
+    await js(\`document.getElementById('toolbar').style.display = 'none'\`)
+    win.setSize(1440, 900)
+
+    console.log('SEEN ' + JSON.stringify({ drawn, cases, sweep }))
   } catch (e) {
     console.log('SEEN ' + JSON.stringify({ failed: String(e && e.message) }))
   }

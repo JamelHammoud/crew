@@ -1,11 +1,14 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react'
+import type { SlashCommand } from '../../../shared/commands'
 import { customEmojiRef, type CustomEmoji } from '../../../shared/customEmoji'
 import { mentionCandidates, type PooledAgent } from '../../../shared/llm'
+import { pathCandidates, pathQuery, pathToken, type PathMatch } from '../../../shared/pathMention'
 import { memberMentionCandidates } from '../../../shared/people'
 import type { MemberInfo } from '../../../shared/protocol'
 import { crewRefs, refCandidates, type CrewRef } from '../../../shared/refs'
 import { FrameGlyph } from '../design/glyphs'
-import { DocGlyph } from '../icons'
+import { DocGlyph, FileGlyph, FolderGlyph } from '../icons'
+import { useProjectFiles } from '../state/projectFiles'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
 import Avatar from './Avatar'
@@ -13,6 +16,7 @@ import { lookupCustomEmoji, searchCustomEmoji } from './customEmojiSheet'
 import Emoji from './Emoji'
 import { emojiForShortcode, searchEmoji, type EmojiEntry } from './emojiData'
 import { rememberEmoji } from './emojiRecents'
+import Marked from './Marked'
 
 export type MentionItem =
   | { kind: 'agent'; agent: PooledAgent }
@@ -20,28 +24,40 @@ export type MentionItem =
   | { kind: 'ref'; ref: CrewRef }
   | { kind: 'emoji'; entry: EmojiEntry }
   | { kind: 'custom'; emoji: CustomEmoji }
+  | { kind: 'path'; match: PathMatch }
 
-type Query = { trigger: '@' | '#' | ':'; text: string }
+type Query = { trigger: '@' | '#' | ':' | '/'; text: string }
 
 const MENTION_QUERY = /(?:^|\s)([@#])([^@#]*)$/
 const EMOJI_QUERY = /(?:^|\s):([A-Za-z0-9_+-]{2,})$/
 const EMOJI_CLOSED = /(?:^|\s):([A-Za-z0-9_+-]+):$/
 const EMOJI_TAIL = /:[A-Za-z0-9_+-]*$/
+const PATH_TAIL = /\S*$/
 const EMOJI_MATCHES = 9
+const PATH_MATCHES = 10
 
 export function useMentionAutocomplete(
   value: string,
   setValue: (text: string) => void,
   inputRef: RefObject<HTMLTextAreaElement>,
-  includeMembers = true
+  { members: includeMembers = true, commands }: { members?: boolean; commands?: readonly SlashCommand[] } = {}
 ) {
   const agents = useCrew(s => s.agents)
   const members = useCrew(s => s.members)
   const docs = useCrew(s => s.docs)
   const boards = useCrew(s => s.boards)
+  const place = useCrew(s => s.place)
+  const files = useProjectFiles(s => s.index)
   const [query, setQuery] = useState<Query | null>(null)
   const [active, setActive] = useState(0)
   const caretTarget = useRef<number | null>(null)
+
+  // The list is read once for the window rather than on the keystroke that
+  // wants it, so the first menu arrives with the word rather than after it.
+  useEffect(() => {
+    useProjectFiles.getState().read(place)
+  }, [place, query?.trigger])
+
   const matches = useMemo<MentionItem[]>(() => {
     if (query?.trigger === '@')
       return [
@@ -52,6 +68,8 @@ export function useMentionAutocomplete(
       ]
     if (query?.trigger === '#')
       return refCandidates(crewRefs(docs, boards), query.text).map(ref => ({ kind: 'ref', ref }))
+    if (query?.trigger === '/')
+      return pathCandidates(files, query.text, PATH_MATCHES).map(match => ({ kind: 'path', match }))
     if (query?.trigger === ':') {
       // The menu is as long as it ever was, so the crew's own take the places at
       // the head of it rather than adding rows underneath the sheet's.
