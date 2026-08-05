@@ -13,7 +13,7 @@ const PAGE = `<!doctype html>
     <div class="flex h-screen">
       <!-- the pinned rail: its own backdrop-filter, with a hard edge inside it -->
       <aside id="rail" class="sidebar-pinned bg-ink-800" style="width:420px">
-        <div style="height:100%;background:linear-gradient(to right,#000 0 200px,#fff 200px 100%)"></div>
+        <div id="scroller" class="scroll-fade" data-fade-top data-fade-bottom style="height:100%;overflow-y:auto;background:linear-gradient(to right,#000 0 200px,#fff 200px 100%)"></div>
       </aside>
       <!-- a plain column, same hard edge, no backdrop-filter of its own -->
       <div style="flex:1;background:linear-gradient(to right,#000 0 200px,#fff 200px 100%)"></div>
@@ -47,10 +47,10 @@ app.whenReady().then(async () => {
     await win.webContents.executeJavaScript("document.getElementById('root').classList.add('railed')")
     await wait(400)
     const railed = await read()
-    await win.webContents.executeJavaScript("document.getElementById('rail').style.backdropFilter = 'none'")
+    await win.webContents.executeJavaScript("document.getElementById('scroller').style.maskImage = 'none'")
     await wait(400)
-    const noRailFilter = await read()
-    console.log('SEEN ' + JSON.stringify({ normal, railed, noRailFilter }))
+    const noMask = await read()
+    console.log('SEEN ' + JSON.stringify({ withMask: normal, railedWithMask: railed, noMask }))
   } catch (e) { console.log('SEEN ' + JSON.stringify({ failed: String(e && e.message) })) }
   app.exit(0)
 })`
