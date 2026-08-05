@@ -22,14 +22,6 @@ global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
 const { default: DesignHeader } = await import('../src/renderer/src/components/DesignHeader')
 const { DesignBoardContext } = await import('../src/renderer/src/components/DesignPanels')
 
-const read = (at: string): string => readFileSync(`${process.cwd()}/src/renderer/src/${at}`, 'utf8')
-const app = read('App.tsx')
-const page = read('views/Design.tsx')
-const left = read('components/DesignLeftPanel.tsx')
-const right = read('components/DesignRightPanel.tsx')
-const stage = read('components/DesignStage.tsx')
-const styles = read('styles.css')
-
 const PLACES: HeaderPlace[] = ['backdrop', 'left', 'center', 'right']
 
 const BOTH = { left: true, right: true }
