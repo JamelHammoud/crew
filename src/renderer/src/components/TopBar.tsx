@@ -14,9 +14,6 @@ import Toolbox from './Toolbox'
 import ToolboxMark from './ToolboxMark'
 import Tooltip from './Tooltip'
 import UpdatePill from './UpdatePill'
-import type { NavTab, Tab } from './navTabs'
-
-export type { NavTab, Tab }
 
 export const TOP_BAR_H = 70
 
