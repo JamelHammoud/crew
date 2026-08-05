@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { AgentSettings, ProviderCapability } from '../../../shared/llm'
 import { resolveSettings, visibleSettingFields } from '../../../shared/llm'
-import { serverLabel, type ModelServer } from '../../../shared/modelServers'
+import { serverLabel, serverUrl, type ModelServer } from '../../../shared/modelServers'
 import { CloseGlyph, PlusGlyph } from '../icons'
 import Modal from './Modal'
 import ProviderMark from './ProviderMark'
