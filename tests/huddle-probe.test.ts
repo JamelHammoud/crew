@@ -27,7 +27,9 @@ const bridge = {
   askForMedia: () => Promise.resolve(true),
   openMediaSettings: () => Promise.resolve(),
   onNotificationOpen: () => () => {},
-  setBadge: () => Promise.resolve()
+  setBadge: () => Promise.resolve(),
+  onUpdate: () => () => {},
+  updateState: async () => NO_UPDATE
 }
 Object.assign(window, { crew: bridge })
 
