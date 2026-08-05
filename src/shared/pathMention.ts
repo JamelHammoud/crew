@@ -4,6 +4,12 @@ import { matchFiles } from './files'
 export interface PathIndex {
   paths: string[]
   dirs: Set<string>
+  all: Set<string>
+}
+
+export interface PathRun {
+  text: string
+  path: boolean
 }
 
 export interface PathMatch {
