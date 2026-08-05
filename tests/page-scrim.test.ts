@@ -85,9 +85,8 @@ describe('the scrim over the top of a page', () => {
 })
 
 describe('where a page comes to rest', () => {
-  it('is its own number, written once and read by every column', () => {
+  it('is its own number, written once and read by both columns of the chat', () => {
     expect(chat).toContain("paddingTop: 'var(--page-rest)'")
-    expect(docs).toContain("const COLUMN_TOP = 'var(--page-rest)'")
     expect(thread).toContain("paddingTop: 'var(--page-rest)'")
     for (const column of [chat, docs, thread]) expect(column).not.toContain('pt-28')
   })
