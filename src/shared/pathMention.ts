@@ -36,7 +36,8 @@ export function pathIndex(files: readonly string[]): PathIndex {
   for (const file of files) {
     for (let at = file.indexOf('/'); at !== -1; at = file.indexOf('/', at + 1)) dirs.add(file.slice(0, at))
   }
-  return { paths: [...dirs, ...files], dirs }
+  const paths = [...dirs, ...files]
+  return { paths, dirs, all: new Set(paths) }
 }
 
 const depthAfter = (path: string, from: number): number => {
