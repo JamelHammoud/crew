@@ -175,7 +175,7 @@ const READ = \`(() => {
     zoom: named('Zoom'),
     undo: named('Undo'),
     face: named('Settings'),
-    corner: box('.app-drag.absolute'),
+    corner: box('div[class*="z-[55]"]'),
     leftPanel: box('[data-look-left]'),
     canvas: box('[data-look-canvas]'),
     rightPanel: box('[data-look-right]'),
