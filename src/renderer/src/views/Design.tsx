@@ -63,7 +63,7 @@ export default function Design() {
     <DesignBoardContext.Provider value={boardContext}>
       <DesignRenameContext.Provider value={renameContext}>
         <EditorContext.Provider value={editor}>
-          <div className="h-full flex flex-col" style={{ paddingTop: TOP_BAR_H }}>
+          <div className="h-full flex flex-col">
             <DesignHeader editor={editor} panels={panels} />
             <div className="flex-1 min-h-0 flex">
               {panels.left && editor && <DesignLeftPanel onClose={() => setPanels(value => ({ ...value, left: false }))} />}
