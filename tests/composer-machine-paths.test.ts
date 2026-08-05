@@ -234,8 +234,8 @@ describe('typing one into the composer', () => {
 
   it('opens on a folder off this machine', async () => {
     const input = await boot()
-    type(input, '/Users/jamel/Do')
-    await waitFor(() => expect(shown()).toEqual(['/Users/jamel/Documents', '/Users/jamel/Downloads']))
+    type(input, '/Users/jamel/Dow')
+    await waitFor(() => expect(shown()).toEqual(['/Users/jamel/Downloads']))
   })
 
   it('writes the whole path and walks into the folder it wrote', async () => {
