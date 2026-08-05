@@ -59,7 +59,12 @@ const inThread = (extra: Partial<ThreadMeta> = {}, events: SessionEvent[] = []) 
   )
 
 const button = () => document.querySelector('[aria-label="Show panel"]')
+const standing = () => {
+  const found = button()
+  return !!found && !found.closest('[aria-hidden="true"]')
+}
 const dot = () => document.querySelector('[aria-label="Show panel"] .bg-fg')
+const mark = () => document.querySelector('[aria-label="Show panel"] svg')
 const kinds = () => useBrowser.getState().tabs.map(tab => tab.kind)
 const activeKind = () => useBrowser.getState().tabs.find(t => t.id === useBrowser.getState().activeTabId)?.kind
 
