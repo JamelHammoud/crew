@@ -7,7 +7,6 @@ import DesignRightPanel from '../components/DesignRightPanel'
 import DesignStage from '../components/DesignStage'
 import { firstBoard } from '../design/firstBoard'
 import { lastBoard, lastPanels, rememberBoard, rememberPanels } from '../design/viewMemory'
-import { TOP_BAR_H } from '../components/TopBar'
 import { useCrew } from '../state/store'
 
 export default function Design() {
