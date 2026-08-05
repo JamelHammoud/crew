@@ -20,17 +20,18 @@ const block = (selector: string): string => {
 }
 
 const HEIGHT = Number(/--page-scrim:\s*(\d+)px/.exec(styles)?.[1])
+const REST = Number(/--page-rest:\s*(\d+)px/.exec(styles)?.[1])
 const TOP_BAR = 70
 
 const stops = (): { at: number; alpha: number }[] => {
   const ramp = block('.page-scrim {')
-  const held = /#000\s+0\s+([\d.]+)%/.exec(ramp)
-  expect(held).not.toBeNull()
+  const head = /#000\s+0%/.exec(ramp)
+  expect(head).not.toBeNull()
   const rest = [...ramp.matchAll(/rgb\(0 0 0 \/ ([\d.]+)\)\s+([\d.]+)%/g)].map(([, alpha, at]) => ({
     at: Number(at),
     alpha: Number(alpha)
   }))
-  return [{ at: 0, alpha: 1 }, { at: Number(held![1]), alpha: 1 }, ...rest]
+  return [{ at: 0, alpha: 1 }, ...rest]
 }
 
 const alphaAt = (px: number): number => {
@@ -50,29 +51,27 @@ const alphaAt = (px: number): number => {
 }
 
 describe('the scrim over the top of a page', () => {
-  it('is one ramp from the window edge rather than a band and a fade under it', () => {
-    expect(HEIGHT).toBeGreaterThan(TOP_BAR)
+  it('is one ease from the window edge, with nothing held under it', () => {
     expect(alphaAt(0)).toBe(1)
     expect(alphaAt(HEIGHT)).toBe(0)
+    expect(stops()[1].alpha).toBeLessThan(1)
     expect(app).toContain('page-scrim absolute inset-x-0 top-0')
     expect(app).not.toContain('bg-gradient-to-b from-ink-900')
   })
 
   it('never turns a corner, so nothing scrolling under it meets an edge', () => {
     const ramp = stops()
-    const falls = ramp.filter(one => one.alpha < 1)
-    const run = 100 - ramp[1].at
+    const falls = ramp.slice(1)
     const even = 1 / falls.length
     expect(1 - falls[0].alpha).toBeLessThan(even / 2)
     expect(falls.at(-2)!.alpha).toBeLessThan(even / 2)
-    expect(run).toBeGreaterThan(50)
     for (let i = 1; i < ramp.length; i++) expect(ramp[i].alpha).toBeLessThanOrEqual(ramp[i - 1].alpha)
   })
 
-  it('leaves the bar standing on ground nothing can be read through', () => {
-    const tallest = 44
-    expect(alphaAt(TOP_BAR / 2 + tallest / 2)).toBeGreaterThanOrEqual(0.9)
-    expect(alphaAt(TOP_BAR / 2)).toBe(1)
+  it('lets a message scroll through the bar and takes it at the window edge', () => {
+    expect(HEIGHT).toBeLessThan(TOP_BAR)
+    expect(alphaAt(TOP_BAR)).toBe(0)
+    expect(alphaAt(TOP_BAR / 2)).toBeLessThan(0.7)
   })
 
   it('is off the design board, which runs its panels to the header', () => {
@@ -81,15 +80,16 @@ describe('the scrim over the top of a page', () => {
   })
 })
 
-describe('where a page comes to rest under it', () => {
-  it('is the scrim itself, written once and read by every column', () => {
-    expect(chat).toContain("paddingTop: 'var(--page-scrim)'")
-    expect(docs).toContain("const COLUMN_TOP = 'var(--page-scrim)'")
-    expect(thread).toContain("paddingTop: 'var(--page-scrim)'")
+describe('where a page comes to rest', () => {
+  it('is its own number, written once and read by every column', () => {
+    expect(chat).toContain("paddingTop: 'var(--page-rest)'")
+    expect(docs).toContain("const COLUMN_TOP = 'var(--page-rest)'")
+    expect(thread).toContain("paddingTop: 'var(--page-rest)'")
     for (const column of [chat, docs, thread]) expect(column).not.toContain('pt-28')
   })
 
-  it('clears the scrim, so the first message never reads as sitting in fog', () => {
-    expect(alphaAt(HEIGHT)).toBe(0)
+  it('clears the bar, so the first message never rests behind the faces', () => {
+    expect(REST).toBeGreaterThan(TOP_BAR)
+    expect(alphaAt(REST)).toBe(0)
   })
 })
