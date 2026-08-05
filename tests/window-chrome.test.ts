@@ -37,10 +37,7 @@ afterEach(() => {
 
 const topBar = () =>
   render(
-    createElement(TopBar, {
-      tab: 'chat',
-      onTab: () => {}
-    })
+    createElement(TopBar)
   )
 
 const inset = () => render(createElement(WindowCorner)).container.firstElementChild!.firstElementChild!

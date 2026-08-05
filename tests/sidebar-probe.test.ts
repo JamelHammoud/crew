@@ -124,7 +124,7 @@ const Sidebar = (
 const corner = () => render(createElement(WindowCorner))
 
 const topBar = () =>
-  render(createElement(TopBar, { tab: 'chat' as const, onTab: () => {} }))
+  render(createElement(TopBar))
 
 const toggleIn = (root: HTMLElement) => root.querySelector('[aria-label="Projects"]') as HTMLElement
 

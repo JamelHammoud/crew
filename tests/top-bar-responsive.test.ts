@@ -53,10 +53,7 @@ const setHeaderWidth = (width: number) => {
 describe('responsive top bar', () => {
   it('leaves the pages to the rail and keeps the controls at the end of the bar', () => {
     render(
-      createElement(TopBar, {
-        tab: 'chat',
-        onTab: () => {}
-      })
+      createElement(TopBar)
     )
 
     expect(screen.queryByRole('navigation')).toBeNull()
@@ -67,10 +64,7 @@ describe('responsive top bar', () => {
 
   it('holds the middle of the bar open for whatever page is up', () => {
     render(
-      createElement(TopBar, {
-        tab: 'design',
-        onTab: () => {}
-      })
+      createElement(TopBar)
     )
     render(createElement(HeaderSlot, { children: createElement('button', null, 'Untitled') }))
 
@@ -96,10 +90,7 @@ describe('responsive top bar', () => {
       activePrompts: {}
     })
     render(
-      createElement(TopBar, {
-        tab: 'chat',
-        onTab: () => {}
-      })
+      createElement(TopBar)
     )
 
     const tasks = screen.getByRole('button', { name: 'Tasks' })
@@ -123,10 +114,7 @@ describe('responsive top bar', () => {
       activePrompts: {}
     })
     render(
-      createElement(TopBar, {
-        tab: 'chat',
-        onTab: () => {}
-      })
+      createElement(TopBar)
     )
 
     setHeaderWidth(600)
