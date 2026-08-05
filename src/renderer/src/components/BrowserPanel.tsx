@@ -134,12 +134,15 @@ export default function BrowserPanel() {
     <div className="h-full flex flex-col">
       <header className="app-drag h-[70px] px-4 flex items-center gap-1.5 shrink-0">
         <div
-          ref={row.ref}
+          ref={node => {
+            row.ref(node)
+            strip.current = node
+          }}
           className="app-no-drag flex-1 min-w-0 flex items-center gap-1.5 overflow-x-auto overflow-y-hidden no-scrollbar"
         >
           {tabs.length === 0 && <StartPill />}
           {tabs.map(tab => (
-            <TabPill key={tab.id} tab={tab} active={tab.id === activeTabId} row={row} />
+            <TabPill key={tab.id} tab={tab} active={tab.id === activeTabId} row={row} strip={strip} />
           ))}
         </div>
         <span className="app-no-drag shrink-0 flex">
