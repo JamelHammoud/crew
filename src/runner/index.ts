@@ -419,7 +419,7 @@ export class Runner {
     const body = [text, ...preambles].join('\n\n')
     const tail = this.tails.get(threadId) ?? Promise.resolve()
     const next = tail
-      .then(() => this.execute(agent.provider, promptId, body, settings, attachments, ghost, goal))
+      .then(() => this.execute(agent.provider, promptId, body, settings, attachments, ghost, goal, plugins))
       .catch(() => {})
     this.tails.set(threadId, next)
     void next.then(() => {
