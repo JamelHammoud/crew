@@ -24,7 +24,7 @@ const REST = Number(/--page-rest:\s*(\d+)px/.exec(styles)?.[1])
 const TOP_BAR = 70
 
 const stops = (): { at: number; alpha: number }[] => {
-  const ramp = block('.page-scrim {')
+  const ramp = block('--scrim-ramp:')
   const head = /#000\s+0%/.exec(ramp)
   expect(head).not.toBeNull()
   const rest = [...ramp.matchAll(/rgb\(0 0 0 \/ ([\d.]+)\)\s+([\d.]+)%/g)].map(([, alpha, at]) => ({

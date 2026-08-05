@@ -297,11 +297,14 @@ export default function Docs() {
           </nav>
         </HeaderSlot>
       )}
+      <HeaderSlot place="backdrop">
+        <div data-docs-band style={{ width: PAGE_LIST_W }} className="h-full border-r border-ink-700" />
+      </HeaderSlot>
       <aside
         {...dropProps('')}
         data-docs-list
         style={{ paddingTop: COLUMN_TOP, width: PAGE_LIST_W }}
-        className="shrink-0 flex flex-col min-h-0 pb-4 px-3"
+        className="shrink-0 flex flex-col min-h-0 pb-4 px-3 border-r border-ink-700"
       >
         <div
           className={`flex-1 min-h-0 overflow-y-auto space-y-0.5 rounded-card transition-colors duration-150 ${
