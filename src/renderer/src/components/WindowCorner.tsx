@@ -32,8 +32,8 @@ export default function WindowCorner() {
         if (peeking) peek(true)
       }}
       onMouseLeave={() => peek(false)}
-      style={{ height: TOP_BAR_H }}
-      className="app-drag absolute top-0 left-0 z-[55] flex items-center px-6"
+      style={{ height: TOP_BAR_H, width: pinned ? SIDEBAR_W : undefined }}
+      className="group app-drag absolute top-0 left-0 z-[55] flex items-center px-6"
     >
       <span className={`flex items-center gap-2 ${full ? '' : 'mac:pl-[64px]'}`}>
         <CrewLogo />
