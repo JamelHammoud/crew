@@ -72,6 +72,37 @@ function extensionOf(name: string): string | null {
   return /\.([a-z0-9]+)$/i.exec(file)?.[1]?.toLowerCase() ?? null
 }
 
+export interface MediaKind {
+  type: string
+  video: boolean
+}
+
+// What this machine can really play, rather than every container there is. A
+// format the browser would refuse falls through to the file having no preview,
+// which is the honest answer: a player standing there doing nothing is worse
+// than a line saying there is nothing to show.
+const MEDIA_TYPES: Record<string, MediaKind> = {
+  mp3: { type: 'audio/mpeg', video: false },
+  m4a: { type: 'audio/mp4', video: false },
+  aac: { type: 'audio/aac', video: false },
+  wav: { type: 'audio/wav', video: false },
+  flac: { type: 'audio/flac', video: false },
+  oga: { type: 'audio/ogg', video: false },
+  ogg: { type: 'audio/ogg', video: false },
+  opus: { type: 'audio/ogg', video: false },
+  weba: { type: 'audio/webm', video: false },
+  mp4: { type: 'video/mp4', video: true },
+  m4v: { type: 'video/mp4', video: true },
+  mov: { type: 'video/quicktime', video: true },
+  webm: { type: 'video/webm', video: true },
+  ogv: { type: 'video/ogg', video: true }
+}
+
+export function mediaType(name: string): MediaKind | null {
+  const extension = extensionOf(name)
+  return extension ? (MEDIA_TYPES[extension] ?? null) : null
+}
+
 export function isMarkdown(name: string): boolean {
   const extension = extensionOf(name)
   return extension ? MARKDOWN_TYPES.has(extension) : false
