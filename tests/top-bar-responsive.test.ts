@@ -72,7 +72,7 @@ describe('responsive top bar', () => {
         onTab: () => {}
       })
     )
-    render(createElement(HeaderSlot, {}, createElement('button', null, 'Untitled')))
+    render(createElement(HeaderSlot, { children: createElement('button', null, 'Untitled') }))
 
     const slot = useHeaderSlot.getState().node!
     const centre = screen.getByRole('button', { name: 'Untitled' })
