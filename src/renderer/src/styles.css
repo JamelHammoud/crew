@@ -1525,7 +1525,7 @@ textarea:placeholder-shown {
 }
 
 .doc .bn-editor [data-content-type='table'] th {
-  background: var(--color-ink-850);
+  background: var(--color-ink-800);
   font-weight: 600;
   color: var(--color-fg-secondary);
 }
