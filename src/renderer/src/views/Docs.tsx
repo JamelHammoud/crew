@@ -1,87 +1,42 @@
-import { useEffect, useLayoutEffect, useRef, useState, type DragEvent } from 'react'
-import {
-  fallbackTitle,
-  pageCode,
-  pageCodeOf,
-  pageSlug,
-  ROOT_PAGE,
-  slugify,
-  splitPageCode
-} from '../../../shared/docs'
-import { docInset, DOC_MAX_W, DOC_TOP, PAGE_LIST_W, trailInset } from '../components/doc/docsLayout'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { fallbackTitle, pageCode, pageCodeOf, pageSlug, ROOT_PAGE, slugify, splitPageCode } from '../../../shared/docs'
+import { DOC_MAX_W, DOC_TOP, docLeft, trailInset } from '../components/doc/docsLayout'
+import { lastSegment, parentOf, trailOf } from '../components/doc/docsTree'
 import DocEditor, { type DocEditorHandle } from '../components/DocEditor'
 import FindBar from '../components/FindBar'
 import HeaderSlot from '../components/HeaderSlot'
-import { MenuItem, Popover } from '../components/Popover'
-import Tooltip from '../components/Tooltip'
-import { ChevronRightGlyph, DocGlyph, PlusGlyph, TrashGlyph } from '../icons'
+import { useDocs } from '../state/docs'
 import { cornerRoom, useHeaderSlot } from '../state/headerSlot'
 import { SIDEBAR_W, useSidebar } from '../state/sidebar'
 import { useCrew } from '../state/store'
-
-const COLUMN_TOP = DOC_TOP
-const ROW = 'h-8 text-sm font-medium'
-
-interface PageNode {
-  slug: string
-  children: PageNode[]
-}
-
-function parentOf(slug: string): string {
-  const idx = slug.lastIndexOf('/')
-  return idx === -1 ? '' : slug.slice(0, idx)
-}
-
-function lastSegment(slug: string): string {
-  return slug.split('/').pop()!
-}
-
-function buildTree(slugs: string[]): PageNode[] {
-  const root: PageNode[] = []
-  const byPath = new Map<string, PageNode>()
-  const ensure = (slug: string): PageNode => {
-    const found = byPath.get(slug)
-    if (found) return found
-    const node: PageNode = { slug, children: [] }
-    byPath.set(slug, node)
-    const parent = parentOf(slug)
-    if (parent) ensure(parent).children.push(node)
-    else root.push(node)
-    return node
-  }
-  for (const slug of [...slugs].sort()) ensure(slug)
-  root.sort((a, b) => (a.slug === ROOT_PAGE ? -1 : b.slug === ROOT_PAGE ? 1 : a.slug.localeCompare(b.slug)))
-  return root
-}
 
 export default function Docs() {
   const docs = useCrew(s => s.docs)
   const updateDoc = useCrew(s => s.updateDoc)
   const retitleDoc = useCrew(s => s.retitleDoc)
   const renameDoc = useCrew(s => s.renameDoc)
-  const deleteDoc = useCrew(s => s.deleteDoc)
   const docsTarget = useCrew(s => s.docsTarget)
   const clearDocsTarget = useCrew(s => s.clearDocsTarget)
-  const [page, setPage] = useState(docsTarget ?? ROOT_PAGE)
+  const page = useDocs(s => s.page)
+  const fresh = useDocs(s => s.fresh)
+  const openPage = useDocs(s => s.open)
+  const took = useDocs(s => s.took)
+  const hold = useDocs(s => s.hold)
 
   useEffect(() => {
     if (!docsTarget) return
-    setPage(docsTarget)
+    openPage(docsTarget)
     clearDocsTarget()
-  }, [docsTarget, clearDocsTarget])
+  }, [docsTarget, clearDocsTarget, openPage])
+
   const current = docs[page] !== undefined ? page : ROOT_PAGE
   const titleOf = (slug: string): string => docs[slug]?.title ?? fallbackTitle(slug)
   const [title, setTitle] = useState(() => titleOf(current))
-  const [expanded, setExpanded] = useState<Set<string>>(new Set())
-  const [dragged, setDragged] = useState<string | null>(null)
-  const [dropTarget, setDropTarget] = useState<string | null>(null)
-  const [menu, setMenu] = useState<{ slug: string; x: number; y: number } | null>(null)
   const titleRef = useRef<HTMLInputElement>(null)
   const editorRef = useRef<DocEditorHandle>(null)
   const scrollerRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const pageRef = useRef<HTMLDivElement>(null)
-  const pendingFocus = useRef(false)
   const pinned = useSidebar(s => s.pinned)
   const corner = useHeaderSlot(s => s.corner)
   const [width, setWidth] = useState(0)
@@ -95,37 +50,32 @@ export default function Docs() {
     return () => observer.disconnect()
   }, [])
 
+  useEffect(() => {
+    hold(editorRef.current)
+    return () => hold(null)
+  }, [hold, current])
+
   const focusBody = () => {
     requestAnimationFrame(() => requestAnimationFrame(() => editorRef.current?.focusStart()))
   }
 
-  const tree = buildTree(Object.keys(docs))
-  const trail: string[] = []
-  for (let parent = parentOf(current); parent; parent = parentOf(parent)) trail.unshift(parent)
+  const trail = trailOf(current)
 
   const currentTitle = docs[current]?.title ?? fallbackTitle(current)
   useEffect(() => {
     if (document.activeElement !== titleRef.current) setTitle(currentTitle)
   }, [current, currentTitle])
 
+  // A page opened by making it takes the caret in its own name, since a page
+  // called Untitled is a page nobody meant to leave that way.
   useEffect(() => {
-    setExpanded(prev => {
-      const next = new Set(prev)
-      let parent = parentOf(current)
-      while (parent) {
-        next.add(parent)
-        parent = parentOf(parent)
-      }
-      return next
+    if (!fresh) return
+    took()
+    requestAnimationFrame(() => {
+      titleRef.current?.focus()
+      titleRef.current?.select()
     })
-    if (pendingFocus.current) {
-      pendingFocus.current = false
-      requestAnimationFrame(() => {
-        titleRef.current?.focus()
-        titleRef.current?.select()
-      })
-    }
-  }, [current])
+  }, [current, fresh, took])
 
   const freshSlug = (parent: string, base: string): string => {
     const taken = new Set(Object.keys(docs).map(pageCodeOf))
@@ -133,54 +83,6 @@ export default function Docs() {
     while (taken.has(code)) code = pageCode()
     return pageSlug(parent, base, code)
   }
-
-  const createPage = (parent: string) => {
-    const slug = freshSlug(parent, 'untitled')
-    updateDoc(slug, '', '')
-    if (parent) setExpanded(prev => new Set(prev).add(parent))
-    pendingFocus.current = true
-    setPage(slug)
-  }
-
-  const canDrop = (target: string): boolean => {
-    if (!dragged || dragged === ROOT_PAGE) return false
-    if (target === dragged || target.startsWith(`${dragged}/`)) return false
-    return parentOf(dragged) !== target
-  }
-
-  const movePage = (target: string) => {
-    if (!dragged || !canDrop(target)) return
-    const segment = lastSegment(dragged)
-    const kept = target ? `${target}/${segment}` : segment
-    const to = docs[kept] !== undefined ? freshSlug(target, splitPageCode(segment).base) : kept
-    editorRef.current?.flush()
-    renameDoc(dragged, to)
-    if (target) setExpanded(prev => new Set(prev).add(target))
-    if (current === dragged || current.startsWith(`${dragged}/`)) setPage(to + current.slice(dragged.length))
-  }
-
-  const dropProps = (target: string) => ({
-    onDragOver: (e: DragEvent) => {
-      e.stopPropagation()
-      if (!canDrop(target)) {
-        setDropTarget(t => (t === null ? t : null))
-        return
-      }
-      e.preventDefault()
-      setDropTarget(target)
-    },
-    onDragLeave: (e: DragEvent) => {
-      if (e.currentTarget.contains(e.relatedTarget as Node | null)) return
-      setDropTarget(t => (t === target ? null : t))
-    },
-    onDrop: (e: DragEvent) => {
-      e.preventDefault()
-      e.stopPropagation()
-      movePage(target)
-      setDragged(null)
-      setDropTarget(null)
-    }
-  })
 
   const commitTitle = () => {
     const trimmed = title.trim()
@@ -205,77 +107,11 @@ export default function Docs() {
     const target = kept && docs[kept] === undefined ? kept : freshSlug(parent, base)
     editorRef.current?.flush()
     renameDoc(current, target, trimmed)
-    setPage(target)
-  }
-
-  const renderNode = (node: PageNode, depth: number) => {
-    const open = expanded.has(node.slug)
-    const active = node.slug === current
-    return (
-      <div key={node.slug}>
-        <div
-          draggable={node.slug !== ROOT_PAGE}
-          onDragStart={e => {
-            e.dataTransfer.effectAllowed = 'move'
-            setDragged(node.slug)
-          }}
-          onDragEnd={() => {
-            setDragged(null)
-            setDropTarget(null)
-          }}
-          {...dropProps(node.slug)}
-          onContextMenu={e => {
-            e.preventDefault()
-            setMenu({ slug: node.slug, x: e.clientX, y: e.clientY })
-          }}
-          className={`group/row flex items-center px-1 ${ROW} rounded-xl transition-colors duration-150 ${
-            dropTarget === node.slug ? 'bg-fg/[0.08] ring-1 ring-fg/25' : ''
-          } ${active ? 'bg-fg/[0.08]' : 'hover:bg-fg/[0.06]'}`}
-          style={{ paddingLeft: 4 + depth * 14 }}
-        >
-          <button
-            onClick={() =>
-              setExpanded(prev => {
-                const next = new Set(prev)
-                if (next.has(node.slug)) next.delete(node.slug)
-                else next.add(node.slug)
-                return next
-              })
-            }
-            aria-label={open ? 'Collapse' : 'Expand'}
-            className={`w-5 h-full flex items-center justify-center shrink-0 text-fg/35 hover:text-fg/70 ${
-              node.children.length === 0 ? 'invisible' : ''
-            }`}
-          >
-            <ChevronRightGlyph className={`w-3.5 h-3.5 transition-transform duration-150 ${open ? 'rotate-90' : ''}`} />
-          </button>
-          <button
-            onClick={() => setPage(node.slug)}
-            aria-current={active ? 'page' : undefined}
-            className={`flex-1 min-w-0 h-full flex items-center gap-1.5 text-left ${
-              active ? 'text-fg' : 'text-fg/70 hover:text-fg'
-            }`}
-          >
-            <DocGlyph className={`w-4 h-4 shrink-0 ${active ? 'text-fg/70' : 'text-fg/45'}`} />
-            <span className="truncate">{titleOf(node.slug) || 'Untitled'}</span>
-          </button>
-          <Tooltip label="Add sub-page">
-            <button
-              onClick={() => createPage(node.slug)}
-              aria-label="Add sub-page"
-              className="w-6 h-6 rounded-lg flex items-center justify-center text-fg/45 opacity-0 group-hover/row:opacity-100 hover:text-fg hover:bg-fg/[0.10] transition-opacity shrink-0"
-            >
-              <PlusGlyph className="w-3.5 h-3.5" />
-            </button>
-          </Tooltip>
-        </div>
-        {open && node.children.map(child => renderNode(child, depth + 1))}
-      </div>
-    )
+    openPage(target)
   }
 
   return (
-    <div ref={pageRef} className="h-full flex relative">
+    <div ref={pageRef} className="h-full relative">
       {trail.length > 0 && (
         <HeaderSlot place="left">
           <nav
@@ -286,10 +122,7 @@ export default function Docs() {
             {trail.map((slug, index) => (
               <span key={slug} className="flex items-center gap-1 min-w-0">
                 {index > 0 && <span className="text-fg/25">/</span>}
-                <button
-                  onClick={() => setPage(slug)}
-                  className="truncate max-w-44 transition-colors hover:text-fg"
-                >
+                <button onClick={() => openPage(slug)} className="truncate max-w-44 transition-colors hover:text-fg">
                   {titleOf(slug) || 'Untitled'}
                 </button>
               </span>
@@ -297,57 +130,13 @@ export default function Docs() {
           </nav>
         </HeaderSlot>
       )}
-      <HeaderSlot place="backdrop">
-        <div data-docs-band style={{ width: PAGE_LIST_W }} className="h-full border-r border-ink-700" />
-      </HeaderSlot>
-      <aside
-        {...dropProps('')}
-        data-docs-list
-        style={{ paddingTop: COLUMN_TOP, width: PAGE_LIST_W }}
-        className="shrink-0 flex flex-col min-h-0 pb-4 px-3 border-r border-ink-700"
-      >
-        <div
-          className={`flex-1 min-h-0 overflow-y-auto space-y-0.5 rounded-card transition-colors duration-150 ${
-            dragged && dropTarget === '' ? 'bg-fg/[0.06] ring-1 ring-fg/20' : ''
-          }`}
-        >
-          {tree.map(node => renderNode(node, 0))}
-          <button
-            onClick={() => createPage('')}
-            className={`w-full flex items-center gap-1.5 pl-6 text-left ${ROW} rounded-xl text-fg/45 transition-colors hover:text-fg/70 hover:bg-fg/[0.06]`}
-          >
-            <PlusGlyph className="w-4 h-4 shrink-0" />
-            New page
-          </button>
-        </div>
-        <Popover open={menu !== null} onClose={() => setMenu(null)} at={menu ?? undefined} align="start">
-          <MenuItem
-            icon={<PlusGlyph />}
-            label="New sub-page"
-            onClick={() => {
-              if (menu) createPage(menu.slug)
-              setMenu(null)
-            }}
-          />
-          {menu?.slug !== ROOT_PAGE && (
-            <MenuItem
-              icon={<TrashGlyph />}
-              label="Delete page"
-              danger
-              onClick={() => {
-                if (menu) {
-                  if (current === menu.slug || current.startsWith(`${menu.slug}/`)) editorRef.current?.discard()
-                  deleteDoc(menu.slug)
-                }
-                setMenu(null)
-              }}
-            />
-          )}
-        </Popover>
-      </aside>
       <FindBar containerRef={contentRef} scrollerRef={scrollerRef} />
-      <div ref={scrollerRef} className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden pr-6">
-        <div ref={contentRef} style={{ paddingTop: COLUMN_TOP, marginLeft: docInset(width), maxWidth: DOC_MAX_W }}>
+      <div ref={scrollerRef} className="h-full overflow-y-auto overflow-x-hidden">
+        <div
+          ref={contentRef}
+          data-docs-page
+          style={{ paddingTop: DOC_TOP, marginLeft: docLeft(width), maxWidth: DOC_MAX_W }}
+        >
           <div className="px-[54px] pb-3">
             <input
               ref={titleRef}
