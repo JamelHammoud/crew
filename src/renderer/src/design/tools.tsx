@@ -12,7 +12,6 @@ import {
   HexagonGlyph,
   HighlighterGlyph,
   LineGlyph,
-  NoteGlyph,
   PencilGlyph,
   PentagonGlyph,
   RectangleGlyph,
