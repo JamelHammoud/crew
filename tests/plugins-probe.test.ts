@@ -45,7 +45,8 @@ window.matchMedia = ((query: string) => ({
   dispatchEvent: () => false
 })) as typeof window.matchMedia
 
-const { PLUGIN_OFFERS, offerOf } = await import('../src/shared/plugins')
+const { PLUGIN_GROUPS, PLUGIN_OFFERS, offerOf } = await import('../src/shared/plugins')
+const { PLUGIN_ART } = await import('../src/renderer/src/components/plugins/pluginArt')
 const { useCrew } = await import('../src/renderer/src/state/store')
 const PluginsView = (await import('../src/renderer/src/views/Plugins')).default
 
