@@ -81,3 +81,48 @@ export function pathCandidates(index: PathIndex, query: string, limit: number): 
 export function pathToken(match: PathMatch): string {
   return match.dir ? `${match.path}/` : match.path
 }
+
+const LINE_TAIL = /:\d+(?::\d+)?$/
+const TRIMMABLE = new Set(['.', ',', ';', ':', '!', '?', ')', ']', '}', "'", '"', '/'])
+
+// A sentence ends after a path too, so what the run is really pointing at is the
+// longest of it this project holds.
+function heldPath(run: string, index: PathIndex): string | null {
+  if (!run.includes('/')) return null
+  const bare = run.replace(LINE_TAIL, '')
+  if (bare !== run && index.all.has(bare)) return run
+  let candidate = run
+  while (candidate) {
+    if (index.all.has(candidate)) return candidate
+    if (candidate.endsWith('/') && index.dirs.has(candidate.slice(0, -1))) return candidate
+    const last = candidate[candidate.length - 1]
+    if (!TRIMMABLE.has(last)) return null
+    candidate = candidate.slice(0, -1)
+  }
+  return null
+}
+
+// Only a path this project really holds is marked out in the box somebody is
+// typing in. A guess at one would dress a line up as a link and then send it as
+// plain words, which is the app promising something it cannot keep.
+export function pathRuns(text: string, index: PathIndex): PathRun[] {
+  const runs: PathRun[] = []
+  const push = (part: string, path: boolean): void => {
+    if (!part) return
+    const last = runs[runs.length - 1]
+    if (last && !last.path && !path) last.text += part
+    else runs.push({ text: part, path })
+  }
+  let cursor = 0
+  for (const match of text.matchAll(/\S+/g)) {
+    const start = match.index ?? 0
+    if (start < cursor) continue
+    const held = heldPath(match[0], index)
+    if (!held) continue
+    push(text.slice(cursor, start), false)
+    push(held, true)
+    cursor = start + held.length
+  }
+  push(text.slice(cursor), false)
+  return runs
+}
