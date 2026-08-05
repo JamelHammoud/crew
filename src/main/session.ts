@@ -310,8 +310,8 @@ export class AppSession {
       this.onEvent?.(event)
       if (RESHAPES_THREADS.has(event.kind)) this.onThreadsChanged?.()
     }
-    const server = await this.listen(session, shared, await portToAsk(PREFERRED_PORT))
-    this.server = server
+    const seat = await this.doors.seat(session, shared)
+    this.seat = seat
     this.git = git
     this.crewGit = crew
     this.projectAuto = auto
