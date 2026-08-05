@@ -179,7 +179,7 @@ describe('node styling', () => {
 describe('design nodes over HTTP', () => {
   it('lets an agent build a node and read it back', async () => {
     const host = await startHost(tmpDir('design-node-http'))
-    const base = `http://127.0.0.1:${host.server.port()}`
+    const base = `http://127.0.0.1:${host.server.port()}/${host.code}`
     const ui = await TestUi.connect(host.url, 'sam', host.code)
 
     ui.send({ type: 'design.create', boardId: 'node-1abc', name: 'Nodes' })

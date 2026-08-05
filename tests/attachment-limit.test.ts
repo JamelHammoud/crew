@@ -59,7 +59,7 @@ describe('how big a file may be', () => {
   it('is one number for everyone, and the host turns away what is over it', async () => {
     const sam = await connect('sam')
     const ali = await connect('ali')
-    const base = `http://127.0.0.1:${host.server.port()}`
+    const base = `http://127.0.0.1:${host.server.port()}/${host.code}`
 
     expect((await upload(base, 3 * 1024 * 1024)).status).toBe(200)
 
@@ -126,7 +126,7 @@ describe('how big a file may be', () => {
     await sam.waitForEvent(e => e.kind === 'attachment.limit')
     expect(host.session.attachmentLimit()).toBe(Number.POSITIVE_INFINITY)
 
-    const base = `http://127.0.0.1:${host.server.port()}`
+    const base = `http://127.0.0.1:${host.server.port()}/${host.code}`
     expect((await upload(base, 12 * 1024 * 1024)).status).toBe(200)
 
     await host.close()

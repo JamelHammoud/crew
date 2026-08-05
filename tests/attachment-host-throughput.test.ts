@@ -30,7 +30,7 @@ describe('a ten megabyte file through the host', () => {
 
   beforeEach(async () => {
     host = await startHost(tmpDir('throughput'))
-    base = `http://127.0.0.1:${host.server.port()}`
+    base = `http://127.0.0.1:${host.server.port()}/${host.code}`
   })
 
   afterEach(async () => {

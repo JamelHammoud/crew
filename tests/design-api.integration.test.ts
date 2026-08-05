@@ -72,7 +72,7 @@ describe('design ops', () => {
 describe('design HTTP API', () => {
   it('reads and edits a board over HTTP while everyone watches', async () => {
     const host = await startHost(tmpDir('design-http'))
-    const base = `http://127.0.0.1:${host.server.port()}`
+    const base = `http://127.0.0.1:${host.server.port()}/${host.code}`
     const ui = await TestUi.connect(host.url, 'sam', host.code)
 
     ui.send({ type: 'design.create', boardId: 'app-1abc', name: 'App' })
@@ -135,7 +135,7 @@ describe('design HTTP API', () => {
 
   it('explains that an unopened board has no page yet', async () => {
     const host = await startHost(tmpDir('design-http-empty'))
-    const base = `http://127.0.0.1:${host.server.port()}`
+    const base = `http://127.0.0.1:${host.server.port()}/${host.code}`
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     ui.send({ type: 'design.create', boardId: 'raw-1abc', name: 'Raw' })
     await ui.waitFor(m => m.type === 'design.boards')
