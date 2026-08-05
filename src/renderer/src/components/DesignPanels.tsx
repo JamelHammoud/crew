@@ -153,6 +153,7 @@ export function DesignZoom() {
       <HeaderButton label="Redo" disabled={!canRedo} onClick={() => editor.redo()}>
         <RedoGlyph className="w-4 h-4" />
       </HeaderButton>
+      <span className="w-px h-5 bg-fg/10 mx-1.5 shrink-0" />
       <span className="relative flex items-center">
         <Tooltip label="Zoom" disabled={open}>
           <button
