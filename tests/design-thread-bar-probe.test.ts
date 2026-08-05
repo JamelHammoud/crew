@@ -55,7 +55,7 @@ function boot(threads: Record<string, unknown>) {
     cancelPrompt: () => {},
     setThreadDraft: () => {}
   } as never)
-  return render(createElement(DesignChat, { boardId: 'board:a' }))
+  return render(createElement(DesignChat, { boardId: 'board:a', onClose: () => {} }))
 }
 
 describe('the board chat thread bar', () => {
