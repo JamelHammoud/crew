@@ -13,6 +13,9 @@ import { AppSession, isGitRepo } from './session'
 export class Crews {
   private open = new Map<string, AppSession>()
   private view = new Map<number, string>()
+  // Every crew this app opens stands behind the same pair of doors, which is
+  // what keeps a guest's link good when somebody opens another project.
+  private doors = new Doors()
   private agentsPath: string | null = null
   private sessionPath: string | null = null
   private projectsPath: string | null = null
