@@ -134,6 +134,25 @@ describe('readRepoFile', () => {
   })
 })
 
+describe('mediaType', () => {
+  it('names what this machine can really play', () => {
+    expect(mediaType('theme.mp3')).toEqual({ type: 'audio/mpeg', video: false })
+    expect(mediaType('src/clips/demo.mp4')).toEqual({ type: 'video/mp4', video: true })
+  })
+
+  it('reads an extension however it was written', () => {
+    expect(mediaType('THEME.MP3')).toEqual({ type: 'audio/mpeg', video: false })
+    expect(mediaType('Demo.Mp4')).toEqual({ type: 'video/mp4', video: true })
+  })
+
+  it('says nothing about a file there is no player for', () => {
+    expect(mediaType('notes.txt')).toBeNull()
+    expect(mediaType('archive.zip')).toBeNull()
+    expect(mediaType('Makefile')).toBeNull()
+    expect(mediaType('')).toBeNull()
+  })
+})
+
 describe('repoPathOf', () => {
   it('tells a path in the project from one that only starts like it', () => {
     const root = makeRepo()

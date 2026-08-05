@@ -98,16 +98,6 @@ function DirRows({ tab, path, entries }: { tab: BrowserTab; path: string; entrie
   )
 }
 
-function Empty({ icon, label, detail }: { icon: React.ReactNode; label: string; detail?: string }) {
-  return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6">
-      {icon}
-      <p className="text-sm text-fg-muted">{label}</p>
-      {detail && <p className="text-xs font-mono text-fg-faint break-all text-center">{detail}</p>}
-    </div>
-  )
-}
-
 export default function FileView({ tab, active }: { tab: BrowserTab; active: boolean }) {
   const [data, setData] = useState<RepoFile | null>(null)
   const [doc, setDoc] = useState('')
