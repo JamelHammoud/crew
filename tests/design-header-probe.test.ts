@@ -19,6 +19,10 @@ class TestResizeObserver {
 
 global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
 
+const CARD = { w: 224, h: 200 }
+Object.defineProperty(HTMLElement.prototype, 'offsetWidth', { configurable: true, get: () => CARD.w })
+Object.defineProperty(HTMLElement.prototype, 'offsetHeight', { configurable: true, get: () => CARD.h })
+
 const { default: DesignHeader } = await import('../src/renderer/src/components/DesignHeader')
 const { DesignBoardContext } = await import('../src/renderer/src/components/DesignPanels')
 
