@@ -485,6 +485,7 @@ app.whenReady().then(() => {
   crews.setAgentsPath(path.join(stateDir, 'agents.json'))
   crews.setSessionPath(path.join(stateDir, 'session.json'))
   crews.setProjectsPath(path.join(stateDir, 'projects'))
+  crews.setServersPath(path.join(stateDir, 'model-servers.json'))
   crews.onTrouble = message => {
     for (const win of appWindows()) win.webContents.send('crew:trouble', message)
   }
