@@ -123,26 +123,8 @@ function PluginsIcon({ size }: { size: number }) {
       <path
         className="tab-icon-draw"
         pathLength={1}
-        d="M6.6 3.4H13.4A3.2 3.2 0 0 1 16.6 6.6V13.4A3.2 3.2 0 0 1 13.4 16.6H6.6A3.2 3.2 0 0 1 3.4 13.4V6.6A3.2 3.2 0 0 1 6.6 3.4Z"
-        style={{ '--draw-dur': '340ms' } as React.CSSProperties}
-      />
-      {[7.9, 12.1].map((x, i) => (
-        <path
-          key={x}
-          className="tab-icon-draw"
-          pathLength={1}
-          d={`M${x} 7.4V10.6`}
-          style={
-            { '--draw-dur': '160ms', '--draw-delay': `${300 + i * 70}ms` } as React.CSSProperties
-          }
-        />
-      ))}
-      <path
-        className="tab-icon-draw"
-        pathLength={1}
-        strokeWidth={1.56}
-        d="M7.4 13.3H12.6"
-        style={{ '--draw-dur': '150ms', '--draw-delay': '440ms' } as React.CSSProperties}
+        d="M5.4 6H7.8A2.2 2.2 0 0 1 12.2 6H14.6A2 2 0 0 1 16.6 8V14.2A2 2 0 0 1 14.6 16.2H5.4A2 2 0 0 1 3.4 14.2V12.6A2.2 2.2 0 0 0 3.4 8.2V8A2 2 0 0 1 5.4 6Z"
+        style={{ '--draw-dur': '380ms' } as React.CSSProperties}
       />
     </Mark>
   )
