@@ -899,7 +899,7 @@ describe('the sidebar', () => {
     expect(toggleIn(container).className).not.toContain('opacity-0')
   })
 
-  it('keeps the button off the head of an expanded rail until the head is hovered', () => {
+  it('keeps the button off an expanded rail until the pointer is on it', () => {
     act(() => {
       useSidebar.setState({ pinned: true })
     })
@@ -907,19 +907,49 @@ describe('the sidebar', () => {
     const button = toggleIn(container)
     expect(button.className).toContain('opacity-0')
     expect(button.className).toContain('pointer-events-none')
-    expect(button.className).toContain('group-hover:opacity-100')
-    expect(button.className).toContain('group-hover:pointer-events-auto')
     expect(button.className).toContain('focus-visible:opacity-100')
+    act(() => useSidebar.getState().peek(true))
+    expect(toggleIn(container).className).toContain('opacity-100')
+    expect(toggleIn(container).className).not.toContain('opacity-0')
   })
 
-  it('makes the whole head of an expanded rail what the button is reached from', () => {
+  it('holds it while a menu the rail opened is standing', () => {
     act(() => {
       useSidebar.setState({ pinned: true })
     })
     const { container } = corner()
-    const box = container.firstElementChild as HTMLElement
-    expect(box.className).toContain('group')
-    expect(box.style.width).toBe(`${SIDEBAR_W}px`)
+    act(() => useSidebar.getState().hold(true))
+    expect(toggleIn(container).className).toContain('opacity-100')
+  })
+
+  it('reads the pointer anywhere on an expanded rail rather than only on its head', async () => {
+    const app = (await import('../src/renderer/src/App.tsx?raw')).default as string
+    const rail = app.indexOf(`width: pinned ? SIDEBAR_W : 0`)
+    expect(rail).toBeGreaterThan(-1)
+    const opened = app.lastIndexOf('<div', rail)
+    expect(app.slice(opened, rail)).toContain('onMouseEnter={() => peek(true)}')
+    expect(app.slice(opened, rail)).toContain('onMouseLeave={() => peek(false)}')
+  })
+
+  it('holds the head of an expanded rail while the pointer crosses it', () => {
+    vi.useFakeTimers()
+    try {
+      act(() => {
+        useSidebar.setState({ pinned: true, near: true })
+      })
+      const { container } = corner()
+      const box = container.firstElementChild as HTMLElement
+      expect(box.style.width).toBe(`${SIDEBAR_W}px`)
+      act(() => useSidebar.getState().peek(false))
+      fireEvent.mouseEnter(box)
+      act(() => {
+        vi.advanceTimersByTime(1000)
+      })
+      expect(useSidebar.getState().near).toBe(true)
+      expect(toggleIn(container).className).toContain('opacity-100')
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('leaves the mark where it stands while the button is hidden', () => {
