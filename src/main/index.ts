@@ -69,6 +69,7 @@ app.commandLine.appendSwitch('disable-renderer-backgrounding')
 // Huddle audio arrives without anyone clicking play, and Chromium blocks that
 // by default.
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
+registerMediaScheme()
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const devUrl = process.env['ELECTRON_RENDERER_URL']
