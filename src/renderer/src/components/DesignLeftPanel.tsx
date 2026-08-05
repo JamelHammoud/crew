@@ -123,6 +123,7 @@ function Layers({ editor, onClose }: { editor: Editor; onClose: () => void }) {
         >
           {searching ? <CloseGlyph className="w-4 h-4" /> : <SearchGlyph className="w-4 h-4" />}
         </PanelButton>
+        <HidePanel onClose={onClose} />
       </div>
       <div className="flex-1 min-h-0 overflow-y-auto px-2 pb-2">
         {rows.length === 0 && (
