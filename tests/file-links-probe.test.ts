@@ -434,17 +434,54 @@ describe('changed lines', () => {
     expect(marked()).toEqual(['6', '7'])
   })
 
+  // The body is the only box the file may move. Asking the page to bring the row
+  // in moves every scroller above it too, and the panel stands in two that show
+  // no scrollbar, so what they lose can never be put back by hand.
   it('takes you back to the change when you open the same file again', async () => {
     await openDiff()
-    const seen: Element[] = []
-    Element.prototype.scrollIntoView = function (this: Element) {
-      seen.push(this)
+    const ROW = 20
+    const PAGE = 200
+    const seen: { el: Element; top: number }[] = []
+    const asked: Element[] = []
+    const body = document.querySelector('.overflow-auto')
+    const rows = [...document.querySelectorAll('[data-line]')]
+    const at = rows.findIndex(row => row.getAttribute('data-line') === '6')
+    expect(at).toBeGreaterThan(-1)
+
+    HTMLElement.prototype.getBoundingClientRect = function (this: HTMLElement) {
+      if (this.dataset.line !== undefined) {
+        const index = [...(this.closest('.overflow-auto')?.querySelectorAll('[data-line]') ?? [])].indexOf(this)
+        return { top: index * ROW, height: ROW, left: 0, width: 0 } as DOMRect
+      }
+      return { top: 0, height: this === body ? PAGE : 0, left: 0, width: 0 } as DOMRect
     }
+    Object.defineProperty(HTMLElement.prototype, 'clientHeight', {
+      configurable: true,
+      get(this: HTMLElement) {
+        return this === body ? PAGE : 0
+      }
+    })
+    Object.defineProperty(HTMLElement.prototype, 'scrollTop', {
+      configurable: true,
+      get: () => 0,
+      set(this: HTMLElement, top: number) {
+        seen.push({ el: this, top })
+      }
+    })
+    Element.prototype.scrollIntoView = function (this: Element) {
+      asked.push(this)
+    }
+
     try {
       fireEvent.click(screen.getByText('src/panel.ts'))
-      await waitFor(() => expect(seen.some(row => row.getAttribute('data-line') === '6')).toBe(true))
+      await waitFor(() => expect(seen.length).toBeGreaterThan(0))
+      expect(seen.at(-1)).toEqual({ el: body, top: at * ROW - (PAGE - ROW) / 2 })
+      expect(asked).toEqual([])
     } finally {
       delete (Element.prototype as Partial<Element>).scrollIntoView
+      Reflect.deleteProperty(HTMLElement.prototype, 'getBoundingClientRect')
+      Reflect.deleteProperty(HTMLElement.prototype, 'clientHeight')
+      Reflect.deleteProperty(HTMLElement.prototype, 'scrollTop')
     }
   })
 
