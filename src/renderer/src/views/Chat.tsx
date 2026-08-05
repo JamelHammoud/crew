@@ -169,7 +169,7 @@ export default function Chat() {
       >
         <div
           className="max-w-[660px] mx-auto space-y-8"
-          style={{ paddingTop: 'var(--page-scrim)', paddingBottom: room }}
+          style={{ paddingTop: 'var(--page-rest)', paddingBottom: room }}
         >
           {moreHistory && (
             <div className="h-6 flex items-center justify-center">
