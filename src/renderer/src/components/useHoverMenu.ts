@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-export const REACH_MS = 220
+export const REACH_MS = 10
 
 const GAP = 6
 
