@@ -17,7 +17,9 @@ const ROWS = [
   ['e', 'flex items-center gap-1.5 overflow-x-auto'],
 ]
 
-const BARE = `<div id="row" style="width:380px;display:flex;align-items:center;gap:6px;overflow-x:auto;scrollbar-width:none">${PILLS.replace(/class="[^"]*"/g, 'style="flex:0 0 auto;height:36px;padding:0 12px;display:flex;align-items:center;background:#222;color:#fff"')}</div>`
+const PLAIN = PILLS.replace(/class="[^"]*"/g, 'style="flex:0 0 auto;height:36px;padding:0 12px;display:flex;align-items:center;background:#222;color:#fff"')
+const BARE = `<div id="row" style="width:380px;display:flex;align-items:center;gap:6px;overflow-x:auto;scrollbar-width:none">${PLAIN}</div>
+<div id="row2" style="width:380px;display:flex;align-items:center;gap:6px;overflow-x:auto">${PLAIN}</div>`
 
 const PAGE = `<!doctype html>
 <html><head><meta charset="utf-8"><script type="module" src="./probe.js"></script></head>
