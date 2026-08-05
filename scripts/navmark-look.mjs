@@ -37,6 +37,8 @@ await build({
   platform: 'node',
   jsx: 'automatic',
   loader: { '.tsx': 'tsx', '.ts': 'ts' },
+  nodePaths: [path.join(root, 'node_modules')],
+  absWorkingDir: root,
   logLevel: 'error'
 })
 const { createRequire } = await import('node:module')
