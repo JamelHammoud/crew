@@ -197,7 +197,7 @@ describe('the sidebar', () => {
     fireEvent.pointerEnter(row)
     const plugins = await screen.findByRole('button', { name: 'Plugins' })
     fireEvent.pointerLeave(row)
-    await rest(REACH_MS / 2)
+    await rest(CROSSING_MS)
     expect(screen.queryByRole('button', { name: 'Plugins' })).not.toBeNull()
     fireEvent.pointerEnter(plugins.parentElement as HTMLElement)
     await rest(REACH_MS + 80)
