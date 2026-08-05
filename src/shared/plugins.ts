@@ -209,14 +209,3 @@ export const offerOf = (name: string): PluginOffer | undefined =>
   PLUGIN_OFFERS.find(one => one.name === pluginKey(name))
 
 export const PLUGIN_GROUPS: readonly string[] = [...new Set(PLUGIN_OFFERS.map(one => one.group))]
-
-export function pluginPreamble(plugins: readonly CrewPlugin[]): string {
-  if (!plugins.length) return ''
-  return [
-    `## What this crew has plugged in`,
-    ``,
-    `These are running beside your own tools, so their tools are already in your hands.`,
-    ``,
-    ...plugins.slice(0, PLUGIN_LIMIT).map(one => `  ${one.name}  ${one.blurb || one.label}`)
-  ].join('\n')
-}

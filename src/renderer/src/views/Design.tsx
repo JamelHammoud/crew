@@ -5,6 +5,7 @@ import DesignLeftPanel from '../components/DesignLeftPanel'
 import { BoardSwitcher, DesignBoardContext, DesignRenameContext, DesignZoom } from '../components/DesignPanels'
 import DesignRightPanel from '../components/DesignRightPanel'
 import DesignStage from '../components/DesignStage'
+import HeaderSlot from '../components/HeaderSlot'
 import { firstBoard } from '../design/firstBoard'
 import { lastBoard, lastPanels, rememberBoard, rememberPanels } from '../design/viewMemory'
 import { PanelLeftGlyph, PanelRightGlyph } from '../icons'
@@ -76,7 +77,9 @@ export default function Design() {
               >
                 <PanelLeftGlyph className={`${GLYPH} ${panels.left ? '' : 'scale-x-[-1]'}`} />
               </HeaderButton>
-              <BoardSwitcher />
+              <HeaderSlot>
+                <BoardSwitcher />
+              </HeaderSlot>
               <div className="ml-auto flex items-center gap-1">
                 {editor && <DesignZoom />}
                 <HeaderButton
