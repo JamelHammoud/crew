@@ -26,6 +26,7 @@ import type {
   RepoWork
 } from '../shared/repository'
 import { AgentStore } from './agents-store'
+import { Doors, type Seat } from './doors'
 import type { SavedSession } from './saved-session'
 import {
   absolutePathOf,
