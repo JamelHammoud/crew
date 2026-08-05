@@ -1,3 +1,5 @@
+import fs from 'node:fs'
+import path from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 import WebSocket from 'ws'
 import { Doors, type Seat } from '../src/main/doors'
@@ -9,6 +11,17 @@ import { tmpDir } from './helpers/session'
 
 function crew(name: string): CrewSession {
   return new CrewSession(new Store(tmpDir(`door-${name}`)))
+}
+
+// Two crews answering to one code is what a door refuses, and it is a real
+// enough case to build the real way: an older crew's code was three bytes, so
+// the folder is what carries it rather than a field being written over here.
+function twinOf(session: CrewSession, name: string): CrewSession {
+  const base = tmpDir(`door-${name}`)
+  const root = path.join(base, '.crew')
+  fs.mkdirSync(root, { recursive: true })
+  fs.writeFileSync(path.join(root, 'session.json'), JSON.stringify({ code: session.code, createdAt: Date.now() }))
+  return new CrewSession(new Store(base))
 }
 
 function firstReply(url: string, code: string): Promise<ServerMessage> {
