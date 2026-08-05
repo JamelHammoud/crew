@@ -163,6 +163,7 @@ describe('the panel itself', () => {
   it('goes with a plan that took itself away', () => {
     render(createElement(BrowserPanel))
     inThread({ plan: 'Step one' })
+    act(() => useBrowser.getState().openPanel())
 
     expect(useBrowser.getState().open).toBe(true)
     act(() => useCrew.setState({ openThreadId: null }))
