@@ -43,9 +43,11 @@ app.whenReady().then(async () => {
   try {
     await win.loadFile(path.join(__dirname, 'dist/index.html'))
     win.setBounds({ x: 60, y: 120, width: 900, height: 400 })
-    win.focus()
-    await wait(1500)
+    win.setAlwaysOnTop(true, 'screen-saver')
+    win.moveTop(); win.focus()
+    await wait(2500)
     require('node:child_process').execFileSync('screencapture', ['-x', '-R60,120,900,400', '/tmp/glass-screen.png'])
+    await wait(200)
     const normal = await read()
     await win.webContents.executeJavaScript("document.getElementById('root').classList.add('railed')")
     await wait(400)
