@@ -26,8 +26,8 @@ function probeSource() {
   return `import React from ${JSON.stringify(resolve('react'))}
 import { createRoot } from ${JSON.stringify(resolve('react-dom/client'))}
 import { createTLStore, EditorContext } from ${from('canvas/index.ts')}
-import { Editor } from ${from('canvas/editor.ts')}
-import { HandTool, SelectTool } from ${from('canvas/tools.ts')}
+import { Editor } from ${from('canvas/editor/index.ts')}
+import { HandTool, SelectTool } from ${from('canvas/tools/index.ts')}
 import DesignHeader from ${from('components/DesignHeader.tsx')}
 import { DesignBoardContext } from ${from('components/DesignPanels.tsx')}
 import TopBar, { TOP_BAR_H } from ${from('components/TopBar.tsx')}

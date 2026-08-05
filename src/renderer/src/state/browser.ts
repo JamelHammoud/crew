@@ -475,11 +475,11 @@ export const useBrowser = create<BrowserState>((write, get) => {
       const closedPlans = get().closedPlans.filter(id => id !== threadId)
       const existing = get().tabs.find(t => t.kind === 'plan')
       if (existing?.threadId === threadId) {
-        set({ activeTabId: existing.id, closedPlans })
+        write({ activeTabId: existing.id, closedPlans })
         return
       }
       const tab = { ...makeTab(), kind: 'plan' as const, threadId }
-      set(s => ({ tabs: [tab, ...s.tabs.filter(t => t.kind !== 'plan')], activeTabId: tab.id, closedPlans }))
+      write(s => ({ tabs: [tab, ...s.tabs.filter(t => t.kind !== 'plan')], activeTabId: tab.id, closedPlans }))
     },
     hidePlan: () => {
       set(s => without(s, t => t.kind === 'plan') ?? {})
