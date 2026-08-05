@@ -80,7 +80,20 @@ export default function Docs() {
   const editorRef = useRef<DocEditorHandle>(null)
   const scrollerRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
+  const pageRef = useRef<HTMLDivElement>(null)
   const pendingFocus = useRef(false)
+  const pinned = useSidebar(s => s.pinned)
+  const corner = useHeaderSlot(s => s.corner)
+  const [width, setWidth] = useState(0)
+
+  useLayoutEffect(() => {
+    const el = pageRef.current
+    if (!el) return
+    const observer = new ResizeObserver(() => setWidth(el.clientWidth))
+    observer.observe(el)
+    setWidth(el.clientWidth)
+    return () => observer.disconnect()
+  }, [])
 
   const focusBody = () => {
     requestAnimationFrame(() => requestAnimationFrame(() => editorRef.current?.focusStart()))
