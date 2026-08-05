@@ -10,6 +10,7 @@ type StrikeName =
   | 'tab.chat'
   | 'tab.docs'
   | 'tab.design'
+  | 'tab.plugins'
   | 'sound.on'
   | 'toolbox.open'
   | 'tasks.open'
