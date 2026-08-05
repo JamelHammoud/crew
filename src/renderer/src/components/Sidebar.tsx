@@ -112,12 +112,19 @@ export default function Sidebar({
     [here, open, peek, setBusy, switchTo]
   )
 
+  // The project itself is the way back to the project, so pressing it lands on
+  // the chat rather than on whatever thread was open in it.
   const goToPlace = useCallback(
     (place: Place) => {
+      if (place.key === here) {
+        peek(false)
+        useCrew.getState().closeThreads()
+        return
+      }
       useCrew.getState().wantThread(null)
       void go(place)
     },
-    [go]
+    [go, here, peek]
   )
 
   const goToThread = useCallback(
