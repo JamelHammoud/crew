@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useEditor, useValue, type Editor, type TLShape, type TLShapeId } from '../canvas'
 import DesignPanel from '../design/DesignPanel'
 import { glyphForShape } from '../design/glyphs'
+import { LEFT_PANEL_W } from '../design/headerBand'
 import { useLayerShapes } from '../design/layerShapes'
 import { canRename, layerName, renameShape } from '../design/tools'
 import {
