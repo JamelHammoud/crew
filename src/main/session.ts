@@ -463,11 +463,6 @@ export class AppSession {
     return { ok: true, message: '' }
   }
 
-  private listen(session: CrewSession, shared: boolean, port: number): Promise<CrewServer> {
-    const host = shared ? '0.0.0.0' : '127.0.0.1'
-    return createCrewServer(session, { port, host }).catch(() => createCrewServer(session, { port: 0, host }))
-  }
-
   private projectsDir(): string {
     if (!this.projectsPath) throw new Error('There is nowhere on this machine to keep a crew.')
     return this.projectsPath
