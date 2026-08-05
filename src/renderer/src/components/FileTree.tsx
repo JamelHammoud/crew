@@ -4,6 +4,7 @@ import { ChevronRightGlyph, FileGlyph, SearchGlyph } from '../icons'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import { useFileMenu } from './fileMenu'
 import Marked from './Marked'
+import { bringInto } from './scrollInto'
 import Skeleton from './Skeleton'
 
 const MATCH_LIMIT = 60
