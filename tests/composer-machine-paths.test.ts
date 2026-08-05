@@ -125,7 +125,7 @@ describe('what the menu offers off this machine', () => {
   })
 
   it('still finds a name by its own letters', () => {
-    expect(offers([HOME], '/Users/jamel/nts')).toEqual(['/Users/jamel/notes.txt'])
+    expect(offers([HOME], '/Users/jamel/nte')).toEqual(['/Users/jamel/notes.txt'])
   })
 
   it('marks out the letters that landed in the name rather than in the folders', () => {
