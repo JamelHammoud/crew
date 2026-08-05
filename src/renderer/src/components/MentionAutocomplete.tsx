@@ -292,6 +292,7 @@ function PathRow({
     <button
       onClick={onClick}
       onMouseEnter={onMouseEnter}
+      data-path={match.path}
       className={`w-full text-left px-2.5 py-2 rounded-xl text-sm flex items-center gap-2.5 transition-colors ${
         active ? 'bg-fg/[0.08] text-fg' : 'text-fg/70 hover:bg-fg/[0.08] hover:text-fg'
       }`}
