@@ -151,12 +151,21 @@ async function waitsFor(url: string): Promise<boolean> {
   return false
 }
 
-// Only a server on this machine is one there is anything to do about. A
-// written address somewhere else is somebody else's to start, and the command
-// here would try to bind their host on this one.
-export async function ensureServing(url: string): Promise<boolean> {
+// The one address there is anything to do about is Ollama's own on this
+// machine. Somewhere else is somebody else's to start, and the command here
+// would try to bind their host on this one; a port on this machine that nobody
+// pointed Ollama at is a second Ollama nobody asked for, standing on a port
+// that was silent for a reason.
+function startable(url: string, env: NodeJS.ProcessEnv = process.env): boolean {
   const at = parse(url)
   if (!at || !here(at.hostname)) return false
+  const said = env.OLLAMA_HOST ? fullUrl(env.OLLAMA_HOST) : null
+  return at.port === String(OLLAMA_PORT) || said === url
+}
+
+export async function ensureServing(url: string): Promise<boolean> {
+  if (!startable(url)) return false
+  const at = parse(url)
   if (await answering(url)) return true
   const command = resolveCommand('ollama')
   if (!command) return false
