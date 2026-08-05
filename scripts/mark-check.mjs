@@ -23,17 +23,14 @@ import './probe.css'
 import * as icons from '${path.join(root, 'src/renderer/src/icons')}'
 import * as tools from '${path.join(root, 'src/renderer/src/components/toolGlyphs')}'
 import * as docs from '${path.join(root, 'src/renderer/src/components/doc/docGlyphs')}'
-import TabIcon from '${path.join(root, 'src/renderer/src/components/TabIcon')}'
+import * as board from '${path.join(root, 'src/renderer/src/design/glyphs')}'
 
 const marks = []
-for (const [where, set] of [['icons', icons], ['tools', tools], ['docs', docs]]) {
+for (const [where, set] of [['icons', icons], ['tools', tools], ['docs', docs], ['board', board]]) {
   for (const [name, Icon] of Object.entries(set)) {
     if (!name.endsWith('Glyph') || typeof Icon !== 'function') continue
     marks.push([where + '/' + name, createElement(Icon, { className: 'w-[${AT}px] h-[${AT}px]' })])
   }
-}
-for (const tab of ['chat', 'docs', 'design']) {
-  marks.push(['tab/' + tab, createElement(TabIcon, { tab, size: ${AT} })])
 }
 
 createRoot(document.getElementById('root')).render(
