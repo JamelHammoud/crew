@@ -35,7 +35,7 @@ export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab
         More
       </button>
       {open && menu.at && (
-        <Popover open onClose={menu.close} at={menu.at} flush className="min-w-44">
+        <Popover open onClose={menu.close} at={menu.at} anchor={rowRef} flush className="min-w-44">
           <div className="p-1.5" onPointerEnter={menu.hold} onPointerLeave={menu.leave}>
             {MORE_TABS.map(one => (
               <MenuItem

@@ -27,7 +27,7 @@ export default function DesignPanel({ onClose }: { onClose: () => void }) {
   )
 }
 
-function SelectionHeader({ shapes }: { shapes: TLShape[] }) {
+function SelectionHeader({ shapes, onClose }: { shapes: TLShape[]; onClose: () => void }) {
   const editor = useEditor()
   const { requested, request } = useContext(DesignRenameContext)
   const nameRef = useRef<HTMLInputElement>(null)
