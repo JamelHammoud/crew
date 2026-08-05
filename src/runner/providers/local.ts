@@ -83,16 +83,16 @@ export const localProvider: Provider = {
       // list warmed in one place and read in another can be cold, and
       // resolveSettings drops a choice its options do not carry, which would
       // quietly send a run to a different server than the one it was made for.
-      const url = settings['address'] || resolved.address || candidateUrls()[0]
+      const url = serverUrl(settings['address'] || resolved.address || candidateUrls()[0]) ?? ''
       // A server that was up when the picker was drawn can be down by the time
       // somebody says something, so the address is asked again here, and only
-      // a silent one is started.
-      let runtime = await answering(url)
-      if (!runtime) {
-        await ensureServing(url)
-        runtime = await answering(url)
-      }
-      if (!runtime) throw new Error(`Nothing answered at ${url}. Start it and say that again.`)
+      // a silent one is started. The key is read off this machine rather than
+      // off the settings, which the whole crew can see.
+      const key = serverKey(url)
+      let probe = await probeServer(url, key)
+      if (!probe.runtime && (await ensureServing(url))) probe = await probeServer(url, key)
+      const runtime = probe.runtime
+      if (!runtime) throw new Error(probe.why ?? `Nothing answered at ${url}.`)
       const model = settings['model'] || resolved.model || cachedModels()[0]
       if (!model) throw new Error('No model to run. Pull one and say that again.')
       if (stopped) throw new Error('Stopped')
