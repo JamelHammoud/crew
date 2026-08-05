@@ -1002,6 +1002,12 @@ export class CrewSession {
       case 'memory.set':
         if (meta.role === 'ui') this.handleMemorySetting(member, msg.enabled)
         break
+      case 'plugin.add':
+        if (meta.role === 'ui') this.handlePluginAdd(ws, member, msg.plugin)
+        break
+      case 'plugin.remove':
+        if (meta.role === 'ui') this.handlePluginRemove(member, msg.pluginId)
+        break
       case 'attachment.limit':
         if (meta.role === 'ui') this.handleAttachmentLimit(member, msg.mb)
         break

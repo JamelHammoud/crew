@@ -187,6 +187,7 @@ export default function Sidebar({
             {one.label}
           </button>
         ))}
+        <SidebarMore tab={tab} onTab={goToTab} />
       </nav>
       <h2 className="app-no-drag shrink-0 px-4 pt-5 pb-1 text-xs font-medium text-fg/45">Projects</h2>
       <div
