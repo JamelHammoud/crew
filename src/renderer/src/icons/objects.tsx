@@ -134,13 +134,6 @@ export const ColumnsGlyph = glyph(
   </>
 )
 
-export const FrameGlyph = glyph(
-  <>
-    <path d="M8.25 4.5v15M15.75 4.5v15" />
-    <path d="M4.5 8.25h15M4.5 15.75h15" />
-  </>
-)
-
 // The same screen with the work heading for its far corner. The arrow stays
 // inside the frame, which is what tells this from a link leaving the app: that
 // one breaks its own box open and sends the arrow out of it, and this one is a
