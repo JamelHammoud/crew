@@ -14,6 +14,5 @@ export const PLUGIN_ART: Record<string, string> = {
   context7: context7Mark,
   playwright: playwrightMark,
   linear: linearMark,
-  notion: notionMark,
-  slack: slackMark
+  notion: notionMark
 }
