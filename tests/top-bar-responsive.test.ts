@@ -7,6 +7,7 @@ import HeaderSlot from '../src/renderer/src/components/HeaderSlot'
 import TopBar from '../src/renderer/src/components/TopBar'
 import { useBrowser } from '../src/renderer/src/state/browser'
 import { useHeaderSlot } from '../src/renderer/src/state/headerSlot'
+import { useSidebar } from '../src/renderer/src/state/sidebar'
 import { useCrew } from '../src/renderer/src/state/store'
 
 const observers = new Set<() => void>()
