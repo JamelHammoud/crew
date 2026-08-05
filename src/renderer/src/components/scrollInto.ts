@@ -24,6 +24,15 @@ const placeIn = (scroller: HTMLElement, target: HTMLElement): Box => {
 const nearest = (start: number, size: number, at: number, view: number): number =>
   start < at ? start : start + size > at + view ? start + size - view : at
 
+const move = (page: HTMLElement, left: number, top: number, behavior: Behavior): void => {
+  if (behavior === 'smooth' && typeof page.scrollTo === 'function') {
+    page.scrollTo({ left, top, behavior })
+    return
+  }
+  page.scrollLeft = left
+  page.scrollTop = top
+}
+
 export function bringInto(target: HTMLElement, scroller?: HTMLElement | null, behavior: Behavior = 'auto'): void {
   const page = scroller ?? scrollerOf(target)
   if (!page) return
