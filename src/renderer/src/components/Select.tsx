@@ -15,10 +15,6 @@ export default function Select({
   value: string
   options: Array<{ value: string; label: string; hint?: ReactNode; mark?: ReactNode }>
   onChange: (value: string) => void
-  // The list ends on the way to one that is not in it yet, the way the toolbox
-  // ends its own row on the slot that opens the builder. It is the way in and
-  // the empty state both, so a list with nothing found in it still has
-  // somewhere to go.
   add?: { label: string; onPick: () => void }
   side?: 'top' | 'bottom'
   full?: boolean

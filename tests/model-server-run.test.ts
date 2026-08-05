@@ -25,8 +25,6 @@ const KEY = 'sk-written-down'
 const sse = (content: string) =>
   `data: ${JSON.stringify({ choices: [{ delta: { content } }] })}\n\ndata: [DONE]\n\n`
 
-// A server standing under a path of its own, the way a proxy in front of
-// several models does, and turning away anything with no key on it.
 async function fakeServer(wantsKey: boolean, prefix = '/v1'): Promise<Fake> {
   const asked: Asked[] = []
   const server: Server = createServer((req, res) => {

@@ -52,11 +52,6 @@ export interface AgentSettingField {
   label: string
   options: AgentSettingOption[]
   default: string
-  // A value may be written into this one rather than only picked from the
-  // list. What is offered is what this machine has found, and what somebody
-  // wrote is still theirs: dropped for not being in the options, a server
-  // written down here would quietly become a different server on the way to
-  // the run.
   free?: boolean
   visibleWhen?: {
     key: string

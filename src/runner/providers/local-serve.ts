@@ -53,9 +53,6 @@ function fullUrl(said: string): string | null {
 
 const here = (host: string): boolean => host === '127.0.0.1' || host === 'localhost' || host === '[::1]'
 
-// What runs on a port is only worth naming where the port is this machine's.
-// A server somewhere else on 1234 is not LM Studio, it is whatever somebody
-// stood up there, and the address is the only true thing to call it.
 function labelOf(url: string, kind: LocalRuntime['kind']): string {
   const at = parse(url)
   if (!at) return url
@@ -90,9 +87,6 @@ export function candidateUrls(env: NodeJS.ProcessEnv = process.env): string[] {
   return [...new Set([...(said ? [said] : []), ...DEFAULT_URLS, ...written])]
 }
 
-// A server that turns the key away is a server, and saying nothing answered
-// there sends somebody to look at the address rather than at the key. So what
-// stands in the way is carried back beside the answer.
 export async function probeServer(
   url: string,
   key?: string,
@@ -105,9 +99,6 @@ export async function probeServer(
   if (guarded(models.status) || guarded(tags.status)) {
     return { runtime: null, why: key ? 'That server did not take the key.' : 'That server wants a key.' }
   }
-  // The move is only offered where there is one. Crew starts Ollama where
-  // Ollama was told to stand and nothing else, so anywhere else is a fact and
-  // no instruction.
   return {
     runtime: null,
     why: `Nothing answered at ${serverLabel(url)}.${startable(url) ? ' Start it and say that again.' : ''}`
@@ -153,11 +144,6 @@ async function waitsFor(url: string): Promise<boolean> {
   return false
 }
 
-// The one address there is anything to do about is Ollama's own on this
-// machine. Somewhere else is somebody else's to start, and the command here
-// would try to bind their host on this one; a port on this machine that nobody
-// pointed Ollama at is a second Ollama nobody asked for, standing on a port
-// that was silent for a reason.
 function startable(url: string, env: NodeJS.ProcessEnv = process.env): boolean {
   const at = parse(url)
   if (!at || !here(at.hostname)) return false

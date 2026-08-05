@@ -126,9 +126,6 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
     if (held) void refresh().catch(() => {})
   }
 
-  // What was written stands as the one that is picked, whatever the picker
-  // found on its own: somebody who has just added a server is adding it to
-  // run on.
   const landOn = (url: string, fresh: ProviderCapability[]) => {
     setCaps(fresh)
     const chosen = fresh.find(c => c.provider === providerRef.current)
