@@ -144,6 +144,8 @@ export type ClientMessage =
   | { type: 'memory.edit'; memoryId: string; text: string }
   | { type: 'memory.remove'; memoryId: string }
   | { type: 'memory.set'; enabled: boolean }
+  | { type: 'plugin.add'; plugin: unknown }
+  | { type: 'plugin.remove'; pluginId: string }
   | { type: 'attachment.limit'; mb: number }
   | { type: 'subagent.stop'; threadId: string }
   // What one person lets helpers do on their own machine. It is kept in that
