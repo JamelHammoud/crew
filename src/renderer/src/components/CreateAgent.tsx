@@ -283,7 +283,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
                 <button
                   onClick={create}
                   disabled={busy || !name.trim() || !cap?.installed || Boolean(cap.note)}
-                  className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-2 transition-all duration-150 hover:scale-[1.03] active:scale-95 disabled:bg-fg/10 disabled:text-fg/45 disabled:scale-100"
+                  className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-2 transition-all duration-150 hover:bg-fg/90 active:scale-95 disabled:bg-fg/10 disabled:text-fg/45"
                 >
                   {busy && <Spinner size={14} />}
                   Create
@@ -352,7 +352,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
                 <button
                   onClick={() => void addServer()}
                   disabled={adding || !address.trim()}
-                  className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-2 transition-all duration-150 hover:scale-[1.03] active:scale-95 disabled:bg-fg/10 disabled:text-fg/45 disabled:scale-100"
+                  className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-2 transition-all duration-150 hover:bg-fg/90 active:scale-95 disabled:bg-fg/10 disabled:text-fg/45"
                 >
                   {adding && <Spinner size={14} />}
                   Add
