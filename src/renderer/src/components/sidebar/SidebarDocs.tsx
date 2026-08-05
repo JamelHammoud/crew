@@ -158,6 +158,7 @@ export default function SidebarDocs({ open }: { open: boolean }) {
             {tree.map(node => renderNode(node, 0))}
           </div>
         </div>
+        <div data-docs-rule className="h-px bg-fg/[0.08] mt-2 mb-1 -mx-2" />
         <Popover open={menu !== null} onClose={() => setMenu(null)} at={menu ?? undefined} align="start">
           <MenuItem
             icon={<PlusGlyph />}
