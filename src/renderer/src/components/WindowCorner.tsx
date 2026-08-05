@@ -1,4 +1,6 @@
+import { useEffect, useRef } from 'react'
 import { PanelLeftGlyph } from '../icons'
+import { useHeaderSlot } from '../state/headerSlot'
 import { useSidebar } from '../state/sidebar'
 import { useFullScreen } from '../state/windowShape'
 import CrewLogo from './CrewLogo'
@@ -11,9 +13,21 @@ export default function WindowCorner() {
   const peek = useSidebar(s => s.peek)
   const toggle = useSidebar(s => s.toggle)
   const full = useFullScreen()
+  const measure = useHeaderSlot(s => s.measure)
+  const box = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = box.current
+    if (!el) return
+    const observer = new ResizeObserver(() => measure('corner', el.clientWidth))
+    observer.observe(el)
+    measure('corner', el.clientWidth)
+    return () => observer.disconnect()
+  }, [measure])
 
   return (
     <div
+      ref={box}
       onMouseEnter={() => {
         if (peeking) peek(true)
       }}
