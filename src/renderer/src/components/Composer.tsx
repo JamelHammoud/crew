@@ -65,16 +65,18 @@ function PathHighlight({
   text,
   at,
   files,
+  known,
   selection,
   surface
 }: {
   text: string
   at: number
   files: PathIndex
+  known: Set<string>
   selection: SelectedRange | null
   surface: string
 }) {
-  const runs = useMemo(() => spanned(pathRuns(text, files), at), [at, files, text])
+  const runs = useMemo(() => spanned(pathRuns(text, files, known), at), [at, files, known, text])
   return (
     <>
       {runs.map(({ token, start }, index) =>
