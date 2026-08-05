@@ -715,6 +715,15 @@ textarea:placeholder-shown {
   );
 }
 
+.page-scrim {
+  height: var(--page-scrim);
+}
+
+.design-scrim {
+  height: var(--design-scrim);
+  background: var(--design-canvas);
+}
+
 /* None of the mark's paint may take the pointer. The light travelling under the
    cursor would otherwise count as arriving at the button and leaving it again,
    over and over, for as long as it travels. The button's own box is the whole
