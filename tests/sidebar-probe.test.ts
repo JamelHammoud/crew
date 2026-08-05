@@ -931,30 +931,40 @@ describe('the sidebar', () => {
     expect(app.slice(opened, rail)).toContain('onMouseLeave={() => peek(false)}')
   })
 
-  it('gives the head of an expanded rail back to the pointer, since a drag band reports none', () => {
+  it('leaves the head of an expanded rail draggable', () => {
     const { container } = corner()
     expect((container.firstElementChild as HTMLElement).className).toContain('app-drag')
     act(() => {
       useSidebar.setState({ pinned: true })
     })
     const box = container.firstElementChild as HTMLElement
-    expect(box.className).toContain('app-no-drag')
-    fireEvent.mouseEnter(box)
+    expect(box.className).toContain('app-drag')
+    expect(box.className).not.toContain('app-no-drag')
+    expect(box.style.width).toBe(`${SIDEBAR_W}px`)
+  })
+
+  it('stands the controls out of that band, in a reach of their own', () => {
+    act(() => {
+      useSidebar.setState({ pinned: true })
+    })
+    const { container } = corner()
+    const reach = reachIn(container)
+    expect(reach.className).toContain('h-full')
+    expect(reach.contains(toggleIn(container))).toBe(true)
+    fireEvent.mouseEnter(reach)
     expect(useSidebar.getState().near).toBe(true)
     expect(toggleIn(container).className).toContain('opacity-100')
   })
 
-  it('holds the head of an expanded rail while the pointer crosses it', () => {
+  it('holds that reach while the pointer crosses it', () => {
     vi.useFakeTimers()
     try {
       act(() => {
         useSidebar.setState({ pinned: true, near: true })
       })
       const { container } = corner()
-      const box = container.firstElementChild as HTMLElement
-      expect(box.style.width).toBe(`${SIDEBAR_W}px`)
       act(() => useSidebar.getState().peek(false))
-      fireEvent.mouseEnter(box)
+      fireEvent.mouseEnter(reachIn(container))
       act(() => {
         vi.advanceTimersByTime(1000)
       })

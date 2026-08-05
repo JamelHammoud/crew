@@ -163,7 +163,6 @@ const READ = \`(() => {
     const r = el.getBoundingClientRect()
     return { left: Math.round(r.left), right: Math.round(r.right) }
   }
-  const band = document.querySelector('[data-design-band]')
   const paint = sel => {
     const el = document.querySelector(sel)
     return el ? getComputedStyle(el).backgroundColor : null
