@@ -130,6 +130,28 @@ function PluginsIcon({ size }: { size: number }) {
   )
 }
 
+/** The ring draws itself round, then the check strokes in the way a thought lands. */
+export function TasksTabIcon({ size = 18 }: { size?: number }) {
+  return (
+    <span className="tab-icon" aria-hidden="true">
+      <Mark size={size}>
+        <path
+          className="tab-icon-draw"
+          pathLength={1}
+          d="M10 2.3A7.7 7.7 0 1 1 10 17.7A7.7 7.7 0 1 1 10 2.3"
+          style={{ '--draw-dur': '340ms' } as React.CSSProperties}
+        />
+        <path
+          className="tab-icon-draw"
+          pathLength={1}
+          d="m6.4 10.2 2.38 2.38 4.54-5"
+          style={{ '--draw-dur': '170ms', '--draw-delay': '260ms' } as React.CSSProperties}
+        />
+      </Mark>
+    </span>
+  )
+}
+
 export function MoreTabIcon({ size = 18 }: { size?: number }) {
   return (
     <span className="tab-icon" aria-hidden="true">
