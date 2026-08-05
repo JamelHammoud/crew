@@ -18,6 +18,7 @@ const ROWS = [
   ['g', 'h-9 flex items-center gap-1.5 overflow-x-auto'],
   ['h', 'h-9 flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none]'],
   ['i', 'h-9 flex items-center gap-1.5 overflow-x-auto overflow-y-hidden'],
+  ['j', 'h-9 flex items-start gap-1.5 overflow-x-auto'],
 ]
 
 const PLAIN = PILLS.replace(/class="[^"]*"/g, 'style="flex:0 0 auto;height:36px;padding:0 12px;display:flex;align-items:center;background:#222;color:#fff"')
