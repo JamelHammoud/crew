@@ -306,48 +306,48 @@ export default function Docs() {
       <FindBar containerRef={contentRef} scrollerRef={scrollerRef} />
       <div ref={scrollerRef} className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden px-6">
         <div ref={contentRef} style={{ paddingTop: COLUMN_TOP }} className="max-w-[760px] mx-auto">
-            {trail.length > 0 && (
-              <nav className="px-[54px] pb-1.5 flex items-center gap-1 text-xs font-medium text-fg-muted">
-                {trail.map((slug, index) => (
-                  <span key={slug} className="flex items-center gap-1 min-w-0">
-                    {index > 0 && <span className="text-fg-faint">/</span>}
-                    <button
-                      onClick={() => setPage(slug)}
-                      className="truncate max-w-44 transition-colors hover:text-fg-secondary"
-                    >
-                      {titleOf(slug) || 'Untitled'}
-                    </button>
-                  </span>
-                ))}
-              </nav>
-            )}
-            <div className="px-[54px] pb-3">
-              <input
-                ref={titleRef}
-                value={title}
-                onChange={e => setTitle(e.target.value)}
-                onBlur={commitTitle}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === 'ArrowDown') {
-                    e.preventDefault()
-                    titleRef.current?.blur()
-                    focusBody()
-                  }
-                  if (e.key === 'Escape') {
-                    setTitle(titleOf(current))
-                    titleRef.current?.blur()
-                  }
-                }}
-                placeholder="Untitled"
-                className="w-full bg-transparent text-[32px] leading-tight font-semibold tracking-[-0.02em] text-fg placeholder:text-fg-faint outline-none"
-              />
-            </div>
-            <DocEditor
-              key={current}
-              ref={editorRef}
-              text={docs[current]?.text ?? ''}
-              onChange={markdown => updateDoc(current, markdown)}
+          {trail.length > 0 && (
+            <nav className="px-[54px] pb-1.5 flex items-center gap-1 text-xs font-medium text-fg-muted">
+              {trail.map((slug, index) => (
+                <span key={slug} className="flex items-center gap-1 min-w-0">
+                  {index > 0 && <span className="text-fg-faint">/</span>}
+                  <button
+                    onClick={() => setPage(slug)}
+                    className="truncate max-w-44 transition-colors hover:text-fg-secondary"
+                  >
+                    {titleOf(slug) || 'Untitled'}
+                  </button>
+                </span>
+              ))}
+            </nav>
+          )}
+          <div className="px-[54px] pb-3">
+            <input
+              ref={titleRef}
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              onBlur={commitTitle}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === 'ArrowDown') {
+                  e.preventDefault()
+                  titleRef.current?.blur()
+                  focusBody()
+                }
+                if (e.key === 'Escape') {
+                  setTitle(titleOf(current))
+                  titleRef.current?.blur()
+                }
+              }}
+              placeholder="Untitled"
+              className="w-full bg-transparent text-[32px] leading-tight font-semibold tracking-[-0.02em] text-fg placeholder:text-fg-faint outline-none"
             />
+          </div>
+          <DocEditor
+            key={current}
+            ref={editorRef}
+            text={docs[current]?.text ?? ''}
+            onChange={markdown => updateDoc(current, markdown)}
+          />
         </div>
       </div>
     </div>
