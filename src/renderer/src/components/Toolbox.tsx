@@ -17,7 +17,7 @@ import { useHuddle } from '../state/huddle'
 import { useMusic } from '../state/music'
 import { useCrew } from '../state/store'
 import { Popover } from './Popover'
-import { opensPanel, runTool, saidAfter, toolSlots } from './runTool'
+import { runTool, saidAfter, toolSlots } from './runTool'
 import ToolBuilder from './ToolBuilder'
 import ToolFill from './ToolFill'
 import ToolMarkView from './toolMark'
@@ -147,7 +147,7 @@ export default function Toolbox({ open, onClose }: { open: boolean; onClose: () 
                 mark={<tool.mark className="w-[22px] h-[22px]" />}
                 name={tool.name}
                 active={tool.on}
-                onClick={() => press(tool.run, tool.panel ?? false)}
+                onClick={() => press(tool.run)}
               />
             ))}
           </div>
