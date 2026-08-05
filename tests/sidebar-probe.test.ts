@@ -110,6 +110,9 @@ const { markOf } = await import('../src/renderer/src/components/sidebar/PlaceFac
 const TopBar = (await import('../src/renderer/src/components/TopBar')).default
 const WindowCorner = (await import('../src/renderer/src/components/WindowCorner')).default
 const { FolderGlyph, GlobeGlyph } = await import('../src/renderer/src/icons')
+const { REACH_MS } = await import('../src/renderer/src/components/useHoverMenu')
+
+const rest = (ms: number) => new Promise(done => setTimeout(done, ms))
 
 const Sidebar = (
   props: {
