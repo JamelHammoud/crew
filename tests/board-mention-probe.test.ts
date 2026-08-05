@@ -116,7 +116,7 @@ describe('board mentions in a message', () => {
 describe('picking a board in the composer', () => {
   it('offers boards and docs under the same #', () => {
     boot(false)
-    const input = screen.getByPlaceholderText(/message/i) as HTMLTextAreaElement
+    const input = screen.getByPlaceholderText('Ask Crew') as HTMLTextAreaElement
     input.focus()
     fireEvent.change(input, { target: { value: '#', selectionStart: 1, selectionEnd: 1 } })
     expect(screen.getByText('#Landing')).toBeTruthy()

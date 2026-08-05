@@ -68,7 +68,7 @@ function boot() {
     docsTarget: null
   })
   render(createElement(Chat))
-  return screen.getByPlaceholderText(/message/i) as HTMLTextAreaElement
+  return screen.getByPlaceholderText('Ask Crew') as HTMLTextAreaElement
 }
 
 function type(input: HTMLTextAreaElement, text: string) {
