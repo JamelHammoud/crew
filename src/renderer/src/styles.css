@@ -693,10 +693,20 @@ textarea:placeholder-shown {
   container-type: inline-size;
 }
 
-.page-scrim,
-.design-scrim {
+.page-scrim {
+  height: var(--page-scrim);
   background: var(--color-ink-900);
-  mask-image: linear-gradient(
+  mask-image: var(--scrim-ramp);
+}
+
+.design-scrim {
+  height: var(--design-scrim);
+  background: var(--design-canvas);
+  mask-image: var(--scrim-ramp);
+}
+
+:root {
+  --scrim-ramp: linear-gradient(
     to bottom,
     #000 0%,
     rgb(0 0 0 / 0.997) 7.143%,
