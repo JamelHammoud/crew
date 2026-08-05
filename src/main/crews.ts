@@ -175,6 +175,7 @@ export class Crews {
     this.open.clear()
     this.view.clear()
     await Promise.all(held.map(session => session.shutdown()))
+    await this.doors.shutdown()
   }
 
   recentProjects(): RecentProject[] {
