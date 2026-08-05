@@ -17,7 +17,7 @@ import { PanelButton } from './DesignControls'
 import Pill from './Pill'
 import Tooltip from './Tooltip'
 
-export default function DesignLeftPanel() {
+export default function DesignLeftPanel({ onClose }: { onClose: () => void }) {
   const editor = useEditor()
   const selection = useValue('design selection size', () => editor.getSelectedShapeIds().length, [editor])
   return (
@@ -26,12 +26,20 @@ export default function DesignLeftPanel() {
       className="w-64 shrink-0 flex flex-col min-w-0 min-h-0 overflow-hidden bg-ink-900 border-r border-ink-700"
     >
       <div data-design-layers hidden={selection > 0} className="flex-1 min-h-0 flex flex-col">
-        <Layers editor={editor} />
+        <Layers editor={editor} onClose={onClose} />
       </div>
       <div data-design-inspector hidden={selection === 0} className="flex-1 min-h-0 flex flex-col">
-        <DesignPanel />
+        <DesignPanel onClose={onClose} />
       </div>
     </aside>
+  )
+}
+
+export function HidePanel({ onClose }: { onClose: () => void }) {
+  return (
+    <PanelButton label="Hide panel" onClick={onClose}>
+      <PanelLeftGlyph className="w-4 h-4" />
+    </PanelButton>
   )
 }
 
