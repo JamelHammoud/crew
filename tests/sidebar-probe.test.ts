@@ -264,6 +264,43 @@ describe('the sidebar', () => {
     expect(screen.getByRole('button', { name: 'More' }).getAttribute('aria-current')).toBe('page')
   })
 
+  it('opens the toolbox off the More row and holds a hovered rail up while it stands', async () => {
+    useSidebar.setState({ pinned: false, peeking: true })
+    render(Sidebar())
+    const more = screen.getByRole('button', { name: 'More' })
+    fireEvent.pointerEnter(more.parentElement as HTMLElement)
+    fireEvent.click(await screen.findByRole('button', { name: 'Toolbox' }))
+
+    expect(screen.getByRole('button', { name: 'Terminal' })).toBeTruthy()
+    expect(screen.queryByRole('button', { name: 'Plugins' })).toBeNull()
+
+    act(() => useSidebar.getState().peek(false))
+    await rest(REACH_MS + 80)
+    expect(useSidebar.getState().peeking).toBe(true)
+  })
+
+  it('puts the toolbox away on a second press of the row that opened it', async () => {
+    render(Sidebar())
+    const more = screen.getByRole('button', { name: 'More' })
+    fireEvent.pointerEnter(more.parentElement as HTMLElement)
+    fireEvent.click(await screen.findByRole('button', { name: 'Toolbox' }))
+    expect(screen.getByRole('button', { name: 'Terminal' })).toBeTruthy()
+
+    fireEvent.click(more)
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Terminal' })).toBeNull())
+    expect(screen.queryByRole('button', { name: 'Plugins' })).toBeNull()
+  })
+
+  it('opens the tasks from its own row and puts a hovered sidebar away with it', async () => {
+    useSidebar.setState({ pinned: false, peeking: true })
+    render(Sidebar())
+
+    fireEvent.click(screen.getByRole('button', { name: /^Tasks/ }))
+
+    expect(useTasks.getState().pinned).toBe(true)
+    await waitFor(() => expect(useSidebar.getState().peeking).toBe(false))
+  })
+
   it('goes to the page a row names and puts a hovered sidebar away with it', async () => {
     const went: string[] = []
     useSidebar.setState({ pinned: false, peeking: true })
