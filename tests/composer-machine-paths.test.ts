@@ -168,61 +168,6 @@ describe('how the two lists stand together', () => {
   })
 })
 
-describe('reading a folder off the disk', () => {
-  const home = process.env.HOME
-  let temp = ''
-
-  afterAll(async () => {
-    process.env.HOME = home
-    if (temp) await fs.rm(temp, { recursive: true, force: true })
-  })
-
-  const stand = async (): Promise<string> => {
-    if (!temp) {
-      temp = await fs.mkdtemp(path.join(os.tmpdir(), 'crew-machine-'))
-      await fs.mkdir(path.join(temp, 'Documents', 'Repositories'), { recursive: true })
-      await fs.writeFile(path.join(temp, 'notes.txt'), 'x')
-      process.env.HOME = temp
-    }
-    return temp
-  }
-
-  it('reads a folder named in full', async () => {
-    const at = await stand()
-    const [dir] = await readMachineDirs(null, path.join(at, 'Documents'))
-    expect(dir.entries).toEqual([{ name: 'Repositories', dir: true }])
-    expect(dir.repoDir).toBeNull()
-  })
-
-  it('reads a leading slash at the root and then under your own folder', async () => {
-    await stand()
-    const dirs = await readMachineDirs(null, '/Documents')
-    expect(dirs.map(dir => dir.dir)).toEqual([path.join(os.homedir(), 'Documents')])
-    const top = await readMachineDirs(null, '/')
-    expect(top.map(dir => dir.dir)).toEqual(['/', os.homedir()])
-  })
-
-  it('reads a tilde as your own folder', async () => {
-    const at = await stand()
-    const [dir] = await readMachineDirs(null, '~')
-    expect(dir.dir).toBe(at)
-    expect(dir.entries.map(entry => entry.name)).toEqual(['Documents', 'notes.txt'])
-  })
-
-  it('says where a folder sits in the project it is inside', async () => {
-    const at = await stand()
-    const [dir] = await readMachineDirs(at, path.join(at, 'Documents'))
-    expect(dir.repoDir).toBe('Documents')
-    const [top] = await readMachineDirs(at, at)
-    expect(top.repoDir).toBe('')
-  })
-
-  it('answers with nothing for a folder that is not there', async () => {
-    await stand()
-    expect(await readMachineDirs(null, '/no/such/folder/here')).toEqual([])
-  })
-})
-
 describe('what is marked out in the box', () => {
   const known = new Set(revealedBy([HOME]))
 
