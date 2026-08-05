@@ -12,6 +12,8 @@ const ABS_PATH = String.raw`~?\/(?:[\w.-]+\/)*[\w.-]*\w`
 const SLASH_PATH = String.raw`(?:\.\/)?(?:[\w.-]+\/)+[\w.-]*\w`
 const BARE_FILE = String.raw`[\w-]+(?:\.[\w-]+)*\.[A-Za-z][A-Za-z0-9]{1,6}`
 const LINE_SUFFIX = String.raw`:\d+(?::\d+)?`
+const FOLDER_SLASH = String.raw`\/`
+const TAIL = String.raw`(?:${LINE_SUFFIX}|${FOLDER_SLASH})`
 const DOMAINS = new Set(['com', 'net', 'org', 'io', 'dev', 'ai', 'app', 'co', 'edu', 'gov'])
 
 const ROOMY_PART = String.raw`(?:[\w.-][\w .-]*)?[\w.-]`
