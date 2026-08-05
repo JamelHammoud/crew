@@ -91,7 +91,7 @@ export default function BrowserPanel() {
   const active = tabs.find(t => t.id === activeTabId) ?? null
   const [newOpen, setNewOpen] = useState(false)
   const opens = usePanelOpens()
-  const strip = useRef<HTMLDivElement>(null)
+  const strip = useRef<HTMLDivElement | null>(null)
   const row = useReorder((id, to) => useBrowser.getState().moveTab(id, to))
   // The plan comes with the thread you are in and goes when you leave it.
   const planThread = useCrew(s => (s.openThreadId && s.threads[s.openThreadId]?.plan ? s.openThreadId : null))
@@ -402,7 +402,7 @@ function TabPill({
   tab: BrowserTab
   active: boolean
   row: Reorder
-  strip: RefObject<HTMLDivElement | null>
+  strip: { current: HTMLDivElement | null }
 }) {
   const pillRef = useRef<HTMLButtonElement>(null)
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
