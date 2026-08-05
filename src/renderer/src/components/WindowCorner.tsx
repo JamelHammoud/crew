@@ -41,24 +41,25 @@ export default function WindowCorner() {
           onMouseLeave={() => peek(false)}
           className="app-no-drag flex h-full items-center gap-2"
         >
-        <CrewLogo />
-        <Tooltip label={pinned ? 'Hide projects' : 'Projects'}>
-          <button
-            onClick={toggle}
-            onMouseEnter={() => peek(true)}
-            aria-label="Projects"
-            aria-expanded={pinned}
-            className={`app-no-drag w-10 h-10 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
-              pinned
-                ? `bg-fg/[0.10] text-fg focus-visible:opacity-100 focus-visible:pointer-events-auto ${
-                    near || over ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                  }`
-                : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
-            }`}
-          >
-            <PanelLeftGlyph className="w-[18px] h-[18px]" />
-          </button>
-        </Tooltip>
+          <CrewLogo />
+          <Tooltip label={pinned ? 'Hide projects' : 'Projects'}>
+            <button
+              onClick={toggle}
+              onMouseEnter={() => peek(true)}
+              aria-label="Projects"
+              aria-expanded={pinned}
+              className={`app-no-drag w-10 h-10 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
+                pinned
+                  ? `bg-fg/[0.10] text-fg focus-visible:opacity-100 focus-visible:pointer-events-auto ${
+                      near || over ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                    }`
+                  : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
+              }`}
+            >
+              <PanelLeftGlyph className="w-[18px] h-[18px]" />
+            </button>
+          </Tooltip>
+        </span>
       </span>
     </div>
   )

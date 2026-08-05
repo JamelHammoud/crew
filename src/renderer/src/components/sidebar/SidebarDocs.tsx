@@ -134,7 +134,7 @@ export default function SidebarDocs() {
             aria-current={here ? 'page' : undefined}
             className="flex-1 min-w-0 truncate text-left"
           >
-            <EmojiText text={titleOf(node.slug) || 'Untitled'} quiet />
+            <EmojiText text={titleOf(node.slug) || 'Untitled'} />
           </button>
           <Tooltip label="Add sub-page">
             <button
