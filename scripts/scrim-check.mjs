@@ -36,7 +36,7 @@ const TODAY = `<div class="top-bar-container pointer-events-auto bg-ink-900">${B
 
 const LIT = '<div class="absolute inset-x-0 top-0 h-[240px] bg-fg"></div>'
 const SCROLLED = `<div class="absolute inset-x-0 px-6 space-y-2" style="top:-30px">${LINES}</div>`
-const RESTING = `<div class="absolute inset-x-0 px-6 space-y-2" style="top:var(--page-scrim)">${LINES}</div>`
+const RESTING = `<div class="absolute inset-x-0 px-6 space-y-2" style="top:var(--page-rest)">${LINES}</div>`
 
 const CASES = [
   ['today lit', TODAY, LIT],
@@ -152,7 +152,7 @@ function run(dir) {
 
 const INK = 20
 const PAPER = 255
-const SAMPLE = [30, 48, 56, 64, 70, 80, 90, 100, 106, 110, 112, 116, 120, 130]
+const SAMPLE = [0, 8, 16, 24, 30, 35, 40, 48, 54, 56, 60, 70, 90, 112]
 
 const dir = await stage()
 try {
