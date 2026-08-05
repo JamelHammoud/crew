@@ -15,6 +15,14 @@ import { mediaType } from '../src/shared/files'
 
 Element.prototype.getAnimations ??= () => []
 
+const store = new Map<string, string>()
+vi.stubGlobal('localStorage', {
+  getItem: (key: string) => store.get(key) ?? null,
+  setItem: (key: string, value: string) => void store.set(key, value),
+  removeItem: (key: string) => void store.delete(key),
+  clear: () => store.clear()
+})
+
 let length = 0
 let paused = true
 

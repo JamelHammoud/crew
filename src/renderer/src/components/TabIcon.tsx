@@ -117,10 +117,36 @@ function DesignIcon({ size }: { size: number }) {
   )
 }
 
+/** The body strokes itself, then the two pins reach out and seat. */
+function PluginsIcon({ size }: { size: number }) {
+  return (
+    <Mark size={size}>
+      <path
+        className="tab-icon-draw"
+        pathLength={1}
+        d="M6 5.2H10.2A2.2 2.2 0 0 1 12.4 7.4V12.6A2.2 2.2 0 0 1 10.2 14.8H6A2.2 2.2 0 0 1 3.8 12.6V7.4A2.2 2.2 0 0 1 6 5.2Z"
+        style={{ '--draw-dur': '340ms' } as React.CSSProperties}
+      />
+      {[8.4, 11.6].map((y, i) => (
+        <path
+          key={y}
+          className="tab-icon-draw"
+          pathLength={1}
+          d={`M12.4 ${y}H16.4`}
+          style={
+            { '--draw-dur': '150ms', '--draw-delay': `${300 + i * 70}ms` } as React.CSSProperties
+          }
+        />
+      ))}
+    </Mark>
+  )
+}
+
 const ICONS: Record<NavTab, (props: { size: number }) => React.ReactElement> = {
   chat: ChatIcon,
   docs: DocsIcon,
-  design: DesignIcon
+  design: DesignIcon,
+  plugins: PluginsIcon
 }
 
 export default function TabIcon({ tab, size = 20 }: { tab: NavTab; size?: number }) {
