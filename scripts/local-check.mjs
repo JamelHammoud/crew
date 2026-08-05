@@ -15,8 +15,10 @@ const LIMIT = 300000
 
 const ENTRY = [
   "export { localProvider } from './src/runner/providers/local'",
-  "export { candidateUrls, cachedRuntimes, findRuntimes } from './src/runner/providers/local-serve'",
-  "export { cachedModels, refreshModels, servedModels } from './src/runner/providers/local-models'"
+  "export { candidateUrls, cachedRuntimes, checkServer, findRuntimes } from './src/runner/providers/local-serve'",
+  "export { cachedModels, refreshModels, servedModels } from './src/runner/providers/local-models'",
+  "export { rememberServer, setServersPath } from './src/runner/providers/local-servers'",
+  "export { serverUrl } from './src/shared/modelServers'"
 ].join('\n')
 
 async function load(dir) {
@@ -41,7 +43,7 @@ function secs(ms) {
   return (ms / 1000).toFixed(2)
 }
 
-async function check(app, work) {
+async function check(app, work, store) {
   const started = Date.now()
   const at = () => ((Date.now() - started) / 1000).toFixed(2).padStart(6)
 
@@ -62,6 +64,14 @@ async function check(app, work) {
     console.log(text)
   }
 
+  const written = process.env.CREW_LOCAL_URL?.trim() ? app.serverUrl(process.env.CREW_LOCAL_URL) : null
+  if (written) {
+    app.setServersPath(path.join(store, 'model-servers.json'))
+    app.rememberServer({ url: written, key: process.env.CREW_LOCAL_KEY?.trim() || undefined })
+    const answer = await app.checkServer({ url: written, key: process.env.CREW_LOCAL_KEY?.trim() || undefined })
+    line(`${at()} written   ${written} ${answer.ok ? `answers, speaking ${answer.runtime.kind}` : `is no good: ${answer.why}`}`)
+  }
+
   const runtimes = await app.findRuntimes()
   for (const runtime of runtimes) line(`${at()} runtime   ${runtime.label} at ${runtime.url}, speaking ${runtime.kind}`)
   if (!runtimes.length) {
@@ -69,7 +79,7 @@ async function check(app, work) {
     line('')
     line('nothing on this computer is serving models, so there was no turn to run')
     line('start one and run this again: `ollama serve`, or LM Studio with its own server on')
-    line('an address off that list is reached by naming it in OLLAMA_HOST')
+    line('an address off that list is reached by naming it in CREW_LOCAL_URL, with CREW_LOCAL_KEY where it wants one')
     return
   }
 
@@ -97,8 +107,7 @@ async function check(app, work) {
     `${at()} detect    ${found ? 'the provider found this machine' : 'the provider found nothing'}${note ? `, saying "${note}"` : ''}`
   )
 
-  const wantedUrl = process.env.CREW_LOCAL_URL?.trim()
-  const runtime = runtimes.find(one => one.url === wantedUrl) ?? runtimes[0]
+  const runtime = runtimes.find(one => one.url === written) ?? runtimes[0]
   const wantedModel = process.env.CREW_LOCAL_MODEL?.trim()
   const model = wantedModel && kept.includes(wantedModel) ? wantedModel : kept[0]
   if (wantedModel && model !== wantedModel) {
@@ -255,7 +264,7 @@ const work = path.join(dir, 'work')
 try {
   await mkdir(work, { recursive: true })
   await writeFile(path.join(work, 'notes.txt'), NOTES)
-  await check(await load(dir), work)
+  await check(await load(dir), work, dir)
 } catch (error) {
   console.error(`the run fell over: ${error.message}`)
   process.exitCode = 1
