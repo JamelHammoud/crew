@@ -181,7 +181,7 @@ describe('the design panels on a real board', () => {
 
   it('follows the tool the toolbar was clicked on', () => {
     const editor = board()
-    inside(editor, createElement(DesignToolbar, { onAsk: () => {}, onRename: () => {}, panels: { left: true, right: true }, onPanels: () => {} }))
+    inside(editor, createElement(DesignToolbar, { boardId: 'b1', onAsk: () => {}, onRename: () => {}, panels: { left: true, right: true }, onPanels: () => {} }))
     fireEvent.click(screen.getByLabelText('Frame'))
     expect(editor.getCurrentToolId()).toBe('frame')
     expect(screen.getByLabelText('Frame').getAttribute('aria-pressed')).toBe('true')
@@ -189,7 +189,7 @@ describe('the design panels on a real board', () => {
 
   it('takes the letter each tool names', () => {
     const editor = board()
-    inside(editor, createElement(DesignToolbar, { onAsk: () => {}, onRename: () => {}, panels: { left: true, right: true }, onPanels: () => {} }))
+    inside(editor, createElement(DesignToolbar, { boardId: 'b1', onAsk: () => {}, onRename: () => {}, panels: { left: true, right: true }, onPanels: () => {} }))
     fireEvent.keyDown(window, { key: 'f' })
     expect(editor.getCurrentToolId()).toBe('frame')
     fireEvent.keyDown(window, { key: 't' })
