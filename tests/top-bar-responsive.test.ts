@@ -85,7 +85,7 @@ describe('responsive top bar', () => {
     expect(follows(slot, document.querySelector('.top-bar > .col-start-3')!)).toBe(true)
   })
 
-  it('keeps the faces together at the end of the bar, after the tasks button', () => {
+  it('keeps the faces together at the end of the bar, in front of your own', () => {
     useCrew.setState({
       selfId: 'self',
       selfName: 'Jamel',

@@ -136,8 +136,8 @@ export const ColumnsGlyph = glyph(
 
 export const FrameGlyph = glyph(
   <>
-    <path d="M8.25 3v18M15.75 3v18" />
-    <path d="M3 8.25h18M3 15.75h18" />
+    <path d="M8.25 4.5v15M15.75 4.5v15" />
+    <path d="M4.5 8.25h15M4.5 15.75h15" />
   </>
 )
 
