@@ -106,6 +106,7 @@ function MentionHighlights({
   const docs = useCrew(s => s.docs)
   const boards = useCrew(s => s.boards)
   const files = useProjectFiles(s => s.index)
+  const known = useMachineFiles(s => s.known)
   const tokens = useMemo(
     () => spanned(tokenizeMentions(value, agents, members, writtenRefs(value, docs, boards)), 0),
     [agents, boards, docs, members, value]
