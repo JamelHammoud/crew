@@ -131,7 +131,7 @@ describe('responsive top bar', () => {
 
     const faces = screen.getByRole('button', { name: "Who's here" })
     expect(faces.textContent).toBe('+2')
-    expect(document.querySelector('.top-bar > div > span.w-px')).toBeNull()
+    expect(document.querySelector('.top-bar > .col-start-3 > span.w-px')).toBeNull()
 
     fireEvent.click(faces)
     expect(screen.getByText('Ali')).toBeTruthy()
