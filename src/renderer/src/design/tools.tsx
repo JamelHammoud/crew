@@ -77,11 +77,6 @@ export const TOOL_GROUPS: DesignToolGroup[] = [
     id: 'text',
     label: 'Text',
     tools: [{ id: 'text', label: 'Text', shortcut: 'T', Icon: TextGlyph }]
-  },
-  {
-    id: 'note',
-    label: 'Note',
-    tools: [{ id: 'note', label: 'Note', shortcut: 'N', Icon: NoteGlyph }]
   }
 ]
 
