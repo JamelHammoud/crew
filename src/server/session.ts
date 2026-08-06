@@ -1985,8 +1985,9 @@ export class CrewSession {
       return undefined
     }
     if (action.kind === 'prompt') {
-      const agent = this.agents.get(action.agentId ?? '')
-      const taking = agent ?? [...this.agents.values()].find(one => one.runner !== null)
+      const named = this.agents.get(action.agentId ?? '')
+      const taking =
+        named?.runner ? named : [...this.agents.values()].find(one => one.runner !== null)
       if (!taking) return undefined
       return this.startThread(member, taking, action.text, [])
     }
