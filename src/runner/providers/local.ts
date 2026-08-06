@@ -194,7 +194,7 @@ function runOn(
       cwd,
       prompt: body,
       sink,
-      tuning: localTuning(key => resolved[key] ?? '')
+      tuning: localTuning(field => resolved[field] ?? '')
     })
     run = started
     for (const text of early) started.say(text)
