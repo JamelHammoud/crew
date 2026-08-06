@@ -12,6 +12,7 @@ export type ToolAction =
   | { kind: 'doc'; page: string }
   | { kind: 'board'; boardId: string }
   | { kind: 'prompt'; text: string; agentId?: string }
+  | { kind: 'post'; text: string; agentId?: string }
   | { kind: 'copy'; text: string }
   | { kind: 'say'; text: string }
   | { kind: 'todo'; text: string; agentId?: string }
