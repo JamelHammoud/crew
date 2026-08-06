@@ -120,9 +120,7 @@ export function SettingSections({
     <>
       {sections.map(section => (
         <Fragment key={section.fields[0].key}>
-          {section.title && (
-            <h4 className="pt-5 pb-1.5 text-sm font-semibold text-fg/45">{section.title}</h4>
-          )}
+          {section.title && <h4 className="pt-5 pb-1.5 text-sm font-semibold text-fg/45">{section.title}</h4>}
           <SettingRows fields={section.fields} settings={settings} onChange={onChange} />
         </Fragment>
       ))}

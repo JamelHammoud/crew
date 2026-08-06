@@ -7,12 +7,7 @@ import {
   resolveSettings,
   visibleSettingFields
 } from '../../../shared/llm'
-import {
-  serverName,
-  serverProviderName,
-  serverUrl,
-  type ModelServer
-} from '../../../shared/modelServers'
+import { serverName, serverProviderName, serverUrl, type ModelServer } from '../../../shared/modelServers'
 import { ChevronLeftGlyph, CloseGlyph, PlusGlyph } from '../icons'
 import Modal from './Modal'
 import ProviderMark from './ProviderMark'
@@ -139,7 +134,10 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
     selectProvider((list.find(c => c.installed) ?? list[0]).provider, list)
     setScreen('agent')
     setOpen(true)
-    void window.crew.modelServers().then(setServers).catch(() => {})
+    void window.crew
+      .modelServers()
+      .then(setServers)
+      .catch(() => {})
     if (held) void refresh().catch(() => {})
   }
 
@@ -383,9 +381,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
                   {servers.map(server => (
                     <div key={server.url} className="group flex items-center gap-2 h-9">
                       <ProviderMark provider={serverProviderName(server.url)} />
-                      <span className="flex-1 min-w-0 truncate text-sm text-fg/45">
-                        {serverName(server)}
-                      </span>
+                      <span className="flex-1 min-w-0 truncate text-sm text-fg/45">{serverName(server)}</span>
                       <Tooltip label="Take out">
                         <button
                           onClick={() => void forgetServer(server.url)}
