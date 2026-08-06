@@ -206,10 +206,10 @@ describe('starting a huddle', () => {
     await waitFor(() => expect(useHuddle.getState().joined).toBe(true))
 
     openMore()
-    const tile = screen.getByText('Huddle').closest('button')
-    expect(tile?.getAttribute('aria-pressed')).toBe('true')
+    const row = screen.getByText('Huddle').closest('button')
+    expect(row?.hasAttribute('data-active')).toBe(true)
     await act(async () => {
-      fireEvent.click(tile!)
+      fireEvent.click(row!)
     })
     expect(useHuddle.getState().joined).toBe(false)
   })
