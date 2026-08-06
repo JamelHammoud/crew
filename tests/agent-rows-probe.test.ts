@@ -97,6 +97,7 @@ describe('the rows an agent is set up on', () => {
   })
 
   it('says a section once, however many rows are under it', () => {
+    stand()
     expect(screen.queryAllByText('On this computer')).toHaveLength(1)
   })
 })
