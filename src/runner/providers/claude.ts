@@ -260,10 +260,11 @@ export const claudeArgs = (_prompt: string, get: SettingReader, run: RunOptions 
     '--thinking-display',
     'summarized',
     ...flag('--model', claudeModel(get)),
-    ...flag('--effort', get('effort')),
+    ...(get('effort') === NO_THINKING
+      ? ['--thinking', 'disabled']
+      : flag('--effort', get('effort'))),
     ...flag('--mcp-config', run.mcp?.file ?? ''),
     ...flag('--append-system-prompt', get('instructions').trim()),
-    ...flag('--thinking', get('thinking')),
     ...flag('--fallback-model', get('fallbackModel')),
     ...(dirs.length ? ['--add-dir', ...dirs] : []),
     ...(get('crewOnly') === ON ? ['--setting-sources', ''] : []),
