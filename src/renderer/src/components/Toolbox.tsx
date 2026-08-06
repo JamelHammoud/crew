@@ -1,46 +1,19 @@
 import { useEffect, useRef, useState } from 'react'
 import type { CrewTool } from '../../../shared/toolbox'
-import {
-  BranchGlyph,
-  CheckGlyph,
-  FolderGlyph,
-  GameGlyph,
-  MusicGlyph,
-  PencilGlyph,
-  PlusGlyph,
-  SignalGlyph,
-  TerminalGlyph,
-  type Glyph
-} from '../icons'
-import { useBrowser } from '../state/browser'
-import { useHuddle } from '../state/huddle'
-import { useMusic } from '../state/music'
+import { CheckGlyph, PencilGlyph, PlusGlyph } from '../icons'
 import { useCrew } from '../state/store'
 import { Popover } from './Popover'
 import { runTool, saidAfter, toolSlots } from './runTool'
 import ToolBuilder from './ToolBuilder'
 import ToolFill from './ToolFill'
 import ToolMarkView from './toolMark'
-import { Rule, SheetHeader, Tile } from './toolboxParts'
-
-// A built-in is the same button as one a crew builds, with the app's own hand
-// behind it rather than an action someone wrote down. It lights the same way a
-// built tool does, while the thing it opens is live.
-interface Builtin {
-  id: string
-  name: string
-  mark: Glyph
-  on?: boolean
-  run: () => void
-}
+import { SheetHeader, Tile } from './toolboxParts'
 
 const SAID = 1200
 
-// Both halves of the toolbox stand on the same three columns, so the app's own
-// hand and the crew's own tools are the same button in the same grid. The panel
-// is as wide as three of them and nothing more: a tile is the size it always
-// was, and the width of the toolbox is worked out from that rather than the
-// other way round.
+// Three columns, and the panel is as wide as three of them and the padding: a
+// tile is the size it always was, and the width of the toolbox is worked out
+// from that rather than the other way round.
 const GRID = 'p-2.5 grid grid-cols-3 gap-1.5'
 
 export default function Toolbox({
