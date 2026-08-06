@@ -1401,6 +1401,19 @@ export class CrewSession {
     }
   }
 
+  private agentToTake(agentId?: string): AgentState | null {
+    const named = this.agents.get(agentId ?? '')
+    if (named?.runner) return named
+    return [...this.agents.values()].find(one => one.runner !== null) ?? null
+  }
+
+  private startPost(member: Member, text: string, agentId?: string): boolean {
+    const taking = this.agentToTake(agentId)
+    if (!taking) return false
+    this.startThread(member, taking, text, [], { post: true })
+    return true
+  }
+
   private agentsHere(ownerId?: string): AgentState[] {
     return [...this.agents.values()].filter(
       agent => agent.runner && (ownerId === undefined || agent.ownerId === ownerId)
