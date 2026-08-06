@@ -4910,7 +4910,7 @@ export class CrewSession {
   private toThread(threadId: string, msg: ServerMessage): void {
     const ghost = this.ghostOf(threadId)
     if (ghost) {
-      this.send(ghost.ws, msg)
+      if (ghost.ws) this.send(ghost.ws, msg)
       return
     }
     this.broadcast(msg)
