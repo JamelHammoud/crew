@@ -65,6 +65,7 @@ function runStep(action: ToolAction): void {
     const trackId = action.trackId ?? music.playlist(action.playlistId ?? null)?.trackIds[0]
     if (trackId) music.put(trackId, action.playlistId ?? null)
   }
+  if (action.kind === 'post') useCrew.getState().postChat(action.text, action.agentId)
   if (action.kind === 'prompt') {
     const { agents, sendChat } = useCrew.getState()
     // The agent a tool was built to ask may be offline on the machine pressing
