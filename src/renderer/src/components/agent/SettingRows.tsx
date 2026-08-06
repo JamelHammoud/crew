@@ -119,9 +119,12 @@ export function SettingSections({
   return (
     <>
       {sections.map(section => (
-        <Section key={section.title} title={section.title || undefined}>
+        <Fragment key={section.title}>
+          {section.title && (
+            <h4 className="pt-5 pb-1.5 text-sm font-semibold text-fg/45">{section.title}</h4>
+          )}
           <SettingRows fields={section.fields} settings={settings} onChange={onChange} />
-        </Section>
+        </Fragment>
       ))}
     </>
   )
