@@ -8,9 +8,11 @@ import {
   takeSyncLock,
   type GitResult
 } from '../shared/git'
+import { cleanBranchName } from '../shared/branch'
 import { interruptedStates } from '../shared/gitState'
 import type {
   RepoActionResult,
+  RepoBranch,
   RepoChange,
   RepoChangeKind,
   RepoCommand,

@@ -167,7 +167,7 @@ describe('the toolbox', () => {
       { type: 'tool.add', name: 'Staging', mark: 'cloud', action: { kind: 'web', url: 'crew.dev' } }
     ])
     // Saving puts the grid back.
-    expect(screen.getByText('Huddle')).toBeTruthy()
+    expect(screen.getByText('New tool')).toBeTruthy()
   })
 
   it('marks a tool with an emoji', () => {
