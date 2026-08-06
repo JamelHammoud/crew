@@ -11,6 +11,7 @@ const MARKS: Record<string, string> = {
   codex: codexMark,
   kimi: kimiMark,
   grok: grokMark,
+  gemini: geminiMark,
   local: ollamaMark
 }
 
