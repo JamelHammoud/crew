@@ -61,6 +61,7 @@ describe('claude model picker', () => {
       configurable: true,
       value: {
         agentCapabilities: vi.fn(async () => [capability]),
+        modelServers: vi.fn(async () => []),
         createAgent
       } as unknown as Window['crew']
     })
@@ -97,7 +98,8 @@ describe('claude model picker', () => {
     Object.defineProperty(window, 'crew', {
       configurable: true,
       value: {
-        agentCapabilities: vi.fn(async () => [capability])
+        agentCapabilities: vi.fn(async () => [capability]),
+        modelServers: vi.fn(async () => [])
       } as unknown as Window['crew']
     })
 
