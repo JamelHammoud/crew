@@ -1,9 +1,10 @@
-import { useMemo, useRef, useState, type KeyboardEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
 import { cleanBranchName, BRANCH_NAME_LIMIT } from '../../../../shared/branch'
 import type { RepoBranch } from '../../../../shared/repository'
 import { BranchGlyph, CheckGlyph, ChevronDownGlyph, ChevronLeftGlyph, CloudGlyph, PlusGlyph, SearchGlyph } from '../../icons'
 import { Popover } from '../Popover'
 import ScreenSwap from '../ScreenSwap'
+import { bringInto } from '../scrollInto'
 import Spinner from '../Spinner'
 import TextField from '../TextField'
 
