@@ -10,7 +10,7 @@ const root = path.resolve(here, '..')
 
 const ART = {
   Compass:
-    '<path d="M2.75 12A9.25 9.25 0 0 1 21.25 12A9.25 9.25 0 0 1 2.75 12Z"/><path d="M15.75 8.25 14 14l-5.75 1.75L10 10Z"/>',
+    '<path d="M2.75 12A9.25 9.25 0 0 1 21.25 12A9.25 9.25 0 0 1 2.75 12Z"/><path d="M16.25 7.75 13.5 13.5l-5.75 2.75L10.5 10.5Z" fill="currentColor" stroke="none"/>',
   Globe:
     '<path d="M2.75 12A9.25 9.25 0 0 1 21.25 12A9.25 9.25 0 0 1 2.75 12ZM8 12A4 9.25 0 0 1 16 12A4 9.25 0 0 1 8 12ZM2.75 12H21.25"/>',
   PanelRight: '<rect x="2.5" y="4.5" width="19" height="15" rx="3"/><path d="M15 4.5v15"/>',
