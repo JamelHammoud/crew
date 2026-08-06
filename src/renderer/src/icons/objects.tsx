@@ -233,6 +233,13 @@ export const ChatGlyph = glyph(
   </>
 )
 
+export const SendGlyph = glyph(
+  <>
+    <path d="M19.86 2.56L3.27 8.3Q1.45 8.93 3.25 9.61L9.81 12.12Q11.3 12.7 11.88 14.19L14.39 20.75Q15.07 22.55 15.7 20.73L21.44 4.14Q22.28 1.72 19.86 2.56Z" />
+    <path d="M20.08 3.92L11.3 12.7" />
+  </>
+)
+
 // The book is the Docs tab, where a page is one document. The tab is the place
 // the crew's writing lives and DocGlyph is a file with words in it, which is why
 // this is a second drawing rather than a change to that one: that mark stands on
