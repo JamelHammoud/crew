@@ -193,7 +193,7 @@ export class GitSync {
       this.onLog(`pull failed, will retry: ${pull.detail}`)
       return this.stalled()
     }
-    const push = await runGit(['push'], this.repoPath)
+    const push = await this.pushCurrent()
     if (push.code !== 0) {
       this.onLog(`push failed, will retry: ${push.stderr.trim()}`)
       return this.stalled()
@@ -261,7 +261,7 @@ export class GitSync {
       return this.result(false, false, `Could not pull before pushing. ${pull.detail}`, status)
     }
     const hadChanges = commit.updated || pull.updated || before.ahead > 0
-    const push = await runGit(['push'], this.repoPath)
+    const push = await this.pushCurrent()
     const status = await this.readStatus()
     if (push.code !== 0) {
       return this.result(false, false, `Could not push. ${gitDetail(push)}`, status)
