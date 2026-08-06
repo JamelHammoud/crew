@@ -238,6 +238,47 @@ describe('the card one is written on', () => {
     ])
   })
 
+  it('names the agent an ask goes to, and offers anyone as well', () => {
+    const asked: ToolAction[] = []
+    useCrew.setState({
+      agents: [{ id: 'bee', label: 'Bubbles', status: 'idle' }] as never,
+      addSchedule: (_name, _mark, _when, action) => (asked.push(action), null)
+    })
+    openCard()
+    expect(screen.getByRole('button', { name: 'Anyone' })).toBeTruthy()
+    fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Morning sweep' } })
+    fireEvent.change(screen.getByLabelText('What to ask'), { target: { value: 'Read what came in' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Bubbles' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+    expect(asked).toEqual([{ kind: 'prompt', text: 'Read what came in', agentId: 'bee' }])
+  })
+
+  it('leaves an ask to whoever is here when nobody is named', () => {
+    const asked: ToolAction[] = []
+    useCrew.setState({
+      agents: [{ id: 'bee', label: 'Bubbles', status: 'idle' }] as never,
+      addSchedule: (_name, _mark, _when, action) => (asked.push(action), null)
+    })
+    openCard()
+    fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Morning sweep' } })
+    fireEvent.change(screen.getByLabelText('What to ask'), { target: { value: 'Read what came in' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+    expect(asked).toEqual([{ kind: 'prompt', text: 'Read what came in' }])
+  })
+
+  it('opens on the agent a schedule already names', () => {
+    useCrew.setState({
+      agents: [{ id: 'bee', label: 'Bubbles', status: 'idle' }] as never,
+      schedules: [
+        one('a', 'Nightly tidy', MORNING, { action: { kind: 'prompt', text: 'Tidy up', agentId: 'bee' } })
+      ]
+    })
+    scheduled()
+    fireEvent.click(screen.getByRole('button', { name: 'Edit Nightly tidy' }))
+    expect(screen.getByRole('button', { name: 'Bubbles' }).getAttribute('aria-pressed')).toBe('true')
+    expect(screen.getByRole('button', { name: 'Anyone' }).getAttribute('aria-pressed')).toBe('false')
+  })
+
   it('swaps the one field for the one the kind needs', () => {
     openCard()
     expect(screen.getByLabelText('What to ask')).toBeTruthy()
