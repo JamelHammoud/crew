@@ -14,7 +14,6 @@ export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab
   const menu = useHoverMenu(rowRef)
   const holdRail = useSidebar(s => s.hold)
   const [toolbox, setToolbox] = useState<Spot | null>(null)
-  const panel = useBrowser(s => s.open)
   const here = MORE_TABS.some(one => one.id === tab)
   const open = menu.open
 
