@@ -402,6 +402,7 @@ const EMPTY = {
   memories: [],
   memoryEnabled: false,
   plugins: [],
+  schedules: [],
   emoji: [],
   scores: [],
   boards: [],
