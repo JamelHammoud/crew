@@ -7,7 +7,7 @@ import electron from 'electron'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
-const shot = path.join(root, 'agent-look.png')
+const shot = path.join(tmpdir(), 'crew-agent-look.png')
 
 const PROBE = `
 import { createRoot } from 'react-dom/client'
