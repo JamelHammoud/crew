@@ -5,6 +5,7 @@ import type { AgentMentionRef, AgentSettings, AgentStep } from './llm'
 import type { MemberMentionRef } from './people'
 import type { CrewPlugin } from './plugins'
 import type { ReactionEmoji } from './reactions'
+import type { Cadence } from './schedules'
 import type { TicketEvent } from './tickets'
 import type { ToolAction } from './toolbox'
 
