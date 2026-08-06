@@ -1850,6 +1850,175 @@ export class CrewSession {
     this.emit({ id: randomUUID(), ts: Date.now(), kind: 'plugin.removed', pluginId, byName: member.name })
   }
 
+  private handleScheduleAdd(
+    ws: WebSocket,
+    member: Member,
+    name: string,
+    mark: string,
+    when: unknown,
+    action: ToolAction,
+    zone: string
+  ): void {
+    const clean = cleanSchedule(name, mark, when, action, zone)
+    if (!clean) return
+    if (this.schedules.size >= SCHEDULE_LIMIT) {
+      this.notice(SCHEDULE_FULL, ws)
+      return
+    }
+    const schedule: Schedule = {
+      id: shortId(new Set(this.schedules.keys())),
+      ...clean,
+      createdBy: member.name.slice(0, BY_LIMIT),
+      ts: Date.now()
+    }
+    this.schedules.set(schedule.id, schedule)
+    this.emit({
+      id: randomUUID(),
+      ts: schedule.ts,
+      kind: 'schedule.added',
+      scheduleId: schedule.id,
+      name: schedule.name,
+      mark: schedule.mark,
+      when: schedule.when,
+      action: schedule.action,
+      zone: schedule.zone,
+      byName: schedule.createdBy
+    })
+    this.armClock()
+  }
+
+  private handleScheduleEdit(
+    member: Member,
+    scheduleId: string,
+    name: string,
+    mark: string,
+    when: unknown,
+    action: ToolAction,
+    zone: string
+  ): void {
+    const held = this.schedules.get(scheduleId)
+    const clean = cleanSchedule(name, mark, when, action, zone)
+    if (!held || !clean) return
+    this.schedules.set(scheduleId, { ...held, ...clean })
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'schedule.edited',
+      scheduleId,
+      name: clean.name,
+      mark: clean.mark,
+      when: clean.when,
+      action: clean.action,
+      zone: clean.zone,
+      byName: member.name
+    })
+    this.armClock()
+  }
+
+  private handleScheduleRemove(member: Member, scheduleId: string): void {
+    if (!this.schedules.delete(scheduleId)) return
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'schedule.removed', scheduleId, byName: member.name })
+    this.armClock()
+  }
+
+  private handleSchedulePause(member: Member, scheduleId: string, paused: boolean): void {
+    const held = this.schedules.get(scheduleId)
+    if (!held || held.paused === (paused === true)) return
+    this.schedules.set(scheduleId, { ...held, paused: paused === true })
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'schedule.paused',
+      scheduleId,
+      paused: paused === true,
+      byName: member.name
+    })
+    this.armClock()
+  }
+
+  // One timer for every schedule there is, armed to the soonest of them, the way
+  // the music arms itself to the end of the track that is playing. A timer each
+  // would be forty of them on a crew that has forty, all to answer one question.
+  private armClock(): void {
+    if (this.clock) clearTimeout(this.clock)
+    this.clock = null
+    const now = Date.now()
+    let soonest = Infinity
+    for (const schedule of this.schedules.values()) {
+      if (schedule.paused) continue
+      const since = schedule.lastRunAt ?? schedule.ts
+      soonest = Math.min(soonest, nextRun({ ...schedule, lastRunAt: since }, since))
+    }
+    if (soonest === Infinity) return
+    this.clock = setTimeout(() => this.strike(), Math.min(Math.max(soonest - now, 0), CLOCK_MAX_MS))
+    this.clock.unref?.()
+  }
+
+  private strike(): void {
+    this.clock = null
+    const now = Date.now()
+    for (const schedule of [...this.schedules.values()]) {
+      if (due(schedule, now)) this.runSchedule(schedule.id, schedule.createdBy, true)
+    }
+    this.armClock()
+  }
+
+  // Firing by hand is the same run, and the one thing it must not do is move
+  // when the next one is due: a run somebody asked for is not the run the
+  // schedule was written for, so only the clock's own writes the time down.
+  private runSchedule(scheduleId: string, byName: string, onTime: boolean): void {
+    const schedule = this.schedules.get(scheduleId)
+    if (!schedule) return
+    const threadId = this.performScheduled(schedule.action, schedule, new Set())
+    if (!onTime) return
+    const ts = Date.now()
+    this.schedules.set(scheduleId, { ...schedule, lastRunAt: ts, lastThreadId: threadId ?? schedule.lastThreadId })
+    this.emit({ id: randomUUID(), ts, kind: 'schedule.ran', scheduleId, threadId, byName })
+  }
+
+  // A schedule fires with nobody standing anywhere, so what it does is done in
+  // the name of whoever wrote it. It hands back the thread it opened, where it
+  // opened one, so the row is a way into what the run produced.
+  private performScheduled(action: ToolAction, schedule: Schedule, walked: Set<string>): string | undefined {
+    const member: Member = {
+      id: SYSTEM_AUTHOR_ID,
+      name: schedule.createdBy,
+      connections: new Set()
+    }
+    if (action.kind === 'say') {
+      this.systemMessage(action.text)
+      return undefined
+    }
+    if (action.kind === 'todo') {
+      this.handleTodoAdd(member, action.text, action.agentId)
+      return undefined
+    }
+    if (action.kind === 'prompt') {
+      const agent = this.agents.get(action.agentId ?? '')
+      // The agent a schedule names may be on a machine that is not here at four
+      // in the morning. Whoever is here takes the work, which is the rule the
+      // toolbox already holds about a tool that names somebody offline.
+      const taking = agent ?? [...this.agents.values()].find(one => one.runner !== null)
+      if (!taking) return undefined
+      return this.startThread(member, taking, action.text, [])
+    }
+    if (action.kind === 'music') {
+      if (action.trackId) this.handleMusicSet(member, action.trackId, true, 0, action.playlistId ?? null)
+      return undefined
+    }
+    if (action.kind === 'chain') {
+      for (const toolId of action.toolIds) {
+        if (walked.has(toolId)) continue
+        walked.add(toolId)
+        if (walked.size > STEP_LIMIT) return undefined
+        const tool = this.tools.get(toolId)
+        if (tool && schedulable(tool.action)) this.performScheduled(tool.action, schedule, walked)
+      }
+      return undefined
+    }
+    return undefined
+  }
+
   private handleMemorySetting(member: Member, enabled: boolean): void {
     if (enabled === this.memoryEnabled) return
     this.memoryEnabled = enabled
