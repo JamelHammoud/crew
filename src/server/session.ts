@@ -4933,7 +4933,8 @@ export class CrewSession {
     const ghost = this.ghostEventOf(event)
     if (ghost || opts.to) {
       ghost?.events.push(event)
-      this.send(opts.to ?? ghost!.ws, { type: 'event', event })
+      const to = opts.to ?? ghost?.ws
+      if (to) this.send(to, { type: 'event', event })
       return
     }
     const ephemeral =
