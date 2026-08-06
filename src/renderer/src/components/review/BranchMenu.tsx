@@ -41,6 +41,11 @@ export default function BranchMenu({
   const fresh = wanted.length > 0 && !branches.some(one => one.name === wanted)
   const active = shown[at] ?? null
 
+  useEffect(() => {
+    const row = listRef.current?.querySelector<HTMLElement>(`[data-row="${at}"]`)
+    if (row) bringInto(row, listRef.current)
+  }, [at])
+
   const shut = () => {
     setOpen(false)
     setScreen('branches')
@@ -80,7 +85,7 @@ export default function BranchMenu({
   }
 
   return (
-    <>
+    <div className="relative flex min-w-0 items-center">
       <button
         onClick={() => setOpen(true)}
         className="flex h-7 min-w-0 items-center gap-1.5 rounded-full pl-1.5 pr-2 text-fg-secondary transition-colors hover:bg-fg/10 hover:text-fg active:scale-[0.97]"
