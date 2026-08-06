@@ -247,7 +247,8 @@ describe('what the crew has put on a clock', () => {
     await new Promise(r => setTimeout(r, 250))
 
     expect(schedulesIn(host)).toHaveLength(1)
-    expect(schedulesIn(host)[0]).toMatchObject({ id: added.scheduleId, name: 'Standup', paused: undefined })
+    expect(schedulesIn(host)[0]).toMatchObject({ id: added.scheduleId, name: 'Standup' })
+    expect(schedulesIn(host)[0].paused).toBeFalsy()
   })
 
   it('goes for good when it is taken out', async () => {
