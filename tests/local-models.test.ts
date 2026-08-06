@@ -3,7 +3,13 @@ import { createServer, type IncomingMessage, type ServerResponse } from 'node:ht
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { afterAll, describe, expect, it, vi } from 'vitest'
-import { cachedModels, diskModels, modelsServedOn, refreshModels, servedModels } from '../src/runner/providers/local-models'
+import {
+  diskModels,
+  localModels,
+  modelsServedOn,
+  refreshModels,
+  servedModels
+} from '../src/runner/providers/local-models'
 import {
   answering,
   cachedRuntimes,
@@ -126,7 +132,7 @@ describe('what this machine has on disk', () => {
     vi.resetModules()
     try {
       const fresh = await import('../src/runner/providers/local-models')
-      expect(fresh.cachedModels()).toContain('llama3.2:3b')
+      expect(fresh.localModels()).toContain('llama3.2:3b')
     } finally {
       if (was.home === undefined) delete process.env.HOME
       else process.env.HOME = was.home
@@ -194,10 +200,17 @@ describe('the models a run can be given', () => {
     expect(shows).toEqual(['cached:8b'])
   })
 
-  it('hands back what it last refreshed rather than the disk', async () => {
+  it('hands back what this computer is really running rather than the disk', async () => {
     const fake = await ollamaOn([tagged('standing:8b')], {})
-    await refreshModels([{ url: fake.url, label: 'Ollama', kind: 'ollama' }])
-    expect(cachedModels()).toEqual(['standing:8b'])
+    const was = process.env.OLLAMA_HOST
+    process.env.OLLAMA_HOST = fake.url
+    try {
+      await refreshModels(await findRuntimes())
+      expect(localModels()).toEqual(['standing:8b'])
+    } finally {
+      if (was === undefined) delete process.env.OLLAMA_HOST
+      else process.env.OLLAMA_HOST = was
+    }
   })
 
   // A server is a provider of its own, so what it serves is asked for by
