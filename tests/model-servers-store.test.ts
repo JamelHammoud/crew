@@ -35,6 +35,12 @@ describe('model server store', () => {
     expect(serverKey('http://llm.example.com:39862/v1')).toBe('sk-one')
   })
 
+  it('keeps the name a server was given, since it is what the picker calls it', () => {
+    rememberServer({ url: 'http://llm.example.com:39862/v1', name: 'The rack', key: 'sk-one' })
+    reopen()
+    expect(knownServers()[0].name).toBe('The rack')
+  })
+
   it('keeps a key when the same address is written down again without one', () => {
     rememberServer({ url: 'http://llm.example.com:39862/v1', key: 'sk-one' })
     rememberServer({ url: 'http://llm.example.com:39862/v1' })
