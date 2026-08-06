@@ -1,7 +1,7 @@
 import { FrameGlyph } from '../design/glyphs'
-import { BookGlyph, ChatGlyph, MoreGlyph, PlugGlyph, type Glyph } from '../icons'
+import { BookGlyph, ChatGlyph, ClockGlyph, MoreGlyph, PlugGlyph, type Glyph } from '../icons'
 
-export type Tab = 'chat' | 'docs' | 'design' | 'plugins'
+export type Tab = 'chat' | 'docs' | 'design' | 'plugins' | 'scheduled'
 
 export type NavTab = Tab
 
@@ -13,7 +13,10 @@ export const TABS: TabRow[] = [
   { id: 'design', label: 'Design', Icon: FrameGlyph }
 ]
 
-export const MORE_TABS: TabRow[] = [{ id: 'plugins', label: 'Plugins', Icon: PlugGlyph }]
+export const MORE_TABS: TabRow[] = [
+  { id: 'scheduled', label: 'Scheduled', Icon: ClockGlyph },
+  { id: 'plugins', label: 'Plugins', Icon: PlugGlyph }
+]
 
 export const MoreIcon = MoreGlyph
 
