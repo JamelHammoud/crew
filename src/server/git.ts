@@ -444,7 +444,29 @@ export class GitSync {
   // working tree once per commit, and each rewrite can land on top of a file an
   // agent is writing right now. A merge leaves local commits alone and touches
   // only what actually came in.
+  private async upstream(): Promise<boolean> {
+    const named = await runGit(
+      ['rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{upstream}'],
+      this.repoPath
+    )
+    return named.code === 0 && named.stdout.trim().length > 0
+  }
+
+  private async pushCurrent(): Promise<GitResult> {
+    if (await this.upstream()) return runGit(['push'], this.repoPath)
+    const [remotes, branch] = await Promise.all([
+      runGit(['remote'], this.repoPath),
+      runGit(['branch', '--show-current'], this.repoPath)
+    ])
+    const names = remotes.stdout.split(/\r?\n/).map(one => one.trim()).filter(Boolean)
+    const target = names.includes('origin') ? 'origin' : names[0]
+    const name = branch.stdout.trim()
+    if (!target || !name) return runGit(['push'], this.repoPath)
+    return runGit(['push', '--set-upstream', target, name], this.repoPath)
+  }
+
   private async pullRemote(autostash: boolean): Promise<{ ok: boolean; updated: boolean; detail: string }> {
+    if (!(await this.upstream())) return { ok: true, updated: false, detail: '' }
     const before = await runGit(['rev-parse', 'HEAD'], this.repoPath)
     const stashes = await stashCount(this.repoPath)
     const args = ['pull', '--no-rebase', '--no-edit']
