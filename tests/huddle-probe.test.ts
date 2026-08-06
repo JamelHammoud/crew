@@ -68,10 +68,9 @@ const session = () => {
   })
 }
 
-const openToolbox = () => {
+const openMore = () => {
   const more = screen.getAllByRole('button', { name: 'More' })
   fireEvent.click(more[more.length - 1])
-  fireEvent.click(screen.getByRole('button', { name: 'Toolbox' }))
 }
 
 const emptyStream = (): MediaStream => ({ getVideoTracks: () => [] }) as unknown as MediaStream
