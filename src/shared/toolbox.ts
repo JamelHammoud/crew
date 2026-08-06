@@ -137,6 +137,12 @@ export function cleanTool(
     const ask = { kind: 'prompt' as const, text }
     return built(action.agentId ? { ...ask, agentId: action.agentId } : ask)
   }
+  if (action?.kind === 'post') {
+    const text = action.text?.trim().slice(0, PROMPT_LIMIT)
+    if (!text) return null
+    const ask = { kind: 'post' as const, text }
+    return built(action.agentId ? { ...ask, agentId: action.agentId } : ask)
+  }
   if (action?.kind === 'say') {
     const text = action.text?.trim().slice(0, PROMPT_LIMIT)
     if (!text) return null
