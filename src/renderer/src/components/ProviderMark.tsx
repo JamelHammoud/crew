@@ -16,12 +16,19 @@ const MARKS: Record<string, string> = {
   local: ollamaMark
 }
 
+// A vendor wears its own app icon. A server somebody stood up themselves has no
+// logo to wear, so it takes the scene a plugin and a helper's mark are
+// photographed in, worked out from the address, which is the one thing about it
+// that is the same on every machine that has it.
 export default function ProviderMark({ provider, className = 'w-4 h-4' }: { provider: string; className?: string }) {
   const src = MARKS[provider]
-  if (!src) return null
   return (
     <span className={`relative shrink-0 overflow-hidden rounded-[22%] ${className}`}>
-      <img src={src} alt="" draggable={false} className="w-full h-full object-cover" />
+      {src ? (
+        <img src={src} alt="" draggable={false} className="w-full h-full object-cover" />
+      ) : (
+        <GeneratedField seed={provider} box={MARK_BOX} />
+      )}
       <InsetRing className="ring-1 ring-inset ring-fg/5" />
     </span>
   )
