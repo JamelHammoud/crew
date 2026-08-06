@@ -47,7 +47,7 @@ export interface AgentSettingOption {
   label: string
 }
 
-export type AgentSettingKind = 'choice' | 'switch' | 'number' | 'text'
+export type AgentSettingKind = 'choice' | 'switch' | 'number' | 'text' | 'paragraph'
 
 export interface AgentSettingField {
   key: string

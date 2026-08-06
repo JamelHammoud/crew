@@ -173,10 +173,9 @@ export const claudeFields = (): AgentSettingField[] => [
   {
     key: 'instructions',
     label: 'Instructions',
-    kind: 'text',
+    kind: 'paragraph',
     default: '',
     advanced: true,
-    section: 'Instructions',
     placeholder: 'None',
     line: 'Read before every message.'
   },
@@ -186,7 +185,7 @@ export const claudeFields = (): AgentSettingField[] => [
     options: FALLBACKS,
     default: '',
     advanced: true,
-    section: 'Instructions'
+    section: 'Model'
   },
   {
     key: 'dirs',
