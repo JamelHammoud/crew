@@ -35,7 +35,31 @@ describe('what a schedule may be', () => {
     expect(schedulable({ kind: 'say', text: 'hi' })).toBe(true)
     expect(schedulable({ kind: 'prompt', text: 'review the diff' })).toBe(true)
     expect(schedulable({ kind: 'todo', text: 'water the plants' })).toBe(true)
+    expect(schedulable({ kind: 'post', text: 'say what changed' })).toBe(true)
     expect(schedulable({ kind: 'chain', toolIds: ['a'] })).toBe(true)
+  })
+
+  it('takes a line posted in the chat, and refuses one with nothing to ask for', () => {
+    const when = { kind: 'daily', at: 9 * 60 }
+    expect(cleanTool('Standup', 'clock', { kind: 'post', text: '  Say what changed  ' })).toEqual({
+      name: 'Standup',
+      mark: 'clock',
+      action: { kind: 'post', text: 'Say what changed' }
+    })
+    expect(cleanTool('Standup', 'clock', { kind: 'post', text: 'Say what changed', agentId: 'mac/fake' })?.action).toEqual(
+      { kind: 'post', text: 'Say what changed', agentId: 'mac/fake' }
+    )
+    expect(cleanTool('Standup', 'clock', { kind: 'post', text: '   ' })).toBeNull()
+    expect(cleanTool('', 'clock', { kind: 'post', text: 'Say what changed' })).toBeNull()
+
+    expect(cleanSchedule('Standup', 'clock', when, { kind: 'post', text: '  Say what changed  ' }, LISBON)).toEqual({
+      name: 'Standup',
+      mark: 'clock',
+      when: { kind: 'daily', at: 9 * 60 },
+      action: { kind: 'post', text: 'Say what changed' },
+      zone: LISBON
+    })
+    expect(cleanSchedule('Standup', 'clock', when, { kind: 'post', text: '   ' }, LISBON)).toBeNull()
   })
 
   it('refuses the ones that need somebody at a screen', () => {
