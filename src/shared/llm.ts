@@ -138,6 +138,12 @@ export interface ProviderCapability {
   installed: boolean
   // Whether crew knows how to install this CLI on this machine's platform.
   installable: boolean
+  // What the row says about itself where installed is not the question. A
+  // server is reached rather than installed, so it says whether it answered.
+  hint?: string
+  // The address behind a provider somebody wrote down, and the whole of what
+  // tells one of those from the five that ship.
+  server?: string
   // Standing in the way of an agent that would be made right now, where being
   // installed is not the whole of whether one would run.
   note?: string
