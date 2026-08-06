@@ -119,7 +119,7 @@ export function SettingSections({
   return (
     <>
       {sections.map(section => (
-        <Fragment key={section.title}>
+        <Fragment key={section.fields[0].key}>
           {section.title && (
             <h4 className="pt-5 pb-1.5 text-sm font-semibold text-fg/45">{section.title}</h4>
           )}
