@@ -53,7 +53,8 @@ export function codexDialog(prompt: string, cwd: string, get: SettingReader, opt
       sandboxPolicy: SANDBOX_POLICY,
       approvalPolicy: APPROVAL,
       summary: SUMMARY,
-      ...(effort ? { effort } : {})
+      ...(effort ? { effort } : {}),
+      ...(personality ? { personality } : {})
     })
 
   const startGoal = () =>
