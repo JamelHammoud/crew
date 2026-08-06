@@ -275,7 +275,7 @@ describe('the sidebar', () => {
     fireEvent.pointerEnter(more.parentElement as HTMLElement)
     fireEvent.click(await screen.findByRole('button', { name: 'Toolbox' }))
 
-    expect(screen.getByRole('button', { name: 'Terminal' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'New tool' })).toBeTruthy()
     expect(screen.queryByRole('button', { name: 'Plugins' })).toBeNull()
 
     act(() => useSidebar.getState().peek(false))
@@ -288,10 +288,10 @@ describe('the sidebar', () => {
     const more = screen.getByRole('button', { name: 'More' })
     fireEvent.pointerEnter(more.parentElement as HTMLElement)
     fireEvent.click(await screen.findByRole('button', { name: 'Toolbox' }))
-    expect(screen.getByRole('button', { name: 'Terminal' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'New tool' })).toBeTruthy()
 
     fireEvent.click(more)
-    await waitFor(() => expect(screen.queryByRole('button', { name: 'Terminal' })).toBeNull())
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'New tool' })).toBeNull())
     expect(screen.queryByRole('button', { name: 'Plugins' })).toBeNull()
   })
 
