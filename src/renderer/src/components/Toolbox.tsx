@@ -51,7 +51,7 @@ export default function Toolbox({
     runTool(tool.action, answers)
     setFilling(null)
     const word = saidAfter(tool.action)
-    if (!word) return press()
+    if (!word) return onClose()
     setSaid({ toolId: tool.id, word })
     clearTimeout(timer.current)
     timer.current = setTimeout(() => setSaid(null), SAID)
