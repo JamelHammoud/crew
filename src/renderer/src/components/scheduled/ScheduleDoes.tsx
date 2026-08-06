@@ -130,7 +130,7 @@ export default function ScheduleDoes({
               rows={2}
               value={post}
               aria-label="What to ask"
-              placeholder="Sum up where the week got to"
+              placeholder="Sum up the week's changes"
               onChange={event => setPost(event.target.value)}
             />
           </Field>
