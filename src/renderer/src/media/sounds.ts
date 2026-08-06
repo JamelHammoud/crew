@@ -11,6 +11,7 @@ type StrikeName =
   | 'tab.docs'
   | 'tab.design'
   | 'tab.plugins'
+  | 'tab.scheduled'
   | 'sound.on'
   | 'toolbox.open'
   | 'tasks.open'

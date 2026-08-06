@@ -132,8 +132,8 @@ describe('repo branches', () => {
     const work = await new GitSync(here).work()
 
     const names = work.branches.map(one => one.name)
-    expect(await git(here, ['for-each-ref', '--format=%(refname:short)', 'refs/remotes'])).toContain(
-      'origin/HEAD'
+    expect(await git(here, ['for-each-ref', '--format=%(refname)', 'refs/remotes'])).toContain(
+      'refs/remotes/origin/HEAD'
     )
     expect(work.branches.find(one => one.name === 'remote-work')).toEqual({
       name: 'remote-work',
