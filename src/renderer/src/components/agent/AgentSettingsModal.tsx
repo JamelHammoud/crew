@@ -41,7 +41,7 @@ export default function AgentSettingsModal({
             </button>
           )}
         </div>
-        <div className="-mt-2">
+        <div>
           <SettingSections fields={deeper} settings={settings} onChange={onChange} />
         </div>
         <div className="flex items-center justify-end">
