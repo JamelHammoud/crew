@@ -51,6 +51,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
   const [screen, setScreen] = useState<'agent' | 'server'>('agent')
   const [servers, setServers] = useState<ModelServer[]>([])
   const [address, setAddress] = useState('')
+  const [serverTitle, setServerTitle] = useState('')
   const [serverKey, setServerKey] = useState('')
   const [adding, setAdding] = useState(false)
   const [addError, setAddError] = useState('')
