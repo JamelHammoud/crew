@@ -870,6 +870,7 @@ export class CrewSession {
     }
     this.assignPageCodes()
     this.persistMeta()
+    this.armClock()
   }
 
   attach(ws: WebSocket): void {
