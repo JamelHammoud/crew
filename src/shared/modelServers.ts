@@ -1,9 +1,21 @@
 export interface ModelServer {
   url: string
+  name?: string
   key?: string
 }
 
 export const SERVER_LIMIT = 20
+export const SERVER_NAME_LIMIT = 40
+
+const PREFIX = 'server:'
+
+export const serverProviderName = (url: string): string => `${PREFIX}${url}`
+
+export const serverUrlIn = (provider: string): string | null =>
+  provider.startsWith(PREFIX) ? provider.slice(PREFIX.length) : null
+
+export const cleanServerName = (said: string): string =>
+  said.replace(/\s+/g, ' ').trim().slice(0, SERVER_NAME_LIMIT)
 
 export function serverUrl(said: string): string | null {
   const written = said.trim().replace(/\/+$/, '')
