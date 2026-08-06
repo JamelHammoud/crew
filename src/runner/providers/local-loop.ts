@@ -23,6 +23,7 @@ export interface LoopOptions {
   cwd: string
   prompt: string
   sink: RunSink
+  tuning?: Tuning
 }
 
 export interface LocalRun {
@@ -108,7 +109,8 @@ export function startLoop(opts: LoopOptions): LocalRun {
           tools: LOCAL_TOOLS,
           context: opts.context,
           lane: round,
-          signal: control.signal
+          signal: control.signal,
+          tuning: opts.tuning
         },
         out => opts.sink.apply(out)
       )
