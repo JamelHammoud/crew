@@ -13,6 +13,22 @@ describe('what a run is worth', () => {
     expect(rateOf('claude-sonnet-5')).toEqual([3, 15])
   })
 
+  it('tells a flash from the flash-lite that is written over the top of it', () => {
+    expect(rateOf('gemini-3.5-flash')).toEqual([1.5, 9])
+    expect(rateOf('gemini-3.5-flash-lite')).toEqual([0.3, 2.5])
+    expect(rateOf('gemini-2.5-flash')).toEqual([0.3, 2.5])
+    expect(rateOf('gemini-2.5-flash-lite-preview-09-2025')).toEqual([0.1, 0.4])
+  })
+
+  it('prices a gemini build by the model it is a build of', () => {
+    expect(rateOf('gemini-3.1-pro-preview')).toEqual([2, 12])
+    expect(rateOf('gemini-3.1-pro-preview-customtools')).toEqual([2, 12])
+    expect(rateOf('gemini-3-flash-preview')).toEqual([0.5, 3])
+    expect(rateOf('gemini-3.6-flash')).toEqual([1.5, 7.5])
+    expect(rateOf('gemini-3.1-flash-lite')).toEqual([0.25, 1.5])
+    expect(rateOf('gemini-2.5-pro')).toEqual([1.25, 10])
+  })
+
   // A wrong number costs more than a missing one, so a model nobody has priced
   // comes back as nothing rather than as the nearest guess.
   it('says nothing about a model it has no rate for', () => {
