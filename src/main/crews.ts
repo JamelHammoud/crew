@@ -222,17 +222,22 @@ export class Crews {
 
   async capabilities(): Promise<ProviderCapability[]> {
     return Promise.all(
-      builtinProviders.map(async p => {
+      allProviders().map(async p => {
         // What detect() finds is what fields() draws from, so the picker is
         // built after the looking rather than beside it. Read together, a
         // model list warmed by detect lands a beat too late to be in it.
         const installed = await p.detect()
+        const url = serverUrlIn(p.name)
         return {
           provider: p.name,
           label: p.label,
           fields: p.fields(),
           installed,
           installable: installCommand(p) !== null,
+          // Nothing here is installed or not, so the word for a server that is
+          // down is what it is really doing rather than the CLI's word.
+          ...(url && !installed ? { hint: 'Not answering' } : {}),
+          ...(url ? { server: url } : {}),
           note: await p.note?.()
         }
       })
