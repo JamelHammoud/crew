@@ -17,6 +17,7 @@ const act =
 // hundred pixels of chrome standing over the one thing anybody came here for.
 export default function ReviewHeader({
   status,
+  branches,
   busy,
   added,
   removed,
@@ -27,6 +28,7 @@ export default function ReviewHeader({
   onForget
 }: {
   status: RepoStatus
+  branches: RepoBranch[]
   busy: RepoCommand['do'] | null
   added: number
   removed: number
