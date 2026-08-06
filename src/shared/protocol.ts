@@ -117,6 +117,7 @@ export type ClientMessage =
       // moment it lands rather than guessing which new thread was its own.
       forkId?: string
     }
+  | { type: 'chat.post'; text: string; agentId?: string }
   | { type: 'history'; before: string }
   // Everything one thread said. A window holds the tail of the log, so a thread
   // opened long after it ran has none of its own events left to draw from,
