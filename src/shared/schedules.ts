@@ -27,7 +27,7 @@ export const DAY_MINUTES = 60 * 24
 
 export const SCHEDULE_FULL = `The crew has as many scheduled tasks as it can hold. Take one out before adding another.`
 
-export const SCHEDULABLE = ['prompt', 'say', 'todo', 'note', 'music', 'chain'] as const
+export const SCHEDULABLE = ['prompt', 'post', 'say', 'todo', 'note', 'music', 'chain'] as const
 
 export const schedulable = (action: ToolAction): boolean =>
   (SCHEDULABLE as readonly string[]).includes(action?.kind)
