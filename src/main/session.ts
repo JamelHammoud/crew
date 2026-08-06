@@ -171,7 +171,7 @@ export class AppSession {
   }
 
   async repoWork(): Promise<RepoWork> {
-    if (!this.git) return { status: await this.repoStatus(), changes: [], stashes: [] }
+    if (!this.git) return { status: await this.repoStatus(), changes: [], stashes: [], branches: [] }
     return this.git.work()
   }
 

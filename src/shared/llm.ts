@@ -58,6 +58,7 @@ export interface AgentSettingField {
   free?: boolean
   line?: string
   advanced?: boolean
+  section?: string
   min?: number
   max?: number
   step?: number
