@@ -294,7 +294,28 @@ export class GitSync {
         return this.stashRefAction(command.ref, 'pop')
       case 'drop':
         return this.stashRefAction(command.ref, 'drop')
+      case 'switch':
+        return this.switchAction(command.branch)
+      case 'branch':
+        return this.branchAction(command.name)
     }
+  }
+
+  private async switchAction(branch: string): Promise<RepoActionResult> {
+    const known = (await this.readBranches()).find(one => one.name === branch)
+    if (!known) return this.done(false, false, 'That branch is not there any more.')
+    if (known.current) return this.done(true, false, `Already on ${branch}.`)
+    const go = await runGit(['switch', branch], this.repoPath)
+    if (go.code !== 0) return this.done(false, false, `Could not switch. ${gitDetail(go)}`)
+    return this.done(true, true, `Switched to ${branch}.`)
+  }
+
+  private async branchAction(name: string): Promise<RepoActionResult> {
+    const wanted = cleanBranchName(name)
+    if (!wanted) return this.done(false, false, 'Give the branch a name first.')
+    const make = await runGit(['switch', '-c', wanted], this.repoPath)
+    if (make.code !== 0) return this.done(false, false, `Could not create that branch. ${gitDetail(make)}`)
+    return this.done(true, true, `Switched to ${wanted}.`)
   }
 
   private async stageAction(paths: string[]): Promise<RepoActionResult> {

@@ -268,6 +268,17 @@ describe('the sidebar', () => {
     expect(screen.getByRole('button', { name: 'More' }).getAttribute('aria-current')).toBe('page')
   })
 
+  it('opens the panel on Start from the Browser row in More', async () => {
+    render(Sidebar())
+    const more = screen.getByRole('button', { name: 'More' })
+    fireEvent.pointerEnter(more.parentElement as HTMLElement)
+    fireEvent.click(await screen.findByRole('button', { name: 'Browser' }))
+
+    expect(useBrowser.getState().open).toBe(true)
+    expect(useBrowser.getState().tabs).toHaveLength(0)
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Browser' })).toBeNull())
+  })
+
   it('opens the toolbox off the More row and holds a hovered rail up while it stands', async () => {
     useSidebar.setState({ pinned: false, peeking: true })
     render(Sidebar())
