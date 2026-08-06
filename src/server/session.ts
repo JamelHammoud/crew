@@ -420,6 +420,8 @@ export class CrewSession {
   private tools = new Map<string, CrewTool>()
   private memories = new Map<string, CrewMemory>()
   private plugins = new Map<string, CrewPlugin>()
+  private schedules = new Map<string, Schedule>()
+  private clock: ReturnType<typeof setTimeout> | null = null
   // How big a file may be, in megabytes. The crew's own, folded off the log the
   // way the toolbox is.
   private attachmentMb = DEFAULT_ATTACHMENT_MB
