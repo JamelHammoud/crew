@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { ToolboxGlyph } from '../../icons'
+import { PanelRightGlyph, ToolboxGlyph } from '../../icons'
 import { playSound } from '../../media/sounds'
+import { useBrowser } from '../../state/browser'
 import { useSidebar } from '../../state/sidebar'
 import { MORE_TABS, MoreIcon, TAB_ICON, type Tab } from '../navTabs'
 import { MenuItem, Popover } from '../Popover'
