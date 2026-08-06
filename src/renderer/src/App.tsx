@@ -149,6 +149,11 @@ function Session() {
               <Plugins />
             </Suspense>
           )}
+          {tab === 'scheduled' && (
+            <Suspense fallback={<Loading />}>
+              <Scheduled />
+            </Suspense>
+          )}
         </main>
         <div className="absolute top-0 inset-x-0 z-40 pointer-events-none">
           {tab !== 'design' && <div className="page-scrim absolute inset-x-0 top-0" />}

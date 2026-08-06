@@ -2006,6 +2006,15 @@ export class CrewSession {
       if (action.trackId) this.handleMusicSet(member, action.trackId, true, 0, action.playlistId ?? null)
       return undefined
     }
+    // A page that has since been deleted is nothing rather than a doc written
+    // back from a schedule, which is the rule the toolbox already holds.
+    if (action.kind === 'note') {
+      const page = this.followRenames(action.page)
+      const doc = this.docs.get(page)
+      if (!doc) return undefined
+      this.handleDoc(member, page, doc.text ? `${doc.text.replace(/\s*$/, '')}\n\n${action.text}` : action.text)
+      return undefined
+    }
     if (action.kind === 'chain') {
       for (const toolId of action.toolIds) {
         if (walked.has(toolId)) continue
