@@ -333,8 +333,9 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
                 <div className="space-y-1">
                   {servers.map(server => (
                     <div key={server.url} className="group flex items-center gap-2 h-9">
+                      <ProviderMark provider={serverProviderName(server.url)} />
                       <span className="flex-1 min-w-0 truncate text-sm text-fg/45">
-                        {serverLabel(server.url)}
+                        {serverName(server)}
                       </span>
                       <Tooltip label="Take out">
                         <button
