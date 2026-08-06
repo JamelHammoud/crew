@@ -2351,7 +2351,8 @@ export class CrewSession {
     const asker: Member = { id: parentAgent.id, name: from.byName, connections: new Set() }
     const model = opts.model?.trim()
     const threadId = this.startThread(asker, agent, cleanTask, [], {
-      ghost: this.ghostOf(from.threadId)?.ws,
+      ghost: this.ghostOf(from.threadId)?.ws ?? undefined,
+      hidden: this.ghostOf(from.threadId) !== undefined,
       subagent: {
         parentThreadId: from.threadId,
         parentPromptId: from.promptId ?? '',
