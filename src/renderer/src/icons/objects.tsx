@@ -285,6 +285,13 @@ export const GlobeGlyph = glyph(
   <path d="M2.75 12A9.25 9.25 0 0 1 21.25 12A9.25 9.25 0 0 1 2.75 12ZM8 12A4 9.25 0 0 1 16 12A4 9.25 0 0 1 8 12ZM2.75 12H21.25" />
 )
 
+export const CompassGlyph = glyph(
+  <>
+    <path d="M2.75 12A9.25 9.25 0 0 1 21.25 12A9.25 9.25 0 0 1 2.75 12Z" />
+    <path d="M15.75 8.25 14 14l-5.75 1.75L10 10Z" />
+  </>
+)
+
 // Two commits on a line and a third off to one side, which is the drawing
 // everyone already reads as what has changed in a project. The nodes are rings
 // rather than dots, because three filled dots on a line is the ellipsis with a
