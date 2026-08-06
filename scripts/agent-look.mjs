@@ -106,7 +106,7 @@ app.whenReady().then(async () => {
 const dir = await realpath(await mkdtemp(path.join(tmpdir(), 'crew-agent-look-')))
 await writeFile(
   path.join(dir, 'index.html'),
-  '<!doctype html><html><head><meta charset="utf-8"><script type="module" src="/probe.jsx"></script></head><body class="mac"><div id="root"></div></body></html>'
+  '<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="/probe.css"><script type="module" src="/probe.jsx"></script></head><body class="mac"><div id="root"></div></body></html>'
 )
 await writeFile(path.join(dir, 'probe.jsx'), PROBE)
 await writeFile(
