@@ -74,12 +74,7 @@ export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab
                 }}
               />
             ))}
-            <MenuItem
-              icon={<PanelRightGlyph />}
-              label="Browser"
-              active={panel}
-              onClick={openBrowser}
-            />
+            <MenuItem icon={<CompassGlyph />} label="Browser" onClick={openBrowser} />
             <MenuItem icon={<ToolboxGlyph />} label="Toolbox" onClick={openToolbox} />
           </div>
         </Popover>
