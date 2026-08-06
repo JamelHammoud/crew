@@ -26,6 +26,7 @@ const input = (text: string) => [{ type: 'text', text }]
 export function codexDialog(prompt: string, cwd: string, get: SettingReader, options: RunOptions = {}): Dialog {
   const model = get('model')
   const effort = get('effort')
+  const personality = get('personality')
   const pending = new Map<number, Stage>()
   let next = 0
   let threadId = ''
