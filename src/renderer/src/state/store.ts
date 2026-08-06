@@ -291,6 +291,7 @@ interface CrewState {
   reactToMessage: (targetId: string, emoji: ReactionEmoji) => void
   setThreadStatus: (threadId: string, status: ThreadStatus) => void
   implementPlan: (threadId: string) => void
+  postChat: (text: string, agentId?: string) => void
   addTodo: (text: string, agentId?: string) => void
   editTodo: (todoId: string, text: string, agentId?: string) => void
   removeTodo: (todoId: string) => void
