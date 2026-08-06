@@ -44,7 +44,7 @@ declare global {
     agentCapabilities(): Promise<ProviderCapability[]>
     installProvider(provider: string): Promise<ProviderCapability[]>
     modelServers(): Promise<ModelServer[]>
-    addModelServer(input: { url: string; key?: string }): Promise<ProviderCapability[]>
+    addModelServer(input: { url: string; name?: string; key?: string }): Promise<ProviderCapability[]>
     forgetModelServer(url: string): Promise<ProviderCapability[]>
     createAgent(input: { provider: string; name: string; settings: AgentSettings }): Promise<AgentDef>
     removeAgent(instanceId: string): Promise<void>

@@ -59,7 +59,7 @@ const bridge = {
   agentCapabilities: (): Promise<ProviderCapability[]> => ipcRenderer.invoke('agents:capabilities'),
   installProvider: (provider: string): Promise<ProviderCapability[]> => ipcRenderer.invoke('agents:install', provider),
   modelServers: (): Promise<ModelServer[]> => ipcRenderer.invoke('agents:servers'),
-  addModelServer: (input: { url: string; key?: string }): Promise<ProviderCapability[]> =>
+  addModelServer: (input: { url: string; name?: string; key?: string }): Promise<ProviderCapability[]> =>
     ipcRenderer.invoke('agents:addServer', input),
   forgetModelServer: (url: string): Promise<ProviderCapability[]> =>
     ipcRenderer.invoke('agents:forgetServer', url),
