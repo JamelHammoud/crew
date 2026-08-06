@@ -144,6 +144,37 @@ export type SessionEvent =
       byName: string
     }
   | { id: string; ts: number; kind: 'plugin.removed'; pluginId: string; byName: string }
+  | {
+      id: string
+      ts: number
+      kind: 'schedule.added'
+      scheduleId: string
+      name: string
+      mark: string
+      when: Cadence
+      action: ToolAction
+      zone: string
+      agentId?: string
+      byName: string
+    }
+  | {
+      id: string
+      ts: number
+      kind: 'schedule.edited'
+      scheduleId: string
+      name: string
+      mark: string
+      when: Cadence
+      action: ToolAction
+      zone: string
+      byName: string
+    }
+  | { id: string; ts: number; kind: 'schedule.removed'; scheduleId: string; byName: string }
+  | { id: string; ts: number; kind: 'schedule.paused'; scheduleId: string; paused: boolean; byName: string }
+  // What a schedule did when it came round. It is the record of a run rather
+  // than the schedule itself, so it carries the thread it opened and nothing
+  // about the cadence: a row that says when it last ran reads this.
+  | { id: string; ts: number; kind: 'schedule.ran'; scheduleId: string; threadId?: string; byName: string }
   // How big a file the crew may send. It is one number for everyone, since the
   // host is what turns a big one away and everything sent lands in the folder
   // they share.
