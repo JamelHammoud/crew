@@ -254,16 +254,18 @@ export class Crews {
     return this.capabilities()
   }
 
+  // The key never goes back to the renderer. The name does, since it is what
+  // the row in the picker is called.
   modelServers(): ModelServer[] {
-    return knownServers().map(({ url }) => ({ url }))
+    return knownServers().map(({ url, name }) => ({ url, ...(name ? { name } : {}) }))
   }
 
-  async addModelServer(input: { url: string; key?: string }): Promise<ProviderCapability[]> {
+  async addModelServer(input: { url: string; name?: string; key?: string }): Promise<ProviderCapability[]> {
     const url = serverUrl(input.url)
     if (!url) throw new Error('That is not an address.')
     const answer = await checkServer({ url, key: input.key })
     if (!answer.ok) throw new Error(answer.why)
-    rememberServer({ url, key: input.key })
+    rememberServer({ url, name: cleanServerName(input.name ?? ''), key: input.key })
     return this.capabilities()
   }
 
