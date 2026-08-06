@@ -151,11 +151,11 @@ export const parseClaudeLine: OutputParser = line => {
   return []
 }
 
-const THINKING = [
-  { value: '', label: 'Default' },
-  { value: 'enabled', label: 'Always' },
-  { value: 'adaptive', label: 'When it helps' },
-  { value: 'disabled', label: 'Never' }
+export const NO_THINKING = 'off'
+
+const EFFORTS = [
+  ...choices(['low', 'medium', 'high', 'xhigh', 'max']),
+  { value: NO_THINKING, label: 'Off' }
 ]
 
 const FALLBACKS = [{ value: '', label: 'None' }, ...CLAUDE_MODELS.slice(1)]
