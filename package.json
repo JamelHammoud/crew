@@ -111,6 +111,7 @@
     "codex-check": "node scripts/codex-check.mjs",
     "goal-check": "node scripts/goal-check.mjs",
     "kimi-check": "node scripts/kimi-check.mjs",
+    "gemini-check": "node scripts/gemini-check.mjs",
     "local-check": "node scripts/local-check.mjs",
     "dist": "electron-vite build && electron-builder",
     "icon": "node scripts/make-icon.mjs",

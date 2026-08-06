@@ -132,24 +132,23 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
     if (held) void refresh().catch(() => {})
   }
 
-  const landOn = (url: string, fresh: ProviderCapability[]) => {
-    setCaps(fresh)
-    const chosen = fresh.find(c => c.provider === providerRef.current)
-    if (!chosen) return
-    const next = resolveSettings(chosen.fields, { ...settings, address: url })
-    setSettings(next)
-    if (!nameEdited) setName(defaultName(chosen, next))
-  }
-
+  // A server that was just written down is what somebody wants to make an agent
+  // on, so the card lands on its row rather than leaving them to find it.
   const addServer = async () => {
     setAdding(true)
     setAddError('')
     try {
       const url = serverUrl(address) ?? address.trim()
-      const fresh = await window.crew.addModelServer({ url, ...(serverKey.trim() ? { key: serverKey.trim() } : {}) })
+      const fresh = await window.crew.addModelServer({
+        url,
+        ...(serverTitle.trim() ? { name: serverTitle.trim() } : {}),
+        ...(serverKey.trim() ? { key: serverKey.trim() } : {})
+      })
       setServers(await window.crew.modelServers())
-      landOn(url, fresh)
+      setCaps(fresh)
+      selectProvider(serverProviderName(url), fresh)
       setAddress('')
+      setServerTitle('')
       setServerKey('')
       setScreen('agent')
     } catch (err) {
@@ -162,7 +161,10 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
   const forgetServer = async (url: string) => {
     const fresh = await window.crew.forgetModelServer(url)
     setServers(await window.crew.modelServers())
-    landOn(settings['address'] === url ? '' : settings['address'] ?? '', fresh)
+    setCaps(fresh)
+    if (providerRef.current === serverProviderName(url)) {
+      selectProvider((fresh.find(c => c.installed) ?? fresh[0])?.provider ?? '', fresh)
+    }
   }
 
   const setSetting = (key: string, value: string) => {
@@ -188,7 +190,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
   const hintFor = (c: ProviderCapability) => {
     if (c.installed) return undefined
     if (installing === c.provider) return <Spinner size={12} />
-    return c.installable ? 'Install' : 'Not installed'
+    return c.hint ?? (c.installable ? 'Install' : 'Not installed')
   }
 
   if (caps && caps.length === 0) {
