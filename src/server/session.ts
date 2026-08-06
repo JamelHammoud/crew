@@ -388,10 +388,6 @@ const RESUME_GRACE_MS = 60000
 const STEP_FLUSH_MS = 80
 const DESIGN_SAVE_MS = 500
 
-// How far ahead the clock is ever armed. A schedule can be a month out, which is
-// past what a timer will hold, and a laptop that slept through the moment it was
-// armed for wakes with the timer still pending. Coming round on its own is what
-// answers both, and the question it asks is one pass over a handful of rows.
 const CLOCK_MAX_MS = 10 * 60 * 1000
 const DESIGN_CURSOR_STEP_MS = 140
 const DESIGN_CURSOR_STEPS_MAX = 25
@@ -720,10 +716,6 @@ export class CrewSession {
         const held = this.schedules.get(event.scheduleId)
         if (held) this.schedules.set(event.scheduleId, { ...held, paused: event.paused })
       }
-      // What it did when it came round is folded onto the schedule itself. A
-      // session coming back up reads the last one and takes the next from there,
-      // which is what keeps a Crew that was shut all weekend from firing every
-      // run it slept through the moment it opens.
       if (event.kind === 'schedule.ran') {
         const held = this.schedules.get(event.scheduleId)
         if (held)
@@ -1944,9 +1936,6 @@ export class CrewSession {
     this.armClock()
   }
 
-  // One timer for every schedule there is, armed to the soonest of them, the way
-  // the music arms itself to the end of the track that is playing. A timer each
-  // would be forty of them on a crew that has forty, all to answer one question.
   private armClock(): void {
     if (this.clock) clearTimeout(this.clock)
     this.clock = null
@@ -1971,9 +1960,6 @@ export class CrewSession {
     this.armClock()
   }
 
-  // Firing by hand is the same run, and the one thing it must not do is move
-  // when the next one is due: a run somebody asked for is not the run the
-  // schedule was written for, so only the clock's own writes the time down.
   private runSchedule(scheduleId: string, byName: string, onTime: boolean): void {
     const schedule = this.schedules.get(scheduleId)
     if (!schedule) return
@@ -1984,9 +1970,6 @@ export class CrewSession {
     this.emit({ id: randomUUID(), ts, kind: 'schedule.ran', scheduleId, threadId, byName })
   }
 
-  // A schedule fires with nobody standing anywhere, so what it does is done in
-  // the name of whoever wrote it. It hands back the thread it opened, where it
-  // opened one, so the row is a way into what the run produced.
   private performScheduled(action: ToolAction, schedule: Schedule, walked: Set<string>): string | undefined {
     const member: Member = {
       id: SYSTEM_AUTHOR_ID,
@@ -2003,9 +1986,6 @@ export class CrewSession {
     }
     if (action.kind === 'prompt') {
       const agent = this.agents.get(action.agentId ?? '')
-      // The agent a schedule names may be on a machine that is not here at four
-      // in the morning. Whoever is here takes the work, which is the rule the
-      // toolbox already holds about a tool that names somebody offline.
       const taking = agent ?? [...this.agents.values()].find(one => one.runner !== null)
       if (!taking) return undefined
       return this.startThread(member, taking, action.text, [])
@@ -2014,8 +1994,6 @@ export class CrewSession {
       if (action.trackId) this.handleMusicSet(member, action.trackId, true, 0, action.playlistId ?? null)
       return undefined
     }
-    // A page that has since been deleted is nothing rather than a doc written
-    // back from a schedule, which is the rule the toolbox already holds.
     if (action.kind === 'note') {
       const page = this.followRenames(action.page)
       const doc = this.docs.get(page)

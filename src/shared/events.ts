@@ -172,9 +172,6 @@ export type SessionEvent =
     }
   | { id: string; ts: number; kind: 'schedule.removed'; scheduleId: string; byName: string }
   | { id: string; ts: number; kind: 'schedule.paused'; scheduleId: string; paused: boolean; byName: string }
-  // What a schedule did when it came round. It is the record of a run rather
-  // than the schedule itself, so it carries the thread it opened and nothing
-  // about the cadence: a row that says when it last ran reads this.
   | { id: string; ts: number; kind: 'schedule.ran'; scheduleId: string; threadId?: string; byName: string }
   // How big a file the crew may send. It is one number for everyone, since the
   // host is what turns a big one away and everything sent lands in the folder
@@ -348,10 +345,6 @@ const EPHEMERAL_KINDS = new Set([
   'memory.setting',
   'plugin.added',
   'plugin.removed',
-  // A schedule rides in the snapshot the way the toolbox does: one written months
-  // ago is still due tomorrow, long after its event has fallen off the window.
-  // What it did when it came round is folded onto the schedule's own row, so the
-  // chat is the work it produced rather than a line every time the clock struck.
   'schedule.added',
   'schedule.edited',
   'schedule.removed',
