@@ -99,8 +99,8 @@ describe('a server in the list of providers', () => {
     await waitFor(() =>
       expect(createAgent).toHaveBeenCalledWith({
         provider: serverProviderName(RACK),
-        name: 'The rack far:70b',
-        settings: { model: 'far:70b', context: '' }
+        name: 'The rack Far:70b',
+        settings: { model: 'far:70b' }
       })
     )
   })

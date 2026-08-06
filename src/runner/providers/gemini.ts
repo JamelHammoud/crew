@@ -17,13 +17,6 @@ export const geminiFields = (): AgentSettingField[] => [
   { key: 'model', label: 'Model', options: choices(['', ...MODELS]), default: '' }
 ]
 
-// Gemini runs on `gemini --acp`, the Agent Client Protocol server inside the
-// same CLI everybody already has, which is the door Kimi is already on.
-// `gemini -p --output-format stream-json` is the other one, and it says most of
-// it: a streamed answer, a tool named with its real arguments, and what the
-// turn cost. What it has no channel for at all is reasoning, and it is one shot,
-// so there is nothing to steer. Those are the two the transport decides, and
-// they are the two worth having.
 export const geminiArgs = (_prompt: string, get: (key: string) => string): string[] => {
   const model = get('model')
   return ['--acp', '--yolo', ...(model ? ['--model', model] : [])]

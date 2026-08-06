@@ -76,8 +76,6 @@ describe('the handshake', () => {
     expect(asked.params.cwd).toBe('/work')
   })
 
-  // What a run is set to rides on the command, so nothing stands between the
-  // session and the turn. A setting sent alongside the turn would race it.
   it('goes straight from the session to the turn, with no settings in between', () => {
     const { dialog, begin } = walk({ model: 'gemini-2.5-pro' })
     const [asked] = sent(dialog, [reply(begin[0].id, { protocolVersion: 1 })])
@@ -144,9 +142,6 @@ describe('what the model says', () => {
 })
 
 describe('what a tool was', () => {
-  // The title is a narrated description and the kind is the tool, so the kind is
-  // what names it. Read the other way round, a tool is a different tool on every
-  // call and none of them is in the table a step is drawn from.
   it('names a tool by its kind rather than by the line it narrates itself with', () => {
     const parse = geminiParser().parse
     const out = parse(call({ toolCallId: 'c1', title: 'notes.txt', kind: 'read', status: 'in_progress' }))
@@ -210,9 +205,6 @@ describe('what a tool was', () => {
   })
 })
 
-// Nothing here carries the arguments a tool was called with, so the diff is the
-// tool's own before and after. That is the better half of the trade: what comes
-// over is what really landed on the file.
 describe('what a tool did to a file', () => {
   const edited = (body: Record<string, unknown>) => {
     const parse = geminiParser().parse
@@ -306,7 +298,6 @@ describe('the end of a turn', () => {
     ])
   })
 
-  // A turn cancelled to make room for a steer is not the end of the run.
   it('says nothing at all about a turn that stood down for a steer', () => {
     expect(stopped('cancelled')).toEqual([])
   })
@@ -317,9 +308,6 @@ describe('the end of a turn', () => {
     expect(parse(reply(3, { stopReason: 'end_turn' }))).toEqual([{ blockStop: { index: 1 } }, { turnEnd: true }])
   })
 
-  // A machine that has never signed in is refused before a turn ever opens, so
-  // no turn is coming to end the run. Read as silence it is ten minutes of an
-  // agent that appears to be working and is not.
   it('ends the run when the session is refused, and says why', () => {
     expect(geminiParser().parse(failed(2, 'Gemini API key is missing or not configured.'))).toEqual([
       { error: 'Gemini API key is missing or not configured.' },
@@ -343,8 +331,6 @@ describe('a steer', () => {
     expect(dialog.steer('and a second one')).toBeNull()
   })
 
-  // A second prompt into a live turn is refused, so the way is to stand the turn
-  // down and go again. What that turn had already done is still in the session.
   it('stands the turn down rather than pushing a message into it', () => {
     const { dialog } = started()
     const out = JSON.parse(dialog.steer('and a second one')!)
@@ -353,8 +339,6 @@ describe('a steer', () => {
     expect(out.id).toBeUndefined()
   })
 
-  // The cancelled turn has to be let go of before the next one is asked for. One
-  // written in the same breath is swallowed by the cancel and does nothing.
   it('waits for the cancelled turn to answer before asking for the next one', () => {
     const { dialog, turn } = started()
     dialog.steer('and a second one')
