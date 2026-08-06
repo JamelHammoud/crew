@@ -546,7 +546,7 @@ A step in a thread says what happened in plain words, wearing a mark of its own.
 
 ## Music
 
-Something to put on while the crew works. It is a tab in the side panel called Music, opened from the toolbox or the New button, and what is playing is playing for everyone: one loop, one place in it, and anyone can press anything.
+Something to put on while the crew works. It is a tab in the side panel called Music, opened from the panel's own New button, and what is playing is playing for everyone: one loop, one place in it, and anyone can press anything.
 
 - Crew plays two things and nothing else. Its own tunes, which are numbers rather than files, and a track somebody in the crew added themselves. There is no service behind it and nothing to fetch from the internet.
 - A tune is written out as rows of steps in `songs.ts`, read by `tunes.ts`, and struck through the same bubble the rest of the app's sounds are made of. A note is its name, a dot is a rest, a dash holds the one before it, an x is a drum. `voices.ts` is the whole kit: the low one, the tune, the spark, and three with the tuning taken out of them for time.
@@ -596,7 +596,7 @@ Something to put on while the crew works. It is a tab in the side panel called M
 
 ## Games
 
-Something to play while you wait. It is a tab in the side panel called Games, opened from the toolbox or the New button, and it holds Tetris and Flappy Bird with room for more. What lasts is the score.
+Something to play while you wait. It is a tab in the side panel called Games, opened from the panel's own New button, and it holds Tetris and Flappy Bird with room for more. What lasts is the score.
 
 - `GAMES` in `src/shared/games.ts` is the whole list of what there is to play, so the panel, the leaderboard and the host all read the same table and a new game is a row in it plus the two files that draw and play it.
 - A game is numbers. `tetris.ts` and `flappy.ts` hold the whole of the rules and neither one draws anything or listens for anything: a move is a function from one game to the next, which is what lets `tests/games-play.test.ts` play both of them through without a canvas anywhere near it. Anything that has to be shuffled or has to fall takes its randomness and its step as arguments, so a test steps them exactly.
@@ -765,7 +765,7 @@ A file opened from a message that changed it opens on the change, showing the di
 - The caret never sits in a line that was taken out. It steps over the whole block, back or forward depending on which way it came, the way a cursor steps over a view zone in VS Code. Rubbing out at the head of a line under a block joins it to the line above, because that is the line above it in the file.
 - Clicking dismisses nothing. It puts the caret where it landed and leaves the page where it was standing. Hide changes puts the diff away.
 
-Files from the toolbox opens the same tab with the project standing beside it, and the button in the toolbar puts that pane away and brings it back.
+Files from the side panel's own New button opens the same tab with the project standing beside it, and the button in the toolbar puts that pane away and brings it back.
 
 - The tree and the folder listing are the same thing, so only one is ever on screen. `FileView` shows `DirRows` when the pane is closed and an empty state when it is open, rather than the same folder twice.
 - A folder opens where it stands and is read only once it is asked for, so nothing walks the whole project to draw the top of it. Which folders are open rides on the tab, beside where it has been, so a pane closed and opened again is where it was left.

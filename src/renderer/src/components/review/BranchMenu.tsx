@@ -181,6 +181,6 @@ export default function BranchMenu({
           </ScreenSwap>
         </div>
       </Popover>
-    </>
+    </div>
   )
 }
