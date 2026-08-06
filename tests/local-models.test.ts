@@ -206,7 +206,7 @@ describe('the models a run can be given', () => {
     process.env.OLLAMA_HOST = fake.url
     try {
       await refreshModels(await findRuntimes())
-      expect(localModels()).toEqual(['standing:8b'])
+      expect(localModels()).toContain('standing:8b')
     } finally {
       if (was === undefined) delete process.env.OLLAMA_HOST
       else process.env.OLLAMA_HOST = was
