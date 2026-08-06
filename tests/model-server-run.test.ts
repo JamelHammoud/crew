@@ -119,21 +119,40 @@ describe('a server written down by hand', () => {
     await fake.close()
     fake = null
     holding([{ url }])
-    const started = localProvider.start('hello', cwd, { onStep: () => {} }, { address: url, model: 'far/model' })
+    const started = serverProvider({ url }).start('hello', cwd, { onStep: () => {} }, { model: 'far/model' })
     await expect(started.done).rejects.toThrow(/Nothing answered at 127\.0\.0\.1:\d+/)
     await expect(started.done).rejects.not.toThrow(/Start it/)
   })
 
-  it('stands in the picker with its models, under the host it was written as', async () => {
+  it('stands in the picker as a provider of its own, under the name it was given', async () => {
+    fake = await fakeServer(true)
+    holding([{ url: fake.url, name: 'The rack', key: KEY }])
+    const provider = allProviders().find(one => one.name === serverProviderName(fake!.url))
+    expect(provider?.label).toBe('The rack')
+    expect(await provider!.detect()).toBe(true)
+    expect(provider!.fields().find(field => field.key === 'model')?.options.map(option => option.value)).toEqual([
+      'far/model'
+    ])
+  })
+
+  it('is called by its own host where nobody named it', async () => {
     fake = await fakeServer(true)
     holding([{ url: fake.url, key: KEY }])
-    const found = await findRuntimes()
-    await refreshModels(found)
+    const provider = allProviders().find(one => one.name === serverProviderName(fake!.url))
+    expect(provider?.label).toBe(fake.url.replace('http://', '').replace('/v1', ''))
+  })
+
+  // Its models are its own. Pooled into Ollama's list they were offered under
+  // the name of a machine that has never heard of them.
+  it('keeps its models out of the list of what this computer is running', async () => {
+    fake = await fakeServer(true)
+    holding([{ url: fake.url, name: 'The rack', key: KEY }])
+    await allProviders()
+      .find(one => one.name === serverProviderName(fake!.url))!
+      .detect()
+    await refreshModels(await findRuntimes())
     const fields = localFields()
-    const server = fields.find(field => field.key === 'address')
-    expect(server?.free).toBe(true)
-    expect(server?.options.map(option => option.value)).toContain(fake.url)
-    expect(server?.options.map(option => option.label)).toContain(fake.url.replace('http://', '').replace('/v1', ''))
-    expect(fields.find(field => field.key === 'model')?.options.map(option => option.value)).toContain('far/model')
+    expect(fields.find(field => field.key === 'address')?.options.map(option => option.value)).not.toContain(fake.url)
+    expect(fields.find(field => field.key === 'model')?.options.map(option => option.value)).not.toContain('far/model')
   })
 })
