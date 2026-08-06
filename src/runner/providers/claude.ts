@@ -255,23 +255,31 @@ function claudeModel(get: SettingReader): string {
 // it is thinking out loud and says nothing. The interactive CLI asks for the
 // summary; a headless one does not, and crew is headless. Asking for it here is
 // the whole of what puts the thinking on screen.
-export const claudeArgs = (_prompt: string, get: SettingReader, run: RunOptions = {}): string[] => [
-  '-p',
-  '--input-format',
-  'stream-json',
-  '--output-format',
-  'stream-json',
-  '--verbose',
-  '--include-partial-messages',
-  '--thinking-display',
-  'summarized',
-  ...flag('--model', claudeModel(get)),
-  ...flag('--effort', get('effort')),
-  ...flag('--mcp-config', run.mcp?.file ?? ''),
-  '--permission-mode',
-  'bypassPermissions',
-  '--dangerously-skip-permissions'
-]
+export const claudeArgs = (_prompt: string, get: SettingReader, run: RunOptions = {}): string[] => {
+  const dirs = list(get('dirs'))
+  return [
+    '-p',
+    '--input-format',
+    'stream-json',
+    '--output-format',
+    'stream-json',
+    '--verbose',
+    '--include-partial-messages',
+    '--thinking-display',
+    'summarized',
+    ...flag('--model', claudeModel(get)),
+    ...flag('--effort', get('effort')),
+    ...flag('--mcp-config', run.mcp?.file ?? ''),
+    ...flag('--append-system-prompt', get('instructions').trim()),
+    ...flag('--thinking', get('thinking')),
+    ...flag('--fallback-model', get('fallbackModel')),
+    ...(dirs.length ? ['--add-dir', ...dirs] : []),
+    ...(get('crewOnly') === ON ? ['--setting-sources', ''] : []),
+    '--permission-mode',
+    'bypassPermissions',
+    '--dangerously-skip-permissions'
+  ]
+}
 
 const userMessage = (text: string): string =>
   JSON.stringify({ type: 'user', message: { role: 'user', content: [{ type: 'text', text }] } })
