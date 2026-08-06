@@ -29,8 +29,11 @@ export default function AgentCard({
   onRemove?: () => void
 }) {
   const status = threadCount > 0 ? 'busy' : agent.status
-  const fields = visibleSettingFields(agent.fields, agent.settings)
+  const fields = visibleSettingFields(plainFields(agent.fields), agent.settings)
+  const deeper = visibleSettingFields(advancedFields(agent.fields), agent.settings)
+  const changed = changedSettings(agent.fields, agent.settings).filter(field => field.advanced).length
   const [draft, setDraft] = useState<string | null>(null)
+  const [deep, setDeep] = useState(false)
   const editing = draft !== null
   const input = useRef<HTMLInputElement>(null)
 
