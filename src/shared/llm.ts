@@ -47,26 +47,70 @@ export interface AgentSettingOption {
   label: string
 }
 
+export type AgentSettingKind = 'choice' | 'switch' | 'number' | 'text'
+
 export interface AgentSettingField {
   key: string
   label: string
-  options: AgentSettingOption[]
+  kind?: AgentSettingKind
+  options?: AgentSettingOption[]
   default: string
   free?: boolean
+  line?: string
+  advanced?: boolean
+  min?: number
+  max?: number
+  step?: number
+  unit?: string
+  placeholder?: string
   visibleWhen?: {
     key: string
     value: string
   }
 }
 
+export const ON = 'on'
+
+export const fieldKind = (field: AgentSettingField): AgentSettingKind => field.kind ?? 'choice'
+
+export const isOn = (value: string | undefined): boolean => value === ON
+
+export function cleanSetting(field: AgentSettingField, value: string | undefined): string {
+  const kind = fieldKind(field)
+  if (kind === 'switch') return value === ON || value === '' ? value : field.default
+  if (kind === 'text') return typeof value === 'string' ? value.trim() : field.default
+  if (kind === 'number') {
+    if (value === undefined || value.trim() === '') return ''
+    const held = Number(value)
+    if (!Number.isFinite(held)) return field.default
+    const floored = field.min !== undefined ? Math.max(field.min, held) : held
+    const capped = field.max !== undefined ? Math.min(field.max, floored) : floored
+    return String(capped)
+  }
+  const options = field.options ?? []
+  const valid = options.some(option => option.value === value)
+  return valid || (field.free && value) ? (value as string) : field.default
+}
+
+export function settingLabel(field: AgentSettingField, settings: AgentSettings): string {
+  const value = settings[field.key] ?? field.default
+  const kind = fieldKind(field)
+  if (kind === 'switch') return isOn(value) ? 'On' : 'Off'
+  if (kind === 'number') return value ? `${value}${field.unit ? ` ${field.unit}` : ''}` : 'Default'
+  if (kind === 'text') return value || 'Default'
+  return field.options?.find(option => option.value === value)?.label ?? value
+}
+
 export function resolveSettings(fields: AgentSettingField[], settings: AgentSettings): AgentSettings {
   const out: AgentSettings = {}
-  for (const field of fields) {
-    const chosen = settings[field.key]
-    const valid = field.options.some(option => option.value === chosen)
-    out[field.key] = valid || (field.free && chosen) ? chosen : field.default
-  }
+  for (const field of fields) out[field.key] = cleanSetting(field, settings[field.key])
   return out
+}
+
+export function changedSettings(fields: AgentSettingField[], settings: AgentSettings): AgentSettingField[] {
+  return visibleSettingFields(fields, settings).filter(
+    field => (settings[field.key] ?? field.default) !== field.default
+  )
 }
 
 export function visibleSettingFields(fields: AgentSettingField[], settings: AgentSettings): AgentSettingField[] {
