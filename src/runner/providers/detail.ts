@@ -94,8 +94,8 @@ const diffOf = (removed: string, added: string): string => {
 }
 
 const editStrings = (record: Record<string, unknown>): { removed: string; added: string } => ({
-  removed: str(record['old_string']) || str(record['old_str']) || str(record['old_text']),
-  added: str(record['new_string']) || str(record['new_str']) || str(record['new_text'])
+  removed: str(record['old_string']) || str(record['old_str']) || str(record['old_text']) || str(record['oldText']),
+  added: str(record['new_string']) || str(record['new_str']) || str(record['new_text']) || str(record['newText'])
 })
 
 export function fileChanges(tool: string, input: unknown): FileChange[] | undefined {
