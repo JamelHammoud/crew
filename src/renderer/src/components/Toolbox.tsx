@@ -72,18 +72,6 @@ export default function Toolbox({
         <>
           <SheetHeader title="Toolbox" />
           <div className={GRID}>
-            {builtins.map(tool => (
-              <Tile
-                key={tool.id}
-                mark={<tool.mark className="w-[22px] h-[22px]" />}
-                name={tool.name}
-                active={tool.on}
-                onClick={() => press(tool.run)}
-              />
-            ))}
-          </div>
-          <Rule />
-          <div className={GRID}>
             {tools.map(tool => (
               <Tile
                 key={tool.id}
