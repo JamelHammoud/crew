@@ -6,7 +6,8 @@ const EVERY_MS = 3000
 const EMPTY: RepoWork = {
   status: { available: false, remote: false, branch: '', changed: 0, ahead: 0, behind: 0, stashes: 0 },
   changes: [],
-  stashes: []
+  stashes: [],
+  branches: []
 }
 
 export interface RepoWorkState {
