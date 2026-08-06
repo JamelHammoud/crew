@@ -227,8 +227,9 @@ const list = (value: string): string[] =>
     .filter(Boolean)
 
 export const claudeEnv = (get: SettingReader): NodeJS.ProcessEnv => {
-  const ms = get('commandMs')
-  if (!ms) return {}
+  const seconds = Number(get('commandSeconds'))
+  if (!Number.isFinite(seconds) || seconds <= 0) return {}
+  const ms = String(Math.round(seconds * 1000))
   return { BASH_DEFAULT_TIMEOUT_MS: ms, BASH_MAX_TIMEOUT_MS: ms }
 }
 
