@@ -103,15 +103,18 @@ export default function ScheduleDoes({
       </Field>
 
       {kind === 'prompt' && (
-        <Field label="What to ask">
-          <TextArea
-            rows={2}
-            value={ask}
-            aria-label="What to ask"
-            placeholder="Look at what came in overnight"
-            onChange={event => setAsk(event.target.value)}
-          />
-        </Field>
+        <>
+          {who('Who it asks')}
+          <Field label="What to ask">
+            <TextArea
+              rows={2}
+              value={ask}
+              aria-label="What to ask"
+              placeholder="Look at what came in overnight"
+              onChange={event => setAsk(event.target.value)}
+            />
+          </Field>
+        </>
       )}
 
       {kind === 'say' && (
