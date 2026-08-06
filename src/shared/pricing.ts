@@ -45,7 +45,16 @@ export const MODEL_RATES: Record<string, [number, number]> = {
   'claude-sonnet-4-6': [3, 15],
   'claude-sonnet-4-5': [3, 15],
   'claude-sonnet-4': [3, 15],
-  'claude-haiku-4-5': [1, 5]
+  'claude-haiku-4-5': [1, 5],
+  'gemini-3.1-pro-preview': [2, 12],
+  'gemini-2.5-pro': [1.25, 10],
+  'gemini-3.6-flash': [1.5, 7.5],
+  'gemini-3.5-flash': [1.5, 9],
+  'gemini-3-flash-preview': [0.5, 3],
+  'gemini-2.5-flash': [0.3, 2.5],
+  'gemini-3.5-flash-lite': [0.3, 2.5],
+  'gemini-3.1-flash-lite': [0.25, 1.5],
+  'gemini-2.5-flash-lite': [0.1, 0.4]
 }
 
 // A CLI names the model it really used, dated build and all, so a row is a

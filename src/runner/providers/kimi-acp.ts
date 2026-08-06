@@ -45,13 +45,8 @@ const outputText = (update: any): string => {
     .join('\n')
 }
 
-// The words arrive as a plain run of chunks with no block number on them, so
-// the lanes are counted here. A block is a stretch of one kind, and switching
-// kind or reaching a tool closes the one that was open. Nothing reuses a
-// number, because closing a block closes every kind standing at that index.
 export function kimiParser(): RunParser {
-  let lane = 0
-  let open: 'thinking' | 'text' | null = null
+  const { close, stream } = makeLanes()
   let sessionId = ''
   let read = 0
   const names = new Map<string, string>()
@@ -65,25 +60,6 @@ export function kimiParser(): RunParser {
     const text = wire(sessionId)
     const usage = text ? kimiUsage(text) : null
     if (usage) out.push({ usage })
-  }
-
-  const close = (out: ParsedOutput[]): void => {
-    if (open === null) return
-    out.push({ blockStop: { index: lane } })
-    open = null
-  }
-
-  const stream = (out: ParsedOutput[], kind: 'thinking' | 'text', text: string): void => {
-    if (!text) return
-    if (open !== kind) {
-      close(out)
-      lane += 1
-      out.push(kind === 'thinking' ? { thinkingStart: { index: lane } } : { textStart: { index: lane } })
-      open = kind
-    }
-    out.push(
-      kind === 'thinking' ? { thinkingDelta: { index: lane, text } } : { textDelta: { index: lane, text } }
-    )
   }
 
   // The name a tool started under is the one that says what it is. Every update
