@@ -36,12 +36,17 @@ export default function ScheduleDoes({
   const [trackId, setTrackId] = useState(initial?.kind === 'music' ? (initial.trackId ?? '') : '')
   const [playlistId, setPlaylistId] = useState(initial?.kind === 'music' ? (initial.playlistId ?? '') : '')
   const [toolIds, setToolIds] = useState<string[]>(initial?.kind === 'chain' ? initial.toolIds : [])
+  const [agentId, setAgentId] = useState<string | null>(
+    initial?.kind === 'prompt' || initial?.kind === 'todo' ? (initial.agentId ?? null) : null
+  )
 
   useEffect(() => {
     const built = (): ToolAction | null => {
-      if (kind === 'prompt') return ask.trim() ? { kind: 'prompt', text: ask } : null
+      if (kind === 'prompt')
+        return ask.trim() ? (agentId ? { kind: 'prompt', text: ask, agentId } : { kind: 'prompt', text: ask }) : null
       if (kind === 'say') return say.trim() ? { kind: 'say', text: say } : null
-      if (kind === 'todo') return task.trim() ? { kind: 'todo', text: task } : null
+      if (kind === 'todo')
+        return task.trim() ? (agentId ? { kind: 'todo', text: task, agentId } : { kind: 'todo', text: task }) : null
       if (kind === 'note') return page && line.trim() ? { kind: 'note', page, text: line } : null
       if (kind === 'music') {
         if (playlistId) return { kind: 'music', playlistId }
