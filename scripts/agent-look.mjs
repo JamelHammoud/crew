@@ -94,6 +94,8 @@ const fs = require('node:fs')
 app.disableHardwareAcceleration()
 app.whenReady().then(async () => {
   const win = new BrowserWindow({ width: 1120, height: 900, show: false, backgroundColor: '#0b0b0d' })
+  win.webContents.on('console-message', (_e, _l, message) => console.log('LOG ' + message))
+  win.webContents.on('render-process-gone', () => console.log('LOG gone'))
   await win.loadFile(path.join(__dirname, 'dist', 'index.html'))
   await new Promise(r => setTimeout(r, 700))
   const image = await win.webContents.capturePage()
@@ -131,7 +133,10 @@ await new Promise((accept, reject) => {
   let out = ''
   child.stdout.on('data', chunk => (out += chunk))
   child.stderr.on('data', () => {})
-  child.on('exit', () => (out.includes('SHOT ok') ? accept() : reject(new Error(out || 'nothing came back'))))
+  child.on('exit', () => {
+    process.stdout.write(out.split('\n').filter(l => l.startsWith('LOG ')).join('\n'))
+    return out.includes('SHOT ok') ? accept() : reject(new Error(out || 'nothing came back'))
+  })
   child.on('error', reject)
 })
 
