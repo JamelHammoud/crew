@@ -377,9 +377,9 @@ export default function ToolBuilder({ tool, onDone }: { tool: CrewTool | null; o
           </Field>
         )}
 
-        {(kind === 'prompt' || kind === 'todo') && (
+        {(kind === 'prompt' || kind === 'post' || kind === 'todo') && (
           <div>
-            <Label>{kind === 'prompt' ? 'Who it asks' : "Who it's for"}</Label>
+            <Label>{kind === 'todo' ? "Who it's for" : 'Who it asks'}</Label>
             <div className="flex flex-wrap gap-1">
               <Who
                 name="Anyone"
