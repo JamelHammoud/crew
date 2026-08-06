@@ -348,6 +348,15 @@ const EPHEMERAL_KINDS = new Set([
   'memory.setting',
   'plugin.added',
   'plugin.removed',
+  // A schedule rides in the snapshot the way the toolbox does: one written months
+  // ago is still due tomorrow, long after its event has fallen off the window.
+  // What it did when it came round is folded onto the schedule's own row, so the
+  // chat is the work it produced rather than a line every time the clock struck.
+  'schedule.added',
+  'schedule.edited',
+  'schedule.removed',
+  'schedule.paused',
+  'schedule.ran',
   // The size limit rides in the snapshot the same way, so a number somebody
   // picked months ago is still the number after its event has fallen off the
   // window.
