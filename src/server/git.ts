@@ -566,9 +566,55 @@ export class GitSync {
 
   private async readWork(): Promise<RepoWork> {
     const status = await this.readStatus()
-    if (!status.available) return { status, changes: [], stashes: [] }
-    const [changes, stashes] = await Promise.all([this.readChanges(), this.readStashes()])
-    return { status, changes, stashes }
+    if (!status.available) return { status, changes: [], stashes: [], branches: [] }
+    const [changes, stashes, branches] = await Promise.all([
+      this.readChanges(),
+      this.readStashes(),
+      this.readBranches()
+    ])
+    return { status, changes, stashes, branches }
+  }
+
+  private async readBranches(): Promise<RepoBranch[]> {
+    const count = String(BRANCH_LIST_LIMIT)
+    const [locals, remotes] = await Promise.all([
+      runGit(
+        ['for-each-ref', '--sort=-committerdate', '--count', count, `--format=%(refname:short)${UNIT}%(HEAD)`, 'refs/heads'],
+        this.repoPath
+      ),
+      runGit(
+        ['for-each-ref', '--sort=-committerdate', '--count', count, '--format=%(refname:short)', 'refs/remotes'],
+        this.repoPath
+      )
+    ])
+    if (locals.code !== 0) return []
+    const here: RepoBranch[] = []
+    const held = new Set<string>()
+    for (const row of locals.stdout.split(/\r?\n/)) {
+      const [name = '', head = ''] = row.trim().split(UNIT)
+      if (!name) continue
+      held.add(name)
+      here.push({ name, current: head.trim() === '*', remote: false })
+    }
+    return [...here, ...this.remoteOnly(remotes, held)].slice(0, BRANCH_LIST_LIMIT)
+  }
+
+  private remoteOnly(remotes: GitResult, held: Set<string>): RepoBranch[] {
+    if (remotes.code !== 0) return []
+    const order: string[] = []
+    const times = new Map<string, number>()
+    for (const row of remotes.stdout.split(/\r?\n/)) {
+      const ref = row.trim()
+      const cut = ref.indexOf('/')
+      if (cut < 0) continue
+      const name = ref.slice(cut + 1)
+      if (!name || name === 'HEAD' || held.has(name)) continue
+      if (!times.has(name)) order.push(name)
+      times.set(name, (times.get(name) ?? 0) + 1)
+    }
+    return order
+      .filter(name => times.get(name) === 1)
+      .map(name => ({ name, current: false, remote: true }))
   }
 
   private async readStashes(): Promise<RepoStash[]> {
