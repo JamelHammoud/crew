@@ -27,6 +27,15 @@ export interface ChatTurn {
   usage: ParsedUsage | null
 }
 
+export interface Tuning {
+  think?: string
+  temperature?: string
+  topP?: string
+  seed?: string
+  maxReply?: string
+  keepAlive?: string
+}
+
 export interface ChatRequest {
   runtime: LocalRuntime
   model: string
@@ -35,6 +44,7 @@ export interface ChatRequest {
   context: number
   lane: number
   signal: AbortSignal
+  tuning?: Tuning
 }
 
 // A model that cannot think is refused outright when a run asks it to, and the
