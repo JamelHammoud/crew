@@ -50,14 +50,22 @@ export function Section({
 export function Row({
   label,
   line,
+  bleed,
   children
 }: {
   label: string
   line?: ReactNode
+  // A row inside a card that holds its own padding, where the rule under it runs
+  // edge to edge rather than stopping short of both sides.
+  bleed?: boolean
   children?: ReactNode
 }) {
   return (
-    <div className="flex items-center gap-6 py-3.5 border-b border-fg/[0.06] last:border-b-0">
+    <div
+      className={`flex items-center gap-6 py-3.5 border-b border-fg/[0.06] last:border-b-0 ${
+        bleed ? '-mx-6 px-6' : ''
+      }`}
+    >
       <div className="min-w-0 flex-1">
         <p className="text-base text-fg">{label}</p>
         {line && <div className="text-sm text-fg/45 mt-0.5">{line}</div>}
