@@ -83,6 +83,7 @@ export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab
               />
             ))}
             <MenuItem icon={<CompassGlyph />} label="Browser" onClick={openBrowser} />
+            <MenuItem icon={<SignalGlyph />} label="Huddle" active={joined} onClick={pressHuddle} />
             <MenuItem icon={<ToolboxGlyph />} label="Toolbox" onClick={openToolbox} />
           </div>
         </Popover>
