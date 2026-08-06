@@ -1,9 +1,9 @@
 import type { AgentSettingField, AgentSettings } from '../../../../shared/llm'
-import { ON, fieldKind, isOn, visibleSettingFields } from '../../../../shared/llm'
+import { ON, fieldKind, fieldSections, isOn, visibleSettingFields } from '../../../../shared/llm'
 import Select from '../Select'
 import TextField from '../TextField'
 import Toggle from '../Toggle'
-import { Row } from '../settings/parts'
+import { Row, Section } from '../settings/parts'
 import NumberField from './NumberField'
 
 export function SettingControl({
