@@ -241,7 +241,7 @@ describe('a line an agent posts in the chat', () => {
     expect(host.session.snapshot().schedules?.[0].lastThreadId).toBeUndefined()
   })
 
-  it('says the agent had nothing to send rather than posting an empty message', async () => {
+  it('says so in the app own voice rather than posting an empty message', async () => {
     const host = await open()
     const runner = await runnerOn(host, 'mac')
     const sam = await connectUi(host, 'sam')
@@ -259,10 +259,12 @@ describe('a line an agent posts in the chat', () => {
     expect(said).toHaveLength(2)
     for (const one of said) {
       expect(one.authorId).toBe(SYSTEM_AUTHOR_ID)
-      expect(one.text).toBe('Fake had nothing to send.')
       expect(one.threadId).toBeUndefined()
     }
+    expect(said[0].text).toBe('Fake had nothing to say.')
+    expect(said[1].text).toBe('Fake could not write that.')
     expect(said.some(one => one.authorId === agentId('mac', 'fake'))).toBe(false)
+    expect(host.store.loadEvents().some(event => event.kind === 'thread.started')).toBe(false)
   })
 
   it('carries the brief on the prompt it hands over, where an ordinary run carries none', async () => {
