@@ -42,7 +42,7 @@ export default function NumberField({
   }
 
   return (
-    <div className="relative flex items-center">
+    <div className="flex items-center gap-2">
       <input
         type="number"
         inputMode="decimal"
@@ -58,13 +58,9 @@ export default function NumberField({
           if (event.key === 'Enter') commit((event.target as HTMLInputElement).value)
           if (event.key === 'Escape') setDraft(value)
         }}
-        className={`no-spin h-8 w-24 rounded-full bg-fg/[0.07] pl-3.5 text-sm text-fg text-right placeholder:text-fg/30 outline-none transition-colors duration-150 hover:bg-fg/[0.1] focus:bg-fg/[0.14] ${
-          unit ? 'pr-9' : 'pr-3.5'
-        }`}
+        className="no-spin h-8 w-24 rounded-full bg-fg/[0.07] px-3.5 text-sm text-fg text-right placeholder:text-fg/30 outline-none transition-colors duration-150 hover:bg-fg/[0.1] focus:bg-fg/[0.14]"
       />
-      {unit && (
-        <span className="pointer-events-none absolute right-3.5 text-sm text-fg/45 select-none">{unit}</span>
-      )}
+      {unit && <span className="shrink-0 text-sm text-fg/45 select-none">{unit}</span>}
     </div>
   )
 }
