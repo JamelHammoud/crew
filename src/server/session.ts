@@ -4360,18 +4360,23 @@ export class CrewSession {
     const helpersOut =
       thread !== undefined && this.subagentThreads(thread.id).some(one => this.subagentRunning(one))
     if (thread && posting && !this.subagentRunning(thread) && !helpersOut) {
-      this.postReturn(thread, agent, result.ok ? (result.text ?? '') : '', stopped)
+      this.postReturn(thread, agent, result.text ?? '', { ok: result.ok, stopped })
     }
   }
 
-  private postReturn(thread: Thread, agent: AgentState, text: string, stopped: boolean): void {
+  private postReturn(
+    thread: Thread,
+    agent: AgentState,
+    text: string,
+    run: { ok: boolean; stopped: boolean }
+  ): void {
     this.ghosts.delete(thread.id)
     this.threads.delete(thread.id)
     thread.queue = []
-    const said = text.trim()
-    if (stopped) return
+    if (run.stopped) return
+    const said = run.ok ? text.trim() : ''
     if (!said) {
-      this.systemMessage(text === '' ? `${agent.label} could not write that.` : `${agent.label} had nothing to say.`)
+      this.systemMessage(run.ok ? `${agent.label} had nothing to say.` : `${agent.label} could not write that.`)
       return
     }
     this.emit({
