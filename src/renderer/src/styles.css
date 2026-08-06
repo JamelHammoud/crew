@@ -389,6 +389,17 @@ textarea:placeholder-shown {
   display: none;
 }
 
+.no-spin {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.no-spin::-webkit-outer-spin-button,
+.no-spin::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 .light ::-webkit-scrollbar-thumb {
   background: rgb(0 0 0 / 0.14);
   border: 2px solid transparent;

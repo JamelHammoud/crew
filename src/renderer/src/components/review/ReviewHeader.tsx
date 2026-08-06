@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import type { RepoCommand, RepoStatus } from '../../../../shared/repository'
-import { ArchiveGlyph, ArrowDownGlyph, ArrowUpGlyph, BranchGlyph, MoreGlyph, RefreshGlyph, UndoGlyph } from '../../icons'
+import type { RepoBranch, RepoCommand, RepoStatus } from '../../../../shared/repository'
+import { ArchiveGlyph, ArrowDownGlyph, ArrowUpGlyph, MoreGlyph, RefreshGlyph, UndoGlyph } from '../../icons'
 import Counts from '../Counts'
 import { MenuDivider, MenuItem, Popover } from '../Popover'
 import Spinner from '../Spinner'
 import Tooltip from '../Tooltip'
+import BranchMenu from './BranchMenu'
 import { Progress } from './parts'
 
 const act =
