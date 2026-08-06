@@ -21,7 +21,10 @@ const READ_MS = 2500
 
 const toolsSaid = new Map<string, boolean>()
 
-let served: string[] | null = null
+// Kept per server rather than as one list, because a server is a provider of
+// its own now: models pooled across all of them would offer everything on
+// somebody's laptop under the name of a machine down the hall.
+const servedBy = new Map<string, string[]>()
 
 function names(at: string, wanted: 'dir' | 'file'): string[] {
   try {
