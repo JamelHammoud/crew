@@ -30,8 +30,10 @@ const STOPS: Record<string, string> = {
 // starts. A turn sent alongside them would race the settings it is for.
 export function kimiDialog(prompt: string, cwd: string, get: SettingReader, options: RunOptions = {}): Dialog {
   const model = get('model')
-  const config: Array<[string, string]> = [['mode', MODE]]
+  const thinking = get('thinking')
+  const config: Array<[string, string]> = [['mode', get('mode') || MODE]]
   if (model) config.push(['model', model])
+  if (thinking === 'on' || thinking === 'off') config.push(['thinking', thinking])
   return acpDialog({ prompt, cwd, run: options, config })
 }
 
