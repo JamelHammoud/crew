@@ -387,6 +387,12 @@ const CANCEL_REPORT_TIMEOUT_MS = 15000
 const RESUME_GRACE_MS = 60000
 const STEP_FLUSH_MS = 80
 const DESIGN_SAVE_MS = 500
+
+// How far ahead the clock is ever armed. A schedule can be a month out, which is
+// past what a timer will hold, and a laptop that slept through the moment it was
+// armed for wakes with the timer still pending. Coming round on its own is what
+// answers both, and the question it asks is one pass over a handful of rows.
+const CLOCK_MAX_MS = 10 * 60 * 1000
 const DESIGN_CURSOR_STEP_MS = 140
 const DESIGN_CURSOR_STEPS_MAX = 25
 
