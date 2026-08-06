@@ -1476,6 +1476,9 @@ export const useCrew = create<CrewState>((set, get) => {
     implementPlan: threadId => {
       socket.send({ type: 'plan.implement', threadId })
     },
+    postChat: (text, agentId) => {
+      socket.send({ type: 'chat.post', text, agentId })
+    },
     addTodo: (text, agentId) => {
       socket.send({ type: 'todo.add', text, agentId })
     },
