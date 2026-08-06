@@ -160,7 +160,10 @@ export function modelsServedOn(urls: readonly string[]): string[] {
   return kept
 }
 
-export function cachedModels(): string[] {
-  const served = modelsServedOn([...servedBy.keys()])
+// What this computer is running, which is the runtimes found here and never a
+// server somebody wrote down. Asked of everything ever refreshed instead, a
+// server that has gone leaves its models standing in the picker forever.
+export function localModels(): string[] {
+  const served = modelsServedOn(cachedRuntimes().map(runtime => runtime.url))
   return served.length ? served : diskModels()
 }
