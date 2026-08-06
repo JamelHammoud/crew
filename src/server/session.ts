@@ -140,7 +140,7 @@ import {
   SCHEDULE_LIMIT,
   type Schedule
 } from '../shared/schedules'
-import { cleanTool, STEP_LIMIT, type CrewTool, type ToolAction } from '../shared/toolbox'
+import { cleanTool, PROMPT_LIMIT, STEP_LIMIT, type CrewTool, type ToolAction } from '../shared/toolbox'
 import {
   cleanHelperName,
   cleanPrefs,
