@@ -226,8 +226,7 @@ try {
   const wrote = messages.filter(t => t.trim())
   const named = [...calls.values()].filter(c => c.title.trim() && c.kind.trim())
   const diffs = updates.flatMap(diffsIn)
-  const early = [...calls.values()].flatMap(() => [])
-  const late = updates.filter(u => diffsIn(u).length === 0).length
+  const carried = updates.filter(u => Array.isArray(u.content) && u.content.length).length
 
   const checks = [
     {
