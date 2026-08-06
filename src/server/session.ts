@@ -1548,7 +1548,12 @@ export class CrewSession {
     }
     this.threads.set(threadId, thread)
     // Before the first word of it is emitted, or that word goes to everyone.
-    if (opts.ghost) this.ghosts.set(threadId, { ws: opts.ghost, events: [] })
+    if (opts.ghost || opts.post)
+      this.ghosts.set(threadId, {
+        ws: opts.ghost ?? null,
+        events: [],
+        post: opts.post ? { agentId: agent.id } : undefined
+      })
     this.emit({
       id: randomUUID(),
       ts: Date.now(),
