@@ -10,6 +10,7 @@ import {
   GroupGlyph,
   MusicGlyph,
   PencilGlyph,
+  SendGlyph,
   SparkGlyph,
   TerminalGlyph,
   type Glyph
