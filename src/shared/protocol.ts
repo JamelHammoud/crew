@@ -146,6 +146,22 @@ export type ClientMessage =
   | { type: 'memory.set'; enabled: boolean }
   | { type: 'plugin.add'; plugin: unknown }
   | { type: 'plugin.remove'; pluginId: string }
+  | { type: 'schedule.add'; name: string; mark: string; when: unknown; action: ToolAction; zone: string }
+  | {
+      type: 'schedule.edit'
+      scheduleId: string
+      name: string
+      mark: string
+      when: unknown
+      action: ToolAction
+      zone: string
+    }
+  | { type: 'schedule.remove'; scheduleId: string }
+  | { type: 'schedule.pause'; scheduleId: string; paused: boolean }
+  // Firing one by hand, to see what it does without waiting for the clock. It
+  // never moves when the next one is due: a run somebody asked for is not the
+  // run the schedule was written for.
+  | { type: 'schedule.run'; scheduleId: string }
   | { type: 'attachment.limit'; mb: number }
   | { type: 'subagent.stop'; threadId: string }
   // What one person lets helpers do on their own machine. It is kept in that
