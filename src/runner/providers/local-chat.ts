@@ -128,17 +128,63 @@ const wire = (message: ChatMessage, kind: LocalRuntime['kind']): Record<string, 
   return out
 }
 
+const num = (value: string | undefined): number | undefined => {
+  if (!value) return undefined
+  const held = Number(value)
+  return Number.isFinite(held) ? held : undefined
+}
+
+const put = (into: Record<string, unknown>, key: string, value: number | undefined): void => {
+  if (value !== undefined) into[key] = value
+}
+
+export const thinkAsked = (picked: string | undefined): boolean | string => {
+  if (picked === 'off') return false
+  if (!picked || picked === 'on') return true
+  return picked
+}
+
+const effortAsked = (picked: string | undefined): string => {
+  if (!picked || picked === 'on') return ''
+  return picked === 'off' ? 'none' : picked
+}
+
 const body = (req: ChatRequest, think: boolean): string => {
   const messages = req.messages.map(message => wire(message, req.runtime.kind))
   const common = { model: req.model, messages, stream: true }
   const tools = req.tools.length ? { tools: req.tools } : {}
+  const tuning = req.tuning ?? {}
+  const sampling: Record<string, unknown> = {}
+  put(sampling, 'temperature', num(tuning.temperature))
+  put(sampling, 'top_p', num(tuning.topP))
+  put(sampling, 'seed', num(tuning.seed))
   // A streamed OpenAI compatible answer carries no counts at all unless they
   // are asked for, so a run would say nothing about what it cost.
   if (req.runtime.kind !== 'ollama') {
-    return JSON.stringify({ ...common, ...tools, stream_options: { include_usage: true } })
+    const effort = effortAsked(tuning.think)
+    const capped: Record<string, unknown> = {}
+    put(capped, 'max_tokens', num(tuning.maxReply))
+    return JSON.stringify({
+      ...common,
+      ...tools,
+      ...sampling,
+      ...capped,
+      ...(effort ? { reasoning_effort: effort } : {}),
+      stream_options: { include_usage: true }
+    })
   }
-  const options = req.context ? { options: { num_ctx: req.context } } : {}
-  return JSON.stringify({ ...common, ...tools, ...options, ...(think ? { think: true } : {}) })
+  const inner: Record<string, unknown> = { ...sampling }
+  if (req.context) inner.num_ctx = req.context
+  put(inner, 'num_predict', num(tuning.maxReply))
+  const options = Object.keys(inner).length ? { options: inner } : {}
+  const alive = tuning.keepAlive ? { keep_alive: tuning.keepAlive } : {}
+  return JSON.stringify({
+    ...common,
+    ...tools,
+    ...options,
+    ...alive,
+    ...(think ? { think: thinkAsked(tuning.think) } : {})
+  })
 }
 
 const endpoint = (req: ChatRequest): string =>
