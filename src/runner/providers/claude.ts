@@ -1,6 +1,6 @@
 import { choices, flag, makeCliProvider, type SettingReader } from './cli'
 import { activityDetail, fileChanges, stepTodos } from './detail'
-import type { AgentSettingField } from '../../shared/llm'
+import { ON, type AgentSettingField } from '../../shared/llm'
 import { resultText } from './output'
 import { taskCall } from './tasks'
 import { usageFrom } from './tokens'
