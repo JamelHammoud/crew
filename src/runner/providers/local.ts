@@ -8,7 +8,7 @@ import {
 } from '../../shared/modelServers'
 import { commandExists } from './cli'
 import { startLoop, type LocalRun } from './local-loop'
-import { cachedModels, diskModels, modelsServedOn, refreshModels } from './local-models'
+import { localModels, modelsServedOn, refreshModels } from './local-models'
 import {
   cachedRuntimes,
   cachedServer,
@@ -46,7 +46,6 @@ const contextField = (): AgentSettingField => ({
 
 export const localFields = (): AgentSettingField[] => {
   const runtimes = cachedRuntimes()
-  const served = modelsServedOn(runtimes.map(runtime => runtime.url))
   return [
     {
       key: 'address',
@@ -55,7 +54,7 @@ export const localFields = (): AgentSettingField[] => {
       default: runtimes[0]?.url ?? '',
       free: true
     },
-    modelField(served.length ? served : diskModels()),
+    modelField(localModels()),
     contextField()
   ]
 }
@@ -190,7 +189,7 @@ export const localProvider: Provider = {
   // that can run models and has none. A server that is installed and not
   // running is not one of them, since start() puts it up.
   note: async () => {
-    if (cachedModels().length > 0) return undefined
+    if (localModels().length > 0) return undefined
     const runtimes = cachedRuntimes()
     if (runtimes.some(runtime => runtime.kind === 'ollama') || commandExists('ollama')) {
       return 'No models on this computer yet. Pull one with ollama pull.'
@@ -208,7 +207,7 @@ export const localProvider: Provider = {
         // quietly send a run to a different server than the one it was made for.
         address: resolved =>
           serverUrl(settings['address'] || resolved.address || candidateUrls()[0]) ?? '',
-        models: cachedModels
+        models: localModels
       },
       prompt,
       cwd,
