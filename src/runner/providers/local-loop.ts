@@ -1,6 +1,6 @@
 import { activityDetail, fileChanges } from './detail'
 import { localBrief } from './local-brief'
-import { chat, type ChatMessage, type ToolCall } from './local-chat'
+import { chat, type ChatMessage, type ToolCall, type Tuning } from './local-chat'
 import { LOCAL_TOOLS, runTool } from './local-tools'
 import { commandOutput } from './output'
 import type { LocalRuntime } from './local-serve'
