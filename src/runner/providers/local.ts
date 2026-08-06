@@ -7,6 +7,7 @@ import {
   type ModelServer
 } from '../../shared/modelServers'
 import { commandExists } from './cli'
+import type { Tuning } from './local-chat'
 import { startLoop, type LocalRun } from './local-loop'
 import { localModels, modelsServedOn, refreshModels } from './local-models'
 import {
@@ -136,13 +137,15 @@ export const localFields = (): AgentSettingField[] => {
       free: true
     },
     modelField(localModels()),
-    contextField()
+    contextField(),
+    ...tuningFields()
   ]
 }
 
 export const serverFields = (url: string): AgentSettingField[] => [
   modelField(modelsServedOn([url])),
-  contextField()
+  contextField(),
+  ...tuningFields()
 ]
 
 const OLLAMA_INSTALL_SH = 'curl -fsSL https://ollama.com/install.sh | sh'
@@ -190,7 +193,8 @@ function runOn(
       context: Number(resolved.context) || 0,
       cwd,
       prompt: body,
-      sink
+      sink,
+      tuning: localTuning(key => resolved[key] ?? '')
     })
     run = started
     for (const text of early) started.say(text)
