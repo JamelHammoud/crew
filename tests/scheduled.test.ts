@@ -148,56 +148,72 @@ describe('what the crew has put on a clock', () => {
     await waitUntil(() => schedulesIn(host)[0]?.paused === false)
   })
 
-  // The record of what it did is what a session coming back up reads to know
-  // where it got to, so it has to survive a restart the schedule itself does.
-  it('remembers when it last ran across a restart', async () => {
-    const sam = await TestUi.connect(host.url, 'sam', host.code)
-    uis.push(sam)
-    sam.send(STANDUP)
-    const added = await sam.waitForEvent(e => e.kind === 'schedule.added')
-    if (added.kind !== 'schedule.added') throw new Error('expected schedule.added')
-
-    host.session.testStrike()
-    await waitUntil(() => (schedulesIn(host)[0]?.lastRunAt ?? 0) > 0)
-    const ran = schedulesIn(host)[0].lastRunAt
-    expect(new CrewSession(host.store).snapshot().schedules?.[0].lastRunAt).toBe(ran)
-    expect(added.scheduleId).toBeTruthy()
-  })
-
-  // A laptop shut for a week comes back to one run of each, never seven.
-  it('fires once for a run it slept through rather than catching up', async () => {
-    const sam = await TestUi.connect(host.url, 'sam', host.code)
-    uis.push(sam)
-    sam.send(STANDUP)
-    await sam.waitForEvent(e => e.kind === 'schedule.added')
-
-    host.session.testStrike()
-    await waitUntil(() => sam.events.filter(e => e.kind === 'schedule.ran').length === 1)
-    host.session.testStrike()
-    host.session.testStrike()
-    await new Promise(r => setTimeout(r, 250))
-    expect(sam.events.filter(e => e.kind === 'schedule.ran')).toHaveLength(1)
-  })
-
   it('does what it says when it comes round', async () => {
-    const sam = await TestUi.connect(host.url, 'sam', host.code)
-    uis.push(sam)
-    sam.send(STANDUP)
-    await sam.waitForEvent(e => e.kind === 'schedule.added')
-
-    host.session.testStrike()
-    const said = await sam.waitForEvent(e => e.kind === 'message' && e.text === 'Morning')
-    expect(said.kind).toBe('message')
+    const slept = await startHost(shutSince(7))
+    try {
+      await waitUntil(() => slept.session.snapshot().events.some(e => e.kind === 'message' && e.text === 'Morning'))
+    } finally {
+      await slept.close()
+    }
   })
 
   it('adds a task to the crew\'s own list when that is what it is for', async () => {
-    const sam = await TestUi.connect(host.url, 'sam', host.code)
-    uis.push(sam)
-    sam.send({ ...STANDUP, name: 'Water', action: { kind: 'todo', text: 'Water the plants' } })
-    await sam.waitForEvent(e => e.kind === 'schedule.added')
+    const slept = await startHost(
+      shutSince(7, { name: 'Water', action: { kind: 'todo', text: 'Water the plants' } })
+    )
+    try {
+      await waitUntil(() => slept.session.snapshot().todos.some(one => one.text === 'Water the plants'))
+    } finally {
+      await slept.close()
+    }
+  })
 
-    host.session.testStrike()
-    await waitUntil(() => host.session.snapshot().todos.some(one => one.text === 'Water the plants'))
+  // A laptop shut for a week comes back to one run, never seven.
+  it('fires once for the runs it slept through rather than catching up', async () => {
+    const slept = await startHost(shutSince(7))
+    try {
+      await waitUntil(() => (schedulesIn(slept)[0]?.lastRunAt ?? 0) > 0)
+      await new Promise(r => setTimeout(r, 300))
+      const said = slept.session.snapshot().events.filter(e => e.kind === 'message' && e.text === 'Morning')
+      expect(said).toHaveLength(1)
+    } finally {
+      await slept.close()
+    }
+  })
+
+  // What it did is what a session coming back up reads to know where it got to,
+  // so it has to survive the restart the schedule itself lived through.
+  it('remembers when it last ran across a restart', async () => {
+    const path = shutSince(7)
+    const slept = await startHost(path)
+    let ran = 0
+    try {
+      await waitUntil(() => (schedulesIn(slept)[0]?.lastRunAt ?? 0) > 0)
+      ran = schedulesIn(slept)[0].lastRunAt ?? 0
+    } finally {
+      await slept.close()
+    }
+    expect(new CrewSession(new Store(path)).snapshot().schedules?.[0].lastRunAt).toBe(ran)
+  })
+
+  it('never fires one that is paused', async () => {
+    const path = shutSince(7)
+    new Store(path).appendEvent({
+      id: randomUUID(),
+      ts: Date.now() - 1000,
+      kind: 'schedule.paused',
+      scheduleId: 'aaa111',
+      paused: true,
+      byName: 'sam'
+    })
+    const slept = await startHost(path)
+    try {
+      await new Promise(r => setTimeout(r, 400))
+      expect(slept.session.snapshot().events.some(e => e.kind === 'message' && e.text === 'Morning')).toBe(false)
+      expect(schedulesIn(slept)[0].lastRunAt).toBeUndefined()
+    } finally {
+      await slept.close()
+    }
   })
 
   // A run somebody asked for is not the run it was written for, so it must not
