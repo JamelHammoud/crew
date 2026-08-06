@@ -3,11 +3,12 @@ import { mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { localFields, localProvider } from '../src/runner/providers/local'
+import { localFields, serverProvider } from '../src/runner/providers/local'
+import { allProviders } from '../src/runner/providers/detect'
 import { checkServer, findRuntimes } from '../src/runner/providers/local-serve'
 import { setServersPath } from '../src/runner/providers/local-servers'
 import { refreshModels } from '../src/runner/providers/local-models'
-import type { ModelServer } from '../src/shared/modelServers'
+import { serverProviderName, type ModelServer } from '../src/shared/modelServers'
 
 interface Asked {
   path: string
