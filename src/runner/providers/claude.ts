@@ -151,6 +151,15 @@ export const parseClaudeLine: OutputParser = line => {
   return []
 }
 
+const THINKING = [
+  { value: '', label: 'Default' },
+  { value: 'enabled', label: 'Always' },
+  { value: 'adaptive', label: 'When it helps' },
+  { value: 'disabled', label: 'Never' }
+]
+
+const FALLBACKS = [{ value: '', label: 'None' }, ...CLAUDE_MODELS.slice(1)]
+
 export const claudeFields = (): AgentSettingField[] => [
   { key: 'model', label: 'Model', options: CLAUDE_MODELS, default: 'opus' },
   {
@@ -160,8 +169,77 @@ export const claudeFields = (): AgentSettingField[] => [
     default: 'claude-opus-5',
     visibleWhen: { key: 'model', value: 'opus' }
   },
-  { key: 'effort', label: 'Thinking', options: choices(['low', 'medium', 'high', 'xhigh', 'max']), default: 'high' }
+  { key: 'effort', label: 'Thinking', options: choices(['low', 'medium', 'high', 'xhigh', 'max']), default: 'high' },
+  {
+    key: 'instructions',
+    label: 'Instructions',
+    kind: 'text',
+    default: '',
+    advanced: true,
+    section: 'Instructions',
+    placeholder: 'None',
+    line: 'Standing instructions for this agent, on top of what it already knows.'
+  },
+  {
+    key: 'thinking',
+    label: 'Thinks out loud',
+    options: THINKING,
+    default: '',
+    advanced: true,
+    section: 'Thinking'
+  },
+  {
+    key: 'fallbackModel',
+    label: 'Busy model falls to',
+    options: FALLBACKS,
+    default: '',
+    advanced: true,
+    section: 'Thinking'
+  },
+  {
+    key: 'dirs',
+    label: 'Other folders',
+    kind: 'text',
+    default: '',
+    advanced: true,
+    section: 'On this computer',
+    placeholder: 'None',
+    line: 'Folders outside the project it may read, separated by commas.'
+  },
+  {
+    key: 'crewOnly',
+    label: 'Crew setup only',
+    kind: 'switch',
+    default: '',
+    advanced: true,
+    section: 'On this computer',
+    line: 'Leaves out the skills and commands on whichever machine takes the run.'
+  },
+  {
+    key: 'commandMs',
+    label: 'Command runs for',
+    kind: 'number',
+    default: '',
+    advanced: true,
+    section: 'On this computer',
+    min: 1000,
+    max: 3600000,
+    step: 1000,
+    unit: 'ms'
+  }
 ]
+
+const list = (value: string): string[] =>
+  value
+    .split(',')
+    .map(one => one.trim())
+    .filter(Boolean)
+
+export const claudeEnv = (get: SettingReader): NodeJS.ProcessEnv => {
+  const ms = get('commandMs')
+  if (!ms) return {}
+  return { BASH_DEFAULT_TIMEOUT_MS: ms, BASH_MAX_TIMEOUT_MS: ms }
+}
 
 function claudeModel(get: SettingReader): string {
   const model = get('model')
