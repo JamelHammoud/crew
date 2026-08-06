@@ -314,8 +314,9 @@ interface PendingWait {
 // and the transcript it is read back from. Nothing here is ever written to the
 // log or handed to anybody else.
 interface Ghost {
-  ws: WebSocket
+  ws: WebSocket | null
   events: SessionEvent[]
+  post?: { agentId: string }
 }
 
 interface DesignBoard {
