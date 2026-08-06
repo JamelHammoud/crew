@@ -13,25 +13,15 @@ const CHAT = [
   'M8.15 11.8a4.25 4.25 0 0 0 8.5 0'
 ]
 
-const A = [
-  'M19.86 2.56L3.27 8.3Q1.45 8.93 3.27 9.55L10.07 11.89Q11.59 12.41 12.11 13.93L14.45 20.73Q15.07 22.55 15.7 20.73L21.44 4.14Q22.28 1.72 19.86 2.56Z',
-  'M20.08 3.92L11.59 12.41'
-]
-const B = [
-  'M19.86 2.56L3.27 8.3Q1.45 8.93 3.2 9.72L9.35 12.53Q10.8 13.2 11.47 14.65L14.28 20.8Q15.07 22.55 15.7 20.73L21.44 4.14Q22.28 1.72 19.86 2.56Z',
-  'M20.08 3.92L10.8 13.2'
-]
-const C = [
-  'M19.86 2.56L3.27 8.3Q1.45 8.93 3.11 9.9L8.65 13.16Q10.03 13.97 10.84 15.35L14.1 20.89Q15.07 22.55 15.7 20.73L21.44 4.14Q22.28 1.72 19.86 2.56Z',
-  'M20.08 3.92L10.03 13.97'
+const SEND = [
+  'M19.86 2.56L3.27 8.3Q1.45 8.93 3.25 9.61L9.81 12.12Q11.3 12.7 11.88 14.19L14.39 20.75Q15.07 22.55 15.7 20.73L21.44 4.14Q22.28 1.72 19.86 2.56Z',
+  'M20.08 3.92L11.3 12.7'
 ]
 
 const ROWS = [
   { name: 'Spark', art: [SPARK] },
   { name: 'Chat', art: CHAT },
-  { name: 'deep 4.7', art: A },
-  { name: 'mid 3.6', art: B },
-  { name: 'shallow 2.5', art: C }
+  { name: 'Send', art: SEND }
 ]
 
 const SIZES = [48, 24, 20, 16]
@@ -56,6 +46,9 @@ ${ROWS.map(
 <div style="display:flex;gap:10px;margin-top:28px">${ROWS.map(tile).join('')}</div>
 <div style="display:flex;gap:22px;margin-top:24px;align-items:center;color:#f5f5f5">
 ${ROWS.map(row => svg(row.art, 16)).join('')}
+</div>
+<div style="margin-top:24px;background:#f7f7f8;color:#111;padding:18px;border-radius:16px;display:flex;gap:26px;align-items:center">
+${ROWS.map(row => svg(row.art, 20)).join('')}${ROWS.map(row => svg(row.art, 16)).join('')}
 </div>
 </body>`
 
