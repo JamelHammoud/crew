@@ -1492,6 +1492,7 @@ export class CrewSession {
       boardId?: string
       mode?: ThreadMode
       ghost?: WebSocket
+      post?: boolean
       mentions?: string[]
       replyTo?: MessageReply
       voice?: boolean
@@ -1530,7 +1531,7 @@ export class CrewSession {
       queue: [],
       running: null,
       boardId: boardId && this.designs.has(boardId) ? boardId : undefined,
-      ghost: opts.ghost !== undefined,
+      ghost: opts.ghost !== undefined || opts.post === true,
       voice: opts.voice === true,
       tickets: opts.tickets === true,
       aside: opts.aside,
