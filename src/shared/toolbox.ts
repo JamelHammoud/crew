@@ -190,6 +190,7 @@ const overWords = (action: ToolAction, over: (text: string) => string): ToolActi
   if (action.kind === 'file') return { ...action, path: over(action.path) }
   if (
     action.kind === 'prompt' ||
+    action.kind === 'post' ||
     action.kind === 'copy' ||
     action.kind === 'say' ||
     action.kind === 'todo' ||
