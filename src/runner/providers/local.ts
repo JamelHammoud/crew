@@ -67,6 +67,110 @@ export const serverFields = (url: string): AgentSettingField[] => [
 
 const OLLAMA_INSTALL_SH = 'curl -fsSL https://ollama.com/install.sh | sh'
 
+interface RunOn {
+  fields: AgentSettingField[]
+  address(resolved: Record<string, string>): string
+  models(): string[]
+}
+
+// The loop is the same wherever it sends its rounds, so what a provider hands
+// over is the address and the models it may pick from, and nothing else.
+function runOn(
+  on: RunOn,
+  prompt: string,
+  cwd: string,
+  hooks: Parameters<Provider['start']>[2],
+  settings: Record<string, string>,
+  options: RunOptions
+): RunningPrompt {
+  const resolved = resolveSettings(on.fields, settings)
+  const sink = makeSink(cwd, hooks)
+  const body = options.goal ? `${goalBrief(goalCondition(options.goal))}\n\n${prompt}` : prompt
+  const early: string[] = []
+  let run: LocalRun | null = null
+  let stopped = false
+
+  const done = (async () => {
+    const url = on.address(resolved)
+    // A server that was up when the picker was drawn can be down by the time
+    // somebody says something, so the address is asked again here, and only
+    // a silent one is started. The key is read off this machine rather than
+    // off the settings, which the whole crew can see.
+    const key = serverKey(url)
+    let probe = await probeServer(url, key)
+    if (!probe.runtime && (await ensureServing(url))) probe = await probeServer(url, key)
+    const runtime = probe.runtime
+    if (!runtime) throw new Error(probe.why ?? `Nothing answered at ${url}.`)
+    const model = settings['model'] || resolved.model || on.models()[0]
+    if (!model) throw new Error('No model to run. Pull one and say that again.')
+    if (stopped) throw new Error('Stopped')
+    const started = startLoop({
+      runtime,
+      model,
+      context: Number(resolved.context) || 0,
+      cwd,
+      prompt: body,
+      sink
+    })
+    run = started
+    for (const text of early) started.say(text)
+    early.length = 0
+    return started.done
+  })()
+
+  return {
+    done,
+    kill: () => {
+      stopped = true
+      run?.kill()
+    },
+    steer: (text: string) => {
+      if (stopped) return false
+      if (run) return run.say(text)
+      early.push(text)
+      return true
+    }
+  }
+}
+
+// A server somebody wrote down stands in the picker under the name they gave
+// it, beside Claude and Ollama rather than inside one of them. The address is
+// what it is written down as, so a rename never orphans the agents made on it.
+export function serverProvider(server: ModelServer): Provider {
+  const url = server.url
+  return {
+    name: serverProviderName(url),
+    label: serverName(server),
+    steerable: true,
+    fields: () => serverFields(url),
+    detect: async () => {
+      const runtime = await findServer(server)
+      if (runtime) await refreshModels([runtime])
+      return runtime !== null
+    },
+    note: async () => {
+      if (!cachedServer(url)) return undefined
+      return modelsServedOn([url]).length > 0 ? undefined : 'No models on that server yet.'
+    },
+    start: (prompt, cwd, hooks, settings = {}, options = {}) =>
+      runOn(
+        { fields: serverFields(url), address: () => url, models: () => modelsServedOn([url]) },
+        prompt,
+        cwd,
+        hooks,
+        settings,
+        options
+      )
+  }
+}
+
+export const serverProviders = (): Provider[] => knownServers().map(serverProvider)
+
+export const serverProviderNamed = (name: string): Provider | null => {
+  const server = knownServers().find(one => serverProviderName(one.url) === name)
+  return server ? serverProvider(server) : null
+}
+
 export const localProvider: Provider = {
   name: 'local',
   label: 'Ollama',

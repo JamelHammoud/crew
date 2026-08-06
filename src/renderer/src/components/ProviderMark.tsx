@@ -1,5 +1,6 @@
 import claudeMark from '../media/providers/claude.png'
 import codexMark from '../media/providers/codex.png'
+import geminiMark from '../media/providers/gemini.png'
 import grokMark from '../media/providers/grok.png'
 import kimiMark from '../media/providers/kimi.png'
 import ollamaMark from '../media/providers/ollama.png'
