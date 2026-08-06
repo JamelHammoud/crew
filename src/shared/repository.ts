@@ -56,6 +56,8 @@ export type RepoCommand =
   | { do: 'stash'; message?: string; keepIndex?: boolean }
   | { do: 'apply'; ref: string }
   | { do: 'drop'; ref: string }
+  | { do: 'switch'; branch: string }
+  | { do: 'branch'; name: string }
   | { do: 'pull' }
   | { do: 'push' }
 

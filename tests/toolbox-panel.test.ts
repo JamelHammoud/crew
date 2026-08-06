@@ -85,7 +85,7 @@ const does = (title: string) => {
 describe('the toolbox', () => {
   // The toolbox is the crew's own tools and nothing else. What the app can open
   // by itself is in the side panel, which is the one place it is listed.
-  it('holds the crew's own tools and none of the app's own', () => {
+  it('holds what the crew built and none of the app it stands in', () => {
     toolbox([tool()])
 
     expect(screen.getByText('Figma')).toBeTruthy()
