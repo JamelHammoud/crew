@@ -71,7 +71,7 @@ export function usePanelOpens(): PanelOpen[] {
         open: () => browser().showSubagents(threadId)
       })
     rows.push(
-      { id: 'web', label: 'Web page', mark: <GlobeGlyph />, scope: 'panel', open: () => browser().addTab() },
+      { id: 'review', label: 'Review', mark: <BranchGlyph />, scope: 'panel', open: () => browser().openReview() },
       {
         id: 'terminal',
         label: 'Terminal',
@@ -80,7 +80,7 @@ export function usePanelOpens(): PanelOpen[] {
         open: () => browser().addTerminal(undefined, useCrew.getState().folder)
       },
       { id: 'file', label: 'Files', mark: <FolderGlyph />, scope: 'panel', open: () => browser().openFiles() },
-      { id: 'review', label: 'Review', mark: <BranchGlyph />, scope: 'panel', open: () => browser().openReview() },
+      { id: 'web', label: 'Web page', mark: <GlobeGlyph />, scope: 'panel', open: () => browser().addTab() },
       { id: 'music', label: 'Music', mark: <MusicGlyph />, scope: 'panel', open: () => browser().openMusic() },
       { id: 'game', label: 'Games', mark: <GameGlyph />, scope: 'panel', open: () => browser().openGame() }
     )
