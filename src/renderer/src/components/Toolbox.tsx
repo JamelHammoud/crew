@@ -28,8 +28,6 @@ export default function Toolbox({
   anchor?: { current: HTMLElement | null }
 }) {
   const tools = useCrew(s => s.tools)
-  const joined = useHuddle(s => s.joined)
-  const playing = useMusic(s => s.room.playing)
   const [building, setBuilding] = useState<{ tool: CrewTool | null } | null>(null)
   const [filling, setFilling] = useState<{ tool: CrewTool; slots: string[] } | null>(null)
   const [said, setSaid] = useState<{ toolId: string; word: string } | null>(null)
