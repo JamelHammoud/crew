@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process'
-import { openaiUrl, serverLabel, type ModelServer } from '../../shared/modelServers'
+import { openaiUrl, serverLabel, serverName, type ModelServer } from '../../shared/modelServers'
 import { detachCliProcess } from './cli'
-import { knownServers, serverKey } from './local-servers'
+import { serverKey } from './local-servers'
 import { resolveCommand } from './path'
 
 export interface LocalRuntime {
