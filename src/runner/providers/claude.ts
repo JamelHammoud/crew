@@ -298,6 +298,7 @@ export const claudeProvider: Provider = makeCliProvider({
   command: 'claude',
   fields: claudeFields,
   args: claudeArgs,
+  env: claudeEnv,
   parser: parseClaudeLine,
   dialog: (prompt, _cwd, _get, run) => claudeDialog(prompt, run.goal),
   goalCommand: true,
