@@ -23,11 +23,12 @@ function CardRule({ className = '', children }: { className?: string; children: 
 }
 
 function AgentCardContent({ agent }: { agent: PooledAgent }) {
-  const settings = visibleSettingFields(agent.fields, agent.settings)
-    .map(field => ({
-      label: field.label,
-      value: field.options.find(o => o.value === (agent.settings[field.key] ?? field.default))?.label
-    }))
+  const shown = [
+    ...visibleSettingFields(plainFields(agent.fields), agent.settings),
+    ...changedSettings(agent.fields, agent.settings).filter(field => field.advanced)
+  ]
+  const settings = shown
+    .map(field => ({ label: field.label, value: settingLabel(field, agent.settings) }))
     .filter(row => row.value)
   return (
     <>

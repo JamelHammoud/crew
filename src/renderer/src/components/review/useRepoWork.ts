@@ -36,7 +36,7 @@ export function useRepoWork(): RepoWorkState {
     }
     try {
       const next = await repoWork()
-      if (alive.current) setWork(next)
+      if (alive.current) setWork({ ...EMPTY, ...next, branches: next.branches ?? [] })
     } catch {
       if (alive.current) setWork(EMPTY)
     } finally {
