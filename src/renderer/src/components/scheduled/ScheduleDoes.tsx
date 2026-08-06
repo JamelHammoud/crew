@@ -61,7 +61,7 @@ export default function ScheduleDoes({
       return toolIds.length > 0 ? { kind: 'chain', toolIds } : null
     }
     onChange(built())
-  }, [kind, ask, say, task, line, page, trackId, playlistId, toolIds, agentId, onChange])
+  }, [kind, ask, post, say, task, line, page, trackId, playlistId, toolIds, agentId, onChange])
 
   const tracks = musicItems(uploads)
   const lists = [...MUSIC_SETS, ...playlists]
