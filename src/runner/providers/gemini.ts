@@ -13,13 +13,46 @@ const MODELS = [
   'gemini-2.5-flash-lite'
 ]
 
+export const GEMINI_MODES = [
+  { value: '', label: 'Anything' },
+  { value: 'auto_edit', label: 'Safe changes' },
+  { value: 'default', label: 'Ask first' },
+  { value: 'plan', label: 'Read only' }
+]
+
 export const geminiFields = (): AgentSettingField[] => [
-  { key: 'model', label: 'Model', options: choices(['', ...MODELS]), default: '' }
+  { key: 'model', label: 'Model', options: choices(['', ...MODELS]), default: '' },
+  {
+    key: 'mode',
+    label: 'Can do',
+    options: GEMINI_MODES,
+    default: '',
+    advanced: true,
+    section: 'On this computer',
+    line: 'Read only writes nothing and runs nothing.'
+  },
+  {
+    key: 'dirs',
+    label: 'Other folders',
+    kind: 'text',
+    default: '',
+    advanced: true,
+    section: 'On this computer',
+    placeholder: 'None',
+    line: 'Folders outside the project it may read, separated by commas.'
+  }
 ]
 
 export const geminiArgs = (_prompt: string, get: (key: string) => string): string[] => {
   const model = get('model')
-  return ['--acp', '--yolo', ...(model ? ['--model', model] : [])]
+  const mode = get('mode')
+  const dirs = get('dirs').trim()
+  return [
+    '--acp',
+    ...(mode ? ['--approval-mode', mode] : ['--yolo']),
+    ...(model ? ['--model', model] : []),
+    ...(dirs ? ['--include-directories', dirs] : [])
+  ]
 }
 
 const INSTALL = 'npm install -g @google/gemini-cli'
