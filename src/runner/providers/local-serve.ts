@@ -31,6 +31,7 @@ const POLL_MS = 300
 const POLL_PROBE_MS = 500
 
 let found: LocalRuntime[] = []
+const answered = new Map<string, LocalRuntime>()
 
 function parse(url: string): URL | null {
   try {
