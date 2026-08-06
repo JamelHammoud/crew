@@ -199,6 +199,20 @@ describe('the models a run can be given', () => {
     await refreshModels([{ url: fake.url, label: 'Ollama', kind: 'ollama' }])
     expect(cachedModels()).toEqual(['standing:8b'])
   })
+
+  // A server is a provider of its own, so what it serves is asked for by
+  // address. Pooled, a model down the hall was offered under Ollama's name.
+  it('keeps each server to the models that server really has', async () => {
+    const one = await ollamaOn([tagged('shared:8b'), tagged('mine:3b')], {})
+    const two = await openaiOn(['shared:8b', 'theirs:7b'])
+    await refreshModels([
+      { url: one.url, label: 'Ollama', kind: 'ollama' },
+      { url: two.url, label: 'The rack', kind: 'openai' }
+    ])
+    expect(modelsServedOn([one.url])).toEqual(['shared:8b', 'mine:3b'])
+    expect(modelsServedOn([two.url])).toEqual(['shared:8b', 'theirs:7b'])
+    expect(modelsServedOn(['http://192.0.2.10:39862/v1'])).toEqual([])
+  })
 })
 
 describe('who is answering on this machine', () => {
