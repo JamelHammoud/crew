@@ -198,58 +198,22 @@ export const localProvider: Provider = {
     if (runtimes.length > 0) return `No models on this computer yet. Download one in ${runtimes[0].label}.`
     return undefined
   },
-  start: (prompt, cwd, hooks, settings = {}, options = {}): RunningPrompt => {
-    const resolved = resolveSettings(localFields(), settings)
-    const sink = makeSink(cwd, hooks)
-    const body = options.goal ? `${goalBrief(goalCondition(options.goal))}\n\n${prompt}` : prompt
-    const early: string[] = []
-    let run: LocalRun | null = null
-    let stopped = false
-
-    const done = (async () => {
-      // What somebody picked beats what the picker can vouch for right now. A
-      // list warmed in one place and read in another can be cold, and
-      // resolveSettings drops a choice its options do not carry, which would
-      // quietly send a run to a different server than the one it was made for.
-      const url = serverUrl(settings['address'] || resolved.address || candidateUrls()[0]) ?? ''
-      // A server that was up when the picker was drawn can be down by the time
-      // somebody says something, so the address is asked again here, and only
-      // a silent one is started. The key is read off this machine rather than
-      // off the settings, which the whole crew can see.
-      const key = serverKey(url)
-      let probe = await probeServer(url, key)
-      if (!probe.runtime && (await ensureServing(url))) probe = await probeServer(url, key)
-      const runtime = probe.runtime
-      if (!runtime) throw new Error(probe.why ?? `Nothing answered at ${url}.`)
-      const model = settings['model'] || resolved.model || cachedModels()[0]
-      if (!model) throw new Error('No model to run. Pull one and say that again.')
-      if (stopped) throw new Error('Stopped')
-      const started = startLoop({
-        runtime,
-        model,
-        context: Number(resolved.context) || 0,
-        cwd,
-        prompt: body,
-        sink
-      })
-      run = started
-      for (const text of early) started.say(text)
-      early.length = 0
-      return started.done
-    })()
-
-    return {
-      done,
-      kill: () => {
-        stopped = true
-        run?.kill()
+  start: (prompt, cwd, hooks, settings = {}, options = {}): RunningPrompt =>
+    runOn(
+      {
+        fields: localFields(),
+        // What somebody picked beats what the picker can vouch for right now. A
+        // list warmed in one place and read in another can be cold, and
+        // resolveSettings drops a choice its options do not carry, which would
+        // quietly send a run to a different server than the one it was made for.
+        address: resolved =>
+          serverUrl(settings['address'] || resolved.address || candidateUrls()[0]) ?? '',
+        models: cachedModels
       },
-      steer: (text: string) => {
-        if (stopped) return false
-        if (run) return run.say(text)
-        early.push(text)
-        return true
-      }
-    }
-  }
+      prompt,
+      cwd,
+      hooks,
+      settings,
+      options
+    )
 }
