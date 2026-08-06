@@ -89,7 +89,7 @@ export default function BranchMenu({
     <div className="relative flex min-w-0 items-center">
       <button
         onClick={() => setOpen(true)}
-        className="flex h-7 min-w-0 items-center gap-1.5 rounded-full pl-1.5 pr-2 text-fg-secondary transition-colors hover:bg-fg/10 hover:text-fg active:scale-[0.97]"
+        className="-ml-1.5 flex h-7 min-w-0 items-center gap-1.5 rounded-full pl-1.5 pr-2 text-fg-secondary transition-colors hover:bg-fg/10 hover:text-fg active:scale-[0.97]"
       >
         {busy ? (
           <Spinner size={13} />
