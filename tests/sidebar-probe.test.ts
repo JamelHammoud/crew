@@ -2,6 +2,7 @@
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { Tab } from '../src/renderer/src/components/navTabs'
 import type { LivePlace } from '../src/shared/places'
 import type { CurrentSession } from '../src/shared/session'
 
@@ -121,8 +122,8 @@ const Sidebar = (
   props: {
     overlay?: boolean
     strong?: boolean
-    tab?: 'chat' | 'docs' | 'design' | 'plugins'
-    onTab?: (tab: 'chat' | 'docs' | 'design' | 'plugins') => void
+    tab?: Tab
+    onTab?: (tab: Tab) => void
   } = {}
 ) =>
   createElement(SidebarView, { tab: 'chat' as const, onTab: () => {}, ...props })
