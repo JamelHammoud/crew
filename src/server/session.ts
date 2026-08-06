@@ -4452,7 +4452,9 @@ export class CrewSession {
       : [
           `You are ${agent.label}, one of several agents in a crew session with ${people}.`,
           `You share a project folder and can read and edit files in it.`,
-          `You are in a focused thread. Only this thread's messages are shown here.`
+          ...(this.ghostOf(prompt.threadId)?.post
+            ? []
+            : [`You are in a focused thread. Only this thread's messages are shown here.`])
         ]
     if (others.length > 0 && !thread?.parentThreadId) {
       lines.push(
