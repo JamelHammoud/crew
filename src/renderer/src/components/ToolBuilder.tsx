@@ -110,8 +110,11 @@ export default function ToolBuilder({ tool, onDone }: { tool: CrewTool | null; o
   const [boardId, setBoardId] = useState(tool?.action.kind === 'board' ? tool.action.boardId : '')
   const [copy, setCopy] = useState(tool?.action.kind === 'copy' ? tool.action.text : '')
   const [ask, setAsk] = useState(tool?.action.kind === 'prompt' ? tool.action.text : '')
+  const [post, setPost] = useState(tool?.action.kind === 'post' ? tool.action.text : '')
   const [agentId, setAgentId] = useState(
-    tool?.action.kind === 'prompt' || tool?.action.kind === 'todo' ? (tool.action.agentId ?? null) : null
+    tool?.action.kind === 'prompt' || tool?.action.kind === 'post' || tool?.action.kind === 'todo'
+      ? (tool.action.agentId ?? null)
+      : null
   )
   const [say, setSay] = useState(tool?.action.kind === 'say' ? tool.action.text : '')
   const [task, setTask] = useState(tool?.action.kind === 'todo' ? tool.action.text : '')
