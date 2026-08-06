@@ -36,8 +36,6 @@ export interface RepoStash {
 export interface RepoBranch {
   name: string
   current: boolean
-  // A branch that is only on the remote so far. Switching to one is git making
-  // the local branch that follows it, so it is offered beside the local ones.
   remote: boolean
 }
 

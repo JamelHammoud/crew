@@ -83,38 +83,22 @@ const does = (title: string) => {
 }
 
 describe('the toolbox', () => {
-  it('holds the built-in tools, every one of them live', () => {
-    toolbox()
+  // The toolbox is the crew's own tools and nothing else. What the app can open
+  // by itself is in the side panel, which is the one place it is listed.
+  it('holds the crew's own tools and none of the app's own', () => {
+    toolbox([tool()])
 
+    expect(screen.getByText('Figma')).toBeTruthy()
     for (const built of ['Huddle', 'Review', 'Terminal', 'Files', 'Music', 'Games'])
-      expect(screen.getByText(built).closest('button')?.disabled).toBe(false)
-    expect(screen.queryByText('Voice')).toBeNull()
+      expect(screen.queryByText(built)).toBeNull()
   })
 
-  // Both halves stand on the same three columns, so the app's own hand and the
-  // crew's own tools are the same button in the same grid.
   it('stands on three columns', () => {
     toolbox([tool()])
 
     const grids = [...document.body.querySelectorAll('.grid')]
-    expect(grids).toHaveLength(2)
+    expect(grids).toHaveLength(1)
     for (const grid of grids) expect(grid.className).toContain('grid-cols-3')
-  })
-
-  it('opens the games in the panel, and leaves you on the page you were on', () => {
-    toolbox()
-    fireEvent.click(screen.getByText('Games'))
-
-    expect(useBrowser.getState().tabs).toEqual([expect.objectContaining({ kind: 'game' })])
-    expect(useBrowser.getState().open).toBe(true)
-  })
-
-  it('opens Review in the Browser', () => {
-    toolbox()
-    fireEvent.click(screen.getByText('Review'))
-
-    expect(useBrowser.getState().tabs).toEqual([expect.objectContaining({ kind: 'review' })])
-    expect(useBrowser.getState().open).toBe(true)
   })
 
   it('ends on an empty slot that opens the builder, with no tools built yet', () => {
@@ -122,26 +106,6 @@ describe('the toolbox', () => {
 
     build()
     expect(screen.getByPlaceholderText('What to call it')).toBeTruthy()
-  })
-
-  it('opens the project files in the panel', () => {
-    toolbox()
-    fireEvent.click(screen.getByText('Files'))
-
-    const tabs = useBrowser.getState().tabs
-    expect(tabs).toHaveLength(1)
-    expect(tabs[0]).toMatchObject({ kind: 'file', path: '', tree: true })
-    expect(useBrowser.getState().open).toBe(true)
-  })
-
-  it('opens a terminal in the panel', () => {
-    toolbox()
-    fireEvent.click(screen.getByText('Terminal'))
-
-    const tabs = useBrowser.getState().tabs
-    expect(tabs).toHaveLength(1)
-    expect(tabs[0]).toMatchObject({ kind: 'terminal', command: null })
-    expect(useBrowser.getState().open).toBe(true)
   })
 
   it('runs a built tool: a page opens in the side panel, a command opens a terminal', () => {
