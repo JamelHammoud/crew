@@ -33,6 +33,15 @@ import {
 import type { GameScore } from '../../../shared/games'
 import { cleanMemoryLine, memoryKey, MEMORY_FULL, MEMORY_LIMIT, type CrewMemory } from '../../../shared/memory'
 import { cleanPlugin, pluginKey, PLUGIN_FULL, PLUGIN_LIMIT, type CrewPlugin } from '../../../shared/plugins'
+import {
+  cleanCadence,
+  cleanSchedule,
+  here as hereZone,
+  SCHEDULE_FULL,
+  SCHEDULE_LIMIT,
+  type Cadence,
+  type Schedule
+} from '../../../shared/schedules'
 import type { CrewTool, ToolAction } from '../../../shared/toolbox'
 import { emptyRoom } from '../../../shared/huddle'
 import { emptyMusic, type MusicPlaylist, type MusicUpload } from '../../../shared/music'
