@@ -82,10 +82,12 @@ async function reaches(url: string, timeoutMs: number, key?: string): Promise<Re
 
 const guarded = (status: number): boolean => status === 401 || status === 403
 
+// Only what this machine is running. A server somebody wrote down is a
+// provider of its own now, so it is probed under its own name rather than
+// swept up here and listed as one of Ollama's.
 export function candidateUrls(env: NodeJS.ProcessEnv = process.env): string[] {
   const said = env.OLLAMA_HOST ? fullUrl(env.OLLAMA_HOST) : null
-  const written = knownServers().map(server => server.url)
-  return [...new Set([...(said ? [said] : []), ...DEFAULT_URLS, ...written])]
+  return [...new Set([...(said ? [said] : []), ...DEFAULT_URLS])]
 }
 
 export async function probeServer(
