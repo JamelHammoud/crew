@@ -124,6 +124,7 @@ export default function BranchMenu({
                   {shown.map((one, index) => (
                     <button
                       key={one.name}
+                      data-row={index}
                       onClick={() => go(one)}
                       onPointerEnter={() => setAt(index)}
                       data-active={index === at ? '' : undefined}
