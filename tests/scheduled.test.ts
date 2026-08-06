@@ -1,9 +1,12 @@
+import { randomUUID } from 'node:crypto'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import WebSocket from 'ws'
+import type { SessionEvent } from '../src/shared/events'
 import type { ClientMessage, RegisteredLlm, ServerMessage } from '../src/shared/protocol'
 import { SCHEDULE_FULL, SCHEDULE_LIMIT, type Schedule } from '../src/shared/schedules'
 import { CrewSession } from '../src/server/session'
-import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
+import { Store } from '../src/server/store'
+import { startHost, TestUi, tmpDir, waitUntil, type TestHost } from './helpers/session'
 
 type Notice = Extract<ServerMessage, { type: 'notice' }>
 
