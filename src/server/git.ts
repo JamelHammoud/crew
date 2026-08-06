@@ -452,8 +452,8 @@ export class GitSync {
     return named.code === 0 && named.stdout.trim().length > 0
   }
 
-  private async pushCurrent(): Promise<GitResult> {
-    if (await this.upstream()) return runGit(['push'], this.repoPath)
+  private async pushCurrent(): Promise<{ push: GitResult; published: boolean }> {
+    if (await this.upstream()) return { push: await runGit(['push'], this.repoPath), published: false }
     const [remotes, branch] = await Promise.all([
       runGit(['remote'], this.repoPath),
       runGit(['branch', '--show-current'], this.repoPath)
@@ -461,8 +461,9 @@ export class GitSync {
     const names = remotes.stdout.split(/\r?\n/).map(one => one.trim()).filter(Boolean)
     const target = names.includes('origin') ? 'origin' : names[0]
     const name = branch.stdout.trim()
-    if (!target || !name) return runGit(['push'], this.repoPath)
-    return runGit(['push', '--set-upstream', target, name], this.repoPath)
+    if (!target || !name) return { push: await runGit(['push'], this.repoPath), published: false }
+    const push = await runGit(['push', '--set-upstream', target, name], this.repoPath)
+    return { push, published: push.code === 0 }
   }
 
   private async pullRemote(autostash: boolean): Promise<{ ok: boolean; updated: boolean; detail: string }> {
