@@ -3,7 +3,7 @@ import { createServer, type IncomingMessage, type ServerResponse } from 'node:ht
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { afterAll, describe, expect, it, vi } from 'vitest'
-import { cachedModels, diskModels, refreshModels, servedModels } from '../src/runner/providers/local-models'
+import { cachedModels, diskModels, modelsServedOn, refreshModels, servedModels } from '../src/runner/providers/local-models'
 import {
   answering,
   cachedRuntimes,
