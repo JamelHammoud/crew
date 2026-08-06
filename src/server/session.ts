@@ -1993,11 +1993,13 @@ export class CrewSession {
       return undefined
     }
     if (action.kind === 'prompt') {
-      const named = this.agents.get(action.agentId ?? '')
-      const taking =
-        named?.runner ? named : [...this.agents.values()].find(one => one.runner !== null)
+      const taking = this.agentToTake(action.agentId)
       if (!taking) return undefined
       return this.startThread(member, taking, action.text, [])
+    }
+    if (action.kind === 'post') {
+      this.startPost(member, action.text, action.agentId)
+      return undefined
     }
     if (action.kind === 'music') {
       if (action.trackId) this.handleMusicSet(member, action.trackId, true, 0, action.playlistId ?? null)
