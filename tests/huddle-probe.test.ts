@@ -158,7 +158,7 @@ describe('starting a huddle', () => {
 
   it('offers a huddle from the toolbox', () => {
     render(createElement(App))
-    openToolbox()
+    openMore()
 
     expect(screen.getByText('Huddle')).toBeTruthy()
   })
@@ -174,7 +174,7 @@ describe('starting a huddle', () => {
   // microphone at all still lands in the huddle with the controls in reach.
   it('gets into the call even when no microphone answers', async () => {
     render(createElement(App))
-    openToolbox()
+    openMore()
     await act(async () => {
       fireEvent.click(screen.getByText('Huddle'))
     })
@@ -188,7 +188,7 @@ describe('starting a huddle', () => {
 
   it('says what went wrong with the microphone and offers the way to fix it', async () => {
     render(createElement(App))
-    openToolbox()
+    openMore()
     await act(async () => {
       fireEvent.click(screen.getByText('Huddle'))
     })
@@ -199,13 +199,13 @@ describe('starting a huddle', () => {
 
   it('offers the way out once you are in', async () => {
     render(createElement(App))
-    openToolbox()
+    openMore()
     await act(async () => {
       fireEvent.click(screen.getByText('Huddle'))
     })
     await waitFor(() => expect(useHuddle.getState().joined).toBe(true))
 
-    openToolbox()
+    openMore()
     const tile = screen.getByText('Huddle').closest('button')
     expect(tile?.getAttribute('aria-pressed')).toBe('true')
     await act(async () => {
@@ -403,7 +403,7 @@ describe('picking a microphone and a camera', () => {
 
   const enter = async () => {
     render(createElement(App))
-    openToolbox()
+    openMore()
     await act(async () => {
       fireEvent.click(screen.getByText('Huddle'))
     })
