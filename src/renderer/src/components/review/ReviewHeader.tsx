@@ -42,7 +42,7 @@ export default function ReviewHeader({
 
   return (
     <div className="shrink-0">
-      <div className="flex h-9 items-center gap-1.5 pl-1 pr-1.5">
+      <div className="flex h-9 items-center gap-2 pl-2 pr-1.5">
         <BranchMenu
           branch={status.branch}
           branches={branches}

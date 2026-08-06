@@ -69,7 +69,7 @@ interface CliProviderOptions {
   // module-level function is shared by every run at once, so a second agent
   // starting would take the first one's place in the stream.
   makeParser?: () => RunParser
-  env?: NodeJS.ProcessEnv
+  env?: NodeJS.ProcessEnv | ((get: SettingReader) => NodeJS.ProcessEnv)
   idleTimeoutMs?: number
   stdinPrompt?: boolean
   // When set, the prompt is written to stdin as a message the dialog decides the
@@ -117,7 +117,11 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       const invocation = commandInvocation(resolveCommand(opts.command) ?? opts.command, opts.args(body, read, run))
       const child = spawn(invocation.command, invocation.args, {
         cwd,
-        env: { ...process.env, PATH: crewPath(), ...opts.env },
+        env: {
+          ...process.env,
+          PATH: crewPath(),
+          ...(typeof opts.env === 'function' ? opts.env(read) : opts.env)
+        },
         detached: detachCliProcess(),
         stdio: [opts.stdinPrompt || dialog ? 'pipe' : 'ignore', 'pipe', 'pipe']
       })
