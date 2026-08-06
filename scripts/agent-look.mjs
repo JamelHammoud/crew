@@ -74,7 +74,7 @@ function App() {
             <h3 className="text-base font-semibold text-fg">Claude</h3>
             <button className="ml-auto text-sm font-semibold text-fg/45">Reset</button>
           </div>
-          <div className="-mt-2">
+          <div>
             <SettingSections fields={DEEP} settings={settings} onChange={set} />
           </div>
           <div className="flex items-center justify-end">
