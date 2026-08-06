@@ -156,7 +156,7 @@ describe('starting a huddle', () => {
     cleanup()
   })
 
-  it('offers a huddle from the toolbox', () => {
+  it('offers a huddle from the sidebar', () => {
     render(createElement(App))
     openMore()
 
