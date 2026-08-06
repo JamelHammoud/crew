@@ -1,21 +1,14 @@
-import type { McpServer } from '../../shared/plugins'
+import { acpDialog, CANCELLED, chunkText, makeLanes, str } from './acp'
 import type { SettingReader } from './cli'
 import { activityDetail, fileChanges, stepTodos } from './detail'
 import { kimiUsage, kimiWire } from './kimi-usage'
 import { taskCall } from './tasks'
 import type { Dialog, ParsedOutput, RunOptions, RunParser } from './types'
 
-const PROTOCOL = 1
-
 const USAGE_MS = 1500
 
-// Crew never reads or writes a file on the agent's behalf. The CLI already runs
-// in the project folder and does its own work everywhere else, so the two file
-// capabilities are declined and the agent uses the hands it has.
-const CAPABILITIES = { fs: { readTextFile: false, writeTextFile: false }, terminal: false }
-
 // Everything is approved before the turn starts, which is the posture every
-// other CLI here runs under. The permission requests below are still answered,
+// other CLI here runs under. The permission requests are still answered,
 // because a CLI too old to take the setting would otherwise ask, and a request
 // nobody answers is a run that hangs forever.
 const MODE = 'yolo'
@@ -23,8 +16,6 @@ const MODE = 'yolo'
 const SUBAGENT_TOOLS = new Set(['Agent', 'Task'])
 
 const STARTED = new Set(['pending', 'in_progress'])
-
-const CANCELLED = 'cancelled'
 
 // A stop that is not the end of a turn has a reason, and these are the ones the
 // protocol names rather than describes.
@@ -34,132 +25,15 @@ const STOPS: Record<string, string> = {
   max_turn_requests: 'Kimi reached its limit of steps before it finished.'
 }
 
-type Stage = 'init' | 'session' | 'config' | 'turn'
-
-const str = (value: unknown): string => (typeof value === 'string' ? value : '')
-
-const rpc = (body: Record<string, unknown>): string => JSON.stringify({ jsonrpc: '2.0', ...body })
-
-const input = (text: string) => [{ type: 'text', text }]
-
-// Everything is allowed, the way it is on every other CLI here: an agent in a
-// crew is already running with permissions bypassed. Nothing is rejected, and a
-// request offering no way to say yes is cancelled rather than left unanswered,
-// since a request nobody answers is a run that hangs forever.
-const allowed = (options: unknown): string => {
-  const list = Array.isArray(options) ? options : []
-  const kind = (option: any): string => str(option?.kind)
-  const pick =
-    list.find(option => kind(option) === 'allow_always') ??
-    list.find(option => kind(option) === 'allow_once') ??
-    list.find(option => !kind(option).startsWith('reject'))
-  return str((pick as any)?.optionId)
-}
-
-export const acpServers = (servers: Record<string, McpServer> = {}): unknown[] =>
-  Object.entries(servers).map(([name, server]) =>
-    'url' in server
-      ? { name, type: 'http', url: server.url, headers: [] }
-      : {
-          name,
-          command: server.command,
-          args: server.args ?? [],
-          env: Object.entries(server.env ?? {}).map(([key, value]) => ({ name: key, value }))
-        }
-  )
-
+// There is no flag to start a session on, so what a run is set to is said over
+// the wire once the session exists, one setting at a time, before the turn
+// starts. A turn sent alongside them would race the settings it is for.
 export function kimiDialog(prompt: string, cwd: string, get: SettingReader, options: RunOptions = {}): Dialog {
   const model = get('model')
-  const pending = new Map<number, Stage>()
-  // There is no flag to start a session on, so what a run is set to is said
-  // over the wire once the session exists, one setting at a time, before the
-  // turn starts. A turn sent alongside them would race the settings it is for.
-  const settings: Array<[string, string]> = []
-  const steers: string[] = []
-  let next = 0
-  let sessionId = ''
-  let turning = false
-
-  const ask = (stage: Stage, method: string, params: unknown): string => {
-    const id = ++next
-    pending.set(id, stage)
-    return rpc({ id, method, params })
-  }
-
-  const turn = (text: string): string => {
-    turning = true
-    return ask('turn', 'session/prompt', { sessionId, prompt: input(text) })
-  }
-
-  const step = (): string => {
-    const setting = settings.shift()
-    if (!setting) return turn(prompt)
-    const [configId, value] = setting
-    return ask('config', 'session/set_config_option', { sessionId, configId, value })
-  }
-
-  const resume = (): string[] => {
-    turning = false
-    if (!steers.length) return []
-    return [turn(steers.splice(0).join('\n'))]
-  }
-
-  const answered = (stage: Stage, result: any): string[] => {
-    if (stage === 'init') return [ask('session', 'session/new', { cwd, mcpServers: acpServers(options.mcp?.servers) })]
-    if (stage === 'session') {
-      sessionId = str(result?.sessionId)
-      if (!sessionId) return []
-      settings.push(['mode', MODE])
-      if (model) settings.push(['model', model])
-      return [step()]
-    }
-    if (stage === 'config') return [step()]
-    return resume()
-  }
-
-  const served = (id: unknown, method: string, params: any): string[] => {
-    if (method === 'session/request_permission') {
-      const optionId = allowed(params?.options)
-      const outcome = optionId ? { outcome: 'selected', optionId } : { outcome: 'cancelled' }
-      return [rpc({ id, result: { outcome } })]
-    }
-    return [rpc({ id, error: { code: -32601, message: `Crew does not answer ${method}.` } })]
-  }
-
-  return {
-    begin: () => [ask('init', 'initialize', { protocolVersion: PROTOCOL, clientCapabilities: CAPABILITIES })],
-    answer: line => {
-      let msg: any
-      try {
-        msg = JSON.parse(line)
-      } catch {
-        return []
-      }
-      if (typeof msg?.method === 'string') {
-        if (msg.id !== undefined && msg.id !== null) return served(msg.id, msg.method, msg.params)
-        return []
-      }
-      const stage = typeof msg?.id === 'number' ? pending.get(msg.id) : undefined
-      if (!stage) return []
-      pending.delete(msg.id)
-      // A setting the CLI will not take is not worth stalling a run over. A
-      // model that has left the config and a CLI too old to be told either way
-      // carry on to the turn, which runs on whatever it was already set to.
-      if (msg.error) {
-        if (stage === 'config') return [step()]
-        return stage === 'turn' ? resume() : []
-      }
-      return answered(stage, msg.result)
-    },
-    steer: text => {
-      if (!sessionId || !turning) return null
-      steers.push(text)
-      return rpc({ method: 'session/cancel', params: { sessionId } })
-    }
-  }
+  const config: Array<[string, string]> = [['mode', MODE]]
+  if (model) config.push(['model', model])
+  return acpDialog({ prompt, cwd, run: options, config })
 }
-
-const chunkText = (content: any): string => (str(content?.type) === 'text' ? str(content.text) : '')
 
 const outputText = (update: any): string => {
   const raw = update?.rawOutput
