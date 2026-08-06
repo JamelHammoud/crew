@@ -183,7 +183,9 @@ export default function ToolBuilder({ tool, onDone }: { tool: CrewTool | null; o
                   ? say
                   : kind === 'todo'
                     ? task
-                    : ask
+                    : kind === 'post'
+                      ? post
+                      : ask
     return written.trim() !== ''
   }
   const ready = name.trim() !== '' && filled()
