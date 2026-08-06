@@ -84,8 +84,6 @@ describe('when it next runs', () => {
     expect(wallIn(nextRun(made(), nine), LISBON).d).toBe(11)
   })
 
-  // The two days a year a zone moves are the whole reason the offset is read
-  // twice. Read once, both of them put the run an hour out.
   it('holds the wall clock across the day the clocks go forward', () => {
     const before = instantOf(2026, 3, 28, 9 * 60, NEW_YORK)
     const after = nextRun(made({ zone: NEW_YORK }), before)
@@ -125,7 +123,6 @@ describe('what a missed run costs', () => {
     expect(due(one, instantOf(2026, 5, 11, 9 * 60, LISBON))).toBe(true)
   })
 
-  // A laptop shut for a week comes back to one run, never seven.
   it('fires once after a week asleep rather than catching up', () => {
     const woke = instantOf(2026, 5, 18, 10 * 60, LISBON)
     const one = made({ lastRunAt: instantOf(2026, 5, 10, 9 * 60, LISBON) })

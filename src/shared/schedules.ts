@@ -27,11 +27,6 @@ export const DAY_MINUTES = 60 * 24
 
 export const SCHEDULE_FULL = `The crew has as many scheduled tasks as it can hold. Take one out before adding another.`
 
-// A tool is pressed by somebody, so it may open a page, a terminal or a file on
-// the screen they are standing at. A schedule has nobody standing anywhere: it
-// fires on the host at four in the morning with every window shut. So the ones
-// that can be scheduled are the ones that are the crew's rather than a machine's,
-// and everything else is refused rather than firing into nothing.
 export const SCHEDULABLE = ['prompt', 'say', 'todo', 'note', 'music', 'chain'] as const
 
 export const schedulable = (action: ToolAction): boolean =>
@@ -42,9 +37,6 @@ const whole = (raw: unknown, low: number, high: number): number | null => {
   return Number.isFinite(n) && n >= low && n <= high ? n : null
 }
 
-// A zone is only ever used to say where a wall clock is read, so one this
-// machine cannot read is the machine's own rather than a schedule that throws
-// every time it is asked when it next runs.
 export const cleanZone = (raw: unknown): string => {
   const zone = typeof raw === 'string' ? raw.trim().slice(0, 64) : ''
   if (!zone) return here()
@@ -88,9 +80,6 @@ export function cleanCadence(raw: unknown): Cadence | null {
   return null
 }
 
-// What arrives over the wire is whatever the other end sent. One with no name,
-// nothing to do, or nothing to say about when, is not a schedule and comes back
-// as null rather than as a row that sits there never firing.
 export function cleanSchedule(
   name: string,
   mark: string,
@@ -143,7 +132,6 @@ export function wallIn(ts: number, zone: string): Wall {
     y: Number(held.year),
     m: Number(held.month),
     d: Number(held.day),
-    // A zone that rolls midnight over reads hour 24 rather than hour 0.
     hh: Number(held.hour) % 24,
     mm: Number(held.minute),
     weekday: Math.max(0, WEEK.indexOf(held.weekday))
@@ -155,10 +143,6 @@ const offsetAt = (ts: number, zone: string): number => {
   return Date.UTC(w.y, w.m - 1, w.d, w.hh, w.mm) - Math.floor(ts / 60000) * 60000
 }
 
-// The inverse of reading a wall clock: which instant is it 9am in Lisbon on this
-// date. The offset is read at the guess and then at the answer, because the
-// offset itself moves on the two days a year a zone changes, and reading it once
-// puts the run an hour out on both of them.
 export function instantOf(y: number, m: number, d: number, minutes: number, zone: string): number {
   const guess = Date.UTC(y, m - 1, d, 0, minutes)
   const once = guess - offsetAt(guess, zone)
@@ -170,10 +154,6 @@ const dayAfter = (y: number, m: number, d: number, step: number): [number, numbe
   return [at.getUTCFullYear(), at.getUTCMonth() + 1, at.getUTCDate()]
 }
 
-// When it next runs, strictly after `from`. Every cadence but the interval is a
-// wall clock in the schedule's own zone, so each one is worked out by walking
-// candidate days rather than by adding milliseconds: a day is not always 24
-// hours long, and a month never is.
 export function nextRun(schedule: Schedule, from: number): number {
   const { when, zone } = schedule
   if (when.kind === 'every') {
@@ -197,10 +177,6 @@ export function nextRun(schedule: Schedule, from: number): number {
   return from + DAY_MINUTES * 60000
 }
 
-// A laptop that was asleep, or a Crew that was shut, comes back to a schedule
-// that should have fired six times. It fires once and the rest are gone: a
-// morning of catching up is a crew watching six of the same run land at once,
-// which is worse than the one that was missed.
 export function due(schedule: Schedule, now: number): boolean {
   if (schedule.paused) return false
   const since = schedule.lastRunAt ?? schedule.ts
@@ -225,8 +201,6 @@ const ordinal = (day: number): string => {
   return `${day}${['th', 'st', 'nd', 'rd'][day % 10] ?? 'th'}`
 }
 
-// What the row says about when it runs. Never a cron line and never a count of
-// milliseconds: it is read by whoever wrote it and by everyone else in the crew.
 export function sayCadence(when: Cadence): string {
   if (when.kind === 'every') {
     if (when.minutes % DAY_MINUTES === 0) {

@@ -28,10 +28,6 @@ interface FakeRunner {
   messages: ServerMessage[]
 }
 
-// A Crew that was shut over the weekend, which is the only way to watch the
-// clock strike without sitting through a real day: the schedule is written into
-// the log as of a week ago, so the session that folds it back finds it overdue
-// the moment it comes up.
 function shutSince(days: number, over: Partial<Extract<SessionEvent, { kind: 'schedule.added' }>> = {}): string {
   const path = tmpDir('slept')
   const store = new Store(path)
@@ -168,7 +164,6 @@ describe('what the crew has put on a clock', () => {
     }
   })
 
-  // A laptop shut for a week comes back to one run, never seven.
   it('fires once for the runs it slept through rather than catching up', async () => {
     const slept = await startHost(shutSince(7))
     try {
@@ -181,8 +176,6 @@ describe('what the crew has put on a clock', () => {
     }
   })
 
-  // What it did is what a session coming back up reads to know where it got to,
-  // so it has to survive the restart the schedule itself lived through.
   it('remembers when it last ran across a restart', async () => {
     const path = shutSince(7)
     const slept = await startHost(path)
@@ -216,8 +209,6 @@ describe('what the crew has put on a clock', () => {
     }
   })
 
-  // A run somebody asked for is not the run it was written for, so it must not
-  // move when the next one is due.
   it('runs by hand without moving the clock', async () => {
     const sam = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(sam)
