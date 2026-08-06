@@ -1662,9 +1662,10 @@ export class CrewSession {
       this.refuse('Say what to carry on with.', ws, parent.id)
       return
     }
-    const ghost = this.ghostOf(parent.id)?.ws
+    const hidden = this.ghostOf(parent.id)
+    const ghost = hidden?.ws ?? undefined
     const named = [...new Set(mentions)].filter(
-      id => this.agents.has(id) && (ghost === undefined || this.ownAgent(member, id))
+      id => this.agents.has(id) && (hidden === undefined || this.ownAgent(member, id))
     )
     const agent = this.agents.get(named[0] ?? '') ?? this.agents.get(parent.agentId)
     if (!agent) {
