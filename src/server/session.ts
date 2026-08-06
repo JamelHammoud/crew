@@ -130,6 +130,14 @@ import {
   type RunStep
 } from '../shared/llm'
 import { cleanMemberName, memberMentionRefsIn } from '../shared/people'
+import {
+  cleanSchedule,
+  due,
+  nextRun,
+  SCHEDULE_FULL,
+  SCHEDULE_LIMIT,
+  type Schedule
+} from '../shared/schedules'
 import { cleanTool, type CrewTool, type ToolAction } from '../shared/toolbox'
 import {
   cleanHelperName,
@@ -927,6 +935,7 @@ export class CrewSession {
       memories: [...this.memories.values()],
       memoryEnabled: this.memoryEnabled,
       plugins: [...this.plugins.values()],
+      schedules: [...this.schedules.values()],
       attachmentMb: this.attachmentMb,
       boards: this.boardList(),
       huddle: this.huddleRoom(),
