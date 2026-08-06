@@ -98,6 +98,7 @@ import {
 import { cleanCommands, type CommandName } from '../shared/commands'
 import { goalCondition } from '../shared/goal'
 import { IMPLEMENT_PROMPT, PLAN_INSTRUCTIONS } from '../shared/plan'
+import { POST_INSTRUCTIONS } from '../shared/post'
 import {
   ASK_LIMIT,
   ASSUMED_LIMIT,
