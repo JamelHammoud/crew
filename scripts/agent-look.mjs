@@ -122,6 +122,7 @@ await build({
   base: './',
   logLevel: 'silent',
   plugins: [tailwind()],
+  resolve: { alias: { react: path.join(root, 'node_modules/react'), 'react-dom': path.join(root, 'node_modules/react-dom') } },
   build: { outDir: path.join(dir, 'dist'), emptyOutDir: true }
 })
 

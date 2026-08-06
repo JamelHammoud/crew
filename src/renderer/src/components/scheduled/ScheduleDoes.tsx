@@ -55,10 +55,35 @@ export default function ScheduleDoes({
       return toolIds.length > 0 ? { kind: 'chain', toolIds } : null
     }
     onChange(built())
-  }, [kind, ask, say, task, line, page, trackId, playlistId, toolIds, onChange])
+  }, [kind, ask, say, task, line, page, trackId, playlistId, toolIds, agentId, onChange])
 
   const tracks = musicItems(uploads)
   const lists = [...MUSIC_SETS, ...playlists]
+  const here = agentsHere(agents)
+  const named = agents.find(agent => agent.id === agentId)
+  const choices = named && !here.includes(named) ? [...here, named] : here
+
+  const who = (label: string) => (
+    <Field label={label}>
+      <div className="flex flex-wrap gap-1.5">
+        <Choice
+          label="Anyone"
+          mark={<PeopleGlyph className="w-4 h-4" />}
+          picked={agentId === null}
+          onClick={() => setAgentId(null)}
+        />
+        {choices.map(agent => (
+          <Choice
+            key={agent.id}
+            label={agent.label}
+            mark={<AgentIcon seed={agent.id} size="xs" />}
+            picked={agentId === agent.id}
+            onClick={() => setAgentId(agent.id)}
+          />
+        ))}
+      </div>
+    </Field>
+  )
 
   return (
     <div className="space-y-3">
