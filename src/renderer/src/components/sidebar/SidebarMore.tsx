@@ -44,6 +44,13 @@ export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab
     useBrowser.getState().openPanel()
   }
 
+  const pressHuddle = () => {
+    menu.close()
+    const huddle = useHuddle.getState()
+    if (huddle.joined) huddle.leave()
+    else void huddle.join()
+  }
+
   return (
     <div
       ref={rowRef}
