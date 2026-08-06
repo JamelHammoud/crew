@@ -1515,6 +1515,7 @@ export class CrewSession {
       boardId?: string
       mode?: ThreadMode
       ghost?: WebSocket
+      hidden?: boolean
       post?: boolean
       mentions?: string[]
       replyTo?: MessageReply
