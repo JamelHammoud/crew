@@ -126,6 +126,7 @@ export default function ToolBuilder({ tool, onDone }: { tool: CrewTool | null; o
   const [toolIds, setToolIds] = useState<string[]>(tool?.action.kind === 'chain' ? tool.action.toolIds : [])
   const commandRef = useAutoResize(command, GROWN)
   const askRef = useAutoResize(ask, GROWN)
+  const postRef = useAutoResize(post, GROWN)
   const copyRef = useAutoResize(copy, GROWN)
   const sayRef = useAutoResize(say, GROWN)
   const taskRef = useAutoResize(task, GROWN)
