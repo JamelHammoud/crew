@@ -331,7 +331,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
                   </button>
                 )}
               </div>
-              <div className="-mt-2">
+              <div>
                 <SettingSections fields={deeper} settings={settings} onChange={setSetting} />
               </div>
               <div className="flex items-center justify-end">
