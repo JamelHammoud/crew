@@ -39,7 +39,9 @@ export default function ScheduleDoes({
   const [playlistId, setPlaylistId] = useState(initial?.kind === 'music' ? (initial.playlistId ?? '') : '')
   const [toolIds, setToolIds] = useState<string[]>(initial?.kind === 'chain' ? initial.toolIds : [])
   const [agentId, setAgentId] = useState<string | null>(
-    initial?.kind === 'prompt' || initial?.kind === 'todo' ? (initial.agentId ?? null) : null
+    initial?.kind === 'prompt' || initial?.kind === 'post' || initial?.kind === 'todo'
+      ? (initial.agentId ?? null)
+      : null
   )
 
   useEffect(() => {
