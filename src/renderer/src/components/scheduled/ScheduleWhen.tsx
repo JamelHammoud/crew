@@ -15,8 +15,6 @@ const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
 const WEEKDAYS = [1, 2, 3, 4, 5]
 
-const MORNING = 9 * 60
-
 const amount = (minutes: number): string => {
   if (minutes % DAY_MINUTES === 0) {
     const days = minutes / DAY_MINUTES
