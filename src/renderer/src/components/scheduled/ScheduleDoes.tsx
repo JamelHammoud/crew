@@ -48,6 +48,8 @@ export default function ScheduleDoes({
     const built = (): ToolAction | null => {
       if (kind === 'prompt')
         return ask.trim() ? (agentId ? { kind: 'prompt', text: ask, agentId } : { kind: 'prompt', text: ask }) : null
+      if (kind === 'post')
+        return post.trim() ? (agentId ? { kind: 'post', text: post, agentId } : { kind: 'post', text: post }) : null
       if (kind === 'say') return say.trim() ? { kind: 'say', text: say } : null
       if (kind === 'todo')
         return task.trim() ? (agentId ? { kind: 'todo', text: task, agentId } : { kind: 'todo', text: task }) : null
