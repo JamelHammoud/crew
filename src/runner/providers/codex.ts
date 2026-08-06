@@ -133,13 +133,50 @@ export const parseCodexLine: OutputParser = line => {
   }
 }
 
+const SEARCH = [
+  { value: '', label: 'Default' },
+  { value: 'live', label: 'Live' },
+  { value: 'indexed', label: 'Indexed' },
+  { value: 'cached', label: 'Cached' },
+  { value: 'disabled', label: 'Off' }
+]
+
+const VERBOSITY = [
+  { value: '', label: 'Default' },
+  { value: 'low', label: 'Short' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'high', label: 'Long' }
+]
+
+const PERSONALITY = [
+  { value: '', label: 'Default' },
+  { value: 'pragmatic', label: 'Pragmatic' },
+  { value: 'friendly', label: 'Friendly' },
+  { value: 'none', label: 'Plain' }
+]
+
 export const codexFields = (): AgentSettingField[] => {
   const { models, efforts } = codexModels()
   return [
     { key: 'model', label: 'Model', options: choices(['', ...models]), default: '' },
-    { key: 'effort', label: 'Thinking', options: choices(['', ...efforts]), default: '' }
+    { key: 'effort', label: 'Thinking', options: choices(['', ...efforts]), default: '' },
+    { key: 'search', label: 'Web search', options: SEARCH, default: '', advanced: true, section: 'What it can reach' },
+    {
+      key: 'verbosity',
+      label: 'Answer length',
+      options: VERBOSITY,
+      default: '',
+      advanced: true,
+      section: 'Answers'
+    },
+    { key: 'personality', label: 'Tone', options: PERSONALITY, default: '', advanced: true, section: 'Answers' }
   ]
 }
+
+export const codexConfigArgs = (get: SettingReader): string[] => [
+  ...(get('search') ? ['-c', `web_search=${tomlText(get('search'))}`] : []),
+  ...(get('verbosity') ? ['-c', `model_verbosity=${tomlText(get('verbosity'))}`] : [])
+]
 
 const tomlText = (value: string): string => JSON.stringify(value)
 
