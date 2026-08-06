@@ -248,6 +248,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
                     mark: <ProviderMark provider={c.provider} />
                   }))}
                   onChange={pick}
+                  add={{ label: 'Add a provider', onPick: () => setScreen('server') }}
                 />
                 {fields.map(field => (
                   <Select
@@ -256,11 +257,6 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
                     value={settings[field.key] ?? field.default}
                     options={field.options}
                     onChange={value => setSetting(field.key, value)}
-                    add={
-                      field.free
-                        ? { label: `Add a ${field.label.toLowerCase()}`, onPick: () => setScreen('server') }
-                        : undefined
-                    }
                   />
                 ))}
               </div>
