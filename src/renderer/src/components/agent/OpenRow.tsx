@@ -15,7 +15,7 @@ export default function OpenRow({
   return (
     <button
       onClick={onOpen}
-      className="w-full flex items-center gap-4 py-3.5 text-left border-b border-fg/[0.06] last:border-b-0 transition-colors duration-150 group"
+      className="-mx-6 px-6 w-[calc(100%+3rem)] flex items-center gap-4 py-3.5 text-left border-b border-fg/[0.06] last:border-b-0 transition-colors duration-150 group"
     >
       <span className="min-w-0 flex-1">
         <span className="block text-base text-fg">{label}</span>

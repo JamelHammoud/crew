@@ -263,7 +263,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
                 />
               </div>
               <div>
-                <Row label="Provider">
+                <Row label="Provider" bleed>
                   <Select
                     value={provider}
                     options={(caps ?? []).map(c => ({
@@ -316,9 +316,9 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
                 <button
                   onClick={() => setScreen('agent')}
                   aria-label="Back"
-                  className="w-8 h-8 -ml-1.5 rounded-full flex items-center justify-center text-fg/45 transition-colors hover:bg-fg/10 hover:text-fg active:scale-95"
+                  className="w-9 h-9 shrink-0 rounded-full bg-fg/[0.07] flex items-center justify-center text-fg/70 transition-all duration-150 hover:bg-fg/[0.12] hover:text-fg active:scale-95"
                 >
-                  <ChevronLeftGlyph className="w-4 h-4" />
+                  <ChevronLeftGlyph className="w-[18px] h-[18px]" />
                 </button>
                 <h3 className="text-base font-semibold text-fg">{cap?.label}</h3>
                 {changed > 0 && (
@@ -326,7 +326,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
                     onClick={putBack}
                     className="ml-auto text-sm font-semibold text-fg/45 transition-colors hover:text-fg active:scale-95"
                   >
-                    Put back
+                    Reset
                   </button>
                 )}
               </div>

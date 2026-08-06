@@ -65,7 +65,7 @@ function ParagraphRow({
   onChange: (key: string, value: string) => void
 }) {
   return (
-    <div className="py-3.5 border-b border-fg/[0.06] last:border-b-0">
+    <div className="-mx-6 px-6 py-3.5 border-b border-fg/[0.06] last:border-b-0">
       <p className="text-base text-fg">{field.label}</p>
       {field.line && <p className="text-sm text-fg/45 mt-0.5">{field.line}</p>}
       <TextArea
@@ -95,7 +95,7 @@ export default function SettingRows({
         fieldKind(field) === 'paragraph' ? (
           <ParagraphRow key={field.key} field={field} settings={settings} onChange={onChange} />
         ) : (
-          <Row key={field.key} label={field.label} line={field.line}>
+          <Row key={field.key} label={field.label} line={field.line} bleed>
             <SettingControl field={field} settings={settings} onChange={onChange} />
           </Row>
         )

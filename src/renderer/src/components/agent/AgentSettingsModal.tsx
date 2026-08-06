@@ -37,7 +37,7 @@ export default function AgentSettingsModal({
               onClick={putBack}
               className="ml-auto text-sm font-semibold text-fg/45 transition-colors hover:text-fg active:scale-95"
             >
-              Put back
+              Reset
             </button>
           )}
         </div>
