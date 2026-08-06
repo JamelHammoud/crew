@@ -4,6 +4,7 @@ import geminiMark from '../media/providers/gemini.png'
 import grokMark from '../media/providers/grok.png'
 import kimiMark from '../media/providers/kimi.png'
 import ollamaMark from '../media/providers/ollama.png'
+import GeneratedField from './art/GeneratedField'
 import InsetRing from './InsetRing'
 
 const MARKS: Record<string, string> = {
