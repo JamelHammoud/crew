@@ -44,6 +44,87 @@ const contextField = (): AgentSettingField => ({
   default: ''
 })
 
+const THINKING = [
+  { value: 'on', label: 'On' },
+  { value: 'max', label: 'Max' },
+  { value: 'high', label: 'High' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'low', label: 'Low' },
+  { value: 'off', label: 'Off' }
+]
+
+const KEEP_ALIVE = [
+  { value: '', label: 'Default' },
+  { value: '30m', label: '30 minutes' },
+  { value: '2h', label: '2 hours' },
+  { value: '-1', label: 'Always' },
+  { value: '0', label: 'Never' }
+]
+
+const tuningFields = (): AgentSettingField[] => [
+  { key: 'thinking', label: 'Thinking', options: THINKING, default: 'on', advanced: true, section: 'Thinking' },
+  {
+    key: 'temperature',
+    label: 'Temperature',
+    kind: 'number',
+    default: '',
+    advanced: true,
+    section: 'Answers',
+    min: 0,
+    max: 2,
+    step: 0.1,
+    line: 'Lower is steadier, higher is looser.'
+  },
+  {
+    key: 'topP',
+    label: 'Top P',
+    kind: 'number',
+    default: '',
+    advanced: true,
+    section: 'Answers',
+    min: 0,
+    max: 1,
+    step: 0.05
+  },
+  {
+    key: 'seed',
+    label: 'Seed',
+    kind: 'number',
+    default: '',
+    advanced: true,
+    section: 'Answers',
+    line: 'The same question comes back with the same answer.'
+  },
+  {
+    key: 'maxReply',
+    label: 'Longest reply',
+    kind: 'number',
+    default: '',
+    advanced: true,
+    section: 'Answers',
+    min: 64,
+    unit: 'tokens'
+  },
+  {
+    key: 'keepAlive',
+    label: 'Stays loaded',
+    options: KEEP_ALIVE,
+    default: '',
+    advanced: true,
+    section: 'On this computer',
+    line: 'How long the model waits in memory before it has to be read in again.'
+  }
+]
+
+export const localTuning = (get: (key: string) => string): Tuning => ({
+  think: get('thinking'),
+  temperature: get('temperature'),
+  topP: get('topP'),
+  seed: get('seed'),
+  maxReply: get('maxReply'),
+  keepAlive: get('keepAlive')
+})
+
 export const localFields = (): AgentSettingField[] => {
   const runtimes = cachedRuntimes()
   return [
