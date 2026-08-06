@@ -841,6 +841,52 @@ export const useCrew = create<CrewState>((set, get) => {
         }
         case 'plugin.removed':
           return { events, plugins: state.plugins.filter(one => one.id !== event.pluginId) }
+        case 'schedule.added': {
+          if (state.schedules.some(one => one.id === event.scheduleId)) return { events }
+          const schedule: Schedule = {
+            id: event.scheduleId,
+            name: event.name,
+            mark: event.mark,
+            when: event.when,
+            action: event.action,
+            zone: event.zone,
+            createdBy: event.byName,
+            ts: event.ts
+          }
+          return { events, schedules: [...state.schedules, schedule] }
+        }
+        case 'schedule.edited':
+          return {
+            events,
+            schedules: state.schedules.map(one =>
+              one.id === event.scheduleId
+                ? {
+                    ...one,
+                    name: event.name,
+                    mark: event.mark,
+                    when: event.when,
+                    action: event.action,
+                    zone: event.zone
+                  }
+                : one
+            )
+          }
+        case 'schedule.removed':
+          return { events, schedules: state.schedules.filter(one => one.id !== event.scheduleId) }
+        case 'schedule.paused':
+          return {
+            events,
+            schedules: state.schedules.map(one =>
+              one.id === event.scheduleId ? { ...one, paused: event.paused } : one
+            )
+          }
+        case 'schedule.ran':
+          return {
+            events,
+            schedules: state.schedules.map(one =>
+              one.id === event.scheduleId ? { ...one, lastRunAt: event.ts, lastThreadId: event.threadId } : one
+            )
+          }
         case 'attachment.limit':
           return { events, attachmentMb: event.mb }
       }
@@ -944,6 +990,7 @@ export const useCrew = create<CrewState>((set, get) => {
           memories: msg.snapshot.memories ?? [],
           memoryEnabled: msg.snapshot.memoryEnabled ?? false,
           plugins: msg.snapshot.plugins ?? [],
+          schedules: msg.snapshot.schedules ?? [],
           emoji: msg.snapshot.emoji ?? [],
           attachmentMb: msg.snapshot.attachmentMb ?? DEFAULT_ATTACHMENT_MB,
           scores: msg.snapshot.gameScores ?? [],
