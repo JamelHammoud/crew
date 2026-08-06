@@ -39,9 +39,6 @@ export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab
     setToolbox(at)
   }
 
-  // The panel is put in rather than filled: with nothing in it, it stands on
-  // Start, which is the way to everything else it can hold. Nothing is pulled in
-  // behind it, or the one thing this row promises is the one screen it skips.
   const openBrowser = () => {
     menu.close()
     useBrowser.getState().openPanel()
