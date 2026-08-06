@@ -296,11 +296,20 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
             </div>
           ) : (
             <div className="p-6 space-y-5">
-              <h3 className="text-base font-semibold text-fg">Add a server</h3>
+              <h3 className="text-base font-semibold text-fg">Add a provider</h3>
               <div className="space-y-2">
                 <TextField
                   glass
                   autoFocus
+                  value={serverTitle}
+                  onChange={e => setServerTitle(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && address.trim()) void addServer()
+                  }}
+                  placeholder="Name"
+                />
+                <TextField
+                  glass
                   value={address}
                   onChange={e => setAddress(e.target.value)}
                   onKeyDown={e => {
