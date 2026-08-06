@@ -4357,7 +4357,9 @@ export class CrewSession {
       this.subagentReturn(thread, result.ok, result.text ?? result.error ?? '', stopped)
     }
     const posting = thread ? this.ghostOf(thread.id)?.post : undefined
-    if (thread && posting && !this.subagentRunning(thread)) {
+    const helpersOut =
+      thread !== undefined && this.subagentThreads(thread.id).some(one => this.subagentRunning(one))
+    if (thread && posting && !this.subagentRunning(thread) && !helpersOut) {
       this.postReturn(thread, agent, result.ok && !stopped ? (result.text ?? '') : '')
     }
   }
