@@ -25,6 +25,7 @@ export default function ScheduleDoes({
 }) {
   const docs = useCrew(s => s.docs)
   const tools = useCrew(s => s.tools)
+  const agents = useCrew(s => s.agents)
   const uploads = useMusic(s => s.uploads)
   const playlists = useMusic(s => s.playlists)
   const [kind, setKind] = useState<ToolKind>(initial?.kind ?? 'prompt')
