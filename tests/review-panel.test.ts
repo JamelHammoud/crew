@@ -548,3 +548,98 @@ describe('the split between the two panes', () => {
     expect(first).toBeLessThanOrEqual(900 - DIFF_MIN)
   })
 })
+
+describe('the branch a review is of', () => {
+  const branches = [
+    { name: 'main', current: true, remote: false },
+    { name: 'feature/tickets', current: false, remote: false },
+    { name: 'ali/spike', current: false, remote: true }
+  ]
+
+  const openBranches = async () => {
+    render(createElement(ReviewView))
+    fireEvent.click(await screen.findByRole('button', { name: /main/ }))
+    return screen.findByLabelText('Find a branch')
+  }
+
+  it('opens every branch there is off the name of the one you are on', async () => {
+    bridge(work({ branches }))
+    await openBranches()
+
+    expect(screen.getByText('feature/tickets')).not.toBeNull()
+    expect(screen.getByText('ali/spike')).not.toBeNull()
+    expect(screen.getByText('New branch')).not.toBeNull()
+  })
+
+  it('switches to the one that was picked', async () => {
+    bridge(work({ branches }))
+    await openBranches()
+
+    fireEvent.click(button('feature/tickets'))
+
+    await waitFor(() => expect(sent).toEqual([{ do: 'switch', branch: 'feature/tickets' }]))
+  })
+
+  it('leaves the branch you are already on alone', async () => {
+    bridge(work({ branches }))
+    await openBranches()
+
+    fireEvent.click(button('main'))
+
+    await waitFor(() => expect(screen.queryByLabelText('Find a branch')).toBeNull())
+    expect(sent).toEqual([])
+  })
+
+  it('finds a branch by any part of its name', async () => {
+    bridge(work({ branches }))
+    const field = await openBranches()
+
+    fireEvent.change(field, { target: { value: 'tick' } })
+
+    expect(screen.queryByText('main')).toBeNull()
+    expect(screen.getByText('feature/tickets')).not.toBeNull()
+  })
+
+  it('makes the branch that was typed when nothing answers to it', async () => {
+    bridge(work({ branches }))
+    const field = await openBranches()
+
+    fireEvent.change(field, { target: { value: 'wip' } })
+    fireEvent.click(button('New branch wip'))
+
+    await waitFor(() => expect(sent).toEqual([{ do: 'branch', name: 'wip' }]))
+  })
+
+  it('says the name git will really take rather than the one being typed', async () => {
+    bridge(work({ branches }))
+    const field = await openBranches()
+
+    fireEvent.change(field, { target: { value: 'my new thing' } })
+    expect(screen.getByText('New branch my-new-thing')).not.toBeNull()
+
+    fireEvent.click(button('New branch my-new-thing'))
+    await waitFor(() => expect(sent).toEqual([{ do: 'branch', name: 'my-new-thing' }]))
+  })
+
+  it('names a branch on a screen inside the same card', async () => {
+    bridge(work({ branches }))
+    await openBranches()
+
+    fireEvent.click(button('New branch'))
+    const field = await screen.findByPlaceholderText('Name')
+    fireEvent.change(field, { target: { value: 'ali/next' } })
+    fireEvent.click(button('Create'))
+
+    await waitFor(() => expect(sent).toEqual([{ do: 'branch', name: 'ali/next' }]))
+  })
+
+  it('switches with the keys alone', async () => {
+    bridge(work({ branches }))
+    const field = await openBranches()
+
+    fireEvent.change(field, { target: { value: 'spike' } })
+    fireEvent.keyDown(field, { key: 'Enter' })
+
+    await waitFor(() => expect(sent).toEqual([{ do: 'switch', branch: 'ali/spike' }]))
+  })
+})
