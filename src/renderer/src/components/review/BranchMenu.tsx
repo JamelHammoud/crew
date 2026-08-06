@@ -39,7 +39,7 @@ export default function BranchMenu({
   }, [branches, query])
 
   const wanted = cleanBranchName(query)
-  const fresh = wanted.length > 0 && !branches.some(one => one.name === wanted)
+  const fresh = wanted.length > 0 && !(branches ?? []).some(one => one.name === wanted)
   const active = shown[at] ?? null
 
   useEffect(() => {
