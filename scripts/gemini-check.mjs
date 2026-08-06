@@ -257,7 +257,7 @@ try {
         ? diffs
             .map(one => `${one.path} ${String(one.oldText ?? '').length} characters to ${String(one.newText ?? '').length}`)
             .join(', ')
-        : `${updates.length} tool_call_update messages, ${late} of them with no diff part in their content`
+        : `${updates.length} tool_call_update messages, ${carried} of them carrying content, none of it a diff part with a path, oldText and newText`
     },
     {
       name: 'the edit really landed',
