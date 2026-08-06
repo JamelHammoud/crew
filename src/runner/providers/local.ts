@@ -108,12 +108,12 @@ const tuningFields = (): AgentSettingField[] => [
   },
   {
     key: 'keepAlive',
-    label: 'Stays loaded',
+    label: 'Stays in memory',
     options: KEEP_ALIVE,
     default: '',
     advanced: true,
     section: 'On this computer',
-    line: 'How long the model waits in memory before it has to be read in again.'
+    line: 'Longer means the next message is answered straight away.'
   }
 ]
 

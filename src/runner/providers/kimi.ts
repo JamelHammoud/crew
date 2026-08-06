@@ -29,12 +29,11 @@ export const kimiFields = (): AgentSettingField[] => [
   },
   {
     key: 'mode',
-    label: 'Can do',
+    label: 'What it may do',
     options: KIMI_MODES,
     default: 'yolo',
     advanced: true,
-    section: 'On this computer',
-    line: 'Read only writes nothing and runs nothing.'
+    section: 'On this computer'
   }
 ]
 

@@ -24,22 +24,21 @@ export const geminiFields = (): AgentSettingField[] => [
   { key: 'model', label: 'Model', options: choices(['', ...MODELS]), default: '' },
   {
     key: 'mode',
-    label: 'Can do',
+    label: 'What it may do',
     options: GEMINI_MODES,
     default: '',
     advanced: true,
-    section: 'On this computer',
-    line: 'Read only writes nothing and runs nothing.'
+    section: 'On this computer'
   },
   {
     key: 'dirs',
-    label: 'Other folders',
+    label: 'Other folders it can read',
     kind: 'text',
     default: '',
     advanced: true,
     section: 'On this computer',
     placeholder: 'None',
-    line: 'Folders outside the project it may read, separated by commas.'
+    line: 'Separated by commas.'
   }
 ]
 
