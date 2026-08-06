@@ -130,15 +130,18 @@ export default function ScheduleDoes({
       )}
 
       {kind === 'todo' && (
-        <Field label="What to add">
-          <TextArea
-            rows={2}
-            value={task}
-            aria-label="What to add"
-            placeholder="Read what the agents left overnight"
-            onChange={event => setTask(event.target.value)}
-          />
-        </Field>
+        <>
+          {who("Who it's for")}
+          <Field label="What to add">
+            <TextArea
+              rows={2}
+              value={task}
+              aria-label="What to add"
+              placeholder="Read what the agents left overnight"
+              onChange={event => setTask(event.target.value)}
+            />
+          </Field>
+        </>
       )}
 
       {kind === 'note' && (
