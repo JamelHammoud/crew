@@ -135,22 +135,32 @@ async function toolsOf(runtime: LocalRuntime, model: Served): Promise<boolean> {
 
 export async function refreshModels(runtimes: LocalRuntime[]): Promise<string[]> {
   const lists = await Promise.all(
-    runtimes.map(async runtime => ({ runtime, models: await servedOn(runtime) }))
+    runtimes.map(async runtime => {
+      const models = await servedOn(runtime)
+      const checked = await Promise.all(
+        models.map(async (model): Promise<LocalModel> => ({ name: model.name, tools: await toolsOf(runtime, model) }))
+      )
+      const kept: string[] = []
+      for (const model of checked) {
+        if (model.tools === false || kept.includes(model.name)) continue
+        kept.push(model.name)
+      }
+      servedBy.set(runtime.url, kept)
+      return kept
+    })
   )
-  const checked = await Promise.all(
-    lists.flatMap(({ runtime, models }) =>
-      models.map(async (model): Promise<LocalModel> => ({ name: model.name, tools: await toolsOf(runtime, model) }))
-    )
-  )
+  const all: string[] = []
+  for (const model of lists.flat()) if (!all.includes(model)) all.push(model)
+  return all
+}
+
+export function modelsServedOn(urls: readonly string[]): string[] {
   const kept: string[] = []
-  for (const model of checked) {
-    if (model.tools === false || kept.includes(model.name)) continue
-    kept.push(model.name)
-  }
-  served = kept
+  for (const url of urls) for (const model of servedBy.get(url) ?? []) if (!kept.includes(model)) kept.push(model)
   return kept
 }
 
 export function cachedModels(): string[] {
-  return served?.length ? served : diskModels()
+  const served = modelsServedOn([...servedBy.keys()])
+  return served.length ? served : diskModels()
 }
