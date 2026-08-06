@@ -1,13 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { AgentSettings, ProviderCapability } from '../../../shared/llm'
-import { resolveSettings, visibleSettingFields } from '../../../shared/llm'
+import {
+  advancedFields,
+  changedSettings,
+  plainFields,
+  resolveSettings,
+  visibleSettingFields
+} from '../../../shared/llm'
 import {
   serverName,
   serverProviderName,
   serverUrl,
   type ModelServer
 } from '../../../shared/modelServers'
-import { CloseGlyph, PlusGlyph } from '../icons'
+import { ChevronLeftGlyph, CloseGlyph, PlusGlyph } from '../icons'
 import Modal from './Modal'
 import ProviderMark from './ProviderMark'
 import ScreenSwap from './ScreenSwap'
@@ -15,6 +21,9 @@ import Select from './Select'
 import Spinner from './Spinner'
 import TextField from './TextField'
 import Tooltip from './Tooltip'
+import OpenRow from './agent/OpenRow'
+import SettingRows, { SettingSections } from './agent/SettingRows'
+import { Row } from './settings/parts'
 
 function titleCase(value: string): string {
   return value ? value[0].toUpperCase() + value.slice(1) : value
@@ -24,19 +33,25 @@ function defaultName(cap: ProviderCapability, settings: AgentSettings): string {
   const model = settings['model']
   if (!model) return cap.label
   const field = cap.fields.find(f => f.key === 'model')
-  const label = field?.options.find(o => o.value === model)?.label ?? model
+  const label = field?.options?.find(o => o.value === model)?.label ?? model
   const variantField = visibleSettingFields(cap.fields, settings).find(
     candidate => candidate.visibleWhen?.key === 'model' && candidate.visibleWhen.value === model
   )
-  const variant = variantField?.options.find(option => option.value === settings[variantField.key])?.label
+  const variant = variantField?.options?.find(option => option.value === settings[variantField.key])?.label
   if (variant) return `${cap.label} ${variant}`
   return `${cap.label} ${titleCase(label)}`
 }
 
-// The way in stands at the end of the agents rather than off in a corner of the
-// page, so it is the empty state and the way in both, the way the toolbox ends
-// its own row on the slot that opens the builder. Alone, it says where an agent
-// comes from, since there is nothing above it to say so.
+type Screen = 'agent' | 'advanced' | 'server'
+
+const TITLES: Record<Screen, string> = {
+  agent: 'Add an agent',
+  advanced: 'Advanced',
+  server: 'Add a provider'
+}
+
+const DEPTH: Record<Screen, number> = { agent: 0, advanced: 1, server: 1 }
+
 export default function CreateAgent({ alone, compact }: { alone?: boolean; compact?: boolean }) {
   const [caps, setCaps] = useState<ProviderCapability[] | null>(null)
   const [open, setOpen] = useState(false)
@@ -48,7 +63,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
   const [loading, setLoading] = useState(false)
   const [installing, setInstalling] = useState<string | null>(null)
   const [error, setError] = useState('')
-  const [screen, setScreen] = useState<'agent' | 'server'>('agent')
+  const [screen, setScreen] = useState<Screen>('agent')
   const [servers, setServers] = useState<ModelServer[]>([])
   const [address, setAddress] = useState('')
   const [serverTitle, setServerTitle] = useState('')
@@ -63,7 +78,10 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
   }, [compact])
 
   const cap = useMemo(() => caps?.find(c => c.provider === provider) ?? null, [caps, provider])
-  const fields = useMemo(() => (cap ? visibleSettingFields(cap.fields, settings) : []), [cap, settings])
+  const plain = useMemo(() => (cap ? plainFields(cap.fields) : []), [cap])
+  const deeper = useMemo(() => (cap ? advancedFields(cap.fields) : []), [cap])
+  const deeperShown = useMemo(() => visibleSettingFields(deeper, settings), [deeper, settings])
+  const changed = useMemo(() => changedSettings(deeper, settings).length, [deeper, settings])
 
   const selectProvider = (next: string, list = caps) => {
     const chosen = list?.find(c => c.provider === next) ?? null
@@ -81,8 +99,6 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
     try {
       const fresh = await window.crew.installProvider(target.provider)
       setCaps(fresh)
-      // Fields can change once the CLI is on disk (model lists come from its
-      // local config), so re-resolve if this provider is still the one shown.
       if (providerRef.current === target.provider) selectProvider(target.provider, fresh)
     } catch (err) {
       setError(String(err instanceof Error ? err.message : err))
@@ -91,17 +107,12 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
     }
   }
 
-  // Picking a provider that is missing its CLI is what kicks off the install.
   const pick = (next: string) => {
     selectProvider(next)
     const chosen = caps?.find(c => c.provider === next)
     if (chosen && !chosen.installed && chosen.installable && installing !== next) void install(chosen)
   }
 
-  // A CLI's models change about never, and a model on this computer changes
-  // the moment somebody pulls one, which they will very often be doing because
-  // this card just told them they had none. So the card asks again every time
-  // it opens, and what it already knows is what it opens on.
   const refresh = async () => {
     const fresh = await window.crew.agentCapabilities()
     setCaps(fresh)
@@ -132,8 +143,6 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
     if (held) void refresh().catch(() => {})
   }
 
-  // A server that was just written down is what somebody wants to make an agent
-  // on, so the card lands on its row rather than leaving them to find it.
   const addServer = async () => {
     setAdding(true)
     setAddError('')
@@ -173,6 +182,13 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
     if (!nameEdited && cap) setName(defaultName(cap, next))
   }
 
+  const putBack = () => {
+    if (!cap) return
+    const next = { ...settings }
+    for (const field of deeper) next[field.key] = field.default
+    setSettings(next)
+  }
+
   const create = async () => {
     if (!cap || !name.trim()) return
     setBusy(true)
@@ -196,6 +212,8 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
   if (caps && caps.length === 0) {
     return <p className="text-sm text-fg/45">No LLM CLIs found on this machine.</p>
   }
+
+  const ready = Boolean(cap?.installed) && !cap?.note
 
   return (
     <>
@@ -227,48 +245,46 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
           </span>
         </button>
       )}
-      <Modal
-        open={open}
-        onClose={() => setOpen(false)}
-        title={screen === 'agent' ? 'Add an agent' : 'Add a server'}
-        flush
-      >
-        <ScreenSwap screen={screen} depth={screen === 'agent' ? 0 : 1}>
+      <Modal open={open} onClose={() => setOpen(false)} title={TITLES[screen]} width={460} flush>
+        <ScreenSwap screen={screen} depth={DEPTH[screen]}>
           {screen === 'agent' ? (
             <div className="p-6 space-y-5">
-              <h3 className="text-base font-semibold text-fg">Add an agent</h3>
-              <div className="flex flex-wrap gap-2">
-                <Select
-                  label="Provider"
-                  value={provider}
-                  options={(caps ?? []).map(c => ({
-                    value: c.provider,
-                    label: c.label,
-                    hint: hintFor(c),
-                    mark: <ProviderMark provider={c.provider} />
-                  }))}
-                  onChange={pick}
-                  add={{ label: 'Add a provider', onPick: () => setScreen('server') }}
+              <div className="flex items-center gap-3.5">
+                <ProviderMark provider={provider} className="w-12 h-12 rounded-2xl" />
+                <TextField
+                  glass
+                  value={name}
+                  onChange={e => {
+                    setName(e.target.value)
+                    setNameEdited(true)
+                  }}
+                  placeholder="Agent name"
+                  className="h-10 text-base"
                 />
-                {fields.map(field => (
-                  <Select
-                    key={field.key}
-                    label={field.label}
-                    value={settings[field.key] ?? field.default}
-                    options={field.options}
-                    onChange={value => setSetting(field.key, value)}
-                  />
-                ))}
               </div>
-              <TextField
-                glass
-                value={name}
-                onChange={e => {
-                  setName(e.target.value)
-                  setNameEdited(true)
-                }}
-                placeholder="Agent name"
-              />
+              <div>
+                <Row label="Provider">
+                  <Select
+                    value={provider}
+                    options={(caps ?? []).map(c => ({
+                      value: c.provider,
+                      label: c.label,
+                      hint: hintFor(c),
+                      mark: <ProviderMark provider={c.provider} />
+                    }))}
+                    onChange={pick}
+                    add={{ label: 'Add a provider', onPick: () => setScreen('server') }}
+                  />
+                </Row>
+                <SettingRows fields={plain} settings={settings} onChange={setSetting} />
+                {deeperShown.length > 0 && (
+                  <OpenRow
+                    label="Advanced"
+                    hint={changed > 0 ? `${changed} changed` : undefined}
+                    onOpen={() => setScreen('advanced')}
+                  />
+                )}
+              </div>
               {installing && (
                 <p className="flex items-center gap-2 text-sm text-fg/45">
                   <Spinner size={14} />
@@ -286,11 +302,43 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
                 </button>
                 <button
                   onClick={create}
-                  disabled={busy || !name.trim() || !cap?.installed || Boolean(cap.note)}
+                  disabled={busy || !name.trim() || !ready}
                   className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-2 transition-all duration-150 hover:bg-fg/90 active:scale-95 disabled:bg-fg/10 disabled:text-fg/45"
                 >
                   {busy && <Spinner size={14} />}
                   Create
+                </button>
+              </div>
+            </div>
+          ) : screen === 'advanced' ? (
+            <div className="p-6 space-y-5">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setScreen('agent')}
+                  aria-label="Back"
+                  className="w-8 h-8 -ml-1.5 rounded-full flex items-center justify-center text-fg/45 transition-colors hover:bg-fg/10 hover:text-fg active:scale-95"
+                >
+                  <ChevronLeftGlyph className="w-4 h-4" />
+                </button>
+                <h3 className="text-base font-semibold text-fg">{cap?.label}</h3>
+                {changed > 0 && (
+                  <button
+                    onClick={putBack}
+                    className="ml-auto text-sm font-semibold text-fg/45 transition-colors hover:text-fg active:scale-95"
+                  >
+                    Put back
+                  </button>
+                )}
+              </div>
+              <div className="-mt-2">
+                <SettingSections fields={deeper} settings={settings} onChange={setSetting} />
+              </div>
+              <div className="flex items-center justify-end">
+                <button
+                  onClick={() => setScreen('agent')}
+                  className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold transition-all duration-150 hover:bg-fg/90 active:scale-95"
+                >
+                  Done
                 </button>
               </div>
             </div>
