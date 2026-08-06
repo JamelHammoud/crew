@@ -4458,6 +4458,7 @@ export class CrewSession {
         `Other agents in the session: ${others.join(', ')}. A mention like @name in a thread hands that message to the named agent, so replies from several agents can appear here.`
       )
     }
+    if (this.ghostOf(prompt.threadId)?.post) lines.push(``, POST_INSTRUCTIONS)
     if (thread?.voice) lines.push(``, VOICE_INSTRUCTIONS)
     if (thread?.aside) lines.push(``, ASIDE_INSTRUCTIONS)
     if (thread?.mode === 'plan') lines.push(``, PLAN_INSTRUCTIONS)
