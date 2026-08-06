@@ -79,7 +79,7 @@ export const isOn = (value: string | undefined): boolean => value === ON
 export function cleanSetting(field: AgentSettingField, value: string | undefined): string {
   const kind = fieldKind(field)
   if (kind === 'switch') return value === ON || value === '' ? value : field.default
-  if (kind === 'text') return typeof value === 'string' ? value.trim() : field.default
+  if (kind === 'text' || kind === 'paragraph') return typeof value === 'string' ? value.trim() : field.default
   if (kind === 'number') {
     if (value === undefined || value.trim() === '') return ''
     const held = Number(value)
@@ -98,7 +98,7 @@ export function settingLabel(field: AgentSettingField, settings: AgentSettings):
   const kind = fieldKind(field)
   if (kind === 'switch') return isOn(value) ? 'On' : 'Off'
   if (kind === 'number') return value ? `${value}${field.unit ? ` ${field.unit}` : ''}` : 'Default'
-  if (kind === 'text') return value || 'Default'
+  if (kind === 'text' || kind === 'paragraph') return value || 'Default'
   return field.options?.find(option => option.value === value)?.label ?? value
 }
 

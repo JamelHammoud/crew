@@ -28,8 +28,8 @@ const PLAIN = [
 ]
 
 const DEEP = [
-  { key: 'instructions', label: 'Instructions', kind: 'text', default: '', section: 'Instructions', placeholder: 'None', line: 'Read before every message.' },
-  { key: 'fallbackModel', label: 'If the model is busy', options: [{ value: '', label: 'None' }], default: '', section: 'Instructions' },
+  { key: 'instructions', label: 'Instructions', kind: 'paragraph', default: '', placeholder: 'None', line: 'Read before every message.' },
+  { key: 'fallbackModel', label: 'If the model is busy', options: [{ value: '', label: 'None' }], default: '', section: 'Model' },
   { key: 'dirs', label: 'Other folders it can read', kind: 'text', default: '', section: 'On this computer', placeholder: 'None', line: 'Separated by commas.' },
   { key: 'crewOnly', label: 'Same on every machine', kind: 'switch', default: '', section: 'On this computer', line: 'Leaves out whatever each person set up in Claude for themselves.' },
   { key: 'commandSeconds', label: 'Longest a command may run', kind: 'number', default: '', section: 'On this computer', min: 1, max: 3600, unit: 'seconds' }
