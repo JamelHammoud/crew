@@ -147,8 +147,9 @@ describe('repo branches', () => {
     })
     expect(names).not.toContain('origin/remote-work')
     expect(names).not.toContain('origin/main')
-    expect(names).not.toContain('HEAD')
     expect(names).not.toContain('origin/HEAD')
+    expect(names).not.toContain('origin')
+    expect(names).not.toContain('HEAD')
   })
 
   it('checks out a local branch that follows the remote one', async () => {

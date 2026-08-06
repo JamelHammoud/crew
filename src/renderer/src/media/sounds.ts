@@ -182,6 +182,20 @@ const STRIKES: Record<StrikeName, Strike[]> = {
       rasp: { hz: 2600, q: 1.6, gain: 0.34, length: 0.012 }
     }
   ],
+  'tab.scheduled': [
+    {
+      hz: 620,
+      at: 0,
+      length: 0.14,
+      gain: 0.5,
+      partials: [1, 2, 3.02],
+      bend: 1.1,
+      bendTime: 0.02,
+      tone: 3600,
+      wet: 0.12,
+      rasp: { hz: 2600, q: 1.6, gain: 0.3, length: 0.012 }
+    }
+  ],
   'toolbox.open': [
     {
       hz: 1245,
