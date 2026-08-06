@@ -117,20 +117,39 @@ export default function AgentCard({
             )}
           </div>
         </div>
-        {onSetting && fields.length > 0 && (
-          <div className="flex flex-wrap gap-2">
+        {onSetting && (fields.length > 0 || deeper.length > 0) && (
+          <div className="flex flex-wrap items-center gap-2">
             {fields.map(field => (
               <Select
                 key={field.key}
                 label={field.label}
                 value={agent.settings[field.key] ?? field.default}
-                options={field.options}
+                options={field.options ?? []}
                 onChange={value => onSetting(field.key, value)}
               />
             ))}
+            {deeper.length > 0 && (
+              <button
+                onClick={() => setDeep(true)}
+                className="flex items-center gap-1.5 h-8 px-3 rounded-full text-sm font-medium bg-fg/[0.07] text-fg/70 transition-all duration-150 hover:bg-fg/[0.12] hover:text-fg active:scale-95"
+              >
+                Advanced
+                {changed > 0 && <span className="text-fg/45">{changed}</span>}
+              </button>
+            )}
           </div>
         )}
       </div>
+      {onSetting && (
+        <AgentSettingsModal
+          open={deep}
+          label={agent.label}
+          fields={agent.fields}
+          settings={agent.settings}
+          onChange={onSetting}
+          onClose={() => setDeep(false)}
+        />
+      )}
       {agent.usage && <UsageFooter usage={agent.usage} />}
       {status === 'busy' && (
         <div className="bg-fg/[0.07] px-5 h-11 flex items-center gap-2.5 rounded-b-[19px]">
