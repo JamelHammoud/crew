@@ -173,6 +173,7 @@ export default function ReviewView() {
     <div className="flex h-full flex-col">
       <ReviewHeader
         status={status}
+        branches={work.branches}
         busy={busy}
         added={totals.added}
         removed={totals.removed}
