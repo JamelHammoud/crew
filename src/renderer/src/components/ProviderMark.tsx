@@ -16,6 +16,11 @@ const MARKS: Record<string, string> = {
   local: ollamaMark
 }
 
+// The mark is worn at a handful of sizes off the class it is handed, and the
+// picture underneath is sampled against a box rather than a class. This is the
+// one it is really drawn at everywhere it stands beside a row of type.
+const MARK_BOX = 16
+
 // A vendor wears its own app icon. A server somebody stood up themselves has no
 // logo to wear, so it takes the scene a plugin and a helper's mark are
 // photographed in, worked out from the address, which is the one thing about it
