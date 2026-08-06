@@ -1572,7 +1572,7 @@ export class CrewSession {
     }
     this.threads.set(threadId, thread)
     // Before the first word of it is emitted, or that word goes to everyone.
-    if (opts.ghost || opts.post)
+    if (opts.ghost || opts.hidden || opts.post)
       this.ghosts.set(threadId, {
         ws: opts.ghost ?? null,
         events: [],
