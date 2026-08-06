@@ -169,7 +169,7 @@ export const claudeFields = (): AgentSettingField[] => [
     default: 'claude-opus-5',
     visibleWhen: { key: 'model', value: 'opus' }
   },
-  { key: 'effort', label: 'Thinking', options: choices(['low', 'medium', 'high', 'xhigh', 'max']), default: 'high' },
+  { key: 'effort', label: 'Thinking', options: EFFORTS, default: 'high' },
   {
     key: 'instructions',
     label: 'Instructions',
@@ -178,54 +178,45 @@ export const claudeFields = (): AgentSettingField[] => [
     advanced: true,
     section: 'Instructions',
     placeholder: 'None',
-    line: 'Standing instructions for this agent, on top of what it already knows.'
-  },
-  {
-    key: 'thinking',
-    label: 'Thinks out loud',
-    options: THINKING,
-    default: '',
-    advanced: true,
-    section: 'Thinking'
+    line: 'Read before every message.'
   },
   {
     key: 'fallbackModel',
-    label: 'Busy model falls to',
+    label: 'If the model is busy',
     options: FALLBACKS,
     default: '',
     advanced: true,
-    section: 'Thinking'
+    section: 'Instructions'
   },
   {
     key: 'dirs',
-    label: 'Other folders',
+    label: 'Other folders it can read',
     kind: 'text',
     default: '',
     advanced: true,
     section: 'On this computer',
     placeholder: 'None',
-    line: 'Folders outside the project it may read, separated by commas.'
+    line: 'Separated by commas.'
   },
   {
     key: 'crewOnly',
-    label: 'Crew setup only',
+    label: 'Same on every machine',
     kind: 'switch',
     default: '',
     advanced: true,
     section: 'On this computer',
-    line: 'Leaves out the skills and commands on whichever machine takes the run.'
+    line: 'Leaves out whatever each person set up in Claude for themselves.'
   },
   {
-    key: 'commandMs',
-    label: 'Command runs for',
+    key: 'commandSeconds',
+    label: 'Longest a command may run',
     kind: 'number',
     default: '',
     advanced: true,
     section: 'On this computer',
-    min: 1000,
-    max: 3600000,
-    step: 1000,
-    unit: 'ms'
+    min: 1,
+    max: 3600,
+    unit: 'seconds'
   }
 ]
 
