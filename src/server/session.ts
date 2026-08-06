@@ -1555,7 +1555,7 @@ export class CrewSession {
       queue: [],
       running: null,
       boardId: boardId && this.designs.has(boardId) ? boardId : undefined,
-      ghost: opts.ghost !== undefined || opts.post === true,
+      ghost: opts.ghost !== undefined || opts.hidden === true || opts.post === true,
       voice: opts.voice === true,
       tickets: opts.tickets === true,
       aside: opts.aside,
