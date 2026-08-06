@@ -136,8 +136,8 @@ describe('a local agent', () => {
   it('lists what the server really has once it has been looked for', async () => {
     await stand([])
     const fields = localFields()
-    expect(fields.find(f => f.key === 'address')?.options.map(o => o.value)).toContain(fake!.url)
-    expect(fields.find(f => f.key === 'model')?.options.map(o => o.value)).toContain('thinker:8b')
+    expect(fields.find(f => f.key === 'address')?.options?.map(o => o.value)).toContain(fake!.url)
+    expect(fields.find(f => f.key === 'model')?.options?.map(o => o.value)).toContain('thinker:8b')
   })
 
   it('draws thinking, the answer and what it cost', async () => {

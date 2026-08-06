@@ -130,7 +130,7 @@ describe('a server written down by hand', () => {
     const provider = allProviders().find(one => one.name === serverProviderName(fake!.url))
     expect(provider?.label).toBe('The rack')
     expect(await provider!.detect()).toBe(true)
-    expect(provider!.fields().find(field => field.key === 'model')?.options.map(option => option.value)).toEqual([
+    expect(provider!.fields().find(field => field.key === 'model')?.options?.map(option => option.value)).toEqual([
       'far/model'
     ])
   })
@@ -152,7 +152,7 @@ describe('a server written down by hand', () => {
       .detect()
     await refreshModels(await findRuntimes())
     const fields = localFields()
-    expect(fields.find(field => field.key === 'address')?.options.map(option => option.value)).not.toContain(fake.url)
-    expect(fields.find(field => field.key === 'model')?.options.map(option => option.value)).not.toContain('far/model')
+    expect(fields.find(field => field.key === 'address')?.options?.map(option => option.value)).not.toContain(fake.url)
+    expect(fields.find(field => field.key === 'model')?.options?.map(option => option.value)).not.toContain('far/model')
   })
 })
