@@ -74,3 +74,24 @@ export default function SettingRows({
     </>
   )
 }
+
+export function SettingSections({
+  fields,
+  settings,
+  onChange
+}: {
+  fields: AgentSettingField[]
+  settings: AgentSettings
+  onChange: (key: string, value: string) => void
+}) {
+  const sections = fieldSections(visibleSettingFields(fields, settings))
+  return (
+    <>
+      {sections.map(section => (
+        <Section key={section.title} title={section.title || undefined}>
+          <SettingRows fields={section.fields} settings={settings} onChange={onChange} />
+        </Section>
+      ))}
+    </>
+  )
+}
