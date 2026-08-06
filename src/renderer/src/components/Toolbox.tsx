@@ -41,56 +41,6 @@ export default function Toolbox({
 
   useEffect(() => () => clearTimeout(timer.current), [])
 
-  const builtins: Builtin[] = [
-    {
-      id: 'huddle',
-      name: 'Huddle',
-      mark: SignalGlyph,
-      on: joined,
-      run: () => {
-        const huddle = useHuddle.getState()
-        if (huddle.joined) huddle.leave()
-        else void huddle.join()
-      }
-    },
-    {
-      id: 'review',
-      name: 'Review',
-      mark: BranchGlyph,
-      run: () => useBrowser.getState().openReview()
-    },
-    {
-      id: 'terminal',
-      name: 'Terminal',
-      mark: TerminalGlyph,
-      run: () => useBrowser.getState().addTerminal(undefined, useCrew.getState().folder)
-    },
-    {
-      id: 'files',
-      name: 'Files',
-      mark: FolderGlyph,
-      run: () => useBrowser.getState().openFiles()
-    },
-    {
-      id: 'music',
-      name: 'Music',
-      mark: MusicGlyph,
-      on: playing,
-      run: () => useBrowser.getState().openMusic()
-    },
-    {
-      id: 'game',
-      name: 'Games',
-      mark: GameGlyph,
-      run: () => useBrowser.getState().openGame()
-    }
-  ]
-
-  const press = (run?: () => void) => {
-    run?.()
-    onClose()
-  }
-
   const pressTool = (tool: CrewTool) => {
     const slots = toolSlots(tool.action)
     if (slots.length > 0) return setFilling({ tool, slots })
