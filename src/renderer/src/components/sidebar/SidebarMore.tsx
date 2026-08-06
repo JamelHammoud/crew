@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { PanelRightGlyph, ToolboxGlyph } from '../../icons'
+import { CompassGlyph, ToolboxGlyph } from '../../icons'
 import { playSound } from '../../media/sounds'
 import { useBrowser } from '../../state/browser'
 import { useSidebar } from '../../state/sidebar'
