@@ -53,7 +53,7 @@ function App() {
             <TextField glass value="Claude Opus 5" onChange={() => {}} className="h-10 text-base" />
           </div>
           <div>
-            <Row label="Provider">
+            <Row label="Provider" bleed>
               <Select value="claude" options={[{ value: 'claude', label: 'Claude', mark: <ProviderMark provider="claude" /> }]} onChange={() => {}} />
             </Row>
             <SettingRows fields={PLAIN} settings={settings} onChange={set} />
@@ -68,9 +68,11 @@ function App() {
       <Card>
         <div className="p-6 space-y-5">
           <div className="flex items-center gap-2">
-            <span className="w-8 h-8 -ml-1.5 rounded-full flex items-center justify-center text-fg/45">‹</span>
+            <button className="w-9 h-9 shrink-0 rounded-full bg-fg/[0.07] flex items-center justify-center text-fg/70">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:18,height:18}}><path d="m15.5 5-7 7 7 7"/></svg>
+            </button>
             <h3 className="text-base font-semibold text-fg">Claude</h3>
-            <button className="ml-auto text-sm font-semibold text-fg/45">Put back</button>
+            <button className="ml-auto text-sm font-semibold text-fg/45">Reset</button>
           </div>
           <div className="-mt-2">
             <SettingSections fields={DEEP} settings={settings} onChange={set} />
