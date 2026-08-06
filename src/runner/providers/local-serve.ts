@@ -134,6 +134,21 @@ export function cachedRuntimes(): LocalRuntime[] {
   return found
 }
 
+// A written server wears the name it was given rather than its own host, since
+// that name is the whole of why it is a row of its own.
+export async function findServer(server: ModelServer): Promise<LocalRuntime | null> {
+  const runtime = await answering(server.url, PROBE_MS, server.key)
+  if (!runtime) {
+    answered.delete(server.url)
+    return null
+  }
+  const named = { ...runtime, label: serverName(server) }
+  answered.set(server.url, named)
+  return named
+}
+
+export const cachedServer = (url: string): LocalRuntime | null => answered.get(url) ?? null
+
 function rest(ms: number): Promise<void> {
   return new Promise(done => setTimeout(done, ms))
 }
