@@ -55,6 +55,31 @@ export function SettingControl({
   )
 }
 
+function ParagraphRow({
+  field,
+  settings,
+  onChange
+}: {
+  field: AgentSettingField
+  settings: AgentSettings
+  onChange: (key: string, value: string) => void
+}) {
+  return (
+    <div className="py-3.5 border-b border-fg/[0.06] last:border-b-0">
+      <p className="text-base text-fg">{field.label}</p>
+      {field.line && <p className="text-sm text-fg/45 mt-0.5">{field.line}</p>}
+      <TextArea
+        glass
+        rows={3}
+        value={settings[field.key] ?? field.default}
+        placeholder={field.placeholder ?? 'None'}
+        onChange={event => onChange(field.key, event.target.value)}
+        className="mt-2.5"
+      />
+    </div>
+  )
+}
+
 export default function SettingRows({
   fields,
   settings,
@@ -66,11 +91,15 @@ export default function SettingRows({
 }) {
   return (
     <>
-      {visibleSettingFields(fields, settings).map(field => (
-        <Row key={field.key} label={field.label} line={field.line}>
-          <SettingControl field={field} settings={settings} onChange={onChange} />
-        </Row>
-      ))}
+      {visibleSettingFields(fields, settings).map(field =>
+        fieldKind(field) === 'paragraph' ? (
+          <ParagraphRow key={field.key} field={field} settings={settings} onChange={onChange} />
+        ) : (
+          <Row key={field.key} label={field.label} line={field.line}>
+            <SettingControl field={field} settings={settings} onChange={onChange} />
+          </Row>
+        )
+      )}
     </>
   )
 }
