@@ -42,6 +42,9 @@ export function serverLabel(url: string): string {
   return bare || url
 }
 
+export const serverName = (server: ModelServer): string =>
+  cleanServerName(server.name ?? '') || serverLabel(server.url)
+
 export const sameServer = (a: string, b: string): boolean =>
   a.replace(/\/+$/, '').toLowerCase() === b.replace(/\/+$/, '').toLowerCase()
 
@@ -49,7 +52,11 @@ export function withServer(servers: readonly ModelServer[], server: ModelServer)
   const rest = servers.filter(one => !sameServer(one.url, server.url))
   const held = servers.find(one => sameServer(one.url, server.url))
   const key = server.key ?? held?.key
-  return [{ url: server.url, ...(key ? { key } : {}) }, ...rest].slice(0, SERVER_LIMIT)
+  const name = cleanServerName(server.name ?? '') || held?.name
+  return [
+    { url: server.url, ...(name ? { name } : {}), ...(key ? { key } : {}) },
+    ...rest
+  ].slice(0, SERVER_LIMIT)
 }
 
 export const withoutServer = (servers: readonly ModelServer[], url: string): ModelServer[] =>
