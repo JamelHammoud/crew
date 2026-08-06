@@ -139,7 +139,7 @@ describe('a line an agent posts in the chat', () => {
     return { host, runner, sam }
   }
 
-  it('lands one message under the agent own name and opens no thread', async () => {
+  it('lands one message under the agent\'s own name and opens no thread', async () => {
     const { host, sam } = await clockStruck()
     const fake = agentId('mac', 'fake')
 
@@ -241,7 +241,7 @@ describe('a line an agent posts in the chat', () => {
     expect(host.session.snapshot().schedules?.[0].lastThreadId).toBeUndefined()
   })
 
-  it('says so in the app own voice rather than posting an empty message', async () => {
+  it('says so in the app\'s own voice rather than posting an empty message', async () => {
     const host = await open()
     const runner = await runnerOn(host, 'mac')
     const sam = await connectUi(host, 'sam')
@@ -285,7 +285,7 @@ describe('a line an agent posts in the chat', () => {
     expect(runner.prompts[1].text).not.toContain(POST_INSTRUCTIONS)
   })
 
-  it('is the crew own rather than a runner own', async () => {
+  it('is the crew\'s to ask for and never a runner\'s', async () => {
     const host = await open()
     const runner = await runnerOn(host, 'mac')
     const sam = await connectUi(host, 'sam')
