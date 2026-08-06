@@ -42,9 +42,14 @@ export default function ReviewHeader({
 
   return (
     <div className="shrink-0">
-      <div className="flex h-9 items-center gap-2 pl-2 pr-1.5">
-        <BranchGlyph className="w-4 h-4 shrink-0 text-fg-faint" />
-        <span className="min-w-0 truncate text-[13px] text-fg-secondary">{status.branch || 'Project'}</span>
+      <div className="flex h-9 items-center gap-1.5 pl-1 pr-1.5">
+        <BranchMenu
+          branch={status.branch}
+          branches={branches}
+          busy={busy === 'switch' || busy === 'branch'}
+          onSwitch={name => onRun({ do: 'switch', branch: name })}
+          onCreate={name => onRun({ do: 'branch', name })}
+        />
         <Counts added={added} removed={removed} />
         <span className="flex-1" />
         <Tooltip label={status.behind > 0 ? `Pull ${status.behind}` : 'Pull'}>
