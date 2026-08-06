@@ -79,7 +79,7 @@ describe('git quiet', () => {
     sync.stop()
 
     await expect(sync.quiet()).resolves.toBeUndefined()
-    expect(logged.some(line => line.startsWith('pull failed'))).toBe(true)
+    expect(logged.some(line => line.startsWith('push failed'))).toBe(true)
   })
 
   it('has nothing to wait for in a folder that is not a git repository', async () => {

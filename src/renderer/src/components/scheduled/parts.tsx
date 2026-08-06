@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
 
+export const MORNING = 9 * 60
+
 export const PILL_INPUT =
   'h-9 px-3.5 rounded-full bg-ink-800 text-sm text-fg outline-none transition-shadow duration-200 focus:shadow-[0_0_0_1px_rgb(255_255_255/0.12)] light:focus:shadow-[0_0_0_1px_rgb(0_0_0/0.14)]'
 
