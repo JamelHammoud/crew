@@ -1674,6 +1674,7 @@ export class CrewSession {
     }
     this.startThread(member, agent, text, attachments, {
       ghost,
+      hidden: hidden !== undefined,
       threadId: forkId,
       mode: parent.mode,
       plan: parent.plan,
