@@ -4,8 +4,38 @@ import { kimiDialog, kimiParser } from './kimi-acp'
 import { kimiModels } from './kimi-models'
 import type { Provider } from './types'
 
+export const KIMI_MODES = [
+  { value: 'yolo', label: 'Anything' },
+  { value: 'auto', label: 'Safe changes' },
+  { value: 'default', label: 'Ask first' },
+  { value: 'plan', label: 'Read only' }
+]
+
+export const KIMI_THINKING = [
+  { value: '', label: 'Default' },
+  { value: 'on', label: 'On' },
+  { value: 'off', label: 'Off' }
+]
+
 export const kimiFields = (): AgentSettingField[] => [
-  { key: 'model', label: 'Model', options: choices(['', ...kimiModels()]), default: '' }
+  { key: 'model', label: 'Model', options: choices(['', ...kimiModels()]), default: '' },
+  {
+    key: 'thinking',
+    label: 'Thinking',
+    options: KIMI_THINKING,
+    default: '',
+    advanced: true,
+    section: 'Thinking'
+  },
+  {
+    key: 'mode',
+    label: 'Can do',
+    options: KIMI_MODES,
+    default: 'yolo',
+    advanced: true,
+    section: 'On this computer',
+    line: 'Read only writes nothing and runs nothing.'
+  }
 ]
 
 // Kimi runs on `kimi acp`, the Agent Client Protocol server inside the same CLI
