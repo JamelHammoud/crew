@@ -28,6 +28,29 @@ interface FakeRunner {
   messages: ServerMessage[]
 }
 
+// A Crew that was shut over the weekend, which is the only way to watch the
+// clock strike without sitting through a real day: the schedule is written into
+// the log as of a week ago, so the session that folds it back finds it overdue
+// the moment it comes up.
+function shutSince(days: number, over: Partial<Extract<SessionEvent, { kind: 'schedule.added' }>> = {}): string {
+  const path = tmpDir('slept')
+  const store = new Store(path)
+  store.appendEvent({
+    id: randomUUID(),
+    ts: Date.now() - days * 24 * 60 * 60 * 1000,
+    kind: 'schedule.added',
+    scheduleId: 'aaa111',
+    name: 'Standup',
+    mark: 'clock',
+    when: { kind: 'daily', at: 9 * 60 },
+    action: { kind: 'say', text: 'Morning' },
+    zone: 'Europe/Lisbon',
+    byName: 'sam',
+    ...over
+  })
+  return path
+}
+
 async function runnerOn(host: TestHost, name: string, llms: RegisteredLlm[] = []): Promise<FakeRunner> {
   const ws = new WebSocket(host.url)
   const runner: FakeRunner = { ws, messages: [] }
