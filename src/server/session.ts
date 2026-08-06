@@ -1404,6 +1404,12 @@ export class CrewSession {
     }
   }
 
+  private handleChatPost(ws: WebSocket, member: Member, text: string, agentId?: string): void {
+    const trimmed = text?.trim().slice(0, PROMPT_LIMIT)
+    if (!trimmed) return
+    if (!this.startPost(member, trimmed, agentId)) this.refuse('No agent is here to write it.', ws)
+  }
+
   private agentToTake(agentId?: string): AgentState | null {
     const named = this.agents.get(agentId ?? '')
     if (named?.runner) return named
