@@ -32,9 +32,10 @@ export default function BranchMenu({
   const listRef = useRef<HTMLDivElement>(null)
 
   const shown = useMemo(() => {
+    const all = branches ?? []
     const asked = query.trim().toLowerCase()
-    if (!asked) return branches
-    return branches.filter(one => one.name.toLowerCase().includes(asked))
+    if (!asked) return all
+    return all.filter(one => one.name.toLowerCase().includes(asked))
   }, [branches, query])
 
   const wanted = cleanBranchName(query)
