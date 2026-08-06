@@ -1,13 +1,26 @@
 import { goalBrief, goalCondition } from '../../shared/goal'
 import { resolveSettings, type AgentSettingField } from '../../shared/llm'
-import { serverUrl } from '../../shared/modelServers'
+import {
+  serverName,
+  serverProviderName,
+  serverUrl,
+  type ModelServer
+} from '../../shared/modelServers'
 import { commandExists } from './cli'
 import { startLoop, type LocalRun } from './local-loop'
-import { cachedModels, refreshModels } from './local-models'
-import { cachedRuntimes, candidateUrls, ensureServing, findRuntimes, probeServer } from './local-serve'
-import { serverKey } from './local-servers'
+import { cachedModels, diskModels, modelsServedOn, refreshModels } from './local-models'
+import {
+  cachedRuntimes,
+  cachedServer,
+  candidateUrls,
+  ensureServing,
+  findRuntimes,
+  findServer,
+  probeServer
+} from './local-serve'
+import { knownServers, serverKey } from './local-servers'
 import { makeSink } from './run'
-import type { Provider, RunningPrompt } from './types'
+import type { Provider, RunningPrompt, RunOptions } from './types'
 
 const CONTEXT_SIZES: Array<[string, string]> = [
   ['', 'Default'],
@@ -17,9 +30,23 @@ const CONTEXT_SIZES: Array<[string, string]> = [
   ['65536', '64K']
 ]
 
+const modelField = (models: string[]): AgentSettingField => ({
+  key: 'model',
+  label: 'Model',
+  options: models.map(model => ({ value: model, label: model })),
+  default: models[0] ?? ''
+})
+
+const contextField = (): AgentSettingField => ({
+  key: 'context',
+  label: 'Context',
+  options: CONTEXT_SIZES.map(([value, label]) => ({ value, label })),
+  default: ''
+})
+
 export const localFields = (): AgentSettingField[] => {
   const runtimes = cachedRuntimes()
-  const models = cachedModels()
+  const served = modelsServedOn(runtimes.map(runtime => runtime.url))
   return [
     {
       key: 'address',
@@ -28,20 +55,15 @@ export const localFields = (): AgentSettingField[] => {
       default: runtimes[0]?.url ?? '',
       free: true
     },
-    {
-      key: 'model',
-      label: 'Model',
-      options: models.map(model => ({ value: model, label: model })),
-      default: models[0] ?? ''
-    },
-    {
-      key: 'context',
-      label: 'Context',
-      options: CONTEXT_SIZES.map(([value, label]) => ({ value, label })),
-      default: ''
-    }
+    modelField(served.length ? served : diskModels()),
+    contextField()
   ]
 }
+
+export const serverFields = (url: string): AgentSettingField[] => [
+  modelField(modelsServedOn([url])),
+  contextField()
+]
 
 const OLLAMA_INSTALL_SH = 'curl -fsSL https://ollama.com/install.sh | sh'
 
