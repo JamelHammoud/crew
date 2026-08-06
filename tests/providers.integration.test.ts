@@ -443,7 +443,7 @@ describe('provider install', () => {
   })
 
   it('every builtin provider has an installer for the desktop platforms', () => {
-    expect(builtinProviders.map(p => p.name)).toEqual(['claude', 'codex', 'kimi', 'grok', 'local'])
+    expect(builtinProviders.map(p => p.name)).toEqual(['claude', 'codex', 'gemini', 'kimi', 'grok', 'local'])
     for (const provider of builtinProviders) {
       for (const platform of ['darwin', 'linux', 'win32']) {
         expect(installCommand(provider, platform), `${provider.name} on ${platform}`).toBeTruthy()
@@ -476,7 +476,7 @@ describe('provider install', () => {
 describe('capabilities list every builtin provider', () => {
   it('marks each one installed or not instead of hiding it', async () => {
     const caps = await new Crews().capabilities()
-    expect(caps.map(c => c.provider)).toEqual(['claude', 'codex', 'kimi', 'grok', 'local'])
+    expect(caps.map(c => c.provider)).toEqual(['claude', 'codex', 'gemini', 'kimi', 'grok', 'local'])
     expect(caps.map(c => c.label)).toEqual(['Claude', 'Codex', 'Kimi', 'Grok', 'Ollama'])
     for (const cap of caps) {
       expect(typeof cap.installed).toBe('boolean')
