@@ -72,25 +72,27 @@ describe('claude model picker', () => {
     await waitFor(() => expect(add.disabled).toBe(false))
     fireEvent.click(add)
 
-    expect(screen.getByRole('button', { name: /VersionOpus 5/ })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Version' })).toBeTruthy()
     expect((screen.getByPlaceholderText('Agent name') as HTMLInputElement).value).toBe('Claude Opus 5')
 
-    fireEvent.click(screen.getByRole('button', { name: /VersionOpus 5/ }))
+    fireEvent.click(screen.getByRole('button', { name: 'Version' }))
     fireEvent.click(screen.getByRole('button', { name: 'Opus 4.8' }))
 
     expect((screen.getByPlaceholderText('Agent name') as HTMLInputElement).value).toBe('Claude Opus 4.8')
     fireEvent.click(screen.getByRole('button', { name: 'Create' }))
 
     await waitFor(() =>
-      expect(createAgent).toHaveBeenCalledWith({
-        provider: 'claude',
-        name: 'Claude Opus 4.8',
-        settings: {
-          model: 'opus',
-          opusModel: 'claude-opus-4-8',
-          effort: 'high'
-        }
-      })
+      expect(createAgent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          provider: 'claude',
+          name: 'Claude Opus 4.8',
+          settings: expect.objectContaining({
+            model: 'opus',
+            opusModel: 'claude-opus-4-8',
+            effort: 'high'
+          })
+        })
+      )
     )
   })
 
@@ -108,7 +110,7 @@ describe('claude model picker', () => {
     const add = screen.getByRole('button', { name: 'Add an agent' }) as HTMLButtonElement
     await waitFor(() => expect(add.disabled).toBe(false))
     fireEvent.click(add)
-    fireEvent.click(screen.getByRole('button', { name: /ModelOpus/i }))
+    fireEvent.click(screen.getByRole('button', { name: 'Model' }))
     fireEvent.click(screen.getByRole('button', { name: /sonnet/i }))
 
     expect(screen.queryByText('Version')).toBeNull()

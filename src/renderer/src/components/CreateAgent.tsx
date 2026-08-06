@@ -265,6 +265,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
               <div>
                 <Row label="Provider" bleed>
                   <Select
+                    name="Provider"
                     value={provider}
                     options={(caps ?? []).map(c => ({
                       value: c.provider,

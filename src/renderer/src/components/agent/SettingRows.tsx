@@ -48,6 +48,7 @@ export function SettingControl({
   }
   return (
     <Select
+      name={field.label}
       value={value}
       options={field.options ?? []}
       onChange={next => onChange(field.key, next)}

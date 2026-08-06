@@ -4,6 +4,7 @@ import { MenuDivider, Popover } from './Popover'
 
 export default function Select({
   label,
+  name,
   value,
   options,
   onChange,
@@ -12,6 +13,9 @@ export default function Select({
   full
 }: {
   label?: string
+  // What the control is called where the label stands outside it, in a row of
+  // its own. Without it the button is named by whatever it happens to be set to.
+  name?: string
   value: string
   options: Array<{ value: string; label: string; hint?: ReactNode; mark?: ReactNode }>
   onChange: (value: string) => void
@@ -26,6 +30,7 @@ export default function Select({
     <div className={`relative ${full ? 'block min-w-0' : 'inline-block'}`}>
       <button
         onClick={() => setOpen(o => !o)}
+        aria-label={name}
         className={`flex items-center gap-1.5 h-8 pl-3 pr-2 rounded-full text-sm font-medium transition-all duration-150 active:scale-95 ${
           full ? 'w-full min-w-0' : ''
         } ${open ? 'bg-fg/[0.12] text-fg' : 'bg-fg/[0.07] text-fg/70 hover:bg-fg/[0.12] hover:text-fg'}`}
