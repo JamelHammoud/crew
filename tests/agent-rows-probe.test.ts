@@ -52,8 +52,18 @@ afterEach(cleanup)
 describe('the rows an agent is set up on', () => {
   it('stands every row and every section title in one list', () => {
     const rows = stand()
-    expect(rows.map(node => (heading(node) ? `= ${node.textContent}` : node.textContent?.slice(0, 12))))
-      .toEqual(['Instructions', '= Model', 'If the model', '= On this com', 'Other folder', 'Same on ever'])
+    expect(
+      rows.map(node =>
+        heading(node) ? `= ${node.textContent}` : (node.textContent ?? '').slice(0, 12)
+      )
+    ).toEqual([
+      'Instructions',
+      '= Model',
+      'If the model',
+      '= On this computer',
+      'Other folder',
+      'Same on ever'
+    ])
   })
 
   it('carries a rule above every section title, so nothing stands adrift', () => {
