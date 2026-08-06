@@ -220,7 +220,7 @@ describe('the toolbox', () => {
     build()
 
     name('Tests')
-    does('Ask an agent')
+    does('Start a thread')
     fireEvent.change(screen.getByPlaceholderText('Run the tests and fix what fails'), {
       target: { value: 'Run the tests' }
     })
@@ -233,7 +233,7 @@ describe('the toolbox', () => {
     sent.length = 0
     build()
     name('Tests')
-    does('Ask an agent')
+    does('Start a thread')
     fireEvent.click(screen.getByText('Bubbles'))
     fireEvent.change(screen.getByPlaceholderText('Run the tests and fix what fails'), {
       target: { value: 'Run the tests' }
@@ -253,7 +253,7 @@ describe('the toolbox', () => {
   it('leaves the pet on the row it stands in rather than at the top of it', () => {
     toolbox([], [agent('a1', 'Fable')])
     build()
-    does('Ask an agent')
+    does('Start a thread')
 
     const row = screen.getByText('Fable').closest('button')!
     expect(row.className).toContain('items-center')
@@ -279,7 +279,7 @@ describe('the toolbox', () => {
     // A file with no path and an ask with nothing in it are not tools.
     does('Open a file')
     expect(save()?.disabled).toBe(true)
-    does('Ask an agent')
+    does('Start a thread')
     expect(save()?.disabled).toBe(true)
   })
 
