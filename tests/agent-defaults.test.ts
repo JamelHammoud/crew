@@ -103,11 +103,17 @@ describe('what a person picks is what goes out', () => {
     expect(args[args.indexOf('--setting-sources') + 1]).toBe('')
   })
 
-  it('claude sets both ends of the command timeout together', () => {
-    expect(claudeEnv(reader({ commandMs: '240000' }))).toEqual({
+  it('claude sets both ends of the command timeout together, in the seconds it was asked in', () => {
+    expect(claudeEnv(reader({ commandSeconds: '240' }))).toEqual({
       BASH_DEFAULT_TIMEOUT_MS: '240000',
       BASH_MAX_TIMEOUT_MS: '240000'
     })
+  })
+
+  it('claude turns thinking off through the one control that has an off', () => {
+    const args = claudeArgs('hi', reader({ ...settled(claudeFields()), effort: 'off' }))
+    expect(args.join(' ')).toContain('--thinking disabled')
+    expect(args).not.toContain('--effort')
   })
 
   it('codex writes its config in the toml a -c takes', () => {
