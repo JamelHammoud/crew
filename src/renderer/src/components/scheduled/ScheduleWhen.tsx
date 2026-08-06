@@ -1,6 +1,6 @@
 import { DAY_MINUTES, EVERY_MAX, EVERY_MIN, type Cadence } from '../../../../shared/schedules'
 import Select from '../Select'
-import { Choice, clockOf, Field, minutesOf, PILL_INPUT } from './parts'
+import { Choice, clockOf, Field, minutesOf, MORNING, PILL_INPUT } from './parts'
 
 const KINDS: Array<{ kind: Cadence['kind']; label: string }> = [
   { kind: 'every', label: 'Every' },
