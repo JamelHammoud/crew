@@ -87,6 +87,7 @@ export function runTool(action: ToolAction, answers: Record<string, string> = {}
 const SAID: Partial<Record<ToolAction['kind'], string>> = {
   copy: 'Copied',
   say: 'Sent',
+  post: 'Writing',
   todo: 'Added',
   note: 'Written',
   music: 'Playing'
