@@ -317,7 +317,7 @@ interface PendingWait {
 interface Ghost {
   ws: WebSocket | null
   events: SessionEvent[]
-  post?: { agentId: string }
+  post?: boolean
 }
 
 interface DesignBoard {
