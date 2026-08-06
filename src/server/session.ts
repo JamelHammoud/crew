@@ -1082,6 +1082,9 @@ export class CrewSession {
       case 'schedule.run':
         if (meta.role === 'ui') this.runSchedule(msg.scheduleId, member.name, false)
         break
+      case 'chat.post':
+        if (meta.role === 'ui') this.handleChatPost(ws, member, msg.text, msg.agentId)
+        break
       case 'attachment.limit':
         if (meta.role === 'ui') this.handleAttachmentLimit(member, msg.mb)
         break
