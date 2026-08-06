@@ -73,6 +73,9 @@ export interface SessionSnapshot {
   memories?: CrewMemory[]
   memoryEnabled?: boolean
   plugins?: CrewPlugin[]
+  // What the crew has put on a clock. These last, so they ride here the way the
+  // toolbox does rather than being read back off a window of events.
+  schedules?: Schedule[]
   // How big a file the crew may send, in megabytes. Absent from a host running
   // an older build, whose limit is the one this shipped with.
   attachmentMb?: number
