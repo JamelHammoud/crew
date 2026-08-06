@@ -25,6 +25,7 @@ const PROJECT_PATHS = ['.', ':(exclude).crew', ':(exclude).crew/**']
 const DIFF_LIMIT = 200_000
 const DIFF_LINE_LIMIT = 2_000
 const UNIT = '\u001f'
+const BRANCH_LIST_LIMIT = 200
 const AUTO_SYNC_MS = 5000
 const DEBOUNCE_MS = 2000
 const TROUBLE_AFTER = 3
