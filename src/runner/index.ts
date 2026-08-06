@@ -103,7 +103,10 @@ export class Runner {
   }
 
   private define(def: AgentDef): string | null {
-    const provider = this.providersByName.get(def.provider)
+    // A server written down after this runner was built is a provider it has
+    // never been handed, so the store is asked rather than only the map, the
+    // same reason every builtin is in there whether or not its CLI was found.
+    const provider = this.providersByName.get(def.provider) ?? serverProviderNamed(def.provider)
     if (!provider) return null
     const id = def.id ?? agentId(this.opts.name, def.instanceId)
     this.agents.set(id, {
