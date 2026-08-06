@@ -27,6 +27,7 @@ import Home from './views/Home'
 
 const Design = lazy(() => import('./views/Design'))
 const Plugins = lazy(() => import('./views/Plugins'))
+const Scheduled = lazy(() => import('./views/Scheduled'))
 
 export default function App() {
   const connection = useCrew(s => s.connection)
