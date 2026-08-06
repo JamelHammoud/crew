@@ -1542,6 +1542,30 @@ export const useCrew = create<CrewState>((set, get) => {
     removePlugin: pluginId => {
       socket.send({ type: 'plugin.remove', pluginId })
     },
+    addSchedule: (name, mark, when, action) => {
+      if (!cleanCadence(when)) return 'Say when it runs'
+      const clean = cleanSchedule(name, mark, when, action, hereZone())
+      if (!clean) return 'Say what it does'
+      if (get().schedules.length >= SCHEDULE_LIMIT) return SCHEDULE_FULL
+      socket.send({ type: 'schedule.add', ...clean })
+      return null
+    },
+    editSchedule: (scheduleId, name, mark, when, action) => {
+      if (!cleanCadence(when)) return 'Say when it runs'
+      const clean = cleanSchedule(name, mark, when, action, hereZone())
+      if (!clean) return 'Say what it does'
+      socket.send({ type: 'schedule.edit', scheduleId, ...clean })
+      return null
+    },
+    removeSchedule: scheduleId => {
+      socket.send({ type: 'schedule.remove', scheduleId })
+    },
+    pauseSchedule: (scheduleId, paused) => {
+      socket.send({ type: 'schedule.pause', scheduleId, paused })
+    },
+    runSchedule: scheduleId => {
+      socket.send({ type: 'schedule.run', scheduleId })
+    },
     // A picture the whole crew will have. The host keeps it beside the session
     // and says so to everyone, so nothing is written down here on the way out.
     // What comes back is the one line to say where it did not go: the name is
