@@ -47,7 +47,6 @@ export default function ScheduleWhen({
     else onChange({ kind: 'monthly', day: 1, at })
   }
 
-  // A week with no day in it never comes round, so the last one standing stays.
   const toggle = (day: number) => {
     const next = days.includes(day) ? days.filter(one => one !== day) : [...days, day].sort()
     if (next.length > 0) onChange({ kind: 'weekly', days: next, at })

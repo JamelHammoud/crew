@@ -221,8 +221,6 @@ interface CrewState {
   memories: CrewMemory[]
   memoryEnabled: boolean
   plugins: CrewPlugin[]
-  // The crew's own tool actions put on a clock. The host is what fires them, so
-  // a window only writes them down and shows them.
   schedules: Schedule[]
   // The emoji the crew drew themselves. They are everyone's here, so they come
   // off the host rather than out of this window's own storage.
