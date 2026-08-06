@@ -35,6 +35,7 @@ const work = (over: Partial<RepoWork> = {}): RepoWork => ({
   status: { available: true, remote: true, branch: 'main', changed: 2, ahead: 1, behind: 0, stashes: 0 },
   changes: [],
   stashes: [],
+  branches: [{ name: 'main', current: true, remote: false }],
   ...over
 })
 

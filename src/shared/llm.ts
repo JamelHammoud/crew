@@ -114,6 +114,23 @@ export function changedSettings(fields: AgentSettingField[], settings: AgentSett
   )
 }
 
+export const plainFields = (fields: AgentSettingField[]): AgentSettingField[] =>
+  fields.filter(field => !field.advanced)
+
+export const advancedFields = (fields: AgentSettingField[]): AgentSettingField[] =>
+  fields.filter(field => field.advanced)
+
+export function fieldSections(fields: AgentSettingField[]): Array<{ title: string; fields: AgentSettingField[] }> {
+  const out: Array<{ title: string; fields: AgentSettingField[] }> = []
+  for (const field of fields) {
+    const title = field.section ?? ''
+    const last = out[out.length - 1]
+    if (last && last.title === title) last.fields.push(field)
+    else out.push({ title, fields: [field] })
+  }
+  return out
+}
+
 export function visibleSettingFields(fields: AgentSettingField[], settings: AgentSettings): AgentSettingField[] {
   return fields.filter(field => {
     if (!field.visibleWhen) return true
