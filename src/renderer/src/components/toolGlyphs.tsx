@@ -125,13 +125,6 @@ export const DoneGlyph = glyph(
   </>
 )
 
-export const PlaneGlyph = glyph(
-  <>
-    <path d="M20.5 3.5 3.5 10.1l7.3 2.6 2.6 7.3Z" />
-    <path d="M10.8 12.7 20.5 3.5" />
-  </>
-)
-
 export const BellGlyph = glyph(
   <>
     <path d="M6.3 10.6a5.7 5.7 0 0 1 11.4 0c0 3 .7 4.4 1.5 5.3.4.5.1 1.3-.6 1.3H5.4c-.7 0-1-.8-.6-1.3.8-.9 1.5-2.3 1.5-5.3Z" />
