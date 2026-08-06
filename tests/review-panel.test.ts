@@ -556,6 +556,12 @@ describe('the branch a review is of', () => {
     { name: 'ali/spike', current: false, remote: true }
   ]
 
+  const rows = (): string[] =>
+    [...document.querySelectorAll('[data-row]')].map(el => el.textContent ?? '')
+
+  const row = (name: string): HTMLElement =>
+    [...document.querySelectorAll<HTMLElement>('[data-row]')].find(el => el.textContent === name) as HTMLElement
+
   const openBranches = async () => {
     render(createElement(ReviewView))
     fireEvent.click(await screen.findByRole('button', { name: /main/ }))
@@ -584,7 +590,7 @@ describe('the branch a review is of', () => {
     bridge(work({ branches }))
     await openBranches()
 
-    fireEvent.click(button('main'))
+    fireEvent.click(row('main'))
 
     await waitFor(() => expect(screen.queryByLabelText('Find a branch')).toBeNull())
     expect(sent).toEqual([])
@@ -596,8 +602,7 @@ describe('the branch a review is of', () => {
 
     fireEvent.change(field, { target: { value: 'tick' } })
 
-    expect(screen.queryByText('main')).toBeNull()
-    expect(screen.getByText('feature/tickets')).not.toBeNull()
+    expect(rows()).toEqual(['feature/tickets'])
   })
 
   it('makes the branch that was typed when nothing answers to it', async () => {
