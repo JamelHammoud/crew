@@ -122,6 +122,21 @@ export default function ScheduleDoes({
         </>
       )}
 
+      {kind === 'post' && (
+        <>
+          {who('Who it asks')}
+          <Field label="What to ask">
+            <TextArea
+              rows={2}
+              value={post}
+              aria-label="What to ask"
+              placeholder="Sum up where the week got to"
+              onChange={event => setPost(event.target.value)}
+            />
+          </Field>
+        </>
+      )}
+
       {kind === 'say' && (
         <Field label="What to say">
           <TextArea
