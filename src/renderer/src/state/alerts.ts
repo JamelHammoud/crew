@@ -105,21 +105,37 @@ const wordToYou = (event: SessionEvent, selfId: string, openThreadIds: string[])
   return event
 }
 
-const wordFrom = (message: ChatMessage, did: string): AgentAlert => ({
-  title: `${message.authorName} ${did} you`,
-  body: message.text,
-  threadId: message.threadId,
-  from: message.authorName
-})
+type Pooled = Array<Pick<PooledAgent, 'id' | 'label'>>
 
-export function memberMentionAlert(event: SessionEvent, selfId: string, openThreadIds: string[]): AgentAlert | null {
-  const message = wordToYou(event, selfId, openThreadIds)
-  if (!message?.memberMentionRefs?.some(ref => ref.id === selfId)) return null
-  return wordFrom(message, 'mentioned')
+const wordFrom = (message: ChatMessage, did: string, agents: Pooled = []): AgentAlert => {
+  const agent = agents.find(one => one.id === message.authorId)
+  return {
+    title: `${agent?.label ?? message.authorName} ${did} you`,
+    body: message.text,
+    threadId: message.threadId,
+    agentId: agent?.id,
+    from: agent ? undefined : message.authorName
+  }
 }
 
-export function memberReplyAlert(event: SessionEvent, selfId: string, openThreadIds: string[]): AgentAlert | null {
+export function memberMentionAlert(
+  event: SessionEvent,
+  selfId: string,
+  openThreadIds: string[],
+  agents: Pooled = []
+): AgentAlert | null {
+  const message = wordToYou(event, selfId, openThreadIds)
+  if (!message?.memberMentionRefs?.some(ref => ref.id === selfId)) return null
+  return wordFrom(message, 'mentioned', agents)
+}
+
+export function memberReplyAlert(
+  event: SessionEvent,
+  selfId: string,
+  openThreadIds: string[],
+  agents: Pooled = []
+): AgentAlert | null {
   const message = wordToYou(event, selfId, openThreadIds)
   if (!message || message.replyTo?.authorId !== selfId) return null
-  return wordFrom(message, 'replied to')
+  return wordFrom(message, 'replied to', agents)
 }

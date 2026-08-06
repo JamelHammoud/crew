@@ -157,6 +157,7 @@ export default function ToolBuilder({ tool, onDone }: { tool: CrewTool | null; o
     if (kind === 'music') return playlistId ? { kind: 'music', playlistId } : { kind: 'music', trackId }
     if (kind === 'chain') return { kind: 'chain', toolIds }
     if (kind === 'prompt') return agentId ? { kind: 'prompt', text: ask, agentId } : { kind: 'prompt', text: ask }
+    if (kind === 'post') return agentId ? { kind: 'post', text: post, agentId } : { kind: 'post', text: post }
     return external ? { kind: 'web', url, external: true } : { kind: 'web', url }
   }
 
