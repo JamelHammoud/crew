@@ -674,6 +674,50 @@ export class CrewSession {
       if (event.kind === 'plugin.removed') {
         this.plugins.delete(event.pluginId)
       }
+      if (event.kind === 'schedule.added') {
+        this.schedules.set(event.scheduleId, {
+          id: event.scheduleId,
+          name: event.name,
+          mark: event.mark,
+          when: event.when,
+          action: event.action,
+          zone: event.zone,
+          createdBy: event.byName,
+          ts: event.ts
+        })
+      }
+      if (event.kind === 'schedule.edited') {
+        const held = this.schedules.get(event.scheduleId)
+        if (held)
+          this.schedules.set(event.scheduleId, {
+            ...held,
+            name: event.name,
+            mark: event.mark,
+            when: event.when,
+            action: event.action,
+            zone: event.zone
+          })
+      }
+      if (event.kind === 'schedule.removed') {
+        this.schedules.delete(event.scheduleId)
+      }
+      if (event.kind === 'schedule.paused') {
+        const held = this.schedules.get(event.scheduleId)
+        if (held) this.schedules.set(event.scheduleId, { ...held, paused: event.paused })
+      }
+      // What it did when it came round is folded onto the schedule itself. A
+      // session coming back up reads the last one and takes the next from there,
+      // which is what keeps a Crew that was shut all weekend from firing every
+      // run it slept through the moment it opens.
+      if (event.kind === 'schedule.ran') {
+        const held = this.schedules.get(event.scheduleId)
+        if (held)
+          this.schedules.set(event.scheduleId, {
+            ...held,
+            lastRunAt: event.ts,
+            lastThreadId: event.threadId ?? held.lastThreadId
+          })
+      }
       if (event.kind === 'attachment.limit') {
         this.attachmentMb = cleanAttachmentMb(event.mb) ?? this.attachmentMb
       }
