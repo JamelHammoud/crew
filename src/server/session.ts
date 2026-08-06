@@ -1063,6 +1063,23 @@ export class CrewSession {
       case 'plugin.remove':
         if (meta.role === 'ui') this.handlePluginRemove(member, msg.pluginId)
         break
+      case 'schedule.add':
+        if (meta.role === 'ui')
+          this.handleScheduleAdd(ws, member, msg.name, msg.mark, msg.when, msg.action, msg.zone)
+        break
+      case 'schedule.edit':
+        if (meta.role === 'ui')
+          this.handleScheduleEdit(member, msg.scheduleId, msg.name, msg.mark, msg.when, msg.action, msg.zone)
+        break
+      case 'schedule.remove':
+        if (meta.role === 'ui') this.handleScheduleRemove(member, msg.scheduleId)
+        break
+      case 'schedule.pause':
+        if (meta.role === 'ui') this.handleSchedulePause(member, msg.scheduleId, msg.paused)
+        break
+      case 'schedule.run':
+        if (meta.role === 'ui') this.runSchedule(msg.scheduleId, member.name, false)
+        break
       case 'attachment.limit':
         if (meta.role === 'ui') this.handleAttachmentLimit(member, msg.mb)
         break
