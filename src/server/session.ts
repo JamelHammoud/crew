@@ -4352,11 +4352,9 @@ export class CrewSession {
     if (thread?.parentThreadId && !this.subagentRunning(thread)) {
       this.subagentReturn(thread, result.ok, result.text ?? result.error ?? '', stopped)
     }
-    const posting = thread ? this.ghostOf(thread.id)?.post : undefined
-    const helpersOut =
-      thread !== undefined && this.subagentThreads(thread.id).some(one => this.subagentRunning(one))
-    if (thread && posting && !this.subagentRunning(thread) && !helpersOut) {
-      this.postReturn(thread, agent, result.text ?? '', { ok: result.ok, stopped })
+    if (thread && this.ghostOf(thread.id)?.post && !this.subagentRunning(thread)) {
+      const out = this.subagentThreads(thread.id).some(one => this.subagentRunning(one))
+      if (!out) this.postReturn(thread, agent, result.text ?? '', { ok: result.ok, stopped })
     }
   }
 
