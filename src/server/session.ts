@@ -4327,6 +4327,32 @@ export class CrewSession {
     if (thread?.parentThreadId && !this.subagentRunning(thread)) {
       this.subagentReturn(thread, result.ok, result.text ?? result.error ?? '', stopped)
     }
+    const posting = thread ? this.ghostOf(thread.id)?.post : undefined
+    if (thread && posting && !this.subagentRunning(thread)) {
+      this.postReturn(thread, agent, result.ok && !stopped ? (result.text ?? '') : '')
+    }
+  }
+
+  private postReturn(thread: Thread, agent: AgentState, text: string): void {
+    this.ghosts.delete(thread.id)
+    this.threads.delete(thread.id)
+    thread.queue = []
+    const said = text.trim()
+    if (!said) {
+      this.systemMessage(`${agent.label} had nothing to send.`)
+      return
+    }
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'message',
+      authorId: agent.id,
+      authorName: agent.label,
+      text: said,
+      mentions: [],
+      ...this.refsOf(said),
+      memberMentionRefs: this.memberRefs(said)
+    })
   }
 
   private pendingReactions(agentId: string): ReactionEvent[] {
