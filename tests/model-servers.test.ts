@@ -133,7 +133,59 @@ describe('whether two addresses are the same server', () => {
   })
 })
 
+describe('what a written server is called', () => {
+  it('is the name somebody gave it', () => {
+    expect(serverName({ url: 'http://192.0.2.10:39862/v1', name: 'The rack' })).toBe('The rack')
+  })
+
+  it('is its own host where nobody named it', () => {
+    expect(serverName({ url: 'http://192.0.2.10:39862/v1' })).toBe('192.0.2.10:39862')
+    expect(serverName({ url: 'http://192.0.2.10:39862/v1', name: '   ' })).toBe('192.0.2.10:39862')
+  })
+
+  it('takes what somebody typed rather than refusing it', () => {
+    expect(cleanServerName('  The   rack  ')).toBe('The rack')
+  })
+
+  it('stops taking words at the limit', () => {
+    expect(cleanServerName('n'.repeat(SERVER_NAME_LIMIT + 20))).toHaveLength(SERVER_NAME_LIMIT)
+  })
+})
+
+// The name is this machine's and the address is what the agent is written down
+// under, so a rename never orphans the agents already made on it.
+describe('the provider a written server stands as', () => {
+  it('is named after the address rather than after the name', () => {
+    expect(serverProviderName('http://192.0.2.10:39862/v1')).toBe('server:http://192.0.2.10:39862/v1')
+  })
+
+  it('reads the address back out of it', () => {
+    expect(serverUrlIn('server:http://192.0.2.10:39862/v1')).toBe('http://192.0.2.10:39862/v1')
+  })
+
+  it('says nothing of a provider that ships with the app', () => {
+    expect(serverUrlIn('local')).toBeNull()
+    expect(serverUrlIn('claude')).toBeNull()
+  })
+})
+
 describe('writing a server down', () => {
+  it('keeps the name it was given', () => {
+    expect(withServer([], { url: 'http://192.0.2.10:39862/v1', name: 'The rack' })).toEqual([
+      { url: 'http://192.0.2.10:39862/v1', name: 'The rack' }
+    ])
+  })
+
+  it('keeps a name already held where the same address is written down again with none', () => {
+    const held = [{ url: 'http://192.0.2.10:39862/v1', name: 'The rack' }]
+    expect(withServer(held, { url: 'http://192.0.2.10:39862/v1' })[0].name).toBe('The rack')
+  })
+
+  it('takes a name given again in place of the one before it', () => {
+    const held = [{ url: 'http://192.0.2.10:39862/v1', name: 'The rack' }]
+    expect(withServer(held, { url: 'http://192.0.2.10:39862/v1', name: 'The big one' })[0].name).toBe('The big one')
+  })
+
   it('puts a new one at the front', () => {
     const held = [{ url: 'http://127.0.0.1:11434' }]
     expect(withServer(held, { url: 'http://192.0.2.10:39862/v1' })).toEqual([
