@@ -13,6 +13,7 @@ import {
   wallIn,
   type Schedule
 } from '../src/shared/schedules'
+import { cleanTool } from '../src/shared/toolbox'
 
 const LISBON = 'Europe/Lisbon'
 const NEW_YORK = 'America/New_York'
