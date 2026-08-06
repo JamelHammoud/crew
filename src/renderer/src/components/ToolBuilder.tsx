@@ -413,6 +413,19 @@ export default function ToolBuilder({ tool, onDone }: { tool: CrewTool | null; o
           </Field>
         )}
 
+        {kind === 'post' && (
+          <Field label="What to ask">
+            <textarea
+              ref={postRef}
+              rows={2}
+              value={post}
+              onChange={e => setPost(e.target.value)}
+              placeholder="Sum up what changed today"
+              className={AREA}
+            />
+          </Field>
+        )}
+
         {kind === 'say' && (
           <Field label="What to say">
             <textarea
