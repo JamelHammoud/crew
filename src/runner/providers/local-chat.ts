@@ -173,8 +173,9 @@ const body = (req: ChatRequest, think: boolean): string => {
       stream_options: { include_usage: true }
     })
   }
-  const inner: Record<string, unknown> = { ...sampling }
+  const inner: Record<string, unknown> = {}
   if (req.context) inner.num_ctx = req.context
+  Object.assign(inner, sampling)
   put(inner, 'num_predict', num(tuning.maxReply))
   const options = Object.keys(inner).length ? { options: inner } : {}
   const alive = tuning.keepAlive ? { keep_alive: tuning.keepAlive } : {}
