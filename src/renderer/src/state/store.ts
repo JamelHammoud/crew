@@ -596,8 +596,8 @@ export const useCrew = create<CrewState>((set, get) => {
     // the system, and neither one waits on the window being in the background.
     const alert =
       finishedAlert(event, get()) ??
-      memberMentionAlert(event, get().selfId, get().openThreadIds) ??
-      memberReplyAlert(event, get().selfId, get().openThreadIds) ??
+      memberMentionAlert(event, get().selfId, get().openThreadIds, get().agents) ??
+      memberReplyAlert(event, get().selfId, get().openThreadIds, get().agents) ??
       questionAlert(event, get(), boardOnScreen())
     if (alert) {
       const showAlertThread = (threadId: string, beside: boolean) => {
