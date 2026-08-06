@@ -30,6 +30,7 @@ export default function ScheduleDoes({
   const playlists = useMusic(s => s.playlists)
   const [kind, setKind] = useState<ToolKind>(initial?.kind ?? 'prompt')
   const [ask, setAsk] = useState(wordsOf(initial, 'prompt'))
+  const [post, setPost] = useState(wordsOf(initial, 'post'))
   const [say, setSay] = useState(wordsOf(initial, 'say'))
   const [task, setTask] = useState(wordsOf(initial, 'todo'))
   const [line, setLine] = useState(wordsOf(initial, 'note'))
