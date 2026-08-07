@@ -34,6 +34,7 @@ export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: 
       schema: docSchema,
       dictionary: docDictionary,
       extensions: [docEmoji],
+      disableExtensions: ['previousBlockType'],
       dropCursor: { width: 2, color: false },
       tables: { headers: true },
       links: {

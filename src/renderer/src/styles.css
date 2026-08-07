@@ -1316,18 +1316,6 @@ textarea:placeholder-shown {
   --level: 1.0625em;
 }
 
-.doc [data-prev-level='1'] {
-  --prev-level: 1.625em;
-}
-
-.doc [data-prev-level='2'] {
-  --prev-level: 1.3125em;
-}
-
-.doc [data-prev-level='3'] {
-  --prev-level: 1.0625em;
-}
-
 .doc .bn-editor .bn-block-outer .bn-block .bn-block-content[data-content-type='heading'] {
   font-weight: 600;
   line-height: 1.3;
