@@ -147,16 +147,16 @@ export default function ScheduleDoes({
         {kind === 'music' &&
           (lists.length + tracks.length > 0 ? (
             <Select
-              label="Play"
               name="What to play"
-              value={playlistId ? `list:${playlistId}` : trackId ? `track:${trackId}` : ''}
+              value={playing}
               options={[
-                ...lists.map(list => ({
-                  value: `list:${list.id}`,
-                  label: list.name,
-                  hint: `${list.trackIds.length} ${list.trackIds.length === 1 ? 'track' : 'tracks'}`
+                { value: '', label: 'Pick a track or list' },
+                ...lists.map(one => ({
+                  value: `list:${one.id}`,
+                  label: one.name,
+                  hint: `${one.trackIds.length} ${one.trackIds.length === 1 ? 'track' : 'tracks'}`
                 })),
-                ...tracks.map(track => ({ value: `track:${track.id}`, label: track.name, hint: track.mood }))
+                ...tracks.map(one => ({ value: `track:${one.id}`, label: one.name, hint: one.mood }))
               ]}
               onChange={value => {
                 const [what, id] = [value.slice(0, value.indexOf(':')), value.slice(value.indexOf(':') + 1)]
