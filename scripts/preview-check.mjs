@@ -12,6 +12,11 @@ import electron from 'electron'
 // browser may quietly refuse to fetch. Refused, the page still draws: it comes
 // out unstyled, with a hole where every picture is, and every suite is green. So
 // this runs the real code in a real window and reads what actually arrived.
+//
+// A page too big to hold whole is the third of them, and it is the one that was
+// really broken: handed the head of a file, the browser draws the chrome down to
+// the cut and the script that was severed never runs, which is a page that looks
+// like it loaded and does nothing.
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
