@@ -71,7 +71,7 @@ function DocTableHandle({ orientation, hideOtherElements }: TableHandleProps) {
         <MenuItem
           icon={row ? <ArrowUpGlyph /> : <ArrowLeftGlyph />}
           label={row ? 'Add above' : 'Add left'}
-          onClick={() => add(row ? 'above' : 'left')}
+          onClick={() => (row ? addRow('above') : addColumn('left'))}
         />
         <MenuItem
           icon={row ? <ArrowDownGlyph /> : <ArrowRightGlyph />}
