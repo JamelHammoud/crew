@@ -15,10 +15,19 @@ const FOLDER = path.join(os.tmpdir(), 'crew-previews')
 // A page with no file behind it, which is one somebody attached, has no folder to
 // read from and is handed no base at all, rather than being pointed at the root
 // of the disk.
+//
+// Words that are only the head of a file are no page at all, so that one is
+// loaded where it stands instead. A file too big to hold cannot be typed in
+// either, so there is no edit to carry into a copy, and standing where it was
+// written it needs no base and no ceiling.
 export class Previews {
   private made = new Map<string, string>()
 
-  async show(key: string, absolute: string, text: string): Promise<string | null> {
+  async show(key: string, absolute: string, text: string | null): Promise<string | null> {
+    if (text === null) {
+      this.drop(key)
+      return absolute ? fileUrl(absolute) : null
+    }
     const file = path.join(FOLDER, `${randomUUID()}.html`)
     try {
       await fs.mkdir(FOLDER, { recursive: true })
