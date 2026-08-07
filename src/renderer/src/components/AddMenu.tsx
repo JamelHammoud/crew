@@ -36,6 +36,10 @@ export default function AddMenu({
   const [screen, setScreen] = useState<Screen>('menu')
   const full = count >= MAX_ATTACHMENTS
   const calling = huddle === true && !joined
+  // With nobody here there is nobody to pick, so the row is left out rather
+  // than opening on an empty card.
+  const anyone = useCrew(s => s.agents.some(agent => agent.status !== 'offline'))
+  const aiming = defaultAgent === true && anyone
 
   const show = () => {
     setScreen('menu')

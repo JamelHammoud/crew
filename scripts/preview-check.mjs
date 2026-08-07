@@ -152,15 +152,20 @@ function run(dir, page, words) {
   })
 }
 
-function judge(seen, beside) {
+// A page stood up beside itself is handed the folder it lives in, one with no
+// file behind it is handed nothing, and one standing where it was written needs
+// nothing: the folder it is read from is already its own, so the base being the
+// page itself is the right answer rather than a missing one.
+function judge(seen, how) {
   if (seen.failed) return [`the page fell over: ${seen.failed}`]
   const problems = []
   if (seen.heading !== 'Written just now') problems.push(`the page reads "${seen.heading}", not the words in hand`)
   if (seen.color !== 'rgb(0, 128, 0)') problems.push(`the style never arrived, the heading is ${seen.color}`)
   if (seen.picture !== 1) problems.push('the picture never arrived')
   if (seen.ran !== 'yes') problems.push('the script never ran')
-  if (beside && seen.base === seen.url) problems.push('the page was never handed the folder it lives in')
-  if (!beside && seen.base !== seen.url) problems.push(`a page with no folder was handed one: ${seen.base}`)
+  if (how === 'beside' && seen.base === seen.url) problems.push('the page was never handed the folder it lives in')
+  if (how === 'alone' && seen.base !== seen.url) problems.push(`a page with no folder was handed one: ${seen.base}`)
+  if (how === 'held' && seen.url !== fileUrl(seen.file)) problems.push(`the page was copied rather than read where it stands: ${seen.url}`)
   return problems
 }
 
