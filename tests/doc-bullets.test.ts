@@ -16,14 +16,16 @@ const rungs = (): Rung[] => {
     const head = styles.slice(styles.lastIndexOf('\n\n', at) + 2, opens)
     if (!head.includes('.doc ')) continue
     const deep = head.split('.bn-block-group').length - 1
-    found.push({ level: deep + 1, body: styles.slice(opens, styles.indexOf('\n}', opens)) })
+    found.push({ level: deep || 1, body: styles.slice(opens, styles.indexOf('\n}', opens)) })
   }
   return found.sort((a, b) => a.level - b.level)
 }
 
 const said = (body: string, name: string): string => {
   const found = body.match(new RegExp(`\\n\\s*${name}:\\s*([^;]+);`))
-  return found ? found[1].trim() : ''
+  if (found) return found[1].trim()
+  if (name === 'border-width') return said(body, 'border').split(' ')[0]
+  return ''
 }
 
 const shapeOf = (body: string): string => {
