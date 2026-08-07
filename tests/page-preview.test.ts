@@ -75,7 +75,7 @@ describe('a page that is only partly in hand', () => {
     expect(await previews.show('one', '', null)).toBeNull()
   })
 
-  it('leaves every other window's page where it is', async () => {
+  it('leaves the page another window is reading where it is', async () => {
     const wrote = path.join(folder, 'index.html')
     const other = await previews.show('two', wrote, '<p>a</p>')
 
