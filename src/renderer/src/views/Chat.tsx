@@ -136,7 +136,7 @@ export default function Chat() {
 
   const send = () => {
     if (!text.trim() && pendingCount(CHAT_KEY) === 0) return
-    sendChat(text, undefined, undefined, replyTo?.reactionTargetId, undefined, commands)
+    sendChat(text, undefined, undefined, replyTo?.reactionTargetId, aimOf(text, agents, aimed), commands)
     setReplyTo(null)
     mention.close()
     slash.close()
