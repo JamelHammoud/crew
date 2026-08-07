@@ -10,7 +10,17 @@ import {
 } from '@blocknote/react'
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react'
 import type { DocTableBlock } from '../../../shared/docTables'
-import { applyTableWidths, readDocTableWidths, tableWidthsOf, writeDocTableWidths } from '../../../shared/docTables'
+import {
+  applyTableAligns,
+  applyTableWidths,
+  mendDocTableRows,
+  readDocTableAligns,
+  readDocTableWidths,
+  tableAlignsOf,
+  tableWidthsOf,
+  writeDocTableAligns,
+  writeDocTableWidths
+} from '../../../shared/docTables'
 import { useCrew } from '../state/store'
 import { useTheme } from '../state/theme'
 import { docEmoji } from './doc/docEmoji'
