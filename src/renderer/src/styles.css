@@ -1233,17 +1233,17 @@ textarea:placeholder-shown {
   --bn-colors-highlights-gray-background: #e5e5e5;
 }
 
-.doc .bn-editor:not(:has(.bn-trailing-block)) {
-  padding-bottom: var(--doc-tail);
+.doc .bn-editor {
+  font-size: 16px;
+  line-height: 1.7;
 }
 
 .doc .bn-editor .bn-trailing-block {
   height: var(--doc-tail);
 }
 
-.doc .bn-editor {
-  font-size: 16px;
-  line-height: 1.7;
+.doc .bn-editor:not(:has(.bn-trailing-block)) {
+  padding-bottom: var(--doc-tail);
 }
 
 .doc .bn-editor .bn-inline-content code {
