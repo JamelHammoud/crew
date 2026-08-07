@@ -63,7 +63,7 @@ describe('a table survives being written out and read back', () => {
   it('keeps a width on one column and leaves the other free', () => {
     const text = writeDocTableWidths('| a | b |\n| --- | --- |\n| c | d |\n', [[null, 90]])
     expect(text).toContain('<!-- crew:cols - 90 -->')
-    expect(table(load(text)).content.columnWidths).toEqual([null, 90])
+    expect(table(load(text)).content.columnWidths).toEqual([undefined, 90])
   })
 
   it('writes no mark for a table nobody resized, so an untouched doc does not churn', () => {

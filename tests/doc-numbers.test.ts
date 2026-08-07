@@ -15,7 +15,7 @@ const rungs = (): Rung[] => {
   for (const block of blocks()) {
     const opens = block.indexOf('{')
     if (opens < 0) continue
-    const head = block.slice(0, opens)
+    const head = block.slice(0, opens).replace(/\s+/g, ' ')
     const body = block.slice(opens)
     if (!head.includes('.doc ')) continue
     if (!head.includes("numberedListItem']::before")) continue
