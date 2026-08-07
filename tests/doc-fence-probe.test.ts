@@ -62,6 +62,14 @@ describe('doc fence', () => {
     type(withLang.prosemirrorView, '```ts ')
     console.log('lang:', JSON.stringify(withLang.document.map(b => [b.type, b.props.language])))
 
+    const bare = stand()
+    type(bare.prosemirrorView, '```')
+    console.log('bare:', JSON.stringify(bare.document.map(b => b.type)))
+
+    const mid = stand()
+    type(mid.prosemirrorView, 'see ``` ')
+    console.log('mid:', JSON.stringify(mid.document.map(b => b.type)))
+
     expect(true).toBe(true)
   })
 })
