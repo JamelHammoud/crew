@@ -27,9 +27,9 @@ function isHot(window: UsageWindow): boolean {
 function WindowRow({ window, now }: { window: UsageWindow; now: number }) {
   const hot = isHot(window)
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-baseline gap-3">
       <span className="w-40 shrink-0 text-sm text-fg/70 truncate">{window.label}</span>
-      <div className="flex-1 h-1.5 rounded-full bg-fg/[0.12] overflow-hidden">
+      <div className="flex-1 self-center h-1.5 rounded-full bg-fg/[0.12] overflow-hidden">
         <div
           className={`h-full rounded-full transition-[width] duration-500 ${hot ? 'bg-danger' : 'bg-fg'}`}
           style={{ width: `${Math.min(100, Math.max(0, window.percent))}%` }}
