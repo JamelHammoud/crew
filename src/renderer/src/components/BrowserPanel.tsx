@@ -483,7 +483,7 @@ function TabPill({
         ) : showsImage(tab) ? (
           <PhotoGlyph className="w-4 h-4 shrink-0" />
         ) : tab.favicon ? (
-          <img src={tab.favicon} alt="" className="w-4 h-4 shrink-0 rounded-sm" />
+          <Favicon key={tab.favicon} src={tab.favicon} />
         ) : (
           <GlobeGlyph className="w-4 h-4 shrink-0" />
         )}
