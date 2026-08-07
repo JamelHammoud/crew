@@ -1830,12 +1830,12 @@ textarea:placeholder-shown {
 }
 
 .doc .bn-container .bn-extend-button-add-remove-columns {
-  width: 14px;
+  width: 16px;
   margin-left: 4px;
 }
 
 .doc .bn-container .bn-extend-button-add-remove-rows {
-  height: 14px;
+  height: 16px;
   margin-top: 4px;
 }
 
