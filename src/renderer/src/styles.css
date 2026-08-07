@@ -1334,13 +1334,64 @@ textarea:placeholder-shown {
   padding-top: 18px;
 }
 
-.doc .bn-editor .bn-block-content[data-content-type='bulletListItem']::before,
 .doc .bn-editor .bn-block-content[data-content-type='numberedListItem']::before {
   color: var(--color-fg-muted);
 }
 
-.doc .bn-editor .bn-block-group .bn-block .bn-block-group .bn-block-outer::before {
-  border-left: 1px solid var(--color-ink-700);
+.doc .bn-editor .bn-block-outer .bn-block .bn-block-content[data-content-type='bulletListItem']::before,
+.doc .bn-editor .bn-block-outer[data-prev-type='bulletListItem'] .bn-block .bn-block-content::before {
+  --doc-bullet: 7px;
+  content: '';
+  display: block;
+  flex: none;
+  box-sizing: border-box;
+  width: var(--doc-bullet);
+  height: var(--doc-bullet);
+  min-width: 0;
+  padding: 0;
+  margin-top: calc(0.85em - var(--doc-bullet) / 2);
+  margin-left: calc(10px - var(--doc-bullet) / 2);
+  margin-right: calc(14px - var(--doc-bullet) / 2);
+  border: 0 solid var(--color-fg-muted);
+  border-radius: 50%;
+  background: var(--color-fg-muted);
+  color: transparent;
+  overflow: hidden;
+}
+
+.doc .bn-editor .bn-block-group .bn-block-group .bn-block .bn-block-content[data-content-type='bulletListItem']::before {
+  --doc-bullet: 7px;
+  border-width: 1.5px;
+  border-radius: 50%;
+  background: none;
+}
+
+.doc .bn-editor .bn-block-group .bn-block-group .bn-block-group .bn-block .bn-block-content[data-content-type='bulletListItem']::before {
+  --doc-bullet: 6.5px;
+  border-width: 0;
+  border-radius: 1px;
+  background: var(--color-fg-muted);
+}
+
+.doc .bn-editor .bn-block-group .bn-block-group .bn-block-group .bn-block-group .bn-block .bn-block-content[data-content-type='bulletListItem']::before {
+  --doc-bullet: 7px;
+  border-width: 0;
+  border-radius: 50%;
+  background: var(--color-fg-muted);
+}
+
+.doc .bn-editor .bn-block-group .bn-block-group .bn-block-group .bn-block-group .bn-block-group .bn-block .bn-block-content[data-content-type='bulletListItem']::before {
+  --doc-bullet: 7px;
+  border-width: 1.5px;
+  border-radius: 50%;
+  background: none;
+}
+
+.doc .bn-editor .bn-block-group .bn-block-group .bn-block-group .bn-block-group .bn-block-group .bn-block-group .bn-block .bn-block-content[data-content-type='bulletListItem']::before {
+  --doc-bullet: 6.5px;
+  border-width: 0;
+  border-radius: 1px;
+  background: var(--color-fg-muted);
 }
 
 .doc .bn-editor .bn-block-content[data-content-type='checkListItem'] > div > input {
