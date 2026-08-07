@@ -112,6 +112,7 @@ async function stage() {
   const site = path.join(dir, 'site')
   await mkdir(path.join(site, 'art'), { recursive: true })
   await writeFile(path.join(site, 'index.html'), SITE)
+  await writeFile(path.join(site, 'model.html'), SITE.replace('<h1>Sign up</h1>', '<h1>Written just now</h1>'))
   await writeFile(path.join(site, 'style.css'), STYLE)
   await writeFile(path.join(site, 'mark.js'), MARK)
   await writeFile(path.join(site, 'art/shot.gif'), Buffer.from(GIF, 'base64'))
