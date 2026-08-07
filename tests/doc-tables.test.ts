@@ -116,3 +116,77 @@ describe('the handles are Crew own', () => {
     expect(styles).not.toContain('.bn-table-cell-handle')
   })
 })
+
+describe('what markdown cannot hold on its own', () => {
+  it('marks a width above the table it belongs to, with a blank line so the table still parses', () => {
+    expect(writeDocTableWidths(TABLE, [[200, 90]])).toBe(`<!-- crew:cols 200 90 -->\n\n${TABLE}`)
+  })
+
+  it('writes a dash for a column nobody sized', () => {
+    expect(writeDocTableWidths(TABLE, [[null, 90]])).toContain('<!-- crew:cols - 90 -->')
+  })
+
+  it('writes nothing at all for a table nobody sized, so an untouched doc does not churn', () => {
+    expect(writeDocTableWidths(TABLE, [[null, null]])).toBe(TABLE)
+  })
+
+  it('reads a mark back off the file and takes it out of the words', () => {
+    const read = readDocTableWidths(`<!-- crew:cols 200 90 -->\n\n${TABLE}`)
+    expect(read.widths).toEqual([[200, 90]])
+    expect(read.text).toBe(TABLE)
+  })
+
+  it('is idempotent, so writing twice is writing once', () => {
+    const once = writeDocTableWidths(TABLE, [[200, 90]])
+    expect(writeDocTableWidths(once, [[200, 90]])).toBe(once)
+  })
+
+  it('gives each table its own mark', () => {
+    const two = `${TABLE}\n\ntext\n\n${TABLE}`
+    expect(readDocTableWidths(writeDocTableWidths(two, [[200, 90], [50, 60]])).widths).toEqual([[200, 90], [50, 60]])
+  })
+
+  it('never takes a table out of a code fence', () => {
+    const fenced = '```\n| a | b |\n| --- | --- |\n```'
+    expect(writeDocTableWidths(fenced, [[200, 90]])).toBe(fenced)
+  })
+
+  it('drops a mark that names no table rather than letting it reach the words', () => {
+    expect(readDocTableWidths('<!-- crew:cols 200 90 -->\n\ntext').text.trim()).toBe('text')
+  })
+
+  it('takes the marks out of what an agent is handed', () => {
+    expect(stripDocTableMarks(`<!-- crew:cols 200 90 -->\n\n${TABLE}`)).toBe(TABLE)
+  })
+})
+
+describe('a line break in a cell', () => {
+  it('mends a row the serializer split across two lines', () => {
+    expect(mendDocTableRows('| a | b |\n| --- | --- |\n| one\\\ntwo | d |')).toBe(
+      '| a | b |\n| --- | --- |\n| one<br>two | d |'
+    )
+  })
+
+  it('leaves a whole table alone', () => {
+    expect(mendDocTableRows(TABLE)).toBe(TABLE)
+  })
+})
+
+describe('column alignment, which markdown carries and BlockNote does not', () => {
+  it('reads a centred and a right aligned column off the delimiter row', () => {
+    expect(readDocTableAligns('| a | b | c |\n|:---:|---:|---|\n| d | e | f |')).toEqual([['center', 'right', null]])
+  })
+
+  it('writes the colons back', () => {
+    expect(writeDocTableAligns(TABLE, [['center', 'right']])).toContain('|:-')
+  })
+
+  it('writes no colon for a table nobody aligned, so an untouched doc does not churn', () => {
+    expect(writeDocTableAligns(TABLE, [[null, null]])).toBe(TABLE)
+  })
+
+  it('round trips', () => {
+    const written = writeDocTableAligns(TABLE, [['center', 'right']])
+    expect(readDocTableAligns(written)).toEqual([['center', 'right']])
+  })
+})
