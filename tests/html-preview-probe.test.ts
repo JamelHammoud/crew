@@ -18,13 +18,25 @@ const PAGE = `<!doctype html>
 </html>
 `
 
+const CUT = `<!doctype html>
+<html>
+  <head><title>The stand</title></head>
+  <body><canvas id="scene"></canvas><script>const model = {`
+
 const repo: Record<string, RepoFile> = {
   'site/index.html': { kind: 'file', path: 'site/index.html', text: PAGE, truncated: false },
+  'site/model.html': { kind: 'file', path: 'site/model.html', text: CUT, truncated: true },
+  'site/many.html': {
+    kind: 'file',
+    path: 'site/many.html',
+    text: `${PAGE}${'<p>a line</p>\n'.repeat(6000)}`,
+    truncated: false
+  },
   'readme.md': { kind: 'file', path: 'readme.md', text: '# Notes\n', truncated: false },
   'src/app.ts': { kind: 'file', path: 'src/app.ts', text: 'const one = 1\n', truncated: false }
 }
 
-let stood: { id: string; path: string; text: string }[] = []
+let stood: { id: string; path: string; text: string | null }[] = []
 let dropped: string[] = []
 let made = 0
 
@@ -38,7 +50,7 @@ beforeEach(() => {
     readFile: async (path: string) => repo[path] ?? { kind: 'missing', path },
     listFiles: async () => Object.keys(repo),
     writeFile: async () => null,
-    previewHtml: async (id: string, path: string, text: string) => {
+    previewHtml: async (id: string, path: string, text: string | null) => {
       stood.push({ id, path, text })
       made += 1
       return `file:///tmp/crew-previews/page-${made}.html`
