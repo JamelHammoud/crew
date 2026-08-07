@@ -123,6 +123,13 @@ app.whenReady().then(async () => {
     await wait(300)
     said.agents = await win.webContents.executeJavaScript(BOX)
     said.rows = await win.webContents.executeJavaScript(\`[...document.querySelectorAll('.glass.fixed button')].map(b => b.textContent)\`)
+    await win.webContents.executeJavaScript(\`window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })), true\`)
+    await wait(300)
+    await win.webContents.executeJavaScript(PRESS('Add to your message'))
+    await wait(400)
+    said.gifFrames = await win.webContents.executeJavaScript(WATCH('Pick a GIF'))
+    await wait(300)
+    said.gif = await win.webContents.executeJavaScript(BOX)
   } catch (e) {
     said.failed = String(e && e.stack)
   }
