@@ -293,6 +293,90 @@ const READ = \`(() => {
   }
 })()\`
 
+const AT = \`(() => {
+  const round = n => Math.round(n * 100) / 100
+  const table = document.querySelectorAll('.bn-editor [data-content-type="table"] table')[0]
+  if (!table) return { failed: 'no table on the page' }
+  const row = table.rows[0]
+  const cell = row.cells[0]
+  const box = cell.getBoundingClientRect()
+  return {
+    x: box.right - 2,
+    y: box.top + box.height / 2,
+    tag: cell.tagName,
+    columns: row.cells.length,
+    cells: [...row.cells].map(one => round(one.getBoundingClientRect().width))
+  }
+})()\`
+
+const ARMED = \`(() => ({
+  handle: !!document.querySelector('.column-resize-handle'),
+  cursor: !!document.querySelector('.resize-cursor'),
+  editor: !!(window.__crew && window.__crew.live())
+}))()\`
+
+const WIDE = \`(() => {
+  const round = n => Math.round(n * 100) / 100
+  const row = document.querySelectorAll('.bn-editor [data-content-type="table"] table')[0].rows[0]
+  return [...row.cells].map(one => round(one.getBoundingClientRect().width))
+})()\`
+
+async function dragPass(win, shot) {
+  const step = {}
+  const at = await win.webContents.executeJavaScript(AT)
+  if (at.failed) return { failed: at.failed }
+  step.found = at
+
+  const x = Math.round(at.x)
+  const y = Math.round(at.y)
+  const REACH = 90
+  const MOVES = 9
+
+  await win.webContents.executeJavaScript('window.scrollTo(0, 0), true')
+  win.webContents.sendInputEvent({ type: 'mouseMove', x, y })
+  await wait(200)
+  step.armed = await win.webContents.executeJavaScript(ARMED)
+  await shot('drag-armed')
+
+  win.webContents.sendInputEvent({ type: 'mouseDown', x, y, button: 'left', clickCount: 1 })
+  await wait(80)
+  for (let i = 1; i <= MOVES; i++) {
+    win.webContents.sendInputEvent({
+      type: 'mouseMove',
+      x: x + Math.round((REACH * i) / MOVES),
+      y,
+      button: 'left',
+      modifiers: ['leftButtonDown']
+    })
+    await wait(45)
+  }
+  step.mid = await win.webContents.executeJavaScript(WIDE)
+  await shot('drag-mid')
+  win.webContents.sendInputEvent({ type: 'mouseUp', x: x + REACH, y, button: 'left', clickCount: 1 })
+  await wait(300)
+
+  step.reach = REACH
+  step.after = await win.webContents.executeJavaScript(WIDE)
+  step.document = await win.webContents.executeJavaScript('window.__crew.widthsNow()')
+  await shot('drag-done')
+
+  step.composed = await win.webContents.executeJavaScript('window.__crew.saveNow()')
+  await wait(900)
+  step.saved = await win.webContents.executeJavaScript('({ text: window.__crew.saved, saves: window.__crew.saves })')
+
+  const markdown = step.saved.text || (step.composed && step.composed.markdown) || ''
+  step.markdown = markdown
+  step.back = await win.webContents.executeJavaScript(
+    'window.__crew.loadBack(' + JSON.stringify(markdown) + ')'
+  )
+  await win.webContents.executeJavaScript('window.__crew.remount(' + JSON.stringify(markdown) + ')')
+  await wait(700)
+  step.remounted = await win.webContents.executeJavaScript('window.__crew.widthsNow()')
+  step.remountedWide = await win.webContents.executeJavaScript(WIDE)
+  await shot('drag-remounted')
+  return step
+}
+
 app.whenReady().then(async () => {
   const win = new BrowserWindow({ width: ${WIDTH}, height: ${HEIGHT}, show: true, backgroundColor: '#141414' })
   try {
