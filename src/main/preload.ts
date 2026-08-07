@@ -85,7 +85,7 @@ const bridge = {
   writeFile: (path: string, text: string): Promise<RepoFile | null> =>
     ipcRenderer.invoke('file:write', path, text),
   locatePath: (path: string): Promise<PathLocation> => ipcRenderer.invoke('file:locate', path),
-  previewHtml: (id: string, path: string, text: string): Promise<string | null> =>
+  previewHtml: (id: string, path: string, text: string | null): Promise<string | null> =>
     ipcRenderer.invoke('preview:html', id, path, text),
   dropPreview: (id: string): Promise<void> => ipcRenderer.invoke('preview:drop', id),
   revealFile: (path: string): Promise<void> => ipcRenderer.invoke('file:reveal', path),
