@@ -252,6 +252,11 @@ try {
   for (const [theme, read] of Object.entries(seen)) {
     if (read.failed) throw new Error(read.failed)
     console.log(`\n${theme}`)
+    if (!theme.endsWith('a cell')) {
+      for (const [what, chrome] of Object.entries(read.chrome))
+        if (chrome) console.log(`  ${what}: ${chrome.box.w}x${chrome.box.h} at ${chrome.box.x},${chrome.box.y}`)
+      continue
+    }
     console.log(
       `  wrapper ${read.wrap.box.w} across, pad ${read.wrap.pad}, radius ${read.wrap.radius}, border ${read.wrap.border}`
     )
