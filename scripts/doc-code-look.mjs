@@ -231,9 +231,7 @@ const say = (what, read) => {
   console.log(
     `  ${what}: ${read.box.w}x${read.box.h} at ${read.box.x},${read.box.y}, pad ${read.pad}, radius ${read.radius}`
   )
-  console.log(
-    `        ${read.font} weight ${read.weight}, ink ${read.ink}, paint ${read.paint}, shows ${read.shows}`
-  )
+  console.log(`        ${read.font} weight ${read.weight}, ink ${read.ink}, paint ${read.paint}, shows ${read.shows}`)
   console.log(
     `        appearance ${read.appearance}, holds "${read.text}", scrolls ${read.scrollW} in ${read.clientW}${read.clipped ? '  <-- CLIPPED' : ''}`
   )
@@ -247,14 +245,18 @@ try {
   for (const [where, read] of Object.entries(seen)) {
     if (read.failed) throw new Error(read.failed)
     console.log(`\n${where}`)
-    console.log(`  block ${read.block.box.w}x${read.block.box.h}, paint ${read.block.paint}, radius ${read.block.radius}`)
+    console.log(
+      `  block ${read.block.box.w}x${read.block.box.h}, paint ${read.block.paint}, radius ${read.block.radius}`
+    )
     console.log(`  pre ${read.pre.box.w}x${read.pre.box.h}, pad ${read.pre.pad}, ${read.pre.font}`)
     if (read.row)
       console.log(
         `  row ${read.row.box.w}x${read.row.box.h} at ${read.row.box.x},${read.row.box.y}, shows ${read.row.shows}, gap ${read.row.gap}, placed ${read.row.at}`
       )
-  if (read.scrim)
-    console.log(`  scrim: paint ${read.scrim.paint}, inset ${read.scrim.inset}, z ${read.scrim.z}, mask ${read.scrim.mask}`)
+    if (read.scrim)
+      console.log(
+        `  scrim: paint ${read.scrim.paint}, inset ${read.scrim.inset}, z ${read.scrim.z}, mask ${read.scrim.mask}`
+      )
     say('select', read.select)
     say('copy', read.copy)
     console.log(`  ${read.options} languages, picked "${read.picked}"`)

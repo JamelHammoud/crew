@@ -32,8 +32,7 @@ export function withCopy(spec: CodeBlockSpec): CodeBlockSpec {
         root.render(createElement(CopyButton, { text: () => code.textContent ?? '', className: 'flex' }))
         return {
           ...drawn,
-          ignoreMutation: mutation =>
-            slot.contains(mutation.target) || (drawn.ignoreMutation?.(mutation) ?? false),
+          ignoreMutation: mutation => slot.contains(mutation.target) || (drawn.ignoreMutation?.(mutation) ?? false),
           destroy: () => {
             queueMicrotask(() => root.unmount())
             drawn.destroy?.()
