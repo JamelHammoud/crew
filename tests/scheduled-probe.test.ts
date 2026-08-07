@@ -254,6 +254,7 @@ describe('the card one is written on', () => {
       addSchedule: (_name, _mark, _when, action) => (asked.push(action), null)
     })
     openCard()
+    open('Ask who')
     expect(screen.getByRole('button', { name: 'Anyone' })).toBeTruthy()
     fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Morning sweep' } })
     fireEvent.change(screen.getByLabelText('What to ask'), { target: { value: 'Read what came in' } })
