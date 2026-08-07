@@ -114,9 +114,6 @@ app.whenReady().then(async () => {
   const win = new BrowserWindow({ width: ${WIDTH}, height: ${HEIGHT}, show: true, backgroundColor: '#141414' })
   try {
     await win.loadFile(path.join(__dirname, 'dist/index.html'))
-    await wait: 0
-  } catch (e) {}
-  try {
     await wait(1600)
     const seen = await win.webContents.executeJavaScript(READ)
     const shot = await win.webContents.capturePage()
