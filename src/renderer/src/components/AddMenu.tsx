@@ -96,7 +96,7 @@ export default function AddMenu({
             )}
             {calling && (
               <>
-                {!full && <MenuDivider />}
+                {(!full || aiming) && <MenuDivider />}
                 <MenuItem
                   icon={<SignalGlyph />}
                   label={live ? 'Join the huddle' : 'Start a huddle'}
