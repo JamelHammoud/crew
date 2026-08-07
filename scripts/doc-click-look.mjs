@@ -105,9 +105,7 @@ const CARET = \`(() => {
 
 const TRIES = [
   ['as it stands', ''],
-  ['bullet mark overflow visible', '.doc .bn-editor .bn-block-content[data-content-type="bulletListItem"]::before { overflow: visible; }'],
-  ['bullet mark no colour', '.doc .bn-editor .bn-block-content[data-content-type="bulletListItem"]::before { color: inherit; }'],
-  ['inline content fills the row', '.doc .bn-editor .bn-block-content > .bn-inline-content { flex: 1 1 auto; min-width: 0; }']
+  ['inline content fills the row', '.doc .bn-editor .bn-block-content > .bn-inline-content { flex: 1 1 auto; }']
 ]
 
 app.whenReady().then(async () => {
