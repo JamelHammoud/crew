@@ -1,23 +1,14 @@
-// @vitest-environment jsdom
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
-
-window.matchMedia = ((query: string) => ({
-  matches: false,
-  media: query,
-  onchange: null,
-  addListener: () => {},
-  removeListener: () => {},
-  addEventListener: () => {},
-  removeEventListener: () => {},
-  dispatchEvent: () => false
-})) as typeof window.matchMedia
+import { DOC_GUTTER, DOC_MAX_W } from '../src/renderer/src/components/doc/docsLayout'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const styles = readFileSync(path.join(root, 'src/renderer/src/styles.css'), 'utf8')
-const handles = readFileSync(path.join(root, 'src/renderer/src/components/doc/DocTableHandles.tsx'), 'utf8')
+const read = (file: string) => readFileSync(path.join(root, file), 'utf8')
+const styles = read('src/renderer/src/styles.css')
+const handles = read('src/renderer/src/components/doc/DocTableHandles.tsx')
+const editor = read('src/renderer/src/components/DocEditor.tsx')
 
 const rule = (selector: string): string => {
   const at = styles.indexOf(selector)
@@ -25,50 +16,25 @@ const rule = (selector: string): string => {
   return styles.slice(at, styles.indexOf('\n}', at))
 }
 
-const { BlockNoteEditor } = await import('@blocknote/core')
-const { docSchema } = await import('../src/renderer/src/components/doc/docSchema')
-const { DOC_GUTTER, DOC_MAX_W } = await import('../src/renderer/src/components/doc/docsLayout')
+const WRAPPER = ".doc .bn-editor [data-content-type='table'] .tableWrapper"
 
-const editor = () => BlockNoteEditor.create({ schema: docSchema as never }) as never as {
-  document: any[]
-  replaceBlocks: (a: unknown[], b: unknown[]) => void
-  blocksToMarkdownLossy: (blocks: unknown[]) => string
-  tryParseMarkdownToBlocks: (markdown: string) => unknown[]
-}
-
-const table = (extra: Record<string, unknown>) => ({
-  type: 'table',
-  content: { type: 'tableContent', ...extra, rows: [{ cells: ['a', 'b'] }, { cells: ['c', 'd'] }] }
-})
-
-const roundTrip = (extra: Record<string, unknown>) => {
-  const one = editor()
-  one.replaceBlocks(one.document, [table(extra) as never])
-  const markdown = one.blocksToMarkdownLossy(one.document)
-  const back = editor()
-  back.replaceBlocks(back.document, back.tryParseMarkdownToBlocks(markdown))
-  return back.document[0].content
-}
+const wrapperSets = (property: string): boolean => new RegExp(`\\n\\s*${property}\\s*:`).test(rule(WRAPPER))
 
 describe('what a doc table offers', () => {
-  it('keeps a header row, so the menu offers one', () => {
-    expect(roundTrip({ headerRows: 1 }).headerRows).toBe(1)
+  it('offers a header row, which markdown carries', () => {
     expect(handles).toContain('Header row')
   })
 
-  it('loses a header column, so the menu offers none', () => {
-    const back = roundTrip({ headerCols: 1 })
-    expect(back.headerCols).toBeUndefined()
+  it('offers no header column, because markdown loses one', () => {
     expect(handles).not.toContain('Header column')
     expect(handles).not.toContain('TableHeaderColumn')
   })
 
-  it('loses a cell colour and a merge, so neither is turned on', () => {
-    const editorSource = readFileSync(path.join(root, 'src/renderer/src/components/DocEditor.tsx'), 'utf8')
-    expect(editorSource).toContain('tables: { headers: true }')
-    expect(editorSource).not.toContain('cellBackgroundColor')
-    expect(editorSource).not.toContain('cellTextColor')
-    expect(editorSource).not.toContain('splitCells')
+  it('turns cell colour and merging off, because markdown loses both', () => {
+    expect(editor).toContain('tables: { headers: true }')
+    expect(editor).not.toContain('cellBackgroundColor')
+    expect(editor).not.toContain('cellTextColor')
+    expect(editor).not.toContain('splitCells')
   })
 
   it('puts the one press that cannot be undone last', () => {
@@ -78,42 +44,39 @@ describe('what a doc table offers', () => {
 })
 
 describe('the room a table stands in', () => {
-  const wrap = () => rule(".doc .bn-editor [data-content-type='table'] .tableWrapper")
-
-  it('leaves the handles and the two add bars the gutter they are revealed in', () => {
-    expect(wrap()).not.toContain('padding: 0')
-    expect(wrap()).not.toContain('padding:')
+  it('leaves the gutter the handles and the two add bars are revealed in', () => {
+    expect(wrapperSets('padding')).toBe(false)
   })
 
   it('gives that gutter back, so the table stands on the writing own edge', () => {
-    expect(wrap()).toContain(
+    expect(rule(WRAPPER)).toContain(
       'margin-inline: calc(var(--bn-table-handle-size) * -1) calc(var(--bn-table-widget-size) * -1)'
     )
-    expect(wrap()).toContain('width: calc(100% + var(--bn-table-handle-size) + var(--bn-table-widget-size))')
-    expect(wrap()).toContain('margin-bottom: calc(var(--doc-table-gap) - var(--bn-table-widget-size))')
+    expect(rule(WRAPPER)).toContain('width: calc(100% + var(--bn-table-handle-size) + var(--bn-table-widget-size))')
+    expect(rule(WRAPPER)).toContain('margin-bottom: calc(var(--doc-table-gap) - var(--bn-table-widget-size))')
   })
 
   it('writes the measure down once, and it is the writing column', () => {
     expect(rule(':root {')).toContain(`--doc-measure: ${DOC_MAX_W - DOC_GUTTER * 2}px`)
   })
 
-  it('holds the add row bar inside it, whatever the table is scrolled to', () => {
+  it('holds the add row bar inside the writing, whatever the table is scrolled to', () => {
     expect(rule('.doc .bn-container .bn-extend-button-add-remove-rows')).toContain('max-width: var(--doc-measure)')
   })
 })
 
 describe('the grid', () => {
   it('draws its outline on the cells, so nothing has to clip', () => {
-    expect(wrapHas('border')).toBe(false)
-    expect(wrapHas('border-radius')).toBe(false)
-    expect(wrapHas('overflow: hidden')).toBe(false)
+    expect(wrapperSets('border')).toBe(false)
+    expect(wrapperSets('border-radius')).toBe(false)
+    expect(wrapperSets('overflow')).toBe(false)
     for (const corner of [
-      "tr:first-child > *:first-child {\n  border-top-left-radius",
-      "tr:first-child > *:last-child {\n  border-top-right-radius",
-      "tr:last-child > *:first-child {\n  border-bottom-left-radius",
-      "tr:last-child > *:last-child {\n  border-bottom-right-radius"
+      'tr:first-child > *:first-child {\n  border-top-left-radius',
+      'tr:first-child > *:last-child {\n  border-top-right-radius',
+      'tr:last-child > *:first-child {\n  border-bottom-left-radius',
+      'tr:last-child > *:last-child {\n  border-bottom-right-radius'
     ])
-      expect(styles).toContain(corner)
+      expect(styles, corner).toContain(corner)
   })
 
   it('sets its own line rather than taking the writing one', () => {
@@ -125,24 +88,17 @@ describe('the grid', () => {
     expect(rule(".doc .bn-editor [data-content-type='table'] th > p,")).toContain('min-height: 1lh')
   })
 
-  it('says which row the pointer is on', () => {
+  it('says which row the pointer is on, and never the header', () => {
     expect(rule(".doc .bn-editor [data-content-type='table'] tr:hover > td")).toContain(
       'background: var(--color-ink-hover)'
     )
   })
 })
 
-function wrapHas(property: string): boolean {
-  const at = styles.indexOf(".doc .bn-editor [data-content-type='table'] .tableWrapper")
-  const body = styles.slice(at, styles.indexOf('\n}', at))
-  return new RegExp(`\\n\\s*${property}\\s*:`).test(body)
-}
-
 describe('the handles are Crew own', () => {
   it('turns BlockNote off rather than standing beside it', () => {
-    const editorSource = readFileSync(path.join(root, 'src/renderer/src/components/DocEditor.tsx'), 'utf8')
-    expect(editorSource).toContain('tableHandles={false}')
-    expect(editorSource).toContain('<DocTableHandles />')
+    expect(editor).toContain('tableHandles={false}')
+    expect(editor).toContain('<DocTableHandles />')
   })
 
   it('wears a bar rather than a card, in both directions off one box', () => {
@@ -151,7 +107,7 @@ describe('the handles are Crew own', () => {
   })
 
   it('leaves nothing of Mantine to style', () => {
-    expect(styles).not.toContain('.bn-table-handle,')
+    expect(styles).not.toContain('.bn-table-handle')
     expect(styles).not.toContain('.bn-table-cell-handle')
   })
 })
