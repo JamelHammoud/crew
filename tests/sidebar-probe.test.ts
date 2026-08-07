@@ -515,6 +515,27 @@ describe('the sidebar', () => {
     expect(screen.getByRole('button', { name: 'Remove' })).toBeTruthy()
     expect(screen.queryByRole('button', { name: 'Stop project' })).toBeNull()
     expect(screen.queryByRole('button', { name: 'Remove from the list' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Copy link' })).toBeNull()
+  })
+
+  it('copies the link off a crew somebody was invited to, from the row it stands on', async () => {
+    const written: string[] = []
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText: (text: string) => (written.push(text), Promise.resolve()) }
+    })
+    joins = [{ folder: TWO, name: 'Jamel', link: LINK, joinedAt: 3 }]
+    await act(async () => {
+      await usePlaces.getState().load()
+    })
+    render(Sidebar())
+
+    fireEvent.contextMenu(screen.getByText('192.0.2.10:2739'))
+    await act(async () => {
+      fireEvent.click(await screen.findByRole('button', { name: 'Copy link' }))
+    })
+
+    expect(written).toEqual([LINK])
   })
 
   it('keeps that name after the list is read again, and gives it back when it is blanked', async () => {
