@@ -738,7 +738,9 @@ textarea:placeholder-shown {
     rgb(0 0 0 / 0.003) 92.857%,
     rgb(0 0 0 / 0) 100%
   );
+}
 
+:root {
   --scrim-ramp-x: linear-gradient(
     to left,
     #000 0%,
