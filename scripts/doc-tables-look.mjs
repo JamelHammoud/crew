@@ -400,6 +400,17 @@ app.whenReady().then(async () => {
   } catch (e) {
     console.log('SEEN ' + JSON.stringify({ failed: String(e && e.stack) }))
   }
+  try {
+    await win.webContents.executeJavaScript('document.documentElement.classList.remove("light"), true')
+    await wait(400)
+    const shot = async name => {
+      const png = await win.webContents.capturePage()
+      await writeFile(OUT + '-' + name + '.png', png.toPNG())
+    }
+    console.log('DRAG ' + JSON.stringify(await dragPass(win, shot)))
+  } catch (e) {
+    console.log('DRAG ' + JSON.stringify({ failed: String(e && e.stack) }))
+  }
   app.exit(0)
 })`
 
