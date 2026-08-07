@@ -253,6 +253,8 @@ try {
       console.log(
         `  row ${read.row.box.w}x${read.row.box.h} at ${read.row.box.x},${read.row.box.y}, shows ${read.row.shows}, gap ${read.row.gap}, placed ${read.row.at}`
       )
+  if (read.scrim)
+    console.log(`  scrim: paint ${read.scrim.paint}, inset ${read.scrim.inset}, z ${read.scrim.z}, mask ${read.scrim.mask}`)
     say('select', read.select)
     say('copy', read.copy)
     console.log(`  ${read.options} languages, picked "${read.picked}"`)
