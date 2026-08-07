@@ -2,6 +2,16 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
+import {
+  mendDocTableRows,
+  readDocTableAligns,
+  readDocTableWidths,
+  stripDocTableMarks,
+  writeDocTableAligns,
+  writeDocTableWidths
+} from '../src/shared/docTables'
+
+const TABLE = '| a | b |\n| --- | --- |\n| c | d |'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const read = (file: string) => readFileSync(path.join(root, file), 'utf8')

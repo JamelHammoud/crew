@@ -7,7 +7,8 @@ import { withCopy } from './docCodeCopy'
 export const docSchema = BlockNoteSchema.create({
   blockSpecs: {
     ...defaultBlockSpecs,
-    codeBlock: withCopy((
+    codeBlock: withCopy(
+      withAliases(
         createCodeBlockSpec({
           defaultLanguage: 'text',
           supportedLanguages: CODE_LANGUAGES,

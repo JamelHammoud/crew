@@ -1569,11 +1569,22 @@ textarea:placeholder-shown {
   position: absolute;
   top: 12px;
   right: 12px;
+  isolation: isolate;
   display: flex;
   align-items: center;
   gap: 2px;
   opacity: 0;
   transition: opacity 0.3s 1s;
+}
+
+.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div::before {
+  content: '';
+  position: absolute;
+  inset: -4px -12px -4px -40px;
+  z-index: -1;
+  background: var(--color-ink-850);
+  mask-image: var(--scrim-ramp-x);
+  pointer-events: none;
 }
 
 .doc .bn-editor .bn-block-content[data-content-type='codeBlock']:hover > div,
