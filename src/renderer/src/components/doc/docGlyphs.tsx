@@ -163,6 +163,15 @@ export const TableGlyph = mark(
   </>
 )
 
+export const TableHeaderGlyph = mark(
+  <>
+    <rect {...BLOCK} />
+    <path d="M3.4 9.6h17.2" />
+    <path d="M12 9.6v10" />
+    <path d="M3.4 9.6V7.2a2.8 2.8 0 0 1 2.8-2.8h11.6a2.8 2.8 0 0 1 2.8 2.8v2.4Z" fill="currentColor" stroke="none" />
+  </>
+)
+
 // One hill, and it runs off the frame at both ends rather than standing inside
 // it: a picture is a view of something larger, and a peak that stops short of
 // the edges reads as a triangle in a box. The three peaks it had before were a
