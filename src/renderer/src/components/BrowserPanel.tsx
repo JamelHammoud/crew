@@ -393,6 +393,19 @@ function PanelOpens({ opens }: { opens: PanelOpen[] }) {
   )
 }
 
+function Favicon({ src }: { src: string }) {
+  const [broken, setBroken] = useState(false)
+  if (broken) return <GlobeGlyph className="w-4 h-4 shrink-0" />
+  return (
+    <img
+      src={src}
+      alt=""
+      className="w-4 h-4 shrink-0 rounded-sm"
+      onError={() => setBroken(true)}
+    />
+  )
+}
+
 function TabPill({
   tab,
   active,
