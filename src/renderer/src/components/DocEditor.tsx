@@ -138,6 +138,7 @@ export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: 
           emojiPicker={false}
           sideMenu={false}
           filePanel={false}
+          tableHandles={false}
         >
           <FormattingToolbarController formattingToolbar={DocToolbar} />
           <SuggestionMenuController
