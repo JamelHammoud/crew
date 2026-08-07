@@ -231,8 +231,10 @@ describe('what BlockNote draws for itself wears Crew colours', () => {
     expect(rule('.doc .bn-table-drop-cursor')).toContain('background-color: var(--color-fg)')
   })
 
-  it('scrolls a wide table inside its own box rather than pushing the writing sideways', () => {
-    expect(rule(WRAPPER)).toContain('overflow-x: auto')
+  it('keeps a wide table scrolling inside its own box rather than pushing the writing sideways', () => {
+    expect(rule(WRAPPER)).toContain('min-width: 0')
+    expect(rule(WRAPPER)).toContain('overscroll-behavior-x: contain')
+    expect(rule(SEL)).toContain('min-width: 0')
     expect(read('src/renderer/src/views/Docs.tsx')).toContain('overflow-x-hidden')
   })
 })
