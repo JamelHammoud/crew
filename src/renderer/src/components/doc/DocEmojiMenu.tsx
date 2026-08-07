@@ -1,10 +1,9 @@
 import type { BlockNoteEditor } from '@blocknote/core'
-import { useBlockNoteEditor, type SuggestionMenuProps } from '@blocknote/react'
-import { useEffect, useRef } from 'react'
+import type { SuggestionMenuProps } from '@blocknote/react'
 import Emoji from '../Emoji'
 import { searchEmoji, type EmojiEntry } from '../emojiData'
 import { rememberEmoji } from '../emojiRecents'
-import { bringInto } from '../scrollInto'
+import { useDocMenu } from './docMenu'
 
 const MATCHES = 9
 
