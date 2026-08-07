@@ -138,6 +138,10 @@ const READ = \`(() => {
     block: { box: box(block), paint: getComputedStyle(block).backgroundColor, radius: getComputedStyle(block).borderTopLeftRadius },
     pre: { box: box(pre), pad: getComputedStyle(pre).padding, font: getComputedStyle(pre).fontSize + '/' + getComputedStyle(pre).lineHeight },
     row: row ? { box: box(row), shows: getComputedStyle(row).opacity, gap: getComputedStyle(row).gap, at: getComputedStyle(row).top + ' / ' + getComputedStyle(row).right } : null,
+    scrim: row ? (() => {
+      const s = getComputedStyle(row, '::before')
+      return { paint: s.backgroundColor, mask: (s.maskImage || s.webkitMaskImage || '').slice(0, 48), inset: s.inset, z: s.zIndex }
+    })() : null,
     select: read(select),
     copy: read(copy),
     options: select ? select.options.length : 0,
