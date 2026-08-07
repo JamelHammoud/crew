@@ -141,6 +141,23 @@ describe('the agent standing on the chat composer', () => {
     expect(screen.getByLabelText('Stop sending to Kimi')).toBeTruthy()
   })
 
+  it('carries the plus from its rows to the faces in one movement', () => {
+    open()
+    fireEvent.click(screen.getByLabelText('Add to your message'))
+
+    const box = document.querySelector('.glass.fixed > div') as HTMLElement
+    expect(box.className).toContain('transition-[height,width]')
+    expect((box.firstElementChild as HTMLElement).className).toContain('w-max')
+    expect((box.firstElementChild as HTMLElement).className).not.toContain('animate-screen')
+
+    fireEvent.click(screen.getByText('Default agent'))
+
+    const arriving = box.firstElementChild as HTMLElement
+    expect(arriving.className).toContain('animate-screen')
+    expect(arriving.textContent).toContain('Bubbles')
+    expect(screen.queryByText('Upload a file')).toBeNull()
+  })
+
   it('offers nobody to pick with nobody here', () => {
     open([agent('ali/away', 'Away', 'offline')])
 
