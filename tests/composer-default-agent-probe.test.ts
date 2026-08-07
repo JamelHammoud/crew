@@ -151,10 +151,10 @@ describe('the agent standing on the chat composer', () => {
     open()
     pick('Bubbles')
 
-    useCrew.setState({ place: 'project:/tmp/two' })
+    act(() => useCrew.setState({ place: 'project:/tmp/two' }))
     expect(screen.queryByLabelText('Stop sending to Bubbles')).toBeNull()
 
-    useCrew.setState({ place: PLACE })
+    act(() => useCrew.setState({ place: PLACE }))
     expect(screen.getByLabelText('Stop sending to Bubbles')).toBeTruthy()
   })
 })
