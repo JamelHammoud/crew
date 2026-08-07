@@ -13,7 +13,7 @@ const resolve = createRequire(path.join(root, 'package.json')).resolve
 const TEXT = [
   'A paragraph of ordinary writing above the block.',
   '',
-  '```ts',
+  '```typescript',
   'export function greet(name: string) {',
   '  return `Hello, ${name}`',
   '}',
@@ -83,6 +83,8 @@ const READ = \`(() => {
     preStyle: block && block.querySelector('pre') ? block.querySelector('pre').getAttribute('style') : null,
     pickText: pick && pick.value,
     pickColor: paint(pick) && paint(pick).color,
+    inkAtBlock: getComputedStyle(block).getPropertyValue('--color-ink-850'),
+    fgAtBlock: getComputedStyle(block).getPropertyValue('--color-fg-secondary'),
     chain: (() => {
       const seen = []
       let at = block
