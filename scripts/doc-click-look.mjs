@@ -29,6 +29,12 @@ const TEXT = [
   '2. second',
   '',
   '> a quote to read',
+  '',
+  '- a bullet long enough that it wraps onto a second line in the writing column, which is what makes the end of a line a different place from the end of the block',
+  '',
+  '```ts',
+  'const one = 1',
+  '```',
   ''
 ].join('\n')
 
@@ -113,6 +119,12 @@ app.whenReady().then(async () => {
   try {
     await win.loadFile(path.join(__dirname, 'dist/index.html'))
     await wait(1800)
+    await win.webContents.executeJavaScript(`(() => {
+      const rows = [...document.querySelectorAll('.bn-block-content[data-content-type="paragraph"]')]
+      if (rows[0]) rows[0].setAttribute('data-text-alignment', 'center')
+      if (rows[1]) rows[1].setAttribute('data-text-alignment', 'right')
+      return true
+    })()`)
     const all = []
     for (const [name, css] of TRIES) {
       await win.webContents.executeJavaScript(
@@ -130,7 +142,39 @@ app.whenReady().then(async () => {
         const caret = await win.webContents.executeJavaScript(CARET)
         seen.push({ ...row, caret })
       }
-      all.push({ name, seen })
+      const furniture = await win.webContents.executeJavaScript(`(() => {
+        const out = []
+        for (const row of document.querySelectorAll('.bn-block-content')) {
+          const box = row.getBoundingClientRect()
+          const kid = row.firstElementChild
+          const ink = kid ? kid.getBoundingClientRect() : null
+          out.push({
+            kind: row.getAttribute('data-content-type'),
+            align: row.getAttribute('data-text-alignment') || '',
+            says: (row.textContent || '').trim().slice(0, 20),
+            tall: Math.round(box.height),
+            textAlign: getComputedStyle(row).textAlign,
+            inkLeft: ink ? Math.round(ink.left - box.left) : null,
+            inkWide: ink ? Math.round(ink.width) : null,
+            rowWide: Math.round(box.width)
+          })
+        }
+        const empty = document.querySelector('.bn-block-content:has(.ProseMirror-trailingBreak:only-child)')
+        let hint = null
+        if (empty) {
+          const after = getComputedStyle(empty, '::after')
+          const kid = empty.firstElementChild
+          hint = {
+            content: after.content.slice(0, 40),
+            width: after.width,
+            kidWide: kid ? Math.round(kid.getBoundingClientRect().width) : null,
+            rowWide: Math.round(empty.getBoundingClientRect().width),
+            tall: Math.round(empty.getBoundingClientRect().height)
+          }
+        }
+        return { furniture: out, hint }
+      })()`)
+      all.push({ name, seen, ...furniture })
     }
     console.log('SEEN ' + JSON.stringify(all))
   } catch (e) {
@@ -186,7 +230,7 @@ try {
   await compile(dir)
   const all = await run(dir)
   if (all.failed) throw new Error(all.failed)
-  all.forEach(({ name, seen }) => {
+  all.forEach(({ name, seen, furniture, hint }) => {
     console.log(`\n== ${name}`)
     seen.forEach(read => {
       const caret = read.caret
@@ -194,6 +238,12 @@ try {
       const where = caret ? `${caret.at} of ${caret.of}` : 'nowhere'
       console.log(`  ${read.kind.padEnd(18)} "${read.says.slice(0,26).padEnd(26)}" tall ${String(read.tall).padStart(3)} slack ${String(read.slack).padStart(4)} ${read.direct ? 'own' : ' - '} ${read.hint.padEnd(22)} -> ${where.padEnd(10)} ${end}`)
     })
+    console.log('  -- alignment')
+    furniture.filter(f => f.align).forEach(f => {
+      console.log(`     ${f.align.padEnd(7)} text-align ${f.textAlign.padEnd(7)} ink ${f.inkWide} wide, ${f.inkLeft} in, row ${f.rowWide}`)
+    })
+    console.log('  -- placeholder on the empty block')
+    console.log(hint ? `     ${hint.content} width ${hint.width}, block ${hint.kidWide} of ${hint.rowWide}, ${hint.tall} tall` : '     none showing')
   })
 } finally {
   await rm(dir, { recursive: true, force: true })
