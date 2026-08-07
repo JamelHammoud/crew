@@ -132,6 +132,11 @@ const HINT = \`(() => {
   return {
     says: after.content.slice(0, 32),
     kidLeft: Math.round(kid.left - box.left),
+    hintLeft: (() => {
+      const r = document.createRange()
+      r.selectNodeContents(empty)
+      return Math.round(r.getBoundingClientRect().width)
+    })(),
     kidWide: Math.round(kid.width),
     rowWide: Math.round(box.width),
     tall: Math.round(box.height)
@@ -173,6 +178,13 @@ app.whenReady().then(async () => {
           'return true })()'
       )
       await wait(200)
+      // The placeholder only paints on the block the caret is in, so stand in it.
+      const empty = (await win.webContents.executeJavaScript(ROWS)).find(r => r.says === '(empty)')
+      if (empty) {
+        win.webContents.sendInputEvent({ type: 'mouseDown', x: empty.x, y: empty.y, button: 'left', clickCount: 1 })
+        win.webContents.sendInputEvent({ type: 'mouseUp', x: empty.x, y: empty.y, button: 'left', clickCount: 1 })
+        await wait(150)
+      }
       const hint = await win.webContents.executeJavaScript(HINT)
       const align = await win.webContents.executeJavaScript(ALIGN)
       const rows = await win.webContents.executeJavaScript(ROWS)
