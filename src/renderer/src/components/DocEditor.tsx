@@ -17,6 +17,7 @@ import { docFence } from './doc/docFence'
 import DocSideMenu from './doc/DocSideMenu'
 import { DocSlashMenu, docSlashItems } from './doc/DocSlashMenu'
 import { docDictionary, docSchema } from './doc/docSchema'
+import DocTableHandles from './doc/DocTableHandles'
 import DocToolbar from './doc/DocToolbar'
 import { localizeDoc, relativizeDoc, uploadImage } from './images'
 
