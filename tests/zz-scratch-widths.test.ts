@@ -11,24 +11,28 @@ const { BlockNoteEditor } = await import('@blocknote/core')
 const { docSchema } = await import('../src/renderer/src/components/doc/docSchema')
 
 const editor = () => BlockNoteEditor.create({ schema: docSchema as never }) as never as any
+const TABLE = '| a | b |\n| --- | --- |\n| c | d |'
 
-describe('probe', () => {
-  it('parses a comment with no blank line', () => {
-    const two = editor()
-    const md = 'intro\n\n<!-- crew:cols 200 90 -->\n| a | b |\n| --- | --- |\n| c | d |\n\nafter\n'
-    const blocks = two.tryParseMarkdownToBlocks(md)
-    console.log('TYPES>>>' + blocks.map((b: any) => b.type).join(',') + '<<<')
-    console.log('WIDTHS>>>' + JSON.stringify(blocks.find((b: any) => b.type === 'table')?.content?.columnWidths) + '<<<')
-    expect(1).toBe(1)
+const shape = (md: string) => {
+  const e = editor()
+  const blocks = e.tryParseMarkdownToBlocks(md)
+  return blocks.map((b: any) => b.type + (b.content?.rows ? `(${b.content.rows.length})` : '')).join(',')
+}
+
+describe('placement', () => {
+  it('A comment then blank then table, in context', () => {
+    console.log('A>>>' + shape(`intro\n\n<!-- crew:cols 200 90 -->\n\n${TABLE}\n\nafter\n`) + '<<<')
   })
-
-  it('accepts widths set back onto a parsed table', () => {
-    const two = editor()
-    const blocks = two.tryParseMarkdownToBlocks('| a | b |\n| --- | --- |\n| c | d |\n')
-    ;(blocks[0] as any).content.columnWidths = [200, 90]
-    two.replaceBlocks(two.document, blocks)
-    console.log('AFTER>>>' + JSON.stringify(two.document[0].content.columnWidths) + '<<<')
-    console.log('REMD>>>\n' + two.blocksToMarkdownLossy(two.document) + '<<<')
-    expect(1).toBe(1)
+  it('B table then blank then comment', () => {
+    console.log('B>>>' + shape(`intro\n\n${TABLE}\n\n<!-- crew:cols 200 90 -->\n\nafter\n`) + '<<<')
+  })
+  it('C two tables each with a comment', () => {
+    console.log('C>>>' + shape(`<!-- crew:cols 200 90 -->\n\n${TABLE}\n\n<!-- crew:cols 50 60 -->\n\n${TABLE}\n`) + '<<<')
+  })
+  it('D comment straight after a heading', () => {
+    console.log('D>>>' + shape(`# Head\n\n<!-- crew:cols 200 90 -->\n\n${TABLE}\n`) + '<<<')
+  })
+  it('E comment inside a list item followed by a table', () => {
+    console.log('E>>>' + shape(`- one\n\n<!-- crew:cols 200 90 -->\n\n${TABLE}\n`) + '<<<')
   })
 })
