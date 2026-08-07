@@ -79,6 +79,7 @@ export default function Chat() {
   const slash = useSlashCommands(text, write, takeCommand, inputRef, offered)
   const scrollRef = useRef<HTMLDivElement>(null)
   const place = useCrew(s => s.place)
+  const aimed = useDefaultAgents(s => s.aimed[place] ?? null)
   const { scrolledUp, atBottom, onScroll, jumpToBottom, follow } = useStickToBottom(scrollRef, `${place}/${CHAT_KEY}`)
   const moreHistory = useCrew(s => s.moreHistory)
   const loadingHistory = useCrew(s => s.loadingHistory)
