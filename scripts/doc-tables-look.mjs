@@ -179,7 +179,16 @@ const READ = \`(() => {
       if (!at) return null
       const style = getComputedStyle(at)
       return { box: box(at), paint: style.backgroundColor, radius: style.borderTopLeftRadius }
-    })()
+    })(),
+    wide: wide
+      ? {
+          box: box(wide),
+          scrollW: round(wide.scrollWidth),
+          clientW: round(wide.clientWidth),
+          table: round(wide.querySelector('table').getBoundingClientRect().width),
+          corner: getComputedStyle(wide.querySelector('tr').firstElementChild).borderTopLeftRadius
+        }
+      : null
   }
 })()\`
 

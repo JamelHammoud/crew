@@ -29,7 +29,7 @@ export default function DefaultAgentChip() {
       }
       label={agent.label}
       removeLabel={`Stop sending to ${agent.label}`}
-      onRemove={() => aim(place, null)}
+      onRemove={() => aim(null)}
     />
   )
 }
