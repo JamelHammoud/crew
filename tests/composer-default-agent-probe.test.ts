@@ -144,7 +144,7 @@ describe('the agent standing on the chat composer', () => {
     expect(useDefaultAgents.getState().aimed[PLACE]).toBe('ali/bubbles')
   })
 
-  it('is one place's own', () => {
+  it('belongs to the project it was picked in', () => {
     open()
     pick('Bubbles')
 
