@@ -160,6 +160,7 @@ export default function Composer({
   onStop,
   sendLabel = 'Send',
   huddle,
+  defaultAgent,
   replyTo,
   onCancelReply,
   chips,
@@ -176,6 +177,7 @@ export default function Composer({
   onStop?: () => void
   sendLabel?: string
   huddle?: boolean
+  defaultAgent?: boolean
   replyTo?: ThreadItem
   onCancelReply?: () => void
   chips?: ReactNode
