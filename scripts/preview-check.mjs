@@ -127,7 +127,7 @@ async function stage() {
   })
   await writeFile(path.join(dir, 'host.html'), HOST)
   await writeFile(path.join(dir, 'main.mjs'), MAIN)
-  return { dir, page: path.join(site, 'index.html') }
+  return { dir, page: path.join(site, 'index.html'), model: path.join(site, 'model.html') }
 }
 
 function run(dir, page, words) {
