@@ -74,49 +74,50 @@ export default function AddMenu({
         <ScreenSwap screen={screen} depth={DEPTH[screen]} width>
           {screen === 'menu' ? (
             <div className="p-1.5">
-            {!full && (
-              <>
-                <MenuItem
-                  icon={<UploadGlyph />}
-                  label="Upload a file"
-                  onClick={() => {
-                    setOpen(false)
-                    choose()
-                  }}
-                />
-                <MenuItem icon={<GifGlyph />} label="Pick a GIF" onClick={() => setScreen('gif')} />
-              </>
-            )}
-            {aiming && (
-              <>
-                {!full && <MenuDivider />}
-                <MenuItem
-                  icon={<PeopleGlyph />}
-                  label="Default agent"
-                  into
-                  onClick={() => setScreen('agent')}
-                />
-              </>
-            )}
-            {calling && (
-              <>
-                {(!full || aiming) && <MenuDivider />}
-                <MenuItem
-                  icon={<SignalGlyph />}
-                  label={live ? 'Join the huddle' : 'Start a huddle'}
-                  onClick={() => {
-                    setOpen(false)
-                    void join()
-                  }}
-                />
-              </>
-            )}
-          </div>
-        ) : screen === 'agent' ? (
-          <DefaultAgentPicker onPick={() => setOpen(false)} />
-        ) : (
-          <GifPicker onPick={pick} />
-        )}
+              {!full && (
+                <>
+                  <MenuItem
+                    icon={<UploadGlyph />}
+                    label="Upload a file"
+                    onClick={() => {
+                      setOpen(false)
+                      choose()
+                    }}
+                  />
+                  <MenuItem icon={<GifGlyph />} label="Pick a GIF" onClick={() => setScreen('gif')} />
+                </>
+              )}
+              {aiming && (
+                <>
+                  {!full && <MenuDivider />}
+                  <MenuItem
+                    icon={<PeopleGlyph />}
+                    label="Default agent"
+                    into
+                    onClick={() => setScreen('agent')}
+                  />
+                </>
+              )}
+              {calling && (
+                <>
+                  {(!full || aiming) && <MenuDivider />}
+                  <MenuItem
+                    icon={<SignalGlyph />}
+                    label={live ? 'Join the huddle' : 'Start a huddle'}
+                    onClick={() => {
+                      setOpen(false)
+                      void join()
+                    }}
+                  />
+                </>
+              )}
+            </div>
+          ) : screen === 'agent' ? (
+            <DefaultAgentPicker onPick={() => setOpen(false)} />
+          ) : (
+            <GifPicker onPick={pick} />
+          )}
+        </ScreenSwap>
       </Popover>
     </>
   )
