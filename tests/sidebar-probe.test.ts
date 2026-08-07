@@ -60,10 +60,13 @@ const project = (folder: string) => ({
   openedAt: folder === ONE ? 2 : 1
 })
 
+const LINK = 'crew://192.0.2.10:2739/a1b2c3'
+
 const asked: string[] = []
 const joined: Array<[string, string, string]> = []
 let picked: string | null = null
 let live: LivePlace[] = []
+let joins: RecentJoin[] = []
 
 const sessionFor = (folder: string): CurrentSession => ({
   wsUrl: `ws://127.0.0.1:2739/ws`,
