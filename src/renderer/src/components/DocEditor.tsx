@@ -34,7 +34,7 @@ export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: 
     const editor = useCreateBlockNote({
       schema: docSchema,
       dictionary: docDictionary,
-      extensions: [docEmoji],
+      extensions: [docEmoji, docFence],
       disableExtensions: ['previousBlockType'],
       dropCursor: { width: 2, color: false },
       tables: { headers: true },
