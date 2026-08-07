@@ -35,7 +35,7 @@ export default function HtmlView({
     return () => {
       alive = false
     }
-  }, [id, path, text])
+  }, [id, path, text, partial])
 
   useEffect(() => {
     return () => {
