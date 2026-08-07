@@ -253,6 +253,24 @@ export function mentionsIn(
   return ids
 }
 
+// Who a message goes to when the words name nobody. It answers typing the same
+// name on every message, so anybody named outright beats it: what somebody
+// wrote now is the whole of who they meant.
+//
+// An agent that is not here takes nothing, which is what writing its name
+// already does, so the words stay a message in the chat rather than opening a
+// thread nobody is on the other end of. The chip says whether they are here, so
+// nothing about that has to be read back afterwards.
+export function aimOf(
+  text: string,
+  agents: Array<Pick<PooledAgent, 'id' | 'label' | 'status'>>,
+  standing: string | null | undefined
+): string[] | undefined {
+  if (!standing) return undefined
+  if (mentionsIn(text, agents).length > 0) return undefined
+  return agents.some(agent => agent.id === standing && agent.status !== 'offline') ? [standing] : undefined
+}
+
 // What a written mention pointed at: the agent's id, plus the name it went out
 // under. The id is what the mention means, the name is only how it was spelled.
 export interface AgentMentionRef {
