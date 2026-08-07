@@ -57,8 +57,9 @@ export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: 
     const timer = useRef<number | null>(null)
 
     const toMarkdown = useCallback(() => {
-      const markdown = relativizeDoc(editor.blocksToMarkdownLossy(editor.document), httpBaseRef.current)
-      return writeDocTableWidths(markdown, tableWidthsOf(editor.document as DocTableBlock[]))
+      const blocks = editor.document as DocTableBlock[]
+      const markdown = mendDocTableRows(relativizeDoc(editor.blocksToMarkdownLossy(editor.document), httpBaseRef.current))
+      return writeDocTableWidths(writeDocTableAligns(markdown, tableAlignsOf(blocks)), tableWidthsOf(blocks))
     }, [editor])
     const toMarkdownRef = useRef(toMarkdown)
     toMarkdownRef.current = toMarkdown
