@@ -94,21 +94,38 @@ const CARET = \`(() => {
   return { at: sel.anchorOffset, of: text.length, in: text.slice(0, 28) }
 })()\`
 
+const TRIES = [
+  ['as it stands', ''],
+  ['bullet mark overflow visible', '.doc .bn-editor .bn-block-content[data-content-type="bulletListItem"]::before { overflow: visible; }'],
+  ['bullet mark no colour', '.doc .bn-editor .bn-block-content[data-content-type="bulletListItem"]::before { color: inherit; }'],
+  ['inline content fills the row', '.doc .bn-editor .bn-block-content > .bn-inline-content { flex: 1 1 auto; min-width: 0; }']
+]
+
 app.whenReady().then(async () => {
   const win = new BrowserWindow({ width: ${WIDTH}, height: ${HEIGHT}, show: true, backgroundColor: '#141414' })
   try {
     await win.loadFile(path.join(__dirname, 'dist/index.html'))
     await wait(1800)
-    const rows = await win.webContents.executeJavaScript(ROWS)
-    const seen = []
-    for (const row of rows) {
-      win.webContents.sendInputEvent({ type: 'mouseDown', x: row.x, y: row.y, button: 'left', clickCount: 1 })
-      win.webContents.sendInputEvent({ type: 'mouseUp', x: row.x, y: row.y, button: 'left', clickCount: 1 })
-      await wait(120)
-      const caret = await win.webContents.executeJavaScript(CARET)
-      seen.push({ ...row, caret })
+    const all = []
+    for (const [name, css] of TRIES) {
+      await win.webContents.executeJavaScript(
+        'document.getElementById("try")?.remove();' +
+        (css ? 'const s=document.createElement("style");s.id="try";s.textContent=' + JSON.stringify(css) + ';document.head.appendChild(s);' : '') +
+        'true'
+      )
+      await wait(200)
+      const rows = await win.webContents.executeJavaScript(ROWS)
+      const seen = []
+      for (const row of rows) {
+        win.webContents.sendInputEvent({ type: 'mouseDown', x: row.x, y: row.y, button: 'left', clickCount: 1 })
+        win.webContents.sendInputEvent({ type: 'mouseUp', x: row.x, y: row.y, button: 'left', clickCount: 1 })
+        await wait(90)
+        const caret = await win.webContents.executeJavaScript(CARET)
+        seen.push({ ...row, caret })
+      }
+      all.push({ name, seen })
     }
-    console.log('SEEN ' + JSON.stringify(seen))
+    console.log('SEEN ' + JSON.stringify(all))
   } catch (e) {
     console.log('SEEN ' + JSON.stringify({ failed: String(e && e.stack) }))
   }
