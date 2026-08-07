@@ -69,7 +69,7 @@ app.whenReady().then(async () => {
   })
   await window.loadFile(path.join(import.meta.dirname, 'host.html'))
   const previews = new Previews()
-  const url = await previews.show('one', site, words)
+  const url = await previews.show('one', site, words === 'HELD' ? null : words)
   if (!url) throw new Error('the page was never stood up')
   const loaded = await window.webContents.executeJavaScript('window.show(' + JSON.stringify(url) + ')')
   if (loaded !== true) throw new Error('the page never loaded: ' + JSON.stringify(loaded))
