@@ -88,7 +88,7 @@ export default function AddMenu({
                 {!full && <MenuDivider />}
                 <MenuItem
                   icon={<PeopleGlyph />}
-                  label="Pick who takes it"
+                  label="Default agent"
                   into
                   onClick={() => setScreen('agent')}
                 />
