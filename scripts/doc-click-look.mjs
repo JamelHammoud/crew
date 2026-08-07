@@ -109,9 +109,9 @@ app.whenReady().then(async () => {
     const all = []
     for (const [name, css] of TRIES) {
       await win.webContents.executeJavaScript(
-        'document.getElementById("try")?.remove();' +
+        '(() => { document.getElementById("try")?.remove();' +
         (css ? 'const s=document.createElement("style");s.id="try";s.textContent=' + JSON.stringify(css) + ';document.head.appendChild(s);' : '') +
-        'true'
+        'return true })()'
       )
       await wait(200)
       const rows = await win.webContents.executeJavaScript(ROWS)
