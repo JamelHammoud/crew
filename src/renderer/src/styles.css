@@ -1357,7 +1357,7 @@ textarea:placeholder-shown {
   height: var(--doc-bullet);
   min-width: 0;
   padding: 0;
-  margin-top: calc(0.85em - var(--doc-bullet) / 2);
+  margin-top: calc(0.5lh - var(--doc-bullet) / 2);
   margin-left: calc(10px - var(--doc-bullet) / 2);
   margin-right: calc(14px - var(--doc-bullet) / 2);
   border: 0 solid var(--color-fg-muted);
