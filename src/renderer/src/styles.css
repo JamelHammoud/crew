@@ -1567,12 +1567,12 @@ textarea:placeholder-shown {
   position: static;
   opacity: 1;
   field-sizing: content;
-  padding: 3px 7px;
+  padding: 3px 6px;
   border-radius: 6px;
   font-family: var(--font-sans);
   font-size: 11px;
   line-height: 1.45;
-  color: var(--color-fg-faint);
+  color: var(--color-fg-muted);
   background: transparent;
   transition:
     color 0.15s,

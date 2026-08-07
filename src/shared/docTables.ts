@@ -31,6 +31,10 @@ export function readDocTableWidths(markdown: string): { text: string; widths: (n
   return { text: kept.join('\n'), widths }
 }
 
+export function stripDocTableMarks(markdown: string): string {
+  return readDocTableWidths(markdown).text
+}
+
 export function writeDocTableWidths(markdown: string, widths: (number | null)[][]): string {
   const lines = readDocTableWidths(markdown).text.split('\n')
   const starts = tableStarts(lines)
