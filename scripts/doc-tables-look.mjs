@@ -458,10 +458,80 @@ function run(dir) {
   })
 }
 
+function say(ok, step, what) {
+  console.log(`${ok ? 'PASS' : 'FAIL'}  ${step}. ${what}`)
+}
+
+function firstWidth(widths) {
+  const row = widths?.[0]
+  return Array.isArray(row) ? row[0] : undefined
+}
+
+function dragReport(drag) {
+  console.log('\nthe drag')
+  if (!drag) {
+    say(false, 0, 'the window never reached the drag pass at all')
+    return
+  }
+  if (drag.failed) {
+    say(false, 0, `the drag pass fell over: ${drag.failed}`)
+    return
+  }
+  const at = drag.found
+  console.log(
+    `  a ${at.columns} column table, header cells ${at.cells.join(', ')}, taking hold at ${Math.round(at.x)},${Math.round(at.y)} on the ${at.tag} border`
+  )
+  console.log(`  armed: handle ${drag.armed.handle}, cursor ${drag.armed.cursor}, editor found ${drag.armed.editor}`)
+  console.log(`  header cells mid drag ${drag.mid.join(', ')}`)
+  console.log(`  header cells after    ${drag.after.join(', ')}`)
+
+  const moved = Math.abs((drag.after[0] ?? 0) - (drag.found.cells[0] ?? 0))
+  say(moved > 4, 1, `the pointer really moved the border, by ${Math.round(moved)} of the ${drag.reach} it was dragged`)
+
+  const held = drag.document?.widths
+  console.log(`  editor.document columnWidths: ${JSON.stringify(held ?? drag.document)}`)
+  const width = firstWidth(held)
+  say(typeof width === 'number' && width > 0, 2, `the table carries a columnWidths, first column ${String(width)}`)
+
+  const markdown = drag.markdown || ''
+  console.log(`  the real save fired ${drag.saved.saves} time(s)`)
+  const composed = drag.composed?.markdown ?? null
+  say(
+    typeof drag.saved.text === 'string' && drag.saved.text.length > 0,
+    3,
+    drag.saved.text ? 'the real DocEditor save path ran and handed back markdown' : 'the real save path handed back nothing'
+  )
+  if (composed !== null && drag.saved.text && composed !== drag.saved.text)
+    console.log('  note: the composed save and the real save disagree')
+  console.log('  the markdown it wrote:')
+  for (const line of markdown.split('\n')) console.log(`    ${line}`)
+
+  const mark = markdown.split('\n').find(line => line.trim().startsWith(`<!-- ${WIDTHS_MARK}`))
+  say(!!mark, 4, mark ? `the markdown carries ${mark.trim()}` : 'the markdown carries no crew:cols line')
+  if (mark) console.log(`  numbers in it: ${mark.replace(/<!--\s*crew:cols\s*/, '').replace(/-->\s*$/, '').trim()}`)
+
+  const back = firstWidth(drag.back?.widths)
+  console.log(`  read back off the mark: ${JSON.stringify(drag.back?.marks)}`)
+  say(
+    typeof back === 'number' && back > 0 && Math.abs(back - (width ?? 0)) <= 1,
+    5,
+    `the load path put the width back, first column ${String(back)}`
+  )
+
+  const again = firstWidth(drag.remounted?.widths)
+  console.log(`  a fresh editor on that markdown: ${JSON.stringify(drag.remounted?.widths ?? drag.remounted)}`)
+  console.log(`  its header cells: ${drag.remountedWide?.join(', ')}`)
+  say(
+    typeof again === 'number' && again > 0 && Math.abs(again - (width ?? 0)) <= 1,
+    6,
+    `a fresh editor loaded from that markdown carries the width, first column ${String(again)}`
+  )
+}
+
 const dir = await stage()
 try {
   await compile(dir)
-  const seen = await run(dir)
+  const { seen, drag } = await run(dir)
   if (seen.failed) throw new Error(seen.failed)
   for (const [theme, read] of Object.entries(seen)) {
     if (read.failed) throw new Error(read.failed)
