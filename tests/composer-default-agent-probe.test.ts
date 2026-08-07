@@ -15,6 +15,19 @@ class TestResizeObserver {
 
 global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
 
+// Somewhere for the choice to be kept, since this environment has none of its
+// own and the whole of what is being read is what survives a window.
+const kept = new Map<string, string>()
+Object.defineProperty(globalThis, 'localStorage', {
+  configurable: true,
+  value: {
+    getItem: (key: string) => kept.get(key) ?? null,
+    setItem: (key: string, value: string) => void kept.set(key, value),
+    removeItem: (key: string) => void kept.delete(key),
+    clear: () => kept.clear()
+  }
+})
+
 const PLACE = 'project:/tmp/one'
 
 const agent = (id: string, label: string, status: PooledAgent['status'] = 'idle'): PooledAgent => ({
