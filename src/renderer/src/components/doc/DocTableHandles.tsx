@@ -95,6 +95,29 @@ function DocTableHandle({ orientation, hideOtherElements }: TableHandleProps) {
           label={row ? 'Add below' : 'Add right'}
           onClick={() => (row ? addRow('below') : addColumn('right'))}
         />
+        {!row && (
+          <>
+            <MenuDivider />
+            <MenuItem
+              icon={<AlignTextLeftGlyph />}
+              label="Align left"
+              checked={alignment === 'left'}
+              onClick={() => align('left')}
+            />
+            <MenuItem
+              icon={<AlignTextCenterGlyph />}
+              label="Align center"
+              checked={alignment === 'center'}
+              onClick={() => align('center')}
+            />
+            <MenuItem
+              icon={<AlignTextRightGlyph />}
+              label="Align right"
+              checked={alignment === 'right'}
+              onClick={() => align('right')}
+            />
+          </>
+        )}
         {row && index === 0 && (
           <>
             <MenuDivider />
