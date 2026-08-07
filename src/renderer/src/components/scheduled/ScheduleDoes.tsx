@@ -48,41 +48,42 @@ export default function ScheduleDoes({
       : null
   )
 
-  useEffect(() => {
-    const built = (): ToolAction | null => {
-      if (kind === 'prompt')
-        return ask.trim() ? (agentId ? { kind: 'prompt', text: ask, agentId } : { kind: 'prompt', text: ask }) : null
-      if (kind === 'post')
-        return post.trim() ? (agentId ? { kind: 'post', text: post, agentId } : { kind: 'post', text: post }) : null
-      if (kind === 'say') return say.trim() ? { kind: 'say', text: say } : null
-      if (kind === 'todo')
-        return task.trim() ? (agentId ? { kind: 'todo', text: task, agentId } : { kind: 'todo', text: task }) : null
-      if (kind === 'note') return page && line.trim() ? { kind: 'note', page, text: line } : null
-      if (kind === 'music') {
-        if (playlistId) return { kind: 'music', playlistId }
-        return trackId ? { kind: 'music', trackId } : null
-      }
-      return toolIds.length > 0 ? { kind: 'chain', toolIds } : null
-    }
-    onChange(built())
-  }, [kind, ask, post, say, task, line, page, trackId, playlistId, toolIds, agentId, onChange])
-
   const tracks = musicItems(uploads)
   const lists = [...MUSIC_SETS, ...playlists]
   const here = agentsHere(agents)
   const named = agents.find(agent => agent.id === agentId)
   const choices = named && !here.includes(named) ? [...here, named] : here
   const pages = Object.entries(docs)
+  const whoId = choices.some(one => one.id === agentId) ? (agentId as string) : ''
   const heldPage = pages.some(([key]) => key === page) ? page : ''
   const track = tracks.some(one => one.id === trackId) ? trackId : ''
   const list = lists.some(one => one.id === playlistId) ? playlistId : ''
   const playing = list ? `list:${list}` : track ? `track:${track}` : ''
 
+  useEffect(() => {
+    const built = (): ToolAction | null => {
+      if (kind === 'prompt')
+        return ask.trim() ? (whoId ? { kind: 'prompt', text: ask, agentId: whoId } : { kind: 'prompt', text: ask }) : null
+      if (kind === 'post')
+        return post.trim() ? (whoId ? { kind: 'post', text: post, agentId: whoId } : { kind: 'post', text: post }) : null
+      if (kind === 'say') return say.trim() ? { kind: 'say', text: say } : null
+      if (kind === 'todo')
+        return task.trim() ? (whoId ? { kind: 'todo', text: task, agentId: whoId } : { kind: 'todo', text: task }) : null
+      if (kind === 'note') return heldPage && line.trim() ? { kind: 'note', page: heldPage, text: line } : null
+      if (kind === 'music') {
+        if (list) return { kind: 'music', playlistId: list }
+        return track ? { kind: 'music', trackId: track } : null
+      }
+      return toolIds.length > 0 ? { kind: 'chain', toolIds } : null
+    }
+    onChange(built())
+  }, [kind, ask, post, say, task, line, heldPage, track, list, toolIds, whoId, onChange])
+
   const who = (label: string) => (
     <Select
       label={label}
       name={`${label} who`}
-      value={choices.some(one => one.id === agentId) ? (agentId as string) : ''}
+      value={whoId}
       options={[
         { value: '', label: 'Anyone', mark: <PeopleGlyph className="w-4 h-4" /> },
         ...choices.map(agent => ({
