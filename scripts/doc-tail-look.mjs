@@ -15,7 +15,8 @@ const HEIGHT = 900
 
 const DOCS = {
   code: { title: 'Ends on code', text: '# Ends on code\n\n```ts\nconst one = 1\n```\n' },
-  words: { title: 'Ends on words', text: '# Ends on words\n\nA paragraph and nothing after it.\n' }
+  words: { title: 'Ends on words', text: '# Ends on words\n\nA paragraph and nothing after it.\n' },
+  blank: { title: 'Ends on a blank line', text: '' }
 }
 
 function probeSource() {
