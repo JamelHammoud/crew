@@ -155,6 +155,7 @@ export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: 
             onItemClick={pick}
           />
           <SideMenuController sideMenu={DocSideMenu} />
+          <DocTableHandles />
         </BlockNoteView>
         <input
           ref={fileRef}
