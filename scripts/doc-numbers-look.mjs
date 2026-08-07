@@ -83,52 +83,25 @@ const READ = \`(() => {
   }
   const rows = [...document.querySelectorAll('.bn-block-content[data-content-type="numberedListItem"]')]
   if (!rows.length) return { failed: 'no numbered rows on the page' }
-  const gutters = rows.map(row => Math.round(parseFloat(getComputedStyle(row, '::before').width) * 100) / 100)
-  const relax = document.createElement('style')
-  relax.textContent = '.doc .bn-block-content[data-content-type="numberedListItem"]::before { min-width: 0 !important; padding-right: 0 !important }'
-  document.head.append(relax)
-  const ruler = document.createElement('span')
-  ruler.style.position = 'fixed'
-  ruler.style.visibility = 'hidden'
-  ruler.style.whiteSpace = 'pre'
-  document.body.append(ruler)
-  const paints = (row, text) => {
-    const mark = getComputedStyle(row, '::before')
-    ruler.style.fontFamily = mark.fontFamily
-    ruler.style.fontSize = mark.fontSize
-    ruler.style.fontWeight = mark.fontWeight
-    ruler.style.fontStyle = mark.fontStyle
-    ruler.style.letterSpacing = mark.letterSpacing
-    ruler.textContent = text
-    return ruler.getBoundingClientRect().width
-  }
   const ROMAN = [[10,'x'],[9,'ix'],[5,'v'],[4,'iv'],[1,'i']]
   const roman = n => ROMAN.reduce((out, [v, s]) => { while (n >= v) { out += s; n -= v } return out }, '')
   const alpha = n => { let out = ''; while (n > 0) { n -= 1; out = String.fromCharCode(97 + (n % 26)) + out; n = Math.floor(n / 26) } return out }
-  const read = rows.map((row, at) => {
+  const spell = { decimal: String, 'lower-alpha': alpha, 'lower-roman': roman }
+  return rows.map(row => {
     const mark = getComputedStyle(row, '::before')
-    const index = Number(row.dataset.index || 0)
-    const wide = parseFloat(mark.width)
-    const guesses = { decimal: String(index) + '.', 'lower-alpha': alpha(index) + '.', 'lower-roman': roman(index) + '.' }
-    let painted = 'unreadable'
-    let closest = Infinity
-    for (const [name, text] of Object.entries(guesses)) {
-      const off = Math.abs(paints(row, text) - wide)
-      if (off < closest) { closest = off; painted = name + ' (' + text + ')' }
-    }
+    const style = (/counter\\(doc-order,?\\s*([a-z-]*)\\)/.exec(mark.content) || [])[1] || 'decimal'
+    const counted = Number((/doc-order\\s+(-?\\d+)/.exec(getComputedStyle(row).counterReset) || [])[1])
     return {
       depth: depthOf(row),
       says: (row.textContent || '').trim().slice(0, 28),
-      index,
-      asks: mark.content,
-      paints: closest < 1.5 ? painted : 'none of them, ' + Math.round(wide) + 'px wide',
+      index: Number(row.dataset.index || 0),
+      counted: Number.isFinite(counted) ? counted : 'never read',
+      style,
+      paints: spell[style] ? spell[style](counted) + '.' : 'a style nothing here spells',
       ink: mark.color,
-      gutter: gutters[at]
+      gutter: Math.round(parseFloat(mark.width) * 100) / 100
     }
   })
-  ruler.remove()
-  relax.remove()
-  return read
 })()\`
 
 app.whenReady().then(async () => {
