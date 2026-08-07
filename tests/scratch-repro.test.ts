@@ -15,9 +15,11 @@ window.matchMedia = ((query: string) => ({
 const { BlockNoteEditor } = await import('@blocknote/core')
 const { docSchema } = await import('../src/renderer/src/components/doc/docSchema')
 
+const settle = (ms: number) => new Promise(done => setTimeout(done, ms))
+
 describe('repro', () => {
-  it('paints the select', () => {
-    for (const written of ['bash', 'ts', 'py', 'yml', 'sh', 'typescript', 'text', 'nonsense']) {
+  it('highlights an alias block', async () => {
+    for (const written of ['bash', 'shellscript', 'ts']) {
       const editor = BlockNoteEditor.create({ schema: docSchema as never }) as never as {
         document: unknown[]
         replaceBlocks: (a: unknown[], b: unknown[]) => void
@@ -27,10 +29,12 @@ describe('repro', () => {
       const host = document.createElement('div')
       document.body.append(host)
       editor.mount(host)
-      editor.replaceBlocks(editor.document, editor.tryParseMarkdownToBlocks(`\`\`\`${written}\nx\n\`\`\`\n`))
-      const select = host.querySelector('select') as HTMLSelectElement | null
-      console.log(written, '-> value', JSON.stringify(select?.value), 'index', select?.selectedIndex, 'text', JSON.stringify(select?.selectedOptions?.[0]?.text))
+      const code = written === 'ts' ? 'const one = 1' : 'echo "hi" | grep hi'
+      editor.replaceBlocks(editor.document, editor.tryParseMarkdownToBlocks(`\`\`\`${written}\n${code}\n\`\`\`\n`))
+      await settle(600)
+      const el = host.querySelector('[data-content-type="codeBlock"] code') as HTMLElement
+      console.log(written, '-> spans', el?.querySelectorAll('span').length, JSON.stringify(el?.innerHTML?.slice(0, 160)))
     }
     expect(true).toBe(true)
-  })
+  }, 20000)
 })
