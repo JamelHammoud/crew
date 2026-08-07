@@ -122,12 +122,12 @@ const READ = \`(() => {
       index,
       asks: mark.content,
       paints: closest < 1.5 ? painted : 'none of them, ' + Math.round(wide) + 'px wide',
-      ink: mark.color
+      ink: mark.color,
+      gutter: gutters[at]
     }
   })
   ruler.remove()
   relax.remove()
-  read.forEach(row => { row.gutter = 24 })
   return read
 })()\`
 
