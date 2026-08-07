@@ -14,23 +14,27 @@ window.matchMedia = ((query: string) => ({
 })) as typeof window.matchMedia
 
 const { BlockNoteEditor } = await import('@blocknote/core')
-const { docSchema, docDictionary } = await import('../src/renderer/src/components/doc/docSchema')
 const { docEmoji } = await import('../src/renderer/src/components/doc/docEmoji')
+const { docFence } = await import('../src/renderer/src/components/doc/docFence')
+const { docDictionary, docSchema } = await import('../src/renderer/src/components/doc/docSchema')
+
+type Block = { type: string; props: Record<string, unknown>; content: unknown }
 
 function stand() {
   const editor = BlockNoteEditor.create({
     schema: docSchema as never,
     dictionary: docDictionary as never,
-    extensions: [docEmoji] as never,
+    extensions: [docEmoji, docFence] as never,
     tables: { headers: true }
   })
   const box = document.createElement('div')
   document.body.append(box)
   editor.mount(box)
   return editor as never as {
-    document: Array<{ type: string; props: Record<string, unknown> }>
+    document: Block[]
     prosemirrorView: EditorView
-    unmount: () => void
+    blocksToMarkdownLossy: (blocks: unknown[]) => string
+    replaceBlocks: (a: unknown[], b: unknown[]) => void
   }
 }
 
@@ -42,34 +46,44 @@ function type(view: EditorView, text: string) {
   }
 }
 
-function enter(view: EditorView) {
-  const event = new KeyboardEvent('keydown', { key: 'Enter' })
-  view.someProp('handleKeyDown', run => run(view, event))
-}
+const text = (block: Block) =>
+  ((block.content ?? []) as Array<{ text?: string }>).map(part => part.text ?? '').join('')
 
 describe('doc fence', () => {
-  it('reports what a fence does today', () => {
-    const withSpace = stand()
-    type(withSpace.prosemirrorView, '``` ')
-    console.log('space:', JSON.stringify(withSpace.document.map(b => b.type)))
+  it('starts a code block on the third backtick', () => {
+    const doc = stand()
+    type(doc.prosemirrorView, '```')
+    expect(doc.document.map(block => block.type)).toEqual(['codeBlock'])
+    expect(text(doc.document[0])).toBe('')
+  })
 
-    const withEnter = stand()
-    type(withEnter.prosemirrorView, '```')
-    enter(withEnter.prosemirrorView)
-    console.log('enter:', JSON.stringify(withEnter.document.map(b => b.type)))
+  it('keeps typing inside the block it opened', () => {
+    const doc = stand()
+    type(doc.prosemirrorView, '```const a = 1')
+    expect(doc.document.map(block => block.type)).toEqual(['codeBlock'])
+    expect(text(doc.document[0])).toBe('const a = 1')
+    expect(doc.blocksToMarkdownLossy(doc.document)).toContain('```text\nconst a = 1\n```')
+  })
 
-    const withLang = stand()
-    type(withLang.prosemirrorView, '```ts ')
-    console.log('lang:', JSON.stringify(withLang.document.map(b => [b.type, b.props.language])))
+  it('still takes a language written after the backticks', () => {
+    const doc = stand()
+    type(doc.prosemirrorView, '```')
+    type(doc.prosemirrorView, 'ts')
+    expect(doc.document[0].props.language).toBe('text')
+  })
 
-    const bare = stand()
-    type(bare.prosemirrorView, '```')
-    console.log('bare:', JSON.stringify(bare.document.map(b => b.type)))
+  it('leaves backticks written inside a sentence alone', () => {
+    const doc = stand()
+    type(doc.prosemirrorView, 'write ``` for code')
+    expect(doc.document.map(block => block.type)).toEqual(['paragraph'])
+    expect(text(doc.document[0])).toBe('write ``` for code')
+  })
 
-    const mid = stand()
-    type(mid.prosemirrorView, 'see ``` ')
-    console.log('mid:', JSON.stringify(mid.document.map(b => b.type)))
-
-    expect(true).toBe(true)
+  it('leaves backticks written inside a code block alone', () => {
+    const doc = stand()
+    type(doc.prosemirrorView, '```')
+    type(doc.prosemirrorView, '```')
+    expect(doc.document.map(block => block.type)).toEqual(['codeBlock'])
+    expect(text(doc.document[0])).toBe('```')
   })
 })
