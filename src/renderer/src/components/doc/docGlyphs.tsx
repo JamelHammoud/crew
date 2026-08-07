@@ -172,6 +172,26 @@ export const TableHeaderGlyph = mark(
   </>
 )
 
+// Where the words sit in a column, which is a different question from where a
+// shape sits on a canvas, so these are not the design set's align marks: those
+// are a bar with two rects pushed against it, and they say align to that edge.
+// These say the type is ragged on that side. Three rows on the set's own
+// spacing with the middle one short, so the ragged edge is the whole of what
+// tells the three apart, and the full rows are the bare line's own 15.
+const FULL = 'M4.5 %yH19.5'
+const align = (short: string) =>
+  mark(
+    <>
+      <path d={FULL.replace('%y', '6.4')} />
+      <path d={short} />
+      <path d={FULL.replace('%y', '17.6')} />
+    </>
+  )
+
+export const AlignTextLeftGlyph = align('M4.5 12H14')
+export const AlignTextCenterGlyph = align('M7.25 12h9.5')
+export const AlignTextRightGlyph = align('M10 12h9.5')
+
 // One hill, and it runs off the frame at both ends rather than standing inside
 // it: a picture is a view of something larger, and a peak that stops short of
 // the edges reads as a triangle in a box. The three peaks it had before were a
