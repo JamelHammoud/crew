@@ -87,7 +87,8 @@ export const isLive = (live: LivePlace[], key: string): boolean => live.some(pla
 export const threadsIn = (live: LivePlace[], key: string): LiveThread[] =>
   live.find(place => place.key === key)?.threads ?? []
 
-window.crew?.onLive?.(live => {
-  usePlaces.setState({ live })
-  void usePlaces.getState().load()
-})
+if (typeof window !== 'undefined')
+  window.crew?.onLive?.(live => {
+    usePlaces.setState({ live })
+    void usePlaces.getState().load()
+  })
