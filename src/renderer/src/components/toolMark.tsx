@@ -23,6 +23,7 @@ import {
   PlayGlyph,
   PromptGlyph,
   SearchGlyph,
+  SendGlyph,
   SignalGlyph,
   SparkGlyph,
   SpeakerGlyph,
