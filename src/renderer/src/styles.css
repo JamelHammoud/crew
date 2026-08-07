@@ -1813,11 +1813,30 @@ textarea:placeholder-shown {
   font-size: var(--text-xs);
 }
 
-.doc .bn-container .bn-table-handle,
-.doc .bn-container .bn-table-cell-handle,
 .doc .bn-container .bn-extend-button {
-  border-radius: 6px;
+  background: var(--color-ink-800);
+  border: none;
+  box-shadow: none;
+  border-radius: 999px;
   color: var(--color-fg-muted);
+  transition:
+    background-color 0.12s,
+    color 0.12s;
+}
+
+.doc .bn-container .bn-extend-button:hover {
+  background: var(--color-ink-700);
+  color: var(--color-fg-secondary);
+}
+
+.doc .bn-container .bn-extend-button-add-remove-columns {
+  width: 14px;
+  margin-left: 4px;
+}
+
+.doc .bn-container .bn-extend-button-add-remove-rows {
+  height: 14px;
+  margin-top: 4px;
 }
 
 .doc .bn-container .bn-form-popover .mantine-TextInput-input {
