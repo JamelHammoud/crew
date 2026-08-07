@@ -285,14 +285,13 @@ describe('the card one is written on', () => {
     })
     scheduled()
     fireEvent.click(screen.getByRole('button', { name: 'Edit Nightly tidy' }))
-    expect(screen.getByRole('button', { name: 'Bubbles' }).getAttribute('aria-pressed')).toBe('true')
-    expect(screen.getByRole('button', { name: 'Anyone' }).getAttribute('aria-pressed')).toBe('false')
+    expect(screen.getByRole('button', { name: 'Ask who' }).textContent).toContain('Bubbles')
   })
 
   it('swaps the one field for the one the kind needs', () => {
     openCard()
     expect(screen.getByLabelText('What to ask')).toBeTruthy()
-    fireEvent.click(screen.getByRole('button', { name: 'Say something' }))
+    pick('What it does', /^Say something/)
     expect(screen.queryByLabelText('What to ask')).toBeNull()
     expect(screen.getByLabelText('What to say')).toBeTruthy()
   })
@@ -300,9 +299,9 @@ describe('the card one is written on', () => {
   it('swaps the one control for the one the cadence needs', () => {
     openCard()
     expect(screen.getByLabelText('Time')).toBeTruthy()
-    fireEvent.click(screen.getByRole('button', { name: 'Every' }))
+    pick('How often it runs', 'Every')
     expect(screen.queryByLabelText('Time')).toBeNull()
-    fireEvent.click(screen.getByRole('button', { name: 'Certain days' }))
+    pick('How often it runs', 'Certain days')
     expect(screen.getByRole('button', { name: 'Mon' })).toBeTruthy()
     expect(screen.getByLabelText('Time')).toBeTruthy()
   })
