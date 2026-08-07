@@ -1,15 +1,18 @@
 import { BlockNoteSchema, createCodeBlockSpec, defaultBlockSpecs } from '@blocknote/core/blocks'
 import { en } from '@blocknote/core/locales'
 import { CODE_LANGUAGES, createCodeHighlighter } from './docCode'
+import { withCopy } from './docCodeCopy'
 
 export const docSchema = BlockNoteSchema.create({
   blockSpecs: {
     ...defaultBlockSpecs,
-    codeBlock: createCodeBlockSpec({
-      defaultLanguage: 'text',
-      supportedLanguages: CODE_LANGUAGES,
-      createHighlighter: createCodeHighlighter
-    })
+    codeBlock: withCopy(
+      createCodeBlockSpec({
+        defaultLanguage: 'text',
+        supportedLanguages: CODE_LANGUAGES,
+        createHighlighter: createCodeHighlighter
+      })
+    )
   }
 })
 
