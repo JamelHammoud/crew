@@ -71,15 +71,19 @@ const ROWS = \`(() => {
   const rows = [...document.querySelectorAll('.bn-block-content')]
   return rows.map((row, i) => {
     const box = row.getBoundingClientRect()
-    const inline = row.querySelector('.bn-inline-content')
+    const inline = row.querySelector(':scope > .bn-inline-content')
     const ink = inline ? inline.getBoundingClientRect() : null
+    const tail = getComputedStyle(row, '::after')
     return {
       i,
       kind: row.getAttribute('data-content-type'),
-      says: (row.textContent || '').trim().slice(0, 28),
+      says: (row.textContent || '').trim().slice(0, 28) || '(empty)',
       rowRight: Math.round(box.right),
-      inkRight: ink ? Math.round(ink.right) : null,
+      tall: Math.round(box.height),
+      direct: !!inline,
       slack: ink ? Math.round(box.right - ink.right) : null,
+      hint: tail.content && tail.content !== 'none' ? tail.content.slice(0, 30) : '',
+      align: getComputedStyle(row).justifyContent,
       y: Math.round(box.top + box.height / 2),
       x: Math.round(box.right - 6)
     }
