@@ -1548,11 +1548,11 @@ textarea:placeholder-shown {
 
 .doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div {
   position: absolute;
-  top: 7px;
-  right: 9px;
+  top: 8px;
+  right: 8px;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   opacity: 0;
   transition: opacity 0.3s 1s;
 }
@@ -1563,35 +1563,26 @@ textarea:placeholder-shown {
   transition-delay: 0.1s;
 }
 
-.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div > select,
-.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div > .doc-code-copy {
+.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div > select {
   position: static;
   opacity: 1;
-  padding: 2px 8px;
-  border-radius: 999px;
+  field-sizing: content;
+  padding: 3px 7px;
+  border-radius: 6px;
   font-family: var(--font-sans);
   font-size: 11px;
-  color: var(--color-fg-secondary);
-  background: var(--color-ink-800);
+  line-height: 1.45;
+  color: var(--color-fg-faint);
+  background: transparent;
   transition:
     color 0.15s,
-    background 0.15s,
-    transform 0.1s;
+    background 0.15s;
 }
 
 .doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div > select:hover,
-.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div > .doc-code-copy:hover {
+.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div > select:focus-visible {
   color: var(--color-fg);
   background: var(--color-ink-700);
-}
-
-.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div > .doc-code-copy {
-  min-width: 56px;
-  text-align: center;
-}
-
-.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div > .doc-code-copy:active {
-  transform: scale(0.95);
 }
 
 .doc .bn-editor .shiki {

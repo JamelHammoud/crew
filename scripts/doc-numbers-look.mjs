@@ -83,6 +83,7 @@ const READ = \`(() => {
   }
   const rows = [...document.querySelectorAll('.bn-block-content[data-content-type="numberedListItem"]')]
   if (!rows.length) return { failed: 'no numbered rows on the page' }
+  const gutters = rows.map(row => Math.round(parseFloat(getComputedStyle(row, '::before').width) * 100) / 100)
   const relax = document.createElement('style')
   relax.textContent = '.doc .bn-block-content[data-content-type="numberedListItem"]::before { min-width: 0 !important; padding-right: 0 !important }'
   document.head.append(relax)
@@ -104,7 +105,7 @@ const READ = \`(() => {
   const ROMAN = [[10,'x'],[9,'ix'],[5,'v'],[4,'iv'],[1,'i']]
   const roman = n => ROMAN.reduce((out, [v, s]) => { while (n >= v) { out += s; n -= v } return out }, '')
   const alpha = n => { let out = ''; while (n > 0) { n -= 1; out = String.fromCharCode(97 + (n % 26)) + out; n = Math.floor(n / 26) } return out }
-  const read = rows.map(row => {
+  const read = rows.map((row, at) => {
     const mark = getComputedStyle(row, '::before')
     const index = Number(row.dataset.index || 0)
     const wide = parseFloat(mark.width)
