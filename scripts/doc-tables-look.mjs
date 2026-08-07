@@ -12,6 +12,7 @@ const resolve = createRequire(path.join(root, 'package.json')).resolve
 
 const WIDTH = 1440
 const HEIGHT = 980
+const WIDTHS_MARK = 'crew:cols'
 
 const TABLE = [
   '# Releases',
