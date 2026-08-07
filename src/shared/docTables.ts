@@ -47,6 +47,114 @@ export function writeDocTableWidths(markdown: string, widths: (number | null)[][
   return out.join('\n')
 }
 
+export type DocTableAlign = 'left' | 'center' | 'right'
+
+export function mendDocTableRows(markdown: string): string {
+  const lines = markdown.split('\n')
+  const starts = new Set(tableStarts(lines))
+  const out: string[] = []
+  for (let i = 0; i < lines.length; ) {
+    if (!starts.has(i)) {
+      out.push(lines[i])
+      i++
+      continue
+    }
+    while (i < lines.length && lines[i].trim() !== '') {
+      let row = lines[i]
+      i++
+      while (!row.trimEnd().endsWith('|') && i < lines.length) {
+        row = `${row.trimEnd().replace(/\\$/, '')}<br>${lines[i]}`
+        i++
+      }
+      out.push(row)
+    }
+  }
+  return out.join('\n')
+}
+
+export function readDocTableAligns(markdown: string): (DocTableAlign | null)[][] {
+  const lines = markdown.split('\n')
+  return tableStarts(lines).map(start =>
+    cells(lines[start + 1]).map(cell => {
+      const left = cell.startsWith(':')
+      const right = cell.endsWith(':')
+      if (left && right) return 'center'
+      if (right) return 'right'
+      return null
+    })
+  )
+}
+
+export function writeDocTableAligns(markdown: string, aligns: (DocTableAlign | null)[][]): string {
+  const lines = markdown.split('\n')
+  const starts = tableStarts(lines)
+  starts.forEach((start, index) => {
+    const row = aligns[index]
+    if (!row?.some(align => align === 'center' || align === 'right')) return
+    const dashes = cells(lines[start + 1])
+    lines[start + 1] = `| ${dashes
+      .map((cell, column) => {
+        const bar = '-'.repeat(Math.max(3, cell.replace(/:/g, '').length))
+        if (row[column] === 'center') return `:${bar.slice(1, -1)}:`
+        if (row[column] === 'right') return `${bar.slice(0, -1)}:`
+        return bar
+      })
+      .join(' | ')} |`
+  })
+  return lines.join('\n')
+}
+
+export function tableAlignsOf(blocks: DocTableBlock[]): (DocTableAlign | null)[][] {
+  const aligns: (DocTableAlign | null)[][] = []
+  walk(blocks, block => {
+    const rows = tableRows(block)
+    const columns = rows[0]?.length ?? 0
+    aligns.push(
+      Array.from({ length: columns }, (_, column) => {
+        const seen = rows.map(row => alignOf(row[column])).filter((one): one is DocTableAlign => one !== null)
+        if (seen.length !== rows.length || seen.length === 0) return null
+        return seen.every(one => one === seen[0]) && seen[0] !== 'left' ? seen[0] : null
+      })
+    )
+  })
+  return aligns
+}
+
+export function applyTableAligns(blocks: DocTableBlock[], aligns: (DocTableAlign | null)[][]): DocTableBlock[] {
+  let index = 0
+  walk(blocks, block => {
+    const row = aligns[index++]
+    if (!row?.some(Boolean)) return
+    for (const cells of tableRows(block)) {
+      cells.forEach((cell, column) => {
+        if (!row[column] || !cell || typeof cell !== 'object' || Array.isArray(cell)) return
+        const props = ((cell as { props?: Record<string, unknown> }).props ??= {})
+        props.textAlignment = row[column]
+      })
+    }
+  })
+  return blocks
+}
+
+function tableRows(block: DocTableBlock): unknown[][] {
+  const content = block.content as { rows?: { cells?: unknown[] }[] }
+  return (content.rows ?? []).map(row => row.cells ?? [])
+}
+
+function alignOf(cell: unknown): DocTableAlign | null {
+  if (!cell || typeof cell !== 'object' || Array.isArray(cell)) return 'left'
+  const value = (cell as { props?: { textAlignment?: string } }).props?.textAlignment
+  return value === 'center' || value === 'right' || value === 'left' ? value : 'left'
+}
+
+function cells(line: string | undefined): string[] {
+  return (line?.trim() ?? '')
+    .replace(/^\|/, '')
+    .replace(/\|$/, '')
+    .split('|')
+    .map(cell => cell.trim())
+}
+
 export function tableWidthsOf(blocks: DocTableBlock[]): (number | null)[][] {
   const widths: (number | null)[][] = []
   walk(blocks, block => widths.push(columnWidths(block).map(width => (usable(width) ? Math.round(width) : null))))
