@@ -1303,6 +1303,10 @@ textarea:placeholder-shown {
   padding-block: 4px;
 }
 
+.doc .bn-editor .bn-block-content:not(:has(.ProseMirror-trailingBreak:only-child)) > .bn-inline-content {
+  flex: 1 1 auto;
+}
+
 .doc .bn-block-content[data-content-type='bulletListItem'],
 .doc .bn-block-content[data-content-type='numberedListItem'],
 .doc .bn-block-content[data-content-type='checkListItem'],
