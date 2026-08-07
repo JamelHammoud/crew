@@ -110,9 +110,11 @@ const READ = \`(() => {
     const r = el.getBoundingClientRect()
     return { x: round(r.left), y: round(r.top), w: round(r.width), h: round(r.height) }
   }
-  const wrap = document.querySelector('.bn-editor [data-content-type="table"] .tableWrapper')
+  const wraps = [...document.querySelectorAll('.bn-editor [data-content-type="table"] .tableWrapper')]
+  const wrap = wraps[0]
   if (!wrap) return { failed: 'no table on the page' }
   const table = wrap.querySelector('table')
+  const wide = wraps[1]
   const head = table.querySelector('th')
   const cell = table.querySelector('td')
   const headStyle = getComputedStyle(head)
