@@ -132,10 +132,12 @@ export default function ScheduleDoes({
         {kind === 'note' &&
           (pages.length > 0 ? (
             <Select
-              label="In"
               name="Which doc"
-              value={page}
-              options={pages.map(([key, doc]) => ({ value: key, label: doc.title || 'Untitled' }))}
+              value={heldPage}
+              options={[
+                { value: '', label: 'Pick a doc' },
+                ...pages.map(([key, doc]) => ({ value: key, label: doc.title || 'Untitled' }))
+              ]}
               onChange={setPage}
             />
           ) : (
