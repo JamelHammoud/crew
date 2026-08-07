@@ -1426,22 +1426,52 @@ textarea:placeholder-shown {
   line-height: 1.6;
 }
 
-.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div > select {
+.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div {
+  position: absolute;
   top: 7px;
   right: 9px;
-  left: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.3s 1s;
+}
+
+.doc .bn-editor .bn-block-content[data-content-type='codeBlock']:hover > div,
+.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div:focus-within {
+  opacity: 1;
+  transition-delay: 0.1s;
+}
+
+.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div > select,
+.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div > .doc-code-copy {
+  position: static;
+  opacity: 1;
   padding: 2px 8px;
   border-radius: 999px;
   font-family: var(--font-sans);
   font-size: 11px;
-  color: var(--color-fg-muted);
+  color: var(--color-fg-secondary);
   background: var(--color-ink-800);
+  transition:
+    color 0.15s,
+    background 0.15s,
+    transform 0.1s;
 }
 
-.doc .bn-editor .bn-block-content[data-content-type='codeBlock']:hover > div > select,
-.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div > select:focus {
-  opacity: 1;
-  color: var(--color-fg-secondary);
+.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div > select:hover,
+.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div > .doc-code-copy:hover {
+  color: var(--color-fg);
+  background: var(--color-ink-700);
+}
+
+.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div > .doc-code-copy {
+  min-width: 56px;
+  text-align: center;
+}
+
+.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div > .doc-code-copy:active {
+  transform: scale(0.95);
 }
 
 .doc .bn-editor .shiki {
