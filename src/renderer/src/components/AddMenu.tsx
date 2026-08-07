@@ -1,23 +1,28 @@
 import { useState } from 'react'
 import { attachmentBytes, MAX_ATTACHMENTS } from '../../../shared/attachments'
-import { GifGlyph, PlusGlyph, SignalGlyph, UploadGlyph } from '../icons'
+import { GifGlyph, PeopleGlyph, PlusGlyph, SignalGlyph, UploadGlyph } from '../icons'
 import { useHuddle } from '../state/huddle'
 import { useCrew } from '../state/store'
 import { ATTACH_SIZES, PLUS_BUTTON, useFilePicker } from './Attachments'
+import DefaultAgentPicker from './DefaultAgentPicker'
 import GifPicker from './GifPicker'
 import { gifFile, type Gif } from './gifs'
 import { MenuDivider, MenuItem, Popover } from './Popover'
 import Tooltip from './Tooltip'
 
-type Screen = 'menu' | 'gif'
+type Screen = 'menu' | 'gif' | 'agent'
 
 export default function AddMenu({
   attachmentKey,
   huddle,
+  defaultAgent,
   onSend
 }: {
   attachmentKey: string
   huddle?: boolean
+  // Only the chat can stand an agent on its own composer. A thread already has
+  // one, and a message in it goes there whatever anybody picked.
+  defaultAgent?: boolean
   onSend: () => void
 }) {
   const count = useCrew(s => (s.pending[attachmentKey] ?? []).length)
