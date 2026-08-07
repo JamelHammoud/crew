@@ -47,6 +47,23 @@ function DocTableHandle({ orientation, hideOtherElements }: TableHandleProps) {
   }
 
   const header = !!block.content.headerRows
+  const alignment = (block.content.rows[0]?.cells[index] as any)?.props?.textAlignment ?? 'left'
+
+  const align = (to: 'left' | 'center' | 'right') => {
+    editor.updateBlock(block, {
+      ...block,
+      content: {
+        ...block.content,
+        rows: block.content.rows.map((line: any) => ({
+          ...line,
+          cells: line.cells.map((cell: any, column: number) =>
+            column === index ? { ...cell, props: { ...cell.props, textAlignment: to } } : cell
+          )
+        }))
+      }
+    })
+    close()
+  }
 
   return (
     <span data-table-handle={orientation} className="relative flex items-center justify-center w-5 h-6">
