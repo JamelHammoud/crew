@@ -38,7 +38,7 @@ If this sounds interesting to you, you can try Crew out yourself (it's incredibl
 
 ## The highlights
 
-<img height="600" alt="image" src="https://github.com/user-attachments/assets/6bd2ef7c-dbb0-4f0c-9275-14c59d827ab5" />
+<img height="600" alt="crew-overview-1" src="https://github.com/user-attachments/assets/91ae3f10-83a8-4ed1-bc0e-ad429517b86e" />
 
 - Run several agents at once (even in the same thread!)
 - Split-view up to 10 active agent threads, across projects
