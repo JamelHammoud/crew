@@ -4,6 +4,7 @@ import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Tab } from '../src/renderer/src/components/navTabs'
 import type { LivePlace } from '../src/shared/places'
+import type { RecentJoin } from '../src/shared/recent'
 import type { CurrentSession } from '../src/shared/session'
 
 Element.prototype.getAnimations ??= () => []
@@ -86,7 +87,7 @@ const sessionFor = (folder: string): CurrentSession => ({
 
 window.crew = {
   projects: () => Promise.resolve([project(ONE), project(TWO)]),
-  recentJoins: () => Promise.resolve([]),
+  recentJoins: () => Promise.resolve(joins),
   liveProjects: () => Promise.resolve(live),
   onLive: () => () => undefined,
   switchTo: (key: string) => {
@@ -145,6 +146,7 @@ beforeEach(async () => {
   joined.length = 0
   picked = null
   live = []
+  joins = []
   localStorage.clear()
   useSidebar.setState({ pinned: false, peeking: false, near: false, over: false })
   useCrew.setState({ place: `project:${ONE}`, folder: ONE, selfName: 'Jamel' })
