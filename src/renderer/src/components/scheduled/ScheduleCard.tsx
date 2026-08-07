@@ -65,9 +65,6 @@ export default function ScheduleCard({
   return (
     <Modal open={open} onClose={onClose} title={schedule ? 'Edit schedule' : 'New schedule'} width={520}>
       <div className="mt-4 space-y-4">
-        {/* The mark and the name are the row this is going to be, so the card
-            opens on the thing being made rather than on a field. The mark is the
-            kind's own, so it turns over as the line underneath is written. */}
         <div className="flex items-center gap-3">
           <span className="w-9 h-9 shrink-0 rounded-full bg-fg/[0.07] flex items-center justify-center text-fg/70">
             <ToolMarkView mark={mark} className="w-[18px] h-[18px]" />
