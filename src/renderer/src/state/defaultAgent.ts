@@ -1,77 +1,55 @@
 import { create } from 'zustand'
 
-// Who takes what you send in the chat when the words name nobody. It is yours
-// rather than the crew's, the way the volume is: it sits on this machine and
-// nothing about it is ever sent, so two people in one crew each aim their own
-// composer.
+// The default agent: who takes what you send in the chat when the words name
+// nobody. It is yours rather than the crew's, the way the volume is: it sits on
+// this machine and nothing about it is ever sent, so two people in one crew each
+// aim their own composer.
 //
-// It is kept per place, because an agent id belongs to the crew it was made in
-// and a window walks between crews without ever unmounting: one record for the
-// window would aim the chat at an agent the project it landed in never had.
+// It is one standing choice rather than one per project. An agent is the
+// machine's own, kept in that machine's agents.json and pooled into whichever
+// crew it is joined to, so an id names the same agent wherever it turns up and
+// there is nothing about a project for it to belong to. Keyed by the place it
+// also went off on its own: a crew joined over a link is keyed by that link, and
+// the port in one moves whenever the host reopens, so the choice quietly came
+// off a project that was never left.
 //
 // It is kept on this machine and it has to be. Held in the window alone, every
 // reload takes it off, and a renderer reloads whenever the project is edited
 // under it, which is most of an afternoon with an agent working.
 
 const KEY = 'crew.default-agent'
-// Places this is remembered for. The oldest goes first, so a machine that has
-// opened projects for months is not carrying an agent from every one of them.
-const PLACE_LIMIT = 20
 
-type Aimed = Record<string, string>
-
-function aimedOf(raw: unknown): Aimed {
-  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {}
-  const held: Aimed = {}
-  for (const [place, agentId] of Object.entries(raw as Record<string, unknown>)) {
-    if (typeof agentId === 'string' && agentId) held[place] = agentId
-  }
-  return held
-}
-
-function load(): Aimed {
+// The value written down was a record of one agent per place. Read as anything
+// but the id it is now, it is nobody, so a machine that had one picked before
+// this comes up with an empty composer rather than aimed at a place.
+function load(): string | null {
   try {
-    return aimedOf(JSON.parse(globalThis.localStorage?.getItem(KEY) ?? 'null'))
+    const held: unknown = JSON.parse(globalThis.localStorage?.getItem(KEY) ?? 'null')
+    return typeof held === 'string' && held ? held : null
   } catch {
-    return {}
+    return null
   }
 }
 
-function save(aimed: Aimed): void {
+function save(agentId: string | null): void {
   try {
-    globalThis.localStorage?.setItem(KEY, JSON.stringify(aimed))
+    if (agentId) globalThis.localStorage?.setItem(KEY, JSON.stringify(agentId))
+    else globalThis.localStorage?.removeItem(KEY)
   } catch {
     // A window with no storage keeps it for as long as it is open, which is
     // still better than losing it while it is.
   }
 }
 
-// Whatever was chosen last goes to the end, so the oldest place is the first to
-// go rather than whichever happened to be opened first.
-const trim = (aimed: Aimed): Aimed => {
-  const places = Object.keys(aimed)
-  if (places.length <= PLACE_LIMIT) return aimed
-  const next = { ...aimed }
-  for (const old of places.slice(0, places.length - PLACE_LIMIT)) delete next[old]
-  return next
+type DefaultAgent = {
+  agentId: string | null
+  aim(agentId: string | null): void
 }
 
-type DefaultAgents = {
-  aimed: Aimed
-  aim(place: string, agentId: string | null): void
-}
-
-export const useDefaultAgents = create<DefaultAgents>(set => ({
-  aimed: load(),
-  aim: (place, agentId) =>
-    set(state => {
-      if (!place) return state
-      const { [place]: gone, ...rest } = state.aimed
-      void gone
-      const aimed = agentId ? trim({ ...rest, [place]: agentId }) : rest
-      save(aimed)
-      return { aimed }
-    })
+export const useDefaultAgent = create<DefaultAgent>(set => ({
+  agentId: load(),
+  aim: agentId => {
+    save(agentId)
+    return set({ agentId })
+  }
 }))
-
-export const aimedAt = (aimed: Aimed, place: string): string | null => aimed[place] ?? null

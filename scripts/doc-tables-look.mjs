@@ -25,6 +25,11 @@ const TABLE = [
   '| 0.3.0 | Bubbles | Drafting | Tables, docs, and the rest of the writing |',
   '',
   'A line after it, so the room underneath can be read.',
+  '',
+  '| Machine | Provider | Model | Window | Week | Agents | Threads | Last seen |',
+  '| --- | --- | --- | --- | --- | --- | --- | --- |',
+  '| Ali (Mac) | Claude | Opus 5 | 42% | 61% | 3 | 12 | Just now |',
+  '| Jamel (dev) | Codex | GPT-5.6 | 8% | 22% | 1 | 4 | Two minutes ago |',
   ''
 ].join('\n')
 
