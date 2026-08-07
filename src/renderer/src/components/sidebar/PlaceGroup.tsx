@@ -79,6 +79,20 @@ function PlaceGroup({
             setNaming(true)
           }}
         />
+        {place.join && (
+          <MenuItem
+            icon={<LinkGlyph className="w-4 h-4" />}
+            label="Copy link"
+            onClick={() => {
+              const link = place.join?.link
+              setMenuAt(null)
+              if (!link) return
+              void navigator.clipboard.writeText(link).then(() => {
+                toast.done('Link copied', { key: 'join-link' })
+              })
+            }}
+          />
+        )}
         {stoppable && (
           <MenuItem
             icon={<XCircleGlyph className="w-4 h-4" />}
