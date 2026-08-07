@@ -119,12 +119,12 @@ app.whenReady().then(async () => {
   try {
     await win.loadFile(path.join(__dirname, 'dist/index.html'))
     await wait(1800)
-    await win.webContents.executeJavaScript(`(() => {
+    await win.webContents.executeJavaScript(\`(() => {
       const rows = [...document.querySelectorAll('.bn-block-content[data-content-type="paragraph"]')]
       if (rows[0]) rows[0].setAttribute('data-text-alignment', 'center')
       if (rows[1]) rows[1].setAttribute('data-text-alignment', 'right')
       return true
-    })()`)
+    })()\`)
     const all = []
     for (const [name, css] of TRIES) {
       await win.webContents.executeJavaScript(
@@ -142,7 +142,7 @@ app.whenReady().then(async () => {
         const caret = await win.webContents.executeJavaScript(CARET)
         seen.push({ ...row, caret })
       }
-      const furniture = await win.webContents.executeJavaScript(`(() => {
+      const furniture = await win.webContents.executeJavaScript(\`(() => {
         const out = []
         for (const row of document.querySelectorAll('.bn-block-content')) {
           const box = row.getBoundingClientRect()
@@ -173,7 +173,7 @@ app.whenReady().then(async () => {
           }
         }
         return { furniture: out, hint }
-      })()`)
+      })()\`)
       all.push({ name, seen, ...furniture })
     }
     console.log('SEEN ' + JSON.stringify(all))
