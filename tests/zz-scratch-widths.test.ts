@@ -13,23 +13,22 @@ const { docSchema } = await import('../src/renderer/src/components/doc/docSchema
 const editor = () => BlockNoteEditor.create({ schema: docSchema as never }) as never as any
 
 describe('probe', () => {
-  it('serializes', () => {
-    const one = editor()
-    one.replaceBlocks(one.document, [
-      { type: 'paragraph', content: 'before' },
-      { type: 'table', content: { type: 'tableContent', headerRows: 1, columnWidths: [200, 90],
-        rows: [{ cells: ['a', 'b'] }, { cells: ['c', 'd'] }] } },
-      { type: 'paragraph', content: 'after' }
-    ])
-    console.log('MARKDOWN>>>\n' + one.blocksToMarkdownLossy(one.document) + '\n<<<END')
+  it('parses a comment with no blank line', () => {
+    const two = editor()
+    const md = 'intro\n\n<!-- crew:cols 200 90 -->\n| a | b |\n| --- | --- |\n| c | d |\n\nafter\n'
+    const blocks = two.tryParseMarkdownToBlocks(md)
+    console.log('TYPES>>>' + blocks.map((b: any) => b.type).join(',') + '<<<')
+    console.log('WIDTHS>>>' + JSON.stringify(blocks.find((b: any) => b.type === 'table')?.content?.columnWidths) + '<<<')
     expect(1).toBe(1)
   })
 
-  it('parses a comment', () => {
+  it('accepts widths set back onto a parsed table', () => {
     const two = editor()
-    const md = '<!-- crew:cols 200 90 -->\n\n| a | b |\n| --- | --- |\n| c | d |\n'
-    const blocks = two.tryParseMarkdownToBlocks(md)
-    console.log('PARSED>>>\n' + JSON.stringify(blocks, null, 1) + '\n<<<END')
+    const blocks = two.tryParseMarkdownToBlocks('| a | b |\n| --- | --- |\n| c | d |\n')
+    ;(blocks[0] as any).content.columnWidths = [200, 90]
+    two.replaceBlocks(two.document, blocks)
+    console.log('AFTER>>>' + JSON.stringify(two.document[0].content.columnWidths) + '<<<')
+    console.log('REMD>>>\n' + two.blocksToMarkdownLossy(two.document) + '<<<')
     expect(1).toBe(1)
   })
 })
