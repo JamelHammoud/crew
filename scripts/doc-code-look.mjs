@@ -19,7 +19,7 @@ const TEXT = [
   'The gate opens on whatever stands well above the floor for long enough.',
   '',
   '```typescript',
-  'export function openOn(level: number, floor: number) {',
+  'export function openOn(level: number, floor: number, held: number, room: number) {',
   '  const over = level - floor',
   '  if (over < MIN_RISE) return false',
   '  return held > MIN_HOLD',
