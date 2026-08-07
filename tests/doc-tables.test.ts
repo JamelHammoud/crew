@@ -200,3 +200,22 @@ describe('column alignment, which markdown carries and BlockNote does not', () =
     expect(readDocTableAligns(written)).toEqual([['center', 'right']])
   })
 })
+
+describe('the column menu offers alignment, because the file now carries it', () => {
+  it('offers all three', () => {
+    expect(handles).toContain('Align left')
+    expect(handles).toContain('Align center')
+    expect(handles).toContain('Align right')
+  })
+
+  it('offers it on a column and never on a row, which is the only thing markdown can say', () => {
+    const at = handles.indexOf('Align left')
+    expect(at).toBeGreaterThan(-1)
+    expect(handles.lastIndexOf('{!row && (', at)).toBeGreaterThan(-1)
+  })
+
+  it('wears the doc set own marks rather than the canvas ones, which mean another thing', () => {
+    expect(handles).toContain('AlignTextLeftGlyph')
+    expect(handles).not.toContain('AlignLeftGlyph />')
+  })
+})
