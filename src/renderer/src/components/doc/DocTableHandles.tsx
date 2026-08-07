@@ -36,8 +36,13 @@ function DocTableHandle({ orientation, hideOtherElements }: TableHandleProps) {
     hideOtherElements(false)
   }
 
-  const add = (side: 'above' | 'below' | 'left' | 'right') => {
-    handles.addRowOrColumn(index, row ? { orientation: 'row', side } : ({ orientation: 'column', side } as never))
+  const addRow = (side: 'above' | 'below') => {
+    handles.addRowOrColumn(index, { orientation: 'row', side })
+    close()
+  }
+
+  const addColumn = (side: 'left' | 'right') => {
+    handles.addRowOrColumn(index, { orientation: 'column', side })
     close()
   }
 
