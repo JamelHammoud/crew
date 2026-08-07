@@ -23,6 +23,7 @@ import {
   type DocMentionRef,
   type DocPage
 } from '../shared/docs'
+import { stripDocTableMarks } from '../shared/docTables'
 import {
   boardMentionsOf,
   crewRefs,
