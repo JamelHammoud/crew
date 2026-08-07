@@ -1,6 +1,6 @@
 import '@blocknote/mantine/style.css'
 import type { PartialBlock } from '@blocknote/core'
-import { filterSuggestionItems, insertOrUpdateBlockForSlashMenu } from '@blocknote/core/extensions'
+import { insertOrUpdateBlockForSlashMenu } from '@blocknote/core/extensions'
 import { BlockNoteView } from '@blocknote/mantine'
 import {
   FormattingToolbarController,
@@ -15,7 +15,7 @@ import { docEmoji } from './doc/docEmoji'
 import { DocEmojiMenu, docEmojiItems } from './doc/DocEmojiMenu'
 import { docFence } from './doc/docFence'
 import DocSideMenu from './doc/DocSideMenu'
-import { DocSlashMenu, docSlashItems } from './doc/DocSlashMenu'
+import { DocSlashMenu, docSlashItems, slashMatches } from './doc/DocSlashMenu'
 import { docDictionary, docSchema } from './doc/docSchema'
 import DocTableHandles from './doc/DocTableHandles'
 import DocToolbar from './doc/DocToolbar'
