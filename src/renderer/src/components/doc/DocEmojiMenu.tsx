@@ -25,30 +25,7 @@ export function docEmojiItems(editor: BlockNoteEditor, query: string): DocEmojiI
 }
 
 export function DocEmojiMenu({ items, selectedIndex, onItemClick }: SuggestionMenuProps<DocEmojiItem>) {
-  const editor = useBlockNoteEditor()
-  const listRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const row = listRef.current?.querySelector('[data-selected="true"]')
-    if (row instanceof HTMLElement) bringInto(row, listRef.current)
-  }, [selectedIndex])
-
-  // Tab takes the one standing under the pointer, which is the first until
-  // somebody moves. It is caught on the way down so the editor never sees it:
-  // left to travel, a Tab written inside a list indents the row instead.
-  useEffect(() => {
-    const dom = editor.domElement
-    const take = items[selectedIndex ?? 0]
-    if (!dom || !take) return
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key !== 'Tab' || event.shiftKey || event.metaKey || event.ctrlKey || event.altKey) return
-      event.preventDefault()
-      event.stopPropagation()
-      onItemClick?.(take)
-    }
-    dom.addEventListener('keydown', onKey, true)
-    return () => dom.removeEventListener('keydown', onKey, true)
-  }, [editor, items, onItemClick, selectedIndex])
+  const listRef = useDocMenu(items, selectedIndex, onItemClick)
 
   if (items.length === 0) return null
   return (
