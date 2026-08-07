@@ -42,6 +42,7 @@ export const TOOL_MARKS = [
   'cloud',
   'signal',
   'chat',
+  'send',
   'people',
   'star',
   'spark',

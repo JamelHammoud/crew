@@ -57,6 +57,7 @@ const GLYPHS: Record<ToolMark, Glyph> = {
   cloud: CloudGlyph,
   signal: SignalGlyph,
   chat: ChatGlyph,
+  send: SendGlyph,
   people: PeopleGlyph,
   star: StarGlyph,
   spark: SparkGlyph,
