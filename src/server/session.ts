@@ -4575,7 +4575,8 @@ export class CrewSession {
     return found
   }
 
-  private docExcerpt(text: string): string {
+  private docExcerpt(raw: string): string {
+    const text = stripDocTableMarks(raw)
     if (text.length <= MAX_DOC_PROMPT_CHARS) return text
     return `${text.slice(0, MAX_DOC_PROMPT_CHARS)}\n[doc cut off here]`
   }

@@ -167,10 +167,10 @@ try {
   const seen = await run(dir)
   if (seen.failed) throw new Error(seen.failed)
   seen.forEach(read => {
+    const off = read.counted === read.index ? '' : `  <- read ${read.counted}, not ${read.index}`
     console.log(`\nlevel ${read.depth}  ${read.says}`)
-    console.log(`  index ${read.index}, asked for ${read.asks}`)
-    console.log(`  painted ${read.paints} in ${read.ink}`)
-    console.log(`  marker ${read.gutter} across`)
+    console.log(`  ${read.paints}   ${read.style}, off index ${read.index}${off}`)
+    console.log(`  ${read.ink}, ${read.gutter} across`)
   })
   console.log(`\nwrote the shot to ${shots}`)
 } finally {
