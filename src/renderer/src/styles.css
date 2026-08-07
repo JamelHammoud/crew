@@ -1339,7 +1339,7 @@ textarea:placeholder-shown {
   color: var(--color-fg-muted);
 }
 
-.doc .bn-editor .bn-block-group .bn-block .bn-block-group .bn-block-outer:not([data-prev-depth-changed])::before {
+.doc .bn-editor .bn-block-group .bn-block .bn-block-group .bn-block-outer::before {
   border-left: 1px solid var(--color-ink-700);
 }
 

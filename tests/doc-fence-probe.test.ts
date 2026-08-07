@@ -14,10 +14,16 @@ window.matchMedia = ((query: string) => ({
 })) as typeof window.matchMedia
 
 const { BlockNoteEditor } = await import('@blocknote/core')
-const { docSchema } = await import('../src/renderer/src/components/doc/docSchema')
+const { docSchema, docDictionary } = await import('../src/renderer/src/components/doc/docSchema')
+const { docEmoji } = await import('../src/renderer/src/components/doc/docEmoji')
 
 function stand() {
-  const editor = BlockNoteEditor.create({ schema: docSchema as never })
+  const editor = BlockNoteEditor.create({
+    schema: docSchema as never,
+    dictionary: docDictionary as never,
+    extensions: [docEmoji] as never,
+    tables: { headers: true }
+  })
   const box = document.createElement('div')
   document.body.append(box)
   editor.mount(box)
