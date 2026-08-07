@@ -19,8 +19,8 @@ export async function createCodeHighlighter(): Promise<HighlighterGeneric<string
   return {
     getLoadedLanguages: () => core.getLoadedLanguages(),
     getLoadedThemes: () => core.getLoadedThemes(),
-    loadLanguage: (lang: string) => loadLanguage(canonicalLanguage(lang)),
+    loadLanguage: (lang: string) => loadLanguage(lang),
     codeToTokens: (code: string, options: { lang: string }) =>
-      core.codeToTokens(code, { lang: canonicalLanguage(options.lang), themes: THEME_NAMES, defaultColor: false })
+      core.codeToTokens(code, { lang: options.lang, themes: THEME_NAMES, defaultColor: false })
   } as unknown as HighlighterGeneric<string, string>
 }
