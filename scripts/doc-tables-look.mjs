@@ -291,6 +291,10 @@ try {
         `  ${what}: ${chrome ? `${chrome.box.w}x${chrome.box.h} at ${chrome.box.x},${chrome.box.y}, paint ${chrome.paint}, radius ${chrome.radius}` : 'not there'}`
       )
     if (read.bar) console.log(`  bar: ${read.bar.box.w}x${read.bar.box.h}, paint ${read.bar.paint}, radius ${read.bar.radius}`)
+    if (read.wide)
+      console.log(
+        `  a wide one: table ${read.wide.table} in ${read.wide.clientW}, scrolls ${read.wide.scrollW}, corner ${read.wide.corner}`
+      )
   }
   console.log(`\nwrote the shots to ${shots}`)
 } finally {
