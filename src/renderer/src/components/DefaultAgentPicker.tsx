@@ -11,10 +11,9 @@ import AgentIcon from './AgentIcon'
 // It is the same list the @ menu offers, since aiming the composer at somebody
 // and naming them in the words are the same errand.
 export default function DefaultAgentPicker({ onPick }: { onPick: () => void }) {
-  const place = useCrew(s => s.place)
   const agents = useCrew(s => s.agents)
-  const aimed = useDefaultAgents(s => s.aimed[place] ?? null)
-  const aim = useDefaultAgents(s => s.aim)
+  const aimed = useDefaultAgent(s => s.agentId)
+  const aim = useDefaultAgent(s => s.aim)
   const here = agents.filter(agent => agent.status !== 'offline')
 
   return (
@@ -23,7 +22,7 @@ export default function DefaultAgentPicker({ onPick }: { onPick: () => void }) {
         <button
           key={agent.id}
           onClick={() => {
-            aim(place, agent.id)
+            aim(agent.id)
             onPick()
           }}
           className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-left whitespace-nowrap transition-colors text-fg/70 hover:text-fg hover:bg-fg/5"
