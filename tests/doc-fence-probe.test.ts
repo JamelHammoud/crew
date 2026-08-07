@@ -65,11 +65,11 @@ describe('doc fence', () => {
     expect(doc.blocksToMarkdownLossy(doc.document)).toContain('```text\nconst a = 1\n```')
   })
 
-  it('still takes a language written after the backticks', () => {
+  it('reads a language off the block rather than off what follows the backticks', () => {
     const doc = stand()
-    type(doc.prosemirrorView, '```')
-    type(doc.prosemirrorView, 'ts')
+    type(doc.prosemirrorView, '```ts')
     expect(doc.document[0].props.language).toBe('text')
+    expect(text(doc.document[0])).toBe('ts')
   })
 
   it('leaves backticks written inside a sentence alone', () => {
