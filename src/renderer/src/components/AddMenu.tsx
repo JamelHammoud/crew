@@ -71,8 +71,9 @@ export default function AddMenu({
         </button>
       </Tooltip>
       <Popover open={open} onClose={() => setOpen(false)} align="start" side="top" flush>
-        {screen === 'menu' ? (
-          <div className="p-1.5">
+        <ScreenSwap screen={screen} depth={DEPTH[screen]} width>
+          {screen === 'menu' ? (
+            <div className="p-1.5">
             {!full && (
               <>
                 <MenuItem
