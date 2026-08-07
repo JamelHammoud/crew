@@ -5,16 +5,10 @@ export const MORNING = 9 * 60
 export const PILL_INPUT =
   'h-8 px-3 rounded-full bg-fg/[0.07] text-sm text-fg tabular-nums outline-none transition-colors duration-150 hover:bg-fg/[0.1] focus:bg-fg/[0.14] [&::-webkit-calendar-picker-indicator]:hidden'
 
-// A row of controls read left to right as one sentence. What a schedule does and
-// when it runs are both a line of plain words with the parts you can change set
-// in pills, so the card says what it is about to do without a preview of itself
-// underneath.
 export function Line({ children }: { children: ReactNode }) {
   return <div className="flex flex-wrap items-center gap-2">{children}</div>
 }
 
-// The words between those pills. They are read rather than pressed, so they are
-// the quietest thing on the line.
 export function Word({ children }: { children: ReactNode }) {
   return <span className="text-sm text-fg/45">{children}</span>
 }
