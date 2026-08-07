@@ -74,8 +74,6 @@ export default function ScheduleDoes({
   const choices = named && !here.includes(named) ? [...here, named] : here
   const pages = Object.entries(docs)
 
-  // Whoever takes it, said inside the pill rather than over it. A label in a row
-  // of its own would be the pill read back in longer words.
   const who = (label: string) => (
     <Select
       label={label}
