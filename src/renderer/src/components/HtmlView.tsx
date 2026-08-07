@@ -23,7 +23,7 @@ export default function HtmlView({
     setUrl(null)
     setFailed(false)
     window.crew
-      .previewHtml(id, path, text)
+      .previewHtml(id, path, partial ? null : text)
       .then(made => {
         if (!alive) return
         if (made) setUrl(made)
