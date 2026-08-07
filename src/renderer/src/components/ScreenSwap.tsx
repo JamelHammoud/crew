@@ -87,7 +87,12 @@ export default function ScreenSwap({
   useEffect(() => {
     const el = inner.current
     if (fill || !el) return
-    const measure = () => setHeight(el.offsetHeight)
+    const measure = () =>
+      setBox(was =>
+        was && was.h === el.offsetHeight && was.w === el.offsetWidth
+          ? was
+          : { h: el.offsetHeight, w: el.offsetWidth }
+      )
     measure()
     if (typeof ResizeObserver === 'undefined') return
     const watching = new ResizeObserver(measure)
