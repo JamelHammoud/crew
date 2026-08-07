@@ -101,7 +101,15 @@ const READ = \`(() => {
     const el = document.querySelector(name)
     if (!el) return null
     const style = getComputedStyle(el)
-    return { box: box(el), paint: style.backgroundColor, radius: style.borderTopLeftRadius, shows: style.opacity }
+    return {
+      box: box(el),
+      paint: style.backgroundColor,
+      radius: style.borderTopLeftRadius,
+      shows: style.opacity,
+      border: style.borderTopWidth + ' ' + style.borderTopColor,
+      inWrapper: !!el.closest('.tableWrapper'),
+      stands: el.parentElement ? el.parentElement.className || el.parentElement.tagName : '?'
+    }
   }
   const rows = [...table.rows].map(row => round(row.getBoundingClientRect().height))
   return {
