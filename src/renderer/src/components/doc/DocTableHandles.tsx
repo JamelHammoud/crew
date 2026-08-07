@@ -113,7 +113,7 @@ function DocTableHandle({ orientation, hideOtherElements }: TableHandleProps) {
 function DocExtendButton(props: ExtendButtonProps) {
   return (
     <ExtendButton {...props}>
-      <PlusGlyph className="w-3.5 h-3.5" />
+      <PlusGlyph className="w-3 h-3" />
     </ExtendButton>
   )
 }
