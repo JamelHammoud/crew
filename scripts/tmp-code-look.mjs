@@ -75,7 +75,14 @@ const READ = \`(() => {
     copyBg: paint(copy) && paint(copy).backgroundColor,
     pickBg: paint(pick) && paint(pick).backgroundColor,
     copyFont: paint(copy) && paint(copy).fontSize,
-    pickFont: paint(pick) && paint(pick).fontSize
+    pickFont: paint(pick) && paint(pick).fontSize,
+    root: document.documentElement.className,
+    blockBg: paint(block) && paint(block).backgroundColor,
+    inkSaid: getComputedStyle(document.documentElement).getPropertyValue('--color-ink-850'),
+    preBg: block && block.querySelector('pre') ? getComputedStyle(block.querySelector('pre')).backgroundColor : null,
+    preStyle: block && block.querySelector('pre') ? block.querySelector('pre').getAttribute('style') : null,
+    pickText: pick && pick.value,
+    pickColor: paint(pick) && paint(pick).color
   }
 })()\`
 
