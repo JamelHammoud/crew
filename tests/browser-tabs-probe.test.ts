@@ -363,6 +363,51 @@ describe('the tab strip', () => {
   })
 })
 
+// A site's own mark is drawn where there is one and the globe stands in where
+// there is not, so a picture that never arrives has to read as the second of
+// those rather than as a hole in the row.
+describe('a tab wearing a favicon', () => {
+  const faviconIn = (root: HTMLElement, id: string) => pillFor(root, id)!.querySelector('img')
+
+  const wearing = (src: string) => {
+    useBrowser.getState().openUrl('https://example.com/one')
+    const tab = useBrowser.getState().tabs[0]!
+    act(() => useBrowser.getState().updateTab(tab.id, { favicon: src }))
+    return tab.id
+  }
+
+  it('draws the site own mark while it loads', () => {
+    const id = wearing('https://example.com/favicon.ico')
+    const { container } = render(createElement(BrowserPanel))
+
+    expect(faviconIn(container, id)).not.toBeNull()
+  })
+
+  it('stands the globe in when the picture will not load', () => {
+    const id = wearing('https://example.com/favicon.ico')
+    const { container } = render(createElement(BrowserPanel))
+
+    act(() => {
+      fireEvent.error(faviconIn(container, id)!)
+    })
+
+    expect(faviconIn(container, id)).toBeNull()
+    expect(pillFor(container, id)!.querySelector('svg')).not.toBeNull()
+  })
+
+  it('draws the next mark rather than holding the globe on the one that broke', () => {
+    const id = wearing('https://example.com/favicon.ico')
+    const { container } = render(createElement(BrowserPanel))
+
+    act(() => {
+      fireEvent.error(faviconIn(container, id)!)
+    })
+    act(() => useBrowser.getState().updateTab(id, { favicon: 'https://example.com/icon.png' }))
+
+    expect(faviconIn(container, id)?.getAttribute('src')).toBe('https://example.com/icon.png')
+  })
+})
+
 // A page an agent showed comes up rather than waiting to be found, and asking
 // for one that is already open loads it again: it is shown because it changed.
 describe('a page an agent shows', () => {
