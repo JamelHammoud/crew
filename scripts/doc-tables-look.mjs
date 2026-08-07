@@ -80,10 +80,9 @@ const THEMES = ['dark', 'light']
 const WHERE = ['a cell', 'last row', 'last column', 'under the table', 'right of the table', 'a wide last row']
 
 const HOVER = where => \`(() => {
-  const wide = \` + JSON.stringify(where.startsWith('a wide')) + \`
-  const at = wide ? 1 : 0
-  const table = document.querySelectorAll('.bn-editor [data-content-type="table"] table')[at]
-  const wrap = document.querySelectorAll('.bn-editor [data-content-type="table"] .tableWrapper')[at]
+  const which = \` + JSON.stringify(where.startsWith('a wide') ? 1 : 0) + \`
+  const table = document.querySelectorAll('.bn-editor [data-content-type="table"] table')[which]
+  const wrap = document.querySelectorAll('.bn-editor [data-content-type="table"] .tableWrapper')[which]
   if (!table) return false
   const rows = [...table.rows]
   const where = \` + JSON.stringify(where) + \`
