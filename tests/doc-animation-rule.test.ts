@@ -1,7 +1,4 @@
 // @vitest-environment jsdom
-import { readFileSync } from 'node:fs'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 
 window.matchMedia = ((query: string) => ({
@@ -14,9 +11,6 @@ window.matchMedia = ((query: string) => ({
   removeEventListener: () => {},
   dispatchEvent: () => false
 })) as typeof window.matchMedia
-
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const renderer = path.join(root, 'src/renderer/src')
 
 const { BlockNoteEditor } = await import('@blocknote/core')
 const { docSchema, docDictionary } = await import('../src/renderer/src/components/doc/docSchema')
@@ -62,13 +56,13 @@ describe('doc block changes do not animate', () => {
     expect(stale(box)).toContain('data-prev-type')
   })
 
-  it('is off in the editor the docs are written in', () => {
-    const source = readFileSync(path.join(renderer, 'components/DocEditor.tsx'), 'utf8')
+  it('is off in the editor the docs are written in', async () => {
+    const source = (await import('../src/renderer/src/components/DocEditor.tsx?raw')).default as string
     expect(source).toContain("disableExtensions: ['previousBlockType']")
   })
 
-  it('leaves no style behind for a block a line used to be', () => {
-    const styles = readFileSync(path.join(renderer, 'styles.css'), 'utf8')
+  it('leaves no style behind for a block a line used to be', async () => {
+    const styles = (await import('../src/renderer/src/styles.css?raw')).default as string
     expect(styles).not.toContain('data-prev-level')
     expect(styles).not.toContain('data-prev-depth')
   })
