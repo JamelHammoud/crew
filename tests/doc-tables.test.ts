@@ -62,7 +62,7 @@ describe('the room a table stands in', () => {
   })
 
   it('writes the measure down once, and it is the writing column', () => {
-    expect(rule(':root {')).toContain(`--doc-measure: ${DOC_MAX_W - DOC_GUTTER * 2}px`)
+    expect(rule(':root {')).toContain(`--doc-measure: ${number('DOC_MAX_W') - number('DOC_GUTTER') * 2}px`)
   })
 
   it('holds the add row bar inside the writing, whatever the table is scrolled to', () => {
