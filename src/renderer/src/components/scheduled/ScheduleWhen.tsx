@@ -1,6 +1,6 @@
 import { DAY_MINUTES, EVERY_MAX, EVERY_MIN, type Cadence } from '../../../../shared/schedules'
 import Select from '../Select'
-import { Choice, clockOf, Field, minutesOf, MORNING, PILL_INPUT } from './parts'
+import { clockOf, Day, Line, minutesOf, MORNING, PILL_INPUT, Word } from './parts'
 
 const KINDS: Array<{ kind: Cadence['kind']; label: string }> = [
   { kind: 'every', label: 'Every' },
@@ -27,6 +27,16 @@ const amount = (minutes: number): string => {
   return `${minutes} minutes`
 }
 
+const ordinal = (day: number): string => {
+  const tens = day % 100
+  if (tens > 3 && tens < 21) return `${day}th`
+  return `${day}${['th', 'st', 'nd', 'rd'][day % 10] ?? 'th'}`
+}
+
+// When it runs, written as a line you read left to right. The cadence decides
+// how the rest of the line goes on: every so often, at a time, on the days you
+// pick, or on a day of the month. Read as a sentence the card says what it is
+// about to do, so nothing under it has to say it again.
 export default function ScheduleWhen({
   when,
   onChange
@@ -50,75 +60,72 @@ export default function ScheduleWhen({
     if (next.length > 0) onChange({ kind: 'weekly', days: next, at })
   }
 
+  const setAt = (written: string) => {
+    const minutes = minutesOf(written, at)
+    if (when.kind === 'weekly') onChange({ kind: 'weekly', days, at: minutes })
+    else if (when.kind === 'monthly') onChange({ kind: 'monthly', day: when.day, at: minutes })
+    else onChange({ kind: 'daily', at: minutes })
+  }
+
   const time = (
-    <Field label="Time">
-      <input
-        type="time"
-        value={clockOf(at)}
-        aria-label="Time"
-        onChange={event =>
-          onChange(
-            when.kind === 'weekly'
-              ? { kind: 'weekly', days, at: minutesOf(event.target.value, at) }
-              : when.kind === 'monthly'
-                ? { kind: 'monthly', day: when.day, at: minutesOf(event.target.value, at) }
-                : { kind: 'daily', at: minutesOf(event.target.value, at) }
-          )
-        }
-        className={PILL_INPUT}
-      />
-    </Field>
+    <input
+      type="time"
+      value={clockOf(at)}
+      aria-label="Time"
+      onChange={event => setAt(event.target.value)}
+      className={PILL_INPUT}
+    />
   )
 
   return (
     <div className="space-y-3">
-      <Field label="When">
-        <div className="flex flex-wrap gap-1.5">
-          {KINDS.map(one => (
-            <Choice
-              key={one.kind}
-              label={one.label}
-              picked={when.kind === one.kind}
-              onClick={() => pick(one.kind)}
-            />
-          ))}
-        </div>
-      </Field>
+      <Line>
+        <Select
+          name="How often it runs"
+          value={when.kind}
+          options={KINDS.map(one => ({ value: one.kind, label: one.label }))}
+          onChange={value => pick(value as Cadence['kind'])}
+        />
 
-      {when.kind === 'every' && (
-        <Field label="How often">
+        {when.kind === 'every' && (
           <Select
+            name="How often"
             value={String(when.minutes)}
             options={STEPS.map(minutes => ({ value: String(minutes), label: amount(minutes) }))}
             onChange={value => onChange({ kind: 'every', minutes: Number(value) })}
           />
-        </Field>
-      )}
+        )}
+
+        {when.kind === 'monthly' && (
+          <>
+            <Word>on the</Word>
+            <Select
+              name="Day of the month"
+              value={String(when.day)}
+              options={Array.from({ length: 28 }, (unused, index) => ({
+                value: String(index + 1),
+                label: ordinal(index + 1)
+              }))}
+              onChange={value => onChange({ kind: 'monthly', day: Number(value), at })}
+            />
+          </>
+        )}
+
+        {when.kind !== 'every' && (
+          <>
+            <Word>at</Word>
+            {time}
+          </>
+        )}
+      </Line>
 
       {when.kind === 'weekly' && (
-        <Field label="Which days">
-          <div className="flex flex-wrap gap-1.5">
-            {DAYS.map((name, day) => (
-              <Choice key={name} label={name} picked={days.includes(day)} onClick={() => toggle(day)} />
-            ))}
-          </div>
-        </Field>
+        <div className="flex flex-wrap gap-1.5">
+          {DAYS.map((name, day) => (
+            <Day key={name} label={name} picked={days.includes(day)} onClick={() => toggle(day)} />
+          ))}
+        </div>
       )}
-
-      {when.kind === 'monthly' && (
-        <Field label="Day of the month">
-          <Select
-            value={String(when.day)}
-            options={Array.from({ length: 28 }, (unused, index) => ({
-              value: String(index + 1),
-              label: String(index + 1)
-            }))}
-            onChange={value => onChange({ kind: 'monthly', day: Number(value), at })}
-          />
-        </Field>
-      )}
-
-      {when.kind !== 'every' && time}
     </div>
   )
 }
