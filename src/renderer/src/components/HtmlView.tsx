@@ -56,11 +56,6 @@ export default function HtmlView({
         </div>
       )}
       {url && <webview key={url} src={url} className="absolute inset-0 w-full h-full" />}
-      {url && partial && (
-        <p className="glass select-none absolute bottom-3 left-3 px-3 py-1.5 rounded-full text-xs text-fg/70">
-          Showing the beginning of this file
-        </p>
-      )}
     </div>
   )
 }
