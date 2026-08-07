@@ -83,6 +83,9 @@ const READ = \`(() => {
   }
   const rows = [...document.querySelectorAll('.bn-block-content[data-content-type="numberedListItem"]')]
   if (!rows.length) return { failed: 'no numbered rows on the page' }
+  const relax = document.createElement('style')
+  relax.textContent = '.doc .bn-block-content[data-content-type="numberedListItem"]::before { min-width: 0 !important; padding-right: 0 !important }'
+  document.head.append(relax)
   const ruler = document.createElement('span')
   ruler.style.position = 'fixed'
   ruler.style.visibility = 'hidden'
@@ -90,7 +93,10 @@ const READ = \`(() => {
   document.body.append(ruler)
   const paints = (row, text) => {
     const mark = getComputedStyle(row, '::before')
-    ruler.style.font = mark.font
+    ruler.style.fontFamily = mark.fontFamily
+    ruler.style.fontSize = mark.fontSize
+    ruler.style.fontWeight = mark.fontWeight
+    ruler.style.fontStyle = mark.fontStyle
     ruler.style.letterSpacing = mark.letterSpacing
     ruler.textContent = text
     return ruler.getBoundingClientRect().width

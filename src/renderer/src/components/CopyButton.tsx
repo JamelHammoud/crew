@@ -12,7 +12,7 @@ export default function CopyButton({
   glass,
   className = ''
 }: {
-  text: string
+  text: string | (() => string)
   label?: string
   glass?: boolean
   className?: string
