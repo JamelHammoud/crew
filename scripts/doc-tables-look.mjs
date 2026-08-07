@@ -448,9 +448,11 @@ function run(dir) {
     child.stdout.on('data', chunk => (out += chunk))
     child.stderr.on('data', () => {})
     child.on('exit', () => {
-      const line = out.split('\n').find(row => row.startsWith('SEEN '))
+      const rows = out.split('\n')
+      const line = rows.find(row => row.startsWith('SEEN '))
+      const drag = rows.find(row => row.startsWith('DRAG '))
       if (!line) return reject(new Error('the window said nothing back'))
-      accept(JSON.parse(line.slice(5)))
+      accept({ seen: JSON.parse(line.slice(5)), drag: drag ? JSON.parse(drag.slice(5)) : null })
     })
     child.on('error', reject)
   })
