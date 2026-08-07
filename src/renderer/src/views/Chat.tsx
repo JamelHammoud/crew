@@ -232,16 +232,22 @@ export default function Chat() {
               onKeyDown={onKeyDown}
               onSend={send}
               huddle
+              defaultAgent
               ghost={ghost}
               replyTo={replyTo ?? undefined}
               onCancelReply={() => setReplyTo(null)}
-              chips={commands.map(name => (
-                <CommandChip
-                  key={name}
-                  name={name}
-                  onRemove={() => setChatCommands(commands.filter(held => held !== name))}
-                />
-              ))}
+              chips={[
+                // The standing one comes first, so a command arriving beside it
+                // never moves it out from under the pointer.
+                <DefaultAgentChip key="agent" />,
+                ...commands.map(name => (
+                  <CommandChip
+                    key={name}
+                    name={name}
+                    onRemove={() => setChatCommands(commands.filter(held => held !== name))}
+                  />
+                ))
+              ]}
             >
               <MentionMenu
                 matches={mention.matches}
