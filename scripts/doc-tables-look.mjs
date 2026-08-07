@@ -186,11 +186,13 @@ app.whenReady().then(async () => {
         'document.documentElement.classList.toggle("light", ' + JSON.stringify(theme === 'light') + '), true'
       )
       await wait(400)
-      await win.webContents.executeJavaScript(HOVER)
-      await wait(500)
-      out[theme] = await win.webContents.executeJavaScript(READ)
-      const shot = await win.webContents.capturePage()
-      await writeFile(OUT + '-' + theme + '.png', shot.toPNG())
+      for (const where of WHERE) {
+        await win.webContents.executeJavaScript(HOVER(where))
+        await wait(400)
+        out[theme + ' / ' + where] = await win.webContents.executeJavaScript(READ)
+        const shot = await win.webContents.capturePage()
+        await writeFile(OUT + '-' + theme + '-' + where.replace(/ /g, '-') + '.png', shot.toPNG())
+      }
     }
     console.log('SEEN ' + JSON.stringify(out))
   } catch (e) {
