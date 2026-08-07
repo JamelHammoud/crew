@@ -35,23 +35,38 @@ const DOC = `Words\n\n\`\`\`ts\n${CODE}\n\`\`\`\n`
 const settle = () => new Promise(done => setTimeout(done, 0))
 
 describe('copying a code block', () => {
-  it('stands a copy button beside the language, and copies what the block holds', async () => {
+  it('stands a mark beside the language, carrying no word of its own', async () => {
     const { container } = render(createElement(DocEditor, { text: DOC, onChange: () => {} }))
+    await settle()
     const block = container.querySelector('[data-content-type="codeBlock"]') as HTMLElement
     expect(block).toBeTruthy()
 
-    const button = block.querySelector('.doc-code-copy') as HTMLButtonElement
+    const slot = block.querySelector('.doc-code-copy') as HTMLElement
+    expect(slot).toBeTruthy()
+    expect(slot.previousElementSibling?.tagName).toBe('SELECT')
+
+    const button = slot.querySelector('button') as HTMLButtonElement
     expect(button).toBeTruthy()
-    expect(button.textContent).toBe('Copy')
-    expect(button.previousElementSibling?.tagName).toBe('SELECT')
+    expect(button.querySelector('svg')).toBeTruthy()
+    expect(button.textContent).toBe('')
+  })
+
+  it('copies what the block holds at the moment it is pressed', async () => {
+    written.length = 0
+    const { container } = render(createElement(DocEditor, { text: DOC, onChange: () => {} }))
+    await settle()
+    const block = container.querySelector('[data-content-type="codeBlock"]') as HTMLElement
+    const button = block.querySelector('.doc-code-copy button') as HTMLButtonElement
 
     button.click()
     await settle()
     expect(written).toEqual([CODE])
-    expect(button.textContent).toBe('Copied')
 
-    await new Promise(done => setTimeout(done, 1300))
-    expect(button.textContent).toBe('Copy')
+    const code = block.querySelector('code') ?? (block.querySelector('pre') as HTMLElement)
+    code.textContent = 'const three = 3'
+    button.click()
+    await settle()
+    expect(written).toEqual([CODE, 'const three = 3'])
   })
 
   it('is drawn for the screen and never written into the doc', () => {
