@@ -72,6 +72,7 @@ app.disableHardwareAcceleration()
 const wait = ms => new Promise(r => setTimeout(r, ms))
 const OUT = ${JSON.stringify(path.join(shots, 'tables'))}
 const THEMES = ['dark', 'light']
+const WHERE = ['a cell', 'last row', 'last column', 'under the table', 'right of the table']
 
 const HOVER = where => \`(() => {
   const table = document.querySelector('.bn-editor [data-content-type="table"] table')
