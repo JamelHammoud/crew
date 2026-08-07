@@ -7,19 +7,28 @@ import { PeopleGlyph } from '../../icons'
 import { useMusic } from '../../state/music'
 import { useCrew } from '../../state/store'
 import AgentIcon from '../AgentIcon'
+import Select from '../Select'
 import { TextArea } from '../TextField'
 import { kindOf, TOOL_KINDS, type ToolKind } from '../toolKinds'
-import { Choice, Field, Picked, Scroller } from './parts'
+import { Empty, Label, Line, Picked, Scroller } from './parts'
 
 const KINDS = TOOL_KINDS.filter(one => (SCHEDULABLE as readonly string[]).includes(one.kind))
 
 const wordsOf = (action: ToolAction | null, kind: ToolKind): string =>
   action?.kind === kind && 'text' in action ? action.text : ''
 
+// What it does, written as a line: the kind of thing, who it is for, and then
+// the words underneath. The kinds carry the notes that tell them apart, which
+// is the whole of what says a thread is taken by an agent, a message is written
+// by one, and saying something is your own words.
 export default function ScheduleDoes({
+  kind,
+  onKind,
   initial,
   onChange
 }: {
+  kind: ToolKind
+  onKind: (kind: ToolKind) => void
   initial: ToolAction | null
   onChange: (action: ToolAction | null) => void
 }) {
@@ -28,7 +37,6 @@ export default function ScheduleDoes({
   const agents = useCrew(s => s.agents)
   const uploads = useMusic(s => s.uploads)
   const playlists = useMusic(s => s.playlists)
-  const [kind, setKind] = useState<ToolKind>(initial?.kind ?? 'prompt')
   const [ask, setAsk] = useState(wordsOf(initial, 'prompt'))
   const [post, setPost] = useState(wordsOf(initial, 'post'))
   const [say, setSay] = useState(wordsOf(initial, 'say'))
@@ -68,184 +76,133 @@ export default function ScheduleDoes({
   const here = agentsHere(agents)
   const named = agents.find(agent => agent.id === agentId)
   const choices = named && !here.includes(named) ? [...here, named] : here
+  const pages = Object.entries(docs)
 
+  // Whoever takes it, said inside the pill rather than over it. A label in a row
+  // of its own would be the pill read back in longer words.
   const who = (label: string) => (
-    <Field label={label}>
-      <div className="flex flex-wrap gap-1.5">
-        <Choice
-          label="Anyone"
-          mark={<PeopleGlyph className="w-4 h-4" />}
-          picked={agentId === null}
-          onClick={() => setAgentId(null)}
-        />
-        {choices.map(agent => (
-          <Choice
-            key={agent.id}
-            label={agent.label}
-            mark={<AgentIcon seed={agent.id} size="xs" />}
-            picked={agentId === agent.id}
-            onClick={() => setAgentId(agent.id)}
-          />
-        ))}
-      </div>
-    </Field>
+    <Select
+      label={label}
+      name={`${label} who`}
+      value={agentId ?? ''}
+      options={[
+        { value: '', label: 'Anyone', mark: <PeopleGlyph className="w-4 h-4" /> },
+        ...choices.map(agent => ({
+          value: agent.id,
+          label: agent.label,
+          mark: <AgentIcon seed={agent.id} size="xs" />
+        }))
+      ]}
+      onChange={value => setAgentId(value || null)}
+    />
+  )
+
+  const words = (
+    value: string,
+    placeholder: string,
+    label: string,
+    onWrite: (text: string) => void
+  ) => (
+    <TextArea
+      glass
+      rows={2}
+      value={value}
+      aria-label={label}
+      placeholder={placeholder}
+      onChange={event => onWrite(event.target.value)}
+    />
   )
 
   return (
     <div className="space-y-3">
-      <Field label="What it does">
-        <div className="flex flex-wrap gap-1.5">
-          {KINDS.map(one => (
-            <Choice
-              key={one.kind}
-              label={one.title}
-              mark={<one.mark className="w-4 h-4" />}
-              picked={kind === one.kind}
-              onClick={() => setKind(one.kind)}
+      <Line>
+        <Select
+          name="What it does"
+          value={kind}
+          options={KINDS.map(one => ({
+            value: one.kind,
+            label: one.title,
+            hint: one.note,
+            mark: <one.mark className="w-4 h-4" />
+          }))}
+          onChange={value => onKind(value as ToolKind)}
+        />
+
+        {(kind === 'prompt' || kind === 'post') && who('Ask')}
+        {kind === 'todo' && who('For')}
+
+        {kind === 'note' &&
+          (pages.length > 0 ? (
+            <Select
+              label="In"
+              name="Which doc"
+              value={page}
+              options={pages.map(([key, doc]) => ({ value: key, label: doc.title || 'Untitled' }))}
+              onChange={setPage}
             />
+          ) : (
+            <Empty>No docs yet</Empty>
           ))}
-        </div>
-      </Field>
 
-      {kind === 'prompt' && (
-        <>
-          {who('Who it asks')}
-          <Field label="What to ask">
-            <TextArea
-              rows={2}
-              value={ask}
-              aria-label="What to ask"
-              placeholder="Look at what came in overnight"
-              onChange={event => setAsk(event.target.value)}
+        {kind === 'music' &&
+          (lists.length + tracks.length > 0 ? (
+            <Select
+              label="Play"
+              name="What to play"
+              value={playlistId ? `list:${playlistId}` : trackId ? `track:${trackId}` : ''}
+              options={[
+                ...lists.map(list => ({
+                  value: `list:${list.id}`,
+                  label: list.name,
+                  hint: `${list.trackIds.length} ${list.trackIds.length === 1 ? 'track' : 'tracks'}`
+                })),
+                ...tracks.map(track => ({ value: `track:${track.id}`, label: track.name, hint: track.mood }))
+              ]}
+              onChange={value => {
+                const [what, id] = [value.slice(0, value.indexOf(':')), value.slice(value.indexOf(':') + 1)]
+                setPlaylistId(what === 'list' ? id : '')
+                setTrackId(what === 'track' ? id : '')
+              }}
             />
-          </Field>
-        </>
-      )}
+          ) : (
+            <Empty>Nothing on the shelf yet</Empty>
+          ))}
+      </Line>
 
-      {kind === 'post' && (
-        <>
-          {who('Who it asks')}
-          <Field label="What to ask">
-            <TextArea
-              rows={2}
-              value={post}
-              aria-label="What to ask"
-              placeholder="Sum up the week's changes"
-              onChange={event => setPost(event.target.value)}
-            />
-          </Field>
-        </>
-      )}
+      {kind === 'prompt' && words(ask, 'Look at what came in overnight', 'What to ask', setAsk)}
+      {kind === 'post' && words(post, "Sum up the week's changes", 'What to ask', setPost)}
+      {kind === 'say' && words(say, 'Standup in ten minutes', 'What to say', setSay)}
+      {kind === 'todo' && words(task, 'Read what the agents left overnight', 'What to add', setTask)}
+      {kind === 'note' && words(line, 'Where everything got to today', 'What to write', setLine)}
 
-      {kind === 'say' && (
-        <Field label="What to say">
-          <TextArea
-            rows={2}
-            value={say}
-            aria-label="What to say"
-            placeholder="Standup in ten minutes"
-            onChange={event => setSay(event.target.value)}
-          />
-        </Field>
-      )}
-
-      {kind === 'todo' && (
-        <>
-          {who("Who it's for")}
-          <Field label="What to add">
-            <TextArea
-              rows={2}
-              value={task}
-              aria-label="What to add"
-              placeholder="Read what the agents left overnight"
-              onChange={event => setTask(event.target.value)}
-            />
-          </Field>
-        </>
-      )}
-
-      {kind === 'note' && (
-        <>
-          <Field label="Which doc">
-            <Scroller empty="No docs yet">
-              {Object.entries(docs).map(([key, doc]) => (
+      {kind === 'chain' && (
+        <div>
+          <Label>In the order you pick them</Label>
+          {tools.length > 0 ? (
+            <Scroller>
+              {tools.map(tool => (
                 <Picked
-                  key={key}
-                  label={doc.title || 'Untitled'}
-                  picked={page === key}
-                  onClick={() => setPage(key)}
+                  key={tool.id}
+                  label={tool.name}
+                  note={kindOf(tool.action.kind).title}
+                  picked={toolIds.includes(tool.id)}
+                  order={toolIds.indexOf(tool.id) + 1 || undefined}
+                  onClick={() =>
+                    setToolIds(held =>
+                      held.includes(tool.id)
+                        ? held.filter(id => id !== tool.id)
+                        : held.length < STEP_LIMIT
+                          ? [...held, tool.id]
+                          : held
+                    )
+                  }
                 />
               ))}
             </Scroller>
-          </Field>
-          <Field label="What to write">
-            <TextArea
-              rows={2}
-              value={line}
-              aria-label="What to write"
-              placeholder="Where everything got to today"
-              onChange={event => setLine(event.target.value)}
-            />
-          </Field>
-        </>
-      )}
-
-      {kind === 'music' && (
-        <Field label="What to play">
-          <Scroller empty="Nothing on the shelf yet">
-            {[
-              ...lists.map(list => (
-                <Picked
-                  key={list.id}
-                  label={list.name}
-                  note={`${list.trackIds.length} ${list.trackIds.length === 1 ? 'track' : 'tracks'}`}
-                  picked={playlistId === list.id}
-                  onClick={() => {
-                    setPlaylistId(list.id)
-                    setTrackId('')
-                  }}
-                />
-              )),
-              ...tracks.map(track => (
-                <Picked
-                  key={track.id}
-                  label={track.name}
-                  note={track.mood}
-                  picked={trackId === track.id}
-                  onClick={() => {
-                    setTrackId(track.id)
-                    setPlaylistId('')
-                  }}
-                />
-              ))
-            ]}
-          </Scroller>
-        </Field>
-      )}
-
-      {kind === 'chain' && (
-        <Field label="Which tools, in the order you pick them">
-          <Scroller empty="Build a tool or two first">
-            {tools.map(tool => (
-              <Picked
-                key={tool.id}
-                label={tool.name}
-                note={kindOf(tool.action.kind).title}
-                picked={toolIds.includes(tool.id)}
-                order={toolIds.indexOf(tool.id) + 1 || undefined}
-                onClick={() =>
-                  setToolIds(held =>
-                    held.includes(tool.id)
-                      ? held.filter(id => id !== tool.id)
-                      : held.length < STEP_LIMIT
-                        ? [...held, tool.id]
-                        : held
-                  )
-                }
-              />
-            ))}
-          </Scroller>
-        </Field>
+          ) : (
+            <Empty>Build a tool or two first</Empty>
+          )}
+        </div>
       )}
     </div>
   )
