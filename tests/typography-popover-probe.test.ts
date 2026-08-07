@@ -48,15 +48,33 @@ function harness(at: number, tall: number) {
   )
 }
 
+function card(): HTMLElement {
+  return document.querySelector('.glass') as HTMLElement
+}
+
+// Where the box really stands, whichever of its two edges is pinned.
 function placed(): { top: number; bottom: number } {
-  const pop = document.querySelector('.glass') as HTMLElement
-  const top = Number.parseInt(pop.style.top, 10)
-  return { top, bottom: top + pop.offsetHeight }
+  const pop = card()
+  const tall = pop.offsetHeight
+  const bottom = pop.style.bottom
+    ? window.innerHeight - Number.parseInt(pop.style.bottom, 10)
+    : Number.parseInt(pop.style.top, 10) + tall
+  return { top: bottom - tall, bottom }
 }
 
 afterEach(cleanup)
 
 describe('popover placement', () => {
+  it('is pinned by the edge it was opened against', () => {
+    const { rerender } = render(harness(700, 400))
+    expect(card().style.top).toBe('')
+    expect(card().style.bottom).toBe('76px')
+
+    rerender(harness(100, 200))
+    expect(card().style.bottom).toBe('')
+    expect(card().style.top).toBe('140px')
+  })
+
   it('keeps its bottom against a trigger it opens above as the content shrinks', () => {
     const { rerender } = render(harness(700, 400))
     expect(placed()).toEqual({ top: 292, bottom: 692 })
