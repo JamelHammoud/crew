@@ -2,7 +2,8 @@ import { app, Notification } from 'electron'
 import type { AgentAlert } from '../shared/alerts'
 
 const KEPT = 32
-const standing: Notification[] = []
+const holder = globalThis as typeof globalThis & { crewAlertsStanding?: Notification[] }
+const standing: Notification[] = (holder.crewAlertsStanding ??= [])
 
 export function setBadge(count: number): void {
   app.setBadgeCount(Math.max(0, Math.round(count)))
