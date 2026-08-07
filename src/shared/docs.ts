@@ -87,10 +87,10 @@ export function serializeDocFile(doc: DocPage): string {
 
 const FENCE = /^\s*(```|~~~)/
 
-export function docExcerpt(text: string, limit = 240): string {
+export function docExcerpt(raw: string, limit = 240): string {
   const kept: string[] = []
   let length = 0
-  for (const line of text.trim().split('\n')) {
+  for (const line of stripDocTableMarks(raw).trim().split('\n')) {
     if (kept.length > 0 && length + line.length + 1 > limit) break
     kept.push(kept.length === 0 ? clip(line, limit) : line)
     length += line.length + 1
