@@ -82,7 +82,16 @@ const READ = \`(() => {
     preBg: block && block.querySelector('pre') ? getComputedStyle(block.querySelector('pre')).backgroundColor : null,
     preStyle: block && block.querySelector('pre') ? block.querySelector('pre').getAttribute('style') : null,
     pickText: pick && pick.value,
-    pickColor: paint(pick) && paint(pick).color
+    pickColor: paint(pick) && paint(pick).color,
+    chain: (() => {
+      const seen = []
+      let at = block
+      while (at) {
+        seen.push(at.tagName + '.' + (at.className || '').toString())
+        at = at.parentElement
+      }
+      return seen
+    })()
   }
 })()\`
 
