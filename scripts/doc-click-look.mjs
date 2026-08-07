@@ -22,8 +22,13 @@ const TEXT = [
   '- two to pick emoji',
   '  - a level in',
   '',
+  '- [ ] a thing to do',
+  '- [x] a thing that is done',
+  '',
   '1. first',
   '2. second',
+  '',
+  '> a quote to read',
   ''
 ].join('\n')
 
@@ -189,7 +194,7 @@ try {
       const caret = read.caret
       const end = caret && caret.at === caret.of ? 'END' : caret && caret.at === 0 ? 'START' : 'mid'
       const where = caret ? `${caret.at} of ${caret.of}` : 'nowhere'
-      console.log(`  ${read.kind.padEnd(18)} "${read.says.padEnd(28)}" slack ${String(read.slack).padStart(4)}  ->  ${where.padEnd(10)} ${end}`)
+      console.log(`  ${read.kind.padEnd(18)} "${read.says.slice(0,26).padEnd(26)}" tall ${String(read.tall).padStart(3)} slack ${String(read.slack).padStart(4)} ${read.direct ? 'own' : ' - '} ${read.hint.padEnd(22)} -> ${where.padEnd(10)} ${end}`)
     })
   })
 } finally {
