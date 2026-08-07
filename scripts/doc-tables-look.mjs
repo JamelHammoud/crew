@@ -267,10 +267,9 @@ try {
     console.log(`       paint ${read.cell.paint}, ink ${read.cell.ink}, rule ${read.cell.border}`)
     for (const [what, chrome] of Object.entries(read.chrome))
       console.log(
-        `  ${what}: ${chrome ? `${chrome.box.w}x${chrome.box.h} at ${chrome.box.x},${chrome.box.y}, paint ${chrome.paint}, radius ${chrome.radius}, in the wrapper ${chrome.inWrapper}` : 'not there'}`
+        `  ${what}: ${chrome ? `${chrome.box.w}x${chrome.box.h} at ${chrome.box.x},${chrome.box.y}, paint ${chrome.paint}, radius ${chrome.radius}` : 'not there'}`
       )
-    for (const one of read.floating)
-      console.log(`  standing: ${one.what} ${one.box.w}x${one.box.h} at ${one.box.x},${one.box.y}, in the wrapper ${one.inWrapper}`)
+    if (read.bar) console.log(`  bar: ${read.bar.box.w}x${read.bar.box.h}, paint ${read.bar.paint}, radius ${read.bar.radius}`)
   }
   console.log(`\nwrote the shots to ${shots}`)
 } finally {
