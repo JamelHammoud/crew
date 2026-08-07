@@ -158,7 +158,7 @@ app.whenReady().then(async () => {
     win.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'Return' })
     win.webContents.sendInputEvent({ type: 'char', keyCode: '\\r' })
     win.webContents.sendInputEvent({ type: 'keyUp', keyCode: 'Return' })
-    await wait: 0
+
     await wait(350)
 
     const all = []

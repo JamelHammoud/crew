@@ -25,13 +25,33 @@ export function docSlashItems(editor: BlockNoteEditor, addImage: () => void): Do
   }))
 }
 
-export function DocSlashMenu({ items, selectedIndex, onItemClick }: SuggestionMenuProps<DocSlashItem>) {
-  const listRef = useRef<HTMLDivElement>(null)
+const MISS = 9
 
-  useEffect(() => {
-    const row = listRef.current?.querySelector('[data-selected="true"]')
-    if (row instanceof HTMLElement) bringInto(row, listRef.current)
-  }, [selectedIndex])
+function rankOf(item: DocSlashItem, wanted: string): number {
+  const title = item.title.toLowerCase()
+  const aliases = item.aliases.map(alias => alias.toLowerCase())
+  if (title === wanted) return 0
+  if (aliases.includes(wanted)) return 1
+  if (title.startsWith(wanted)) return 2
+  if (aliases.some(alias => alias.startsWith(wanted))) return 3
+  if (title.includes(wanted)) return 4
+  if (aliases.some(alias => alias.includes(wanted))) return 5
+  return MISS
+}
+
+export function slashMatches(items: DocSlashItem[], query: string): DocSlashItem[] {
+  const wanted = query.trim().toLowerCase()
+  if (!wanted) return items
+  const found = items
+    .map((item, index) => ({ item, index, rank: rankOf(item, wanted) }))
+    .filter(one => one.rank < MISS)
+    .sort((a, b) => a.rank - b.rank || a.index - b.index)
+  const groups = [...new Set(found.map(one => one.item.group))]
+  return found.sort((a, b) => groups.indexOf(a.item.group) - groups.indexOf(b.item.group)).map(one => one.item)
+}
+
+export function DocSlashMenu({ items, selectedIndex, onItemClick }: SuggestionMenuProps<DocSlashItem>) {
+  const listRef = useDocMenu(items, selectedIndex, onItemClick)
 
   if (items.length === 0) return null
   return (
