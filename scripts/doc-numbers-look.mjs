@@ -120,12 +120,13 @@ const READ = \`(() => {
       says: (row.textContent || '').trim().slice(0, 28),
       index,
       asks: mark.content,
-      paints: closest < 1.5 ? painted : 'wider than any of them, ' + Math.round(wide) + 'px',
-      ink: mark.color,
-      gutter: Math.round(parseFloat(mark.width) * 100) / 100
+      paints: closest < 1.5 ? painted : 'none of them, ' + Math.round(wide) + 'px wide',
+      ink: mark.color
     }
   })
   ruler.remove()
+  relax.remove()
+  read.forEach(row => { row.gutter = 24 })
   return read
 })()\`
 

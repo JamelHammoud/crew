@@ -1,38 +1,9 @@
 import type { createCodeBlockSpec } from '@blocknote/core/blocks'
+import { createElement } from 'react'
+import { createRoot } from 'react-dom/client'
+import CopyButton from '../CopyButton'
 
 type CodeBlockSpec = ReturnType<typeof createCodeBlockSpec>
-
-const SAID_MS = 1200
-
-function copyPill(read: () => string) {
-  const button = document.createElement('button')
-  button.type = 'button'
-  button.className = 'doc-code-copy'
-  button.textContent = 'Copy'
-  let said = 0
-  const hold = (event: MouseEvent) => event.preventDefault()
-  const press = (event: MouseEvent) => {
-    event.preventDefault()
-    event.stopPropagation()
-    void navigator.clipboard?.writeText(read()).then(() => {
-      button.textContent = 'Copied'
-      window.clearTimeout(said)
-      said = window.setTimeout(() => {
-        button.textContent = 'Copy'
-      }, SAID_MS)
-    })
-  }
-  button.addEventListener('mousedown', hold)
-  button.addEventListener('click', press)
-  return {
-    button,
-    stop: () => {
-      window.clearTimeout(said)
-      button.removeEventListener('mousedown', hold)
-      button.removeEventListener('click', press)
-    }
-  }
-}
 
 function controlsIn(dom: HTMLElement | DocumentFragment) {
   const found = dom.querySelector('div')
@@ -53,14 +24,18 @@ export function withCopy(spec: CodeBlockSpec): CodeBlockSpec {
         const drawn = draw.call(this, block, editor)
         const code = drawn.contentDOM
         if (!code || !('renderType' in this) || this.renderType !== 'nodeView') return drawn
-        const { button, stop } = copyPill(() => code.textContent ?? '')
-        controlsIn(drawn.dom).append(button)
+        const slot = document.createElement('span')
+        slot.className = 'doc-code-copy'
+        slot.contentEditable = 'false'
+        controlsIn(drawn.dom).append(slot)
+        const root = createRoot(slot)
+        root.render(createElement(CopyButton, { text: () => code.textContent ?? '', className: 'flex' }))
         return {
           ...drawn,
           ignoreMutation: mutation =>
-            button.contains(mutation.target) || (drawn.ignoreMutation?.(mutation) ?? false),
+            slot.contains(mutation.target) || (drawn.ignoreMutation?.(mutation) ?? false),
           destroy: () => {
-            stop()
+            queueMicrotask(() => root.unmount())
             drawn.destroy?.()
           }
         }
