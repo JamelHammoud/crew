@@ -73,13 +73,28 @@ const wait = ms => new Promise(r => setTimeout(r, ms))
 const OUT = ${JSON.stringify(path.join(shots, 'tables'))}
 const THEMES = ['dark', 'light']
 
-const HOVER = \`(() => {
-  const cell = document.querySelector('.bn-editor [data-content-type="table"] td')
-  if (!cell) return false
+const HOVER = where => \`(() => {
+  const table = document.querySelector('.bn-editor [data-content-type="table"] table')
+  const wrap = document.querySelector('.bn-editor [data-content-type="table"] .tableWrapper')
+  if (!table) return false
+  const rows = [...table.rows]
+  const where = \` + JSON.stringify(where) + \`
+  const cell =
+    where === 'last row' ? rows[rows.length - 1].cells[0]
+    : where === 'last column' ? rows[1].cells[rows[0].cells.length - 1]
+    : rows[1].cells[0]
   const box = cell.getBoundingClientRect()
-  const at = { clientX: box.left + box.width / 2, clientY: box.top + box.height / 2, bubbles: true }
-  cell.dispatchEvent(new MouseEvent('mouseover', at))
-  cell.dispatchEvent(new MouseEvent('mousemove', at))
+  const edge = table.getBoundingClientRect()
+  const at =
+    where === 'under the table'
+      ? { clientX: edge.left + edge.width / 2, clientY: edge.bottom + 8 }
+      : where === 'right of the table'
+        ? { clientX: edge.right + 8, clientY: edge.top + edge.height / 2 }
+        : { clientX: box.left + box.width / 2, clientY: box.top + box.height / 2 }
+  const on = where === 'under the table' || where === 'right of the table' ? wrap : cell
+  const send = { ...at, bubbles: true }
+  on.dispatchEvent(new MouseEvent('mouseover', send))
+  on.dispatchEvent(new MouseEvent('mousemove', send))
   return true
 })()\`
 
