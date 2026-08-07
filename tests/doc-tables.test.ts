@@ -31,7 +31,8 @@ const rule = (selector: string): string => {
   return styles.slice(at, styles.indexOf('\n}', at))
 }
 
-const WRAPPER = ".doc .bn-editor [data-content-type='table'] .tableWrapper"
+const SEL = ".doc .bn-editor [data-content-type='table']"
+const WRAPPER = `${SEL} .tableWrapper`
 
 const wrapperSets = (property: string): boolean => new RegExp(`\\n\\s*${property}\\s*:`).test(rule(WRAPPER))
 
