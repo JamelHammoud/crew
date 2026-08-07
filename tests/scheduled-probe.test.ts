@@ -312,7 +312,7 @@ describe('the card one is written on', () => {
     openCard()
     fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Weekly sweep' } })
     fireEvent.change(screen.getByLabelText('What to ask'), { target: { value: 'Read what came in' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Certain days' }))
+    pick('How often it runs', 'Certain days')
     for (const day of ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']) {
       fireEvent.click(screen.getByRole('button', { name: day }))
     }
