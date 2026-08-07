@@ -152,17 +152,13 @@ const READ = \`(() => {
       anyExtend: seen('.bn-extend-button'),
       resize: seen('.column-resize-handle')
     },
-    clipped: (() => {
-      const out = []
-      const edge = wrap.getBoundingClientRect()
-      for (const el of document.querySelectorAll('.bn-extend-button, .bn-table-handle')) {
-        const r = el.getBoundingClientRect()
-        if (r.width === 0 && r.height === 0) continue
-        if (r.right > edge.right + 0.5 || r.bottom > edge.bottom + 0.5 || r.left < edge.left - 0.5 || r.top < edge.top - 0.5)
-          out.push({ what: el.className, box: box(el) })
-      }
-      return out
-    })()
+    floating: [...document.querySelectorAll('[class*="bn-table"], [class*="bn-extend"], .column-resize-handle')]
+      .filter(el => el.getBoundingClientRect().width || el.getBoundingClientRect().height)
+      .map(el => ({
+        what: (el.className || '').split(' ').filter(name => name.startsWith('bn-') || name.startsWith('column-')).join(' '),
+        box: box(el),
+        inWrapper: !!el.closest('.tableWrapper')
+      }))
   }
 })()\`
 
