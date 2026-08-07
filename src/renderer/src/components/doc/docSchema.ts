@@ -8,11 +8,13 @@ export const docSchema = BlockNoteSchema.create({
   blockSpecs: {
     ...defaultBlockSpecs,
     codeBlock: withCopy(
-      createCodeBlockSpec({
-        defaultLanguage: 'text',
-        supportedLanguages: CODE_LANGUAGES,
-        createHighlighter: createCodeHighlighter
-      })
+      withAliases(
+        createCodeBlockSpec({
+          defaultLanguage: 'text',
+          supportedLanguages: CODE_LANGUAGES,
+          createHighlighter: createCodeHighlighter
+        })
+      )
     )
   }
 })
