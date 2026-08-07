@@ -2,38 +2,50 @@ import type { ReactNode } from 'react'
 
 export const MORNING = 9 * 60
 
+// The card is glass, so nothing on it is set in a solid grey: a field takes the
+// foreground at an opacity the way everything else on a floating panel does.
+// The clock the machine draws on a time field is the one mark in here nobody at
+// Crew drew, so it is taken off and the field is typed into.
 export const PILL_INPUT =
-  'h-9 px-3.5 rounded-full bg-ink-800 text-sm text-fg outline-none transition-shadow duration-200 focus:shadow-[0_0_0_1px_rgb(255_255_255/0.12)] light:focus:shadow-[0_0_0_1px_rgb(0_0_0/0.14)]'
+  'h-8 px-3 rounded-full bg-fg/[0.07] text-sm text-fg tabular-nums outline-none transition-colors duration-150 hover:bg-fg/[0.1] focus:bg-fg/[0.14] [&::-webkit-calendar-picker-indicator]:hidden'
 
-export function Field({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <div>
-      <span className="block text-xs font-medium text-fg/45 mb-1.5">{label}</span>
-      {children}
-    </div>
-  )
+// A row of controls read left to right as one sentence. What a schedule does and
+// when it runs are both a line of plain words with the parts you can change set
+// in pills, so the card says what it is about to do without a preview of itself
+// underneath.
+export function Line({ children }: { children: ReactNode }) {
+  return <div className="flex flex-wrap items-center gap-2">{children}</div>
 }
 
-export function Choice({
-  label,
-  mark,
-  picked,
-  onClick
-}: {
-  label: string
-  mark?: ReactNode
-  picked: boolean
-  onClick: () => void
-}) {
+// The words between those pills. They are read rather than pressed, so they are
+// the quietest thing on the line.
+export function Word({ children }: { children: ReactNode }) {
+  return <span className="text-sm text-fg/45">{children}</span>
+}
+
+export function Rule() {
+  return <div className="h-px -mx-6 bg-fg/[0.07]" />
+}
+
+export function Label({ children }: { children: ReactNode }) {
+  return <span className="block mb-1.5 text-xs font-medium text-fg/45">{children}</span>
+}
+
+export function Empty({ children }: { children: ReactNode }) {
+  return <p className="text-sm text-fg/35">{children}</p>
+}
+
+// One day of the week. They are a strip rather than a row of pills that each
+// hug their own word, so a week reads as a week.
+export function Day({ label, picked, onClick }: { label: string; picked: boolean; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
       aria-pressed={picked}
-      className={`h-8 px-3 rounded-full flex items-center gap-1.5 text-sm font-medium transition-all duration-150 active:scale-95 ${
-        picked ? 'bg-fg text-ink-900' : 'bg-fg/[0.06] text-fg/70 hover:bg-fg/[0.1] hover:text-fg'
+      className={`w-11 h-8 rounded-full text-sm font-medium transition-all duration-150 active:scale-95 ${
+        picked ? 'bg-fg text-ink-900' : 'bg-fg/[0.07] text-fg/70 hover:bg-fg/[0.12] hover:text-fg'
       }`}
     >
-      {mark}
       {label}
     </button>
   )
@@ -56,7 +68,7 @@ export function Picked({
     <button
       onClick={onClick}
       aria-pressed={picked}
-      className={`w-full flex items-center gap-2 px-3 h-10 rounded-xl text-left transition-colors duration-150 ${
+      className={`w-full flex items-center gap-2 px-3 h-9 rounded-xl text-left transition-colors duration-150 ${
         picked ? 'bg-fg/[0.12] text-fg' : 'text-fg/70 hover:bg-fg/[0.06] hover:text-fg'
       }`}
     >
@@ -71,8 +83,7 @@ export function Picked({
   )
 }
 
-export function Scroller({ empty, children }: { empty: string; children: ReactNode[] }) {
-  if (children.length === 0) return <p className="text-sm text-fg/45">{empty}</p>
+export function Scroller({ children }: { children: ReactNode[] }) {
   return <div className="max-h-40 overflow-y-auto overscroll-contain no-scrollbar">{children}</div>
 }
 
