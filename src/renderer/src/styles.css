@@ -1402,6 +1402,10 @@ textarea:placeholder-shown {
   background: var(--color-fg-muted);
 }
 
+.doc .bn-container .bn-editor .bn-block-group .bn-block .bn-block-group .bn-block-outer::before {
+  border-left-width: 0;
+}
+
 .doc .bn-editor .bn-block-content[data-content-type='checkListItem'] > div > input {
   appearance: none;
   position: relative;
