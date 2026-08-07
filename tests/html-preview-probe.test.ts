@@ -108,6 +108,39 @@ describe('reading an html file as the page it is written to be', () => {
     expect(screen.getByLabelText('File contents')).toBeTruthy()
   })
 
+  it('draws a page too big to hold from the file rather than from the head of it', async () => {
+    useBrowser.getState().openFile('site/model.html')
+    render(createElement(BrowserPanel))
+
+    fireEvent.click(await screen.findByLabelText('Show preview'))
+
+    await waitFor(() => expect(stood.length).toBe(1))
+    expect(stood[0].path).toBe('site/model.html')
+    expect(stood[0].text).toBeNull()
+  })
+
+  it('says nothing about the beginning of a file over a page', async () => {
+    useBrowser.getState().openFile('site/model.html')
+    render(createElement(BrowserPanel))
+
+    expect(await screen.findByText('Showing the beginning of this file')).toBeTruthy()
+
+    fireEvent.click(screen.getByLabelText('Show preview'))
+
+    await waitFor(() => expect(page()).not.toBeNull())
+    expect(screen.queryByText('Showing the beginning of this file')).toBeNull()
+  })
+
+  it('draws a page of many lines whole, since the text view is the only thing that cuts them', async () => {
+    useBrowser.getState().openFile('site/many.html')
+    render(createElement(BrowserPanel))
+
+    fireEvent.click(await screen.findByLabelText('Show preview'))
+
+    await waitFor(() => expect(stood.length).toBe(1))
+    expect(stood[0].text).toBeNull()
+  })
+
   it('draws the page from what is in hand, edits and all', async () => {
     useBrowser.getState().openFile('site/index.html')
     render(createElement(BrowserPanel))
