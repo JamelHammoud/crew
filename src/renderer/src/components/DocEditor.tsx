@@ -54,17 +54,26 @@ export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: 
     const loaded = useRef(false)
     const timer = useRef<number | null>(null)
 
+    const toMarkdown = useCallback(() => {
+      const markdown = relativizeDoc(editor.blocksToMarkdownLossy(editor.document), httpBaseRef.current)
+      return writeDocTableWidths(markdown, tableWidthsOf(editor.document as DocTableBlock[]))
+    }, [editor])
+    const toMarkdownRef = useRef(toMarkdown)
+    toMarkdownRef.current = toMarkdown
+
     useEffect(() => {
       const focused = containerRef.current?.contains(document.activeElement) ?? false
       if (loaded.current && (focused || text === lastMarkdown.current)) return
-      const blocks: PartialBlock[] = editor.tryParseMarkdownToBlocks(localizeDoc(text || '', httpBaseRef.current))
+      const read = readDocTableWidths(text || '')
+      const blocks: PartialBlock[] = editor.tryParseMarkdownToBlocks(localizeDoc(read.text, httpBaseRef.current))
+      applyTableWidths(blocks as DocTableBlock[], read.widths)
       editor.replaceBlocks(editor.document, blocks.length ? blocks : [{ type: 'paragraph', content: [] }])
       lastMarkdown.current = text
       loaded.current = true
     }, [editor, text])
 
     const save = () => {
-      const markdown = relativizeDoc(editor.blocksToMarkdownLossy(editor.document), httpBaseRef.current)
+      const markdown = toMarkdownRef.current()
       if (markdown === lastMarkdown.current) return
       lastMarkdown.current = markdown
       onChange(markdown)
