@@ -25,8 +25,6 @@ export function Empty({ children }: { children: ReactNode }) {
   return <p className="text-sm text-fg/35">{children}</p>
 }
 
-// One day of the week. They are a strip rather than a row of pills that each
-// hug their own word, so a week reads as a week.
 export function Day({ label, picked, onClick }: { label: string; picked: boolean; onClick: () => void }) {
   return (
     <button
