@@ -747,7 +747,7 @@ app.whenReady().then(() => {
     crews.inView(event.sender.id).writeFile(target, text)
   )
   ipcMain.handle('file:locate', (event, target: string) => crews.inView(event.sender.id).locatePath(target))
-  ipcMain.handle('preview:html', (event, id: string, target: string, text: string) => {
+  ipcMain.handle('preview:html', (event, id: string, target: string, text: string | null) => {
     // A page somebody attached names no file, since it never landed in the
     // project, so there is nothing to resolve and nothing beside it to reach.
     const absolute = target ? crews.inView(event.sender.id).resolveFile(target) : ''
