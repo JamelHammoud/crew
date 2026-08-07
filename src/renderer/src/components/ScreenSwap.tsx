@@ -42,8 +42,6 @@ export default function ScreenSwap({
   // For a box that already has its size, where the screen being left has to be
   // seen to go.
   fill?: boolean
-  // For a card whose screens are not all one width, where the box has to carry
-  // that too or half the change is a movement and the other half is a jump.
   width?: boolean
   children: ReactNode
 }) {
