@@ -73,12 +73,16 @@ export default function ScheduleDoes({
   const named = agents.find(agent => agent.id === agentId)
   const choices = named && !here.includes(named) ? [...here, named] : here
   const pages = Object.entries(docs)
+  const heldPage = pages.some(([key]) => key === page) ? page : ''
+  const track = tracks.some(one => one.id === trackId) ? trackId : ''
+  const list = lists.some(one => one.id === playlistId) ? playlistId : ''
+  const playing = list ? `list:${list}` : track ? `track:${track}` : ''
 
   const who = (label: string) => (
     <Select
       label={label}
       name={`${label} who`}
-      value={agentId ?? ''}
+      value={choices.some(one => one.id === agentId) ? (agentId as string) : ''}
       options={[
         { value: '', label: 'Anyone', mark: <PeopleGlyph className="w-4 h-4" /> },
         ...choices.map(agent => ({
