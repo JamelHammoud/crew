@@ -1,3 +1,5 @@
+import { stripDocTableMarks } from './docTables'
+
 export const ROOT_PAGE = 'main'
 export const ROOT_TITLE = 'Welcome'
 
