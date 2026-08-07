@@ -1838,6 +1838,7 @@ textarea:placeholder-shown {
 .doc .bn-container .bn-extend-button-add-remove-rows {
   height: 16px;
   margin-top: 4px;
+  max-width: var(--doc-measure);
 }
 
 .doc .bn-container .bn-form-popover .mantine-TextInput-input {
