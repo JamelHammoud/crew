@@ -1580,10 +1580,17 @@ textarea:placeholder-shown {
 .doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div::before {
   content: '';
   position: absolute;
-  inset: -4px -12px -4px -40px;
+  inset: -5px -12px -5px -44px;
   z-index: -1;
   background: var(--color-ink-850);
-  mask-image: var(--scrim-ramp-x);
+  mask-image: var(--scrim-ramp-x), linear-gradient(#000, #000);
+  mask-size:
+    44px 100%,
+    calc(100% - 44px) 100%;
+  mask-position:
+    left center,
+    right center;
+  mask-repeat: no-repeat;
   pointer-events: none;
 }
 
