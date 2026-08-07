@@ -3,7 +3,7 @@ import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { aimOf, type PooledAgent } from '../src/shared/llm'
-import { useDefaultAgents } from '../src/renderer/src/state/defaultAgent'
+import { useDefaultAgent } from '../src/renderer/src/state/defaultAgent'
 import { useCrew } from '../src/renderer/src/state/store'
 import Chat from '../src/renderer/src/views/Chat'
 
@@ -61,14 +61,14 @@ const open = (agents: PooledAgent[] = [BUBBLES, KIMI], sendChat = vi.fn()) => {
 
 const pick = (label: string) => {
   fireEvent.click(screen.getByLabelText('Add to your message'))
-  fireEvent.click(screen.getByText('Pick who takes it'))
+  fireEvent.click(screen.getByText('Default agent'))
   fireEvent.click(screen.getByText(label))
 }
 
 describe('the agent standing on the chat composer', () => {
   beforeEach(() => {
     globalThis.localStorage?.clear()
-    useDefaultAgents.setState({ aimed: {} })
+    useDefaultAgent.setState({ agentId: null })
   })
   afterEach(cleanup)
 
@@ -79,11 +79,11 @@ describe('the agent standing on the chat composer', () => {
     // The chip stands in the row the plus stands in, the way a command does.
     const row = screen.getByLabelText('Add to your message').parentElement?.parentElement as HTMLElement
     expect(row.textContent).toContain('Bubbles')
-    expect(useDefaultAgents.getState().aimed[PLACE]).toBe('ali/bubbles')
+    expect(useDefaultAgent.getState().agentId).toBe('ali/bubbles')
 
     fireEvent.click(screen.getByLabelText('Stop sending to Bubbles'))
     expect(row.textContent).not.toContain('Bubbles')
-    expect(useDefaultAgents.getState().aimed[PLACE]).toBeUndefined()
+    expect(useDefaultAgent.getState().agentId).toBeNull()
   })
 
   it('sends what was typed to them without the name being written', () => {
@@ -132,19 +132,19 @@ describe('the agent standing on the chat composer', () => {
     open([agent('ali/away', 'Away', 'offline')])
 
     fireEvent.click(screen.getByLabelText('Add to your message'))
-    expect(screen.queryByText('Pick who takes it')).toBeNull()
+    expect(screen.queryByText('Default agent')).toBeNull()
     expect(screen.getByText('Upload a file')).toBeTruthy()
   })
 
   it('draws no chip for an agent the crew has nothing for', () => {
-    useDefaultAgents.setState({ aimed: { [PLACE]: 'ali/bubbles' } })
+    useDefaultAgent.setState({ agentId: 'ali/bubbles' })
     open([])
 
     const row = screen.getByLabelText('Add to your message').parentElement?.parentElement as HTMLElement
     expect(row.textContent).not.toContain('Bubbles')
     // The agents arrive with the welcome, so the choice is still there for the
     // moment they do.
-    expect(useDefaultAgents.getState().aimed[PLACE]).toBe('ali/bubbles')
+    expect(useDefaultAgent.getState().agentId).toBe('ali/bubbles')
   })
 
   it('belongs to the project it was picked in', () => {
