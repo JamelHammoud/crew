@@ -1727,10 +1727,7 @@ textarea:placeholder-shown {
 .doc .bn-container .bn-form-popover,
 .doc .bn-container .bn-menu-dropdown,
 .doc .bn-container .mantine-Menu-dropdown,
-.doc .bn-container .bn-tooltip,
-.doc .bn-container .bn-table-handle,
-.doc .bn-container .bn-table-cell-handle,
-.doc .bn-container .bn-extend-button {
+.doc .bn-container .bn-tooltip {
   background: var(--glass-bg);
   backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid var(--glass-line);
