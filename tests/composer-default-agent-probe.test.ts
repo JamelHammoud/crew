@@ -147,15 +147,27 @@ describe('the agent standing on the chat composer', () => {
     expect(useDefaultAgent.getState().agentId).toBe('ali/bubbles')
   })
 
-  it('belongs to the project it was picked in', () => {
+  it('stands in whatever project you walk into', () => {
     open()
     pick('Bubbles')
 
     act(() => useCrew.setState({ place: 'project:/tmp/two' }))
-    expect(screen.queryByLabelText('Stop sending to Bubbles')).toBeNull()
-
-    act(() => useCrew.setState({ place: PLACE }))
     expect(screen.getByLabelText('Stop sending to Bubbles')).toBeTruthy()
+  })
+
+  it('is read back off this machine, and an older record is nobody', async () => {
+    open()
+    pick('Bubbles')
+    expect(globalThis.localStorage.getItem('crew.default-agent')).toBe(JSON.stringify('ali/bubbles'))
+
+    const held = async () => {
+      vi.resetModules()
+      return (await import('../src/renderer/src/state/defaultAgent')).useDefaultAgent.getState().agentId
+    }
+    expect(await held()).toBe('ali/bubbles')
+
+    globalThis.localStorage.setItem('crew.default-agent', JSON.stringify({ [PLACE]: 'ali/bubbles' }))
+    expect(await held()).toBeNull()
   })
 })
 
