@@ -1062,7 +1062,7 @@ An agent standing on the chat's own composer, so a person working with one of th
 - The picker is the agents that are here, the same list the `@` menu offers, and with nobody here the row is left out rather than opening on an empty card. It has no way back and no heading, the rule the GIFs already hold: the rows it was opened from are one press away again, and a row of faces one press after asking for one says what it is.
 - Only the chat has one. A thread already has an agent, and a message in it goes there whatever anybody picked.
 - The chip is `ComposerChip`, which is what a command chip is made of too, so the standing one and the passing ones are one control at one height. It stands first in the row, so a command arriving beside it never moves it out from under the pointer.
-- `tests/composer-default-agent-probe.test.ts` holds the picking, the chip standing through a send, a written name beating it, an agent that is not here taking nothing, and the choice belonging to the project it was picked in.
+- `tests/composer-default-agent-probe.test.ts` holds the picking, the chip standing through a send and into another project, a written name beating it, an agent that is not here taking nothing, the choice read back off this machine, and the older record reading as nobody.
 
 ## Helpers
 
