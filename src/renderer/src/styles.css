@@ -1547,7 +1547,7 @@ textarea:placeholder-shown {
   min-width: 0;
   width: calc(100% + var(--bn-table-handle-size) + var(--bn-table-widget-size));
   margin-inline: calc(var(--bn-table-handle-size) * -1) calc(var(--bn-table-widget-size) * -1);
-  margin-bottom: calc(var(--bn-table-widget-size) - var(--doc-table-gap));
+  margin-bottom: calc(var(--doc-table-gap) - var(--bn-table-widget-size));
   overscroll-behavior-x: contain;
 }
 
