@@ -2,11 +2,16 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
-import { DOC_GUTTER, DOC_MAX_W } from '../src/renderer/src/components/doc/docsLayout'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const read = (file: string) => readFileSync(path.join(root, file), 'utf8')
 const styles = read('src/renderer/src/styles.css')
+const layout = read('src/renderer/src/components/doc/docsLayout.ts')
+const number = (name: string): number => {
+  const found = new RegExp(`export const ${name} = (\\d+)`).exec(layout)
+  expect(found, name).toBeTruthy()
+  return Number(found![1])
+}
 const handles = read('src/renderer/src/components/doc/DocTableHandles.tsx')
 const editor = read('src/renderer/src/components/DocEditor.tsx')
 
