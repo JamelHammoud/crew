@@ -19,6 +19,12 @@ const TEXT = [
   '}',
   '```',
   '',
+  'A block whose fence was written short:',
+  '',
+  '```ts',
+  'const one = 1',
+  '```',
+  '',
   'And a line under it.'
 ].join('\n')
 
@@ -60,7 +66,8 @@ const READ = \`(() => {
     const r = el.getBoundingClientRect()
     return { left: Math.round(r.left), right: Math.round(r.right), top: Math.round(r.top), width: Math.round(r.width), height: Math.round(r.height) }
   }
-  const block = document.querySelector('[data-content-type="codeBlock"]')
+  const blocks = [...document.querySelectorAll('[data-content-type="codeBlock"]')]
+  const block = blocks[0]
   const row = block && block.querySelector('div')
   const copy = block && block.querySelector('.doc-code-copy')
   const pick = block && block.querySelector('select')
@@ -85,6 +92,16 @@ const READ = \`(() => {
     pickColor: paint(pick) && paint(pick).color,
     inkAtBlock: getComputedStyle(block).getPropertyValue('--color-ink-850'),
     fgAtBlock: getComputedStyle(block).getPropertyValue('--color-fg-secondary'),
+    second: (() => {
+      const two = blocks[1]
+      if (!two) return null
+      const style = getComputedStyle(two)
+      const pick = two.querySelector('select')
+      const chain = []
+      let at = two
+      while (at) { chain.push(at.tagName + '.' + (at.className || '')); at = at.parentElement }
+      return { bg: style.backgroundColor, ink: style.getPropertyValue('--color-ink-850'), pick: pick && pick.value, chain }
+    })(),
     chain: (() => {
       const seen = []
       let at = block
