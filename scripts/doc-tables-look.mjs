@@ -160,20 +160,18 @@ const READ = \`(() => {
       border: cellStyle.borderRightWidth + ' ' + cellStyle.borderRightColor
     },
     chrome: {
-      rowHandle: seen('.bn-table-handle'),
-      cellHandle: seen('.bn-table-cell-handle'),
-      extendCols: seen('.bn-extend-button-add-remove-columns'),
-      extendRows: seen('.bn-extend-button-add-remove-rows'),
-      anyExtend: seen('.bn-extend-button'),
-      resize: seen('.column-resize-handle')
+      rowHandle: seen('[data-table-handle="row"]'),
+      columnHandle: seen('[data-table-handle="column"]'),
+      addColumn: seen('.bn-extend-button-add-remove-columns'),
+      addRow: seen('.bn-extend-button-add-remove-rows'),
+      mantine: seen('.bn-table-handle, .bn-table-cell-handle')
     },
-    floating: [...document.querySelectorAll('[class*="bn-table"], [class*="bn-extend"], .column-resize-handle')]
-      .filter(el => el.getBoundingClientRect().width || el.getBoundingClientRect().height)
-      .map(el => ({
-        what: (el.className || '').split(' ').filter(name => name.startsWith('bn-') || name.startsWith('column-')).join(' '),
-        box: box(el),
-        inWrapper: !!el.closest('.tableWrapper')
-      }))
+    bar: (() => {
+      const at = document.querySelector('[data-table-handle] span')
+      if (!at) return null
+      const style = getComputedStyle(at)
+      return { box: box(at), paint: style.backgroundColor, radius: style.borderTopLeftRadius }
+    })()
   }
 })()\`
 
