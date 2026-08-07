@@ -8,6 +8,12 @@ export const CODE_LANGUAGES: Record<string, { name: string; aliases?: string[] }
   )
 }
 
+export function canonicalLanguage(lang: string): string {
+  if (CODE_LANGUAGES[lang]) return lang
+  const found = Object.entries(CODE_LANGUAGES).find(([, one]) => one.aliases?.includes(lang))
+  return found?.[0] ?? lang
+}
+
 export async function createCodeHighlighter(): Promise<HighlighterGeneric<string, string>> {
   const core = await shikiCore()
   return {
