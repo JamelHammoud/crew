@@ -121,7 +121,7 @@ export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: 
     }
 
     const slashItems = useCallback(
-      async (query: string) => filterSuggestionItems(docSlashItems(editor, addImage), query),
+      async (query: string) => slashMatches(docSlashItems(editor, addImage), query),
       [addImage, editor]
     )
     const emojiItems = useCallback(async (query: string) => docEmojiItems(editor, query), [editor])
