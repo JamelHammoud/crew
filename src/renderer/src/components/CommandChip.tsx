@@ -59,16 +59,11 @@ export default function CommandChip({ name, onRemove }: { name: CommandName; onR
   }
 
   return (
-    <span className="h-10 pl-4 pr-1.5 rounded-full border border-ink-600 flex items-center gap-2 text-sm text-fg shrink-0">
-      <Mark className="w-4 h-4 shrink-0" />
-      <span className="truncate">{label}</span>
-      <button
-        onClick={onRemove}
-        aria-label={`Remove ${label}`}
-        className="w-7 h-7 -mr-0.5 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 cursor-pointer hover:text-fg hover:bg-fg/[0.06] active:scale-95"
-      >
-        <CloseGlyph className="w-3.5 h-3.5" />
-      </button>
-    </span>
+    <ComposerChip
+      mark={<Mark className="w-4 h-4 shrink-0" />}
+      label={label}
+      removeLabel={`Remove ${label}`}
+      onRemove={onRemove}
+    />
   )
 }
