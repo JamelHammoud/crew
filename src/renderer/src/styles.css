@@ -1352,6 +1352,69 @@ textarea:placeholder-shown {
   color: var(--color-fg-muted);
 }
 
+.doc .bn-editor .bn-block-content[data-content-type='numberedListItem'] {
+  counter-reset: doc-order attr(data-index type(<integer>), 1);
+}
+
+.doc .bn-editor .bn-block-outer[data-prev-type='numberedListItem']:not([data-prev-index='none']) {
+  counter-reset: doc-order attr(data-prev-index type(<integer>), 1);
+}
+
+.doc .bn-editor .bn-block-outer .bn-block .bn-block-content[data-content-type='numberedListItem']::before,
+.doc .bn-editor .bn-block-outer[data-prev-type='numberedListItem'] .bn-block .bn-block-content::before {
+  content: counter(doc-order, decimal) '.';
+}
+
+.doc .bn-editor .bn-block-group .bn-block-group .bn-block .bn-block-content[data-content-type='numberedListItem']::before {
+  content: counter(doc-order, lower-alpha) '.';
+}
+
+.doc
+  .bn-editor
+  .bn-block-group
+  .bn-block-group
+  .bn-block-group
+  .bn-block
+  .bn-block-content[data-content-type='numberedListItem']::before {
+  content: counter(doc-order, lower-roman) '.';
+}
+
+.doc
+  .bn-editor
+  .bn-block-group
+  .bn-block-group
+  .bn-block-group
+  .bn-block-group
+  .bn-block
+  .bn-block-content[data-content-type='numberedListItem']::before {
+  content: counter(doc-order, decimal) '.';
+}
+
+.doc
+  .bn-editor
+  .bn-block-group
+  .bn-block-group
+  .bn-block-group
+  .bn-block-group
+  .bn-block-group
+  .bn-block
+  .bn-block-content[data-content-type='numberedListItem']::before {
+  content: counter(doc-order, lower-alpha) '.';
+}
+
+.doc
+  .bn-editor
+  .bn-block-group
+  .bn-block-group
+  .bn-block-group
+  .bn-block-group
+  .bn-block-group
+  .bn-block-group
+  .bn-block
+  .bn-block-content[data-content-type='numberedListItem']::before {
+  content: counter(doc-order, lower-roman) '.';
+}
+
 .doc .bn-editor .bn-block-outer .bn-block .bn-block-content[data-content-type='bulletListItem']::before,
 .doc .bn-editor .bn-block-outer[data-prev-type='bulletListItem'] .bn-block .bn-block-content::before {
   --doc-bullet: 7px;
