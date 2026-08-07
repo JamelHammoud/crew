@@ -68,8 +68,10 @@ export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: 
       const focused = containerRef.current?.contains(document.activeElement) ?? false
       if (loaded.current && (focused || text === lastMarkdown.current)) return
       const read = readDocTableWidths(text || '')
+      const aligns = readDocTableAligns(read.text)
       const blocks: PartialBlock[] = editor.tryParseMarkdownToBlocks(localizeDoc(read.text, httpBaseRef.current))
       applyTableWidths(blocks as DocTableBlock[], read.widths)
+      applyTableAligns(blocks as DocTableBlock[], aligns)
       editor.replaceBlocks(editor.document, blocks.length ? blocks : [{ type: 'paragraph', content: [] }])
       lastMarkdown.current = text
       loaded.current = true
