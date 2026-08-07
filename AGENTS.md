@@ -18,6 +18,7 @@ Pool LLMs with friends. Open a project and you are in, share it when you want so
 - `yarn docs-look` — stand the docs page up in a real window and read where the list, the writing and the trail landed
 - `yarn plus-look` — press through the composer's plus in a real window and read the card back every frame of the way
 - `yarn doc-click-look` — click past the end of every kind of row in a real window and read where the caret landed
+- `yarn doc-numbers-look` — nest a numbered list six deep in a real window and read what each level really counted
 - `yarn scrim-check` — stand the chrome over a real column in a real window and read the pixels down it
 - `yarn codex-check` — run a real Codex turn and read what came back off it
 - `yarn kimi-check` — run a real Kimi turn and read what came back off it
