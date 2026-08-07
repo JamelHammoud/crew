@@ -1,5 +1,5 @@
 import { CheckGlyph } from '../icons'
-import { useDefaultAgents } from '../state/defaultAgent'
+import { useDefaultAgent } from '../state/defaultAgent'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
 
