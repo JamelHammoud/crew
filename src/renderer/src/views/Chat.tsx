@@ -25,10 +25,12 @@ import { useComposerRoom } from '../components/useComposerRoom'
 import { useLoadOlder } from '../components/useLoadOlder'
 import { useNow } from '../components/useNow'
 import { useStickToBottom } from '../components/useStickToBottom'
+import { useDefaultAgents } from '../state/defaultAgent'
 import { usePrefs } from '../state/prefs'
 import { CHAT_KEY, pendingCount, useCrew, type ThreadMeta } from '../state/store'
 import { useVoice } from '../state/voice'
 import { cleanCommands, commandsIn, commandTyped, type CommandName } from '../../../shared/commands'
+import { aimOf } from '../../../shared/llm'
 
 export default function Chat() {
   const events = useCrew(s => s.events)
