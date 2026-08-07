@@ -188,7 +188,7 @@ describe('column alignment, which markdown carries and BlockNote does not', () =
   })
 
   it('writes the colons back', () => {
-    expect(writeDocTableAligns(TABLE, [['center', 'right']])).toContain('|:-')
+    expect(writeDocTableAligns(TABLE, [['center', 'right']])).toContain('| :---: | ---: |')
   })
 
   it('writes no colon for a table nobody aligned, so an untouched doc does not churn', () => {

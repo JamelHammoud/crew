@@ -99,8 +99,8 @@ export function writeDocTableAligns(markdown: string, aligns: (DocTableAlign | n
     lines[start + 1] = `| ${dashes
       .map((cell, column) => {
         const bar = '-'.repeat(Math.max(3, cell.replace(/:/g, '').length))
-        if (row[column] === 'center') return `:${bar.slice(1, -1)}:`
-        if (row[column] === 'right') return `${bar.slice(0, -1)}:`
+        if (row[column] === 'center') return `:${bar}:`
+        if (row[column] === 'right') return `${bar}:`
         return bar
       })
       .join(' | ')} |`
