@@ -107,7 +107,7 @@ const READ = \`(() => {
   const read = rows.map(row => {
     const mark = getComputedStyle(row, '::before')
     const index = Number(row.dataset.index || 0)
-    const wide = parseFloat(mark.width) - parseFloat(mark.paddingRight || 0)
+    const wide = parseFloat(mark.width)
     const guesses = { decimal: String(index) + '.', 'lower-alpha': alpha(index) + '.', 'lower-roman': roman(index) + '.' }
     let painted = 'unreadable'
     let closest = Infinity

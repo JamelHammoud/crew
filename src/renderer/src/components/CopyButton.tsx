@@ -24,7 +24,7 @@ export default function CopyButton({
         <button
           onClick={event => {
             event.stopPropagation()
-            void navigator.clipboard.writeText(text).then(() => {
+            void navigator.clipboard.writeText(typeof text === 'function' ? text() : text).then(() => {
               setCopied(true)
               setTimeout(() => setCopied(false), 1200)
             })
