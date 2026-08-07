@@ -9,6 +9,8 @@ import {
   useCreateBlockNote
 } from '@blocknote/react'
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react'
+import type { DocTableBlock } from '../../../shared/docTables'
+import { applyTableWidths, readDocTableWidths, tableWidthsOf, writeDocTableWidths } from '../../../shared/docTables'
 import { useCrew } from '../state/store'
 import { useTheme } from '../state/theme'
 import { docEmoji } from './doc/docEmoji'
@@ -109,7 +111,7 @@ export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: 
             window.clearTimeout(timer.current)
             timer.current = null
           }
-          lastMarkdown.current = relativizeDoc(editor.blocksToMarkdownLossy(editor.document), httpBaseRef.current)
+          lastMarkdown.current = toMarkdownRef.current()
         }
       }),
       [editor]
