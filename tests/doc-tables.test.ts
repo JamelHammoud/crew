@@ -219,3 +219,19 @@ describe('the column menu offers alignment, because the file now carries it', ()
     expect(handles).not.toContain('AlignLeftGlyph />')
   })
 })
+
+describe('what BlockNote draws for itself wears Crew colours', () => {
+  it('paints a selected cell in the app own band', () => {
+    expect(rule(`${SEL} .selectedCell::after`)).toContain('background: var(--color-selection)')
+  })
+
+  it('draws the resize handle and the drop cursor in the foreground rather than in BlockNote blue', () => {
+    expect(rule('.doc .bn-editor .column-resize-handle')).toContain('background-color: var(--color-fg)')
+    expect(rule('.doc .bn-table-drop-cursor')).toContain('background-color: var(--color-fg)')
+  })
+
+  it('scrolls a wide table inside its own box rather than pushing the writing sideways', () => {
+    expect(rule(WRAPPER)).toContain('overflow-x: auto')
+    expect(read('src/renderer/src/views/Docs.tsx')).toContain('overflow-x-hidden')
+  })
+})
