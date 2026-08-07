@@ -104,16 +104,19 @@ describe('the agent standing on the chat composer', () => {
     )
   })
 
-  it('stands through a send, where a command does not', () => {
-    const composer = open()
+  it('stands through a send, and takes the next message too', () => {
+    const sendChat = vi.fn()
+    const composer = open([BUBBLES, KIMI], sendChat)
     pick('Bubbles')
 
-    fireEvent.change(composer, { target: { value: '/plan ' } })
     fireEvent.change(composer, { target: { value: 'work out the columns' } })
     fireEvent.click(screen.getByLabelText('Send'))
-
-    expect(useCrew.getState().chatCommands).toEqual([])
     expect(screen.getByLabelText('Stop sending to Bubbles')).toBeTruthy()
+
+    fireEvent.change(composer, { target: { value: 'and the rows' } })
+    fireEvent.click(screen.getByLabelText('Send'))
+
+    expect(sendChat).toHaveBeenNthCalledWith(2, 'and the rows', undefined, undefined, undefined, ['ali/bubbles'], [])
   })
 
   it('is swapped rather than stacked when another is picked', () => {
