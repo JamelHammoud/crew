@@ -1548,8 +1548,8 @@ textarea:placeholder-shown {
 
 .doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 12px;
+  right: 12px;
   display: flex;
   align-items: center;
   gap: 2px;
