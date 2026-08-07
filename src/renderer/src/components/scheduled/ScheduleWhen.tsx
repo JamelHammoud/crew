@@ -33,10 +33,6 @@ const ordinal = (day: number): string => {
   return `${day}${['th', 'st', 'nd', 'rd'][day % 10] ?? 'th'}`
 }
 
-// When it runs, written as a line you read left to right. The cadence decides
-// how the rest of the line goes on: every so often, at a time, on the days you
-// pick, or on a day of the month. Read as a sentence the card says what it is
-// about to do, so nothing under it has to say it again.
 export default function ScheduleWhen({
   when,
   onChange

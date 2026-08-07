@@ -17,10 +17,6 @@ const KINDS = TOOL_KINDS.filter(one => (SCHEDULABLE as readonly string[]).includ
 const wordsOf = (action: ToolAction | null, kind: ToolKind): string =>
   action?.kind === kind && 'text' in action ? action.text : ''
 
-// What it does, written as a line: the kind of thing, who it is for, and then
-// the words underneath. The kinds carry the notes that tell them apart, which
-// is the whole of what says a thread is taken by an agent, a message is written
-// by one, and saying something is your own words.
 export default function ScheduleDoes({
   kind,
   onKind,
