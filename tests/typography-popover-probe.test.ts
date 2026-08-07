@@ -52,7 +52,6 @@ function card(): HTMLElement {
   return document.querySelector('.glass') as HTMLElement
 }
 
-// Where the box really stands, whichever of its two edges is pinned.
 function placed(): { top: number; bottom: number } {
   const pop = card()
   const tall = pop.offsetHeight
@@ -64,14 +63,12 @@ function placed(): { top: number; bottom: number } {
 
 afterEach(cleanup)
 
+describe('popover placement', () => {
   it('keeps its bottom against a trigger it opens above as the content shrinks', () => {
     const { rerender } = render(harness(700, 400))
     expect(placed()).toEqual({ top: 292, bottom: 692 })
     rerender(harness(700, 120))
     expect(placed()).toEqual({ top: 572, bottom: 692 })
-
-    // It is the edge itself that is pinned rather than a top worked back from
-    // the height, so a card that grows carries its own bottom with it.
     expect(card().style.top).toBe('')
     expect(card().style.bottom).toBe('76px')
   })
