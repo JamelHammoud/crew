@@ -78,7 +78,7 @@ describe('a page that is only partly in hand', () => {
 
     await previews.show('one', wrote, null)
 
-    expect(fsSync.existsSync(copyOf(url!))).toBe(false)
+    expect(await gone(copyOf(url!))).toBe(true)
   })
 
   it('has nothing to stand up for a page with no file behind it', async () => {
