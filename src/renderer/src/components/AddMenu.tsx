@@ -83,6 +83,17 @@ export default function AddMenu({
                 <MenuItem icon={<GifGlyph />} label="Pick a GIF" onClick={() => setScreen('gif')} />
               </>
             )}
+            {aiming && (
+              <>
+                {!full && <MenuDivider />}
+                <MenuItem
+                  icon={<PeopleGlyph />}
+                  label="Pick who takes it"
+                  into
+                  onClick={() => setScreen('agent')}
+                />
+              </>
+            )}
             {calling && (
               <>
                 {!full && <MenuDivider />}
