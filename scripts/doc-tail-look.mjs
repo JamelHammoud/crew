@@ -92,7 +92,7 @@ app.whenReady().then(async () => {
   try {
     await win.loadFile(path.join(__dirname, 'dist/index.html'))
     await wait(1500)
-    for (const page of ['code', 'words']) {
+    for (const page of ['code', 'words', 'blank']) {
       await win.webContents.executeJavaScript('window.__step(' + JSON.stringify(page) + ')')
       await wait(600)
       seen[page] = await win.webContents.executeJavaScript(READ)
