@@ -88,7 +88,7 @@ const HOVER = where => \`(() => {
   const rows = [...table.rows]
   const where = \` + JSON.stringify(where) + \`
   const cell =
-    where === 'last row' ? rows[rows.length - 1].cells[0]
+    where.endsWith('last row') ? rows[rows.length - 1].cells[0]
     : where === 'last column' ? rows[1].cells[rows[0].cells.length - 1]
     : rows[1].cells[0]
   const box = cell.getBoundingClientRect()
