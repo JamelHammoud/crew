@@ -37,20 +37,60 @@ const DOCS = { releases: { title: 'Releases', text: TABLE } }
 
 function probeSource() {
   const from = file => JSON.stringify(path.join(root, 'src/renderer/src', file))
+  const shared = file => JSON.stringify(path.join(root, 'src/shared', file))
   return `import React from ${JSON.stringify(resolve('react'))}
 import { createRoot } from ${JSON.stringify(resolve('react-dom/client'))}
 import Docs from ${from('views/Docs.tsx')}
+import { localizeDoc, relativizeDoc } from ${from('components/images.ts')}
 import { useDocs } from ${from('state/docs.ts')}
 import { useCrew } from ${from('state/store.ts')}
+import {
+  applyTableAligns,
+  applyTableWidths,
+  mendDocTableRows,
+  readDocTableAligns,
+  readDocTableWidths,
+  tableAlignsOf,
+  tableWidthsOf,
+  writeDocTableAligns,
+  writeDocTableWidths
+} from ${shared('docTables.ts')}
 import './probe.css'
 
-useCrew.setState({
-  docs: ${JSON.stringify(DOCS)},
-  selfId: 'self',
-  selfName: 'Jamel',
-  connection: 'online',
-  members: [{ id: 'self', name: 'Jamel', connected: true }]
-})
+const DOCS = ${JSON.stringify(DOCS)}
+
+function liveEditor() {
+  const starts = ['.bn-editor', '.bn-container', '.doc'].map(one => document.querySelector(one)).filter(Boolean)
+  for (const start of starts) {
+    let node = start
+    while (node) {
+      for (const key of Object.keys(node)) {
+        if (key.indexOf('__reactFiber$') !== 0 && key.indexOf('__reactInternalInstance$') !== 0) continue
+        let fiber = node[key]
+        while (fiber) {
+          const found = fiber.memoizedProps && fiber.memoizedProps.editor
+          if (found && typeof found.blocksToMarkdownLossy === 'function' && Array.isArray(found.document)) return found
+          fiber = fiber.return
+        }
+      }
+      node = node.parentElement
+    }
+  }
+  return null
+}
+
+function widthsIn(blocks) {
+  const out = []
+  const walk = list => {
+    for (const block of list || []) {
+      if (block.type === 'table' && block.content)
+        out.push((block.content.columnWidths || []).map(width => (width === undefined ? null : width)))
+      if (block.children && block.children.length) walk(block.children)
+    }
+  }
+  walk(blocks)
+  return out
+}
 
 function Page() {
   React.useEffect(() => {
@@ -63,7 +103,67 @@ function Page() {
   )
 }
 
-createRoot(document.getElementById('root')).render(React.createElement(Page))
+const crew = {
+  saved: null,
+  saves: 0,
+  root: null,
+  live: () => !!liveEditor(),
+  widthsNow() {
+    const editor = liveEditor()
+    if (!editor) return { failed: 'no editor on the page' }
+    return { widths: widthsIn(editor.document) }
+  },
+  saveNow() {
+    const editor = liveEditor()
+    if (!editor) return { failed: 'no editor on the page' }
+    const base = useCrew.getState().httpBase
+    const blocks = editor.document
+    const markdown = mendDocTableRows(relativizeDoc(editor.blocksToMarkdownLossy(blocks), base))
+    return { markdown: writeDocTableWidths(writeDocTableAligns(markdown, tableAlignsOf(blocks)), tableWidthsOf(blocks)) }
+  },
+  loadBack(text) {
+    const editor = liveEditor()
+    if (!editor) return { failed: 'no editor on the page' }
+    const base = useCrew.getState().httpBase
+    const read = readDocTableWidths(text || '')
+    const aligns = readDocTableAligns(read.text)
+    const blocks = editor.tryParseMarkdownToBlocks(localizeDoc(read.text, base))
+    applyTableWidths(blocks, read.widths)
+    applyTableAligns(blocks, aligns)
+    return { marks: read.widths, widths: widthsIn(blocks) }
+  },
+  remount(text) {
+    return new Promise(accept => {
+      if (crew.root) crew.root.unmount()
+      useCrew.setState(state => ({
+        docs: { ...state.docs, releases: { title: 'Releases', text } }
+      }))
+      crew.root = createRoot(document.getElementById('root'))
+      crew.root.render(React.createElement(Page))
+      setTimeout(() => accept(true), 600)
+    })
+  }
+}
+
+window.__crew = crew
+
+useCrew.setState({
+  docs: DOCS,
+  selfId: 'self',
+  selfName: 'Jamel',
+  connection: 'online',
+  members: [{ id: 'self', name: 'Jamel', connected: true }],
+  updateDoc: (page, text, title) => {
+    crew.saved = text
+    crew.saves++
+    useCrew.setState(state => ({
+      docs: { ...state.docs, [page]: { title: title ?? state.docs[page]?.title ?? page, text } }
+    }))
+  }
+})
+
+crew.root = createRoot(document.getElementById('root'))
+crew.root.render(React.createElement(Page))
 `
 }
 
