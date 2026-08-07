@@ -108,6 +108,8 @@ export default function AddMenu({
               </>
             )}
           </div>
+        ) : screen === 'agent' ? (
+          <DefaultAgentPicker onPick={() => setOpen(false)} />
         ) : (
           <GifPicker onPick={pick} />
         )}

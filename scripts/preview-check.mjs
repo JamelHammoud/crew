@@ -180,15 +180,18 @@ function say(what, seen, problems) {
   console.log(`  reaching from: ${seen.base}`)
 }
 
-const { dir, page } = await stage()
+const { dir, page, model } = await stage()
 try {
   const beside = await run(dir, page, EDITED)
-  const problems = judge(beside, true)
+  const problems = judge(beside, 'beside')
   say('Reading a page in the project', beside, problems)
   const attached = await run(dir, '', ATTACHED)
-  const alone = judge(attached, false)
+  const alone = judge(attached, 'alone')
   say('Reading a page somebody attached', attached, alone)
-  if (problems.length || alone.length) process.exitCode = 1
+  const held = await run(dir, model, 'HELD')
+  const partly = judge(held, 'held')
+  say('Reading a page too big to hold whole', held, partly)
+  if (problems.length || alone.length || partly.length) process.exitCode = 1
 } finally {
   await rm(dir, { recursive: true, force: true })
 }
