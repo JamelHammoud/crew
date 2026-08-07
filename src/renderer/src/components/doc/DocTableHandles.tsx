@@ -11,7 +11,7 @@ import {
 import { useState, type DragEvent } from 'react'
 import { ArrowDownGlyph, ArrowLeftGlyph, ArrowRightGlyph, ArrowUpGlyph, PlusGlyph, TrashGlyph } from '../../icons'
 import { MenuDivider, MenuItem, Popover } from '../Popover'
-import { TableHeaderGlyph } from './docGlyphs'
+import { AlignTextCenterGlyph, AlignTextLeftGlyph, AlignTextRightGlyph, TableHeaderGlyph } from './docGlyphs'
 
 function DocTableHandle({ orientation, hideOtherElements }: TableHandleProps) {
   const editor = useBlockNoteEditor<any, any, any>()
