@@ -8,9 +8,12 @@ import DefaultAgentPicker from './DefaultAgentPicker'
 import GifPicker from './GifPicker'
 import { gifFile, type Gif } from './gifs'
 import { MenuDivider, MenuItem, Popover } from './Popover'
+import ScreenSwap from './ScreenSwap'
 import Tooltip from './Tooltip'
 
 type Screen = 'menu' | 'gif' | 'agent'
+
+const DEPTH: Record<Screen, number> = { menu: 0, gif: 1, agent: 1 }
 
 export default function AddMenu({
   attachmentKey,
