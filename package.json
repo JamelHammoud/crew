@@ -103,6 +103,7 @@
     "design-header-look": "node scripts/design-header-look.mjs",
     "docs-look": "node scripts/docs-look.mjs",
     "doc-bullets-look": "node scripts/doc-bullets-look.mjs",
+    "doc-tables-look": "node scripts/doc-tables-look.mjs",
     "agent-look": "node scripts/agent-look.mjs",
     "board-perf": "node scripts/board-perf.mjs",
     "snap-check": "node scripts/snap-check.mjs",
