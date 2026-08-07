@@ -106,6 +106,7 @@
     "doc-numbers-look": "node scripts/doc-numbers-look.mjs",
     "doc-click-look": "node scripts/doc-click-look.mjs",
     "doc-tables-look": "node scripts/doc-tables-look.mjs",
+    "doc-code-look": "node scripts/doc-code-look.mjs",
     "agent-look": "node scripts/agent-look.mjs",
     "plus-look": "node scripts/plus-look.mjs",
     "board-perf": "node scripts/board-perf.mjs",
