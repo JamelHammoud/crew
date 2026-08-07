@@ -1,10 +1,9 @@
 import type { BlockNoteEditor } from '@blocknote/core'
 import { insertOrUpdateBlockForSlashMenu } from '@blocknote/core/extensions'
 import type { SuggestionMenuProps } from '@blocknote/react'
-import { useEffect, useRef } from 'react'
 import type { Glyph } from '../glyph'
 import { DOC_BLOCKS, shortcutLabel } from './docBlocks'
-import { bringInto } from '../scrollInto'
+import { useDocMenu } from './docMenu'
 
 export interface DocSlashItem {
   title: string
