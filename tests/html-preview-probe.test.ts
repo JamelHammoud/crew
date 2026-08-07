@@ -1,13 +1,8 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
-import fsSync from 'node:fs'
-import { promises as fs } from 'node:fs'
-import os from 'node:os'
-import path from 'node:path'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import BrowserPanel from '../src/renderer/src/components/BrowserPanel'
-import { Previews } from '../src/main/preview'
 import { useBrowser } from '../src/renderer/src/state/browser'
 import { canPreview, isHtml, type RepoFile } from '../src/shared/files'
 import { baseUrl, fileUrl, withBase } from '../src/shared/htmlPage'
