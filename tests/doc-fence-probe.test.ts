@@ -41,8 +41,9 @@ function stand() {
 function type(view: EditorView, text: string) {
   for (const ch of text) {
     const { from, to } = view.state.selection
-    const took = view.someProp('handleTextInput', run => run(view, from, to, ch))
-    if (!took) view.dispatch(view.state.tr.insertText(ch, from, to))
+    const insert = () => view.state.tr.insertText(ch, from, to)
+    const took = view.someProp('handleTextInput', run => run(view, from, to, ch, insert))
+    if (!took) view.dispatch(insert())
   }
 }
 
