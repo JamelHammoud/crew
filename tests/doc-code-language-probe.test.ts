@@ -89,10 +89,26 @@ describe('a code block written under a short language name', () => {
   })
 
   it('highlights an alias block the way it highlights the language written out', async () => {
-    const short = opened(fence('bash', 'echo "hi" | grep hi'))
-    const long = opened(fence('shellscript', 'echo "hi" | grep hi'))
+    const code = 'echo "hi" | grep hi'
+    const short = opened(fence('bash', code))
+    const long = opened(fence('shellscript', code))
     await settle(800)
     expect(spansIn(short.host)).toBeGreaterThan(1)
     expect(spansIn(short.host)).toBe(spansIn(long.host))
   }, 20000)
+
+  it('highlights under every alias, including the ones shiki does not answer to itself', async () => {
+    const code = 'one two three'
+    const under = pairs
+      .filter(([, canonical]) => canonical !== 'text')
+      .map(([alias, canonical]) => ({ alias, canonical, short: opened(fence(alias, code)) }))
+    const full = new Map(
+      [...new Set(under.map(one => one.canonical))].map(key => [key, opened(fence(key, code))])
+    )
+    await settle(2000)
+    for (const { alias, canonical, short } of under) {
+      expect(spansIn(short.host), `${alias} drew nothing`).toBeGreaterThan(0)
+      expect(spansIn(short.host), `${alias} against ${canonical}`).toBe(spansIn(full.get(canonical)!.host))
+    }
+  }, 30000)
 })
