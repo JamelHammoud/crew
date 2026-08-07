@@ -177,15 +177,16 @@ function run(dir) {
 const dir = await stage()
 try {
   await compile(dir)
-  const seen = await run(dir)
-  if (seen.failed) throw new Error(seen.failed)
-  seen.forEach(read => {
-    const caret = read.caret
-    const where = caret ? `${caret.at} of ${caret.of} in "${caret.in}"` : 'nowhere'
-    const end = caret && caret.at === caret.of ? 'END' : caret && caret.at === 0 ? 'START' : 'mid'
-    console.log(`\n${read.kind}  "${read.says}"`)
-    console.log(`  row ends ${read.rowRight}, text ends ${read.inkRight}, slack ${read.slack}`)
-    console.log(`  clicked at ${read.x} -> caret ${where}  [${end}]`)
+  const all = await run(dir)
+  if (all.failed) throw new Error(all.failed)
+  all.forEach(({ name, seen }) => {
+    console.log(`\n== ${name}`)
+    seen.forEach(read => {
+      const caret = read.caret
+      const end = caret && caret.at === caret.of ? 'END' : caret && caret.at === 0 ? 'START' : 'mid'
+      const where = caret ? `${caret.at} of ${caret.of}` : 'nowhere'
+      console.log(`  ${read.kind.padEnd(18)} "${read.says.padEnd(28)}" slack ${String(read.slack).padStart(4)}  ->  ${where.padEnd(10)} ${end}`)
+    })
   })
 } finally {
   await rm(dir, { recursive: true, force: true })
