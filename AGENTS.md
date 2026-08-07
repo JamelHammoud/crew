@@ -1046,7 +1046,7 @@ A word with a slash in front of it, lifted out of the box onto a chip beside the
 - A condition longer than the ceiling is cut at a word, and nothing is said about it. The whole of what somebody wrote is still in the prompt right underneath, so what is lost is the tail of the finish line rather than the tail of the ask, and a run that happens is worth more than one refused over a length nobody can see.
 - `tests/goal.integration.test.ts` holds the condition being the message and never the prompt, the two messages Claude opens on, and the cut. `yarn goal-check` is the only thing that can see the rest of it: it runs a real turn against the real CLI with a prompt well past the ceiling and a condition that is not met by what the prompt asks for, so a goal that never landed reads as a file with one line missing. Every suite here was green the whole time this was dead.
 
-## Who takes what you send
+## The default agent
 
 An agent standing on the chat's own composer, so a person working with one of them all day writes what they want rather than their name and then what they want. It is picked under the plus, on a screen inside it the way the GIFs are, and it wears a chip beside the plus until it is taken off.
 
