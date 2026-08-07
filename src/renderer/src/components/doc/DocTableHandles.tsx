@@ -49,7 +49,7 @@ function DocTableHandle({ orientation, hideOtherElements }: TableHandleProps) {
   const header = !!block.content.headerRows
 
   return (
-    <span className="relative flex items-center justify-center w-5 h-6">
+    <span data-table-handle={orientation} className="relative flex items-center justify-center w-5 h-6">
       <button
         draggable
         onDragStart={(event: DragEvent<HTMLButtonElement>) =>
