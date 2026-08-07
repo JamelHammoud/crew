@@ -129,10 +129,14 @@ export default function ScreenSwap({
 
   return (
     <div
-      style={height === null ? undefined : { height }}
-      className={`relative transition-[height] duration-200 ease-out ${moving ? 'overflow-hidden' : 'overflow-visible'}`}
+      style={box === null ? undefined : { height: box.h, width: width ? box.w : undefined }}
+      className={`relative rounded-[inherit] transition-[height,width] duration-200 ease-out ${moving ? 'overflow-hidden' : 'overflow-visible'}`}
     >
-      <div key={screen} ref={inner} className={arriving}>
+      <div
+        key={screen}
+        ref={inner}
+        className={`rounded-[inherit] ${width ? 'w-max' : ''} ${arriving}`}
+      >
         {children}
       </div>
     </div>
