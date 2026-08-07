@@ -198,18 +198,27 @@ describe('the card one is written on', () => {
     fireEvent.click(screen.getByRole('button', { name: /Schedule something/ }))
   }
 
+  const open = (control: string) => fireEvent.click(screen.getByRole('button', { name: control }))
+
+  const pick = (control: string, option: string | RegExp) => {
+    open(control)
+    fireEvent.click(screen.getByRole('button', { name: option }))
+  }
+
   it('offers only the kinds that can be put on a clock', () => {
     openCard()
+    open('What it does')
     for (const entry of TOOL_KINDS) {
       const offered = (SCHEDULABLE as readonly string[]).includes(entry.kind)
-      expect(Boolean(screen.queryByRole('button', { name: entry.title })), entry.kind).toBe(offered)
+      expect(screen.queryAllByText(entry.title).length > 0, entry.kind).toBe(offered)
     }
   })
 
   it('asks when it runs in plain words rather than as a cron line', () => {
     openCard()
+    open('How often it runs')
     for (const words of ['Every', 'Every day', 'Certain days', 'Every month']) {
-      expect(screen.getByRole('button', { name: words })).toBeTruthy()
+      expect(screen.queryAllByText(words).length > 0, words).toBe(true)
     }
   })
 
