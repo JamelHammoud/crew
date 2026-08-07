@@ -40,8 +40,12 @@ describe('clicking the page under a code block', () => {
     expect(kinds(container)).toEqual(['codeBlock', 'paragraph'])
   })
 
-  it('stands nothing in the way of a doc that already ends on a line to write in', () => {
-    const { container } = render(createElement(DocEditor, { text: 'Words\n\n\n', onChange: () => {} }))
+  // Both carrying the room is a doc ending on twice the gap it asked for, so the
+  // trailing block goes the moment the writing ends on a line to write in.
+  it('stands down once there is a line at the foot of the doc', () => {
+    const { container } = render(createElement(DocEditor, { text: '```ts\nconst one = 1\n```\n', onChange: () => {} }))
+    const tail = container.querySelector('.bn-trailing-block') as HTMLElement
+    tail.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }))
     expect(container.querySelector('.bn-trailing-block')).toBeNull()
   })
 })
