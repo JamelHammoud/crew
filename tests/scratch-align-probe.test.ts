@@ -158,6 +158,26 @@ describe('what else a table loses', () => {
     expect(out?.rows?.[1]?.cells?.[0]?.content).toBeTruthy()
   })
 
+  it('5c. the chain: open a doc with <br>, touch nothing, save', () => {
+    const one = editor()
+    one.replaceBlocks(one.document, one.tryParseMarkdownToBlocks('| a | b |\n| --- | --- |\n| one<br>two | d |\n'))
+    const saved = one.blocksToMarkdownLossy(one.document)
+    console.log('CHAIN SAVED ---', JSON.stringify(saved))
+    const two = editor()
+    two.replaceBlocks(two.document, two.tryParseMarkdownToBlocks(saved))
+    const out = two.document[0].content
+    console.log('CHAIN OUT ---', JSON.stringify(out.rows.map((r: any) => r.cells.map((c: any) => c.content?.[0]?.text ?? ''))))
+    expect(out.rows.length).toBe(2)
+  })
+
+  it('5d. an alignment written by hand, opened and saved', () => {
+    const one = editor()
+    one.replaceBlocks(one.document, one.tryParseMarkdownToBlocks('| a | b |\n|:---|---:|\n| c | d |\n'))
+    const saved = one.blocksToMarkdownLossy(one.document)
+    console.log('ALIGN CHAIN SAVED ---', JSON.stringify(saved))
+    expect(saved).toContain(':')
+  })
+
   it('6. a pipe inside a cell', () => {
     const { md, out } = trip([
       { cells: [cell('a'), cell('b')] },
