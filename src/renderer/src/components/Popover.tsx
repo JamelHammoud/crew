@@ -165,8 +165,11 @@ export function Popover({
     const other = side === 'bottom' ? 'top' : 'bottom'
     const placed = placedRef.current ?? (fits(side) || !fits(other) ? side : other)
     placedRef.current = placed
-    let top = placed === 'bottom' ? rect.bottom + 8 : rect.top - 8 - size.h
-    top = Math.max(8, Math.min(top, window.innerHeight - size.h - 8))
+    if (placed === 'top') {
+      const rise = window.innerHeight - rect.top + 8
+      return { left, bottom: Math.min(Math.max(rise, 8), window.innerHeight - size.h - 8) }
+    }
+    const top = Math.max(8, Math.min(rect.bottom + 8, window.innerHeight - size.h - 8))
     return { left, top }
   })()
 

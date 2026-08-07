@@ -84,25 +84,21 @@ const OUT = ${JSON.stringify(path.join(shots, 'code'))}
 const THEMES = ['dark', 'light']
 const WHERE = ['at rest', 'hovered', 'copy hovered']
 
-const HOVER = where => \`(() => {
+const AIM = where => \`(() => {
   const block = document.querySelector('.bn-block-content[data-content-type="codeBlock"]')
-  if (!block) return false
+  if (!block) return null
   const where = \` + JSON.stringify(where) + \`
-  const send = box => ({ clientX: box.left + box.width / 2, clientY: box.top + box.height / 2, bubbles: true })
-  if (where === 'at rest') {
-    const body = document.querySelector('.bn-editor')
-    const box = body.getBoundingClientRect()
-    const at = { clientX: box.left + 4, clientY: box.bottom - 4, bubbles: true }
-    body.dispatchEvent(new MouseEvent('mouseover', at))
-    body.dispatchEvent(new MouseEvent('mousemove', at))
-    return true
+  const middle = el => {
+    const r = el.getBoundingClientRect()
+    return { x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2) }
   }
-  const on = where === 'copy hovered' ? block.querySelector('.doc-code-copy') : block
-  if (!on) return false
-  const at = send(on.getBoundingClientRect())
-  on.dispatchEvent(new MouseEvent('mouseover', at))
-  on.dispatchEvent(new MouseEvent('mousemove', at))
-  return true
+  if (where === 'at rest') return { x: 40, y: 900 }
+  if (where === 'copy hovered') {
+    const copy = block.querySelector('.doc-code-copy')
+    return copy ? middle(copy) : null
+  }
+  const box = block.getBoundingClientRect()
+  return { x: Math.round(box.left + 40), y: Math.round(box.bottom - 12) }
 })()\`
 
 const READ = \`(() => {
@@ -165,8 +161,13 @@ app.whenReady().then(async () => {
       )
       await wait(400)
       for (const where of WHERE) {
-        await win.webContents.executeJavaScript(HOVER(where))
-        await wait(700)
+        const at = await win.webContents.executeJavaScript(AIM(where))
+        if (at) {
+          win.webContents.sendInputEvent({ type: 'mouseMove', x: at.x, y: at.y })
+          await wait(60)
+          win.webContents.sendInputEvent({ type: 'mouseMove', x: at.x + 1, y: at.y })
+        }
+        await wait(900)
         out[theme + ' / ' + where] = await win.webContents.executeJavaScript(READ)
         const shot = await win.webContents.capturePage()
         await writeFile(OUT + '-' + theme + '-' + where.replace(/ /g, '-') + '.png', shot.toPNG())
