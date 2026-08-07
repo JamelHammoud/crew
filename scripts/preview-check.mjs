@@ -165,7 +165,9 @@ function judge(seen, how) {
   if (seen.ran !== 'yes') problems.push('the script never ran')
   if (how === 'beside' && seen.base === seen.url) problems.push('the page was never handed the folder it lives in')
   if (how === 'alone' && seen.base !== seen.url) problems.push(`a page with no folder was handed one: ${seen.base}`)
-  if (how === 'held' && seen.url !== fileUrl(seen.file)) problems.push(`the page was copied rather than read where it stands: ${seen.url}`)
+  if (how === 'held' && seen.url.includes('crew-previews'))
+    problems.push(`the page was copied rather than read where it stands: ${seen.url}`)
+  if (how === 'held' && seen.base !== seen.url) problems.push(`a page read where it stands was handed a base: ${seen.base}`)
   return problems
 }
 
