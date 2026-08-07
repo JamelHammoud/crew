@@ -64,22 +64,16 @@ function placed(): { top: number; bottom: number } {
 
 afterEach(cleanup)
 
-describe('popover placement', () => {
-  it('is pinned by the edge it was opened against', () => {
-    const { rerender } = render(harness(700, 400))
-    expect(card().style.top).toBe('')
-    expect(card().style.bottom).toBe('76px')
-
-    rerender(harness(100, 200))
-    expect(card().style.bottom).toBe('')
-    expect(card().style.top).toBe('140px')
-  })
-
   it('keeps its bottom against a trigger it opens above as the content shrinks', () => {
     const { rerender } = render(harness(700, 400))
     expect(placed()).toEqual({ top: 292, bottom: 692 })
     rerender(harness(700, 120))
     expect(placed()).toEqual({ top: 572, bottom: 692 })
+
+    // It is the edge itself that is pinned rather than a top worked back from
+    // the height, so a card that grows carries its own bottom with it.
+    expect(card().style.top).toBe('')
+    expect(card().style.bottom).toBe('76px')
   })
 
   it('keeps its top against a trigger it opens below as the content shrinks', () => {
@@ -87,6 +81,7 @@ describe('popover placement', () => {
     expect(placed().top).toBe(140)
     rerender(harness(100, 80))
     expect(placed().top).toBe(140)
+    expect(card().style.bottom).toBe('')
   })
 
   it('stays on the side it opened on once the content would fit the other way', () => {
