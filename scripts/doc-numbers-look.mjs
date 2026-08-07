@@ -89,8 +89,10 @@ const READ = \`(() => {
   const spell = { decimal: String, 'lower-alpha': alpha, 'lower-roman': roman }
   return rows.map(row => {
     const mark = getComputedStyle(row, '::before')
-    const style = (/counter\\(doc-order,?\\s*([a-z-]*)\\)/.exec(mark.content) || [])[1] || 'decimal'
-    const counted = Number((/doc-order\\s+(-?\\d+)/.exec(getComputedStyle(row).counterReset) || [])[1])
+    const asked = mark.content
+    const style = asked.includes('lower-alpha') ? 'lower-alpha' : asked.includes('lower-roman') ? 'lower-roman' : 'decimal'
+    const reset = getComputedStyle(row).counterReset
+    const counted = reset.startsWith('doc-order ') ? Number(reset.slice('doc-order '.length).split(' ')[0]) : NaN
     return {
       depth: depthOf(row),
       says: (row.textContent || '').trim().slice(0, 28),
