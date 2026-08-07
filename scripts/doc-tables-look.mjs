@@ -564,6 +564,7 @@ try {
         `  a wide one: table ${read.wide.table} in ${read.wide.clientW}, scrolls ${read.wide.scrollW}, corner ${read.wide.corner}`
       )
   }
+  dragReport(drag)
   console.log(`\nwrote the shots to ${shots}`)
 } finally {
   await rm(dir, { recursive: true, force: true })
