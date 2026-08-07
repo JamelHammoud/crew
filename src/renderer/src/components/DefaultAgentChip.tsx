@@ -1,4 +1,4 @@
-import { useDefaultAgents } from '../state/defaultAgent'
+import { useDefaultAgent } from '../state/defaultAgent'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
 import ComposerChip from './ComposerChip'
@@ -11,12 +11,12 @@ import ComposerChip from './ComposerChip'
 // down, so a rename reads as the name they carry today. An id the crew has
 // nothing for draws nothing rather than being forgotten: the agents arrive with
 // the welcome, so a window still connecting has none of them yet and would take
-// the choice off on the way in.
+// the choice off on the way in, and a crew that never had them is one to walk
+// back out of with the choice still standing.
 export default function DefaultAgentChip() {
-  const place = useCrew(s => s.place)
-  const aimed = useDefaultAgents(s => s.aimed[place] ?? null)
+  const aimed = useDefaultAgent(s => s.agentId)
   const agent = useCrew(s => s.agents.find(held => held.id === aimed))
-  const aim = useDefaultAgents(s => s.aim)
+  const aim = useDefaultAgent(s => s.aim)
   if (!agent) return null
   return (
     <ComposerChip
