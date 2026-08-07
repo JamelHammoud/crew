@@ -2,10 +2,6 @@ import type { ReactNode } from 'react'
 
 export const MORNING = 9 * 60
 
-// The card is glass, so nothing on it is set in a solid grey: a field takes the
-// foreground at an opacity the way everything else on a floating panel does.
-// The clock the machine draws on a time field is the one mark in here nobody at
-// Crew drew, so it is taken off and the field is typed into.
 export const PILL_INPUT =
   'h-8 px-3 rounded-full bg-fg/[0.07] text-sm text-fg tabular-nums outline-none transition-colors duration-150 hover:bg-fg/[0.1] focus:bg-fg/[0.14] [&::-webkit-calendar-picker-indicator]:hidden'
 
