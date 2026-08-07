@@ -236,7 +236,12 @@ export default function Composer({
         </div>
         <div className="flex items-center justify-between gap-2 mt-2">
           <div className="flex items-center gap-2 min-w-0">
-            <AddMenu attachmentKey={attachmentKey} huddle={huddle && !ghost} onSend={onSend} />
+            <AddMenu
+              attachmentKey={attachmentKey}
+              huddle={huddle && !ghost}
+              defaultAgent={defaultAgent}
+              onSend={onSend}
+            />
             {chips}
           </div>
           {onStop && !canSend ? (
