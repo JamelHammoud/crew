@@ -55,6 +55,6 @@ describe('what a table keeps when the doc is written back out', () => {
   })
 
   it('loses a column width, so the drag is the session own and never the file', () => {
-    expect(roundTrip({ headerRows: 1, columnWidths: [200, 90] }).columnWidths).toEqual([null, null])
+    expect(roundTrip({ headerRows: 1, columnWidths: [200, 90] }).columnWidths).toEqual([undefined, undefined])
   })
 })
