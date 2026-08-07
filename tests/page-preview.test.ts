@@ -23,6 +23,16 @@ afterEach(async () => {
 
 const copyOf = (url: string) => decodeURIComponent(url.slice('file://'.length))
 
+// A copy is taken away without anybody waiting on it, so the reading waits here
+// rather than the app holding a page up for a file nobody is reading any more.
+async function gone(file: string): Promise<boolean> {
+  for (let at = 0; at < 50; at += 1) {
+    if (!fsSync.existsSync(file)) return true
+    await new Promise(rest => setTimeout(rest, 10))
+  }
+  return false
+}
+
 describe('a page drawn from the words in hand', () => {
   it('stands in a copy of its own, so an edit typed in the text is on it', async () => {
     const wrote = path.join(folder, 'index.html')
