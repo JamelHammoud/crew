@@ -84,7 +84,7 @@ app.whenReady().then(async () => {
   const seen = {}
   try {
     await win.loadFile(path.join(__dirname, 'dist/index.html'))
-    await wait: 0
+    await wait(0)
   } catch (e) {}
   try {
     await wait(1600)
