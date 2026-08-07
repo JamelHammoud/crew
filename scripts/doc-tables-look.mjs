@@ -250,10 +250,11 @@ try {
     console.log(`  cell ${read.cell.box.h} tall, pad ${read.cell.pad}, ${read.cell.size}/${read.cell.line}`)
     console.log(`       paint ${read.cell.paint}, ink ${read.cell.ink}, rule ${read.cell.border}`)
     for (const [what, chrome] of Object.entries(read.chrome))
-      console.log(`  ${what}: ${chrome ? `${chrome.box.w}x${chrome.box.h} at ${chrome.box.x},${chrome.box.y}` : 'not there'}`)
-    if (read.clipped.length)
-      for (const out of read.clipped) console.log(`  OUTSIDE THE WRAPPER: ${out.what} at ${out.box.x},${out.box.y}`)
-    else console.log('  nothing stands outside the wrapper')
+      console.log(
+        `  ${what}: ${chrome ? `${chrome.box.w}x${chrome.box.h} at ${chrome.box.x},${chrome.box.y}, paint ${chrome.paint}, radius ${chrome.radius}, in the wrapper ${chrome.inWrapper}` : 'not there'}`
+      )
+    for (const one of read.floating)
+      console.log(`  standing: ${one.what} ${one.box.w}x${one.box.h} at ${one.box.x},${one.box.y}, in the wrapper ${one.inWrapper}`)
   }
   console.log(`\nwrote the shots to ${shots}`)
 } finally {
