@@ -36,7 +36,7 @@ function FeedRow({ entry, dayTs, linked, planned, status, onOpenThread, onReply 
           />
         )
       ) : (
-        <ChatMessage item={entry.item} editable linked={linked} onReply={onReply} />
+        <ChatMessage item={entry.item} editable markdown linked={linked} onReply={onReply} />
       )}
     </>
   )
