@@ -70,7 +70,7 @@ export default function ThreadCard({
         <ThreadStrand
           onOpen={onOpen}
           dashed={thread.ghost}
-          face={<AgentIcon seed={thread.agentId} px={44} />}
+          face={<AgentIcon seed={thread.agentId} size="md" />}
           mark={
             live ? (
               line.icon ? (

@@ -30,17 +30,12 @@ const DOTS = {
 export default function AgentIcon({
   seed,
   size = 'md',
-  px,
   presence,
   photo,
   className = ''
 }: {
   seed: string
   size?: keyof typeof SIZES
-  // For places that size themselves in pixels, the way Avatar does: a face
-  // standing beside a row is as tall as the row rather than as tall as whichever
-  // step of the ramp happens to be nearest.
-  px?: number
   presence?: 'online' | 'offline'
   // For the tray panel, which is handed the picture rather than the session it
   // came from.
@@ -48,17 +43,14 @@ export default function AgentIcon({
   className?: string
 }) {
   const pet = petOf(seed)
-  const box = px ?? BOX[size]
+  const box = BOX[size]
   const gap = eyeGapAt(pet, box)
   const mask = useId()
   const file = useCrew(state => state.agents.find(agent => agent.id === seed)?.avatar)
   const httpBase = useCrew(state => state.httpBase)
   const src = photo ?? (file && httpBase ? attachmentFileUrl(httpBase, file) : undefined)
   return (
-    <span
-      className={`${px ? '' : SIZES[size]} relative inline-block align-middle shrink-0 ${className}`}
-      style={px ? { width: px, height: px } : undefined}
-    >
+    <span className={`${SIZES[size]} relative inline-block align-middle shrink-0 ${className}`}>
       {src ? (
         <img
           src={src}

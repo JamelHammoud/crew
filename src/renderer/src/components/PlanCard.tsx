@@ -30,7 +30,7 @@ export default function PlanCard({
         <ThreadStrand
           onOpen={onOpen}
           dashed={thread.ghost}
-          face={<AgentIcon seed={thread.agentId} px={44} />}
+          face={<AgentIcon seed={thread.agentId} size="md" />}
           mark={<ChecklistGlyph className="w-[18px] h-[18px] text-fg shrink-0" />}
           label="Planning complete"
         />
