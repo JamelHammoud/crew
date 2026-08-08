@@ -236,8 +236,9 @@ export default function Composer({
             rows={2}
             spellCheck={false}
             placeholder={placeholder}
-            className={`relative block w-full ${lead} bg-transparent text-base text-transparent caret-fg placeholder:text-fg-muted outline-none resize-none leading-relaxed max-h-48 no-scrollbar`}
+            className={`relative block w-full ${room} bg-transparent text-base text-transparent caret-fg placeholder:text-fg-muted outline-none resize-none leading-relaxed max-h-48 no-scrollbar`}
           />
+          <div aria-hidden className={`absolute inset-x-0 top-0 z-20 pointer-events-none composer-scrim ${surface}`} />
         </div>
         <div className="flex items-center justify-between gap-2 mt-5">
           <div className="flex items-center gap-2 min-w-0">
