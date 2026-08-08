@@ -35,6 +35,8 @@ const tool = (extra: Partial<CrewTool> = {}): CrewTool => ({
 const agent = (id: string, label: string): PooledAgent =>
   ({ id, label, provider: 'claude', ownerId: 'o', ownerName: 'Jamel', status: 'idle', runs: {} }) as PooledAgent
 
+const shut: number[] = []
+
 const toolbox = (
   tools: CrewTool[] = [],
   agents: PooledAgent[] = [],
