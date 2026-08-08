@@ -119,7 +119,7 @@ app.whenReady().then(async () => {
     await wait(900)
     said.rest = await win.webContents.executeJavaScript(READ)
     await shoot(win, 'composer-rest')
-    await win.webContents.executeJavaScript(SCROLL(170))
+    await win.webContents.executeJavaScript(SCROLL(184))
     await wait(120)
     said.scrolled = await win.webContents.executeJavaScript(READ)
     await shoot(win, 'composer-scrolled')
