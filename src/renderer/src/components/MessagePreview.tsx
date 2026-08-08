@@ -107,7 +107,7 @@ export default function MessagePreview({
 
   return (
     <div className={className}>
-      <div ref={ref}>
+      <div ref={ref} className="select-text">
         {written.map((line, index) => (
           <span key={index} className={line === '' ? `${ROW} h-[1lh]` : ROW}>
             <MentionText text={line} mentionRefs={mentionRefs} />
