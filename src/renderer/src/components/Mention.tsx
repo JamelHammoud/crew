@@ -283,7 +283,7 @@ export function MemberName({
   const selfId = useCrew(s => s.selfId)
   if (member) {
     return (
-      <HoverCard content={<MemberCardContent member={member} self={member.id === selfId} />} className={className}>
+      <HoverCard hug content={<MemberCardContent member={member} self={member.id === selfId} />} className={className}>
         {children}
       </HoverCard>
     )
