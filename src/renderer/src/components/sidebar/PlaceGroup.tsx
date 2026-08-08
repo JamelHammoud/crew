@@ -1,4 +1,4 @@
-import { memo, useCallback, useRef, useState } from 'react'
+import { memo, useCallback, useRef, useState, type CSSProperties } from 'react'
 import { LinkGlyph, PencilGlyph, TrashGlyph, XCircleGlyph } from '../../icons'
 import { toast } from '../../state/toast'
 import Spinner from '../Spinner'
