@@ -62,6 +62,5 @@ export function activeThreads(
   }
   return [...open]
     .sort(([, a], [, b]) => b.at - a.at)
-    .slice(0, THREAD_LIMIT)
     .map(([id, thread]) => ({ id, title: liveTitle(thread.title, thread.agentLabel), working: working(id) }))
 }
