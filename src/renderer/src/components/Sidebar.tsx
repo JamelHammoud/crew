@@ -206,7 +206,7 @@ export default function Sidebar({
           <SidebarTasks />
           <SidebarMore tab={tab} onTab={goToTab} />
         </nav>
-        <div className="group pl-2 pt-5 pb-1 flex items-center justify-between">
+        <div className="group pl-2 pt-5 pb-2.5 flex items-center justify-between">
           <h2 className="text-xs font-medium text-fg/45">Projects</h2>
           <NewPlace busy={busyKey !== null} onOpen={addPlace} />
         </div>

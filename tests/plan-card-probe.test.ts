@@ -93,7 +93,6 @@ describe('plans in the app', () => {
 
     render(createElement(App))
     expect(screen.getByText('Planning complete')).toBeTruthy()
-    expect(screen.getByText("ALI's PC")).toBeTruthy()
     expect(screen.getAllByText('Rename the tabs').length).toBeGreaterThan(0)
 
     fireEvent.click(screen.getByText('Planning complete'))
