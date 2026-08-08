@@ -192,7 +192,7 @@ const EVENTS = [
   },
   {
     id: 'e-8',
-    ts: ago(1890),
+    ts: ago(196),
     kind: 'agent.start',
     threadId: 'thread-working',
     promptId: 'prompt-working',
