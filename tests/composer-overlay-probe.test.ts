@@ -112,3 +112,52 @@ describe('the composer overlay', () => {
     expect(overlay.textContent).toContain('well 😔')
   })
 })
+
+describe('the room around what is typed', () => {
+  it('belongs to the scroller, so a line scrolled past runs to the edge', () => {
+    const { textarea, overlay, card } = boot('a long line\n'.repeat(40))
+
+    expect(textarea.className).toContain('py-[var(--composer-scrim)]')
+    expect(overlay.className).toContain('py-[var(--composer-scrim)]')
+    expect(card.className).toContain('px-5 pb-5')
+    expect(card.className).not.toMatch(/\bp-5\b|\bpt-5\b|\bpy-5\b/)
+  })
+
+  it('leaves the controls hard against the box, since the box carries its own', () => {
+    const { textarea } = boot('a line')
+    const rows = textarea.closest('.rounded-shell')!.lastElementChild as HTMLElement
+
+    expect(rows.className).toContain('items-center')
+    expect(rows.className).not.toMatch(/\bmt-\d/)
+  })
+
+  it('fades what crosses either edge, in the composer own surface', () => {
+    const { card } = boot('a long line\n'.repeat(40))
+    const top = card.querySelector('.composer-scrim') as HTMLElement
+    const foot = card.querySelector('.composer-scrim-up') as HTMLElement
+
+    expect(top.className).toContain('top-0')
+    expect(top.className).toContain('bg-ink-800')
+    expect(foot.className).toContain('bottom-0')
+    expect(foot.className).toContain('bg-ink-800')
+    for (const scrim of [top, foot]) {
+      expect(scrim.className).toContain('pointer-events-none')
+      expect(scrim.className).toContain('z-20')
+    }
+  })
+
+  it('clips the card, or text run to the edge stands past the corner', () => {
+    const { card } = boot('a line')
+
+    expect(card.className).toContain('overflow-hidden')
+  })
+
+  it('gives the room back to the card once something is attached', () => {
+    const { textarea, card } = boot('a line', {
+      chat: [{ id: 'one', name: 'a.png', mime: 'image/png', size: 10, data: '' }]
+    })
+
+    expect(card.className).toContain('pt-5')
+    expect(textarea.parentElement!.className).toContain('-mt-3')
+  })
+})
