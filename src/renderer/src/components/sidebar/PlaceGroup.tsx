@@ -26,6 +26,9 @@ function PlaceGroup({
 }: PlaceGroupProps) {
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
   const [naming, setNaming] = useState(false)
+  const rows = useRef<HTMLDivElement | null>(null)
+  useScrollFade(rows)
+  const room = threadsRoom(threads.length)
 
   const openThread = useCallback(
     (threadId: string) => onOpenThread(place, threadId, false),
