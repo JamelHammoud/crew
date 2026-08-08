@@ -22,7 +22,39 @@ function CardRule({ className = '', children }: { className?: string; children: 
   return <div className={`-mx-3 mt-2.5 border-t border-fg/[0.06] px-3 pt-2.5 ${className}`}>{children}</div>
 }
 
+// A band across the foot of the card, on the card's own bottom corners, the way
+// the preview under a board is and the way the same band sits under an agent in
+// the settings.
+function CardFoot({ children }: { children: ReactNode }) {
+  return (
+    <div className="-mx-3 -mb-3 mt-2.5 flex items-center gap-2 rounded-b-2xl border-t border-fg/[0.06] bg-fg/[0.04] px-3 py-2">
+      {children}
+    </div>
+  )
+}
+
+// The face, the name and whose it is, which is what both cards open with. An
+// agent runs a real CLI on somebody's machine and spends their tokens, so who
+// that is stands under the name rather than being something to go and look up.
+function CardHead({ face, name, badge, under }: { face: ReactNode; name: string; badge?: ReactNode; under?: string }) {
+  return (
+    <div className="flex items-center gap-2.5">
+      {face}
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-1.5">
+          <span className="text-sm font-semibold text-fg truncate">{name}</span>
+          {badge}
+        </div>
+        {under && <div className="text-xs text-fg/45 truncate">{under}</div>}
+      </div>
+    </div>
+  )
+}
+
 function AgentCardContent({ agent }: { agent: PooledAgent }) {
+  // A field read rather than a walk, and the card is only ever rendered while it
+  // is standing, so a chip on screen costs nothing until it is hovered.
+  const threads = useCrew(s => s.activePrompts[agent.id]?.length ?? 0)
   const shown = [
     ...visibleSettingFields(plainFields(agent.fields), agent.settings),
     ...changedSettings(agent.fields, agent.settings).filter(field => field.advanced)
@@ -32,26 +64,28 @@ function AgentCardContent({ agent }: { agent: PooledAgent }) {
     .filter(row => row.value)
   return (
     <>
-      <span className="flex items-center gap-2.5">
-        <AgentIcon seed={agent.id} size="sm" presence={agent.status === 'offline' ? 'offline' : 'online'} />
-        <span className="min-w-0 flex-1 flex items-center gap-2">
-          <span className="text-sm font-semibold text-fg truncate">{agent.label}</span>
-          <Pill>{agent.provider}</Pill>
-        </span>
-      </span>
-      <span className="flex items-center gap-2 mt-2.5 text-xs text-fg-muted">
-        <DesktopGlyph className="w-3.5 h-3.5 shrink-0" />
-        {agent.ownerName}'s PC
-      </span>
+      <CardHead
+        face={<AgentIcon seed={agent.id} presence={agent.status === 'offline' ? 'offline' : 'online'} />}
+        name={agent.label}
+        badge={<ProviderMark provider={agent.provider} />}
+        under={agent.ownerName}
+      />
       {settings.length > 0 && (
         <CardRule className="space-y-1.5">
           {settings.map(row => (
-            <span key={row.label} className="flex items-center justify-between text-xs">
-              <span className="text-fg-muted">{row.label}</span>
-              <span className="text-fg-secondary">{row.value}</span>
-            </span>
+            <div key={row.label} className="flex items-baseline justify-between gap-3 text-xs">
+              <span className="shrink-0 text-fg/45">{row.label}</span>
+              <span className="min-w-0 truncate text-fg/70">{row.value}</span>
+            </div>
           ))}
         </CardRule>
+      )}
+      {threads > 0 && (
+        <CardFoot>
+          <Spinner size={12} className="text-fg" />
+          <span className="text-xs font-semibold text-fg">Working</span>
+          {threads > 1 && <span className="text-xs text-fg/45">on {threads} threads</span>}
+        </CardFoot>
       )}
     </>
   )
