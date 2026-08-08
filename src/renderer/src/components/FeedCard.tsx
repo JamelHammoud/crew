@@ -27,18 +27,22 @@ export function FeedHead({ author, ts }: { author: string; ts: number }) {
 export function FeedBlock({
   author,
   ts,
+  thread,
   onContextMenu,
   children
 }: {
   author: string
   ts: number
+  // The thread the block stands for, so anything looking for one card among
+  // many has a name to ask for rather than a shape to guess at.
+  thread?: string
   onContextMenu?: (event: React.MouseEvent) => void
   children: ReactNode
 }) {
   const presence = usePresence(author)
 
   return (
-    <div className="flex items-start gap-4 animate-rise" onContextMenu={onContextMenu}>
+    <div className="flex items-start gap-4 animate-rise" data-thread={thread} onContextMenu={onContextMenu}>
       <Avatar name={author} presence={presence} />
       <div className="min-w-0 flex-1 pt-0.5">
         <FeedHead author={author} ts={ts} />

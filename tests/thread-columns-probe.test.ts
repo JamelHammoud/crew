@@ -332,10 +332,8 @@ describe('the chat standing beside a thread', () => {
     open(['thread-1'], 'thread-1')
     fireEvent.click(slot())
 
-    const card = within(chatColumn())
-      .getAllByRole('button')
-      .find(one => one.textContent?.includes('look at the footer'))!
-    fireEvent.click(card)
+    const card = chatColumn().querySelector<HTMLElement>('[data-thread="thread-2"]')!
+    fireEvent.click(within(card).getByRole('button'))
 
     expect(useCrew.getState().openThreadIds).toEqual(['thread-1', 'thread-2'])
     expect(useCrew.getState().openThreadId).toBe('thread-2')
@@ -346,9 +344,7 @@ describe('the chat standing beside a thread', () => {
     open(['thread-1'], 'thread-1')
     fireEvent.click(slot())
 
-    const card = within(chatColumn())
-      .getAllByRole('button')
-      .find(one => one.textContent?.includes('look at the footer'))!
+    const card = chatColumn().querySelector<HTMLElement>('[data-thread="thread-2"]')!
     fireEvent.contextMenu(card)
 
     expect(screen.getByText('Open to right')).toBeTruthy()

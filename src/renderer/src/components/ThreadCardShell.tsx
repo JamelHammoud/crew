@@ -38,7 +38,7 @@ export default function ThreadCardShell({
   if (thread.forkedFrom) chips.push('fork')
 
   return (
-    <FeedBlock author={thread.createdBy} ts={ts} onContextMenu={onContextMenu}>
+    <FeedBlock author={thread.createdBy} ts={ts} thread={thread.id} onContextMenu={onContextMenu}>
       <div className="mt-1 flex items-start gap-2.5">
         <Clamped lines={5} watch={named} className="min-w-0 flex-1 text-base leading-[22px]">
           <p className="text-fg whitespace-pre-wrap break-words">
