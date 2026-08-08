@@ -60,15 +60,7 @@ export default function ThreadCard({
 
   return (
     <>
-      <ThreadCardShell
-        thread={thread}
-        ts={ts}
-        ask={ask}
-        onContextMenu={event => {
-          event.preventDefault()
-          setMenuAt({ x: event.clientX, y: event.clientY })
-        }}
-      >
+      <ThreadCardShell thread={thread} ts={ts} ask={ask} onContextMenu={onContextMenu}>
         <ThreadStrand
           onOpen={onOpen}
           dashed={thread.ghost}
