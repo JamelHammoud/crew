@@ -716,7 +716,7 @@ describe('the sidebar', () => {
     const { container } = render(Sidebar())
     const titles = [...container.querySelectorAll('button')].map(b => b.textContent)
     for (let i = 0; i < THREADS_SHOWN + 5; i += 1) expect(titles).toContain(`Thread ${i}`)
-    const list = container.querySelector('[data-reorder]')?.querySelector('div') as HTMLElement
+    const list = container.querySelector('[data-reorder] > div') as HTMLElement
     expect(list.className).toContain('overflow-y-auto')
     expect(list.className).toContain('overscroll-contain')
     expect(list.className).toContain('scroll-fade')
@@ -741,7 +741,7 @@ describe('the sidebar', () => {
       await usePlaces.getState().load()
     })
     const { container } = render(Sidebar())
-    const list = container.querySelector('[data-reorder]')?.querySelector('div') as HTMLElement
+    const list = container.querySelector('[data-reorder] > div') as HTMLElement
     expect(list.className).not.toContain('overflow-y-auto')
     expect(list.style.maxHeight).toBe('')
   })
