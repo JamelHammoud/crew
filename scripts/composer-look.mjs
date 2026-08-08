@@ -43,7 +43,7 @@ const LINES = [
   'Ideally you can also see +/- changes (when available) before clicking in',
   '',
   'As well as exactly what is being run right now, if it is working (like literally the last tool call, or "Thinking")'
-].join('\\n')
+].join('\\n').repeat(3)
 
 function Page() {
   const [text, setText] = React.useState(LINES)
