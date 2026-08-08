@@ -8,6 +8,7 @@ export interface EventIndex {
   replyAttachments: Map<string, Attachment>
   lastEnds: Map<string, AgentEnd>
   helperParents: Set<string>
+  runsByThread: Map<string, string[]>
 }
 
 const held = new WeakMap<SessionEvent[], EventIndex>()

@@ -65,12 +65,12 @@ function PlaceGroup({
       </button>
       <div
         ref={rows}
-        style={room ? { maxHeight: room } : undefined}
+        style={scrolls ? ({ '--rail-rows': THREADS_SHOWN } as CSSProperties) : undefined}
         className={
           threads.length === 0
             ? 'contents'
             : `flex flex-col gap-0.5 ${
-                room ? 'scroll-fade overflow-y-auto overscroll-contain no-scrollbar' : ''
+                scrolls ? 'rail-threads scroll-fade overflow-y-auto overscroll-contain no-scrollbar' : ''
               }`
         }
       >
