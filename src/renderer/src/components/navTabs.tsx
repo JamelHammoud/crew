@@ -15,7 +15,7 @@ export const TABS: TabRow[] = [
 
 export const MORE_TABS: TabRow[] = [
   { id: 'scheduled', label: 'Scheduled', Icon: ClockGlyph },
-  { id: 'plugins', label: 'Plugins', Icon: PlugGlyph }
+  { id: 'plugins', label: 'Plugins', Icon: AtGlyph }
 ]
 
 export const MoreIcon = MoreGlyph
