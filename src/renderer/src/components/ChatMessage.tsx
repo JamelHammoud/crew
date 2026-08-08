@@ -272,6 +272,7 @@ export default memo(
   (before, after) =>
     before.editable === after.editable &&
     before.linked === after.linked &&
+    before.markdown === after.markdown &&
     before.onReply === after.onReply &&
     sameItem(before.item, after.item)
 )
