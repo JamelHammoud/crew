@@ -32,6 +32,8 @@ export interface ThreadStatus {
   // than here, so a working thread does not draw the whole feed again once a
   // second.
   startedAt?: number
+  tokens?: number
+  cost?: number
   added: number
   removed: number
 }
@@ -150,5 +152,7 @@ export const sameStatus = (a: ThreadStatus, b: ThreadStatus): boolean =>
   (a.state === b.state &&
     a.step === b.step &&
     a.startedAt === b.startedAt &&
+    a.tokens === b.tokens &&
+    a.cost === b.cost &&
     a.added === b.added &&
     a.removed === b.removed)

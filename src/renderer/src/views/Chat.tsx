@@ -130,6 +130,8 @@ export default function Chat() {
       state: 'working',
       step: (steps[promptId] ?? []).at(-1),
       startedAt: startedAt.get(promptId),
+      tokens: tokens[promptId] ?? 0,
+      cost: costs[promptId],
       ...counted
     }
   }

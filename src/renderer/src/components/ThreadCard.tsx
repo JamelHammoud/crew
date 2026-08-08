@@ -13,7 +13,7 @@ import { liveLine, type LiveLine } from './threadLive'
 import ThreadStrand, { type StrandTone } from './ThreadStrand'
 import { ThreadIdItem, ThreadOpenItems, ThreadStatusItems } from './threadMenu'
 import ThinkingMark from './ThinkingMark'
-import { formatElapsed } from './time'
+import RunFigures from './RunFigures'
 import { useNow } from './useNow'
 
 export function StateIcon({ state, className = 'w-4 h-4' }: { state: ThreadState; className?: string }) {
@@ -88,7 +88,12 @@ export default function ThreadCard({
             <>
               <Counts added={status.added} removed={status.removed} className="mono-inline" />
               {live && status.startedAt !== undefined && (
-                <span className="text-fg-muted tabular-nums">{formatElapsed(now - status.startedAt)}</span>
+                <RunFigures
+                  ms={now - status.startedAt}
+                  tokens={status.tokens ?? 0}
+                  cost={status.cost}
+                  tone="text-fg-muted"
+                />
               )}
             </>
           }

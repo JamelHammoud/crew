@@ -43,7 +43,7 @@ export default function ThreadStrand({
       >
         {mark}
         <span className={`min-w-0 truncate font-medium ${TONES[tone]}`}>{label}</span>
-        <span className="shrink-0 flex items-center gap-2.5 text-xs">{figures}</span>
+        <span className="shrink-0 ml-2 flex items-center gap-2.5 text-xs">{figures}</span>
         <span
           className={`shrink-0 -ml-2.5 w-0 overflow-hidden opacity-0 transition-[width,margin,opacity] duration-200 ${
             onOpen ? 'group-hover:ml-0 group-hover:w-3.5 group-hover:opacity-100' : ''
