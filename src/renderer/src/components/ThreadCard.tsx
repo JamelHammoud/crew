@@ -51,7 +51,7 @@ export default function ThreadCard({
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
   const live = status.state === 'working'
   const now = useNow(live)
-  const line = live ? liveLine(status.step) : { label: THREAD_STATE_LABELS[status.state] }
+  const line: LiveLine = live ? liveLine(status.step) : { label: THREAD_STATE_LABELS[status.state] }
 
   return (
     <>
@@ -68,7 +68,7 @@ export default function ThreadCard({
           dashed={thread.ghost}
           mark={
             live ? (
-              'icon' in line && line.icon ? (
+              line.icon ? (
                 <Mark icon={line.icon} running />
               ) : (
                 <ThinkingMark running />
