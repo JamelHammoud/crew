@@ -103,7 +103,7 @@ export default function AddMenu({
                   {(!full || aiming) && <MenuDivider />}
                   <MenuItem
                     icon={<SignalGlyph />}
-                    label={live ? 'Join the huddle' : 'Start a huddle'}
+                    label={live ? 'Join the huddle' : 'Huddle'}
                     onClick={() => {
                       setOpen(false)
                       void join()
