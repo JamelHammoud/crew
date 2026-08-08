@@ -19,7 +19,7 @@ import {
   type ThreadStatus
 } from '../components/feed/feedItems'
 import { changedIn, NOTHING } from '../components/threadChanged'
-import { endPreview, lastEnd, sameRun, threadState, type ThreadItem } from '../components/thread'
+import { sameRun, threadState, type ThreadItem } from '../components/thread'
 import { isNewDay } from '../components/time'
 import { useAutoResize } from '../components/useAutoResize'
 import { useComposerRoom } from '../components/useComposerRoom'
@@ -104,16 +104,7 @@ export default function Chat() {
     const held = new Map<string, ThreadStatus>()
     for (const entry of feed) {
       if (entry.kind !== 'card') continue
-      const end = lastEnd(entry.thread.id, ends)
-      held.set(entry.thread.id, {
-        state: threadState(entry.thread, ends, false),
-        detail: endPreview(end),
-        ms: end?.ms,
-        tokens: end?.tokens,
-        cost: end?.cost,
-        added: 0,
-        removed: 0
-      })
+      held.set(entry.thread.id, { state: threadState(entry.thread, ends, false), added: 0, removed: 0 })
     }
     return held
   }, [events, feed])
@@ -137,11 +128,8 @@ export default function Chat() {
     }
     return {
       state: 'working',
-      detail: '',
       step: (steps[promptId] ?? []).at(-1),
       startedAt: startedAt.get(promptId),
-      tokens: tokens[promptId] ?? 0,
-      cost: costs[promptId],
       ...counted
     }
   }

@@ -25,23 +25,18 @@ export type FeedEntry =
 
 export interface ThreadStatus {
   state: ThreadState
-  // What the run is on right now, so the card says the tool it is holding and
-  // the file it is on rather than a word for the kind of work.
+  // What the run is on right now, so the strand says the tool it is holding
+  // rather than a word for the kind of work.
   step?: AgentStep
-  // The line a finished run left behind.
-  detail: string
-  // The moment a live run started, counted into seconds by the card rather than
-  // here, so a working thread does not draw the whole feed again once a second.
+  // The moment a live run started, counted into seconds by the strand rather
+  // than here, so a working thread does not draw the whole feed again once a
+  // second.
   startedAt?: number
-  // How long a finished run took.
-  ms?: number
-  tokens?: number
-  cost?: number
   added: number
   removed: number
 }
 
-export const RESTING: ThreadStatus = { state: 'ready', detail: '', added: 0, removed: 0 }
+export const RESTING: ThreadStatus = { state: 'ready', added: 0, removed: 0 }
 
 export function buildFeed(
   events: SessionEvent[],
@@ -154,10 +149,6 @@ export const sameStatus = (a: ThreadStatus, b: ThreadStatus): boolean =>
   a === b ||
   (a.state === b.state &&
     a.step === b.step &&
-    a.detail === b.detail &&
     a.startedAt === b.startedAt &&
-    a.ms === b.ms &&
-    a.tokens === b.tokens &&
-    a.cost === b.cost &&
     a.added === b.added &&
     a.removed === b.removed)
