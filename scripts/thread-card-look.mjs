@@ -103,7 +103,7 @@ const THREADS = {
     id: 'thread-failed',
     agentId: 'sam/gemini',
     agentLabel: 'Gemini',
-    title: '@Gemini run the review panel suite and fix whatever fails',
+    title: '@Gemini run the review panel suite and fix whatever fails\n\nIt has been red since this morning.\n\n',
     createdBy: 'SAM',
     status: 'open',
     mode: 'build'
