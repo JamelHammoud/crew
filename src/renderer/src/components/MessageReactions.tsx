@@ -14,6 +14,12 @@ import Tooltip from './Tooltip'
 
 const PILL = 'flex h-7 items-center rounded-full transition-[transform,background-color,color,opacity] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-95'
 
+// The tray stands over the row rather than inside the words, so the row is what
+// positions it and what says it is being hovered. Anything that can be reacted
+// to wears this, a message in a thread and a thread's own card in the chat, and
+// it is written once so the two cannot drift.
+export const REACTING_ROW = 'relative group/message'
+
 export default function MessageReactions({
   targetId,
   reactions = [],
