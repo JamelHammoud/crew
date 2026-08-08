@@ -203,7 +203,8 @@ describe('reacting to what opened a thread', () => {
     threadId: 't1',
     authorId,
     authorName: authorId === 'crew' ? 'Crew' : 'ALI',
-    text: '@Claude redraw the rows'
+    text: '@Claude redraw the rows',
+    mentions: []
   })
 
   const reacted = (emoji: string, memberId: string, memberName: string): SessionEvent => ({
