@@ -475,6 +475,7 @@ const READ = \`(() => {
       width: Math.round(box.width),
       height: Math.round(box.height),
       band: band ? Math.round(band.getBoundingClientRect().height) : null,
+      corners: band ? (() => { const pill = band.querySelector('span'); const style = getComputedStyle(pill); return { tl: style.borderTopLeftRadius, tr: style.borderTopRightRadius, br: style.borderBottomRightRadius, bl: style.borderBottomLeftRadius } })() : null,
       words: band ? wordsOf(band) : null
     }
   })
