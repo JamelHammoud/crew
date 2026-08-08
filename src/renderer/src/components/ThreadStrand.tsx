@@ -49,7 +49,7 @@ export default function ThreadStrand({
       }`}
     >
       <span
-        className={`min-w-0 max-w-full h-9 pl-3.5 pr-2 flex items-center gap-2.5 rounded-[14px] border text-sm transition-[background-color,border-color] duration-200 ${
+        className={`${STRAND_SHAPE} min-w-0 max-w-full pl-3.5 pr-2 transition-[background-color,border-color] duration-200 ${
           dashed ? 'border-dashed border-ink-600' : 'border-transparent bg-ink-800'
         } ${onOpen ? (dashed ? 'group-hover:border-ink-500' : 'group-hover:bg-ink-700') : ''}`}
       >
