@@ -74,7 +74,7 @@ const open = (agents: PooledAgent[] = [BUBBLES, KIMI], sendChat = vi.fn()) => {
 
 const pick = (label: string) => {
   fireEvent.click(screen.getByLabelText('Add to your message'))
-  fireEvent.click(screen.getByText('Default agent'))
+  fireEvent.click(screen.getByText('Agent'))
   fireEvent.click(screen.getByText(label))
 }
 
@@ -157,7 +157,7 @@ describe('the agent standing on the chat composer', () => {
     expect((box.firstElementChild as HTMLElement).className).toContain('w-max')
     expect((box.firstElementChild as HTMLElement).className).not.toContain('animate-screen')
 
-    fireEvent.click(screen.getByText('Default agent'))
+    fireEvent.click(screen.getByText('Agent'))
 
     const arriving = box.firstElementChild as HTMLElement
     expect(arriving.className).toContain('animate-screen')
@@ -169,7 +169,7 @@ describe('the agent standing on the chat composer', () => {
     open([agent('ali/away', 'Away', 'offline')])
 
     fireEvent.click(screen.getByLabelText('Add to your message'))
-    expect(screen.queryByText('Default agent')).toBeNull()
+    expect(screen.queryByText('Agent')).toBeNull()
     expect(screen.getByText('Upload a file')).toBeTruthy()
   })
 
