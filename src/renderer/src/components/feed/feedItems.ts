@@ -9,11 +9,6 @@ import { sameItem, sameReactions, type ThreadItem, type ThreadState } from '../t
 // The whole of what somebody wrote to open a thread. The title is cut to a line
 // on the host, which is right for a rail row and wrong for the feed, so the card
 // reads the thread's own first message instead and keeps its mentions with it.
-//
-// It is that message rather than a copy of it, so it carries what a message
-// carries: reacting to the preview and reacting to the same line inside the
-// thread is one reaction on one message, and neither place has a record of its
-// own to keep in step with the other.
 export interface ThreadAsk {
   text: string
   mentionRefs?: AgentMentionRef[]
