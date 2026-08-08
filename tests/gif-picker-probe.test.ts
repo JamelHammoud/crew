@@ -143,16 +143,16 @@ describe('the huddle in the plus menu', () => {
 
   it('starts the call from the main chat', () => {
     openIn(true)
-    fireEvent.click(screen.getByText('Start a huddle'))
+    fireEvent.click(screen.getByText('Huddle'))
 
     expect(join).toHaveBeenCalledTimes(1)
-    expect(screen.queryByText('Start a huddle')).toBeNull()
+    expect(screen.queryByText('Huddle')).toBeNull()
   })
 
   it('is not offered in a thread or on a board', () => {
     openIn()
 
-    expect(screen.queryByText('Start a huddle')).toBeNull()
+    expect(screen.queryByText('Huddle')).toBeNull()
     expect(screen.getByText('Upload a file')).not.toBeNull()
   })
 
@@ -160,7 +160,7 @@ describe('the huddle in the plus menu', () => {
     useHuddle.setState({ room: { id: 'call-1', peers: [peer], startedAt: 1 } })
     openIn(true)
 
-    expect(screen.queryByText('Start a huddle')).toBeNull()
+    expect(screen.queryByText('Huddle')).toBeNull()
     fireEvent.click(screen.getByText('Join the huddle'))
     expect(join).toHaveBeenCalledTimes(1)
   })
@@ -170,7 +170,7 @@ describe('the huddle in the plus menu', () => {
     openIn(true)
 
     expect(screen.queryByText('Join the huddle')).toBeNull()
-    expect(screen.queryByText('Start a huddle')).toBeNull()
+    expect(screen.queryByText('Huddle')).toBeNull()
   })
 
   it('is still reachable with the attachments full', () => {
@@ -187,7 +187,7 @@ describe('the huddle in the plus menu', () => {
     })
     openIn(true)
 
-    expect(screen.getByText('Start a huddle')).not.toBeNull()
+    expect(screen.getByText('Huddle')).not.toBeNull()
     expect(screen.queryByText('Upload a file')).toBeNull()
   })
 })

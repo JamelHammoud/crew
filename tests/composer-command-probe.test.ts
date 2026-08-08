@@ -123,13 +123,13 @@ describe('commands in the composer', () => {
     const composer = open()
 
     fireEvent.click(screen.getByLabelText('Add to your message'))
-    expect(screen.getByText('Start a huddle')).toBeTruthy()
+    expect(screen.getByText('Huddle')).toBeTruthy()
     fireEvent.keyDown(document, { key: 'Escape' })
 
     fireEvent.change(composer, { target: { value: '/ghost ' } })
     fireEvent.click(screen.getByLabelText('Add to your message'))
     expect(screen.getByText('Upload a file')).toBeTruthy()
-    expect(screen.queryByText('Start a huddle')).toBeNull()
+    expect(screen.queryByText('Huddle')).toBeNull()
   })
 
   it('rubs a chip out with backspace on an empty box', () => {
