@@ -323,7 +323,7 @@ describe('the sidebar', () => {
     await waitFor(() => expect(useSidebar.getState().peeking).toBe(false))
   })
 
-  it('leaves the count beside the tasks row out of the pointer, so a press on it opens the tasks', () => {
+  it('leaves the count beside the tasks row out of the pointer, so the row under it takes the press', () => {
     useCrew.setState({
       threads: {
         t1: {
