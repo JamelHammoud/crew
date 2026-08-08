@@ -99,6 +99,13 @@ describe('the agent standing on the chat composer', () => {
     expect(useDefaultAgent.getState().agentId).toBeNull()
   })
 
+  it('leaves the caret in the box it just aimed', () => {
+    const composer = open()
+    pick('Bubbles')
+
+    expect(document.activeElement).toBe(composer)
+  })
+
   it('sends what was typed to them without the name being written', () => {
     const sendChat = vi.fn()
     const composer = open([BUBBLES, KIMI], sendChat)
