@@ -50,8 +50,8 @@ function Page() {
   const inputRef = useAutoResize(text, COMPOSER_MAX)
   return React.createElement(
     'div',
-    { className: 'h-full bg-ink-900 flex items-end p-6' },
-    React.createElement(Composer, {
+    { className: 'h-full bg-ink-900 flex items-end justify-center p-6' },
+    React.createElement('div', { className: 'w-[660px]' }, React.createElement(Composer, {
       attachmentKey: 'chat',
       value: text,
       placeholder: 'Message the crew',
@@ -60,7 +60,7 @@ function Page() {
       onKeyDown: () => {},
       onSend: () => {},
       defaultAgent: true
-    })
+    }))
   )
 }
 
