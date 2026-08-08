@@ -110,7 +110,7 @@ describe('the plus button on the composer', () => {
 
   it('holds the tooltip back while the menu it opens is up', () => {
     vi.useFakeTimers()
-    render(createElement(AddMenu, { attachmentKey: CHAT_KEY, onSend: vi.fn() }))
+    render(createElement(AddMenu, { attachmentKey: CHAT_KEY, inputRef: box, onSend: vi.fn() }))
     const button = screen.getByLabelText('Add to your message')
 
     fireEvent.mouseEnter(button.parentElement!)
