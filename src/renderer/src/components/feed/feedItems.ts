@@ -48,7 +48,12 @@ export function buildFeed(
   const list: FeedEntry[] = []
   const reactions = reactionGroups(events, selfId)
   const huddles = huddleRecords(events)
+  const asks = new Map<string, ThreadAsk>()
+  const cards: Array<Extract<FeedEntry, { kind: 'card' }>> = []
   for (const event of events) {
+    if (event.kind === 'message' && event.threadId && !asks.has(event.threadId)) {
+      asks.set(event.threadId, { text: event.text, mentionRefs: event.mentionRefs })
+    }
     if (event.kind === 'message' && !event.threadId) {
       const targetId = messageReactionTarget(event.id)
       list.push({
