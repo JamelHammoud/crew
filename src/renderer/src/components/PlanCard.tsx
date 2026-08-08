@@ -1,10 +1,10 @@
 import { ChecklistGlyph } from '../icons'
 import type { ThreadMeta } from '../state/store'
-import AgentIcon from './AgentIcon'
 import Clamped from './Clamped'
 import type { ThreadAsk } from './feed/feedItems'
 import Markdown from './Markdown'
 import ThreadCardShell from './ThreadCardShell'
+import ThreadChips from './ThreadChips'
 import ThreadStrand from './ThreadStrand'
 import { useThreadMenu } from './threadMenu'
 
@@ -30,7 +30,7 @@ export default function PlanCard({
         <ThreadStrand
           onOpen={onOpen}
           dashed={thread.ghost}
-          face={<AgentIcon seed={thread.agentId} px={36} />}
+          chips={<ThreadChips thread={thread} />}
           mark={<ChecklistGlyph className="w-[18px] h-[18px] text-fg shrink-0" />}
           label="Planning complete"
         />

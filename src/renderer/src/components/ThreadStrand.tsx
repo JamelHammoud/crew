@@ -10,19 +10,19 @@ const TONES: Record<StrandTone, string> = {
 }
 
 export default function ThreadStrand({
-  face,
   mark,
   label,
   tone = 'plain',
   figures,
+  chips,
   dashed,
   onOpen
 }: {
-  face?: ReactNode
   mark: ReactNode
   label: string
   tone?: StrandTone
   figures?: ReactNode
+  chips?: ReactNode
   dashed?: boolean
   onOpen?: () => void
 }) {
@@ -35,7 +35,6 @@ export default function ThreadStrand({
         onOpen ? 'cursor-pointer transition-transform duration-200 active:scale-[0.99]' : ''
       }`}
     >
-      {face}
       <span
         className={`min-w-0 max-w-full h-9 pl-3.5 pr-2 flex items-center gap-2.5 rounded-[14px] border text-sm transition-[background-color,border-color] duration-200 ${
           dashed ? 'border-dashed border-ink-600' : 'border-transparent bg-ink-800'
@@ -52,6 +51,7 @@ export default function ThreadStrand({
           <ChevronRightGlyph className="w-3.5 h-3.5 shrink-0 text-fg-muted" />
         </span>
       </span>
+      {chips}
     </Row>
   )
 }

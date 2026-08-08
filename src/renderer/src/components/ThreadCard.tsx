@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { ArchiveGlyph, CheckGlyph, EyeGlyph, StopGlyph, WarningGlyph } from '../icons'
 import { type ThreadMeta } from '../state/store'
-import AgentIcon from './AgentIcon'
 import Counts from './Counts'
 import type { ThreadAsk, ThreadStatus } from './feed/feedItems'
 import { MenuDivider, Popover } from './Popover'
@@ -9,6 +8,7 @@ import Spinner from './Spinner'
 import { Mark } from './StepRow'
 import { THREAD_STATE_LABELS, type ThreadState } from './thread'
 import ThreadCardShell from './ThreadCardShell'
+import ThreadChips from './ThreadChips'
 import { liveLine, type LiveLine } from './threadLive'
 import ThreadStrand, { type StrandTone } from './ThreadStrand'
 import { ThreadIdItem, ThreadOpenItems, ThreadStatusItems } from './threadMenu'
@@ -70,7 +70,7 @@ export default function ThreadCard({
         <ThreadStrand
           onOpen={onOpen}
           dashed={thread.ghost}
-          face={<AgentIcon seed={thread.agentId} px={36} />}
+          chips={<ThreadChips thread={thread} />}
           mark={
             live ? (
               line.icon ? (
