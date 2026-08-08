@@ -696,6 +696,56 @@ describe('the sidebar', () => {
     expect(idle.querySelector('[role="status"]')).toBe(null)
   })
 
+  it('scrolls the threads under a project rather than showing fewer of them', async () => {
+    live = [
+      {
+        key: `project:${TWO}`,
+        folder: TWO,
+        name: 'Jamel',
+        hosting: true,
+        threads: Array.from({ length: THREADS_SHOWN + 5 }, (_, i) => ({
+          id: `t${i}`,
+          title: `Thread ${i}`,
+          working: false
+        }))
+      }
+    ]
+    await act(async () => {
+      await usePlaces.getState().load()
+    })
+    const { container } = render(Sidebar())
+    const titles = [...container.querySelectorAll('button')].map(b => b.textContent)
+    for (let i = 0; i < THREADS_SHOWN + 5; i += 1) expect(titles).toContain(`Thread ${i}`)
+    const list = container.querySelector('[data-reorder]')?.querySelector('div') as HTMLElement
+    expect(list.className).toContain('overflow-y-auto')
+    expect(list.className).toContain('overscroll-contain')
+    expect(list.className).toContain('scroll-fade')
+    expect(list.style.maxHeight).toBe(`${THREADS_SHOWN * 30 + (THREADS_SHOWN - 1) * 2}px`)
+  })
+
+  it('leaves a short list of threads standing at its own height', async () => {
+    live = [
+      {
+        key: `project:${TWO}`,
+        folder: TWO,
+        name: 'Jamel',
+        hosting: true,
+        threads: Array.from({ length: THREADS_SHOWN }, (_, i) => ({
+          id: `t${i}`,
+          title: `Thread ${i}`,
+          working: false
+        }))
+      }
+    ]
+    await act(async () => {
+      await usePlaces.getState().load()
+    })
+    const { container } = render(Sidebar())
+    const list = container.querySelector('[data-reorder]')?.querySelector('div') as HTMLElement
+    expect(list.className).not.toContain('overflow-y-auto')
+    expect(list.style.maxHeight).toBe('')
+  })
+
   it('keeps the open thread highlighted beneath its project', async () => {
     live = [
       {
