@@ -3,22 +3,13 @@ import { TOOL_MARKS } from '../../../shared/toolbox'
 import EmojiPicker from './EmojiPicker'
 import { rememberEmoji } from './emojiRecents'
 import ToolMarkView, { glyphFor } from './toolMark'
-import { Segmented, SheetHeader } from './toolboxParts'
+import { Segmented } from './toolboxParts'
 
-export default function ToolMarkPicker({
-  mark,
-  onPick,
-  onBack
-}: {
-  mark: string
-  onPick: (mark: string) => void
-  onBack: () => void
-}) {
+export default function ToolMarkPicker({ mark, onPick }: { mark: string; onPick: (mark: string) => void }) {
   const [set, setSet] = useState<'icons' | 'emoji'>(glyphFor(mark) ? 'icons' : 'emoji')
 
   return (
     <>
-      <SheetHeader title="Choose a mark" onBack={onBack} />
       <div className="p-2.5 pb-0">
         <Segmented
           value={set}
