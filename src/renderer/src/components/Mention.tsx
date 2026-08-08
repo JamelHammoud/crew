@@ -6,7 +6,7 @@ import { changedSettings, plainFields, relabelMentions, settingLabel, visibleSet
 import type { MemberInfo } from '../../../shared/protocol'
 import type { CrewRefKind } from '../../../shared/refs'
 import { FrameGlyph } from '../design/glyphs'
-import { DesktopGlyph, DocGlyph } from '../icons'
+import { DocGlyph } from '../icons'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
 import Avatar from './Avatar'
@@ -17,6 +17,8 @@ import { localizeDoc } from './images'
 import Markdown from './Markdown'
 import { tokenizeMentions, writtenRefs } from './mentionTokens'
 import Pill from './Pill'
+import ProviderMark from './ProviderMark'
+import Spinner from './Spinner'
 
 function CardRule({ className = '', children }: { className?: string; children: ReactNode }) {
   return <div className={`-mx-3 mt-2.5 border-t border-fg/[0.06] px-3 pt-2.5 ${className}`}>{children}</div>
