@@ -240,6 +240,7 @@ export default function Composer({
               attachmentKey={attachmentKey}
               huddle={huddle && !ghost}
               defaultAgent={defaultAgent}
+              inputRef={inputRef}
               onSend={onSend}
             />
             {chips}
