@@ -55,6 +55,8 @@ export default function ThreadCard({
   const live = status.state === 'working'
   const now = useNow(live)
   const line: LiveLine = live ? liveLine(status.step) : { label: THREAD_STATE_LABELS[status.state] }
+  const running = live && status.startedAt !== undefined
+  const counted = Boolean(status.added || status.removed)
 
   return (
     <>
