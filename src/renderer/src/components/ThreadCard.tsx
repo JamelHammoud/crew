@@ -86,7 +86,6 @@ export default function ThreadCard({
           tone={TONES[status.state]}
           figures={
             <>
-              <Counts added={status.added} removed={status.removed} className="mono-inline" />
               {live && status.startedAt !== undefined && (
                 <RunFigures
                   ms={now - status.startedAt}
@@ -95,6 +94,7 @@ export default function ThreadCard({
                   tone="text-fg-muted"
                 />
               )}
+              <Counts added={status.added} removed={status.removed} className="mono-inline" />
             </>
           }
         />
