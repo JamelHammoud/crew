@@ -118,13 +118,17 @@ app.whenReady().then(async () => {
   fs.mkdirSync(SHOTS, { recursive: true })
   const win = new BrowserWindow({ width: ${WIDTH}, height: ${HEIGHT}, show: true, backgroundColor: '#141414' })
   const said = {}
+  const trail = []
+  said.trail = trail
+  const step = async (name, run) => { trail.push(name); return run() }
+  win.webContents.on('console-message', (e, level, message) => { if (level > 1) trail.push('console: ' + message) })
   try {
     await win.loadFile(path.join(__dirname, 'dist/index.html'), { search: '?card=schedule' })
     await wait(900)
     await shoot(win, 'schedule-empty')
     said.schedule = await win.webContents.executeJavaScript(CARD)
-    said.short = await win.webContents.executeJavaScript(BOX('What to ask'))
-    await win.webContents.executeJavaScript(WRITE('What to ask', 'Summarize what was added to the codebase today in features release notes style, and say who did what.'))
+    said.short = await step('box empty', () => win.webContents.executeJavaScript(BOX('What to ask')))
+    await step('write', () => win.webContents.executeJavaScript(WRITE('What to ask', 'Summarize what was added to the codebase today in features release notes style, and say who did what.')))
     await wait(200)
     said.grown = await win.webContents.executeJavaScript(BOX('What to ask'))
     await shoot(win, 'schedule-grown')
@@ -152,7 +156,7 @@ app.whenReady().then(async () => {
     await wait(300)
     await shoot(win, 'tool-mark')
   } catch (e) {
-    said.failed = String(e && e.stack)
+    said.failed = trail.join(' | ') + ' >> ' + String(e && e.message)
   }
   console.log('SEEN ' + JSON.stringify(said))
   app.exit(0)
