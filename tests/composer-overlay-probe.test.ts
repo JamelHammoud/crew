@@ -37,8 +37,8 @@ Object.defineProperty(HTMLElement.prototype, 'scrollTop', {
 const { default: Composer } = await import('../src/renderer/src/components/Composer')
 const { useCrew } = await import('../src/renderer/src/state/store')
 
-function boot(value: string) {
-  useCrew.setState({ agents: [], docs: {}, pending: {} })
+function boot(value: string, pending: Record<string, unknown[]> = {}) {
+  useCrew.setState({ agents: [], docs: {}, pending: pending as never })
   const inputRef = createRef<HTMLTextAreaElement>() as React.RefObject<HTMLTextAreaElement>
   const view = render(
     createElement(Composer, {
