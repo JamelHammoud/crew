@@ -30,8 +30,7 @@ function FeedRow({ entry, dayTs, linked, planned, status, onOpenThread, onReply 
           <ThreadCard
             thread={entry.thread}
             ts={entry.ts}
-            state={status.state}
-            detail={status.detail}
+            status={status}
             onOpen={() => onOpenThread(entry.thread.id)}
           />
         )
