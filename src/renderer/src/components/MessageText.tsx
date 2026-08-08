@@ -101,17 +101,18 @@ function Inline({ tokens, refs }: { tokens: Token[]; refs: Refs }) {
               </Link>
             )
           case 'image':
-            return <img key={index} src={token.href} alt={token.text} />
+            return <img key={index} src={token.href} alt={plain(token.text)} />
           case 'br':
             return <br key={index} />
           case 'escape':
+            return plain(token.text)
           case 'html':
             return token.text
           case 'text':
             return nested.length > 0 ? (
               <Inline key={index} tokens={nested} refs={refs} />
             ) : (
-              <Words key={index} text={token.text} refs={refs} />
+              <Words key={index} text={plain(token.text)} refs={refs} />
             )
           default:
             return <Words key={index} text={token.raw ?? ''} refs={refs} />
