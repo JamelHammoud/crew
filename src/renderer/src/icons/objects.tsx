@@ -154,16 +154,10 @@ export const TerminalGlyph = glyph(
   </>
 )
 
-// A case with a handle and a lid on it. Wide and shallow rather than tall, which
-// is what tells a toolbox from a briefcase at 16px. The case is a box of its own
-// and closes across the top, so the lid is a lid rather than the upper half of a
-// rounded rectangle, and the mouth stays shut behind it when it comes up. The
-// geometry is in toolbox.ts, which is also where the open drawing comes from.
 export const ToolboxGlyph = glyph(
   <>
-    <path d={TOOLBOX_CASE} />
-    <path d={TOOLBOX_SHUT.lid} />
-    <path d={TOOLBOX_SHUT.handle} />
+    <rect x="2.5" y="10.5" width="19" height="9" rx="2.5" />
+    <path d="M7.75 10.5V6.75A2.25 2.25 0 0 1 10 4.5h4a2.25 2.25 0 0 1 2.25 2.25v3.75" />
   </>
 )
 
