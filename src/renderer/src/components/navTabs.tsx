@@ -1,5 +1,5 @@
 import { FrameGlyph } from '../design/glyphs'
-import { BookGlyph, ChatGlyph, ClockGlyph, MoreGlyph, PlugGlyph, type Glyph } from '../icons'
+import { AtGlyph, BookGlyph, ChatGlyph, ClockGlyph, MoreGlyph, type Glyph } from '../icons'
 
 export type Tab = 'chat' | 'docs' | 'design' | 'plugins' | 'scheduled'
 
