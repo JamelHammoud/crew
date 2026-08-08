@@ -195,6 +195,90 @@ describe('what a run is doing reads on the card in the feed', () => {
   })
 })
 
+describe('reacting to what opened a thread', () => {
+  const wrote = (id = 'm1', authorId = 'ali'): SessionEvent => ({
+    id,
+    ts: 1,
+    kind: 'message',
+    threadId: 't1',
+    authorId,
+    authorName: authorId === 'crew' ? 'Crew' : 'ALI',
+    text: '@Claude redraw the rows'
+  })
+
+  const reacted = (emoji: string, memberId: string, memberName: string): SessionEvent => ({
+    id: `react-${memberId}-${emoji}`,
+    ts: 2,
+    kind: 'message.reaction',
+    targetId: 'message:m1',
+    targetAuthorId: 'ali',
+    targetAuthorName: 'ALI',
+    memberId,
+    memberName,
+    emoji,
+    active: true,
+    threadId: 't1'
+  })
+
+  const rested: SessionEvent[] = [started('t1', 'p1'), ended('t1', 'p1', { text: 'Done.' })]
+
+  const sent = useCrew.getState().reactToMessage
+
+  afterEach(() => {
+    cleanup()
+    useCrew.setState({ reactToMessage: sent })
+  })
+
+  const card = (events: SessionEvent[]) => {
+    const reactToMessage = vi.fn()
+    stand({ events, threads: { t1: thread('t1') }, reactToMessage })
+    return reactToMessage
+  }
+
+  it('stands the reactions under the words and over the strand', () => {
+    card([opened('t1'), wrote(), reacted('🎉', 'jamel', 'Jamel'), ...rested])
+    const pill = screen.getByLabelText('🎉, 1 reaction')
+    const words = document.querySelector('.preview-line')!
+    const strand = screen.getByText('Ready for review')
+    const after = (a: Element, b: Element) =>
+      Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING)
+    expect(after(words, pill)).toBe(true)
+    expect(after(pill, strand)).toBe(true)
+  })
+
+  it('reacts to the message the preview is, rather than to a card of its own', () => {
+    const reactToMessage = card([opened('t1'), wrote(), ...rested])
+    fireEvent.click(screen.getByLabelText('React with :tada:'))
+    expect(reactToMessage).toHaveBeenCalledWith('message:m1', '🎉')
+  })
+
+  it('counts everybody who reacted, whichever screen they pressed it on', () => {
+    card([opened('t1'), wrote(), reacted('❤️', 'jamel', 'Jamel'), reacted('❤️', 'ali', 'ALI'), ...rested])
+    expect(screen.getByLabelText('❤️, 2 reactions')).toBeTruthy()
+  })
+
+  it('leaves a card with nothing anybody wrote behind it alone', () => {
+    card([opened('t1'), ...rested])
+    expect(screen.queryByLabelText('React with :tada:')).toBeNull()
+    expect(document.querySelector('[data-message]')).toBeNull()
+  })
+
+  it('says nothing about reacting to a line the app wrote itself', () => {
+    card([opened('t1'), wrote('m1', 'crew'), ...rested])
+    expect(screen.queryByLabelText('React with :tada:')).toBeNull()
+  })
+
+  it('draws the card again when a reaction lands on it', () => {
+    const threads = { t1: thread('t1') }
+    const opening = [opened('t1'), wrote(), ...rested]
+    const before = buildFeed(opening, threads, [agent], 'ali')
+    const after = buildFeed([...opening, reacted('🎉', 'jamel', 'Jamel')], threads, [agent], 'ali')
+    const card = (list: typeof before) => list.find(entry => entry.kind === 'card')!
+    expect(sameEntry(card(before), card(before))).toBe(true)
+    expect(sameEntry(card(before), card(after))).toBe(false)
+  })
+})
+
 describe('what a card counts', () => {
   const threads = { t1: thread('t1'), t2: thread('t2', { parentThreadId: 't1' }) }
 
