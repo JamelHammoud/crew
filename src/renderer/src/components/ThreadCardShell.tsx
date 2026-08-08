@@ -30,11 +30,7 @@ export default function ThreadCardShell({
 
   return (
     <FeedBlock author={thread.createdBy} ts={ts} thread={thread.id} onContextMenu={onContextMenu}>
-      <Clamped lines={5} watch={named} className="mt-1 text-base leading-[22px]">
-        <p className="text-fg whitespace-pre-wrap break-words">
-          <MentionText text={named} mentionRefs={refs} />
-        </p>
-      </Clamped>
+      <MessagePreview text={named} mentionRefs={refs} lines={5} className="mt-1 text-base leading-[22px] text-fg" />
       {children}
     </FeedBlock>
   )
