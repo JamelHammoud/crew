@@ -81,7 +81,8 @@ const wait = ms => new Promise(r => setTimeout(r, ms))
 const SHOTS = ${JSON.stringify(shots)}
 
 const PRESS = name => \`(() => {
-  const el = [...document.querySelectorAll('button')].find(b => ((b.getAttribute('aria-label') || '') + ' ' + (b.textContent || '')).trim() === \${JSON.stringify(name)})
+  const want = \${JSON.stringify(name)}
+  const el = [...document.querySelectorAll('button')].find(b => (b.getAttribute('aria-label') || '').trim() === want || (b.textContent || '').trim() === want)
   if (!el) return false
   el.click()
   return true
@@ -146,7 +147,7 @@ app.whenReady().then(async () => {
     await win.webContents.executeJavaScript(PRESS('What it does'))
     await wait(300)
     await shoot(win, 'tool-kinds')
-    await win.webContents.executeJavaScript(\`(() => { const b = [...document.querySelectorAll('button')].find(x => (x.textContent||'').trim() === 'Start a thread'); b.click(); return true })()\`)
+    await win.webContents.executeJavaScript(\`(() => { const b = [...document.querySelectorAll('button')].find(x => (x.textContent||'').trim() === 'Start a thread'); if (!b) return false; b.click(); return true })()\`)
     await wait(300)
     await win.webContents.executeJavaScript(WRITE('Name', 'Nightly tests'))
     await win.webContents.executeJavaScript(WRITE('What to ask', 'Run the whole suite and fix whatever fails, then say what you changed.'))
