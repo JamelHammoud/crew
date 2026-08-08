@@ -81,12 +81,9 @@ describe('the threads a place is showing', () => {
     expect(activeThreads(events, none).map(thread => thread.title)).toEqual(['First', 'Second', 'Third'])
   })
 
-  it('holds the handful that were worked on last rather than the ones started last', () => {
-    const events = [
-      ...Array.from({ length: THREAD_LIMIT + 1 }, (_, i) => started(`t${i}`, `Thread ${i}`)),
-      ran('t0')
-    ]
-    expect(activeThreads(events, none).map(thread => thread.id)).toContain('t0')
+  it('puts the one worked on last at the head of a long list', () => {
+    const events = [...Array.from({ length: 20 }, (_, i) => started(`t${i}`, `Thread ${i}`)), ran('t0')]
+    expect(activeThreads(events, none)[0]?.id).toBe('t0')
   })
 
   it('leaves the agent name out and capitalizes the first letter', () => {
