@@ -150,7 +150,8 @@ describe('the right click on a thread in the rail', () => {
     fireEvent(screen.getByText('Draw the footer'), press)
 
     expect(press.defaultPrevented).toBe(false)
-    expect(said()).toEqual([])
+    expect(rows()).toEqual([])
+    expect(said()).not.toContain('Copy thread ID')
     held.mockRestore()
   })
 })
