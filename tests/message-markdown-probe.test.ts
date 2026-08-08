@@ -124,9 +124,9 @@ describe('the crew own marks inside markdown', () => {
     useCrew.setState({ agents: [agent] })
     const body = drawn('**@Bubbles** and @Bubbles again')
 
-    const chips = [...body.querySelectorAll('strong')].filter(el => el.textContent === '@Bubbles')
-    expect(chips).toHaveLength(2)
-    expect(body.querySelector('strong strong')).toBeTruthy()
+    const chips = [...body.querySelectorAll('strong.cursor-default')]
+    expect(chips.map(chip => chip.textContent)).toEqual(['@Bubbles', '@Bubbles'])
+    expect(body.querySelector('strong > strong.cursor-default')).toBeTruthy()
     expect(body.textContent).toBe('@Bubbles and @Bubbles again')
   })
 
@@ -135,9 +135,9 @@ describe('the crew own marks inside markdown', () => {
     const { container } = render(
       createElement(MessageText, { text: 'see **#Plan** for the rest', docMentions: [{ page: 'plan', title: 'Plan' }] })
     )
-    const pill = [...container.querySelectorAll('span')].find(el => el.textContent === 'Plan')
+    const pill = container.querySelector('span > svg')?.parentElement
 
-    expect(pill).toBeTruthy()
+    expect(pill?.textContent).toBe('Plan')
     fireEvent.click(pill as HTMLElement)
     expect(useCrew.getState().docsTarget).toBe('plan')
   })
