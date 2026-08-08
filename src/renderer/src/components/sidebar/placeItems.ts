@@ -4,6 +4,13 @@ import type { Place } from '../../views/home/place'
 
 export const NO_THREADS: LiveThread[] = []
 
+export const THREADS_SHOWN = 6
+const THREAD_ROW_H = 30
+const THREAD_ROW_GAP = 2
+
+export const threadsRoom = (count: number): number | undefined =>
+  count > THREADS_SHOWN ? THREADS_SHOWN * THREAD_ROW_H + (THREADS_SHOWN - 1) * THREAD_ROW_GAP : undefined
+
 export interface PlaceGroupProps {
   place: Place
   here: boolean
