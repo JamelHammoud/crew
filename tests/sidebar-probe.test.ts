@@ -113,6 +113,7 @@ const { useBrowser } = await import('../src/renderer/src/state/browser')
 const { useTasks } = await import('../src/renderer/src/state/tasks')
 const SidebarView = (await import('../src/renderer/src/components/Sidebar')).default
 const { markOf } = await import('../src/renderer/src/components/sidebar/PlaceFace')
+const { THREADS_SHOWN } = await import('../src/renderer/src/components/sidebar/placeItems')
 const TopBar = (await import('../src/renderer/src/components/TopBar')).default
 const WindowCorner = (await import('../src/renderer/src/components/WindowCorner')).default
 const { FolderGlyph, GlobeGlyph } = await import('../src/renderer/src/icons')
