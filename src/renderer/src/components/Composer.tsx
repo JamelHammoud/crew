@@ -149,6 +149,8 @@ function MentionHighlights({
   )
 }
 
+export const COMPOSER_MAX = 232
+
 export default function Composer({
   attachmentKey,
   value,
