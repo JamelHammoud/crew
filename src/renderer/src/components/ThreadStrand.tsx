@@ -37,7 +37,7 @@ export default function ThreadStrand({
     >
       {face}
       <span
-        className={`min-w-0 max-w-full h-9 pl-4 pr-3 flex items-center gap-2.5 rounded-[14px] border text-sm transition-[background-color,border-color] duration-200 ${
+        className={`min-w-0 max-w-full h-9 pl-4 pr-2 flex items-center gap-2.5 rounded-[14px] border text-sm transition-[background-color,border-color] duration-200 ${
           dashed ? 'border-dashed border-ink-600' : 'border-transparent bg-ink-800'
         } ${onOpen ? (dashed ? 'group-hover:border-ink-500' : 'group-hover:bg-ink-700') : ''}`}
       >
