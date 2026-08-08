@@ -65,9 +65,7 @@ export default function Toolbox({
 
   return (
     <Popover open={open} onClose={onClose} align="center" at={at} anchor={anchor} flush className="w-[262px]">
-      {building ? (
-        <ToolBuilder tool={building.tool} onDone={() => setBuilding(null)} />
-      ) : filling ? (
+      {filling ? (
         <ToolFill
           tool={filling.tool}
           slots={filling.slots}
