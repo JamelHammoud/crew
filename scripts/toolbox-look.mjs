@@ -22,33 +22,9 @@ const arch = (halfSpan, top, foot, r) => {
 }
 
 const VARIANTS = [
-  {
-    key: 'C seam',
-    art: rect(2.5, 9, 19, 10.5, 2.5) + p('M2.5 12.75H21.5') + arch(4.5, 4.5, 9, 2)
-  },
-  {
-    key: 'C thin lid',
-    art: rect(2.5, 9, 19, 10.5, 2.5) + p('M2.5 12H21.5') + arch(4.5, 4.5, 9, 2)
-  },
-  {
-    key: 'C deep lid',
-    art: rect(2.5, 9, 19, 10.5, 2.5) + p('M2.5 13.5H21.5') + arch(4.5, 4.5, 9, 2)
-  },
-  {
-    key: 'C wide grip',
-    art: rect(2.5, 9, 19, 10.5, 2.5) + p('M2.5 12.75H21.5') + arch(5.5, 4.5, 9, 2)
-  },
-  {
-    key: 'J band',
-    art:
-      rect(2.5, 8.5, 19, 4.25, 1.75) +
-      p('M4.75 12.75V17.5A2 2 0 0 0 6.75 19.5h10.5a2 2 0 0 0 2-2V12.75') +
-      arch(4, 4.5, 8.5, 2)
-  },
-  {
-    key: 'K short',
-    art: rect(2.5, 10, 19, 9.5, 2.5) + p('M2.5 13.25H21.5') + arch(4.5, 4.5, 10, 2)
-  }
+  { key: 'grip 9', art: rect(2.5, 9, 19, 10.5, 2.5) + p('M2.5 12.75H21.5') + arch(4.5, 4.5, 9, 2) },
+  { key: 'grip 10', art: rect(2.5, 9, 19, 10.5, 2.5) + p('M2.5 12.75H21.5') + arch(5, 4.5, 9, 2) },
+  { key: 'grip 11', art: rect(2.5, 9, 19, 10.5, 2.5) + p('M2.5 12.75H21.5') + arch(5.5, 4.5, 9, 2) }
 ]
 
 const ROW = [
@@ -68,7 +44,7 @@ const at = (name, px) =>
 export function draw() {
   return {
     row: ${JSON.stringify(ROW)}.map(([name, label]) => ({ label, svg: at(name, 16) })),
-    weight: [48, 24, 20, 16].map(px => [px, wearWeight(STROKE, 'w-[' + px + 'px]')])
+    weight: [64, 24, 20, 16].map(px => [px, wearWeight(STROKE, 'w-[' + px + 'px]')])
   }
 }
 `
@@ -95,7 +71,7 @@ const weights = Object.fromEntries(weight)
 const svg = (art, px) =>
   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${weights[px]}" stroke-linecap="round" stroke-linejoin="round" style="width:${px}px;height:${px}px">${art}</svg>`
 
-const SIZES = [48, 24, 20, 16]
+const SIZES = [64, 24, 20, 16]
 
 const page = `<!doctype html><html><body style="margin:0;background:#0c0d0e;color:#f5f5f5;font:13px -apple-system,system-ui,sans-serif;padding:28px">
 <table style="border-collapse:collapse">
@@ -127,7 +103,7 @@ const path = require('node:path')
 const fs = require('node:fs')
 app.disableHardwareAcceleration()
 app.whenReady().then(async () => {
-  const win = new BrowserWindow({ width: 780, height: 820, show: false, backgroundColor: '#0c0d0e' })
+  const win = new BrowserWindow({ width: 780, height: 480, show: false, backgroundColor: '#0c0d0e' })
   await win.loadFile(path.join(__dirname, 'look.html'))
   await new Promise(r => setTimeout(r, 300))
   const image = await win.webContents.capturePage()
