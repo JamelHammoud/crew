@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type RefObject } from 'react'
 import { attachmentBytes, MAX_ATTACHMENTS } from '../../../shared/attachments'
 import { GifGlyph, PeopleGlyph, PlusGlyph, SignalGlyph, UploadGlyph } from '../icons'
 import { useHuddle } from '../state/huddle'
