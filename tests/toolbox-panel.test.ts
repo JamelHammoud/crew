@@ -183,8 +183,8 @@ describe('the toolbox', () => {
     expect(sent).toEqual([
       { type: 'tool.add', name: 'Staging', mark: 'cloud', action: { kind: 'web', url: 'crew.dev' } }
     ])
-    // Saving puts the grid back.
-    expect(screen.getByText('New tool')).toBeTruthy()
+    // Saving puts the card away.
+    expect(screen.queryByPlaceholderText('What to call it')).toBeNull()
   })
 
   it('marks a tool with an emoji', () => {
@@ -210,7 +210,7 @@ describe('the toolbox', () => {
 
     name('Docs')
     fireEvent.change(screen.getByPlaceholderText('figma.com'), { target: { value: 'crew.dev' } })
-    fireEvent.click(screen.getByText('Your browser'))
+    pick('Where it opens', 'Your browser')
     fireEvent.click(screen.getByText('Add to toolbox'))
 
     expect(sent).toEqual([
@@ -251,7 +251,7 @@ describe('the toolbox', () => {
     build()
     name('Tests')
     does('Start a thread')
-    fireEvent.click(screen.getByText('Bubbles'))
+    pick('Ask who', 'Bubbles')
     fireEvent.change(screen.getByPlaceholderText('Run the tests and fix what fails'), {
       target: { value: 'Run the tests' }
     })
@@ -271,6 +271,7 @@ describe('the toolbox', () => {
     toolbox([], [agent('a1', 'Fable')])
     build()
     does('Start a thread')
+    fireEvent.click(screen.getByRole('button', { name: 'Ask who' }))
 
     const row = screen.getByText('Fable').closest('button')!
     expect(row.className).toContain('items-center')
@@ -309,7 +310,7 @@ describe('the toolbox', () => {
 
     name('Notes')
     does('Open a doc')
-    fireEvent.click(screen.getByText('Notes', { selector: 'span' }))
+    pick('Which doc', 'Notes')
     fireEvent.click(screen.getByText('Add to toolbox'))
 
     expect(sent).toEqual([
@@ -320,7 +321,7 @@ describe('the toolbox', () => {
     build()
     name('Board')
     does('Open a board')
-    fireEvent.click(screen.getByText('Onboarding'))
+    pick('Which board', 'Onboarding')
     fireEvent.click(screen.getByText('Add to toolbox'))
 
     expect(sent).toEqual([
@@ -467,7 +468,7 @@ describe('the toolbox', () => {
 
     name('Focus')
     does('Put music on')
-    fireEvent.click(screen.getByText('Crew'))
+    pick('What to play', /^Crew/)
     fireEvent.click(screen.getByText('Add to toolbox'))
 
     expect(sent).toEqual([
@@ -533,7 +534,7 @@ describe('the toolbox', () => {
 
     sent.length = 0
     fireEvent.click(screen.getByLabelText('Edit Figma'))
-    fireEvent.click(screen.getByLabelText('Remove tool'))
+    fireEvent.click(screen.getByText('Remove'))
     expect(sent).toEqual([{ type: 'tool.remove', toolId: 'tool-1' }])
   })
 })

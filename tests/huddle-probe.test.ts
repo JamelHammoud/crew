@@ -197,6 +197,8 @@ describe('starting a huddle', () => {
     expect(screen.getByText(/could not reach your microphone/)).toBeTruthy()
   })
 
+  // The plus is the way in and nothing else, so once you are in it stops
+  // offering the call and the way out is the one on the dock.
   it('offers the way out once you are in', async () => {
     render(createElement(App))
     openPlus()
@@ -206,10 +208,10 @@ describe('starting a huddle', () => {
     await waitFor(() => expect(useHuddle.getState().joined).toBe(true))
 
     openPlus()
-    const row = screen.getByText('Huddle').closest('button')
-    expect(row?.hasAttribute('data-active')).toBe(true)
+    expect(screen.queryByText('Huddle')).toBeNull()
+    fireEvent.keyDown(document, { key: 'Escape' })
     await act(async () => {
-      fireEvent.click(row!)
+      fireEvent.click(screen.getByLabelText('Leave'))
     })
     expect(useHuddle.getState().joined).toBe(false)
   })
