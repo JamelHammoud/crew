@@ -139,7 +139,7 @@ describe('the huddle in the plus menu', () => {
   }
 
   const openIn = (huddle?: boolean) => {
-    render(createElement(AddMenu, { attachmentKey: CHAT_KEY, huddle, onSend: vi.fn() }))
+    render(createElement(AddMenu, { attachmentKey: CHAT_KEY, huddle, inputRef: box, onSend: vi.fn() }))
     fireEvent.click(screen.getByLabelText('Add to your message'))
   }
 
