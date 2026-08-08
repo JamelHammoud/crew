@@ -14,7 +14,7 @@ export const STRAND_SHAPE = 'h-9 flex items-center gap-2.5 rounded-[14px] border
 export function StrandPill({ mark, label }: { mark: ReactNode; label: string }) {
   return (
     <span
-      className={`${STRAND_SHAPE} shrink-0 px-3.5 border-transparent bg-ink-800 font-medium text-fg-muted`}
+      className={`${STRAND_SHAPE} shrink-0 pl-3 pr-3.5 border-transparent bg-ink-800 font-medium text-fg-muted`}
     >
       {mark}
       {label}
