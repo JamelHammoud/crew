@@ -571,6 +571,10 @@ textarea:placeholder-shown {
   }
 }
 
+.preview-line[data-more]::after {
+  content: '…';
+}
+
 /* The dictation pill, which is the one panel in the app that floats over another
    application rather than over Crew. Nothing can blur what is back there: a
    backdrop filter samples the page it is drawn in, and behind this window there
