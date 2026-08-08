@@ -1,15 +1,10 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { readFileSync } from 'node:fs'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import type { PathLocation } from '../src/shared/files'
 import type { PooledAgent } from '../src/shared/llm'
 import type { ThreadItem } from '../src/renderer/src/components/thread'
-
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
 const located: Record<string, PathLocation> = {}
 ;(window as unknown as { crew: unknown }).crew = {
@@ -34,13 +29,13 @@ const agent: PooledAgent = {
 }
 
 const said = (text: string, extra: Partial<ThreadItem> = {}): ThreadItem => ({
-    key: 'm1',
-    ts: Date.parse('2026-08-07T12:00:00Z'),
-    kind: 'message',
-    author: 'Jamel',
-    authorId: 'jamel',
-    self: false,
-    text,
+  key: 'm1',
+  ts: Date.parse('2026-08-07T12:00:00Z'),
+  kind: 'message',
+  author: 'Jamel',
+  authorId: 'jamel',
+  self: false,
+  text,
   streaming: false,
   ...extra
 })
@@ -191,9 +186,8 @@ describe('where markdown is drawn', () => {
     expect(container.querySelector('p')?.className).toContain('text-[32px]')
   })
 
-  it('sets it on the line a message has always been read at', () => {
-    const styles = readFileSync(path.join(root, 'src/renderer/src/styles.css'), 'utf8')
-
+  it('sets it on the line a message has always been read at', async () => {
+    const styles = (await import('../src/renderer/src/styles.css?raw')).default as string
     const md = styles.indexOf('\n.md {')
     const said = styles.indexOf('\n.md-said {')
 
