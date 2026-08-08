@@ -9,16 +9,10 @@ const TONES: Record<StrandTone, string> = {
   danger: 'text-danger'
 }
 
-// The thread itself, hanging under the ask that opened it. It is one row rather
-// than a box with a bar in the bottom of it: a thread is a strand off the
-// conversation, and a card drawn around the ask made the two read as one object
-// with a slab of chrome under it. Everything the thread has to say from out
-// here is on this row, so there is one thing to press and one line to read.
 export default function ThreadStrand({
   mark,
   label,
   tone = 'plain',
-  subject,
   figures,
   dashed,
   onOpen
@@ -26,10 +20,7 @@ export default function ThreadStrand({
   mark: ReactNode
   label: string
   tone?: StrandTone
-  subject?: ReactNode
   figures?: ReactNode
-  // A ghost thread wears a dashed stroke wherever it is drawn, and out here the
-  // strand is the whole of what there is to draw it on.
   dashed?: boolean
   onOpen?: () => void
 }) {
@@ -39,17 +30,12 @@ export default function ThreadStrand({
     <Row
       onClick={onOpen}
       className={`group mt-2 w-full h-11 px-5 flex items-center gap-2.5 rounded-full border text-sm text-left transition-[background-color,border-color,transform] duration-200 ${
-        dashed ? 'border-dashed border-ink-600 hover:bg-ink-800' : 'border-transparent bg-ink-800'
-      } ${onOpen ? `cursor-pointer active:scale-[0.99] ${dashed ? 'hover:border-ink-500' : 'hover:bg-ink-700'}` : ''}`}
+        dashed ? 'border-dashed border-ink-600' : 'border-transparent bg-ink-800'
+      } ${onOpen ? `cursor-pointer active:scale-[0.99] ${dashed ? 'hover:border-ink-500 hover:bg-ink-800' : 'hover:bg-ink-700'}` : ''}`}
     >
       {mark}
-      <span className={`shrink-0 font-medium ${TONES[tone]}`}>{label}</span>
-      {subject}
-      <span className="ml-auto shrink-0 flex items-center gap-2.5 pl-1 text-xs">{figures}</span>
-      {/* The chevron takes no room until it is wanted, and the row's own gap is
-          taken back with it, so at rest what the run has spent sits hard against
-          the end of the strand rather than beside a slot held open for a mark
-          that is not there. Reaching for it is what makes the room. */}
+      <span className={`min-w-0 truncate font-medium ${TONES[tone]}`}>{label}</span>
+      <span className="ml-auto shrink-0 flex items-center gap-2.5 pl-2 text-xs">{figures}</span>
       <span
         className={`shrink-0 -ml-2.5 w-0 overflow-hidden opacity-0 transition-[width,margin,opacity] duration-200 ${
           onOpen ? 'group-hover:ml-0 group-hover:w-3.5 group-hover:opacity-100' : ''
