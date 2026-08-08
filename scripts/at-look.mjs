@@ -38,6 +38,8 @@ await writeFile(entry, ENTRY)
 const bundle = path.join(dir, 'bundle.cjs')
 await build({
   entryPoints: [entry],
+  absWorkingDir: root,
+  nodePaths: [path.join(root, 'node_modules')],
   bundle: true,
   outfile: bundle,
   format: 'cjs',
