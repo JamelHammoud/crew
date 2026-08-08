@@ -17,6 +17,7 @@ Pool LLMs with friends. Open a project and you are in, share it when you want so
 - `yarn design-header-look` — stand the design header up in a real window and read where every control landed
 - `yarn docs-look` — stand the docs page up in a real window and read where the list, the writing and the trail landed
 - `yarn plus-look` — press through the composer's plus in a real window and read the card back every frame of the way
+- `yarn composer-look` — fill the composer past its ceiling in a real window, scroll it, and photograph both edges
 - `yarn card-look` — stand the schedule and the tool cards up in a real window and photograph them, growing a box of words until it scrolls
 - `yarn doc-click-look` — click past the end of every kind of row in a real window and read where the caret landed
 - `yarn doc-numbers-look` — nest a numbered list six deep in a real window and read what each level really counted
