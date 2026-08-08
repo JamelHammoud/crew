@@ -3,13 +3,12 @@ import { ArchiveGlyph, CheckGlyph, EyeGlyph, StopGlyph, WarningGlyph } from '../
 import { type ThreadMeta } from '../state/store'
 import Counts from './Counts'
 import type { ThreadStatus } from './feed/feedItems'
-import { isPrivate, labelFor, PrivateChip, useLocated } from './fileLinks'
 import { MenuDivider, Popover } from './Popover'
 import Spinner from './Spinner'
 import { Mark } from './StepRow'
 import { THREAD_STATE_LABELS, type ThreadState } from './thread'
 import ThreadCardShell from './ThreadCardShell'
-import { liveLine, type LiveLine } from './threadLive'
+import { liveLine } from './threadLive'
 import ThreadStrand, { type StrandTone } from './ThreadStrand'
 import { ThreadIdItem, ThreadOpenItems, ThreadStatusItems } from './threadMenu'
 import ThinkingMark from './ThinkingMark'
@@ -27,9 +26,6 @@ export function StateIcon({ state, className = 'w-4 h-4' }: { state: ThreadState
   return <CheckGlyph className={`${className} text-fg shrink-0`} />
 }
 
-// A state somebody decided is as quiet as the decision was. Failing is the one
-// thing on the strand worth a color, and the mark and the word take the same
-// one, so the row reads as one thing rather than as a mark beside a label.
 const TONES: Record<ThreadState, StrandTone> = {
   working: 'plain',
   ready: 'plain',
@@ -40,17 +36,6 @@ const TONES: Record<ThreadState, StrandTone> = {
 }
 
 const MARK = 'w-[18px] h-[18px]'
-
-function Subject({ line }: { line: LiveLine }) {
-  useLocated(line.path ? [line.path] : [])
-  if (!line.subject) return null
-  if (line.path && isPrivate(line.path)) return <PrivateChip />
-  return (
-    <span className={`min-w-0 truncate text-xs text-fg-muted ${line.mono ? 'mono-inline' : ''}`}>
-      {line.path ? labelFor(line.path, '', line.subject) : line.subject}
-    </span>
-  )
-}
 
 export default function ThreadCard({
   thread,
@@ -65,12 +50,8 @@ export default function ThreadCard({
 }) {
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
   const live = status.state === 'working'
-  // The strand counts its own seconds, so a run in one thread does not draw the
-  // whole feed again once a second.
   const now = useNow(live)
-  const line: LiveLine = live
-    ? liveLine(status.step)
-    : { label: THREAD_STATE_LABELS[status.state], subject: status.detail, mono: false, dots: false }
+  const line = live ? liveLine(status.step) : { label: THREAD_STATE_LABELS[status.state] }
 
   return (
     <>
@@ -87,7 +68,7 @@ export default function ThreadCard({
           dashed={thread.ghost}
           mark={
             live ? (
-              line.icon ? (
+              'icon' in line && line.icon ? (
                 <Mark icon={line.icon} running />
               ) : (
                 <ThinkingMark running />
@@ -98,12 +79,11 @@ export default function ThreadCard({
           }
           label={line.label}
           tone={TONES[status.state]}
-          subject={<Subject line={line} />}
           figures={
             <>
               <Counts added={status.added} removed={status.removed} className="mono-inline" />
               {live && status.startedAt !== undefined && (
-                <span className="text-fg-faint tabular-nums">{formatElapsed(now - status.startedAt)}</span>
+                <span className="text-fg-muted tabular-nums">{formatElapsed(now - status.startedAt)}</span>
               )}
             </>
           }
