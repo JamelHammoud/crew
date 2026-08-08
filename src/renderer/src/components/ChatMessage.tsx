@@ -79,6 +79,11 @@ function ChatMessage({
   if (item.kind === 'note') {
     return <p className="text-xs text-fg-muted text-center animate-rise select-none">{item.text}</p>
   }
+  const edited = linked && item.editedTs !== undefined && (
+    <Tooltip label={`Edited ${formatFullTime(item.editedTs)}`} className="ml-1.5">
+      <span className="text-sm text-fg-faint cursor-default select-none">(edited)</span>
+    </Tooltip>
+  )
   const quote = item.replyTo && (
     <ReplyQuote
       targetId={item.replyTo.targetId}
