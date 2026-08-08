@@ -197,7 +197,8 @@ export default function Composer({
 
   const tray = pendingCount > 0
   const above = tray ? 'pt-5' : ''
-  const lead = tray ? '' : 'pt-5'
+  const pull = tray ? '-mt-3' : ''
+  const room = 'pt-[var(--composer-scrim)]'
 
   return (
     <div className="relative">
