@@ -103,7 +103,7 @@ export default function Toolbox({
               ghost
               mark={<PlusGlyph className="w-[22px] h-[22px]" />}
               name="New tool"
-              onClick={() => setBuilding({ tool: null })}
+              onClick={() => build(null)}
             />
           </div>
         </>

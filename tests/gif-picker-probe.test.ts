@@ -73,8 +73,10 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
+const box = createRef<HTMLTextAreaElement>() as React.RefObject<HTMLTextAreaElement>
+
 const openMenu = (onSend = vi.fn()) => {
-  render(createElement(AddMenu, { attachmentKey: CHAT_KEY, onSend }))
+  render(createElement(AddMenu, { attachmentKey: CHAT_KEY, inputRef: box, onSend }))
   fireEvent.click(screen.getByLabelText('Add to your message'))
   return onSend
 }
