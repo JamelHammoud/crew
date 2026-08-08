@@ -19,9 +19,16 @@ export default function ThreadChips({ thread }: { thread: ThreadMeta }) {
   if (chips.length === 0) return null
   return (
     <>
-      {chips.map(name => (
-        <CommandChip key={name} name={name} />
-      ))}
+      {chips.map(name => {
+        const Mark = COMMAND_MARKS[name]
+        return (
+          <StrandPill
+            key={name}
+            mark={<Mark className="w-[18px] h-[18px] shrink-0" />}
+            label={COMMAND_LABELS[name]}
+          />
+        )
+      })}
     </>
   )
 }
