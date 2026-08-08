@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { commandInvocation, detachCliProcess } from '../src/runner/providers/cli'
+import { commandInvocation, detachCliProcess, spawnFailure } from '../src/runner/providers/cli'
 
 describe('commandInvocation', () => {
   it('runs Windows npm command shims through their PowerShell companion', () => {
@@ -38,5 +38,21 @@ describe('commandInvocation', () => {
     expect(detachCliProcess('win32')).toBe(false)
     expect(detachCliProcess('darwin')).toBe(true)
     expect(detachCliProcess('linux')).toBe(true)
+  })
+})
+
+describe('spawnFailure', () => {
+  it('names a project folder that has gone away', () => {
+    const error = Object.assign(new Error('spawn /opt/homebrew/bin/codex ENOENT'), { code: 'ENOENT' })
+
+    expect(spawnFailure(error, '/this/project/folder/does-not-exist')).toEqual(
+      new Error('This project folder is no longer on this computer.')
+    )
+  })
+
+  it('keeps an executable failure when the project is still there', () => {
+    const error = Object.assign(new Error('spawn codex ENOENT'), { code: 'ENOENT' })
+
+    expect(spawnFailure(error, process.cwd())).toBe(error)
   })
 })

@@ -22,6 +22,13 @@ export function commandExists(command: string, dirs?: string[]): boolean {
   return resolveCommand(command, dirs) !== null
 }
 
+export function spawnFailure(error: NodeJS.ErrnoException, cwd: string): Error {
+  if (error.code === 'ENOENT' && !existsSync(cwd)) {
+    return new Error('This project folder is no longer on this computer.')
+  }
+  return error
+}
+
 export type SettingReader = (key: string) => string
 
 export function flag(name: string, value: string): string[] {
@@ -288,7 +295,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
           settled = true
           clearTimers()
           if (exitTimer) clearTimeout(exitTimer)
-          reject(err)
+          reject(spawnFailure(err, cwd))
         })
         child.on('close', (code, signal) => settle(code, signal))
         child.on('exit', (code, signal) => {
