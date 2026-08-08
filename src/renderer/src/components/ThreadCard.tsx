@@ -94,7 +94,7 @@ export default function ThreadCard({
                   tone="text-fg-muted"
                 />
               )}
-              <Counts added={status.added} removed={status.removed} className="mono-inline" />
+              <Counts added={status.added} removed={status.removed} size="beside" className="mono-inline" />
             </>
           }
         />
