@@ -51,7 +51,7 @@ export default function ThreadCard({
   status: ThreadStatus
   onOpen: () => void
 }) {
-  const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
+  const { onContextMenu, menu } = useThreadMenu({ threadId: thread.id, status: true, onOpen })
   const live = status.state === 'working'
   const now = useNow(live)
   const line: LiveLine = live ? liveLine(status.step) : { label: THREAD_STATE_LABELS[status.state] }
