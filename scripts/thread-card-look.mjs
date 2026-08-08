@@ -469,7 +469,7 @@ const READ = \`(() => {
       })
   return cards.map((card, index) => {
     const box = card.getBoundingClientRect()
-    const band = card.lastElementChild
+    const band = card.querySelector(':scope > div:last-child > :last-child')
     return {
       name: NAMES[index] || 'card ' + index,
       width: Math.round(box.width),
