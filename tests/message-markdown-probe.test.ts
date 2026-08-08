@@ -186,6 +186,16 @@ describe('where markdown is drawn', () => {
     expect(container.querySelector('p')?.className).toContain('text-[32px]')
   })
 
+  it('sets it on the line a message has always been read at', () => {
+    const styles = readFileSync(path.join(root, 'src/renderer/src/styles.css'), 'utf8')
+    const md = styles.indexOf('\n.md {')
+    const said = styles.indexOf('\n.md-said {')
+
+    expect(md).toBeGreaterThan(0)
+    expect(said).toBeGreaterThan(md)
+    expect(styles.slice(said, said + 120)).toContain('leading-[22px]')
+  })
+
   it('lands the edited marker at the end of what was written', () => {
     const item = said('one\n\n**two**', { editedTs: Date.parse('2026-08-07T12:05:00Z') })
     const { container } = render(createElement(ChatMessage, { item, markdown: true, linked: true }))
