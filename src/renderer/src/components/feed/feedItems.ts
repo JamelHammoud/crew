@@ -150,8 +150,6 @@ export function sameEntry(a: FeedEntry, b: FeedEntry): boolean {
       a.ask?.text === b.ask?.text &&
       a.ask?.mentionRefs === b.ask?.mentionRefs &&
       a.ask?.targetId === b.ask?.targetId &&
-      // Made fresh on every pass, so it is compared by what is in it. Left as a
-      // reference the card would stop saying what has been reacted to it.
       sameReactions(a.ask?.reactions, b.ask?.reactions)
     )
   return b.kind === 'huddle' && sameHuddleRecord(a.record, b.record)
