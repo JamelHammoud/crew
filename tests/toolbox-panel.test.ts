@@ -54,10 +54,21 @@ const toolbox = (
     addTodo: (text, agentId) => tasks.push({ text, agentId }),
     updateDoc: (page, text) => void written.push({ page, text })
   })
-  return render(createElement(Toolbox, { open: true, onClose: () => {} }))
+  // The card is raised from outside the toolbox, so both stand in the tree the
+  // way they do in the app.
+  return render(
+    createElement(
+      Fragment,
+      null,
+      createElement(Toolbox, { open: true, onClose: () => void shut.push(1) }),
+      createElement(ToolBuilder)
+    )
+  )
 }
 
 beforeEach(() => {
+  closeBuilder()
+  shut.length = 0
   sent.length = 0
   asked.length = 0
   tasks.length = 0
