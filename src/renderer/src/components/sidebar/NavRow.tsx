@@ -39,7 +39,9 @@ export default function NavRow({
         <span className={lit || current ? 'text-fg/70' : 'text-fg/45'}>{icon}</span>
         <span className="flex-1 truncate">{label}</span>
       </button>
-      {after && <span className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">{after}</span>}
+      {after && (
+        <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 flex items-center">{after}</span>
+      )}
     </div>
   )
 }

@@ -60,7 +60,13 @@ export function buildFeed(
   const cards: Array<Extract<FeedEntry, { kind: 'card' }>> = []
   for (const event of events) {
     if (event.kind === 'message' && event.threadId && !asks.has(event.threadId)) {
-      asks.set(event.threadId, { text: askPreview(event.text), mentionRefs: event.mentionRefs })
+      const targetId = event.authorId === 'crew' ? undefined : messageReactionTarget(event.id)
+      asks.set(event.threadId, {
+        text: askPreview(event.text),
+        mentionRefs: event.mentionRefs,
+        targetId,
+        reactions: targetId ? reactions.get(targetId) : undefined
+      })
     }
     if (event.kind === 'message' && !event.threadId) {
       const targetId = messageReactionTarget(event.id)
