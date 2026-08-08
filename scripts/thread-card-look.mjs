@@ -331,7 +331,7 @@ const STEPS = {
   'prompt-thinking': [
     {
       id: 'step-t1',
-      ts: ago(1480),
+      ts: ago(90),
       kind: 'tool',
       status: 'done',
       name: 'Bash',
