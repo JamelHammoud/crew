@@ -4,7 +4,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent 
 import { useBrowser } from '../state/browser'
 import { useCustomEmoji } from './customEmojiSheet'
 import { emojifyHtml } from './emojiHtml'
-import { linkifyFiles, locatePaths, parseFileRef, targetFor } from './fileLinks'
+import { linkifyFiles, locatePaths, openHref } from './fileLinks'
 import { morph } from './mdMorph'
 
 function markTasks(container: HTMLElement) {
