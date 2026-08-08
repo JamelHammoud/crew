@@ -312,7 +312,7 @@ const STEPS = {
     },
     {
       id: 'step-w4',
-      ts: ago(900),
+      ts: ago(100),
       kind: 'tool',
       status: 'done',
       name: 'Edit',
