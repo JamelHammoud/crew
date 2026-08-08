@@ -1,6 +1,6 @@
 import { useLayoutEffect, useMemo, useRef } from 'react'
 import { pendingCount, useCrew } from '../state/store'
-import Composer from './Composer'
+import Composer, { COMPOSER_MAX } from './Composer'
 import RunEnded from './RunEnded'
 import RunStatus from './RunStatus'
 import ScrollFade from './ScrollFade'

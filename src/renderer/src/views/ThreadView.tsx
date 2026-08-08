@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import AgentIcon from '../components/AgentIcon'
 import CommandChip from '../components/CommandChip'
-import Composer from '../components/Composer'
+import Composer, { COMPOSER_MAX } from '../components/Composer'
 import FilesChanged from '../components/FilesChanged'
 import FindBar from '../components/FindBar'
 import ForkedFrom from '../components/ForkedFrom'

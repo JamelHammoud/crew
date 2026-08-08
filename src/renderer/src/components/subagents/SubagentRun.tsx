@@ -1,6 +1,6 @@
 import { useCallback, useLayoutEffect, useMemo, useRef } from 'react'
 import { pendingCount, useCrew } from '../../state/store'
-import Composer from '../Composer'
+import Composer, { COMPOSER_MAX } from '../Composer'
 import FilesChanged from '../FilesChanged'
 import RunEnded from '../RunEnded'
 import RunStatus from '../RunStatus'

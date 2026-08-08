@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { mentionsIn } from '../../../shared/llm'
 import { pendingCount, useCrew, type ThreadMeta } from '../state/store'
-import Composer from './Composer'
+import Composer, { COMPOSER_MAX } from './Composer'
 import TypingLine from './TypingLine'
 import { HidePanel } from './DesignControls'
 import DesignThreadBar from './DesignThreadBar'

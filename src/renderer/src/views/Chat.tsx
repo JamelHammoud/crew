@@ -1,7 +1,7 @@
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import ChatListSkeleton from '../components/ChatListSkeleton'
 import CommandChip from '../components/CommandChip'
-import Composer from '../components/Composer'
+import Composer, { COMPOSER_MAX } from '../components/Composer'
 import CreateAgent from '../components/CreateAgent'
 import DefaultAgentChip from '../components/DefaultAgentChip'
 import { JumpToBottom } from '../components/OverComposer'
