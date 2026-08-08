@@ -3,10 +3,15 @@ import { ChevronRightGlyph } from '../icons'
 
 export type StrandTone = 'plain' | 'quiet' | 'danger'
 
-const TONES: Record<StrandTone, { text: string; bg: string; hover: string }> = {
-  plain: { text: 'text-fg', bg: 'bg-ink-800', hover: 'group-hover:bg-ink-700' },
-  quiet: { text: 'text-fg-muted', bg: 'bg-ink-800', hover: 'group-hover:bg-ink-700' },
-  danger: { text: 'text-danger', bg: 'bg-danger/15', hover: 'group-hover:bg-danger/25' }
+const TONES: Record<StrandTone, { text: string; bg: string; hover: string; chevron: string }> = {
+  plain: { text: 'text-fg', bg: 'bg-ink-800', hover: 'group-hover:bg-ink-700', chevron: 'text-fg-muted' },
+  quiet: { text: 'text-fg-muted', bg: 'bg-ink-800', hover: 'group-hover:bg-ink-700', chevron: 'text-fg-muted' },
+  danger: {
+    text: 'text-danger',
+    bg: 'bg-danger/[0.08]',
+    hover: 'group-hover:bg-danger/[0.14]',
+    chevron: 'text-danger/60'
+  }
 }
 
 export const STRAND_SHAPE = 'h-9 flex items-center gap-2.5 rounded-[14px] border text-sm'
