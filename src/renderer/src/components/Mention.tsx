@@ -255,13 +255,11 @@ export function MentionText({
 
 function MemberCardContent({ member, self }: { member: MemberInfo; self: boolean }) {
   return (
-    <span className="flex items-center gap-2.5">
-      <Avatar name={member.name} size="sm" presence={member.connected ? 'online' : 'offline'} />
-      <span className="min-w-0 flex-1 flex items-center gap-2">
-        <span className="text-sm font-semibold text-fg truncate">{member.name}</span>
-        {self && <Pill>You</Pill>}
-      </span>
-    </span>
+    <CardHead
+      face={<Avatar name={member.name} presence={member.connected ? 'online' : 'offline'} />}
+      name={member.name}
+      badge={self ? <Pill glass>You</Pill> : undefined}
+    />
   )
 }
 
