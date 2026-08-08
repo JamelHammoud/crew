@@ -216,11 +216,11 @@ export default function Composer({
         }}
       >
         <AttachmentTray attachmentKey={attachmentKey} />
-        <div className="relative">
+        <div className={`relative ${pull}`}>
           <div
             ref={highlightRef}
             aria-hidden
-            className={`absolute inset-y-0 -inset-x-1 px-1 ${lead} z-10 overflow-hidden text-base text-fg whitespace-pre-wrap break-words leading-relaxed pointer-events-none`}
+            className={`absolute inset-y-0 -inset-x-1 px-1 ${room} z-10 overflow-hidden text-base text-fg whitespace-pre-wrap break-words leading-relaxed pointer-events-none`}
           >
             <MentionHighlights value={value} selection={selection} surface={surface} />
           </div>
