@@ -111,6 +111,7 @@
     "card-look": "node scripts/card-look.mjs",
     "thread-card-look": "node scripts/thread-card-look.mjs",
     "plus-look": "node scripts/plus-look.mjs",
+    "composer-look": "node scripts/composer-look.mjs",
     "board-perf": "node scripts/board-perf.mjs",
     "snap-check": "node scripts/snap-check.mjs",
     "scribe-check": "node scripts/scribe-check.mjs",
