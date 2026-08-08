@@ -505,6 +505,11 @@ app.whenReady().then(async () => {
       await wait(400)
       await shoot(win, name)
       said.reads[name] = await step('read ' + name, () => win.webContents.executeJavaScript(READ))
+      const zoom = (said.reads[name] || []).find(one => one.name === 'working tool')
+      if (zoom && zoom.corners) {
+        const shot = await win.capturePage({ x: zoom.corners.x - 6, y: zoom.corners.y - 8, width: 110, height: zoom.corners.h + 16 })
+        fs.writeFileSync(path.join(SHOTS, 'thread-card-look-' + name + '-corner.png'), shot.toPNG())
+      }
       await step('tail ' + name, () => win.webContents.executeJavaScript(SCROLL('tail')))
       await wait(400)
       await shoot(win, name + '-tail')
