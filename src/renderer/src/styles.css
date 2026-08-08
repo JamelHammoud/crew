@@ -424,6 +424,7 @@ textarea:placeholder-shown {
   --page-scrim: 56px;
   --page-rest: 112px;
   --design-scrim: 112px;
+  --composer-scrim: 20px;
   --doc-tail: 30vh;
   --doc-measure: 652px;
   --doc-table-gap: 13px;
