@@ -39,7 +39,7 @@ export default function ThreadCardShell({
   return (
     <FeedBlock author={thread.createdBy} ts={ts} onContextMenu={onContextMenu}>
       <div className="mt-1 flex items-start gap-2.5">
-        <p className="min-w-0 flex-1 text-base text-fg leading-[22px] line-clamp-2">
+        <p className="min-w-0 flex-1 text-base text-fg leading-[22px] line-clamp-5 whitespace-pre-wrap break-words">
           <MentionText text={title} />
         </p>
         {chips.length > 0 && (
