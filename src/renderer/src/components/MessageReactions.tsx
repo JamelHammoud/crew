@@ -30,8 +30,8 @@ export default function MessageReactions({
 }: {
   targetId: string
   reactions?: ReactionGroup[]
-  deletable: boolean
-  onDelete: () => void
+  deletable?: boolean
+  onDelete?: () => void
   onEdit?: () => void
   onReply?: () => void
 }) {
