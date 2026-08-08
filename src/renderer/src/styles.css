@@ -537,12 +537,6 @@ textarea:placeholder-shown {
   initial-value: 0px;
 }
 
-/* The threads standing under a project in the rail. Every open thread is in the
-   list, and how many of them stand before it scrolls is --rail-rows, handed in
-   by whoever draws it. The room is worked out from the row rather than written
-   down as a height: a row is a line of the app's own small type with its own
-   padding either side, so the list follows the type ramp instead of drifting
-   from it the day the ramp moves. */
 .rail-threads {
   --rail-row: calc(var(--text-sm--line-height) + 12px);
   --rail-gap: 2px;
