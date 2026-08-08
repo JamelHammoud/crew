@@ -108,6 +108,7 @@
     "doc-tables-look": "node scripts/doc-tables-look.mjs",
     "doc-code-look": "node scripts/doc-code-look.mjs",
     "agent-look": "node scripts/agent-look.mjs",
+    "card-look": "node scripts/card-look.mjs",
     "plus-look": "node scripts/plus-look.mjs",
     "board-perf": "node scripts/board-perf.mjs",
     "snap-check": "node scripts/snap-check.mjs",
