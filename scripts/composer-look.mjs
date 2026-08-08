@@ -95,7 +95,7 @@ const READ = \`(() => { try {
     topScrim: top ? { ...box(top), ...said(top) } : null,
     footScrim: foot ? { ...box(foot), ...said(foot) } : null
   }
-})()\`
+} catch (e) { return { broke: String(e && e.stack), body: document.body.innerHTML.slice(0, 400) } } })()\`
 
 const SCROLL = at => \`(() => {
   const area = document.querySelector('textarea')
