@@ -25,11 +25,12 @@ function FeedRow({ entry, dayTs, linked, planned, status, onOpenThread, onReply 
         <HuddleCard record={entry.record} />
       ) : entry.kind === 'card' ? (
         planned ? (
-          <PlanCard thread={entry.thread} ts={entry.ts} onOpen={() => onOpenThread(entry.thread.id)} />
+          <PlanCard thread={entry.thread} ts={entry.ts} ask={entry.ask} onOpen={() => onOpenThread(entry.thread.id)} />
         ) : (
           <ThreadCard
             thread={entry.thread}
             ts={entry.ts}
+            ask={entry.ask}
             status={status}
             onOpen={() => onOpenThread(entry.thread.id)}
           />

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { ArchiveGlyph, CheckGlyph, EyeGlyph, StopGlyph, WarningGlyph } from '../icons'
 import { type ThreadMeta } from '../state/store'
 import Counts from './Counts'
-import type { ThreadStatus } from './feed/feedItems'
+import type { ThreadAsk, ThreadStatus } from './feed/feedItems'
 import { MenuDivider, Popover } from './Popover'
 import Spinner from './Spinner'
 import { Mark } from './StepRow'
@@ -40,11 +40,13 @@ const MARK = 'w-[18px] h-[18px]'
 export default function ThreadCard({
   thread,
   ts,
+  ask,
   status,
   onOpen
 }: {
   thread: ThreadMeta
   ts: number
+  ask?: ThreadAsk
   status: ThreadStatus
   onOpen: () => void
 }) {
@@ -58,6 +60,7 @@ export default function ThreadCard({
       <ThreadCardShell
         thread={thread}
         ts={ts}
+        ask={ask}
         onContextMenu={event => {
           event.preventDefault()
           setMenuAt({ x: event.clientX, y: event.clientY })
