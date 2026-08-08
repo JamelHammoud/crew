@@ -1,10 +1,9 @@
 import type { ReactNode } from 'react'
 import { relabelMentions } from '../../../shared/llm'
 import { useCrew, type ThreadMeta } from '../state/store'
-import Clamped from './Clamped'
 import type { ThreadAsk } from './feed/feedItems'
 import { FeedBlock } from './FeedCard'
-import { MentionText } from './Mention'
+import MessagePreview from './MessagePreview'
 
 export default function ThreadCardShell({
   thread,
