@@ -13,7 +13,6 @@ export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab
   const rowRef = useRef<HTMLDivElement>(null)
   const menu = useHoverMenu(rowRef)
   const holdRail = useSidebar(s => s.hold)
-  const joined = useHuddle(s => s.joined)
   const [toolbox, setToolbox] = useState<Spot | null>(null)
   const here = MORE_TABS.some(one => one.id === tab)
   const open = menu.open
@@ -42,13 +41,6 @@ export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab
   const openBrowser = () => {
     menu.close()
     useBrowser.getState().openPanel()
-  }
-
-  const pressHuddle = () => {
-    menu.close()
-    const huddle = useHuddle.getState()
-    if (huddle.joined) huddle.leave()
-    else void huddle.join()
   }
 
   return (
