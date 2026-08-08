@@ -1,12 +1,13 @@
-import { memo, useCallback, useState } from 'react'
+import { memo, useCallback, useRef, useState } from 'react'
 import { LinkGlyph, PencilGlyph, TrashGlyph, XCircleGlyph } from '../../icons'
 import { toast } from '../../state/toast'
 import Spinner from '../Spinner'
 import { MenuItem, Popover } from '../Popover'
+import { useScrollFade } from '../useScrollFade'
 import PlaceFace from './PlaceFace'
 import PlaceName from './PlaceName'
 import ThreadRow from './ThreadRow'
-import { samePlaceGroup, type PlaceGroupProps } from './placeItems'
+import { samePlaceGroup, threadsRoom, type PlaceGroupProps } from './placeItems'
 
 function PlaceGroup({
   place,
