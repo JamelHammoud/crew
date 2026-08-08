@@ -180,6 +180,7 @@ function Session() {
       <HuddlePanel />
       <VoiceScreen />
       <Settings />
+      <ToolBuilder />
     </div>
   )
 }
