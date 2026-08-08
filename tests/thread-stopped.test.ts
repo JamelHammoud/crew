@@ -116,8 +116,7 @@ describe('a run somebody stopped', () => {
       createElement(ThreadCard, {
         thread,
         ts: 1,
-        state: threadState(thread, [started, stopped], false),
-        detail: '',
+        status: { state: threadState(thread, [started, stopped], false), detail: '', added: 0, removed: 0 },
         onOpen: () => {}
       })
     )
@@ -131,8 +130,7 @@ describe('a run somebody stopped', () => {
       createElement(ThreadCard, {
         thread,
         ts: 1,
-        state: threadState(thread, [started, broke], false),
-        detail: '',
+        status: { state: threadState(thread, [started, broke], false), detail: '', added: 0, removed: 0 },
         onOpen: () => {}
       })
     )
