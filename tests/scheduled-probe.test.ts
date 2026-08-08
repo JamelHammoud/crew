@@ -205,6 +205,29 @@ describe('the card one is written on', () => {
     fireEvent.click(screen.getByRole('button', { name: option }))
   }
 
+  // The name is the one thing the card opens on, so nothing stands beside it. The
+  // mark a schedule wears is worked out from the kind, and a picture of a
+  // decision nobody made is not worth the room it takes.
+  it('leaves the name to stand on its own', () => {
+    openCard()
+
+    expect(screen.getByLabelText('Name').previousElementSibling).toBeNull()
+  })
+
+  // A row is its mark and its title. A line under every row is a paragraph to
+  // read for one press, and beside the answer afterwards it is the machinery of
+  // the choice standing next to the choice.
+  it('says what a kind is and nothing else on the row it is picked from', () => {
+    openCard()
+    open('What it does')
+
+    for (const entry of TOOL_KINDS) {
+      if (!(SCHEDULABLE as readonly string[]).includes(entry.kind)) continue
+      const row = screen.getByRole('button', { name: new RegExp(`^${entry.title}$`) })
+      expect(row.textContent, entry.kind).toBe(entry.title)
+    }
+  })
+
   it('offers only the kinds that can be put on a clock', () => {
     openCard()
     open('What it does')
