@@ -110,7 +110,7 @@ const online = {
 }
 
 const THREAD_COMPOSER = 'Send a message or @ someone'
-const CHAT_COMPOSER = 'Send a message, @ someone, or / for a command'
+const CHAT_COMPOSER = 'Ask Crew'
 
 const open = (ids: string[], focused: string | null): void => {
   useCrew.setState({ ...online, openThreadIds: ids, openThreadId: focused, chatColumn: false })
