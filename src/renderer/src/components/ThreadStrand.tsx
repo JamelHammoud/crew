@@ -10,6 +10,7 @@ const TONES: Record<StrandTone, string> = {
 }
 
 export default function ThreadStrand({
+  face,
   mark,
   label,
   tone = 'plain',
@@ -17,6 +18,7 @@ export default function ThreadStrand({
   dashed,
   onOpen
 }: {
+  face?: ReactNode
   mark: ReactNode
   label: string
   tone?: StrandTone
@@ -29,10 +31,11 @@ export default function ThreadStrand({
   return (
     <Row
       onClick={onOpen}
-      className={`group mt-2 w-full h-11 px-5 flex items-center gap-2.5 rounded-full border text-sm text-left transition-[background-color,border-color,transform] duration-200 ${
+      className={`group mt-2 w-full h-11 pl-2.5 pr-5 flex items-center gap-2.5 rounded-full border text-sm text-left transition-[background-color,border-color,transform] duration-200 ${
         dashed ? 'border-dashed border-ink-600' : 'border-transparent bg-ink-800'
       } ${onOpen ? `cursor-pointer active:scale-[0.99] ${dashed ? 'hover:border-ink-500 hover:bg-ink-800' : 'hover:bg-ink-700'}` : ''}`}
     >
+      {face}
       {mark}
       <span className={`min-w-0 truncate font-medium ${TONES[tone]}`}>{label}</span>
       <span className="ml-auto shrink-0 flex items-center gap-2.5 pl-2 text-xs">{figures}</span>
