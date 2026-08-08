@@ -21,6 +21,21 @@ const sideOf = (side: Tokens.Table['align'][number] | undefined): CSSProperties 
 
 const kidsOf = (token: Token): Token[] => ('tokens' in token && token.tokens ? token.tokens : [])
 
+const NAMED: Record<string, string> = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" }
+
+const charOf = (code: string): string | null => {
+  const at = Number(code[1] === 'x' || code[1] === 'X' ? `0x${code.slice(2)}` : code.slice(1))
+  return Number.isInteger(at) && at >= 0 && at <= 0x10ffff ? String.fromCodePoint(at) : null
+}
+
+const plain = (text: string): string =>
+  text.includes('&')
+    ? text.replace(
+        /&(#\d+|#[Xx][\da-fA-F]+|[a-zA-Z]+);/g,
+        (whole, code: string) => (code[0] === '#' ? charOf(code) : NAMED[code.toLowerCase()]) ?? whole
+      )
+    : text
+
 function Words({ text, refs }: { text: string; refs: Refs }) {
   return (
     <MentionText
