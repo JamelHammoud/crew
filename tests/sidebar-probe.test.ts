@@ -150,7 +150,7 @@ beforeEach(async () => {
   joins = []
   localStorage.clear()
   useSidebar.setState({ pinned: false, peeking: false, near: false, over: false })
-  useCrew.setState({ place: `project:${ONE}`, folder: ONE, selfName: 'Jamel' })
+  useCrew.setState({ place: `project:${ONE}`, folder: ONE, selfName: 'Jamel', threads: {}, threadPrompts: {}, queues: {} })
   useBrowser.setState({ tabs: [], activeTabId: null, open: false })
   await act(async () => {
     await usePlaces.getState().load()
