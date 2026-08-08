@@ -6,9 +6,17 @@ import { huddleRecords, type HuddleRecord } from '../huddle/log'
 import { reactionGroups } from '../reactionGroups'
 import { sameItem, type ThreadItem, type ThreadState } from '../thread'
 
+// The whole of what somebody wrote to open a thread. The title is cut to a line
+// on the host, which is right for a rail row and wrong for the feed, so the card
+// reads the thread's own first message instead and keeps its mentions with it.
+export interface ThreadAsk {
+  text: string
+  mentionRefs?: AgentMentionRef[]
+}
+
 export type FeedEntry =
   | { kind: 'msg'; key: string; ts: number; item: ThreadItem }
-  | { kind: 'card'; key: string; ts: number; thread: ThreadMeta }
+  | { kind: 'card'; key: string; ts: number; thread: ThreadMeta; ask?: ThreadAsk }
   | { kind: 'huddle'; key: string; ts: number; record: HuddleRecord }
 
 export interface ThreadStatus {
