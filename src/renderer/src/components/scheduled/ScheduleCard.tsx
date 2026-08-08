@@ -65,28 +65,29 @@ export default function ScheduleCard({
   return (
     <Modal open={open} onClose={onClose} title={schedule ? 'Edit schedule' : 'New schedule'} width={520}>
       <div className="mt-4 space-y-4">
-        <div className="flex items-center gap-3">
-          <span className="w-9 h-9 shrink-0 rounded-full bg-fg/[0.07] flex items-center justify-center text-fg/70">
-            <ToolMarkView mark={mark} className="w-[18px] h-[18px]" />
-          </span>
-          <TextField
-            glass
-            ref={first}
-            value={name}
-            maxLength={NAME_LIMIT}
-            placeholder="Morning standup"
-            aria-label="Name"
-            onChange={event => setName(event.target.value)}
-            onKeyDown={event => {
-              if (event.key !== 'Enter') return
-              event.preventDefault()
-              send()
-            }}
-          />
-        </div>
+        <TextField
+          glass
+          ref={first}
+          value={name}
+          maxLength={NAME_LIMIT}
+          placeholder="Morning standup"
+          aria-label="Name"
+          onChange={event => setName(event.target.value)}
+          onKeyDown={event => {
+            if (event.key !== 'Enter') return
+            event.preventDefault()
+            send()
+          }}
+        />
 
         <Rule />
-        <ScheduleDoes kind={kind} onKind={setKind} initial={schedule?.action ?? null} onChange={took} />
+        <ToolDoes
+          kinds={SCHEDULABLE}
+          kind={kind}
+          onKind={setKind}
+          initial={schedule?.action ?? null}
+          onChange={took}
+        />
         <Rule />
         <ScheduleWhen when={when} onChange={setWhen} />
       </div>
