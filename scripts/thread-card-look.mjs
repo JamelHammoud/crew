@@ -303,7 +303,7 @@ const STEPS = {
     },
     {
       id: 'step-w3',
-      ts: ago(1400),
+      ts: ago(140),
       kind: 'tool',
       status: 'done',
       name: 'Edit',
