@@ -119,6 +119,7 @@ export function useThreadMenu({
 
   return {
     onContextMenu: event => {
+      if (selecting()) return
       event.preventDefault()
       setAt({ x: event.clientX, y: event.clientY })
     },
