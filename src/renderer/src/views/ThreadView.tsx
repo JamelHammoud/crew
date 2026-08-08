@@ -100,7 +100,7 @@ export default function ThreadView({
     scrollRef,
     `thread:${threadId}`
   )
-  const inputRef = useAutoResize(text)
+  const inputRef = useAutoResize(text, COMPOSER_MAX)
   const agentPresence = usePresence(thread?.agentLabel ?? '', thread?.agentId)
   const onReply = useCallback(
     (item: ThreadItem) => {

@@ -29,7 +29,7 @@ export default function AsideView({ threadId }: { threadId: string }) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const { onScroll, follow, jumpToBottom } = useStickToBottom(scrollRef, `aside:${threadId}`)
   const { edges } = useScrollEdges(scrollRef)
-  const inputRef = useAutoResize(text)
+  const inputRef = useAutoResize(text, COMPOSER_MAX)
 
   const threadEvents = useMemo(() => eventsOfThread(events, threadId), [events, threadId])
   const items = useMemo(() => buildThread(threadEvents, steps, selfId, agents), [threadEvents, steps, selfId, agents])

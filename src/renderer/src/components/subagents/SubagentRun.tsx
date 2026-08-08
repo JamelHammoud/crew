@@ -52,7 +52,7 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const { onScroll, follow, jumpToBottom } = useStickToBottom(scrollRef, `subagent:${threadId}`)
   const { edges } = useScrollEdges(scrollRef)
-  const inputRef = useAutoResize(text)
+  const inputRef = useAutoResize(text, COMPOSER_MAX)
 
   const threadEvents = useMemo(() => eventsOfThread(events, threadId), [events, threadId])
   // The work here is the helper's, so it stands under the name the agent made it

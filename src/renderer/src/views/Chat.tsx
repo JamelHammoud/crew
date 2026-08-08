@@ -74,7 +74,7 @@ export default function Chat() {
   }
 
   const ghost = commands.includes('ghost')
-  const inputRef = useAutoResize(text)
+  const inputRef = useAutoResize(text, COMPOSER_MAX)
   const mention = useMentionAutocomplete(text, write, inputRef, { commands: offered })
   const slash = useSlashCommands(text, write, takeCommand, inputRef, offered)
   const scrollRef = useRef<HTMLDivElement>(null)
