@@ -24,10 +24,8 @@ import { isNewDay } from '../components/time'
 import { useAutoResize } from '../components/useAutoResize'
 import { useComposerRoom } from '../components/useComposerRoom'
 import { useLoadOlder } from '../components/useLoadOlder'
-import { useNow } from '../components/useNow'
 import { useStickToBottom } from '../components/useStickToBottom'
 import { useDefaultAgent } from '../state/defaultAgent'
-import { usePrefs } from '../state/prefs'
 import { CHAT_KEY, pendingCount, useCrew, type ThreadMeta } from '../state/store'
 import { useVoice } from '../state/voice'
 import { cleanCommands, commandsIn, commandTyped, type CommandName } from '../../../shared/commands'
@@ -41,7 +39,6 @@ export default function Chat() {
   const steps = useCrew(s => s.steps)
   const tokens = useCrew(s => s.tokens)
   const costs = useCrew(s => s.costs)
-  const prefs = usePrefs()
   const sendChat = useCrew(s => s.sendChat)
   const openThread = useCrew(s => s.openThread)
   const text = useCrew(s => s.chatDraft)

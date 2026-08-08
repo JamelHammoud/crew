@@ -76,7 +76,7 @@ app.disableHardwareAcceleration()
 const wait = ms => new Promise(r => setTimeout(r, ms))
 const SHOTS = ${JSON.stringify(shots)}
 
-const READ = \`(() => {
+const READ = \`(() => { try {
   const card = document.querySelector('.rounded-shell')
   const area = document.querySelector('textarea')
   const ink = document.querySelector('[aria-hidden="true"]')
