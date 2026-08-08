@@ -132,6 +132,24 @@ const EVENTS = [
     byName: 'ALI'
   },
   {
+    id: 'e-1a',
+    ts: ago(1899),
+    kind: 'message',
+    threadId: 'thread-working',
+    authorId: 'ali',
+    authorName: 'ALI',
+    text: [
+      'Do a design pass on the thread preview in chat',
+      '',
+      "It's one of the older things we've worked on, make it look beautiful and match the rest of Crew's UI/UX design",
+      '',
+      'Ideally you can also see +/- changes (when available) before clicking in',
+      '',
+      'As well as exactly what\\'s being run right now, if it\\'s working (like literally the last tool call, or "Thinking")'
+    ].join('\\n'),
+    mentions: []
+  },
+  {
     id: 'e-2',
     ts: ago(1700),
     kind: 'message',
