@@ -67,7 +67,7 @@ export default function ThreadStrand({
             onOpen ? 'group-hover:ml-0 group-hover:w-3.5 group-hover:opacity-100' : ''
           }`}
         >
-          <ChevronRightGlyph className="w-3.5 h-3.5 shrink-0 text-fg-muted" />
+          <ChevronRightGlyph className={`w-3.5 h-3.5 shrink-0 ${skin.chevron}`} />
         </span>
       </span>
       {chips}
