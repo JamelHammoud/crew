@@ -179,6 +179,7 @@ function run(dir) {
 const dir = await stage()
 await compile(dir)
 const seen = await run(dir)
+if (seen.console?.length) console.log('the window said: ' + seen.console.join('\n'))
 if (seen.failed) throw new Error(seen.failed)
 
 function say(name, at) {
