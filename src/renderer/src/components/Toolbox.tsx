@@ -91,7 +91,7 @@ export default function Toolbox({
                 onClick={() => pressTool(tool)}
               >
                 <button
-                  onClick={() => setBuilding({ tool })}
+                  onClick={() => build(tool)}
                   aria-label={`Edit ${tool.name}`}
                   className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full flex items-center justify-center bg-fg/10 text-fg/70 opacity-0 transition-all duration-150 hover:bg-fg/20 hover:text-fg active:scale-90 group-hover:opacity-100 focus-visible:opacity-100"
                 >
