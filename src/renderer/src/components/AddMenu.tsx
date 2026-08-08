@@ -1,6 +1,6 @@
 import { useState, type RefObject } from 'react'
 import { attachmentBytes, MAX_ATTACHMENTS } from '../../../shared/attachments'
-import { GifGlyph, PeopleGlyph, PlusGlyph, SignalGlyph, UploadGlyph } from '../icons'
+import { GifGlyph, PlusGlyph, SignalGlyph, SparkGlyph, UploadGlyph } from '../icons'
 import { useHuddle } from '../state/huddle'
 import { useCrew } from '../state/store'
 import { ATTACH_SIZES, PLUS_BUTTON, useFilePicker } from './Attachments'
