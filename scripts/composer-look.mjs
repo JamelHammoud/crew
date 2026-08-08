@@ -30,7 +30,7 @@ useCrew.setState({
   agents: [],
   members: [{ id: 'ali', name: 'ALI', connected: true }],
   docs: {},
-  boards: {},
+  boards: [],
   pending: {},
   attachmentMb: 10
 })
