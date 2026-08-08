@@ -343,6 +343,7 @@ export default function ToolDoes({
                 <Picked
                   key={tool.id}
                   label={tool.name}
+                  note={kindOf(tool.action.kind).title}
                   picked={toolIds.includes(tool.id)}
                   order={toolIds.indexOf(tool.id) + 1 || undefined}
                   onClick={() =>
