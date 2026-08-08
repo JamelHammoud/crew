@@ -51,11 +51,11 @@ export default function ThreadStrand({
     >
       <span
         className={`${STRAND_SHAPE} min-w-0 max-w-full pl-3.5 pr-2 transition-[background-color,border-color] duration-200 ${
-          dashed ? 'border-dashed border-ink-600' : 'border-transparent bg-ink-800'
-        } ${onOpen ? (dashed ? 'group-hover:border-ink-500' : 'group-hover:bg-ink-700') : ''}`}
+          dashed ? 'border-dashed border-ink-600' : `border-transparent ${skin.bg}`
+        } ${onOpen ? (dashed ? 'group-hover:border-ink-500' : skin.hover) : ''}`}
       >
         {mark}
-        <span className={`min-w-0 truncate font-medium ${TONES[tone]}`}>{label}</span>
+        <span className={`min-w-0 truncate font-medium ${skin.text}`}>{label}</span>
         {figures && <span className="shrink-0 ml-2 flex items-center gap-2.5 text-xs">{figures}</span>}
         <span
           className={`shrink-0 -ml-2.5 w-1.5 overflow-hidden opacity-0 transition-[width,margin,opacity] duration-200 ${
