@@ -238,7 +238,7 @@ export default function Composer({
             rows={2}
             spellCheck={false}
             placeholder={placeholder}
-            className={`relative block w-full ${room} bg-transparent text-base text-transparent caret-fg placeholder:text-fg-muted outline-none resize-none leading-relaxed max-h-48 no-scrollbar`}
+            className={`relative block w-full ${room} bg-transparent text-base text-transparent caret-fg placeholder:text-fg-muted outline-none resize-none leading-relaxed no-scrollbar`}
           />
           <div aria-hidden className={`absolute -inset-x-5 top-0 z-20 pointer-events-none composer-scrim ${surface}`} />
           <div
