@@ -9,7 +9,7 @@ import electron from 'electron'
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
 const resolve = createRequire(path.join(root, 'package.json')).resolve
-const shots = path.join(root, 'shots')
+const shots = path.join(tmpdir(), 'crew-composer-look')
 
 const WIDTH = 760
 const HEIGHT = 520
