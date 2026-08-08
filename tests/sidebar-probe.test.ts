@@ -323,6 +323,38 @@ describe('the sidebar', () => {
     await waitFor(() => expect(useSidebar.getState().peeking).toBe(false))
   })
 
+  it('leaves the count beside the tasks row out of the pointer, so a press on it opens the tasks', () => {
+    useCrew.setState({
+      threads: {
+        t1: {
+          id: 't1',
+          agentId: 'a1',
+          agentLabel: 'Bubbles',
+          title: 'Something to look at',
+          createdBy: 'Jamel',
+          status: 'open',
+          mode: 'build'
+        }
+      },
+      threadPrompts: {},
+      queues: {}
+    })
+    render(Sidebar())
+
+    const row = screen.getByRole('button', { name: /^Tasks/ })
+    const slot = row.nextElementSibling as HTMLElement
+    expect(slot.textContent).toBe('1')
+    expect(slot.className).toContain('pointer-events-none')
+  })
+
+  it('gives the pointer back to a control standing in that slot', () => {
+    render(Sidebar({ tab: 'docs' }))
+
+    const slot = (screen.getByRole('button', { name: 'Docs' }).nextElementSibling as HTMLElement) ?? null
+    expect(slot.className).toContain('pointer-events-none')
+    expect(screen.getByRole('button', { name: 'New page' }).className).toContain('pointer-events-auto')
+  })
+
   it('goes to the page a row names and puts a hovered sidebar away with it', async () => {
     const went: string[] = []
     useSidebar.setState({ pinned: false, peeking: true })
