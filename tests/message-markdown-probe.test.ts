@@ -119,6 +119,50 @@ describe('what somebody wrote, drawn as markdown', () => {
   })
 })
 
+describe('the characters somebody really typed', () => {
+  it('reads an apostrophe, a quote, an ampersand and an angle as themselves', () => {
+    const body = drawn(`Today's changes & "the rest" of them, 5 > 4`)
+
+    expect(body.textContent).toBe(`Today's changes & "the rest" of them, 5 > 4`)
+  })
+
+  it('reads them the same inside a mark and inside a table', () => {
+    const body = drawn(`**Today's** and *a "quote"*\n\n| it's | b |\n| --- | --- |\n| 5 > 4 | c's |`)
+
+    expect(body.querySelector('strong')?.textContent).toBe(`Today's`)
+    expect(body.querySelector('em')?.textContent).toBe(`a "quote"`)
+    expect(body.querySelector('th')?.textContent).toBe(`it's`)
+    expect([...body.querySelectorAll('tbody td')].map(cell => cell.textContent)).toEqual(['5 > 4', `c's`])
+  })
+
+  it('reads them as themselves in backticks and in a fence', () => {
+    const body = drawn("A `<br>` in a cell, and `a && b`\n\n```\nconst a = b < c && d > e\n```")
+
+    expect([...body.querySelectorAll('p code')].map(code => code.textContent)).toEqual(['<br>', 'a && b'])
+    expect(body.querySelector('pre code')?.textContent).toBe('const a = b < c && d > e')
+  })
+
+  it('reads a backslash escape as the character it was holding back', () => {
+    const body = drawn('\\<not a tag\\> and \\*not thin\\*')
+
+    expect(body.textContent).toBe('<not a tag> and *not thin*')
+    expect(body.querySelector('em')).toBeNull()
+  })
+
+  it('leaves markup somebody typed as the characters they typed', () => {
+    const body = drawn('an <img src=x onerror=boom> in a sentence')
+
+    expect(body.textContent).toBe('an <img src=x onerror=boom> in a sentence')
+    expect(body.querySelector('img')).toBeNull()
+  })
+
+  it('reads an escape a person wrote themselves, and leaves the rest of them alone', () => {
+    const body = drawn('&amp; and &#39; and &#x3c; and &hellip; and &notreally;')
+
+    expect(body.textContent).toBe('& and \' and < and &hellip; and &notreally;')
+  })
+})
+
 describe('the crew own marks inside markdown', () => {
   it('still draws a name as a mention, bold or not', () => {
     useCrew.setState({ agents: [agent] })
