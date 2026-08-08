@@ -99,9 +99,16 @@ describe('the agent standing on the chat composer', () => {
     expect(useDefaultAgent.getState().agentId).toBeNull()
   })
 
+  // A real click stands on the row it landed on, so the row is focused by hand
+  // here: jsdom moves the caret for neither a press nor an unmount, and the
+  // composer is left focused by the press that opened the menu without it.
   it('leaves the caret in the box it just aimed', () => {
     const composer = open()
-    pick('Bubbles')
+    fireEvent.click(screen.getByLabelText('Add to your message'))
+    fireEvent.click(screen.getByText('Agent'))
+    const row = screen.getByText('Bubbles').closest('button') as HTMLButtonElement
+    row.focus()
+    fireEvent.click(row)
 
     expect(document.activeElement).toBe(composer)
   })

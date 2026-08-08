@@ -93,7 +93,7 @@ export default function AddMenu({
                 <>
                   {!full && <MenuDivider />}
                   <MenuItem
-                    icon={<PeopleGlyph />}
+                    icon={<SparkGlyph />}
                     label="Agent"
                     into
                     onClick={() => setScreen('agent')}
