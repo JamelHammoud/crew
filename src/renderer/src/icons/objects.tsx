@@ -175,6 +175,13 @@ export const PlugGlyph = glyph(
   </>
 )
 
+export const AtGlyph = glyph(
+  <>
+    <circle cx="12" cy="12" r="3.5" />
+    <path d="M15.5 8.5v4.5c0 1.75 1.25 2.75 3 2.75s2.75-1.75 2.75-3.75a9.25 9.25 0 1 0-3.5 7.25" />
+  </>
+)
+
 // One ticket, and the whole of it is the silhouette. The two bites out of the
 // sides are what tell it from every other rounded box in the set, so they are
 // deep: a notch small enough to be tasteful at 48 is gone by 16, and what is
