@@ -287,11 +287,11 @@ describe('what a long chat draws again', () => {
     expect(drawn.messages).toBe(0)
   })
 
-  it('says what a resting thread finished with', () => {
+  it('says where a resting thread stands, and leaves what it said to the thread', () => {
     const steps = Array.from({ length: STEPS }, (_, index) => stepAt(index))
     openChat(steps)
 
-    expect(screen.getByText('the 3th piece is done')).toBeTruthy()
     expect(screen.getAllByText('Ready for review').length).toBe(CARDS - 1)
+    expect(screen.queryByText('the 3th piece is done')).toBeNull()
   })
 })
