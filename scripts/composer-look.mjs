@@ -112,7 +112,8 @@ async function shoot(win, name) {
 app.whenReady().then(async () => {
   fs.mkdirSync(SHOTS, { recursive: true })
   const win = new BrowserWindow({ width: ${WIDTH}, height: ${HEIGHT}, show: true, backgroundColor: '#141414' })
-  const said = {}
+  const said = { console: [] }
+  win.webContents.on('console-message', (e, level, message) => said.console.push(message))
   try {
     await win.loadFile(path.join(__dirname, 'dist/index.html'))
     await wait(900)

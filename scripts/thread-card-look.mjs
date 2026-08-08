@@ -425,6 +425,8 @@ function Page() {
   return React.createElement('div', { className: 'h-full bg-ink-900' }, React.createElement(Chat))
 }
 
+window.addEventListener('error', event => console.error('STACK ' + (event.error && event.error.stack)))
+
 createRoot(document.getElementById('root')).render(React.createElement(Page))
 `
 }
