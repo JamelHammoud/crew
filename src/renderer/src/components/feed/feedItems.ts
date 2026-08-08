@@ -85,13 +85,21 @@ export function buildFeed(
       !event.parentThreadId &&
       threads[event.threadId]?.status === 'open'
     ) {
-      list.push({ kind: 'card', key: event.id, ts: event.ts, thread: threads[event.threadId] })
+      const card: Extract<FeedEntry, { kind: 'card' }> = {
+        kind: 'card',
+        key: event.id,
+        ts: event.ts,
+        thread: threads[event.threadId]
+      }
+      cards.push(card)
+      list.push(card)
     }
     if (event.kind === 'huddle.started') {
       const record = huddles.get(event.huddleId)
       if (record) list.push({ kind: 'huddle', key: event.id, ts: event.ts, record })
     }
   }
+  for (const card of cards) card.ask = asks.get(card.thread.id)
   return list
 }
 
