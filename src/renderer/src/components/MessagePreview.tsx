@@ -56,6 +56,8 @@ export default function MessagePreview({
   className?: string
 }) {
   const ref = useRef<HTMLDivElement>(null)
+  const [more, setMore] = useState(false)
+  const [open, setOpen] = useState(false)
   const written = text.split('\n')
 
   useLayoutEffect(() => {
@@ -74,6 +76,10 @@ export default function MessagePreview({
       const own = rows.map(row => Math.max(1, Math.round(row.offsetHeight / lh)))
       const blank = rows.map(row => (row.textContent ?? '').trim() === '')
       const fit = fitOf(own, blank, lines)
+      // The cut is worked out whether or not it is applied, so the way back is
+      // still there once the whole of it is standing.
+      setMore(fit.more)
+      if (open) return
       rows.forEach((row, i) => {
         if (i > fit.upTo) {
           row.style.display = 'none'
