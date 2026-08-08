@@ -448,8 +448,12 @@ const SCROLL = where => \`(() => {
 
 const READ = \`(() => {
   const scroller = document.querySelector('div.overflow-y-auto')
-  const feed = scroller || document
-  const cards = [...feed.querySelectorAll('[role=button]')]
+  const column = scroller && scroller.firstElementChild
+  const blocks = column ? [...column.children] : []
+  const cards = blocks.filter(block => {
+    const strand = block.querySelector(':scope > div:last-child > :last-child')
+    return strand && strand.tagName === 'BUTTON'
+  })
   const NAMES = ['working tool', 'working thinking', 'ready', 'failed', 'plan']
   const wordsOf = band =>
     [...band.querySelectorAll('*')]
