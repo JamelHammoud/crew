@@ -12,6 +12,7 @@ import {
 import { useCrew } from '../state/store'
 import { toast } from '../state/toast'
 import { MenuDivider, MenuItem, Popover } from './Popover'
+import { selecting } from './selecting'
 
 const LABEL: Record<ThreadOpenAction, string> = {
   open: 'Open',
