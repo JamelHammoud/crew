@@ -106,6 +106,19 @@ export function targetFor(path: string): string {
   return location?.kind === 'repo' ? location.path : path
 }
 
+export function openHref(href: string): void {
+  if (/^https?:/i.test(href)) {
+    useBrowser.getState().openUrl(href)
+    return
+  }
+  if (/^mailto:/i.test(href)) {
+    void window.crew.openExternal(href)
+    return
+  }
+  const ref = parseFileRef(decodeURIComponent(href))
+  if (ref) useBrowser.getState().openFile(targetFor(ref.path), ref.line)
+}
+
 function toRef(rawPath: string, tail: string | undefined): FileRef | null {
   const path = rawPath.replace(/^\.\//, '').replace(/\/$/, '')
   if (path.startsWith('../') || path.includes('//')) return null
