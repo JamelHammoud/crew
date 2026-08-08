@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { createElement, Fragment } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import ToolBuilder from '../src/renderer/src/components/ToolBuilder'
@@ -99,6 +99,10 @@ const pick = (control: string, option: string | RegExp) => {
 // schedule picks its own.
 const does = (title: string) => pick('What it does', new RegExp(`^${title}$`))
 
+// The card is its own surface, so a name in it is asked for there rather than
+// against the grid standing behind it.
+const card = () => within(screen.getByRole('dialog'))
+
 describe('the toolbox', () => {
   // The toolbox is the crew's own tools and nothing else. What the app can open
   // by itself is in the side panel, which is the one place it is listed.
@@ -123,6 +127,18 @@ describe('the toolbox', () => {
 
     build()
     expect(screen.getByPlaceholderText('What to call it')).toBeTruthy()
+  })
+
+  // A popover is drawn above a dialog, so the toolbox goes as the card arrives
+  // rather than standing on top of the thing it just opened.
+  it('puts the toolbox away as the card opens', () => {
+    toolbox([tool()])
+
+    build()
+    expect(shut).toHaveLength(1)
+
+    fireEvent.click(screen.getByLabelText('Edit Figma'))
+    expect(shut).toHaveLength(2)
   })
 
   it('runs a built tool: a page opens in the side panel, a command opens a terminal', () => {
@@ -479,8 +495,8 @@ describe('the toolbox', () => {
     build()
     name('Start the day')
     does('Do several things')
-    fireEvent.click(screen.getByText('Dev'))
-    fireEvent.click(screen.getByText('Figma'))
+    fireEvent.click(card().getByText('Dev'))
+    fireEvent.click(card().getByText('Figma'))
     fireEvent.click(screen.getByText('Add to toolbox'))
 
     expect(sent).toEqual([
@@ -516,8 +532,8 @@ describe('the toolbox', () => {
     fireEvent.click(screen.getByLabelText('Edit Figma'))
     does('Do several things')
 
-    expect(screen.queryByText('Figma')).toBeNull()
-    expect(screen.getByText('Build a tool or two first')).toBeTruthy()
+    expect(card().queryByText('Figma')).toBeNull()
+    expect(card().getByText('Build a tool or two first')).toBeTruthy()
   })
 
   it('edits and removes a tool that is already there', () => {
