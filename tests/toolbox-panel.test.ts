@@ -90,12 +90,14 @@ const build = () => fireEvent.click(screen.getByText('New tool'))
 const name = (value: string) =>
   fireEvent.change(screen.getByPlaceholderText('What to call it'), { target: { value } })
 
-// What a tool does is a screen of its own, reached from the row that says which
-// kind is picked.
-const does = (title: string) => {
-  fireEvent.click(screen.getByText('What it does').parentElement!.querySelector('button')!)
-  fireEvent.click(screen.getByText(title))
+const pick = (control: string, option: string | RegExp) => {
+  fireEvent.click(screen.getByRole('button', { name: control }))
+  fireEvent.click(screen.getByRole('button', { name: option }))
 }
+
+// What a tool does is picked off the pill that says which kind it is, the way a
+// schedule picks its own.
+const does = (title: string) => pick('What it does', new RegExp(`^${title}$`))
 
 describe('the toolbox', () => {
   // The toolbox is the crew's own tools and nothing else. What the app can open
