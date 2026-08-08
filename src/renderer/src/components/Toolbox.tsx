@@ -28,18 +28,24 @@ export default function Toolbox({
   anchor?: { current: HTMLElement | null }
 }) {
   const tools = useCrew(s => s.tools)
-  const [building, setBuilding] = useState<{ tool: CrewTool | null } | null>(null)
   const [filling, setFilling] = useState<{ tool: CrewTool; slots: string[] } | null>(null)
   const [said, setSaid] = useState<{ toolId: string; word: string } | null>(null)
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   useEffect(() => {
     if (open) return
-    setBuilding(null)
     setFilling(null)
   }, [open])
 
   useEffect(() => () => clearTimeout(timer.current), [])
+
+  // The card stands in front of everything, so the toolbox goes as it opens: a
+  // popover is drawn above a dialog, and one left standing behind the card would
+  // be a menu sitting on top of it.
+  const build = (tool: CrewTool | null) => {
+    buildTool(tool)
+    onClose()
+  }
 
   const pressTool = (tool: CrewTool) => {
     const slots = toolSlots(tool.action)
