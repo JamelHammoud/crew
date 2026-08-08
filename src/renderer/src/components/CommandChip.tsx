@@ -39,23 +39,9 @@ export const COMMAND_LABELS: Record<CommandName, string> = {
   fallback: 'Fallback'
 }
 
-// In the composer a command is a control standing in the row the plus stands in,
-// so it is that button's height and wears its outline. On a card it is a label
-// on a line of type, so it is a pill. One with a way off it is the first.
-export default function CommandChip({ name, onRemove }: { name: CommandName; onRemove?: () => void }) {
+export default function CommandChip({ name, onRemove }: { name: CommandName; onRemove: () => void }) {
   const Mark = COMMAND_MARKS[name]
   const label = COMMAND_LABELS[name]
-
-  if (!onRemove) {
-    return (
-      <Pill>
-        <span className="flex items-center gap-1.5">
-          <Mark className="w-3.5 h-3.5 shrink-0" />
-          {label}
-        </span>
-      </Pill>
-    )
-  }
 
   return (
     <ComposerChip
