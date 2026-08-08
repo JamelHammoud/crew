@@ -1,5 +1,5 @@
 import type { SessionEvent } from '../../../../shared/events'
-import type { AgentStep, PooledAgent } from '../../../../shared/llm'
+import type { AgentMentionRef, AgentStep, PooledAgent } from '../../../../shared/llm'
 import { messageReactionTarget } from '../../../../shared/reactions'
 import type { ThreadMeta } from '../../state/store'
 import { huddleRecords, type HuddleRecord } from '../huddle/log'
