@@ -203,30 +203,24 @@ describe('what a card counts', () => {
 })
 
 describe('the line a live step reads as', () => {
-  it('shortens a run of files to the count of them', () => {
-    const line = liveLine(
-      step({
-        name: 'Edit',
-        files: [
-          { path: 'a.ts', added: 1, removed: 0, diff: '' },
-          { path: 'b.ts', added: 2, removed: 0, diff: '' }
-        ]
-      })
-    )
-    expect(line.subject).toBe('2 files')
+  it('wears the tool it is running', () => {
+    const line = liveLine(step({ name: 'Read', detail: 'a.ts' }))
+    expect(line.label).toBe('Reading')
+    expect(line.icon).toBeTruthy()
   })
 
   it('reads a finished tool as the model thinking, the way the foot of a thread does', () => {
-    expect(liveLine(step({ name: 'Read', status: 'done', detail: 'a.ts' })).label).toBe('Thinking')
+    const line = liveLine(step({ name: 'Read', status: 'done', detail: 'a.ts' }))
+    expect(line.label).toBe('Thinking')
+    expect(line.icon).toBeUndefined()
   })
 
   it('is Starting before a run has taken a step', () => {
     expect(liveLine(undefined).label).toBe('Starting')
   })
 
-  it('sets a command in mono and a sentence in the reading face', () => {
-    expect(liveLine(step({ name: 'Bash', detail: 'yarn test' })).mono).toBe(true)
-    expect(liveLine(step({ kind: 'thinking', status: 'running', text: 'A thought.' })).mono).toBe(false)
+  it('says Writing while the reply is arriving', () => {
+    expect(liveLine(step({ kind: 'text', status: 'running', text: 'Here is what I did.' })).label).toBe('Writing')
   })
 })
 
