@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, createEvent, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import ThreadRow from '../src/renderer/src/components/sidebar/ThreadRow'
@@ -137,6 +137,21 @@ describe('the right click on a thread in the rail', () => {
     row(false, false, AWAY)
 
     expect(said()).toContain('Copy thread ID')
+  })
+
+  it('hands the press back where words are already selected, since that is where Copy lives', () => {
+    const held = vi.spyOn(window, 'getSelection').mockReturnValue({
+      isCollapsed: false,
+      toString: () => 'Draw the footer'
+    } as unknown as Selection)
+
+    render(createElement(ThreadRow, { thread, open: false, here: true, placeKey: HERE, onOpen, onOpenToRight }))
+    const press = createEvent.contextMenu(screen.getByText('Draw the footer'))
+    fireEvent(screen.getByText('Draw the footer'), press)
+
+    expect(press.defaultPrevented).toBe(false)
+    expect(said()).toEqual([])
+    held.mockRestore()
   })
 })
 
