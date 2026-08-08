@@ -14,6 +14,16 @@ export interface ThreadAsk {
   mentionRefs?: AgentMentionRef[]
 }
 
+// A preview is cut off after so many lines, and a blank line is one of them, so
+// a paragraph break left the cut standing on a line with nothing on it. The
+// breaks are kept and the blank rows between them are not, so every line of the
+// preview is a line somebody wrote.
+export const askPreview = (text: string): string =>
+  text
+    .replace(/[ \t]+$/gm, '')
+    .replace(/\n{2,}/g, '\n')
+    .trim()
+
 export type FeedEntry =
   | { kind: 'msg'; key: string; ts: number; item: ThreadItem }
   | { kind: 'card'; key: string; ts: number; thread: ThreadMeta; ask?: ThreadAsk }
