@@ -53,7 +53,8 @@ function boot(value: string, pending: Record<string, unknown[]> = {}) {
   )
   const textarea = view.container.querySelector('textarea')!
   const overlay = view.container.querySelector('[aria-hidden="true"]') as HTMLElement
-  return { textarea, overlay }
+  const card = textarea.closest('.rounded-shell') as HTMLElement
+  return { textarea, overlay, card, view }
 }
 
 describe('the composer overlay', () => {
