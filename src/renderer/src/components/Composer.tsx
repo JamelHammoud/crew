@@ -238,7 +238,7 @@ export default function Composer({
             className={`relative block w-full ${lead} bg-transparent text-base text-transparent caret-fg placeholder:text-fg-muted outline-none resize-none leading-relaxed max-h-48 no-scrollbar`}
           />
         </div>
-        <div className="flex items-center justify-between gap-2 mt-2">
+        <div className="flex items-center justify-between gap-2 mt-5">
           <div className="flex items-center gap-2 min-w-0">
             <AddMenu
               attachmentKey={attachmentKey}
