@@ -128,12 +128,14 @@ describe('where the panel hangs', () => {
 })
 
 describe('what the menu bar says', () => {
-  it('counts the same tasks as the button in the app, and stops at nine', () => {
+  it('counts the same tasks as the button in the app, and stops at ninety nine', () => {
     expect(badgeText(0)).toBe('')
     expect(badgeText(-1)).toBe('')
     expect(badgeText(3)).toBe('3')
     expect(badgeText(9)).toBe('9')
-    expect(badgeText(40)).toBe('9+')
+    expect(badgeText(40)).toBe('40')
+    expect(badgeText(99)).toBe('99')
+    expect(badgeText(140)).toBe('99+')
   })
 
   it('says what is waiting, and nothing else', () => {
