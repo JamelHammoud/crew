@@ -21,8 +21,7 @@ export default function PlanCard({ thread, ts, onOpen }: { thread: ThreadMeta; t
           <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-ink-900 to-transparent pointer-events-none" />
         </div>
         <ThreadStatusBar
-          thread={thread}
-          icon={<ChecklistGlyph className="w-4 h-4 text-fg shrink-0" />}
+          mark={<ChecklistGlyph className="w-[18px] h-[18px] text-fg shrink-0" />}
           label="Planning complete"
         />
       </ThreadCardShell>
