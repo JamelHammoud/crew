@@ -7,8 +7,6 @@ export interface LiveThread {
   working: boolean
 }
 
-export const THREAD_LIMIT = 6
-
 // Which events a thread is built from. Almost every one of them names the
 // thread it happened on, and the two a helper raises are the exception: they
 // name the helper's own thread and belong to the one that sent it out. Read
