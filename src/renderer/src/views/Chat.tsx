@@ -87,8 +87,6 @@ export default function Chat() {
   const loadHistory = useCrew(s => s.loadHistory)
   const reachBack = useLoadOlder(scrollRef, { more: moreHistory, loading: loadingHistory, load: loadHistory })
   const { ref: overlayRef, room } = useComposerRoom()
-  const working = Object.keys(threadPrompts).length > 0
-  const now = useNow(working)
 
   const feed = useMemo<FeedEntry[]>(
     () => buildFeed(events, threads, agents, selfId),
