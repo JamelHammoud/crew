@@ -737,6 +737,7 @@ describe('the sidebar', () => {
       fireEvent.click(row)
     })
     expect(asked).toEqual([`project:${TWO}`])
+    await waitFor(() => expect(useCrew.getState().place).toBe(`project:${TWO}`))
   })
 
   it('replaces the open thread from a thread in the place you are already in', async () => {
