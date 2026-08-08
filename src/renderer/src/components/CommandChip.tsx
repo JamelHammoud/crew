@@ -12,7 +12,6 @@ import {
   TicketGlyph
 } from '../icons'
 import ComposerChip from './ComposerChip'
-import Pill from './Pill'
 
 export const COMMAND_MARKS: Record<CommandName, typeof ChecklistGlyph> = {
   plan: ChecklistGlyph,
