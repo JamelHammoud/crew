@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import Avatar from './Avatar'
 import { MemberName } from './Mention'
+import { REACTING_ROW } from './MessageReactions'
 import { usePresence } from './presence'
 import Tooltip from './Tooltip'
 import { formatFullTime, formatTime } from './time'
