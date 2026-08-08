@@ -196,7 +196,17 @@ function ChatMessage({
             {item.error ? item.text : <Markdown text={item.text || '…'} stream={item.streaming} />}
           </div>
         ) : (
-          item.text && (
+          item.text &&
+          (markdown && !large ? (
+            <MessageText
+              text={item.text}
+              mentionRefs={item.mentionRefs}
+              docMentions={item.docMentions}
+              boardMentions={item.boardMentions}
+              className={linked ? '' : 'mt-1'}
+              tail={edited}
+            />
+          ) : (
             <p
               className={`select-text text-fg whitespace-pre-wrap break-words ${
                 large ? 'text-[32px] leading-[1.3]' : 'text-base leading-[22px]'
@@ -208,13 +218,9 @@ function ChatMessage({
                 docMentions={item.docMentions}
                 boardMentions={item.boardMentions}
               />
-              {linked && item.editedTs !== undefined && (
-                <Tooltip label={`Edited ${formatFullTime(item.editedTs)}`} className="ml-1.5">
-                  <span className="text-sm text-fg-faint cursor-default select-none">(edited)</span>
-                </Tooltip>
-              )}
+              {edited}
             </p>
-          )
+          ))
         )}
         {item.attachments && <MessageAttachments attachments={item.attachments} />}
         {item.reactionTargetId && !editing && (
