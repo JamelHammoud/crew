@@ -5,15 +5,15 @@ import Counts from './Counts'
 import type { ThreadStatus } from './feed/feedItems'
 import { isPrivate, labelFor, PrivateChip, useLocated } from './fileLinks'
 import { MenuDivider, Popover } from './Popover'
-import RunFigures from './RunFigures'
 import Spinner from './Spinner'
 import { Mark } from './StepRow'
 import { THREAD_STATE_LABELS, type ThreadState } from './thread'
 import ThreadCardShell from './ThreadCardShell'
 import { liveLine, type LiveLine } from './threadLive'
-import ThreadStatusBar, { type StatusTone } from './ThreadStatusBar'
+import ThreadStrand, { type StrandTone } from './ThreadStrand'
 import { ThreadIdItem, ThreadOpenItems, ThreadStatusItems } from './threadMenu'
 import ThinkingMark from './ThinkingMark'
+import { formatElapsed } from './time'
 import { useNow } from './useNow'
 
 export function StateIcon({ state, className = 'w-4 h-4' }: { state: ThreadState; className?: string }) {
@@ -28,9 +28,9 @@ export function StateIcon({ state, className = 'w-4 h-4' }: { state: ThreadState
 }
 
 // A state somebody decided is as quiet as the decision was. Failing is the one
-// thing on a card worth a color, and the mark and the word take the same one so
-// the row reads as one thing rather than as a mark beside a label.
-const TONES: Record<ThreadState, StatusTone> = {
+// thing on the strand worth a color, and the mark and the word take the same
+// one, so the row reads as one thing rather than as a mark beside a label.
+const TONES: Record<ThreadState, StrandTone> = {
   working: 'plain',
   ready: 'plain',
   done: 'plain',
@@ -46,7 +46,7 @@ function Subject({ line }: { line: LiveLine }) {
   if (!line.subject) return null
   if (line.path && isPrivate(line.path)) return <PrivateChip />
   return (
-    <span className={`min-w-0 truncate text-xs text-fg-faint ${line.mono ? 'mono-inline' : ''}`}>
+    <span className={`min-w-0 truncate text-xs text-fg-muted ${line.mono ? 'mono-inline' : ''}`}>
       {line.path ? labelFor(line.path, '', line.subject) : line.subject}
     </span>
   )
@@ -65,26 +65,26 @@ export default function ThreadCard({
 }) {
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
   const live = status.state === 'working'
-  // The card counts its own seconds, so a run in one thread does not draw the
+  // The strand counts its own seconds, so a run in one thread does not draw the
   // whole feed again once a second.
   const now = useNow(live)
   const line: LiveLine = live
     ? liveLine(status.step)
     : { label: THREAD_STATE_LABELS[status.state], subject: status.detail, mono: false, dots: false }
-  const ms = live ? (status.startedAt === undefined ? undefined : now - status.startedAt) : status.ms
 
   return (
     <>
       <ThreadCardShell
         thread={thread}
         ts={ts}
-        onOpen={onOpen}
         onContextMenu={event => {
           event.preventDefault()
           setMenuAt({ x: event.clientX, y: event.clientY })
         }}
       >
-        <ThreadStatusBar
+        <ThreadStrand
+          onOpen={onOpen}
+          dashed={thread.ghost}
           mark={
             live ? (
               line.icon ? (
@@ -101,8 +101,10 @@ export default function ThreadCard({
           subject={<Subject line={line} />}
           figures={
             <>
-              {ms !== undefined && <RunFigures ms={ms} tokens={status.tokens ?? 0} cost={status.cost} />}
               <Counts added={status.added} removed={status.removed} className="mono-inline" />
+              {live && status.startedAt !== undefined && (
+                <span className="text-fg-faint tabular-nums">{formatElapsed(now - status.startedAt)}</span>
+              )}
             </>
           }
         />
