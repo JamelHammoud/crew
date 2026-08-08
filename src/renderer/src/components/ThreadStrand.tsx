@@ -31,13 +31,13 @@ export default function ThreadStrand({
   return (
     <Row
       onClick={onOpen}
-      className={`group mt-2 w-full flex items-center gap-2.5 text-left ${
+      className={`group mt-4 w-full flex items-center gap-2.5 text-left ${
         onOpen ? 'cursor-pointer transition-transform duration-200 active:scale-[0.99]' : ''
       }`}
     >
       {face}
       <span
-        className={`min-w-0 flex-1 h-11 px-5 flex items-center gap-2.5 rounded-full border text-sm transition-[background-color,border-color] duration-200 ${
+        className={`min-w-0 flex-1 h-10 px-5 flex items-center gap-2.5 rounded-full border text-sm transition-[background-color,border-color] duration-200 ${
           dashed ? 'border-dashed border-ink-600' : 'border-transparent bg-ink-800'
         } ${onOpen ? (dashed ? 'group-hover:border-ink-500' : 'group-hover:bg-ink-700') : ''}`}
       >

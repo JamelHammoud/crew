@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import type { CommandName } from '../../../shared/commands'
 import { relabelMentions } from '../../../shared/llm'
 import { useCrew, type ThreadMeta } from '../state/store'
+import Clamped from './Clamped'
 import CommandChip from './CommandChip'
 import type { ThreadAsk } from './feed/feedItems'
 import { FeedBlock } from './FeedCard'
@@ -39,9 +40,11 @@ export default function ThreadCardShell({
   return (
     <FeedBlock author={thread.createdBy} ts={ts} onContextMenu={onContextMenu}>
       <div className="mt-1 flex items-start gap-2.5">
-        <p className="min-w-0 flex-1 text-base text-fg leading-[22px] whitespace-pre-wrap break-words line-clamp-5">
-          <MentionText text={named} mentionRefs={refs} />
-        </p>
+        <Clamped lines={5} watch={named} className="min-w-0 flex-1 text-base leading-[22px]">
+          <p className="text-fg whitespace-pre-wrap break-words">
+            <MentionText text={named} mentionRefs={refs} />
+          </p>
+        </Clamped>
         {chips.length > 0 && (
           <span className="shrink-0 flex items-center gap-1.5">
             {chips.map(name => (

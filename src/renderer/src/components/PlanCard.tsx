@@ -1,6 +1,7 @@
 import { ChecklistGlyph } from '../icons'
 import type { ThreadMeta } from '../state/store'
 import AgentIcon from './AgentIcon'
+import Clamped from './Clamped'
 import type { ThreadAsk } from './feed/feedItems'
 import Markdown from './Markdown'
 import ThreadCardShell from './ThreadCardShell'
@@ -23,14 +24,13 @@ export default function PlanCard({
   return (
     <>
       <ThreadCardShell thread={thread} ts={ts} ask={ask} onContextMenu={onContextMenu}>
-        <div className="relative mt-1 max-h-72 overflow-hidden">
+        <Clamped lines={14} watch={thread.plan} className="mt-1 text-base leading-[22px]">
           <Markdown text={thread.plan ?? ''} />
-          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-ink-900 to-transparent pointer-events-none" />
-        </div>
+        </Clamped>
         <ThreadStrand
           onOpen={onOpen}
           dashed={thread.ghost}
-          face={<AgentIcon seed={thread.agentId} size="sm" />}
+          face={<AgentIcon seed={thread.agentId} size="md" />}
           mark={<ChecklistGlyph className="w-[18px] h-[18px] text-fg shrink-0" />}
           label="Planning complete"
         />
