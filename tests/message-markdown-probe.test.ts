@@ -4,6 +4,7 @@ import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import type { PathLocation } from '../src/shared/files'
 import type { PooledAgent } from '../src/shared/llm'
+import type { ThreadItem } from '../src/renderer/src/components/thread'
 
 const located: Record<string, PathLocation> = {}
 ;(window as unknown as { crew: unknown }).crew = {
@@ -14,10 +15,6 @@ const { default: ChatMessage } = await import('../src/renderer/src/components/Ch
 const { default: MessageText } = await import('../src/renderer/src/components/MessageText')
 const { useBrowser } = await import('../src/renderer/src/state/browser')
 const { useCrew } = await import('../src/renderer/src/state/store')
-const { type ThreadItem } = await import('../src/renderer/src/components/thread')
-
-type Item = Awaited<ReturnType<typeof itemType>>
-const itemType = async (): Promise<ThreadItem> => ({}) as ThreadItem
 
 const agent: PooledAgent = {
   id: 'jamel/bubbles',
@@ -31,8 +28,7 @@ const agent: PooledAgent = {
   fields: []
 }
 
-const said = (text: string, extra: Partial<Item> = {}): Item =>
-  ({
+const said = (text: string, extra: Partial<ThreadItem> = {}): ThreadItem => ({
     key: 'm1',
     ts: Date.parse('2026-08-07T12:00:00Z'),
     kind: 'message',
@@ -40,9 +36,9 @@ const said = (text: string, extra: Partial<Item> = {}): Item =>
     authorId: 'jamel',
     self: false,
     text,
-    streaming: false,
-    ...extra
-  }) as Item
+  streaming: false,
+  ...extra
+})
 
 const drawn = (text: string): HTMLElement => {
   const { container } = render(createElement(MessageText, { text }))
@@ -135,9 +131,7 @@ describe('the crew own marks inside markdown', () => {
   })
 
   it('still opens a doc a message names', () => {
-    useCrew.setState({
-      docs: { plan: { page: 'plan', title: 'Plan', text: '# Plan', ts: 1, by: 'Jamel' } } as never
-    })
+    useCrew.setState({ docs: { plan: { title: 'Plan', text: '# Plan' } }, docsTarget: null })
     const { container } = render(
       createElement(MessageText, { text: 'see **#Plan** for the rest', docMentions: [{ page: 'plan', title: 'Plan' }] })
     )
@@ -145,7 +139,7 @@ describe('the crew own marks inside markdown', () => {
 
     expect(pill).toBeTruthy()
     fireEvent.click(pill as HTMLElement)
-    expect(useCrew.getState().openDocPage ?? 'plan').toBeTruthy()
+    expect(useCrew.getState().docsTarget).toBe('plan')
   })
 
   it('opens a link in the panel rather than walking the window off the app', () => {
