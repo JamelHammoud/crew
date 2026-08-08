@@ -475,7 +475,7 @@ const READ = \`(() => {
       width: Math.round(box.width),
       height: Math.round(box.height),
       band: band ? Math.round(band.getBoundingClientRect().height) : null,
-      corners: band ? (() => { const pill = band.lastElementChild; const style = getComputedStyle(pill); return { tl: style.borderTopLeftRadius, tr: style.borderTopRightRadius, br: style.borderBottomRightRadius, bl: style.borderBottomLeftRadius } })() : null,
+      corners: band ? (() => { const pill = band.lastElementChild; const style = getComputedStyle(pill); const r = pill.getBoundingClientRect(); return { tl: style.borderTopLeftRadius, tr: style.borderTopRightRadius, br: style.borderBottomRightRadius, bl: style.borderBottomLeftRadius, x: Math.round(r.left), y: Math.round(r.top), h: Math.round(r.height) } })() : null,
       words: band ? wordsOf(band) : null
     }
   })
