@@ -561,6 +561,7 @@ const dir = await stage()
 await compile(dir)
 const seen = await run(dir)
 if (seen.failed) throw new Error(seen.failed)
+console.log(JSON.stringify(seen.trail, null, 1))
 
 for (const [name] of CASES) {
   const cards = seen.reads[name] ?? []
