@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react'
-import { CheckGlyph, ChevronLeftGlyph, ChevronRightGlyph } from '../icons'
-import Tooltip from './Tooltip'
+import { ChevronLeftGlyph } from '../icons'
 
 // The toolbox is a builder rather than chrome, so it is set on its own two
 // radii: a tile is softer than the fields under it, and both are squarer than
