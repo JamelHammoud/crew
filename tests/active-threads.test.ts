@@ -130,8 +130,8 @@ describe('the threads a place is showing', () => {
     expect(list.find(thread => thread.id === 'b')?.working).toBe(false)
   })
 
-  it('holds a handful rather than every thread a long project ever had', () => {
-    const events = Array.from({ length: THREAD_LIMIT + 5 }, (_, i) => started(`t${i}`, `Thread ${i}`))
-    expect(activeThreads(events, none)).toHaveLength(THREAD_LIMIT)
+  it('holds every thread that is open, however many there are', () => {
+    const events = Array.from({ length: 24 }, (_, i) => started(`t${i}`, `Thread ${i}`))
+    expect(activeThreads(events, none)).toHaveLength(24)
   })
 })
