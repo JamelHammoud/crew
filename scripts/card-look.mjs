@@ -9,7 +9,7 @@ import electron from 'electron'
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
 const resolve = createRequire(path.join(root, 'package.json')).resolve
-const shots = path.join(root, 'shots')
+const shots = root
 
 const WIDTH = 720
 const HEIGHT = 820
@@ -112,11 +112,10 @@ const CARD = \`(() => {
 
 async function shoot(win, name) {
   const image = await win.capturePage()
-  fs.writeFileSync(path.join(SHOTS, name + '.png'), image.toPNG())
+  fs.writeFileSync(path.join(SHOTS, 'card-look-' + name + '.png'), image.toPNG())
 }
 
 app.whenReady().then(async () => {
-  fs.mkdirSync(SHOTS, { recursive: true })
   const win = new BrowserWindow({ width: ${WIDTH}, height: ${HEIGHT}, show: true, backgroundColor: '#141414' })
   const said = {}
   const trail = []
@@ -215,4 +214,4 @@ console.log(`tool card       ${seen.tool.width} x ${seen.tool.height}`)
 console.log(`words empty     ${seen.short.height} high, ${seen.short.scrolls}`)
 console.log(`words grown     ${seen.grown.height} high, ${seen.grown.scrolls}`)
 console.log(`words capped    ${seen.capped.height} high, ${seen.capped.scrolls}, holding ${seen.capped.room}`)
-console.log(`\nshots in ${shots}`)
+console.log(`\nshots written beside the project as card-look-*.png`)
