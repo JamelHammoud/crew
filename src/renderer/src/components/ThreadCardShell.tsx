@@ -4,6 +4,7 @@ import { useCrew, type ThreadMeta } from '../state/store'
 import type { ThreadAsk } from './feed/feedItems'
 import { FeedBlock } from './FeedCard'
 import MessagePreview from './MessagePreview'
+import MessageReactions from './MessageReactions'
 
 export default function ThreadCardShell({
   thread,
