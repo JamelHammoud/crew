@@ -51,7 +51,7 @@ function Inline({ tokens, refs }: { tokens: Token[]; refs: Refs }) {
   return (
     <>
       {tokens.map((token, index) => {
-        const nested = token.tokens ?? []
+        const nested = kidsOf(token)
         switch (token.type) {
           case 'strong':
             return (
@@ -151,7 +151,7 @@ function Table({ table, refs }: { table: Tokens.Table; refs: Refs }) {
 }
 
 function Block({ token, refs, tail }: { token: Token; refs: Refs; tail?: ReactNode }) {
-  const nested = token.tokens ?? []
+  const nested = kidsOf(token)
   switch (token.type) {
     case 'space':
     case 'def':
@@ -200,14 +200,14 @@ function Block({ token, refs, tail }: { token: Token; refs: Refs; tail?: ReactNo
     case 'list':
       return (
         <>
-          <List list={token} refs={refs} />
+          <List list={token as Tokens.List} refs={refs} />
           {tail}
         </>
       )
     case 'table':
       return (
         <>
-          <Table table={token} refs={refs} />
+          <Table table={token as Tokens.Table} refs={refs} />
           {tail}
         </>
       )
