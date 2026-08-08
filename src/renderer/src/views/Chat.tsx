@@ -18,8 +18,9 @@ import {
   type FeedEntry,
   type ThreadStatus
 } from '../components/feed/feedItems'
-import { describeStep, endPreview, lastEnd, sameRun, threadState, type ThreadItem } from '../components/thread'
-import { formatCost, formatElapsed, formatTokens, isNewDay } from '../components/time'
+import { changedIn, NOTHING } from '../components/threadChanged'
+import { endPreview, lastEnd, sameRun, threadState, type ThreadItem } from '../components/thread'
+import { isNewDay } from '../components/time'
 import { useAutoResize } from '../components/useAutoResize'
 import { useComposerRoom } from '../components/useComposerRoom'
 import { useLoadOlder } from '../components/useLoadOlder'
