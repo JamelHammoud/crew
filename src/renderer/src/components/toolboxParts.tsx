@@ -8,9 +8,6 @@ import Tooltip from './Tooltip'
 export const FIELD =
   'w-full h-9 px-3 rounded-field bg-fg/[0.06] text-sm text-fg placeholder:text-fg/25 outline-none transition-colors focus:bg-fg/[0.09]'
 
-export const AREA =
-  'w-full px-3 py-2 rounded-field bg-fg/[0.06] text-sm leading-5 text-fg placeholder:text-fg/25 outline-none transition-colors resize-none focus:bg-fg/[0.09] no-scrollbar'
-
 export function Rule() {
   return <div className="h-px bg-fg/[0.06]" />
 }
@@ -25,32 +22,6 @@ export function Field({ label, children }: { label: string; children: ReactNode 
       <Label>{label}</Label>
       {children}
     </label>
-  )
-}
-
-export function HeaderButton({
-  label,
-  danger,
-  onClick,
-  children
-}: {
-  label: string
-  danger?: boolean
-  onClick: () => void
-  children: ReactNode
-}) {
-  return (
-    <Tooltip label={label}>
-      <button
-        onClick={onClick}
-        aria-label={label}
-        className={`w-8 h-8 shrink-0 rounded-field flex items-center justify-center text-fg/45 transition-all duration-150 active:scale-95 ${
-          danger ? 'hover:text-danger hover:bg-danger/10' : 'hover:text-fg hover:bg-fg/[0.08]'
-        }`}
-      >
-        {children}
-      </button>
-    </Tooltip>
   )
 }
 
@@ -143,71 +114,6 @@ export function Segmented<T extends string>({
       ))}
     </div>
   )
-}
-
-// One row of a list the toolbox holds: the kind of thing a tool does, a doc, a
-// board. A mark on the left, what it is, what it is for under it, and on the
-// right either the way on to a screen of its own or the tick that says this is
-// the one picked.
-export function Row({
-  mark,
-  title,
-  note,
-  active,
-  chevron,
-  order,
-  onClick
-}: {
-  mark: ReactNode
-  title: string
-  note?: string
-  active?: boolean
-  chevron?: boolean
-  order?: number
-  onClick: () => void
-}) {
-  return (
-    <button
-      onClick={onClick}
-      aria-pressed={chevron ? undefined : active}
-      className={`w-full px-2.5 py-2 rounded-field flex items-center gap-2.5 text-left transition-colors ${
-        chevron
-          ? 'bg-fg/[0.05] text-fg hover:bg-fg/[0.09]'
-          : active
-            ? 'bg-fg/[0.09] text-fg'
-            : 'text-fg/70 hover:bg-fg/[0.06] hover:text-fg'
-      }`}
-    >
-      <span
-        className={`w-8 h-8 shrink-0 rounded-[7px] flex items-center justify-center transition-colors ${
-          active && !chevron ? 'bg-fg text-ink-900' : chevron ? 'bg-fg/10' : 'bg-fg/[0.07]'
-        }`}
-      >
-        {mark}
-      </span>
-      <span className="flex-1 min-w-0">
-        <span className="block truncate text-sm font-medium">{title}</span>
-        {note && <span className="block truncate text-xs text-fg/40">{note}</span>}
-      </span>
-      {chevron ? (
-        <ChevronRightGlyph className="w-4 h-4 shrink-0 text-fg/30" />
-      ) : order ? (
-        <span className="w-5 h-5 shrink-0 rounded-full flex items-center justify-center bg-fg text-ink-900 text-[10px] font-semibold">
-          {order}
-        </span>
-      ) : (
-        active && <CheckGlyph className="w-4 h-4 shrink-0" />
-      )}
-    </button>
-  )
-}
-
-export function Empty({ children }: { children: ReactNode }) {
-  return <p className="px-1 py-3 text-center text-xs text-fg/35">{children}</p>
-}
-
-export function Hint({ children }: { children: ReactNode }) {
-  return <p className="px-0.5 text-xs leading-4 text-fg/35">{children}</p>
 }
 
 // One tile: a tool in the toolbox, built in or built here. Lit white while the
