@@ -103,15 +103,25 @@ export default function MessagePreview({
     })
     watching.observe(box)
     return () => watching.disconnect()
-  }, [lines, text, mentionRefs])
+  }, [lines, text, mentionRefs, open])
 
   return (
-    <div ref={ref} className={className}>
-      {written.map((line, index) => (
-        <span key={index} className={line === '' ? `${ROW} h-[1lh]` : ROW}>
-          <MentionText text={line} mentionRefs={mentionRefs} />
-        </span>
-      ))}
+    <div className={className}>
+      <div ref={ref}>
+        {written.map((line, index) => (
+          <span key={index} className={line === '' ? `${ROW} h-[1lh]` : ROW}>
+            <MentionText text={line} mentionRefs={mentionRefs} />
+          </span>
+        ))}
+      </div>
+      {more && (
+        <button
+          onClick={() => setOpen(was => !was)}
+          className="mt-1 text-sm text-fg-secondary transition-colors duration-150 hover:text-fg"
+        >
+          {open ? 'Show less' : 'Show more'}
+        </button>
+      )}
     </div>
   )
 }
