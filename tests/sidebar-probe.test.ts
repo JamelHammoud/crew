@@ -717,7 +717,7 @@ describe('the sidebar', () => {
     const { container } = render(Sidebar())
     const titles = [...container.querySelectorAll('button')].map(b => b.textContent)
     for (let i = 0; i < THREADS_SHOWN + 5; i += 1) expect(titles).toContain(`Thread ${i}`)
-    const list = container.querySelector('[data-reorder] > div') as HTMLElement
+    const list = screen.getByRole('button', { name: 'Thread 0' }).parentElement as HTMLElement
     expect(list.className).toContain('overflow-y-auto')
     expect(list.className).toContain('overscroll-contain')
     expect(list.className).toContain('scroll-fade')
@@ -742,7 +742,7 @@ describe('the sidebar', () => {
       await usePlaces.getState().load()
     })
     const { container } = render(Sidebar())
-    const list = container.querySelector('[data-reorder] > div') as HTMLElement
+    const list = screen.getByRole('button', { name: 'Thread 0' }).parentElement as HTMLElement
     expect(list.className).not.toContain('overflow-y-auto')
     expect(list.style.maxHeight).toBe('')
   })
@@ -764,7 +764,7 @@ describe('the sidebar', () => {
     render(Sidebar())
     const thread = screen.getByRole('button', { name: 'Check the plan charge' })
     expect(thread.className).toContain('bg-fg/[0.10]')
-    expect(thread.previousElementSibling?.textContent).toBe('one')
+    expect(thread.closest('[data-reorder]')?.querySelector('button')?.textContent).toBe('one')
   })
 
   it('goes to the place a thread is in and opens that thread', async () => {
