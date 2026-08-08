@@ -38,10 +38,6 @@ export function FeedBlock({
   // The thread the block stands for, so anything looking for one card among
   // many has a name to ask for rather than a shape to guess at.
   thread?: string
-  // The message the block is standing in for, where it is standing in for one.
-  // The tray hangs off the block rather than off the words, so the block is
-  // what has to be positioned, what has to say when it is hovered, and what has
-  // to carry the target the tray finds its way back to.
   reactionTargetId?: string
   onContextMenu?: (event: React.MouseEvent) => void
   children: ReactNode
