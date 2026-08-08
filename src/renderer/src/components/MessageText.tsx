@@ -16,8 +16,10 @@ const LEX = { ...marked.getDefaults(), breaks: true }
 
 const HEADINGS = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] as const
 
-const sideOf = (side: Tokens.TableCell['align'] | undefined): CSSProperties | undefined =>
+const sideOf = (side: Tokens.Table['align'][number] | undefined): CSSProperties | undefined =>
   side ? { textAlign: side } : undefined
+
+const kidsOf = (token: Token): Token[] => ('tokens' in token && token.tokens ? token.tokens : [])
 
 function Words({ text, refs }: { text: string; refs: Refs }) {
   return (
