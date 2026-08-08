@@ -314,7 +314,7 @@ export function sameItem(a: ThreadItem, b: ThreadItem): boolean {
     a.replyTo === b.replyTo &&
     sameShown(a.shown, b.shown) &&
     sameList(a.runs, b.runs, sameSubagentRun) &&
-    sameList(a.reactions, b.reactions, sameReaction)
+    sameReactions(a.reactions, b.reactions)
   )
 }
 

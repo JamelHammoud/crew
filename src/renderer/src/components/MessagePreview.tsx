@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import type { AgentMentionRef } from '../../../shared/llm'
 import { MentionText } from './Mention'
 
