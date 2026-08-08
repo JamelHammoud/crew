@@ -87,17 +87,21 @@ export default function ThreadCard({
           label={line.label}
           tone={TONES[status.state]}
           figures={
-            <>
-              {live && status.startedAt !== undefined && (
-                <RunFigures
-                  ms={now - status.startedAt}
-                  tokens={status.tokens ?? 0}
-                  cost={status.cost}
-                  tone="text-fg-muted"
-                />
-              )}
-              <Counts added={status.added} removed={status.removed} size="beside" className="mono-inline" />
-            </>
+            running || counted ? (
+              <>
+                {running && (
+                  <RunFigures
+                    ms={now - status.startedAt!}
+                    tokens={status.tokens ?? 0}
+                    cost={status.cost}
+                    tone="text-fg-muted"
+                  />
+                )}
+                {counted && (
+                  <Counts added={status.added} removed={status.removed} size="beside" className="mono-inline" />
+                )}
+              </>
+            ) : undefined
           }
         />
       </ThreadCardShell>
