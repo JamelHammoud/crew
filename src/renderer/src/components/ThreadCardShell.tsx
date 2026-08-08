@@ -24,7 +24,7 @@ export default function ThreadCardShell({
   // The title is brought up to date before the agent's name is put in front of
   // it, so a renamed agent is not named twice.
   const refs = ask ? ask.mentionRefs : thread.titleRefs
-  const written = relabelMentions(ask ? ask.text : thread.title, refs, agents)
+  const written = relabelMentions(ask ? ask.text : thread.title, refs, agents).trim()
   const prefix = `@${thread.agentLabel}`
   const named = written.toLowerCase().startsWith(prefix.toLowerCase()) ? written : `${prefix} ${written}`
 
