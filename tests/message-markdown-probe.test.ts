@@ -126,7 +126,7 @@ describe('the crew own marks inside markdown', () => {
 
     const chips = [...body.querySelectorAll('strong.cursor-default')]
     expect(chips.map(chip => chip.textContent)).toEqual(['@Bubbles', '@Bubbles'])
-    expect(body.querySelector('strong > strong.cursor-default')).toBeTruthy()
+    expect(body.querySelector('strong strong.cursor-default')).toBeTruthy()
     expect(body.textContent).toBe('@Bubbles and @Bubbles again')
   })
 
