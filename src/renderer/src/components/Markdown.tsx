@@ -102,17 +102,7 @@ export default function Markdown({
       useBrowser.getState().openFile(link.dataset.path, line)
       return
     }
-    const href = link.getAttribute('href') ?? ''
-    if (/^https?:/i.test(href)) {
-      useBrowser.getState().openUrl(href)
-      return
-    }
-    if (/^mailto:/i.test(href)) {
-      void window.crew.openExternal(href)
-      return
-    }
-    const ref = parseFileRef(decodeURIComponent(href))
-    if (ref) useBrowser.getState().openFile(targetFor(ref.path), ref.line)
+    openHref(link.getAttribute('href') ?? '')
   }
 
   return <div ref={host} className={`md select-text ${className}`} onClick={onClick} />
