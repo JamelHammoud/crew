@@ -86,12 +86,14 @@ function Inline({ tokens, refs }: { tokens: Token[]; refs: Refs }) {
                 <Inline tokens={nested} refs={refs} />
               </del>
             )
-          case 'codespan':
-            return parseFileRef(token.text) ? (
-              <TextWithFileLinks key={index} text={token.text} />
+          case 'codespan': {
+            const code = plain(token.text)
+            return parseFileRef(code) ? (
+              <TextWithFileLinks key={index} text={code} />
             ) : (
-              <code key={index}>{token.text}</code>
+              <code key={index}>{code}</code>
             )
+          }
           case 'link':
             return (
               <Link key={index} href={token.href}>
