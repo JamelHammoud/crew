@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { SessionEvent } from '../src/shared/events'
-import { activeThreads, THREAD_LIMIT } from '../src/shared/threads'
+import { activeThreads } from '../src/shared/threads'
 
 let n = 0
 
