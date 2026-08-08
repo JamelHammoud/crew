@@ -203,7 +203,7 @@ const EVENTS = [
   },
   {
     id: 'e-9',
-    ts: ago(1490),
+    ts: ago(97),
     kind: 'agent.start',
     threadId: 'thread-thinking',
     promptId: 'prompt-thinking',
