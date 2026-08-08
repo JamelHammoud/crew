@@ -118,7 +118,7 @@ export default function AddMenu({
             <DefaultAgentPicker
               onPick={() => {
                 setOpen(false)
-                void inputRef
+                inputRef.current?.focus()
               }}
             />
           ) : (
