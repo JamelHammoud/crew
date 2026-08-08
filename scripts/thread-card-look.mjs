@@ -287,7 +287,7 @@ const STEPS = {
   'prompt-working': [
     {
       id: 'step-w1',
-      ts: ago(1880),
+      ts: ago(190),
       kind: 'text',
       status: 'done',
       text: 'Reading the card and the band it holds before touching either.'
