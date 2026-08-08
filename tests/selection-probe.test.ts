@@ -75,6 +75,34 @@ describe('what is selectable', () => {
     expect(selectable(prose)).toBe(true)
   })
 
+  it('opens the message a thread card is standing for, and leaves the head of it shut', () => {
+    boot()
+    const { container } = render(
+      createElement(ThreadCardShell, {
+        thread: {
+          id: 't1',
+          agentId: 'ali/claude',
+          agentLabel: 'Claude',
+          title: 'Redraw the rows',
+          createdBy: 'Jamel',
+          status: 'open',
+          mode: 'build'
+        },
+        ts: 1,
+        ask: { text: '@Claude redraw the rows', mentionRefs: [] },
+        children: null
+      })
+    )
+    const said = Array.from(container.querySelectorAll('span')).find(el =>
+      (el.textContent ?? '').includes('redraw the rows')
+    )
+    expect(said).toBeTruthy()
+    expect(selectable(said ?? null)).toBe(true)
+    const name = Array.from(container.querySelectorAll('span')).find(el => el.textContent === 'Jamel')
+    expect(name).toBeTruthy()
+    expect(selectable(name ?? null)).toBe(false)
+  })
+
   it('opens a command and what it printed, and leaves the row it hangs off shut', () => {
     boot()
     const { container } = render(
