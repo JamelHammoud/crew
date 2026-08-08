@@ -195,6 +195,14 @@ export default function Composer({
   // everywhere else. The border stands in both states so the row cannot shift.
   const surface = ghost ? 'bg-ink-900' : 'bg-ink-800'
 
+  // The room above the first line belongs to the scroller rather than to the
+  // card, so a line scrolled past runs to the top edge instead of being cut
+  // short with a band of the card standing empty over it. A tray takes that
+  // room back, since the text scrolls up under whatever is attached.
+  const tray = pendingCount > 0
+  const above = tray ? 'pt-5' : ''
+  const lead = tray ? '' : 'pt-5'
+
   return (
     <div className="relative">
       {children}

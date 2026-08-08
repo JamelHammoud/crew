@@ -155,8 +155,9 @@ export const TerminalGlyph = glyph(
 
 export const ToolboxGlyph = glyph(
   <>
-    <rect x="2.5" y="10.5" width="19" height="9" rx="2.5" />
-    <path d="M7.75 10.5V6.75A2.25 2.25 0 0 1 10 4.5h4a2.25 2.25 0 0 1 2.25 2.25v3.75" />
+    <rect x="2.5" y="9" width="19" height="10.5" rx="2.5" />
+    <path d="M2.5 12.75H21.5" />
+    <path d="M7.5 9V6.5A2 2 0 0 1 9.5 4.5h5a2 2 0 0 1 2 2V9" />
   </>
 )
 
