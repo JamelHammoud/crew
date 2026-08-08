@@ -721,7 +721,8 @@ describe('the sidebar', () => {
     expect(list.className).toContain('overflow-y-auto')
     expect(list.className).toContain('overscroll-contain')
     expect(list.className).toContain('scroll-fade')
-    expect(list.style.maxHeight).toBe(`${THREADS_SHOWN * 30 + (THREADS_SHOWN - 1) * 2}px`)
+    expect(list.className).toContain('rail-threads')
+    expect(list.style.getPropertyValue('--rail-rows')).toBe(String(THREADS_SHOWN))
   })
 
   it('leaves a short list of threads standing at its own height', async () => {
