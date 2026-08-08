@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ArchiveGlyph, CheckGlyph, EyeGlyph, StopGlyph, WarningGlyph } from '../icons'
 import { type ThreadMeta } from '../state/store'
+import AgentIcon from './AgentIcon'
 import Counts from './Counts'
 import type { ThreadAsk, ThreadStatus } from './feed/feedItems'
 import { MenuDivider, Popover } from './Popover'
@@ -69,6 +70,7 @@ export default function ThreadCard({
         <ThreadStrand
           onOpen={onOpen}
           dashed={thread.ghost}
+          face={<AgentIcon seed={thread.agentId} size="sm" />}
           mark={
             live ? (
               line.icon ? (
