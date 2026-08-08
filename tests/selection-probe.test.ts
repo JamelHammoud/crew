@@ -4,6 +4,7 @@ import { createElement } from 'react'
 import { afterEach, describe, expect, it } from 'vitest'
 import ChatMessage from '../src/renderer/src/components/ChatMessage'
 import StepRow from '../src/renderer/src/components/StepRow'
+import ThreadCardShell from '../src/renderer/src/components/ThreadCardShell'
 import { useCrew } from '../src/renderer/src/state/store'
 import type { ThreadItem } from '../src/renderer/src/components/thread'
 
