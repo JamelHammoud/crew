@@ -120,7 +120,7 @@ const stand = (state: Record<string, unknown>) => {
 describe('what a run is doing reads on the card in the feed', () => {
   afterEach(cleanup)
 
-  it('says the tool and the file it is holding rather than a word for the kind of work', () => {
+  it('says the tool the run is holding rather than a word for the kind of work', () => {
     stand({
       events: [opened('t1'), started('t1', 'p1')],
       threads: { t1: thread('t1') },
@@ -128,10 +128,10 @@ describe('what a run is doing reads on the card in the feed', () => {
       steps: { p1: [step({ name: 'Read', detail: 'src/renderer/src/components/FeedCard.tsx' })] }
     })
     expect(screen.getByText('Reading')).toBeTruthy()
-    expect(screen.getByText('src/renderer/src/components/FeedCard.tsx')).toBeTruthy()
+    expect(screen.queryByText('src/renderer/src/components/FeedCard.tsx')).toBeNull()
   })
 
-  it('says Thinking with the thought so far', () => {
+  it('says Thinking between one tool and the next', () => {
     stand({
       events: [opened('t1'), started('t1', 'p1')],
       threads: { t1: thread('t1') },
@@ -139,7 +139,7 @@ describe('what a run is doing reads on the card in the feed', () => {
       steps: { p1: [step({ kind: 'thinking', status: 'running', text: 'The band is heavier than the row it sits under.' })] }
     })
     expect(screen.getByText('Thinking')).toBeTruthy()
-    expect(screen.getByText('The band is heavier than the row it sits under.')).toBeTruthy()
+    expect(screen.queryByText('The band is heavier than the row it sits under.')).toBeNull()
   })
 
   it('counts what the run has changed so far, before anybody opens it', () => {
@@ -155,7 +155,7 @@ describe('what a run is doing reads on the card in the feed', () => {
     expect(screen.getByText('−7')).toBeTruthy()
   })
 
-  it('carries the reply and what the run took once it is done', () => {
+  it('keeps the counts once the run is done, and stops counting the seconds', () => {
     stand({
       events: [
         opened('t1'),
@@ -166,9 +166,24 @@ describe('what a run is doing reads on the card in the feed', () => {
       steps: { p1: [edited('a.ts', 9, 2)] }
     })
     expect(screen.getByText('Ready for review')).toBeTruthy()
-    expect(screen.getByText('Redrew the rows and pinned the band.')).toBeTruthy()
-    expect(screen.getByText('1m 5s')).toBeTruthy()
     expect(screen.getByText('+9')).toBeTruthy()
+    expect(screen.queryByText('1m 5s')).toBeNull()
+  })
+
+  it('reads the whole of what somebody wrote rather than the line the title was cut to', () => {
+    const long = 'Redraw the thread card\n\nIt is one of the older things here, so make it belong.'
+    stand({
+      events: [
+        opened('t1'),
+        { id: 'm1', ts: 1, kind: 'message', threadId: 't1', authorId: 'ali', authorName: 'ALI', text: `@Claude ${long}` },
+        started('t1', 'p1'),
+        ended('t1', 'p1', { text: 'Done.' })
+      ],
+      threads: { t1: thread('t1', { title: '@Claude Redraw the thread card It is one of the older…' }) }
+    })
+    const written = screen.getByText(/older things here/)
+    expect(written.textContent).toContain('It is one of the older things here, so make it belong.')
+    expect(written.textContent).toContain('\n\n')
   })
 
   it('spends no row on whose machine it ran, since the agent it names already says so', () => {
@@ -225,17 +240,13 @@ describe('the line a live step reads as', () => {
 })
 
 describe('a card is drawn again only when it reads differently', () => {
-  const one: ThreadStatus = { state: 'working', detail: '', added: 0, removed: 0 }
+  const one: ThreadStatus = { state: 'working', added: 0, removed: 0 }
 
   it('names every field, so nothing quietly stops updating', () => {
     const fields: Array<Partial<ThreadStatus>> = [
       { state: 'ready' },
       { step: step({}) },
-      { detail: 'said something' },
       { startedAt: 5 },
-      { ms: 5 },
-      { tokens: 5 },
-      { cost: 5 },
       { added: 5 },
       { removed: 5 }
     ]

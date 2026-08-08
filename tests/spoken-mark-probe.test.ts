@@ -79,7 +79,7 @@ const card = (voice: boolean) => {
     createElement(ThreadCard, {
       thread: thread(voice),
       ts: 1,
-      status: { state: 'ready' as const, detail: '', added: 0, removed: 0 },
+      status: { state: 'ready' as const, added: 0, removed: 0 },
       onOpen: () => {}
     })
   )
