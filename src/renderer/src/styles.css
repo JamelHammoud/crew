@@ -2183,6 +2183,14 @@ textarea:placeholder-shown {
   @apply not-italic my-2 rounded-lg p-2;
 }
 
+/* What somebody typed is read at the line a message has always been set on, so
+   a sentence with no marks in it is the same sentence it was before markdown
+   drew it. Prose at 1.65 is the answer for an agent writing paragraphs, and it
+   would move every line in the chat for the sake of the few that are lists. */
+.md-said {
+  @apply leading-[22px];
+}
+
 @keyframes shimmer {
   from {
     transform: translateX(-100%);
