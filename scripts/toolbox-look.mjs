@@ -9,49 +9,64 @@ const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
 const shot = path.join(root, 'toolbox-look.png')
 
+const rect = (x, y, w, h, r) =>
+  `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}"></rect>`
+const p = d => `<path d="${d}"></path>`
+
+const arch = (halfSpan, top, foot, r) => {
+  const l = 12 - halfSpan
+  const rr = 12 + halfSpan
+  return p(
+    `M${l} ${foot}V${top + r}A${r} ${r} 0 0 1 ${l + r} ${top}h${2 * halfSpan - 2 * r}a${r} ${r} 0 0 1 ${r} ${r}V${foot}`
+  )
+}
+
+const VARIANTS = [
+  { key: 'A now', art: rect(2.5, 10.5, 19, 9, 2.5) + arch(4.25, 4.5, 10.5, 2.25) },
+  { key: 'B wide', art: rect(2.5, 10, 19, 9.5, 2.5) + arch(5.5, 4.5, 10, 2.25) },
+  {
+    key: 'C seam',
+    art: rect(2.5, 9, 19, 10.5, 2.5) + p('M2.5 12.75H21.5') + arch(4.5, 4.5, 9, 2)
+  },
+  { key: 'F flat', art: rect(2.5, 11.5, 19, 8, 2.5) + arch(6, 4.5, 11.5, 2.75) },
+  { key: 'H widest', art: rect(2.5, 10, 19, 9.5, 2.5) + arch(6.5, 4.5, 10, 2.5) },
+  { key: 'I square', art: rect(2.5, 10, 19, 9.5, 2.5) + arch(5, 4.5, 10, 1.25) },
+  {
+    key: 'J band',
+    art:
+      rect(2.5, 8.5, 19, 4.25, 1.75) +
+      p('M4.75 12.75V17.5A2 2 0 0 0 6.75 19.5h10.5a2 2 0 0 0 2-2V12.75') +
+      arch(4, 4.5, 8.5, 2)
+  }
+]
+
 const ROW = [
   ['ClockGlyph', 'Scheduled'],
   ['AtGlyph', 'Plugins'],
-  ['CompassGlyph', 'Browser'],
-  ['ToolboxGlyph', 'Toolbox']
+  ['CompassGlyph', 'Browser']
 ]
 
 const ENTRY = `
 import { renderToStaticMarkup } from 'react-dom/server'
 import { createElement } from 'react'
 import * as set from ${JSON.stringify(path.join(root, 'src/renderer/src/icons/index.ts'))}
-import { TOOLBOX_CASE, TOOLBOX_SHUT } from ${JSON.stringify(path.join(root, 'src/renderer/src/icons/toolbox.ts'))}
 import { STROKE, wearWeight } from ${JSON.stringify(path.join(root, 'src/renderer/src/icons/keylines.ts'))}
-
 const at = (name, px) =>
   renderToStaticMarkup(createElement(set[name], { className: 'w-[' + px + 'px] h-[' + px + 'px]' }))
     .replace(/class="[^"]*"/, 'style="width:' + px + 'px;height:' + px + 'px"')
-
-const was = px =>
-  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' +
-  wearWeight(STROKE, 'w-[' + px + 'px]') +
-  '" stroke-linecap="round" stroke-linejoin="round" style="width:' + px + 'px;height:' + px + 'px">' +
-  '<path d="' + TOOLBOX_CASE + '"></path><path d="' + TOOLBOX_SHUT.lid + '"></path><path d="' +
-  TOOLBOX_SHUT.handle + '"></path></svg>'
-
 export function draw() {
   return {
     row: ${JSON.stringify(ROW)}.map(([name, label]) => ({ label, svg: at(name, 16) })),
-    ladder: ${JSON.stringify(ROW)}.map(([name, label]) => ({
-      label,
-      sizes: [48, 24, 20, 16].map(px => at(name, px))
-    })),
-    versus: [48, 24, 16].map(px => ({ px, was: was(px), now: at('ToolboxGlyph', px) }))
+    weight: [48, 24, 20, 16].map(px => [px, wearWeight(STROKE, 'w-[' + px + 'px]')])
   }
 }
 `
 
 const dir = await realpath(await mkdtemp(path.join(root, 'node_modules', '.crew-toolbox-look-')))
-const entry = path.join(dir, 'entry.jsx')
-await writeFile(entry, ENTRY)
+await writeFile(path.join(dir, 'entry.jsx'), ENTRY)
 const bundle = path.join(dir, 'bundle.cjs')
 await build({
-  entryPoints: [entry],
+  entryPoints: [path.join(dir, 'entry.jsx')],
   absWorkingDir: root,
   nodePaths: [path.join(root, 'node_modules')],
   bundle: true,
@@ -63,55 +78,34 @@ await build({
   logLevel: 'error'
 })
 const { createRequire } = await import('node:module')
-const { row, ladder, versus } = createRequire(import.meta.url)(bundle).draw()
+const { row, weight } = createRequire(import.meta.url)(bundle).draw()
+const weights = Object.fromEntries(weight)
 
-const page = `<!doctype html><html><body style="margin:0;background:#0c0d0e;color:#f5f5f5;font:13px -apple-system,system-ui,sans-serif;padding:28px;display:flex;gap:44px;align-items:flex-start">
+const svg = (art, px) =>
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${weights[px]}" stroke-linecap="round" stroke-linejoin="round" style="width:${px}px;height:${px}px">${art}</svg>`
 
-<div>
-<div style="color:#8b8d91;margin-bottom:10px">the menu</div>
-<div style="width:176px;padding:6px;border-radius:14px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.09)">
-${row
-  .map(
-    one =>
-      `<div style="display:flex;align-items:center;gap:10px;height:30px;padding:0 9px;border-radius:9px;color:rgba(245,245,245,0.7)"><span style="display:flex">${one.svg}</span><span>${one.label}</span></div>`
-  )
-  .join('')}
-</div>
-</div>
+const SIZES = [48, 24, 20, 16]
 
-<div>
-<div style="color:#8b8d91;margin-bottom:10px">worn</div>
+const page = `<!doctype html><html><body style="margin:0;background:#0c0d0e;color:#f5f5f5;font:13px -apple-system,system-ui,sans-serif;padding:28px">
 <table style="border-collapse:collapse">
-<tr><th></th>${[48, 24, 20, 16].map(s => `<th style="padding:6px 20px;font-weight:400;color:#5a5c60">${s}</th>`).join('')}</tr>
-${ladder
-  .map(
-    one =>
-      `<tr><td style="padding:12px 18px 12px 0;color:#8b8d91">${one.label}</td>` +
-      one.sizes
-        .map(
-          svg => `<td style="padding:12px 20px"><span style="display:flex;justify-content:center">${svg}</span></td>`
-        )
-        .join('') +
-      '</tr>'
-  )
-  .join('')}
+<tr><th></th>${SIZES.map(s => `<th style="padding:6px 18px;font-weight:400;color:#5a5c60">${s}</th>`).join('')}<th style="padding:6px 18px;font-weight:400;color:#5a5c60">in the menu</th></tr>
+${VARIANTS.map(
+  one =>
+    `<tr><td style="padding:10px 18px 10px 0;color:#8b8d91;white-space:nowrap">${one.key}</td>` +
+    SIZES.map(
+      px => `<td style="padding:10px 18px"><span style="display:flex;justify-content:center">${svg(one.art, px)}</span></td>`
+    ).join('') +
+    `<td style="padding:10px 18px"><div style="width:168px;padding:5px;border-radius:13px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.09)">` +
+    row
+      .map(
+        r =>
+          `<div style="display:flex;align-items:center;gap:10px;height:26px;padding:0 9px;color:rgba(245,245,245,0.7)"><span style="display:flex">${r.svg}</span><span>${r.label}</span></div>`
+      )
+      .join('') +
+    `<div style="display:flex;align-items:center;gap:10px;height:26px;padding:0 9px;color:rgba(245,245,245,0.7)"><span style="display:flex">${svg(one.art, 16)}</span><span>Toolbox</span></div>` +
+    `</div></td></tr>`
+).join('')}
 </table>
-</div>
-
-<div>
-<div style="color:#8b8d91;margin-bottom:10px">was / now</div>
-<table style="border-collapse:collapse">
-${versus
-  .map(
-    one =>
-      `<tr><td style="padding:12px 16px 12px 0;color:#5a5c60">${one.px}</td>` +
-      `<td style="padding:12px 20px"><span style="display:flex;justify-content:center">${one.was}</span></td>` +
-      `<td style="padding:12px 20px"><span style="display:flex;justify-content:center">${one.now}</span></td></tr>`
-  )
-  .join('')}
-</table>
-</div>
-
 </body></html>`
 
 await writeFile(path.join(dir, 'look.html'), page)
@@ -122,7 +116,7 @@ const path = require('node:path')
 const fs = require('node:fs')
 app.disableHardwareAcceleration()
 app.whenReady().then(async () => {
-  const win = new BrowserWindow({ width: 900, height: 400, show: false, backgroundColor: '#0c0d0e' })
+  const win = new BrowserWindow({ width: 780, height: 900, show: false, backgroundColor: '#0c0d0e' })
   await win.loadFile(path.join(__dirname, 'look.html'))
   await new Promise(r => setTimeout(r, 300))
   const image = await win.webContents.capturePage()
