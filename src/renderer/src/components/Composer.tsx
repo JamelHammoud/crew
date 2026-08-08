@@ -207,7 +207,7 @@ export default function Composer({
       <div
         className={`relative ${surface} border ${
           ghost ? 'border-dashed border-ink-600' : 'border-transparent'
-        } rounded-shell px-5 pb-5 ${above} flex flex-col transition-[background-color,border-color,box-shadow] duration-200 focus-within:shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_12px_40px_rgb(0_0_0/0.4)] light:focus-within:shadow-[0_0_0_1px_rgb(0_0_0/0.1),0_12px_40px_rgb(0_0_0/0.1)] cursor-text`}
+        } rounded-shell overflow-hidden px-5 pb-5 ${above} flex flex-col transition-[background-color,border-color,box-shadow] duration-200 focus-within:shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_12px_40px_rgb(0_0_0/0.4)] light:focus-within:shadow-[0_0_0_1px_rgb(0_0_0/0.1),0_12px_40px_rgb(0_0_0/0.1)] cursor-text`}
         onClick={clickToFocus(inputRef)}
         onDragOver={event => event.preventDefault()}
         onDrop={event => {
