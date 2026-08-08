@@ -40,6 +40,7 @@ export default function ThreadStrand({
   onOpen?: () => void
 }) {
   const Row = onOpen ? 'button' : 'div'
+  const skin = TONES[tone]
 
   return (
     <Row
