@@ -29,8 +29,18 @@ export default function ThreadCardShell({
   const named = written.toLowerCase().startsWith(prefix.toLowerCase()) ? written : `${prefix} ${written}`
 
   return (
-    <FeedBlock author={thread.createdBy} ts={ts} thread={thread.id} onContextMenu={onContextMenu}>
+    <FeedBlock
+      author={thread.createdBy}
+      ts={ts}
+      thread={thread.id}
+      reactionTargetId={ask?.targetId}
+      onContextMenu={onContextMenu}
+    >
       <MessagePreview text={named} mentionRefs={refs} lines={5} className="mt-1 text-base leading-[22px] text-fg" />
+      {/* Under the words and over whatever the card holds. A reaction belongs to
+          the line it is about, and the line is the preview, so it stands where
+          it stands under a message rather than at the foot of the card. */}
+      {ask?.targetId && <MessageReactions targetId={ask.targetId} reactions={ask.reactions} />}
       {children}
     </FeedBlock>
   )
