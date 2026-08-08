@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { Cadence, Schedule } from '../../../../shared/schedules'
+import { SCHEDULABLE, type Cadence, type Schedule } from '../../../../shared/schedules'
 import { DEFAULT_MARK, NAME_LIMIT, type ToolAction } from '../../../../shared/toolbox'
 import { useCrew } from '../../state/store'
+import { Rule } from '../cardParts'
 import Modal from '../Modal'
 import TextField from '../TextField'
-import ToolMarkView from '../toolMark'
+import ToolDoes from '../ToolDoes'
 import type { ToolKind } from '../toolKinds'
-import ScheduleDoes from './ScheduleDoes'
 import ScheduleWhen from './ScheduleWhen'
-import { MORNING, Rule } from './parts'
+import { MORNING } from './parts'
 
 const MARKS: Record<string, string> = {
   prompt: 'spark',
