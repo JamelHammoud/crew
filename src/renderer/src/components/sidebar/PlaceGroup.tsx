@@ -7,7 +7,7 @@ import { useScrollFade } from '../useScrollFade'
 import PlaceFace from './PlaceFace'
 import PlaceName from './PlaceName'
 import ThreadRow from './ThreadRow'
-import { samePlaceGroup, threadsRoom, type PlaceGroupProps } from './placeItems'
+import { samePlaceGroup, THREADS_SHOWN, type PlaceGroupProps } from './placeItems'
 
 function PlaceGroup({
   place,
@@ -28,7 +28,7 @@ function PlaceGroup({
   const [naming, setNaming] = useState(false)
   const rows = useRef<HTMLDivElement | null>(null)
   useScrollFade(rows)
-  const room = threadsRoom(threads.length)
+  const scrolls = threads.length > THREADS_SHOWN
 
   const openThread = useCallback(
     (threadId: string) => onOpenThread(place, threadId, false),
