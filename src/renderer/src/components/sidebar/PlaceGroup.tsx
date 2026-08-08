@@ -63,17 +63,29 @@ function PlaceGroup({
         <PlaceFace place={place} lit={here} />
         {busy && <Spinner size={13} className="text-fg/45" />}
       </button>
-      {threads.map(thread => (
-        <ThreadRow
-          key={thread.id}
-          thread={thread}
-          open={openThreadIds.includes(thread.id)}
-          here={here}
-          placeKey={place.key}
-          onOpen={openThread}
-          onOpenToRight={openThreadToRight}
-        />
-      ))}
+      <div
+        ref={rows}
+        style={room ? { maxHeight: room } : undefined}
+        className={
+          threads.length === 0
+            ? 'contents'
+            : `flex flex-col gap-0.5 ${
+                room ? 'scroll-fade overflow-y-auto overscroll-contain no-scrollbar' : ''
+              }`
+        }
+      >
+        {threads.map(thread => (
+          <ThreadRow
+            key={thread.id}
+            thread={thread}
+            open={openThreadIds.includes(thread.id)}
+            here={here}
+            placeKey={place.key}
+            onOpen={openThread}
+            onOpenToRight={openThreadToRight}
+          />
+        ))}
+      </div>
       <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined} className="min-w-44">
         <MenuItem
           icon={<PencilGlyph className="w-4 h-4" />}
