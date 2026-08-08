@@ -10,7 +10,7 @@ import AgentIcon from './AgentIcon'
 import { Empty, Hint, Label, Line, Picked, Scroller } from './cardParts'
 import Select from './Select'
 import TextField, { TextArea } from './TextField'
-import { TOOL_KINDS, type ToolKind } from './toolKinds'
+import { kindOf, TOOL_KINDS, type ToolKind } from './toolKinds'
 import { useAutoResize } from './useAutoResize'
 
 // How far a box of words grows before it scrolls inside itself. A tool is a
