@@ -19,6 +19,7 @@ export default function AddMenu({
   attachmentKey,
   huddle,
   defaultAgent,
+  inputRef,
   onSend
 }: {
   attachmentKey: string
@@ -26,6 +27,7 @@ export default function AddMenu({
   // Only the chat can stand an agent on its own composer. A thread already has
   // one, and a message in it goes there whatever anybody picked.
   defaultAgent?: boolean
+  inputRef: RefObject<HTMLTextAreaElement>
   onSend: () => void
 }) {
   const count = useCrew(s => (s.pending[attachmentKey] ?? []).length)
