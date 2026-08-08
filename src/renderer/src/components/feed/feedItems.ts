@@ -117,5 +117,16 @@ export function sameEntry(a: FeedEntry, b: FeedEntry): boolean {
   return b.kind === 'huddle' && sameHuddleRecord(a.record, b.record)
 }
 
+// Every field by name, the way `sameItem` names every one of a message's: one
+// left out is a card that quietly stops saying what its run is doing.
 export const sameStatus = (a: ThreadStatus, b: ThreadStatus): boolean =>
-  a === b || (a.state === b.state && a.detail === b.detail)
+  a === b ||
+  (a.state === b.state &&
+    a.step === b.step &&
+    a.detail === b.detail &&
+    a.startedAt === b.startedAt &&
+    a.ms === b.ms &&
+    a.tokens === b.tokens &&
+    a.cost === b.cost &&
+    a.added === b.added &&
+    a.removed === b.removed)
