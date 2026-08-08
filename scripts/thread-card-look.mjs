@@ -475,7 +475,7 @@ const READ = \`(() => {
       width: Math.round(box.width),
       height: Math.round(box.height),
       band: band ? Math.round(band.getBoundingClientRect().height) : null,
-      corners: band ? (() => { const pill = band.lastElementChild; const style = getComputedStyle(pill); const r = pill.getBoundingClientRect(); return { tl: style.borderTopLeftRadius, tr: style.borderTopRightRadius, br: style.borderBottomRightRadius, bl: style.borderBottomLeftRadius, x: Math.round(r.left), y: Math.round(r.top), h: Math.round(r.height) } })() : null,
+      corners: band ? (() => { const pill = band.lastElementChild; const style = getComputedStyle(pill); const r = pill.getBoundingClientRect(); return { tl: style.borderTopLeftRadius, tr: style.borderTopRightRadius, br: style.borderBottomRightRadius, bl: style.borderBottomLeftRadius, x: Math.round(r.left), y: Math.round(r.top), h: Math.round(r.height), w: Math.round(r.width) } })() : null,
       words: band ? wordsOf(band) : null
     }
   })
@@ -507,7 +507,7 @@ app.whenReady().then(async () => {
       said.reads[name] = await step('read ' + name, () => win.webContents.executeJavaScript(READ))
       const zoom = (said.reads[name] || []).find(one => one.name === 'working tool')
       if (zoom && zoom.corners) {
-        const shot = await win.capturePage({ x: zoom.corners.x - 6, y: zoom.corners.y - 8, width: 110, height: zoom.corners.h + 16 })
+        const shot = await win.capturePage({ x: zoom.corners.x - 6, y: zoom.corners.y - 8, width: Math.min(560, Math.round(zoom.corners.w) + 20), height: zoom.corners.h + 16 })
         fs.writeFileSync(path.join(SHOTS, 'thread-card-look-' + name + '-corner.png'), shot.toPNG())
       }
       await step('tail ' + name, () => win.webContents.executeJavaScript(SCROLL('tail')))
