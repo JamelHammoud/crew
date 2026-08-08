@@ -17,6 +17,7 @@ const build = (events: SessionEvent[]): EventIndex => {
   const replyAttachments = new Map<string, Attachment>()
   const lastEnds = new Map<string, AgentEnd>()
   const helperParents = new Set<string>()
+  const runsByThread = new Map<string, string[]>()
   for (const event of events) {
     if (event.kind === 'message') {
       const target = messageReactionTarget(event.id)
@@ -25,10 +26,15 @@ const build = (events: SessionEvent[]): EventIndex => {
       else replyAttachments.set(target, carried.find(one => isImageType(one.mime)) ?? carried[0])
       continue
     }
+    if (event.kind === 'agent.start' && event.threadId) {
+      const held = runsByThread.get(event.threadId)
+      if (held) held.push(event.promptId)
+      else runsByThread.set(event.threadId, [event.promptId])
+    }
     if (event.kind === 'agent.end' && event.threadId) lastEnds.set(event.threadId, event)
     if (event.kind === 'subagent.started') helperParents.add(event.parentThreadId)
   }
-  return { replyAttachments, lastEnds, helperParents }
+  return { replyAttachments, lastEnds, helperParents, runsByThread }
 }
 
 export function eventIndex(events: SessionEvent[]): EventIndex {

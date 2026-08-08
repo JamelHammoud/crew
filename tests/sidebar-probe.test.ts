@@ -745,7 +745,7 @@ describe('the sidebar', () => {
     const { container } = render(Sidebar())
     const list = screen.getByRole('button', { name: 'Thread 0' }).parentElement as HTMLElement
     expect(list.className).not.toContain('overflow-y-auto')
-    expect(list.style.maxHeight).toBe('')
+    expect(list.className).not.toContain('rail-threads')
   })
 
   it('keeps the open thread highlighted beneath its project', async () => {
