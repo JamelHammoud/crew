@@ -720,6 +720,11 @@ textarea:placeholder-shown {
   mask-image: var(--scrim-ramp);
 }
 
+.composer-scrim {
+  height: var(--composer-scrim);
+  mask-image: var(--scrim-ramp);
+}
+
 :root {
   --scrim-ramp: linear-gradient(
     to bottom,

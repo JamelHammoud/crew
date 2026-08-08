@@ -22,9 +22,8 @@ const arch = (halfSpan, top, foot, r) => {
 }
 
 const VARIANTS = [
-  { key: 'grip 9', art: rect(2.5, 9, 19, 10.5, 2.5) + p('M2.5 12.75H21.5') + arch(4.5, 4.5, 9, 2) },
-  { key: 'grip 10', art: rect(2.5, 9, 19, 10.5, 2.5) + p('M2.5 12.75H21.5') + arch(5, 4.5, 9, 2) },
-  { key: 'grip 11', art: rect(2.5, 9, 19, 10.5, 2.5) + p('M2.5 12.75H21.5') + arch(5.5, 4.5, 9, 2) }
+  { key: 'was', art: p('M2.5 12.75V17a2.5 2.5 0 0 0 2.5 2.5h14a2.5 2.5 0 0 0 2.5-2.5V12.75Z') + p('M2.5 12.75L2.5 11A2.5 2.5 0 0 1 5 8.5L19 8.5A2.5 2.5 0 0 1 21.5 11L21.5 12.75Z') + p('M8.25 8.5L8.25 7.25A2.75 2.75 0 0 1 11 4.5L13 4.5A2.75 2.75 0 0 1 15.75 7.25L15.75 8.5') },
+  { key: 'now', art: rect(2.5, 9, 19, 10.5, 2.5) + p('M2.5 12.75H21.5') + arch(5, 4.5, 9, 2) }
 ]
 
 const ROW = [
@@ -103,7 +102,7 @@ const path = require('node:path')
 const fs = require('node:fs')
 app.disableHardwareAcceleration()
 app.whenReady().then(async () => {
-  const win = new BrowserWindow({ width: 780, height: 480, show: false, backgroundColor: '#0c0d0e' })
+  const win = new BrowserWindow({ width: 780, height: 360, show: false, backgroundColor: '#0c0d0e' })
   await win.loadFile(path.join(__dirname, 'look.html'))
   await new Promise(r => setTimeout(r, 300))
   const image = await win.webContents.capturePage()
