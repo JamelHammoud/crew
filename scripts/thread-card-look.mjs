@@ -294,7 +294,7 @@ const STEPS = {
     },
     {
       id: 'step-w2',
-      ts: ago(1700),
+      ts: ago(170),
       kind: 'tool',
       status: 'done',
       name: 'Edit',
