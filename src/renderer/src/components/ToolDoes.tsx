@@ -314,10 +314,10 @@ export default function ToolDoes({
         />
       )}
       {kind === 'prompt' && (
-        <Words value={ask} label="What to ask" placeholder="Look at what came in overnight" onWrite={setAsk} />
+        <Words value={ask} label="What to ask" placeholder="Run the tests and fix what fails" onWrite={setAsk} />
       )}
       {kind === 'post' && (
-        <Words value={post} label="What to ask" placeholder="Sum up the week's changes" onWrite={setPost} />
+        <Words value={post} label="What to ask" placeholder="Sum up what changed today" onWrite={setPost} />
       )}
       {kind === 'say' && (
         <Words value={say} label="What to say" placeholder="Standup in ten minutes" onWrite={setSay} />
