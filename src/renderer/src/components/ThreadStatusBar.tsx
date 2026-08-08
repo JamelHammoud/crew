@@ -1,34 +1,38 @@
 import type { ReactNode } from 'react'
 import { ChevronRightGlyph } from '../icons'
-import { useCrew, type ThreadMeta } from '../state/store'
 
+export type StatusTone = 'plain' | 'quiet' | 'danger'
+
+const TONES: Record<StatusTone, string> = {
+  plain: 'text-fg',
+  quiet: 'text-fg-muted',
+  danger: 'text-danger'
+}
+
+// The band at the foot of a thread's card, read in the grammar a step inside
+// the thread is already read in: a mark, the word, and what the word is about.
+// What the run has spent stands at the far end, where it is at the same offset
+// on every card whatever the words in front of it are doing.
 export default function ThreadStatusBar({
-  thread,
-  icon,
+  mark,
   label,
-  detail,
-  danger
+  tone = 'plain',
+  subject,
+  figures
 }: {
-  thread: ThreadMeta
-  icon: ReactNode
+  mark: ReactNode
   label: string
-  detail?: string
-  danger?: boolean
+  tone?: StatusTone
+  subject?: ReactNode
+  figures?: ReactNode
 }) {
-  const owner = useCrew(s => s.agents.find(a => a.id === thread.agentId))?.ownerName
-
   return (
-    <div className="relative w-full bg-ink-700 px-5 h-[52px] flex items-center gap-3 text-left">
-      {icon}
-      <span className={`text-base font-semibold shrink-0 ${danger ? 'text-danger' : 'text-fg'}`}>{label}</span>
-      <span className="text-base text-fg-muted truncate flex-1">{detail}</span>
-      {owner && (
-        <span className="relative self-stretch shrink-0 flex items-center bg-ink-700 transition-transform duration-200 group-hover:-translate-x-5">
-          <span className="absolute right-full inset-y-0 w-10 bg-gradient-to-l from-ink-700 to-transparent pointer-events-none" />
-          <span className="text-base font-semibold text-fg-muted">{owner}'s PC</span>
-        </span>
-      )}
-      <ChevronRightGlyph className="w-4 h-4 text-fg-muted absolute right-4 opacity-0 -translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0" />
+    <div className="w-full bg-ink-700 px-5 h-11 flex items-center gap-2.5 text-sm text-left">
+      {mark}
+      <span className={`shrink-0 font-medium ${TONES[tone]}`}>{label}</span>
+      {subject}
+      <span className="ml-auto shrink-0 flex items-center gap-2.5 pl-1 text-xs">{figures}</span>
+      <ChevronRightGlyph className="w-3.5 h-3.5 shrink-0 text-fg-faint opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
     </div>
   )
 }
