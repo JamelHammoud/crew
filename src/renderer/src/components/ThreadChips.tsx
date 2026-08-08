@@ -1,6 +1,7 @@
 import type { CommandName } from '../../../shared/commands'
 import type { ThreadMeta } from '../state/store'
-import CommandChip from './CommandChip'
+import { COMMAND_LABELS, COMMAND_MARKS } from './CommandChip'
+import { StrandPill } from './ThreadStrand'
 
 // What was asked for, beside the thread it was asked of: a plan says so until
 // it is built, and a ghost says so for as long as it is nobody else's to see.
