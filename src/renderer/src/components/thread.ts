@@ -279,6 +279,9 @@ const sameSubagentRun = (a: SubagentRun, b: SubagentRun): boolean =>
 const sameReaction = (a: ReactionGroup, b: ReactionGroup): boolean =>
   a.emoji === b.emoji && a.count === b.count && a.self === b.self && sameList(a.names, b.names, sameText)
 
+export const sameReactions = (a: ReactionGroup[] | undefined, b: ReactionGroup[] | undefined): boolean =>
+  sameList(a, b, sameReaction)
+
 export function sameItem(a: ThreadItem, b: ThreadItem): boolean {
   if (a === b) return true
   return (
