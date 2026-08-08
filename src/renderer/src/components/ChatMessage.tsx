@@ -29,6 +29,7 @@ function ChatMessage({
   item,
   editable = false,
   linked = false,
+  markdown = false,
   onReply
 }: {
   item: ThreadItem
@@ -37,6 +38,7 @@ function ChatMessage({
   // the same person still talking: no face, no name, and the time in the gutter
   // for whoever goes looking for it.
   linked?: boolean
+  markdown?: boolean
   onReply?: (item: ThreadItem) => void
 }) {
   const presence = usePresence(item.author, item.authorId)
