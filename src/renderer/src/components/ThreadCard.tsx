@@ -97,13 +97,7 @@ export default function ThreadCard({
           }
         />
       </ThreadCardShell>
-      <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined} className="min-w-52">
-        <ThreadOpenItems threadId={thread.id} onOpen={onOpen} onDone={() => setMenuAt(null)} />
-        <MenuDivider />
-        <ThreadStatusItems threadId={thread.id} onDone={() => setMenuAt(null)} />
-        <MenuDivider />
-        <ThreadIdItem threadId={thread.id} onDone={() => setMenuAt(null)} />
-      </Popover>
+      {menu}
     </>
   )
 }
