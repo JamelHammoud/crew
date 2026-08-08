@@ -238,9 +238,13 @@ export default function Composer({
             placeholder={placeholder}
             className={`relative block w-full ${room} bg-transparent text-base text-transparent caret-fg placeholder:text-fg-muted outline-none resize-none leading-relaxed max-h-48 no-scrollbar`}
           />
-          <div aria-hidden className={`absolute inset-x-0 top-0 z-20 pointer-events-none composer-scrim ${surface}`} />
+          <div aria-hidden className={`absolute -inset-x-5 top-0 z-20 pointer-events-none composer-scrim ${surface}`} />
+          <div
+            aria-hidden
+            className={`absolute -inset-x-5 bottom-0 z-20 pointer-events-none composer-scrim-up ${surface}`}
+          />
         </div>
-        <div className="flex items-center justify-between gap-2 mt-5">
+        <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
             <AddMenu
               attachmentKey={attachmentKey}
