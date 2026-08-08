@@ -134,7 +134,13 @@ export function sameEntry(a: FeedEntry, b: FeedEntry): boolean {
   if (a === b) return true
   if (a.key !== b.key || a.ts !== b.ts) return false
   if (a.kind === 'msg') return b.kind === 'msg' && sameItem(a.item, b.item)
-  if (a.kind === 'card') return b.kind === 'card' && a.thread === b.thread
+  if (a.kind === 'card')
+    return (
+      b.kind === 'card' &&
+      a.thread === b.thread &&
+      a.ask?.text === b.ask?.text &&
+      a.ask?.mentionRefs === b.ask?.mentionRefs
+    )
   return b.kind === 'huddle' && sameHuddleRecord(a.record, b.record)
 }
 
