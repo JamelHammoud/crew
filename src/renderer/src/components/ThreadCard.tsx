@@ -89,9 +89,9 @@ export default function ThreadCard({
           figures={
             running || counted ? (
               <>
-                {running && (
+                {live && status.startedAt !== undefined && (
                   <RunFigures
-                    ms={now - status.startedAt!}
+                    ms={now - status.startedAt}
                     tokens={status.tokens ?? 0}
                     cost={status.cost}
                     tone="text-fg-muted"
