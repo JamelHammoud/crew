@@ -21,11 +21,17 @@ function within(rect: DOMRect | undefined, x: number, y: number, pad: number): b
 export default function HoverCard({
   content,
   width = CARD_WIDTH,
+  hug,
   className = '',
   children
 }: {
   content: ReactNode
   width?: number
+  // A card as wide as what it holds, up to the width, rather than pinned at it.
+  // A card that holds rows to line up or a picture to fill it wants the whole
+  // width every time, and one that holds a face and a name is a hand's width of
+  // empty glass at that size.
+  hug?: boolean
   className?: string
   children: ReactNode
 }) {
