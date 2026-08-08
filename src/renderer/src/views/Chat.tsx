@@ -97,14 +97,25 @@ export default function Chat() {
     follow(feed.length > 0)
   }, [feed, steps, threadPrompts, room, follow])
 
+  const cardIds = useMemo(
+    () => feed.flatMap(entry => (entry.kind === 'card' ? [entry.thread.id] : [])),
+    [feed]
+  )
+
   const resting = useMemo(() => {
     const ends = lastEnds(events)
     const held = new Map<string, ThreadStatus>()
     for (const entry of feed) {
       if (entry.kind !== 'card') continue
+      const end = lastEnd(entry.thread.id, ends)
       held.set(entry.thread.id, {
         state: threadState(entry.thread, ends, false),
-        detail: endPreview(lastEnd(entry.thread.id, ends))
+        detail: endPreview(end),
+        ms: end?.ms,
+        tokens: end?.tokens,
+        cost: end?.cost,
+        added: 0,
+        removed: 0
       })
     }
     return held
@@ -112,17 +123,30 @@ export default function Chat() {
 
   const startedAt = useMemo(() => runStarts(events), [events])
 
+  // What every card in the feed has changed, counted in one pass. A step
+  // landing replaces one run's own steps, so all but that run answer off the
+  // cache rather than being counted again on every frame.
+  const changed = useMemo(
+    () => changedIn(cardIds, events, steps, threads),
+    [cardIds, events, steps, threads]
+  )
+
   const threadStatus = (thread: ThreadMeta): ThreadStatus => {
+    const counted = changed.get(thread.id) ?? NOTHING
     const promptId = threadPrompts[thread.id]
-    if (!promptId) return resting.get(thread.id) ?? RESTING
-    const started = startedAt.get(promptId)
-    const parts = [describeStep((steps[promptId] ?? []).at(-1))]
-    if (started !== undefined) parts.push(formatElapsed(now - started))
-    const count = tokens[promptId] ?? 0
-    if (prefs.tokens && count > 0) parts.push(`${formatTokens(count)} tokens`)
-    const cost = costs[promptId]
-    if (prefs.cost && cost !== undefined && cost > 0) parts.push(formatCost(cost))
-    return { state: 'working', detail: parts.join(' · ') }
+    if (!promptId) {
+      const rest = resting.get(thread.id) ?? RESTING
+      return { ...rest, ...counted }
+    }
+    return {
+      state: 'working',
+      detail: '',
+      step: (steps[promptId] ?? []).at(-1),
+      startedAt: startedAt.get(promptId),
+      tokens: tokens[promptId] ?? 0,
+      cost: costs[promptId],
+      ...counted
+    }
   }
 
   const reply = useCallback(
