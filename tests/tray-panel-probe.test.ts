@@ -91,13 +91,16 @@ describe('tray panel', () => {
     expect(screen.getByText('3 tasks need review')).toBeTruthy()
   })
 
-  it('names a single task in the singular and stops the badge at nine', () => {
+  it('names a single task in the singular and stops the badge at ninety nine', () => {
     show({ sharing: true, known: true, waiting: 1 })
     expect(screen.getByText('1 task needs review')).toBeTruthy()
 
     show({ sharing: true, known: true, waiting: 12 })
-    expect(screen.getByText('9+')).toBeTruthy()
+    expect(screen.getByText('12')).toBeTruthy()
     expect(screen.getByText('12 tasks need review')).toBeTruthy()
+
+    show({ sharing: true, known: true, waiting: 140 })
+    expect(screen.getByText('99+')).toBeTruthy()
   })
 
   it('leaves the badge off when nothing is waiting', () => {
