@@ -157,7 +157,7 @@ export const ToolboxGlyph = glyph(
   <>
     <rect x="2.5" y="9" width="19" height="10.5" rx="2.5" />
     <path d="M2.5 12.75H21.5" />
-    <path d="M7.5 9V6.5A2 2 0 0 1 9.5 4.5h5a2 2 0 0 1 2 2V9" />
+    <path d="M7 9V6.5A2 2 0 0 1 9 4.5h6a2 2 0 0 1 2 2V9" />
   </>
 )
 
