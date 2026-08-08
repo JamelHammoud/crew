@@ -425,8 +425,6 @@ function Page() {
   return React.createElement('div', { className: 'h-full bg-ink-900' }, React.createElement(Chat))
 }
 
-window.addEventListener('error', event => console.error('STACK ' + (event.error && event.error.stack)))
-
 createRoot(document.getElementById('root')).render(React.createElement(Page))
 `
 }
@@ -563,7 +561,9 @@ const dir = await stage()
 await compile(dir)
 const seen = await run(dir)
 if (seen.failed) throw new Error(seen.failed)
-console.log(JSON.stringify(seen.trail, null, 1))
+
+const found = Object.values(seen.reads).some(cards => cards.length > 0)
+if (!found) console.log(`nothing was drawn: ${seen.trail.join(' | ')}`)
 
 for (const [name] of CASES) {
   const cards = seen.reads[name] ?? []
