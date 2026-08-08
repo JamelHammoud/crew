@@ -1,10 +1,15 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { readFileSync } from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import type { PathLocation } from '../src/shared/files'
 import type { PooledAgent } from '../src/shared/llm'
 import type { ThreadItem } from '../src/renderer/src/components/thread'
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
 const located: Record<string, PathLocation> = {}
 ;(window as unknown as { crew: unknown }).crew = {
@@ -188,6 +193,7 @@ describe('where markdown is drawn', () => {
 
   it('sets it on the line a message has always been read at', () => {
     const styles = readFileSync(path.join(root, 'src/renderer/src/styles.css'), 'utf8')
+
     const md = styles.indexOf('\n.md {')
     const said = styles.indexOf('\n.md-said {')
 
