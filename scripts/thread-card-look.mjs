@@ -583,6 +583,12 @@ for (const [name] of CASES) {
     console.log(`${pad(want, 16)}card ${card.width} x ${card.height}, band ${card.band} high`)
     console.log(say('  label', words[0]))
     console.log(say('  subject', words[1]))
+    const corners = card.corners
+    console.log(
+      corners
+        ? `${pad('  corners', 16)}tl ${corners.tl}  tr ${corners.tr}  br ${corners.br}  bl ${corners.bl}`
+        : `${pad('  corners', 16)}nothing found`
+    )
   }
 }
 
