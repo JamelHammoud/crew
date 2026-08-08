@@ -68,9 +68,9 @@ const session = () => {
   })
 }
 
-const openMore = () => {
-  const more = screen.getAllByRole('button', { name: 'More' })
-  fireEvent.click(more[more.length - 1])
+const openPlus = () => {
+  const plus = screen.getAllByLabelText('Add to your message')
+  fireEvent.click(plus[plus.length - 1])
 }
 
 const emptyStream = (): MediaStream => ({ getVideoTracks: () => [] }) as unknown as MediaStream
