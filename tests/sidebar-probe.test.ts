@@ -348,9 +348,9 @@ describe('the sidebar', () => {
   })
 
   it('gives the pointer back to a control standing in that slot', () => {
-    render(Sidebar({ tab: 'docs' }))
+    render(Sidebar())
 
-    const slot = (screen.getByRole('button', { name: 'Docs' }).nextElementSibling as HTMLElement) ?? null
+    const slot = screen.getByRole('button', { name: 'Docs' }).nextElementSibling as HTMLElement
     expect(slot.className).toContain('pointer-events-none')
     expect(screen.getByRole('button', { name: 'New page' }).className).toContain('pointer-events-auto')
   })
