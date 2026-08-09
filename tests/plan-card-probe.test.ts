@@ -73,7 +73,7 @@ const online = {
 describe('plans in the app', () => {
   afterEach(cleanup)
 
-  it('shows a finished plan like any other thread, and keeps it beside the thread once opened', () => {
+  it('keeps the plan out of the chat and stands it beside the thread once opened', () => {
     useCrew.setState({
       ...online,
       events,
