@@ -93,7 +93,8 @@ describe('plans in the app', () => {
 
     render(createElement(App))
     expect(screen.getByText('Planning complete')).toBeTruthy()
-    expect(screen.getAllByText('Rename the tabs').length).toBeGreaterThan(0)
+    expect(screen.queryByText('Rename the tabs')).toBeNull()
+    expect(screen.queryByText('Ship it')).toBeNull()
 
     fireEvent.click(screen.getByText('Planning complete'))
     expect(screen.getByLabelText('Back to chat')).toBeTruthy()
