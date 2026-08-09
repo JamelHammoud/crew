@@ -1,8 +1,6 @@
 import { ChecklistGlyph } from '../icons'
 import type { ThreadMeta } from '../state/store'
-import Clamped from './Clamped'
 import type { ThreadAsk } from './feed/feedItems'
-import Markdown from './Markdown'
 import ThreadCardShell from './ThreadCardShell'
 import ThreadChips from './ThreadChips'
 import ThreadStrand from './ThreadStrand'
@@ -24,9 +22,6 @@ export default function PlanCard({
   return (
     <>
       <ThreadCardShell thread={thread} ts={ts} ask={ask} onContextMenu={onContextMenu}>
-        <Clamped lines={14} watch={thread.plan} className="mt-1 text-base leading-[22px]">
-          <Markdown text={thread.plan ?? ''} />
-        </Clamped>
         <ThreadStrand
           onOpen={onOpen}
           dashed={thread.ghost}
