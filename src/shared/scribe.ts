@@ -1,3 +1,5 @@
+import { localUrl, OLLAMA_PORT } from './modelServers'
+import type { Editor } from './scribeEdit'
 import { TIDY_RULES, type TidyRules } from './scribeTidy'
 
 // Hold a key, talk, and what you said is written into whatever you were typing
