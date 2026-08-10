@@ -81,7 +81,7 @@ const guarded = (status: number): boolean => status === 401 || status === 403
 // swept up here and listed as one of Ollama's.
 export function candidateUrls(env: NodeJS.ProcessEnv = process.env): string[] {
   const said = env.OLLAMA_HOST ? fullUrl(env.OLLAMA_HOST) : null
-  return [...new Set([...(said ? [said] : []), ...DEFAULT_URLS])]
+  return [...new Set([...(said ? [said] : []), ...LOCAL_URLS])]
 }
 
 export async function probeServer(
