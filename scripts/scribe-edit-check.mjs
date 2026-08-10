@@ -130,11 +130,11 @@ async function check(app) {
     const started = Date.now()
     const out = await app.editSaid(rules, editor)
     const took = ((Date.now() - started) / 1000).toFixed(2)
-    const stood = out === rules
-    if (stood) refused += 1
+    const same = out === rules
+    if (same) refused += 1
     console.log(`spoken:   ${one.spoken}`)
     console.log(`rules:    ${rules}`)
-    console.log(`written:  ${out}${stood ? '   (the rules stood)' : ''}`)
+    console.log(`written:  ${out}${same ? '   (unchanged)' : ''}`)
     console.log(`took:     ${took}s\n`)
     for (const [name, holds] of one.wants) {
       checks.push({ name, ok: holds(out), note: out })
@@ -144,7 +144,9 @@ async function check(app) {
   for (const one of checks) console.log(`${one.ok ? 'PASS' : 'FAIL'}  ${one.name}\n      ${one.note}`)
 
   const failed = checks.filter(one => !one.ok)
-  console.log(`\n${checks.length - failed.length} of ${checks.length} held, and the rules stood on ${refused} of ${CASES.length}`)
+  console.log(
+    `\n${checks.length - failed.length} of ${checks.length} held, and ${refused} of ${CASES.length} came back unchanged`
+  )
   if (failed.length) {
     console.error(`\n${failed.length} of ${checks.length} checks failed off the real model, which is the model rather than the code`)
   } else {
