@@ -6,8 +6,10 @@ import {
   WORD_LIMIT,
   type ScribeKey,
   type ScribeKeyState,
+  type ScribeSettings,
   type ScribeWord
 } from '../../../../shared/scribe'
+import { editModels } from '../../../../shared/scribeEdit'
 import type { Said } from '../../../../shared/scribeSaid'
 import { CloseGlyph, PlusGlyph, WarningGlyph } from '../../icons'
 import { forgetSaid, useScribeSaid } from '../../state/scribeSaid'
