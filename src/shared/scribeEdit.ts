@@ -55,7 +55,7 @@ export const KEPT = 0.65
 export const GROWN = 1.35
 export const ADDED = 0.1
 
-const WORD = /[\p{L}\p{N}][\p{L}\p{N}'’.]*/gu
+const WORD = /[\p{L}\p{N}][\p{L}\p{N}'’]*/gu
 
 const FENCE = /^```[^\n]*\n([\s\S]*?)\n?```$/
 
