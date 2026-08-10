@@ -48,6 +48,10 @@ export const EDIT_LIMIT = 1600
 // about it is a dictation that appears to have stopped.
 export const EDIT_MS = 8000
 
+// Long enough for a server that is up and short enough that a page does not sit
+// there waiting on one that is not.
+export const MODELS_MS = 2000
+
 // What has to survive for an answer to be believed. An edit keeps the words and
 // moves the marks, so an answer that has dropped a third of what was said is
 // answering rather than editing.
@@ -180,8 +184,7 @@ async function ask(said: string, editor: Editor, signal: AbortSignal): Promise<s
   const answer = await fetch(openaiUrl(editor.url, '/chat/completions'), {
     method: 'POST',
     headers: {
-      'content-type': 'application/json',
-      ...(editor.key ? { authorization: `Bearer ${editor.key}` } : {})
+      'content-type': 'application/json'
     },
     body: JSON.stringify({
       model: editor.model,
@@ -216,23 +219,18 @@ export async function editSaid(
   }
 }
 
-export interface ModelChoice {
-  id: string
-}
-
 // What the server says it will serve, asked for again every time the page is
 // opened rather than once: a CLI's models change about never and a local one
 // changes the moment somebody runs a pull.
-export async function editModels(editor: Omit<Editor, 'model'>): Promise<string[]> {
-  if (!editor.url.trim()) return []
+export async function editModels(url: string): Promise<string[]> {
+  if (!url.trim()) return []
   try {
-    const answer = await fetch(openaiUrl(editor.url, '/models'), {
-      headers: editor.key ? { authorization: `Bearer ${editor.key}` } : undefined,
-      signal: AbortSignal.timeout(2000)
+    const answer = await fetch(openaiUrl(url, '/models'), {
+      signal: AbortSignal.timeout(MODELS_MS)
     })
     if (!answer.ok) return []
     const held = await answer.json()
-    const rows: ModelChoice[] = Array.isArray(held?.data) ? held.data : []
+    const rows: Array<{ id?: unknown }> = Array.isArray(held?.data) ? held.data : []
     return rows
       .map(row => (typeof row?.id === 'string' ? row.id : ''))
       .filter(Boolean)
