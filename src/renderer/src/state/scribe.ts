@@ -2,10 +2,12 @@ import { create } from 'zustand'
 import {
   cleanSettings,
   defaultSettings,
+  editorOf,
   LONGEST_MS,
   rulesOf,
   type ScribeSettings
 } from '../../../shared/scribe'
+import { editSaid } from '../../../shared/scribeEdit'
 import { ScribeFlow } from '../../../shared/scribeLive'
 import { tidy, type ScribeChunk } from '../../../shared/scribeTidy'
 import { ScribeTake } from '../media/scribe/take'
