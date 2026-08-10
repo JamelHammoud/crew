@@ -58,8 +58,13 @@ describe('the page a dictation is set to be written up on', () => {
     await open()
     expect(screen.getByText('Server')).toBeTruthy()
     await waitFor(() => expect(screen.getByText('Model')).toBeTruthy())
-    await waitFor(() => expect(screen.getByText('llama3.2')).toBeTruthy())
     expect(asked).toEqual([`${AT}/v1/models`])
+  })
+
+  it('says which model was picked', async () => {
+    act(() => setScribeSettings({ edit: true, editModel: 'llama3.2' }))
+    await open()
+    await waitFor(() => expect(screen.getByText('llama3.2')).toBeTruthy())
   })
 
   it('says so where nothing answers, rather than opening an empty picker', async () => {
