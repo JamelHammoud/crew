@@ -6,7 +6,7 @@ import { VoiceEar } from '../media/voice/ear'
 import { VoiceListener } from '../media/voice/listener'
 import { progressOf, rememberVoice, storedVoice, type Fetching } from '../media/voice/models'
 import { VoiceMouth } from '../media/voice/mouth'
-import { endOf, findTurn, textOf, worthSending } from '../media/voice/turn'
+import { endOf, findTurn, HeldTurn, HOLD_MS, textOf, worthSending } from '../media/voice/turn'
 import { hushChat, playSound } from '../media/sounds'
 import { useCrew } from './store'
 
