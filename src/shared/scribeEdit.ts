@@ -72,25 +72,37 @@ const LOOSE = new Set([
   'billion', 'first', 'second', 'third', 'fourth', 'fifth', 'point', 'percent',
   'dollar', 'dollars', 'cent', 'cents', 'pound', 'pounds', 'euro', 'euros',
   'quarter', 'oh', 'o', 'a', 'm', 'p', 'am', 'pm', 'and', 'quote', 'unquote',
-  'end', 'the'
+  'end'
+])
+
+// The words that say nothing about which text a line came out of. A preamble is
+// made of them, so sharing one is no evidence at all that a line is somebody's
+// dictation rather than a model's own sentence about it.
+const COMMON = new Set([
+  'a', 'an', 'the', 'and', 'or', 'of', 'to', 'in', 'is', 'it', 'this', 'that',
+  'for', 'you', 'your', 'i', 'be', 'as', 'on', 'at', 'with', 'here', 'have',
+  'has', 'was', 'are', 'my', 'me', 'so', 'up', 'out'
 ])
 
 const wordsIn = (text: string): string[] =>
-  [...text.toLowerCase().matchAll(WORD)].map(found => found[0].replace(/\.+$/, ''))
+  [...text.toLowerCase().matchAll(WORD)].map(found => found[0])
 
 const figure = (word: string): boolean => /\d/.test(word)
 
 const meaning = (word: string): boolean => !figure(word) && !LOOSE.has(word)
 
-// A preamble is a line that shares no word with what was said, which is what
-// "Here is the cleaned up text:" is and what a line of the dictation never is.
-// It is cut rather than refused, since the words underneath it are the answer.
+const telling = (word: string): boolean => !figure(word) && !COMMON.has(word)
+
+// A preamble is a line with none of the dictation's own words in it, which is
+// what "Here is the cleaned up text:" is and what a line of somebody's speech
+// never is. It is cut rather than refused, since the words under it are the
+// answer. Only a word that says something counts as evidence: a line sharing
+// nothing but "the" came from a model rather than from a room.
 const withoutPreamble = (answer: string, said: Set<string>): string => {
   const lines = answer.split('\n')
   let from = 0
   while (from < lines.length - 1) {
-    const words = wordsIn(lines[from])
-    if (words.some(word => said.has(word))) break
+    if (wordsIn(lines[from]).some(word => said.has(word))) break
     from += 1
   }
   return lines.slice(from).join('\n')
