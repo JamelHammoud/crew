@@ -44,6 +44,8 @@ export class VoiceGate {
   private heldMs = 0
   private guard = false
 
+  constructor(private readonly closeMs: number = CLOSE_MS) {}
+
   // On while the agent is speaking, which is the only time the microphone is
   // hearing something the room did not make.
   guarded(on: boolean): void {
