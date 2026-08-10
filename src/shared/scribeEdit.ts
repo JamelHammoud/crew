@@ -35,8 +35,12 @@ export const EDIT_MS = 8000
 export const MODELS_MS = 2000
 
 export const KEPT = 0.65
+export const KEPT_CUT = 0.3
 export const GROWN = 1.35
 export const ADDED = 0.1
+
+const CUTTING =
+  /\b(actually|sorry|scratch that|strike that|delete that|forget that|i mean|no wait|wait no|make that|rather than|instead)\b/i
 
 const WORD = /[\p{L}\p{N}][\p{L}\p{N}'’]*/gu
 
@@ -116,7 +120,7 @@ export function edited(said: string, answer: string): string | null {
   if (asked > 0) {
     let lost = 0
     for (const [word, count] of left) if (meaning(word)) lost += count
-    if (asked - lost < asked * KEPT) return null
+    if (asked - lost < asked * (CUTTING.test(said) ? KEPT_CUT : KEPT)) return null
   }
   return out
 }
