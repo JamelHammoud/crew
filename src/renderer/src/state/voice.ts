@@ -138,12 +138,14 @@ export const useVoice = create<VoiceState>((set, get) => {
       // a reply that was dropped, which is a conversation that never speaks
       // again.
       if (mouth.speaking) {
+        forget()
         promptId = null
         reply = null
         asked = null
         raw = ''
         mouth.stop()
       }
+      letGo()
       set({ phase: 'hearing', saying: '', problem: null })
     },
     onEnd: audio => {
