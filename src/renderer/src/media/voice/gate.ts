@@ -25,7 +25,8 @@ const FALL = 0.35
 const RISE = 0.004
 
 const OPEN_MS = 96
-const CLOSE_MS = 420
+export const CLOSE_MS = 620
+export const TURN_CLOSE_MS = 420
 const SHORTEST_MS = 240
 const LONGEST_MS = 30_000
 
