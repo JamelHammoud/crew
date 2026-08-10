@@ -191,6 +191,7 @@ export const useVoice = create<VoiceState>((set, get) => {
   const send = (text: string) => {
     const { threadId, agentId } = get()
     if (!agentId) return
+    forget()
     asked = text
     promptId = null
     raw = ''
