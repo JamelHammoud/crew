@@ -1,16 +1,5 @@
 import { openaiUrl } from './modelServers'
 
-// A dictation read a second time, by a model on this machine, so what lands is
-// what somebody would have typed rather than what they said out loud. The
-// tidying in `scribeTidy.ts` is rules, and rules cannot reach most of this: a
-// pause is not a full stop, "four thirty" is 4:30, a spoken list wants its
-// commas, and a mishearing is only ever settled by the sentence around it.
-//
-// It runs where whisper runs, on this computer, or it does not run at all.
-// Scribe never touches the crew and nothing said into it goes over the wire, and
-// a second pass through somebody else's service would be the one thing here that
-// broke that.
-
 export const EDIT_BRIEF = `You are editing dictation. What you are given is speech that has been transcribed and lightly tidied. Turn it into the text the speaker would have typed. Return only that text.
 
 MEANING COMES FIRST. Never swap one word for another: not "the" for "a", not "their" for "the", not "meet" for "be", not "review" for "view". Never change a singular to a plural, a positive to a negative, or a name, date, amount or quantity. Where a phrase is uncertain, take the reading that makes sense with the fewest changes to what was heard. Never reword a sentence because another phrasing sounds better.
@@ -39,22 +28,12 @@ Repair an obvious mishearing only where the sentence gives strong evidence for i
 
 Return the edited text and nothing else. No preamble, no quotation marks around the whole of it, no notes.`
 
-// A stretch longer than this is a paragraph of speech, and past it the wait is
-// worse than the tidying is good.
 export const EDIT_LIMIT = 1600
 
-// How long a stretch may take before the rules-based writing goes out instead.
-// The whole feature is words landing while somebody talks, so a model thinking
-// about it is a dictation that appears to have stopped.
 export const EDIT_MS = 8000
 
-// Long enough for a server that is up and short enough that a page does not sit
-// there waiting on one that is not.
 export const MODELS_MS = 2000
 
-// What has to survive for an answer to be believed. An edit keeps the words and
-// moves the marks, so an answer that has dropped a third of what was said is
-// answering rather than editing.
 export const KEPT = 0.65
 export const GROWN = 1.35
 export const ADDED = 0.1
@@ -65,9 +44,6 @@ const FENCE = /^```[^\n]*\n([\s\S]*?)\n?```$/
 
 const QUOTED = /^(["'“”])([\s\S]*)\1$/
 
-// Words a real edit is allowed to lose or invent, because these are the ones
-// that become something else on the way to being written: a figure, a symbol, a
-// time. Everything outside this set is meaning and has to come back.
 const LOOSE = new Set([
   'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',
   'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen',
@@ -79,9 +55,6 @@ const LOOSE = new Set([
   'end'
 ])
 
-// The words that say nothing about which text a line came out of. A preamble is
-// made of them, so sharing one is no evidence at all that a line is somebody's
-// dictation rather than a model's own sentence about it.
 const COMMON = new Set([
   'a', 'an', 'the', 'and', 'or', 'of', 'to', 'in', 'is', 'it', 'this', 'that',
   'for', 'you', 'your', 'i', 'be', 'as', 'on', 'at', 'with', 'here', 'have',
@@ -97,11 +70,6 @@ const meaning = (word: string): boolean => !figure(word) && !LOOSE.has(word)
 
 const telling = (word: string): boolean => !figure(word) && !COMMON.has(word)
 
-// A preamble is a line with none of the dictation's own words in it, which is
-// what "Here is the cleaned up text:" is and what a line of somebody's speech
-// never is. It is cut rather than refused, since the words under it are the
-// answer. Only a word that says something counts as evidence: a line sharing
-// nothing but "the" came from a model rather than from a room.
 const withoutPreamble = (answer: string, said: Set<string>): string => {
   const lines = answer.split('\n')
   let from = 0
@@ -119,12 +87,6 @@ const unwrapped = (answer: string, said: Set<string>): string => {
   return (quoted ? quoted[2] : inside).replace(/\s+/g, ' ').trim()
 }
 
-// Whether what a model handed back may be written into somebody's work. The two
-// ways of being wrong do not cost the same: a dictation that came out as the
-// rules would have written it is a sentence somebody has to punctuate for
-// themselves, and one that came out as a model's own answer, or with a line of
-// chat in front of it, is somebody's document with words in it that nobody said.
-// So a doubt is refused, and the rules-based writing stands.
 export function edited(said: string, answer: string): string | null {
   const meant = wordsIn(said)
   if (meant.length === 0) return null
@@ -134,9 +96,6 @@ export function edited(said: string, answer: string): string | null {
   if (wrote.length === 0) return null
   if (wrote.length > Math.ceil(meant.length * GROWN) + 2) return null
 
-  // What is left in here once the answer has been walked is every occurrence of
-  // a word that was said and did not come back, which is the one number both
-  // halves of this are read from.
   const left = new Map<string, number>()
   for (const word of meant) left.set(word, (left.get(word) ?? 0) + 1)
   let added = 0
@@ -159,11 +118,6 @@ export function edited(said: string, answer: string): string | null {
   return out
 }
 
-// No key anywhere in here on purpose. A key belongs to the machine and is kept
-// beside the app at 0600, where Scribe's own settings live in this window, so a
-// key written into one would be a token in a window's storage. What Scribe
-// reaches is a server on this computer, and a server that wants a key is one it
-// leaves alone.
 export interface Editor {
   url: string
   model: string
@@ -177,9 +131,6 @@ const answerOf = (frame: any): string => {
   return typeof held === 'string' ? held : ''
 }
 
-// One call, whole rather than streamed. Nothing is drawn as it arrives and a
-// half written sentence is not something to paste, so what is wanted is the one
-// settled answer.
 async function ask(said: string, editor: Editor, signal: AbortSignal): Promise<string> {
   const answer = await fetch(openaiUrl(editor.url, '/chat/completions'), {
     method: 'POST',
@@ -201,9 +152,6 @@ async function ask(said: string, editor: Editor, signal: AbortSignal): Promise<s
   return answerOf(await answer.json())
 }
 
-// What to write for a stretch. Every way this can fail hands back the writing
-// the rules already produced, because a dictation somebody said out loud is
-// never worth losing to a model that was slow, offline, or talking to itself.
 export async function editSaid(
   said: string,
   editor: Editor,
@@ -219,9 +167,6 @@ export async function editSaid(
   }
 }
 
-// What the server says it will serve, asked for again every time the page is
-// opened rather than once: a CLI's models change about never and a local one
-// changes the moment somebody runs a pull.
 export async function editModels(url: string): Promise<string[]> {
   if (!url.trim()) return []
   try {

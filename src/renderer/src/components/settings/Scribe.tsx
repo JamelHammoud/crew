@@ -130,7 +130,6 @@ function Recent({ said }: { said: Said[] }) {
   )
 }
 
-
 function Editing({ settings }: { settings: ScribeSettings }) {
   const [address, setAddress] = useState(settings.editUrl)
   const [models, setModels] = useState<string[] | null>(null)

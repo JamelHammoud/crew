@@ -22,7 +22,6 @@ export class ScribeFlow {
     return this.mark(tidy(chunks, rules))
   }
 
-
   mark(text: string): string {
     if (!text) return ''
     const out = this.wrote ? ` ${text}` : text

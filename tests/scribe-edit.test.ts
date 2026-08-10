@@ -11,11 +11,6 @@ import { cleanSettings, editorOf } from '../src/shared/scribe'
 import { tidy, TIDY_RULES, type ScribeChunk } from '../src/shared/scribeTidy'
 import { ScribeFlow } from '../src/shared/scribeLive'
 
-// A dictation read a second time. The guard is what decides whether a model's
-// answer may be written into somebody else's application, so most of this is
-// about answers that must never land: a preamble, a refusal, a reply to the
-// words rather than an edit of them.
-
 interface Asked {
   path: string
   brief: string
@@ -110,8 +105,6 @@ describe('what a model is allowed to have written', () => {
     )
   })
 
-  // The one that has to be caught. A dictation is pasted into somebody else's
-  // work, so a line of chat in front of it is words nobody said.
   it('cuts a preamble off its own line', () => {
     expect(edited(said, `Here is the cleaned up text:\n\n${meant}`)).toBe(meant)
   })
@@ -208,8 +201,6 @@ describe('reading a dictation again against a real server', () => {
     expect(fake.asked[0].path).toBe('/v1/chat/completions')
   })
 
-  // Every one of these is the rules' own writing going out. A dictation
-  // somebody said out loud is never worth losing to a server.
   it('writes what the rules wrote when the answer cannot be believed', async () => {
     fake = await fakeModel(() => wrote('I have no idea what you are asking me about.'))
     expect(await editSaid('Open the file.', { url: fake.url, model: 'a-model' })).toBe('Open the file.')

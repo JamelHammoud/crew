@@ -9,7 +9,6 @@ export const SERVER_NAME_LIMIT = 40
 
 export const OLLAMA_PORT = 11434
 
-
 export const LOCAL_SERVERS: ReadonlyArray<{ port: number; name: string }> = [
   { port: OLLAMA_PORT, name: 'Ollama' },
   { port: 1234, name: 'LM Studio' },

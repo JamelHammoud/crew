@@ -109,7 +109,6 @@ export const useScribe = create<ScribeState>((set, get) => {
   // the clipboard has one place to land and lands there once.
   const asSaid = (): boolean => get().settings.live && get().settings.finish === 'paste'
 
-
   const written = (chunks: readonly ScribeChunk[]): Promise<string> => {
     const settings = get().settings
     return editSaid(tidy(chunks, rulesOf(settings)), editorOf(settings))
