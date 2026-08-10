@@ -205,7 +205,8 @@ export const useScribe = create<ScribeState>((set, get) => {
     try {
       const chunks = (await Promise.all(waiting)).flat()
       if (get().phase !== 'reading') return
-      const text = tidy(chunks, rulesOf(get().settings))
+      const text = await written(chunks)
+      if (get().phase !== 'reading') return
       held = []
       set({ phase: 'off', problem: null })
       window.crew.scribeDone(text)
