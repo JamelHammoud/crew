@@ -317,6 +317,7 @@ export const useVoice = create<VoiceState>((set, get) => {
         // Storage turned off keeps the choice for this conversation.
       }
       mouth.stop()
+      forget()
       promptId = null
       reply = null
       asked = null
