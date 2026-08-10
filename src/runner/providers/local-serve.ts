@@ -53,7 +53,7 @@ function labelOf(url: string, kind: LocalRuntime['kind']): string {
   if (!at) return url
   if (!here(at.hostname)) return serverLabel(url)
   if (kind === 'ollama') return 'Ollama'
-  return SERVERS[at.port] ?? at.host
+  return localServerName(at.port) ?? at.host
 }
 
 interface Reached {
