@@ -59,3 +59,120 @@ export function endOf(events: readonly SessionEvent[], promptId: string): Ended 
 export function worthSending(heard: string): boolean {
   return /[a-z0-9]/i.test(heard) && heard.trim().length > 1
 }
+
+export const HOLD_MS = 700
+
+const CARRIES_ON = new Set([
+  'and',
+  'but',
+  'or',
+  'so',
+  'because',
+  'cause',
+  'since',
+  'although',
+  'though',
+  'unless',
+  'until',
+  'while',
+  'when',
+  'where',
+  'whether',
+  'if',
+  'plus',
+  'then',
+  'also',
+  'other',
+  'another',
+  'the',
+  'a',
+  'an',
+  'my',
+  'your',
+  'our',
+  'their',
+  'this',
+  'these',
+  'to',
+  'of',
+  'for',
+  'with',
+  'about',
+  'into',
+  'from',
+  'is',
+  'are',
+  'was',
+  'were',
+  'am',
+  'be',
+  'been',
+  'do',
+  'does',
+  'did',
+  'can',
+  'could',
+  'will',
+  'would',
+  'should',
+  'might',
+  'must',
+  'have',
+  'has',
+  'had',
+  'like',
+  'just',
+  'maybe',
+  'basically',
+  'actually',
+  'literally',
+  'probably',
+  'um',
+  'umm',
+  'uh',
+  'uhh',
+  'er',
+  'erm'
+])
+
+const ASKED = /[?!]["')\]]*$/
+const OPEN_END = /(?:[,;:]|\.\.\.|…|[-–—]+)["')\]]*$/
+const TRAILED = /\s*[-–—]+\s*$/
+
+export function stillGoing(heard: string): boolean {
+  const text = heard.trim()
+  if (!text) return false
+  if (ASKED.test(text)) return false
+  if (OPEN_END.test(text)) return true
+  const words = text.toLowerCase().match(/[a-z']+/g)
+  return words ? CARRIES_ON.has(words[words.length - 1]) : false
+}
+
+export class HeldTurn {
+  private held = ''
+
+  get waiting(): string {
+    return this.held
+  }
+
+  add(heard: string): string | null {
+    const text = heard.trim()
+    const whole = this.held ? `${this.held.replace(TRAILED, '')} ${text}` : text
+    if (stillGoing(whole)) {
+      this.held = whole
+      return null
+    }
+    this.held = ''
+    return whole
+  }
+
+  take(): string {
+    const held = this.held
+    this.held = ''
+    return held
+  }
+
+  clear(): void {
+    this.held = ''
+  }
+}
