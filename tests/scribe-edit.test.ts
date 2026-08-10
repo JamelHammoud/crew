@@ -152,6 +152,17 @@ describe('what a model is allowed to have written', () => {
     expect(edited('draw the rows and then the header and then the footer', 'Draw the rows.')).toBe(null)
   })
 
+  it('takes a correction, which throws a clause away on purpose', () => {
+    const said = 'Schedule it for tuesday at three, actually make that wednesday at four thirty.'
+    expect(edited(said, 'Schedule it for Wednesday at 4:30.')).toBe('Schedule it for Wednesday at 4:30.')
+    expect(edited('I will meet you thursday, sorry, friday.', "I'll meet you Friday.")).toBe("I'll meet you Friday.")
+  })
+
+  it('does not read a correction as leave to drop the whole of it', () => {
+    const said = 'Schedule it for tuesday at three, actually make that wednesday at four thirty.'
+    expect(edited(said, 'Wednesday.')).toBe(null)
+  })
+
   it('refuses a note left on the end', () => {
     expect(edited('open the file', 'Open the file. (I fixed the punctuation for you.)')).toBe(null)
   })
