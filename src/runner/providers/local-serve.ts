@@ -1,5 +1,13 @@
 import { spawn } from 'node:child_process'
-import { openaiUrl, serverLabel, serverName, type ModelServer } from '../../shared/modelServers'
+import {
+  LOCAL_URLS,
+  localServerName,
+  OLLAMA_PORT,
+  openaiUrl,
+  serverLabel,
+  serverName,
+  type ModelServer
+} from '../../shared/modelServers'
 import { detachCliProcess } from './cli'
 import { serverKey } from './local-servers'
 import { resolveCommand } from './path'
