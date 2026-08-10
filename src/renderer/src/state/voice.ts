@@ -172,8 +172,20 @@ export const useVoice = create<VoiceState>((set, get) => {
       set({ phase: 'listening' })
       return
     }
-    set({ heard: heard.text })
-    send(heard.text)
+    const whole = held.add(heard.text)
+    if (whole) {
+      set({ heard: whole })
+      send(whole)
+      return
+    }
+    set({ heard: held.waiting, phase: 'listening' })
+    holding = globalThis.setTimeout(() => {
+      holding = null
+      const rest = held.take()
+      if (!rest || get().phase === 'off') return
+      set({ heard: rest })
+      send(rest)
+    }, HOLD_MS)
   }
 
   const send = (text: string) => {
