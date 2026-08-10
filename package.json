@@ -115,6 +115,7 @@
     "board-perf": "node scripts/board-perf.mjs",
     "snap-check": "node scripts/snap-check.mjs",
     "scribe-check": "node scripts/scribe-check.mjs",
+    "scribe-edit-check": "node scripts/scribe-edit-check.mjs",
     "scribe-caret-check": "node scripts/scribe-caret-check.mjs",
     "preview-check": "node scripts/preview-check.mjs",
     "scrim-check": "node scripts/scrim-check.mjs",
