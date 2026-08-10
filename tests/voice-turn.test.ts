@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { SessionEvent } from '../src/shared/events'
 import type { AgentStep } from '../src/shared/llm'
 import { VoiceReply } from '../src/shared/voiceReply'
-import { endOf, findTurn, textOf, worthSending } from '../src/renderer/src/media/voice/turn'
+import { endOf, findTurn, HeldTurn, stillGoing, textOf, worthSending } from '../src/renderer/src/media/voice/turn'
 
 let clock = 0
 const at = () => ++clock
