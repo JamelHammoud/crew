@@ -283,6 +283,7 @@ export const useVoice = create<VoiceState>((set, get) => {
       playSound('leave')
       unwatch?.()
       unwatch = null
+      forget()
       promptId = null
       reply = null
       asked = null
