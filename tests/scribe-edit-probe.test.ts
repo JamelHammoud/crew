@@ -17,7 +17,9 @@ beforeEach(() => {
   vi.stubGlobal('crew', {
     applyScribe: vi.fn(),
     scribeState: vi.fn().mockResolvedValue({ hooked: true, trusted: true }),
-    openScribePermission: vi.fn()
+    openScribePermission: vi.fn(),
+    scribeSaid: vi.fn().mockResolvedValue([]),
+    onScribeSaid: vi.fn().mockReturnValue(() => {})
   })
   vi.stubGlobal('fetch', (url: string) => {
     asked.push(String(url))
