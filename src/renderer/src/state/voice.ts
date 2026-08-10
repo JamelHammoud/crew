@@ -297,6 +297,7 @@ export const useVoice = create<VoiceState>((set, get) => {
     toggleMute: () => {
       const muted = !get().muted
       ear.mute(muted)
+      if (muted) forget()
       set({ muted })
       if (muted && get().phase === 'hearing') set({ phase: 'listening' })
     },
