@@ -27,7 +27,7 @@ export class VoiceEar {
   private source: MediaStreamAudioSourceNode | null = null
   private node: AudioWorkletNode | null = null
   private sink: GainNode | null = null
-  private gate = new VoiceGate()
+  private gate = new VoiceGate(TURN_CLOSE_MS)
   private preRoll = new PreRoll(Math.round((HEARD_RATE * PRE_ROLL_MS) / 1000))
   private said: Float32Array[] = []
   private spare = new Float32Array(0)
