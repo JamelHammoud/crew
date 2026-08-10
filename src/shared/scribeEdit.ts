@@ -44,6 +44,8 @@ const FENCE = /^```[^\n]*\n([\s\S]*?)\n?```$/
 
 const QUOTED = /^(["'“”])([\s\S]*)\1$/
 
+const THOUGHT = /^[\s\S]*<\/think(?:ing)?>/
+
 const LOOSE = new Set([
   'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',
   'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen',
@@ -81,8 +83,9 @@ const withoutPreamble = (answer: string, said: Set<string>): string => {
 }
 
 const unwrapped = (answer: string, said: Set<string>): string => {
-  const fenced = FENCE.exec(answer.trim())
-  const inside = withoutPreamble((fenced ? fenced[1] : answer).trim(), said)
+  const thought = answer.replace(THOUGHT, '').trim()
+  const fenced = FENCE.exec(thought)
+  const inside = withoutPreamble((fenced ? fenced[1] : thought).trim(), said)
   const quoted = QUOTED.exec(inside.trim())
   return (quoted ? quoted[2] : inside).replace(/\s+/g, ' ').trim()
 }
@@ -123,7 +126,7 @@ export interface Editor {
   model: string
 }
 
-export const canEdit = (editor: Editor): boolean =>
+const canEdit = (editor: Editor): boolean =>
   Boolean(editor.url.trim()) && Boolean(editor.model.trim())
 
 const answerOf = (frame: any): string => {
@@ -134,9 +137,7 @@ const answerOf = (frame: any): string => {
 async function ask(said: string, editor: Editor, signal: AbortSignal): Promise<string> {
   const answer = await fetch(openaiUrl(editor.url, '/chat/completions'), {
     method: 'POST',
-    headers: {
-      'content-type': 'application/json'
-    },
+    headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
       model: editor.model,
       stream: false,
