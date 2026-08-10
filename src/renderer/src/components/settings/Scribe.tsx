@@ -130,6 +130,62 @@ function Recent({ said }: { said: Said[] }) {
   )
 }
 
+// The address is held here while it is being typed and written down once it is
+// settled, because every write is cleaned on the way in and a cleaning that runs
+// on each keystroke rewrites the address under the caret.
+function Editing({ settings }: { settings: ScribeSettings }) {
+  const [address, setAddress] = useState(settings.editUrl)
+  const [models, setModels] = useState<string[] | null>(null)
+
+  useEffect(() => setAddress(settings.editUrl), [settings.editUrl])
+
+  // Asked again whenever the page is opened rather than once, since what a
+  // machine will serve changes the moment somebody pulls a model.
+  useEffect(() => {
+    let live = true
+    setModels(null)
+    void editModels(settings.editUrl).then(found => live && setModels(found))
+    return () => {
+      live = false
+    }
+  }, [settings.editUrl])
+
+  const settle = () => {
+    if (address.trim() !== settings.editUrl) setScribeSettings({ editUrl: address })
+  }
+
+  return (
+    <>
+      <Row label="Server">
+        <TextField
+          glass
+          value={address}
+          placeholder="Address"
+          onChange={event => setAddress(event.target.value)}
+          onBlur={settle}
+          onKeyDown={event => event.key === 'Enter' && settle()}
+        />
+      </Row>
+      {models !== null && models.length === 0 ? (
+        <Row label="Nothing answered there" line="Start it and the models turn up here.">
+          <WarningGlyph className="w-5 h-5 text-danger" />
+        </Row>
+      ) : (
+        <Row label="Model">
+          <Select
+            value={settings.editModel}
+            options={(models ?? [settings.editModel].filter(Boolean)).map(model => ({
+              value: model,
+              label: model
+            }))}
+            onChange={editModel => setScribeSettings({ editModel })}
+          />
+        </Row>
+      )}
+    </>
+  )
+}
+
 function Trouble({ state }: { state: ScribeKeyState }) {
   if (!state.trusted) {
     return (
