@@ -155,10 +155,14 @@ export function edited(said: string, answer: string): string | null {
   return out
 }
 
+// No key anywhere in here on purpose. A key belongs to the machine and is kept
+// beside the app at 0600, where Scribe's own settings live in this window, so a
+// key written into one would be a token in a window's storage. What Scribe
+// reaches is a server on this computer, and a server that wants a key is one it
+// leaves alone.
 export interface Editor {
   url: string
   model: string
-  key?: string
 }
 
 export const canEdit = (editor: Editor): boolean =>
