@@ -51,6 +51,18 @@ describe('where a thing somebody said starts and ends', () => {
     expect(say(gate, room(0.004, 30))).toContain('ended')
   })
 
+  it('gives a turn back sooner than a dictation, and only where it was asked for', () => {
+    const turn = new VoiceGate(TURN_CLOSE_MS)
+    const dictation = new VoiceGate()
+    settled(turn, 0.004)
+    settled(dictation, 0.004)
+    // Long enough that a conversation takes it as the end of a turn and short
+    // enough that a dictation reads it as the pause inside one.
+    const gap = [...room(0.14, 20), ...room(0.004, 16)]
+    expect(say(turn, gap)).toContain('ended')
+    expect(say(dictation, gap)).not.toContain('ended')
+  })
+
   it('drops a cough rather than sending it', () => {
     const gate = new VoiceGate()
     settled(gate, 0.004)
