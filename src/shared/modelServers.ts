@@ -9,10 +9,7 @@ export const SERVER_NAME_LIMIT = 40
 
 export const OLLAMA_PORT = 11434
 
-// What a machine running a model of its own is nearly always running it on, and
-// what each of those ports really is. The runner probes them to find an agent a
-// model, and Scribe sends a dictation to one to be written up, so the table
-// stands here rather than inside either of them.
+
 export const LOCAL_SERVERS: ReadonlyArray<{ port: number; name: string }> = [
   { port: OLLAMA_PORT, name: 'Ollama' },
   { port: 1234, name: 'LM Studio' },

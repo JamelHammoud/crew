@@ -22,10 +22,7 @@ export class ScribeFlow {
     return this.mark(tidy(chunks, rules))
   }
 
-  // The same, for a stretch that has already been written up. Anything standing
-  // between the rules and the paste hands its answer back through here, so what
-  // decides the space in front of a stretch is one rule rather than one per way
-  // in.
+
   mark(text: string): string {
     if (!text) return ''
     const out = this.wrote ? ` ${text}` : text

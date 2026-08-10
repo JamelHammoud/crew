@@ -130,17 +130,13 @@ function Recent({ said }: { said: Said[] }) {
   )
 }
 
-// The address is held here while it is being typed and written down once it is
-// settled, because every write is cleaned on the way in and a cleaning that runs
-// on each keystroke rewrites the address under the caret.
+
 function Editing({ settings }: { settings: ScribeSettings }) {
   const [address, setAddress] = useState(settings.editUrl)
   const [models, setModels] = useState<string[] | null>(null)
 
   useEffect(() => setAddress(settings.editUrl), [settings.editUrl])
 
-  // Asked again whenever the page is opened rather than once, since what a
-  // machine will serve changes the moment somebody pulls a model.
   useEffect(() => {
     let live = true
     setModels(null)
@@ -307,7 +303,6 @@ export default function Scribe() {
             onChange={edit => setScribeSettings({ edit })}
           />
         </Row>
-        {/* Left out rather than greyed where there is nothing for them to say. */}
         {settings.edit && <Editing settings={settings} />}
       </Section>
 
