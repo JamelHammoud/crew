@@ -296,6 +296,21 @@ export default function Scribe() {
         </Row>
       </Section>
 
+      <Section title="Writing it up">
+        <Row
+          label="Use a model on this computer"
+          line="Sentences come out whole, and times and amounts are written properly."
+        >
+          <Toggle
+            on={settings.edit}
+            label="Use a model on this computer"
+            onChange={edit => setScribeSettings({ edit })}
+          />
+        </Row>
+        {/* Left out rather than greyed where there is nothing for them to say. */}
+        {settings.edit && <Editing settings={settings} />}
+      </Section>
+
       <Section title="Finishing">
         <Row label="When you are done">
           <Select
