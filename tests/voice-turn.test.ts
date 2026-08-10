@@ -131,6 +131,66 @@ describe('what is worth sending on', () => {
   })
 })
 
+describe('a pause somebody took against a turn they finished', () => {
+  it('answers a finished thought at once', () => {
+    expect(stillGoing('run the tests')).toBe(false)
+    expect(stillGoing('two of them are failing.')).toBe(false)
+    expect(stillGoing('what broke?')).toBe(false)
+    expect(stillGoing('wait!')).toBe(false)
+  })
+
+  it('waits on somebody who is plainly still going', () => {
+    expect(stillGoing('and then')).toBe(true)
+    expect(stillGoing('the other thing is')).toBe(true)
+    expect(stillGoing('if we could just...')).toBe(true)
+    expect(stillGoing('so basically')).toBe(true)
+    expect(stillGoing('it waits two seconds after I,')).toBe(true)
+  })
+
+  it('waits on a question that has not been asked yet', () => {
+    expect(stillGoing('what I want to know is')).toBe(true)
+  })
+
+  it('answers nothing at all', () => {
+    expect(stillGoing('')).toBe(false)
+    expect(stillGoing('   ')).toBe(false)
+  })
+
+  it('sends the whole thought once the rest of it arrives', () => {
+    const held = new HeldTurn()
+    expect(held.add('So basically')).toBe(null)
+    expect(held.waiting).toBe('So basically')
+    expect(held.add('the tests are slow.')).toBe('So basically the tests are slow.')
+    expect(held.waiting).toBe('')
+  })
+
+  it('keeps holding while every piece trails off', () => {
+    const held = new HeldTurn()
+    expect(held.add('I want to make it faster because')).toBe(null)
+    expect(held.add('right now it waits like two seconds and')).toBe(null)
+    expect(held.add('then it answers.')).toBe('I want to make it faster because right now it waits like two seconds and then it answers.')
+  })
+
+  it('takes the dash off the end of a piece it joins', () => {
+    const held = new HeldTurn()
+    expect(held.add('two seconds after I-')).toBe(null)
+    expect(held.add('finish speaking.')).toBe('two seconds after I finish speaking.')
+  })
+
+  it('sends what it was holding when nothing else comes', () => {
+    const held = new HeldTurn()
+    held.add('and then')
+    expect(held.take()).toBe('and then')
+    expect(held.take()).toBe('')
+  })
+
+  it('never holds a finished sentence', () => {
+    const held = new HeldTurn()
+    expect(held.add('run the tests')).toBe('run the tests')
+    expect(held.waiting).toBe('')
+  })
+})
+
 // The whole path a reply takes, without a store or a speaker anywhere near it:
 // the run is found, the text is spoken as it grows, and the end says the rest.
 describe('a turn from asking to said', () => {
