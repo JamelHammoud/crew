@@ -125,6 +125,13 @@ describe('what a model is allowed to have written', () => {
     expect(edited('open the file', '"Open the file."')).toBe('Open the file.')
   })
 
+  it('takes a model that thinks out loud on its way to the answer', () => {
+    expect(edited('open the file', '<think>The speaker paused. No full stop there.</think>\nOpen the file.')).toBe(
+      'Open the file.'
+    )
+    expect(edited('open the file', 'Reasoning about it.</think> Open the file.')).toBe('Open the file.')
+  })
+
   it('refuses an answer to the words rather than an edit of them', () => {
     expect(edited('what time are we supposed to meet tomorrow', 'You have nothing on your calendar tomorrow.')).toBe(
       null
