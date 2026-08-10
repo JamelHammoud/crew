@@ -73,6 +73,18 @@ export const useVoice = create<VoiceState>((set, get) => {
   let asked: string | null = null
   let raw = ''
   let ready = 0
+  const held = new HeldTurn()
+  let holding: ReturnType<typeof setTimeout> | null = null
+
+  const letGo = () => {
+    if (holding) globalThis.clearTimeout(holding)
+    holding = null
+  }
+
+  const forget = () => {
+    letGo()
+    held.clear()
+  }
 
   const fetched = (file: string, loaded: number, total: number) => {
     fetching.set(file, { file, loaded, total })
