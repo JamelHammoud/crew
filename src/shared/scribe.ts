@@ -241,6 +241,10 @@ export function rulesOf(settings: ScribeSettings): TidyRules {
   }
 }
 
+export function editorOf(settings: ScribeSettings): Editor {
+  return { url: settings.edit ? settings.editUrl : '', model: settings.editModel }
+}
+
 export const restsOnScreen = (settings: ScribeSettings): boolean => settings.on && settings.always
 
 export type { TidyRules }
