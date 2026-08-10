@@ -3,7 +3,7 @@ import { context } from '../audio'
 import { captureMic } from '../capture'
 import { storedInput } from '../devices'
 import { EAR_PROCESSOR, loadEarWorklet } from './earWorklet'
-import { FRAME, HEARD_RATE, rmsOf, VoiceGate } from './gate'
+import { FRAME, HEARD_RATE, rmsOf, TURN_CLOSE_MS, VoiceGate } from './gate'
 import { join, PreRoll, resample } from './resample'
 
 const PRE_ROLL_MS = 320
