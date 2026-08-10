@@ -214,6 +214,9 @@ export function cleanSettings(input: unknown, platform: string): ScribeSettings 
     marks: bool(held.marks, base.marks),
     ready: bool(held.ready, base.ready),
     live: bool(held.live, base.live),
+    edit: bool(held.edit, base.edit),
+    editUrl: typeof held.editUrl === 'string' ? serverUrl(held.editUrl) ?? '' : base.editUrl,
+    editModel: text(held.editModel),
     words: cleanWords(held.words)
   }
 }
