@@ -19,7 +19,14 @@ export class ScribeFlow {
   // words in. Every stretch after the first carries the space that keeps it off
   // the end of the one before it.
   next(chunks: readonly ScribeChunk[], rules: TidyRules): string {
-    const text = tidy(chunks, rules)
+    return this.mark(tidy(chunks, rules))
+  }
+
+  // The same, for a stretch that has already been written up. Anything standing
+  // between the rules and the paste hands its answer back through here, so what
+  // decides the space in front of a stretch is one rule rather than one per way
+  // in.
+  mark(text: string): string {
     if (!text) return ''
     const out = this.wrote ? ` ${text}` : text
     this.wrote = true
