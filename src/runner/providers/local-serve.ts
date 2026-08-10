@@ -19,20 +19,6 @@ export interface LocalRuntime {
   key?: string
 }
 
-const OLLAMA_PORT = 11434
-
-const DEFAULT_URLS = [
-  `http://127.0.0.1:${OLLAMA_PORT}`,
-  'http://127.0.0.1:1234',
-  'http://127.0.0.1:8080'
-]
-
-const SERVERS: Record<string, string> = {
-  [String(OLLAMA_PORT)]: 'Ollama',
-  '1234': 'LM Studio',
-  '8080': 'llama-server'
-}
-
 const PROBE_MS = 1500
 const START_MS = 8000
 const POLL_MS = 300
