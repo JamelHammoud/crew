@@ -83,7 +83,7 @@ export class VoiceGate {
     }
     this.heldMs += ms
     this.quietMs = level < closesAt ? this.quietMs + ms : 0
-    if (this.quietMs >= CLOSE_MS || this.heldMs >= LONGEST_MS) return this.close()
+    if (this.quietMs >= this.closeMs || this.heldMs >= LONGEST_MS) return this.close()
     return 'speaking'
   }
 
