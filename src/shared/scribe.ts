@@ -1,4 +1,4 @@
-import { localUrl, OLLAMA_PORT } from './modelServers'
+import { localUrl, OLLAMA_PORT, serverUrl } from './modelServers'
 import type { Editor } from './scribeEdit'
 import { TIDY_RULES, type TidyRules } from './scribeTidy'
 
