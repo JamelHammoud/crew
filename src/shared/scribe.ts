@@ -163,6 +163,9 @@ export function defaultSettings(platform: string): ScribeSettings {
     marks: true,
     ready: false,
     live: true,
+    edit: false,
+    editUrl: localUrl(OLLAMA_PORT),
+    editModel: '',
     words: []
   }
 }
