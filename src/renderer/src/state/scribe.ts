@@ -109,6 +109,14 @@ export const useScribe = create<ScribeState>((set, get) => {
   // the clipboard has one place to land and lands there once.
   const asSaid = (): boolean => get().settings.live && get().settings.finish === 'paste'
 
+  // The rules first and then, where somebody has a model here for it, the model.
+  // Every way that can fail hands the rules' own writing back, so a dictation is
+  // never lost to a server that was slow or is not running.
+  const written = (chunks: readonly ScribeChunk[]): Promise<string> => {
+    const settings = get().settings
+    return editSaid(tidy(chunks, rulesOf(settings)), editorOf(settings))
+  }
+
   const keep = (audio: Float32Array, at: number) => {
     held.push({ audio, at })
     pieces.push(read(audio, at))
