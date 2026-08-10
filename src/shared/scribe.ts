@@ -37,6 +37,12 @@ export interface ScribeSettings {
   // to hand over once this is on, which is why the pill has no way to finish on
   // it: the key started the dictation and the key ends it.
   live: boolean
+  // A dictation read again by a model on this machine before it is written, and
+  // the server and model that does it. Off until somebody says otherwise, since
+  // it wants something running here and costs a wait the rules do not.
+  edit: boolean
+  editUrl: string
+  editModel: string
   words: ScribeWord[]
 }
 
