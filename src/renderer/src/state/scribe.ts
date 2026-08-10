@@ -138,7 +138,11 @@ export const useScribe = create<ScribeState>((set, get) => {
         if (pieces[0] !== first) return
         pieces.shift()
         held.shift()
-        const text = flow.next(chunks, rulesOf(get().settings))
+        const said = await written(chunks)
+        // Reading it again takes a moment, and the dictation can be cancelled
+        // inside that moment. Nothing goes out for a take nobody is waiting on.
+        if (get().phase !== 'reading' && get().phase !== 'hearing') return
+        const text = flow.mark(said)
         if (text) window.crew.scribeWrite(text)
       }
     })
