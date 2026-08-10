@@ -124,12 +124,15 @@ const unwrapped = (answer: string, said: Set<string>): string => {
 export function edited(said: string, answer: string): string | null {
   const meant = wordsIn(said)
   if (meant.length === 0) return null
-  const out = unwrapped(answer, new Set(meant))
+  const out = unwrapped(answer, new Set(meant.filter(telling)))
   if (!out) return null
   const wrote = wordsIn(out)
   if (wrote.length === 0) return null
   if (wrote.length > Math.ceil(meant.length * GROWN) + 2) return null
 
+  // What is left in here once the answer has been walked is every occurrence of
+  // a word that was said and did not come back, which is the one number both
+  // halves of this are read from.
   const left = new Map<string, number>()
   for (const word of meant) left.set(word, (left.get(word) ?? 0) + 1)
   let added = 0
@@ -143,11 +146,11 @@ export function edited(said: string, answer: string): string | null {
   }
   if (added > Math.max(1, Math.floor(meant.length * ADDED))) return null
 
-  const asked = meant.filter(meaning)
-  if (asked.length > 0) {
+  const asked = meant.filter(meaning).length
+  if (asked > 0) {
     let lost = 0
-    for (const word of asked) if ((left.get(word) ?? 0) > 0) lost += 1
-    if (asked.length - lost < asked.length * KEPT) return null
+    for (const [word, count] of left) if (meaning(word)) lost += count
+    if (asked - lost < asked * KEPT) return null
   }
   return out
 }
