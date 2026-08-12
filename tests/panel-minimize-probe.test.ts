@@ -70,15 +70,15 @@ describe('putting the side panel away by its own edge', () => {
 
   it('is what raises the way back, and pressing it takes the way back away', () => {
     view()
-    expect(screen.queryByLabelText('Show panel')).toBeNull()
+    expect(wayBack()).toBeNull()
 
     dragTo(0, DEFAULT_WIDTH)
-    const button = screen.getByLabelText('Show panel')
+    const button = wayBack()!
 
     fireEvent.click(button)
 
     expect(useBrowser.getState().open).toBe(true)
     expect(useBrowser.getState().width).toBe(DEFAULT_WIDTH)
-    expect(screen.queryByLabelText('Show panel')).toBeNull()
+    expect(wayBack()).toBeNull()
   })
 })
