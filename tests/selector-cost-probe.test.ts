@@ -245,16 +245,19 @@ function Screen(): ReactNode {
   usePanelOpens()
   // Half of them point at a message the window still holds and half at one that
   // has fallen out of it, which is the walk that finds nothing.
-  const quotes = Array.from({ length: QUOTES }, (_, index) =>
-    createElement(ReplyQuote, {
-      key: index,
-      targetId: `message:msg-${index % 2 === 0 ? READ_EVENTS + index * 10 : index}`,
-      authorId: 'ali',
-      authorName: 'ALI',
-      label: 'Replying to ALI',
-      text: `quoted line ${index}`
-    })
-  )
+  const quotes: ReactNode[] = []
+  for (let index = 0; index < QUOTES; index++) {
+    quotes.push(
+      createElement(ReplyQuote, {
+        key: index,
+        targetId: `message:msg-${index % 2 === 0 ? READ_EVENTS + index * 10 : index}`,
+        authorId: 'ali',
+        authorName: 'ALI',
+        label: 'Replying to ALI',
+        text: `quoted line ${index}`
+      })
+    )
+  }
   return createElement(
     Fragment,
     null,
