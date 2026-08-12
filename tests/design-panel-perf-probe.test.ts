@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { act, cleanup, render } from '@testing-library/react'
-import { createElement, Profiler, type ReactNode } from 'react'
-import { afterEach, describe, expect, it } from 'vitest'
+import { createElement } from 'react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { EditorContext } from '../src/renderer/src/canvas/react'
 import { Editor } from '../src/renderer/src/canvas/editor'
 import { createShapeId, createTLStore, type TLShapeId } from '../src/renderer/src/canvas/schema'
@@ -12,7 +12,21 @@ import { sameLayers } from '../src/renderer/src/design/layerShapes'
 
 const COUNT = 200
 const MOVES = 20
-const BUDGET_MS = 2
+
+const drawn = vi.hoisted(() => ({ layers: 0 }))
+
+vi.mock('../src/renderer/src/design/layerShapes', async () => {
+  const actual = await vi.importActual<typeof import('../src/renderer/src/design/layerShapes')>(
+    '../src/renderer/src/design/layerShapes'
+  )
+  return {
+    ...actual,
+    useLayerShapes: (editor: Parameters<typeof actual.useLayerShapes>[0]) => {
+      drawn.layers += 1
+      return actual.useLayerShapes(editor)
+    }
+  }
+})
 
 function board(): { editor: Editor; ids: TLShapeId[] } {
   const editor = new Editor({
@@ -31,36 +45,41 @@ function board(): { editor: Editor; ids: TLShapeId[] } {
   return { editor, ids }
 }
 
-function panel(editor: Editor, onCommit: (ms: number) => void): ReactNode {
-  return createElement(
-    EditorContext.Provider,
-    { value: editor },
-    createElement(
-      Profiler,
-      { id: 'left-panel', onRender: (_id: string, _phase: string, actual: number) => onCommit(actual) },
-      createElement(DesignLeftPanel)
-    )
-  )
+interface Stand {
+  editor: Editor
+  ids: TLShapeId[]
+  layers(): number
 }
 
-function reactCostOfADrag(): number {
+function stand(): Stand {
   const { editor, ids } = board()
   editor.setSelectedShapes([ids[0]])
-  let ms = 0
   act(() => {
-    render(panel(editor, spent => (ms += spent)))
+    render(
+      createElement(
+        EditorContext.Provider,
+        { value: editor },
+        createElement(DesignLeftPanel, { onClose: () => undefined })
+      )
+    )
   })
-  ms = 0
-  for (let step = 0; step < MOVES; step++) {
-    act(() => {
-      const shape = editor.getShape(ids[0])!
-      editor.updateShape({ id: ids[0], type: shape.type, x: shape.x + 1, y: shape.y + 1 })
-    })
-  }
-  return ms / MOVES
+  drawn.layers = 0
+  return { editor, ids, layers: () => drawn.layers }
 }
 
-afterEach(cleanup)
+function drag(editor: Editor, id: TLShapeId): void {
+  for (let step = 0; step < MOVES; step++) {
+    act(() => {
+      const shape = editor.getShape(id)!
+      editor.updateShape({ id, type: shape.type, x: shape.x + 1, y: shape.y + 1 })
+    })
+  }
+}
+
+afterEach(() => {
+  cleanup()
+  drawn.layers = 0
+})
 
 describe('the layer list while a shape is being dragged', () => {
   it('is handed a new array by the editor for one moved shape', () => {
@@ -94,7 +113,17 @@ describe('the layer list while a shape is being dragged', () => {
     expect(sameLayers(ordered, editor.getCurrentPageShapesSorted())).toBe(false)
   })
 
-  it('costs the panel almost no react time per pointer move', () => {
-    expect(reactCostOfADrag()).toBeLessThan(BUDGET_MS)
+  it('is drawn again for none of the frames of a drag', () => {
+    const view = stand()
+    drag(view.editor, view.ids[0])
+    expect(view.layers()).toBe(0)
+  })
+
+  it('is drawn again when a layer really changes', () => {
+    const view = stand()
+    act(() => {
+      view.editor.updateShape({ id: view.ids[0], type: 'geo', meta: { hidden: true } })
+    })
+    expect(view.layers()).toBe(1)
   })
 })
