@@ -94,8 +94,11 @@ describe('presence stack', () => {
     render(createElement(PresenceStack))
     const bar = screen.getByRole('button', { name: "Who's here" })
 
-    for (const face of bar.querySelectorAll('span[style*="width"]')) {
+    const faces = [...(bar.querySelector('.inline-flex')?.children ?? [])]
+    expect(faces.length).toBe(2)
+    for (const face of faces) {
       expect((face as HTMLElement).style.width).toBe('40px')
+      expect((face as HTMLElement).style.height).toBe('40px')
     }
     expect(bar.querySelectorAll('.w-10.h-10').length).toBe(2)
   })
