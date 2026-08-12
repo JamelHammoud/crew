@@ -80,7 +80,7 @@ describe('the empty chat', () => {
     const agentCapabilities = vi.fn(async () => [capability])
     Object.defineProperty(window, 'crew', {
       configurable: true,
-      value: { agentCapabilities } as unknown as Window['crew']
+      value: { agentCapabilities, modelServers: vi.fn(async () => []) } as unknown as Window['crew']
     })
 
     open([])
