@@ -180,14 +180,10 @@ describe('the sidebar', () => {
   it('holds the three pages at its head, then the tasks, then More under them', () => {
     const { container } = render(Sidebar())
     const nav = container.querySelector('nav[aria-label="Main navigation"]') as HTMLElement
-    expect([...nav.querySelectorAll('button')].map(one => one.textContent)).toEqual([
-      'Chat',
-      'Docs',
-      'Design',
-      'Tasks',
-      'More'
-    ])
+    const rows = [...nav.querySelectorAll('.group.relative > button')]
+    expect(rows.map(one => one.textContent)).toEqual(['Chat', 'Docs', 'Design', 'Tasks', 'More'])
     expect(nav.querySelector('button[aria-current="page"]')?.textContent).toBe('Chat')
+    expect(rows[1].parentElement?.contains(screen.getByRole('button', { name: 'New page' }))).toBe(true)
   })
 
   it('opens More to the side on hover and goes to the page a row in it names', async () => {
