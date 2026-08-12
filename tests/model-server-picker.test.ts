@@ -77,7 +77,7 @@ describe('a server in the list of providers', () => {
   it('stands under its own name beside the ones that ship', async () => {
     stand([ollama, rack])
     await openCard()
-    fireEvent.click(screen.getByRole('button', { name: /ProviderOllama/ }))
+    fireEvent.click(picker('Provider'))
     expect(screen.getByRole('button', { name: 'The rack' })).toBeTruthy()
   })
 
@@ -85,7 +85,7 @@ describe('a server in the list of providers', () => {
   it('offers what it serves and nothing this computer is running', async () => {
     stand([ollama, rack])
     await openCard()
-    fireEvent.click(screen.getByRole('button', { name: /ProviderOllama/ }))
+    fireEvent.click(picker('Provider'))
     fireEvent.click(screen.getByRole('button', { name: 'The rack' }))
     expect(screen.getByRole('button', { name: /Modelfar:70b/ })).toBeTruthy()
     expect(screen.queryByRole('button', { name: /Modelhere:8b/ })).toBeNull()
@@ -95,7 +95,7 @@ describe('a server in the list of providers', () => {
   it('makes an agent that is written down against the address rather than the name', async () => {
     const { createAgent } = stand([ollama, rack])
     await openCard()
-    fireEvent.click(screen.getByRole('button', { name: /ProviderOllama/ }))
+    fireEvent.click(picker('Provider'))
     fireEvent.click(screen.getByRole('button', { name: 'The rack' }))
     fireEvent.click(screen.getByRole('button', { name: 'Create' }))
     await waitFor(() =>
@@ -112,7 +112,7 @@ describe('a server in the list of providers', () => {
   it('says it is not answering rather than that it is not installed', async () => {
     stand([ollama, down])
     await openCard()
-    fireEvent.click(screen.getByRole('button', { name: /ProviderOllama/ }))
+    fireEvent.click(picker('Provider'))
     expect(screen.getByText('Not answering')).toBeTruthy()
   })
 })
@@ -121,14 +121,14 @@ describe('adding one', () => {
   it('is the way the list of providers ends', async () => {
     stand([ollama])
     await openCard()
-    fireEvent.click(screen.getByRole('button', { name: /ProviderOllama/ }))
+    fireEvent.click(picker('Provider'))
     expect(screen.getByRole('button', { name: 'Add a provider' })).toBeTruthy()
   })
 
   it('takes a name and lands on the row it just made', async () => {
     const { addModelServer } = stand([ollama])
     await openCard()
-    fireEvent.click(screen.getByRole('button', { name: /ProviderOllama/ }))
+    fireEvent.click(picker('Provider'))
     fireEvent.click(screen.getByRole('button', { name: 'Add a provider' }))
     fireEvent.change(screen.getByPlaceholderText('Name'), { target: { value: 'The rack' } })
     fireEvent.change(screen.getByPlaceholderText('Address'), { target: { value: '192.0.2.10:39862/v1' } })
@@ -149,7 +149,7 @@ describe('adding one', () => {
       })
     })
     await openCard()
-    fireEvent.click(screen.getByRole('button', { name: /ProviderOllama/ }))
+    fireEvent.click(picker('Provider'))
     fireEvent.click(screen.getByRole('button', { name: 'Add a provider' }))
     fireEvent.change(screen.getByPlaceholderText('Address'), { target: { value: '192.0.2.10:39862/v1' } })
     fireEvent.click(screen.getByRole('button', { name: 'Add' }))
@@ -160,7 +160,7 @@ describe('adding one', () => {
   it('lists what is written down under the names they were given', async () => {
     stand([ollama, rack], [{ url: RACK, name: 'The rack' }, { url: 'http://192.0.2.11:8000' }])
     await openCard()
-    fireEvent.click(screen.getByRole('button', { name: /ProviderOllama/ }))
+    fireEvent.click(picker('Provider'))
     fireEvent.click(screen.getByRole('button', { name: 'Add a provider' }))
     await waitFor(() => expect(screen.getByText('The rack')).toBeTruthy())
     expect(screen.getByText('192.0.2.11:8000')).toBeTruthy()
