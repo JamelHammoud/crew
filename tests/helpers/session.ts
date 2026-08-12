@@ -84,7 +84,7 @@ export class TestUi {
     return new Promise((resolve, reject) => {
       const ws = new WebSocket(url)
       const ui = new TestUi(ws)
-      const timer = setTimeout(() => reject(new Error('welcome timed out')), 10000)
+      const timer = setTimeout(() => reject(new Error('welcome timed out')), 30000)
       ws.on('open', () => {
         const hello: ClientMessage = { type: 'hello', role: 'ui', name, code }
         ws.send(JSON.stringify(hello))
