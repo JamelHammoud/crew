@@ -154,7 +154,7 @@ describe('the helpers a thread sent out', () => {
   })
 
   it('brings the panel back with the helpers still in it', () => {
-    const { getByLabelText, queryByLabelText } = render(
+    const { getByRole, queryByRole } = render(
       createElement(
         'div',
         null,
