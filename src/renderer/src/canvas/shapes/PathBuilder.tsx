@@ -49,11 +49,7 @@ export interface NonePathBuilderOpts extends BasePathBuilderOpts {
   style: 'none'
 }
 
-export type PathBuilderOpts =
-  | SolidPathBuilderOpts
-  | DashedPathBuilderOpts
-  | DrawPathBuilderOpts
-  | NonePathBuilderOpts
+export type PathBuilderOpts = SolidPathBuilderOpts | DashedPathBuilderOpts | DrawPathBuilderOpts | NonePathBuilderOpts
 
 export interface PathBuilderCommandOpts {
   offset?: number
@@ -98,10 +94,7 @@ interface CubicBezierToPathBuilderCommand extends PathBuilderCommandBase {
   resolution?: number
 }
 
-export type PathBuilderCommand =
-  | MoveToPathBuilderCommand
-  | LineToPathBuilderCommand
-  | CubicBezierToPathBuilderCommand
+export type PathBuilderCommand = MoveToPathBuilderCommand | LineToPathBuilderCommand | CubicBezierToPathBuilderCommand
 
 export interface PathBuilderToDOpts {
   startIdx?: number
@@ -884,12 +877,8 @@ export class PathBuilderGeometry2d extends Geometry2d {
   }
 }
 
-const T_VALUES = [
-  -0.1252, 0.1252, -0.3678, 0.3678, -0.5873, 0.5873, -0.7699, 0.7699, -0.9041, 0.9041, -0.9816, 0.9816
-]
-const C_VALUES = [
-  0.2491, 0.2491, 0.2335, 0.2335, 0.2032, 0.2032, 0.1601, 0.1601, 0.1069, 0.1069, 0.0472, 0.0472
-]
+const T_VALUES = [-0.1252, 0.1252, -0.3678, 0.3678, -0.5873, 0.5873, -0.7699, 0.7699, -0.9041, 0.9041, -0.9816, 0.9816]
+const C_VALUES = [0.2491, 0.2491, 0.2335, 0.2335, 0.2032, 0.2032, 0.1601, 0.1601, 0.1069, 0.1069, 0.0472, 0.0472]
 
 function base3(t: number, p1: number, p2: number, p3: number, p4: number): number {
   const t1 = -3 * p1 + 9 * p2 - 9 * p3 + 3 * p4

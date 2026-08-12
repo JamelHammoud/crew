@@ -28,11 +28,7 @@ const configPath = (id: string): string => {
   return path.join(os.tmpdir(), `crew-mcp-${named || randomUUID()}.json`)
 }
 
-export function openMcp(
-  plugins: readonly CrewPlugin[],
-  how: McpHandover | undefined,
-  id: string
-): McpRun | null {
+export function openMcp(plugins: readonly CrewPlugin[], how: McpHandover | undefined, id: string): McpRun | null {
   if (!how || !plugins.length) return null
   const servers = mcpServersOf(plugins, machineKeys(plugins))
   if (!Object.keys(servers).length) return null

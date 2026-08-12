@@ -6,13 +6,7 @@ import { SearchGlyph } from '../design/glyphs'
 import { Popover } from './Popover'
 import { bringInto } from './scrollInto'
 
-export default function DesignActions({
-  onAsk,
-  onRename
-}: {
-  onAsk: () => void
-  onRename: (shape: TLShape) => void
-}) {
+export default function DesignActions({ onAsk, onRename }: { onAsk: () => void; onRename: (shape: TLShape) => void }) {
   const editor = useEditor()
   const [open, setOpen] = useState(false)
 

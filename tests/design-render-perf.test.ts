@@ -137,9 +137,7 @@ function board(count = COUNT) {
   const move = (id: string, x: number, y: number) =>
     shapes.set(shapes.get().map(shape => (shape.id === id ? { ...shape, x, y } : shape)))
   const relabel = (id: string, label: string) =>
-    shapes.set(
-      shapes.get().map(shape => (shape.id === id ? { ...shape, props: { ...shape.props, label } } : shape))
-    )
+    shapes.set(shapes.get().map(shape => (shape.id === id ? { ...shape, props: { ...shape.props, label } } : shape)))
   return { shapes, camera, culled, cameraState, instance, entries, host, move, relabel }
 }
 
@@ -259,7 +257,8 @@ describe('design board render work', () => {
 
   it('reuses the sort order while the same shapes are on the page', () => {
     const order = new RenderingShapeOrder()
-    const make = () => Array.from({ length: 64 }, (_unused, at) => entry(`shape:${String(63 - at).padStart(2, '0')}`, at))
+    const make = () =>
+      Array.from({ length: 64 }, (_unused, at) => entry(`shape:${String(63 - at).padStart(2, '0')}`, at))
     const first = order.sort(make()).map(one => one.id)
     const sort = vi.spyOn(Array.prototype, 'sort')
     const second = order.sort(make()).map(one => one.id)

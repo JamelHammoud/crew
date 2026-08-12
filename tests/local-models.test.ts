@@ -230,11 +230,7 @@ describe('the models a run can be given', () => {
 
 describe('who is answering on this machine', () => {
   it('asks the three addresses a local server is usually on', () => {
-    expect(candidateUrls({})).toEqual([
-      'http://127.0.0.1:11434',
-      'http://127.0.0.1:1234',
-      'http://127.0.0.1:8080'
-    ])
+    expect(candidateUrls({})).toEqual(['http://127.0.0.1:11434', 'http://127.0.0.1:1234', 'http://127.0.0.1:8080'])
   })
 
   it('reads OLLAMA_HOST first, however it was written', () => {

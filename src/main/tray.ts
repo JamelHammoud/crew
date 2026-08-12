@@ -1,17 +1,5 @@
-import {
-  Menu,
-  nativeImage,
-  nativeTheme,
-  Tray,
-  type BrowserWindow,
-  type NativeImage
-} from 'electron'
-import {
-  badgeText,
-  emptyPresence,
-  presenceTooltip,
-  type PresenceSnapshot
-} from '../shared/presence'
+import { Menu, nativeImage, nativeTheme, Tray, type BrowserWindow, type NativeImage } from 'electron'
+import { badgeText, emptyPresence, presenceTooltip, type PresenceSnapshot } from '../shared/presence'
 import { TrayPanel, type PanelPage } from './tray-panel'
 import { TRAY_HEIGHT, TRAY_ICON, TRAY_WIDTH } from './tray-png'
 

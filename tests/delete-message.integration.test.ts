@@ -23,7 +23,7 @@ describe('deleting messages', () => {
     await host.close()
   })
 
-  it('removes the author\'s message for everyone and stays gone after a restart', async () => {
+  it("removes the author's message for everyone and stays gone after a restart", async () => {
     const alice = await TestUi.connect(host.url, 'alice', host.code)
     const bob = await TestUi.connect(host.url, 'bob', host.code)
     uis.push(alice, bob)

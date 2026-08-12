@@ -110,11 +110,7 @@ export default function MediaView({ path, src, video }: { path: string; src: str
         onError={() => setFailed(true)}
         onClick={video ? toggle : undefined}
         aria-label={path}
-        className={
-          video && !failed
-            ? 'absolute inset-0 w-full h-full object-contain animate-rise'
-            : 'sr-only'
-        }
+        className={video && !failed ? 'absolute inset-0 w-full h-full object-contain animate-rise' : 'sr-only'}
       />
 
       {!failed && !ready && (

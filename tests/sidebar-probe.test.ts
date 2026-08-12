@@ -123,20 +123,12 @@ const rest = (ms: number) => new Promise(done => setTimeout(done, ms))
 
 const CROSSING_MS = 60
 
-const Sidebar = (
-  props: {
-    overlay?: boolean
-    strong?: boolean
-    tab?: Tab
-    onTab?: (tab: Tab) => void
-  } = {}
-) =>
+const Sidebar = (props: { overlay?: boolean; strong?: boolean; tab?: Tab; onTab?: (tab: Tab) => void } = {}) =>
   createElement(SidebarView, { tab: 'chat' as const, onTab: () => {}, ...props })
 
 const corner = () => render(createElement(WindowCorner))
 
-const topBar = () =>
-  render(createElement(TopBar))
+const topBar = () => render(createElement(TopBar))
 
 const toggleIn = (root: HTMLElement) => root.querySelector('[aria-label="Projects"]') as HTMLElement
 
@@ -150,7 +142,14 @@ beforeEach(async () => {
   joins = []
   localStorage.clear()
   useSidebar.setState({ pinned: false, peeking: false, near: false, over: false })
-  useCrew.setState({ place: `project:${ONE}`, folder: ONE, selfName: 'Jamel', threads: {}, threadPrompts: {}, queues: {} })
+  useCrew.setState({
+    place: `project:${ONE}`,
+    folder: ONE,
+    selfName: 'Jamel',
+    threads: {},
+    threadPrompts: {},
+    queues: {}
+  })
   useBrowser.setState({ tabs: [], activeTabId: null, open: false })
   await act(async () => {
     await usePlaces.getState().load()
@@ -651,10 +650,7 @@ describe('the sidebar', () => {
     })
 
     expect(usePlaces.getState().places.map(place => place.title)).toEqual(['two', 'one'])
-    expect(JSON.parse(localStorage.getItem('crew.project-order') ?? '[]')).toEqual([
-      `project:${TWO}`,
-      `project:${ONE}`
-    ])
+    expect(JSON.parse(localStorage.getItem('crew.project-order') ?? '[]')).toEqual([`project:${TWO}`, `project:${ONE}`])
 
     await act(async () => {
       await usePlaces.getState().load()

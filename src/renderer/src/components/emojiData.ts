@@ -46,8 +46,7 @@ const CATEGORIES: Array<{ id: string; source: string; label: string; icon: strin
   { id: 'flags', source: 'Flags', label: 'Flags', icon: '🚩' }
 ]
 
-const toChar = (unified: string) =>
-  String.fromCodePoint(...unified.split('-').map(part => Number.parseInt(part, 16)))
+const toChar = (unified: string) => String.fromCodePoint(...unified.split('-').map(part => Number.parseInt(part, 16)))
 
 const ordered = (source as unknown as SourceEmoji[])
   .filter(item => item.has_img_twitter)

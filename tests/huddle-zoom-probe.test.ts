@@ -73,15 +73,13 @@ const stage = () => {
 
   const { container } = render(createElement(HuddleStage))
   const frame = container.querySelector('[data-zoom-frame]') as HTMLElement
-  frame.getBoundingClientRect = () =>
-    ({ left: 0, top: 0, width: FRAME.width, height: FRAME.height }) as DOMRect
+  frame.getBoundingClientRect = () => ({ left: 0, top: 0, width: FRAME.width, height: FRAME.height }) as DOMRect
   const video = container.querySelector('video') as HTMLVideoElement
   act(() => void video.dispatchEvent(new Event('loadedmetadata')))
   return { container, frame, drawn: container.querySelector('[data-zoom-content]') as HTMLElement }
 }
 
-const scaleOf = (drawn: HTMLElement): number =>
-  Number(/scale\(([\d.]+)\)/.exec(drawn.style.transform)?.[1] ?? 0)
+const scaleOf = (drawn: HTMLElement): number => Number(/scale\(([\d.]+)\)/.exec(drawn.style.transform)?.[1] ?? 0)
 
 const offsetOf = (drawn: HTMLElement): { x: number; y: number } => {
   const match = /translate3d\((-?[\d.]+)px, (-?[\d.]+)px/.exec(drawn.style.transform)

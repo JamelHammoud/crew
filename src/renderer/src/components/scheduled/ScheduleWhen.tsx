@@ -34,13 +34,7 @@ const ordinal = (day: number): string => {
   return `${day}${['th', 'st', 'nd', 'rd'][day % 10] ?? 'th'}`
 }
 
-export default function ScheduleWhen({
-  when,
-  onChange
-}: {
-  when: Cadence
-  onChange: (when: Cadence) => void
-}) {
+export default function ScheduleWhen({ when, onChange }: { when: Cadence; onChange: (when: Cadence) => void }) {
   const at = when.kind === 'every' ? MORNING : when.at
   const days = when.kind === 'weekly' ? when.days : WEEKDAYS
 

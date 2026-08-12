@@ -45,12 +45,7 @@ export default function Avatar({
       style={px ? { width: px, height: px, fontSize: Math.round(px * 0.36) } : undefined}
     >
       {src ? (
-        <img
-          src={src}
-          alt=""
-          draggable={false}
-          className="block w-full h-full rounded-full object-cover"
-        />
+        <img src={src} alt="" draggable={false} className="block w-full h-full rounded-full object-cover" />
       ) : (
         <span
           className="w-full h-full rounded-full font-semibold flex items-center justify-center"

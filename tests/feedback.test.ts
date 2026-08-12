@@ -25,9 +25,7 @@ describe('feedback', () => {
   })
 
   it('puts what was written first and what it was written on under it', () => {
-    expect(feedbackBody('  The panel went blank  ', mac)).toBe(
-      'The panel went blank\n\nCrew 0.1.0\nmacOS 25.5.0 arm64'
-    )
+    expect(feedbackBody('  The panel went blank  ', mac)).toBe('The panel went blank\n\nCrew 0.1.0\nmacOS 25.5.0 arm64')
   })
 
   it('draws no empty lines when the machine said nothing about itself', () => {

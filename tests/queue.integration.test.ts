@@ -68,9 +68,10 @@ describe('queued messages', () => {
     expect(ui.events.some(e => e.kind === 'message' && e.text === 'first draft')).toBe(false)
 
     ui.send({ type: 'queue.edit', promptId: item.promptId, text: 'final version' })
-    const start = (await ui.waitForEvent(
-      e => e.kind === 'agent.start' && e.promptId === item.promptId
-    )) as Extract<SessionEvent, { kind: 'agent.start' }>
+    const start = (await ui.waitForEvent(e => e.kind === 'agent.start' && e.promptId === item.promptId)) as Extract<
+      SessionEvent,
+      { kind: 'agent.start' }
+    >
     expect(start.promptText).toBe('final version')
     await ui.waitForEvent(e => e.kind === 'message' && e.text === 'final version')
     expect(ui.events.some(e => e.kind === 'message' && e.text === 'first draft')).toBe(false)

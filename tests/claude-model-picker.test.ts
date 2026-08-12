@@ -51,12 +51,14 @@ afterEach(() => {
 
 describe('claude model picker', () => {
   it('opens an exact version picker for opus and creates the agent with that model', async () => {
-    const createAgent = vi.fn(async (): Promise<AgentDef> => ({
-      instanceId: 'claude-1',
-      provider: 'claude',
-      name: 'Claude Opus 4.8',
-      settings: {}
-    }))
+    const createAgent = vi.fn(
+      async (): Promise<AgentDef> => ({
+        instanceId: 'claude-1',
+        provider: 'claude',
+        name: 'Claude Opus 4.8',
+        settings: {}
+      })
+    )
     Object.defineProperty(window, 'crew', {
       configurable: true,
       value: {

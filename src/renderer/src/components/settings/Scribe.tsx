@@ -33,8 +33,7 @@ const FINISHES = [
   { value: 'copy', label: 'Copy it' }
 ]
 
-const isMac = (): boolean =>
-  Boolean(globalThis.navigator?.platform?.toLowerCase().includes('mac'))
+const isMac = (): boolean => Boolean(globalThis.navigator?.platform?.toLowerCase().includes('mac'))
 
 const platform = (): string => (isMac() ? 'darwin' : 'win32')
 
@@ -115,13 +114,8 @@ function Recent({ said }: { said: Said[] }) {
   return (
     <div>
       {said.map(one => (
-        <div
-          key={one.id}
-          className="flex items-start gap-3 py-1.5 border-b border-fg/[0.06] last:border-b-0"
-        >
-          <p className="flex-1 min-w-0 pt-1.5 text-sm text-fg/70 leading-snug line-clamp-2 select-text">
-            {one.text}
-          </p>
+        <div key={one.id} className="flex items-start gap-3 py-1.5 border-b border-fg/[0.06] last:border-b-0">
+          <p className="flex-1 min-w-0 pt-1.5 text-sm text-fg/70 leading-snug line-clamp-2 select-text">{one.text}</p>
           <span className="shrink-0 pt-1.5 text-xs text-fg/45">{when(one.at)}</span>
           <CopyButton glass text={one.text} />
         </div>
@@ -231,10 +225,7 @@ export default function Scribe() {
         </Row>
       </Section>
 
-      <Section
-        title="Recently said"
-        action={said.length > 0 && <Quiet label="Clear" onClick={() => forgetSaid()} />}
-      >
+      <Section title="Recently said" action={said.length > 0 && <Quiet label="Clear" onClick={() => forgetSaid()} />}>
         <Recent said={said} />
       </Section>
 
@@ -266,18 +257,10 @@ export default function Scribe() {
 
       <Section title="Tidying">
         <Row label="Fillers" line="Um, uh, you know.">
-          <Toggle
-            on={settings.fillers}
-            label="Fillers"
-            onChange={fillers => setScribeSettings({ fillers })}
-          />
+          <Toggle on={settings.fillers} label="Fillers" onChange={fillers => setScribeSettings({ fillers })} />
         </Row>
         <Row label="Stutters">
-          <Toggle
-            on={settings.stutters}
-            label="Stutters"
-            onChange={stutters => setScribeSettings({ stutters })}
-          />
+          <Toggle on={settings.stutters} label="Stutters" onChange={stutters => setScribeSettings({ stutters })} />
         </Row>
         <Row label="Corrections" line="Say scratch that and the sentence before it goes.">
           <Toggle
@@ -318,11 +301,7 @@ export default function Scribe() {
             lands there once. */}
         {settings.finish === 'paste' && (
           <Row label="Write as you talk">
-            <Toggle
-              on={settings.live}
-              label="Write as you talk"
-              onChange={live => setScribeSettings({ live })}
-            />
+            <Toggle on={settings.live} label="Write as you talk" onChange={live => setScribeSettings({ live })} />
           </Row>
         )}
         <Row

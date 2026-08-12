@@ -75,7 +75,12 @@ export default function Appearance({ view }: { view: NodeView | null }) {
         />
         {radius ? (
           uniform ? (
-            <NumberInput icon={<CornersGlyph className="w-4 h-4" />} value={radius.value[0]} min={0} onChange={setAll} />
+            <NumberInput
+              icon={<CornersGlyph className="w-4 h-4" />}
+              value={radius.value[0]}
+              min={0}
+              onChange={setAll}
+            />
           ) : (
             <MixedInput label="Corner radius" icon={<CornersGlyph className="w-4 h-4" />} onChange={setAll} />
           )

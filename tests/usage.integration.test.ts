@@ -15,7 +15,14 @@ const sampleUsage = (): AgentUsage => ({
   accountLabel: 'someone@example.com',
   plan: 'max',
   windows: [
-    { key: 'session', label: '5-hour limit', percent: 63, severity: 'normal', resetsAt: Date.now() + 3600_000, active: true },
+    {
+      key: 'session',
+      label: '5-hour limit',
+      percent: 63,
+      severity: 'normal',
+      resetsAt: Date.now() + 3600_000,
+      active: true
+    },
     { key: 'weekly_all', label: 'Weekly (all models)', percent: 11, severity: 'normal' }
   ]
 })
@@ -66,10 +73,7 @@ describe('usage limits', () => {
     const usage = sampleUsage()
     await connectRunner('jamel', makeUsageProvider(usage))
 
-    const msg = (await ui.waitFor(m => m.type === 'agent.usage')) as Extract<
-      ServerMessage,
-      { type: 'agent.usage' }
-    >
+    const msg = (await ui.waitFor(m => m.type === 'agent.usage')) as Extract<ServerMessage, { type: 'agent.usage' }>
     expect(msg.agentId).toBe(agentId('jamel', 'fake'))
     expect(msg.usage.accountId).toBe('acct-1')
     expect(msg.usage.windows.map(w => w.label)).toEqual(['5-hour limit', 'Weekly (all models)'])
@@ -110,8 +114,22 @@ describe('claude usage parsing', () => {
   it('reads the limits array with per-model weekly scopes', () => {
     const windows = claudeWindowsFrom({
       limits: [
-        { kind: 'session', group: 'session', percent: 63, severity: 'normal', resets_at: '2026-07-20T21:59:59Z', is_active: true },
-        { kind: 'weekly_all', group: 'weekly', percent: 11, severity: 'normal', resets_at: '2026-07-24T11:59:59Z', is_active: false },
+        {
+          kind: 'session',
+          group: 'session',
+          percent: 63,
+          severity: 'normal',
+          resets_at: '2026-07-20T21:59:59Z',
+          is_active: true
+        },
+        {
+          kind: 'weekly_all',
+          group: 'weekly',
+          percent: 11,
+          severity: 'normal',
+          resets_at: '2026-07-24T11:59:59Z',
+          is_active: false
+        },
         {
           kind: 'weekly_scoped',
           group: 'weekly',
@@ -140,11 +158,7 @@ describe('claude usage parsing', () => {
 
   it('ignores malformed entries and clamps percents', () => {
     const windows = claudeWindowsFrom({
-      limits: [
-        { kind: 'session', percent: 130 },
-        { kind: 'weekly_all', percent: 'lots' },
-        { percent: 5 }
-      ]
+      limits: [{ kind: 'session', percent: 130 }, { kind: 'weekly_all', percent: 'lots' }, { percent: 5 }]
     })
     expect(windows).toHaveLength(1)
     expect(windows[0].percent).toBe(100)

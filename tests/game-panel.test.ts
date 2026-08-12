@@ -91,7 +91,6 @@ describe('the games panel', () => {
     fireEvent.click(screen.getByText('Falling Blocks'))
     expect(document.body.querySelectorAll('ol li')).toHaveLength(1)
 
-
     fireEvent.click(screen.getByRole('button', { name: 'Play' }))
     expect(document.body.querySelectorAll('ol li')).toHaveLength(0)
     expect(screen.getByText('points')).toBeTruthy()

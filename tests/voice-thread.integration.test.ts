@@ -66,9 +66,7 @@ describe('a thread somebody spoke', () => {
     sam.chat('what broke', [fake], undefined, ['voice'])
     const started = (await sam.waitForEvent(e => e.kind === 'thread.started')) as Started
     expect(started.voice).toBe(true)
-    const ended = (await sam.waitForEvent(
-      e => e.kind === 'agent.end' && e.threadId === started.threadId
-    )) as Ended
+    const ended = (await sam.waitForEvent(e => e.kind === 'agent.end' && e.threadId === started.threadId)) as Ended
     expect(ended.text).toContain(SAID_OUT_LOUD)
     expect(ended.text).toContain(A_CARD)
   })
@@ -90,9 +88,7 @@ describe('a thread somebody spoke', () => {
     const sam = await ready()
     sam.chat('what broke @Fake', [fake])
     const started = (await sam.waitForEvent(e => e.kind === 'thread.started')) as Started
-    const ended = (await sam.waitForEvent(
-      e => e.kind === 'agent.end' && e.threadId === started.threadId
-    )) as Ended
+    const ended = (await sam.waitForEvent(e => e.kind === 'agent.end' && e.threadId === started.threadId)) as Ended
     expect(ended.text).not.toContain(SAID_OUT_LOUD)
   })
 

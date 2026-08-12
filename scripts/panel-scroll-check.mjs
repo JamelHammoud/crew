@@ -19,7 +19,8 @@ const PILLS = Array.from(
 
 const ICON = 'w-9 h-9 shrink-0 rounded-full flex items-center justify-center text-fg-muted'
 
-const CRUMBS = '<div class="flex-1 min-w-0 h-9 px-3 rounded-full bg-ink-800 flex items-center text-sm truncate">src/renderer/src/components/BrowserPanel.tsx</div>'
+const CRUMBS =
+  '<div class="flex-1 min-w-0 h-9 px-3 rounded-full bg-ink-800 flex items-center text-sm truncate">src/renderer/src/components/BrowserPanel.tsx</div>'
 
 const PAGE = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><script type="module" src="./probe.js"></script></head>
@@ -273,7 +274,7 @@ async function compile(dir) {
     base: './',
     logLevel: 'silent',
     plugins: [tailwind()],
-    build: { outDir: path.join(dir, 'dist'), emptyOutDir: true },
+    build: { outDir: path.join(dir, 'dist'), emptyOutDir: true }
   })
   const assets = path.join(dir, 'dist/assets')
   const files = await readdir(assets)
@@ -284,7 +285,7 @@ async function compile(dir) {
     rootRule: css.includes('#root{') || /#root\s*\{/.test(css),
     hidden: css.includes('overflow:hidden'),
     noScrollbar: css.includes('scrollbar-width:none'),
-    header: css.includes('height:70px'),
+    header: css.includes('height:70px')
   }
 }
 
@@ -309,16 +310,14 @@ const SAYS = {
   C: 'mid animation: outer 40 wide holding an inner 380 wide',
   D: '#root given real vertical overflow (a 400px sibling inside it)',
   E: 'the same as A but behavior: smooth, read 500ms later',
-  F: 'SidePanel outer given real vertical overflow (the column forced to 1200)',
+  F: 'SidePanel outer given real vertical overflow (the column forced to 1200)'
 }
 
 function table(before, after) {
   const rows = []
   const width = Math.max(...before.levels.map(l => l.name.length))
   rows.push(
-    '  ' +
-      'box'.padEnd(width) +
-      '  scrollTop        scrollLeft       client/scroll W    client/scroll H    overflow'
+    '  ' + 'box'.padEnd(width) + '  scrollTop        scrollLeft       client/scroll W    client/scroll H    overflow'
   )
   for (let i = 0; i < before.levels.length; i++) {
     const b = before.levels[i]
@@ -384,7 +383,9 @@ try {
   }
 
   console.log('\n=== G: can the SidePanel outer ever gain vertical overflow on its own? ===')
-  console.log('  window  toolbar  outer client/scroll H   outer top/left   #root client/scroll H  #root top  header top')
+  console.log(
+    '  window  toolbar  outer client/scroll H   outer top/left   #root client/scroll H  #root top  header top'
+  )
   for (const s of seen.sweep) {
     console.log(
       '  ' +

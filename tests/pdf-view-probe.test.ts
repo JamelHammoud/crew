@@ -39,10 +39,7 @@ HTMLCanvasElement.prototype.getContext = function measuring(this: HTMLCanvasElem
 } as never
 
 const here = import.meta.url
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  '../node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs',
-  here
-).href
+pdfjs.GlobalWorkerOptions.workerSrc = new URL('../node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs', here).href
 
 const url = 'https://crew.test/note.pdf'
 const bytes = pdfBytes(['Crew pools agents', 'Second page here'])
@@ -57,8 +54,7 @@ const bar = (root: HTMLElement): HTMLInputElement | null =>
 const counted = (root: HTMLElement): string | null =>
   bar(root)?.parentElement?.querySelector('span.tabular-nums')?.textContent ?? null
 
-const paper = (root: HTMLElement): HTMLElement =>
-  root.querySelector('[data-pdf-text]')?.parentElement as HTMLElement
+const paper = (root: HTMLElement): HTMLElement => root.querySelector('[data-pdf-text]')?.parentElement as HTMLElement
 
 const words = ['Crew pools agents', 'Second page here']
 
@@ -146,8 +142,6 @@ describe('a pdf in the panel', () => {
   })
 
   it('reads the page it is really given', () => {
-    expect(pdfAssets().standardFontDataUrl).toBe(
-      new URL('pdfjs/standard_fonts/', document.baseURI).href
-    )
+    expect(pdfAssets().standardFontDataUrl).toBe(new URL('pdfjs/standard_fonts/', document.baseURI).href)
   })
 })

@@ -29,7 +29,9 @@ export function codexModels(home = homedir()): CodexCatalog {
   }
   const listed = (Array.isArray(cached?.models) ? cached.models : [])
     .filter(m => typeof m?.slug === 'string' && m.visibility !== 'hide')
-    .sort((a, b) => (typeof a.priority === 'number' ? a.priority : 0) - (typeof b.priority === 'number' ? b.priority : 0))
+    .sort(
+      (a, b) => (typeof a.priority === 'number' ? a.priority : 0) - (typeof b.priority === 'number' ? b.priority : 0)
+    )
   if (listed.length === 0) return FALLBACK
   const efforts: string[] = []
   for (const model of listed) {

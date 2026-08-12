@@ -134,9 +134,7 @@ describe('adding one', () => {
     fireEvent.change(screen.getByPlaceholderText('Address'), { target: { value: '192.0.2.10:39862/v1' } })
     fireEvent.change(screen.getByPlaceholderText('Key'), { target: { value: 'sk-one' } })
     fireEvent.click(screen.getByRole('button', { name: 'Add' }))
-    await waitFor(() =>
-      expect(addModelServer).toHaveBeenCalledWith({ url: RACK, name: 'The rack', key: 'sk-one' })
-    )
+    await waitFor(() => expect(addModelServer).toHaveBeenCalledWith({ url: RACK, name: 'The rack', key: 'sk-one' }))
     await waitFor(() => expect(picker('Provider').textContent).toContain('The rack'))
   })
 

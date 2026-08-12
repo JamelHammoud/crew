@@ -143,8 +143,7 @@ describe('what has the caret in it', () => {
 })
 
 describe('reading back what the machine printed', () => {
-  const printed = (role: string, attributes: readonly string[]): string =>
-    `${role}\n${attributes.join(',')}`
+  const printed = (role: string, attributes: readonly string[]): string => `${role}\n${attributes.join(',')}`
 
   it('reads the two lines osascript prints', () => {
     expect(landingOf(printed('AXTextField', FIELD))).toBe('text')
@@ -192,17 +191,7 @@ describe('reading back what the machine printed', () => {
 // arrived at by accident is a dictation held behind a button while the field it
 // was meant for sits there empty.
 describe('nothing malformed is ever held back by accident', () => {
-  const malformed = [
-    '',
-    '   ',
-    '\n',
-    'unknown',
-    'AXTextField',
-    'AXWebArea',
-    'osascript: no such file',
-    '{}',
-    '\n\n'
-  ]
+  const malformed = ['', '   ', '\n', 'unknown', 'AXTextField', 'AXWebArea', 'osascript: no such file', '{}', '\n\n']
 
   it('is never none', () => {
     for (const printed of malformed) expect(landingOf(printed)).not.toBe('none')

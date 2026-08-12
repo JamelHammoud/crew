@@ -11,7 +11,11 @@ const { CursorGlyph, RectangleGlyph } = await import('../src/renderer/src/design
 
 afterEach(cleanup)
 
-function toolbar(tool = 'select', panels = { left: true, right: true }, onPanels: (next: (value: Panels) => Panels) => void = () => {}) {
+function toolbar(
+  tool = 'select',
+  panels = { left: true, right: true },
+  onPanels: (next: (value: Panels) => Panels) => void = () => {}
+) {
   const board = fakeBoard([])
   const editor = {
     ...board.editor,

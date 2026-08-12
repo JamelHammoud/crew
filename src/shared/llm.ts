@@ -114,8 +114,7 @@ export function changedSettings(fields: AgentSettingField[], settings: AgentSett
   )
 }
 
-export const plainFields = (fields: AgentSettingField[]): AgentSettingField[] =>
-  fields.filter(field => !field.advanced)
+export const plainFields = (fields: AgentSettingField[]): AgentSettingField[] => fields.filter(field => !field.advanced)
 
 export const advancedFields = (fields: AgentSettingField[]): AgentSettingField[] =>
   fields.filter(field => field.advanced)
@@ -234,10 +233,7 @@ export function mentionCandidates<T extends Pick<PooledAgent, 'label' | 'status'
   return [...prefix, ...within]
 }
 
-export function mentionsIn(
-  text: string,
-  agents: Array<Pick<PooledAgent, 'id' | 'label' | 'status'>>
-): string[] {
+export function mentionsIn(text: string, agents: Array<Pick<PooledAgent, 'id' | 'label' | 'status'>>): string[] {
   let work = ` ${text.toLowerCase()} `
   const ids: string[] = []
   const ordered = [...agents].sort((a, b) => b.label.length - a.label.length)
@@ -289,10 +285,7 @@ export const stripMention = (text: string, label: string): string =>
 // Who a piece of text names, whether or not they are here right now. Only
 // agents that are here get the work, but a name on the page points at its agent
 // either way, so it can be read back under the name they carry today.
-export function agentMentionRefsIn(
-  text: string,
-  agents: Array<Pick<PooledAgent, 'id' | 'label'>>
-): AgentMentionRef[] {
+export function agentMentionRefsIn(text: string, agents: Array<Pick<PooledAgent, 'id' | 'label'>>): AgentMentionRef[] {
   const here = agents.map(agent => ({ ...agent, status: 'idle' as const }))
   const labels = new Map(agents.map(agent => [agent.id, agent.label]))
   return mentionsIn(text, here).map(id => ({ id, label: labels.get(id)! }))

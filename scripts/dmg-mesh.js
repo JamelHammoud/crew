@@ -213,33 +213,20 @@ void main() {
 
     const buffer = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
-    gl.bufferData(
-      gl.ARRAY_BUFFER,
-      new Float32Array([-1, -1, 3, -1, -1, 3]),
-      gl.STATIC_DRAW
-    )
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW)
     const spot = gl.getAttribLocation(program, 'aSpot')
     gl.enableVertexAttribArray(spot)
     gl.vertexAttribPointer(spot, 2, gl.FLOAT, false, 0, 0)
 
     gl.uniform3fv(gl.getUniformLocation(program, 'uBase'), BASE)
     gl.uniform3fv(gl.getUniformLocation(program, 'uPaper'), PAPER)
-    gl.uniform4f(
-      gl.getUniformLocation(program, 'uBloom'),
-      BLOOM.x,
-      BLOOM.y,
-      BLOOM.radius,
-      BLOOM.strength
-    )
+    gl.uniform4f(gl.getUniformLocation(program, 'uBloom'), BLOOM.x, BLOOM.y, BLOOM.radius, BLOOM.strength)
     gl.uniform2fv(gl.getUniformLocation(program, 'uShape'), BLOOM.shape)
     gl.uniform1f(gl.getUniformLocation(program, 'uWide'), BLOOM.wide)
     gl.uniform1f(gl.getUniformLocation(program, 'uFade'), BLOOM.fade)
     gl.uniform1f(gl.getUniformLocation(program, 'uLift'), BLOOM.lift)
     gl.uniform1f(gl.getUniformLocation(program, 'uGrain'), GRAIN)
-    gl.uniform1f(
-      gl.getUniformLocation(program, 'uGrainCell'),
-      Math.max(1, Math.round(canvas.width / BASE_WIDTH))
-    )
+    gl.uniform1f(gl.getUniformLocation(program, 'uGrainCell'), Math.max(1, Math.round(canvas.width / BASE_WIDTH)))
     gl.uniform3fv(
       gl.getUniformLocation(program, 'uColour'),
       LAYERS.flatMap(layer => layer.color)

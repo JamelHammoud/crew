@@ -218,8 +218,7 @@ describe('the review tab', () => {
   it('keeps reading a file that has just been staged', async () => {
     let staged = false
     window.crew = {
-      repoWork: async () =>
-        work({ changes: [change('src/app.ts', staged, '@@ -1 +1 @@\n-a\n+kept')] }),
+      repoWork: async () => work({ changes: [change('src/app.ts', staged, '@@ -1 +1 @@\n-a\n+kept')] }),
       runRepo: async (command: RepoCommand) => {
         if (command.do === 'stage') staged = true
         return { ok: true, updated: true, message: 'Done', status: work().status }
@@ -258,7 +257,11 @@ describe('the review tab', () => {
     bridge(
       work({
         changes: [
-          change('src/app.ts', false, '@@ -1,3 +1,3 @@\n const before = 1\n-const gone = 2\n+const made = 2\n const after = 3')
+          change(
+            'src/app.ts',
+            false,
+            '@@ -1,3 +1,3 @@\n const before = 1\n-const gone = 2\n+const made = 2\n const after = 3'
+          )
         ]
       })
     )
@@ -556,8 +559,7 @@ describe('the branch a review is of', () => {
     { name: 'ali/spike', current: false, remote: true }
   ]
 
-  const rows = (): string[] =>
-    [...document.querySelectorAll('[data-row]')].map(el => el.textContent ?? '')
+  const rows = (): string[] => [...document.querySelectorAll('[data-row]')].map(el => el.textContent ?? '')
 
   const row = (name: string): HTMLElement =>
     [...document.querySelectorAll<HTMLElement>('[data-row]')].find(el => el.textContent === name) as HTMLElement

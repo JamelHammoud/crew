@@ -56,7 +56,15 @@ export const LIST_LIMIT = 24
 // they are on rather than a board id, because a board is a thread.
 export type TicketEvent =
   | { id: string; ts: number; kind: 'ticket.added'; threadId: string; ticketId: string; title: string }
-  | { id: string; ts: number; kind: 'ticket.moved'; threadId: string; ticketId: string; column: TicketColumn; note: string }
+  | {
+      id: string
+      ts: number
+      kind: 'ticket.moved'
+      threadId: string
+      ticketId: string
+      column: TicketColumn
+      note: string
+    }
   | { id: string; ts: number; kind: 'ticket.decided'; threadId: string; ticketId: string; text: string }
   | {
       id: string

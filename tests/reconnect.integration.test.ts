@@ -58,9 +58,10 @@ describe('reconnect', () => {
     runner.dropConnection()
     await ui.waitForEvent(e => e.kind === 'agent.offline')
 
-    const end = (await ui.waitForEvent(
-      e => e.kind === 'agent.end' && e.promptId === start.promptId
-    )) as Extract<SessionEvent, { kind: 'agent.end' }>
+    const end = (await ui.waitForEvent(e => e.kind === 'agent.end' && e.promptId === start.promptId)) as Extract<
+      SessionEvent,
+      { kind: 'agent.end' }
+    >
     expect(end.ok).toBe(true)
     expect(end.text).toContain('slow @Fake')
   })
@@ -78,9 +79,10 @@ describe('reconnect', () => {
     >
     runner.dropConnection()
 
-    const end = (await ui.waitForEvent(
-      e => e.kind === 'agent.end' && e.promptId === start.promptId
-    )) as Extract<SessionEvent, { kind: 'agent.end' }>
+    const end = (await ui.waitForEvent(e => e.kind === 'agent.end' && e.promptId === start.promptId)) as Extract<
+      SessionEvent,
+      { kind: 'agent.end' }
+    >
     expect(end.ok).toBe(true)
     expect(end.text).toContain('buffered @Fake')
   })
@@ -123,9 +125,10 @@ describe('reconnect', () => {
       runner.dropConnection()
       runner.close()
 
-      const end = (await ui.waitForEvent(
-        e => e.kind === 'agent.end' && e.promptId === start.promptId
-      )) as Extract<SessionEvent, { kind: 'agent.end' }>
+      const end = (await ui.waitForEvent(e => e.kind === 'agent.end' && e.promptId === start.promptId)) as Extract<
+        SessionEvent,
+        { kind: 'agent.end' }
+      >
       expect(end.ok).toBe(false)
       expect(end.error).toContain('disconnected')
     } finally {
@@ -148,9 +151,10 @@ describe('reconnect', () => {
     >
     runner.close()
 
-    const end = (await ui.waitForEvent(
-      e => e.kind === 'agent.end' && e.promptId === start.promptId
-    )) as Extract<SessionEvent, { kind: 'agent.end' }>
+    const end = (await ui.waitForEvent(e => e.kind === 'agent.end' && e.promptId === start.promptId)) as Extract<
+      SessionEvent,
+      { kind: 'agent.end' }
+    >
     expect(end.ok).toBe(false)
     expect(end.error).toContain('disconnected')
     await ui.waitForEvent(e => e.kind === 'agent.offline')

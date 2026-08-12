@@ -37,7 +37,8 @@ const actionList = (item: any): any[] => (Array.isArray(item?.commandActions) ? 
 const actionDetail = (action: any): string => {
   const type = str(action?.type)
   if (type === 'read') return str(action.path) || str(action.name) || str(action.command)
-  if (type === 'search') return [str(action.query), str(action.path)].filter(Boolean).join(' in ') || str(action.command)
+  if (type === 'search')
+    return [str(action.query), str(action.path)].filter(Boolean).join(' in ') || str(action.command)
   if (type === 'listFiles') return str(action.path) || str(action.command)
   return str(action.command)
 }
@@ -127,7 +128,13 @@ const named = (item: any): { name: string; detail: string } => {
   if (type === 'sleep') return { name: 'Sleep', detail: '' }
   if (type === 'hookPrompt') {
     const fragments = Array.isArray(item.fragments) ? item.fragments : []
-    return { name: 'Hook', detail: fragments.map((f: any) => str(f?.text)).filter(Boolean).join('\n') }
+    return {
+      name: 'Hook',
+      detail: fragments
+        .map((f: any) => str(f?.text))
+        .filter(Boolean)
+        .join('\n')
+    }
   }
   if (type === 'enteredReviewMode' || type === 'exitedReviewMode') return { name: 'Plan', detail: str(item.review) }
   return { name: ITEM_TOOLS[type] ?? type, detail: '' }

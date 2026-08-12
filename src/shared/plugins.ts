@@ -47,16 +47,16 @@ const line = (raw: unknown, limit: number): string =>
 
 const args = (raw: unknown): string[] =>
   Array.isArray(raw)
-    ? raw
-        .filter((one): one is string => typeof one === 'string' && one.trim().length > 0)
-        .slice(0, PLUGIN_ARG_LIMIT)
+    ? raw.filter((one): one is string => typeof one === 'string' && one.trim().length > 0).slice(0, PLUGIN_ARG_LIMIT)
     : []
 
 const keys = (raw: unknown): PluginKey[] =>
   Array.isArray(raw)
     ? raw
         .map(one => ({
-          name: cleanPluginName((one as PluginKey)?.name).toUpperCase().replace(/-/g, '_'),
+          name: cleanPluginName((one as PluginKey)?.name)
+            .toUpperCase()
+            .replace(/-/g, '_'),
           label: line((one as PluginKey)?.label, PLUGIN_NAME_LIMIT)
         }))
         .filter(one => one.name.length > 0)

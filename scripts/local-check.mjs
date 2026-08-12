@@ -69,7 +69,9 @@ async function check(app, work, store) {
     app.setServersPath(path.join(store, 'model-servers.json'))
     app.rememberServer({ url: written, key: process.env.CREW_LOCAL_KEY?.trim() || undefined })
     const answer = await app.checkServer({ url: written, key: process.env.CREW_LOCAL_KEY?.trim() || undefined })
-    line(`${at()} written   ${written} ${answer.ok ? `answers, speaking ${answer.runtime.kind}` : `is no good: ${answer.why}`}`)
+    line(
+      `${at()} written   ${written} ${answer.ok ? `answers, speaking ${answer.runtime.kind}` : `is no good: ${answer.why}`}`
+    )
   }
 
   const runtimes = await app.findRuntimes()

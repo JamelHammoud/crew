@@ -20,8 +20,7 @@ export default function MadeBy() {
   return (
     <p className="pt-8 text-sm text-fg/45 select-text">
       Made with <Emoji char="❤️" size="1.15em" className="align-[-0.2em]" />
-      <span className="sr-only">❤️</span> by <Maker {...MAKERS[0]} /> and{' '}
-      <Maker {...MAKERS[1]} />
+      <span className="sr-only">❤️</span> by <Maker {...MAKERS[0]} /> and <Maker {...MAKERS[1]} />
     </p>
   )
 }

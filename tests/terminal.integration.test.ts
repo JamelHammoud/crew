@@ -3,14 +3,7 @@ import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync } from 'nod
 import os from 'node:os'
 import path from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import {
-  replayable,
-  shellFor,
-  startingFolder,
-  terminalEnv,
-  Terminals,
-  type TerminalSink
-} from '../src/main/terminal'
+import { replayable, shellFor, startingFolder, terminalEnv, Terminals, type TerminalSink } from '../src/main/terminal'
 
 const unix = process.platform !== 'win32'
 

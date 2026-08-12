@@ -128,8 +128,13 @@ describe('subagents', () => {
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === fake)
 
     const parent = await openParent(ui, fake)
-    await post('/agents/spawn', { promptId: parent.promptId, name: 'Auditor',
-      provider: 'fake', subject: 'check', task: 'check the tests' })
+    await post('/agents/spawn', {
+      promptId: parent.promptId,
+      name: 'Auditor',
+      provider: 'fake',
+      subject: 'check',
+      task: 'check the tests'
+    })
     const out = (await ui.waitForEvent(e => e.kind === 'subagent.started')) as SpawnStarted
 
     const second = (await ui.waitForEvent(
@@ -153,8 +158,13 @@ describe('subagents', () => {
 
     const parent = await openParent(ui, fake)
     for (const subject of ['schema', 'tests', 'docs']) {
-      await post('/agents/spawn', { promptId: parent.promptId, name: 'Scout',
-      provider: 'fake', subject, task: `look at the ${subject}` })
+      await post('/agents/spawn', {
+        promptId: parent.promptId,
+        name: 'Scout',
+        provider: 'fake',
+        subject,
+        task: `look at the ${subject}`
+      })
     }
     await waitUntil(() => ui.events.filter(e => e.kind === 'subagent.ended').length === 3)
 
@@ -175,8 +185,13 @@ describe('subagents', () => {
     await connectRunner(20, 20)
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === fake)
 
-    const dead = await post('/agents/spawn', { promptId: 'not-a-run', name: 'Scout',
-      provider: 'fake', subject: 'x', task: 'x' })
+    const dead = await post('/agents/spawn', {
+      promptId: 'not-a-run',
+      name: 'Scout',
+      provider: 'fake',
+      subject: 'x',
+      task: 'x'
+    })
     expect(dead.status).toBe(400)
     expect(dead.body.error).toContain('not a run')
 
@@ -320,10 +335,7 @@ describe('subagents', () => {
     await ui.waitForEvent(e => e.kind === 'agent.start' && e.threadId === child)
 
     ui.cancel(parent.promptId)
-    const childEnd = await ui.waitForEvent(
-      e => e.kind === 'agent.end' && e.threadId === child && e.ok === false,
-      20000
-    )
+    const childEnd = await ui.waitForEvent(e => e.kind === 'agent.end' && e.threadId === child && e.ok === false, 20000)
     // The helper was called off rather than broken, and its chip is drawn off
     // this, so a stop that reads as a failure is a row of red for one press.
     expect(childEnd.kind === 'agent.end' && childEnd.stopped).toBe(true)
@@ -364,10 +376,14 @@ describe('subagents', () => {
       task: 'read the file'
     })
     expect(again.status).toBe(200)
-    const over = await post('/agents/spawn', { promptId: parent.promptId, name: 'Scout',
-      provider: 'fake', subject: 'y', task: 'more' })
+    const over = await post('/agents/spawn', {
+      promptId: parent.promptId,
+      name: 'Scout',
+      provider: 'fake',
+      subject: 'y',
+      task: 'more'
+    })
     expect(over.status).toBe(400)
     expect(over.body.error).toContain('1 running')
   })
-
 })

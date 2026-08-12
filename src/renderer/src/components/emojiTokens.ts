@@ -27,9 +27,7 @@ export function anyEmoji(text: string): boolean {
 
 function entryFor(segment: string): EmojiEntry | undefined {
   if (!PICTOGRAPHIC.test(segment)) return undefined
-  return (
-    lookupEmoji(segment) ?? lookupEmoji(segment.replace(VARIATION, '')) ?? lookupEmoji(`${segment}\uFE0F`)
-  )
+  return lookupEmoji(segment) ?? lookupEmoji(segment.replace(VARIATION, '')) ?? lookupEmoji(`${segment}\uFE0F`)
 }
 
 // What is between the crew's own is walked grapheme by grapheme, since a flag

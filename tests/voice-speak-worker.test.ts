@@ -61,7 +61,11 @@ describe('the speak worker', () => {
   beforeEach(async () => {
     said.length = 0
     vi.resetModules()
-    const self = { set onmessage(handler: (message: MessageEvent<SpeakIn>) => void) { hear = handler } }
+    const self = {
+      set onmessage(handler: (message: MessageEvent<SpeakIn>) => void) {
+        hear = handler
+      }
+    }
     vi.stubGlobal('self', self)
     vi.stubGlobal('postMessage', (message: SpeakOut) => said.push(message))
     await import('../src/renderer/src/media/voice/speak.worker')

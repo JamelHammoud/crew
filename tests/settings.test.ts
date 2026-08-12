@@ -229,9 +229,7 @@ describe('the settings', () => {
 
     fireEvent.click(visibility)
     expect(visibility.getAttribute('aria-checked')).toBe('false')
-    expect(window.crew.applyScribe).toHaveBeenLastCalledWith(
-      expect.objectContaining({ always: false })
-    )
+    expect(window.crew.applyScribe).toHaveBeenLastCalledWith(expect.objectContaining({ always: false }))
   })
 
   // The command comes with the app, so this row is the one press that puts it

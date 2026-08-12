@@ -29,8 +29,7 @@ export const serverProviderName = (url: string): string => `${PREFIX}${url}`
 export const serverUrlIn = (provider: string): string | null =>
   provider.startsWith(PREFIX) ? provider.slice(PREFIX.length) : null
 
-export const cleanServerName = (said: string): string =>
-  said.replace(/\s+/g, ' ').trim().slice(0, SERVER_NAME_LIMIT)
+export const cleanServerName = (said: string): string => said.replace(/\s+/g, ' ').trim().slice(0, SERVER_NAME_LIMIT)
 
 export function serverUrl(said: string): string | null {
   const written = said.trim().replace(/\/+$/, '')
@@ -57,8 +56,7 @@ export function serverLabel(url: string): string {
   return bare || url
 }
 
-export const serverName = (server: ModelServer): string =>
-  cleanServerName(server.name ?? '') || serverLabel(server.url)
+export const serverName = (server: ModelServer): string => cleanServerName(server.name ?? '') || serverLabel(server.url)
 
 export const sameServer = (a: string, b: string): boolean =>
   a.replace(/\/+$/, '').toLowerCase() === b.replace(/\/+$/, '').toLowerCase()
@@ -68,10 +66,7 @@ export function withServer(servers: readonly ModelServer[], server: ModelServer)
   const held = servers.find(one => sameServer(one.url, server.url))
   const key = server.key ?? held?.key
   const name = cleanServerName(server.name ?? '') || held?.name
-  return [
-    { url: server.url, ...(name ? { name } : {}), ...(key ? { key } : {}) },
-    ...rest
-  ].slice(0, SERVER_LIMIT)
+  return [{ url: server.url, ...(name ? { name } : {}), ...(key ? { key } : {}) }, ...rest].slice(0, SERVER_LIMIT)
 }
 
 export const withoutServer = (servers: readonly ModelServer[], url: string): ModelServer[] =>

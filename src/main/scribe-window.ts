@@ -2,17 +2,7 @@ import fs from 'node:fs'
 import { BrowserWindow, screen } from 'electron'
 import { PILL_ROOM, restsOnScreen, type ScribeSettings } from '../shared/scribe'
 import { joinHeld } from '../shared/scribeLanding'
-import {
-  fits,
-  grown,
-  hold,
-  middle,
-  PILL_LARGEST,
-  restSpot,
-  spotFrom,
-  type Size,
-  type Spot
-} from './scribe-spot'
+import { fits, grown, hold, middle, PILL_LARGEST, restSpot, spotFrom, type Size, type Spot } from './scribe-spot'
 import type { PanelPage } from './tray-panel'
 import { createScribeOptions } from './window-options'
 

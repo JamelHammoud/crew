@@ -7,12 +7,7 @@ import { TRAY_HEIGHT, TRAY_ICON, TRAY_WIDTH } from '../src/main/tray-png'
 import { badgeText, emptyPresence, presenceTooltip, presentNow } from '../src/shared/presence'
 import type { AgentStatus, PooledAgent } from '../src/shared/llm'
 import type { MemberInfo } from '../src/shared/protocol'
-import {
-  MARK_DISCS,
-  MARK_HEIGHT,
-  MARK_RADIUS,
-  MARK_WIDTH
-} from '../src/renderer/src/components/crew-mark'
+import { MARK_DISCS, MARK_HEIGHT, MARK_RADIUS, MARK_WIDTH } from '../src/renderer/src/components/crew-mark'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const trayArt = readFileSync(path.join(root, 'resources', 'tray.svg'), 'utf8')

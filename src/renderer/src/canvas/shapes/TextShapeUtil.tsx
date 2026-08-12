@@ -143,8 +143,7 @@ export class TextShapeUtil extends ShapeUtil<TextShape> {
       return resizeScaled(shape, info)
     }
     const width = Math.max(1, Math.abs(info.initialBounds.width * info.scaleX))
-    const point =
-      info.scaleX < 0 ? Vec.Sub(info.newPoint, Vec.FromAngle(shape.rotation).mul(width)) : info.newPoint
+    const point = info.scaleX < 0 ? Vec.Sub(info.newPoint, Vec.FromAngle(shape.rotation).mul(width)) : info.newPoint
     return {
       ...shape,
       x: point.x,

@@ -137,9 +137,7 @@ export class DragAndDropManager {
   }
 
   private update(point: Vec, onReparent?: () => void): void {
-    const dragging = this.shapesToActuallyMove
-      .map((shape: any) => this.editor.getShape(shape.id))
-      .filter(Boolean)
+    const dragging = this.shapesToActuallyMove.map((shape: any) => this.editor.getShape(shape.id)).filter(Boolean)
     if (!dragging.length) return
 
     const next = this.draggingOverShape(point)

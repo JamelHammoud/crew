@@ -231,10 +231,7 @@ describe('both axes snap alike', () => {
       const result = snapTranslateBounds({
         initialSelectionPageBounds: along(axis, -1, 0, 1, 10),
         dragDelta: new Vec(0, 0),
-        snappableShapes: [
-          at('first', along(axis, 0, 0, 1, 10)),
-          at('second', along(axis, 3, 0, 1, 10))
-        ]
+        snappableShapes: [at('first', along(axis, 0, 0, 1, 10)), at('second', along(axis, 3, 0, 1, 10))]
       })
 
       expect(result.nudge[axis]).toBe(-2)
@@ -252,9 +249,7 @@ describe('both axes snap alike', () => {
         ]
       })
 
-      const drawn = result.indicators.filter(
-        (indicator): indicator is GapsSnapIndicator => indicator.type === 'gaps'
-      )
+      const drawn = result.indicators.filter((indicator): indicator is GapsSnapIndicator => indicator.type === 'gaps')
       expect(result.nudge[axis]).toBe(1)
       expect(drawn).toHaveLength(2)
       const cross = axis === 'x' ? 'y' : 'x'

@@ -59,9 +59,9 @@ describe('the tools a local model is given', () => {
     expect(edit).toEqual([{ path: 'src/app.ts', added: 1, removed: 1, diff: '- const x = 1\n+ const x = 2' }])
     const wrote = fileChanges('Write', { file_path: 'notes.md', content: 'one\ntwo\n' })
     expect(wrote?.[0]).toMatchObject({ path: 'notes.md', added: 3, removed: 0 })
-    expect(stepTodos({ todos: [{ content: 'Draw the rows', activeForm: 'Drawing the rows', status: 'in_progress' }] })).toEqual([
-      { text: 'Draw the rows', status: 'doing' }
-    ])
+    expect(
+      stepTodos({ todos: [{ content: 'Draw the rows', activeForm: 'Drawing the rows', status: 'in_progress' }] })
+    ).toEqual([{ text: 'Draw the rows', status: 'doing' }])
   })
 })
 
@@ -105,7 +105,11 @@ describe('Edit', () => {
 
   it('says what went wrong when the old_string is not there', async () => {
     const root = project()
-    const edit = await runTool('Edit', { file_path: 'src/app.ts', old_string: 'export const q = 9', new_string: 'x' }, root)
+    const edit = await runTool(
+      'Edit',
+      { file_path: 'src/app.ts', old_string: 'export const q = 9', new_string: 'x' },
+      root
+    )
     expect(edit.ok).toBe(false)
     expect(edit.output).toContain('not in')
     const read = await runTool('Read', { file_path: 'src/app.ts' }, root)
@@ -115,7 +119,11 @@ describe('Edit', () => {
   it('refuses an ambiguous match, and takes it with replace_all', async () => {
     const root = project()
     write(root, 'twice.ts', 'const a = 1\nconst a = 1\n')
-    const refused = await runTool('Edit', { file_path: 'twice.ts', old_string: 'const a = 1', new_string: 'const a = 2' }, root)
+    const refused = await runTool(
+      'Edit',
+      { file_path: 'twice.ts', old_string: 'const a = 1', new_string: 'const a = 2' },
+      root
+    )
     expect(refused.ok).toBe(false)
     expect(refused.output).toContain('2 times')
     expect((await runTool('Read', { file_path: 'twice.ts' }, root)).output).toBe('const a = 1\nconst a = 1\n')

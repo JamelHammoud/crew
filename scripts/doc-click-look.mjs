@@ -225,11 +225,15 @@ try {
   } else console.log('  nothing showing')
 
   console.log('\nAlignment')
-  Object.entries(align).forEach(([how, a]) => console.log(`  ${how.padEnd(6)} words start ${a.wordLeft} of ${a.rowWide}`))
+  Object.entries(align).forEach(([how, a]) =>
+    console.log(`  ${how.padEnd(6)} words start ${a.wordLeft} of ${a.rowWide}`)
+  )
   if (align.center.wordLeft < 10) wrong.push('centred text did not move off the left')
   if (align.right.wordLeft <= align.center.wordLeft) wrong.push('right aligned text did not stand right of centred')
 
-  console.log(wrong.length ? `\nWRONG\n  ${wrong.join('\n  ')}` : '\nEvery row lands at the end of what is written in it.')
+  console.log(
+    wrong.length ? `\nWRONG\n  ${wrong.join('\n  ')}` : '\nEvery row lands at the end of what is written in it.'
+  )
 } finally {
   await rm(dir, { recursive: true, force: true })
 }

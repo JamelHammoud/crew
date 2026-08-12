@@ -45,7 +45,16 @@ const agent = (id: string, label: string, status = 'idle') =>
   }) as never
 
 const thread = (id: string, agentId: string, status = 'open') =>
-  ({ id, agentId, agentLabel: agentId, title: id, createdBy: 'ALI', status, mode: 'build', boardId: 'board:a' }) as never
+  ({
+    id,
+    agentId,
+    agentLabel: agentId,
+    title: id,
+    createdBy: 'ALI',
+    status,
+    mode: 'build',
+    boardId: 'board:a'
+  }) as never
 
 interface Sent {
   text: string
@@ -292,9 +301,9 @@ describe('the ask bar', () => {
   it('carries on in the agent’s own thread rather than taking over another', () => {
     const { sent } = boot(['shape:a'], {
       threads: {
-        't1': thread('t1', 'agent:fable'),
-        't2': thread('t2', 'agent:bubbles'),
-        't3': thread('t3', 'agent:bubbles', 'archived')
+        t1: thread('t1', 'agent:fable'),
+        t2: thread('t2', 'agent:bubbles'),
+        t3: thread('t3', 'agent:bubbles', 'archived')
       }
     })
     ask('make it round')

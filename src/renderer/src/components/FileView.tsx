@@ -1,12 +1,4 @@
-import {
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ChangeEvent,
-  type KeyboardEvent
-} from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ChangeEvent, type KeyboardEvent } from 'react'
 import { fileSize } from '../../../shared/attachments'
 import { canPreview, isHtml, type FileEntry, type RepoFile } from '../../../shared/files'
 import { DocGlyph, FileGlyph, FolderGlyph } from '../icons'
@@ -274,9 +266,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
             ) : (
               <DirRows tab={tab} path={data.path} entries={data.entries} />
             ))}
-          {file && reading && !asPage && (
-            <MarkdownView path={tab.path} text={text} partial={file.truncated || long} />
-          )}
+          {file && reading && !asPage && <MarkdownView path={tab.path} text={text} partial={file.truncated || long} />}
           {file && !reading && (
             <div className="relative min-h-full py-3 min-w-max font-mono text-xs leading-5 select-text">
               <CodeRows path={tab.path} rows={rows} gutter={gutter} line={tab.line} dirty={dirty} />
@@ -302,7 +292,9 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
                 />
               )}
               {!editable && (file.truncated || long) && (
-                <p className="select-none px-4 pt-3 text-xs text-fg-muted font-sans">Showing the beginning of this file</p>
+                <p className="select-none px-4 pt-3 text-xs text-fg-muted font-sans">
+                  Showing the beginning of this file
+                </p>
               )}
             </div>
           )}
@@ -322,9 +314,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
             />
           )}
         </div>
-        {file && asPage && (
-          <HtmlView id={tab.id} path={tab.path} text={text} partial={file.truncated || long} />
-        )}
+        {file && asPage && <HtmlView id={tab.id} path={tab.path} text={text} partial={file.truncated || long} />}
         {data?.kind === 'media' && <MediaView path={data.path} src={data.url} video={data.video} />}
         {((base && !reading) || dirty) && (
           <div className="absolute top-2.5 right-4 flex items-center gap-1.5">

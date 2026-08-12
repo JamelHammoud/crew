@@ -18,13 +18,7 @@ import type { SessionEvent } from '../shared/events'
 import { activeThreads, type LiveThread } from '../shared/threads'
 import type { ServerMessage } from '../shared/protocol'
 import type { CurrentSession, OpenOptions } from '../shared/session'
-import type {
-  RepoActionResult,
-  RepoChange,
-  RepoCommand,
-  RepoStatus,
-  RepoWork
-} from '../shared/repository'
+import type { RepoActionResult, RepoChange, RepoCommand, RepoStatus, RepoWork } from '../shared/repository'
 import { AgentStore } from './agents-store'
 import { Doors, type Seat } from './doors'
 import type { SavedSession } from './saved-session'
@@ -289,7 +283,9 @@ export class AppSession {
   async startHost(repoPath: string, name: string, opts: OpenOptions = {}): Promise<CurrentSession> {
     await this.stop()
     const tracked = await isGitRepo(repoPath)
-    const known = this.savedStore()?.projects().find(project => project.folder === repoPath)
+    const known = this.savedStore()
+      ?.projects()
+      .find(project => project.folder === repoPath)
     const remote = await readCrewRemote(repoPath)
     const home = opts.home ?? known?.home ?? (remote ? 'private' : tracked ? 'folder' : 'private')
     const shared = opts.share ?? known?.shared ?? home === 'folder'

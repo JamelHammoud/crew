@@ -71,8 +71,7 @@ describe('ghost threads', () => {
 
   const fake = agentId('sam', 'fake')
 
-  const about = (ui: TestUi, threadId: string) =>
-    ui.events.filter(e => 'threadId' in e && e.threadId === threadId)
+  const about = (ui: TestUi, threadId: string) => ui.events.filter(e => 'threadId' in e && e.threadId === threadId)
 
   it('/ghost opens a thread the window keeps to itself, and writes none of it down', async () => {
     const sam = await connectUi('sam')
@@ -171,9 +170,7 @@ describe('ghost threads', () => {
       commands: ['ghost'],
       attachments: [{ name: 'shot.png', mime: 'image/png', data: PNG.toString('base64') }]
     })
-    const sent = (await sam.waitForEvent(
-      e => e.kind === 'message' && (e.attachments?.length ?? 0) > 0
-    )) as Message
+    const sent = (await sam.waitForEvent(e => e.kind === 'message' && (e.attachments?.length ?? 0) > 0)) as Message
     const file = sent.attachments![0].file
     const base = host.url.replace(/^ws/, 'http').replace(/\/ws$/, '')
 

@@ -46,9 +46,7 @@ describe('naming a call', () => {
     expect(huddleTitle(room(self), 'me')).toBe('Waiting for others')
     expect(huddleTitle(room(self, peer('a', 'Ali')), 'me')).toBe('Ali')
     expect(huddleTitle(room(self, peer('a', 'Ali'), peer('b', 'Kim')), 'me')).toBe('Ali and Kim')
-    expect(huddleTitle(room(self, peer('a', 'Ali'), peer('b', 'Kim'), peer('c', 'Sam')), 'me')).toBe(
-      'Ali and 2 others'
-    )
+    expect(huddleTitle(room(self, peer('a', 'Ali'), peer('b', 'Kim'), peer('c', 'Sam')), 'me')).toBe('Ali and 2 others')
   })
 
   it('has nothing to say about an empty room', () => {

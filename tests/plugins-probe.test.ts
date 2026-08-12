@@ -55,8 +55,7 @@ const held = (name: string): CrewPlugin => {
   return { ...offer, id: `id-${name}`, by: 'Jamel', ts: 1 }
 }
 
-const rowFor = (label: string): HTMLElement =>
-  screen.getByText(label).closest('div.group') as HTMLElement
+const rowFor = (label: string): HTMLElement => screen.getByText(label).closest('div.group') as HTMLElement
 
 const plugins = () => render(createElement(PluginsView))
 

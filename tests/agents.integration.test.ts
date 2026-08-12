@@ -75,9 +75,10 @@ describe('agent instances', () => {
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.label === 'Fake')
 
     runner.addAgent({ instanceId: 'x', provider: 'fake', name: 'Fake X', settings: {} })
-    const added = (await ui.waitFor(
-      m => m.type === 'agent.added' && m.agent.label === 'Fake X'
-    )) as Extract<ServerMessage, { type: 'agent.added' }>
+    const added = (await ui.waitFor(m => m.type === 'agent.added' && m.agent.label === 'Fake X')) as Extract<
+      ServerMessage,
+      { type: 'agent.added' }
+    >
     expect(added.agent.id).toBe(agentId('jamel', 'x'))
     const online = (await ui.waitForEvent(e => e.kind === 'agent.online' && e.label === 'Fake X')) as Extract<
       SessionEvent,
@@ -86,9 +87,10 @@ describe('agent instances', () => {
     expect(online.agentId).toBe(agentId('jamel', 'x'))
 
     ui.chat('hello @Fake X', [agentId('jamel', 'x')])
-    const end = (await ui.waitForEvent(
-      e => e.kind === 'agent.end' && e.agentId === agentId('jamel', 'x')
-    )) as Extract<SessionEvent, { kind: 'agent.end' }>
+    const end = (await ui.waitForEvent(e => e.kind === 'agent.end' && e.agentId === agentId('jamel', 'x'))) as Extract<
+      SessionEvent,
+      { kind: 'agent.end' }
+    >
     expect(end.ok).toBe(true)
     expect(end.text).toContain('hello @Fake X')
 

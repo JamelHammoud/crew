@@ -11,16 +11,25 @@ const served = (): ((url: string) => Promise<{ type?: string; body?: Buffer; pas
   const plugin = pdfjsAssets()
   const configure = plugin.configureServer
   if (typeof configure !== 'function') throw new Error('no configureServer')
-  configure.call({} as never, {
-    middlewares: { use: (fn: never) => { handler = fn } }
-  } as never)
+  configure.call(
+    {} as never,
+    {
+      middlewares: {
+        use: (fn: never) => {
+          handler = fn
+        }
+      }
+    } as never
+  )
   return url =>
     new Promise(resolve => {
       const headers: Record<string, string> = {}
       handler?.(
         { url },
         {
-          setHeader: (name: string, value: string) => { headers[name.toLowerCase()] = value },
+          setHeader: (name: string, value: string) => {
+            headers[name.toLowerCase()] = value
+          },
           end: (body: Buffer) => resolve({ type: headers['content-type'], body, passed: false })
         },
         () => resolve({ passed: true })
@@ -37,10 +46,7 @@ describe('the files pdfjs reads for itself', () => {
   })
 
   it('asks for every parameter pdfjs still takes', async () => {
-    const types = await readFile(
-      path.join(pdfjsRoot(), 'types/src/display/api.d.ts'),
-      'utf8'
-    )
+    const types = await readFile(path.join(pdfjsRoot(), 'types/src/display/api.d.ts'), 'utf8')
     for (const param of PARAMS) expect(types).toContain(`${param}?:`)
   })
 
@@ -55,15 +61,16 @@ describe('the files pdfjs reads for itself', () => {
 
   it('stands beside the page rather than at the root of it', () => {
     const assets = pdfAssets('file:///Apps/Crew.app/out/renderer/index.html')
-    expect(assets.standardFontDataUrl).toBe(
-      'file:///Apps/Crew.app/out/renderer/pdfjs/standard_fonts/'
-    )
+    expect(assets.standardFontDataUrl).toBe('file:///Apps/Crew.app/out/renderer/pdfjs/standard_fonts/')
   })
 
   it('lists a file from each directory', async () => {
     const files = await pdfjsFiles()
     for (const dir of PDFJS_DIRS) {
-      expect(files.some(name => name.startsWith(`${dir}/`)), dir).toBe(true)
+      expect(
+        files.some(name => name.startsWith(`${dir}/`)),
+        dir
+      ).toBe(true)
     }
   })
 

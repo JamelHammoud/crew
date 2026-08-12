@@ -1,14 +1,6 @@
 import Spinner from '../../components/Spinner'
 
-export default function CrewAway({
-  busy,
-  onRetry,
-  onOwn
-}: {
-  busy: boolean
-  onRetry: () => void
-  onOwn: () => void
-}) {
+export default function CrewAway({ busy, onRetry, onOwn }: { busy: boolean; onRetry: () => void; onOwn: () => void }) {
   return (
     <div className="space-y-7 text-center">
       <div>

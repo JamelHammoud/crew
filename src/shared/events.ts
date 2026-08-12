@@ -109,7 +109,30 @@ export type SessionEvent =
   // forkedFrom is the thread this one carried on from, and forkedAt the moment
   // it was carried. The pair is what the run of talk before the fork is folded
   // back out of, so nothing about it is copied and it replays for free.
-  | { id: string; ts: number; kind: 'thread.started'; threadId: string; agentId: string; agentLabel: string; title: string; titleRefs?: AgentMentionRef[]; byName: string; boardId?: string; mode?: ThreadMode; ghost?: boolean; voice?: boolean; tickets?: boolean; aside?: string; forkedFrom?: string; forkedAt?: number; parentThreadId?: string; parentPromptId?: string; helper?: string; subject?: string; depth?: number }
+  | {
+      id: string
+      ts: number
+      kind: 'thread.started'
+      threadId: string
+      agentId: string
+      agentLabel: string
+      title: string
+      titleRefs?: AgentMentionRef[]
+      byName: string
+      boardId?: string
+      mode?: ThreadMode
+      ghost?: boolean
+      voice?: boolean
+      tickets?: boolean
+      aside?: string
+      forkedFrom?: string
+      forkedAt?: number
+      parentThreadId?: string
+      parentPromptId?: string
+      helper?: string
+      subject?: string
+      depth?: number
+    }
   | { id: string; ts: number; kind: 'thread.plan'; threadId: string; text: string; agentId: string; agentLabel: string }
   | { id: string; ts: number; kind: 'thread.implement'; threadId: string; byName: string }
   // Superseded by thread.status; still emitted-compatible and replayed so old
@@ -117,19 +140,53 @@ export type SessionEvent =
   | { id: string; ts: number; kind: 'thread.archived'; threadId: string; byName: string }
   // A hand-off nobody made carries no name: the thread moved because a run fell
   // over and the fallback took it, so there is no one to say it was them.
-  | { id: string; ts: number; kind: 'thread.agent'; threadId: string; agentId: string; agentLabel: string; byName?: string }
+  | {
+      id: string
+      ts: number
+      kind: 'thread.agent'
+      threadId: string
+      agentId: string
+      agentLabel: string
+      byName?: string
+    }
   // Who takes over when a run in this thread ends badly. No agent means it was
   // taken off. Nothing reads it until a run fails, so the thread queues and
   // steers exactly as it did before one was named.
-  | { id: string; ts: number; kind: 'thread.fallback'; threadId: string; agentId?: string; agentLabel?: string; byName: string }
+  | {
+      id: string
+      ts: number
+      kind: 'thread.fallback'
+      threadId: string
+      agentId?: string
+      agentLabel?: string
+      byName: string
+    }
   | { id: string; ts: number; kind: 'thread.status'; threadId: string; status: ThreadStatus; byName: string }
   | { id: string; ts: number; kind: 'todo.added'; todoId: string; text: string; agentId?: string; byName: string }
   | { id: string; ts: number; kind: 'todo.edited'; todoId: string; text: string; agentId?: string; byName: string }
   | { id: string; ts: number; kind: 'todo.removed'; todoId: string; byName: string }
   | { id: string; ts: number; kind: 'todo.checked'; todoId: string; checked: boolean; byName: string }
   | { id: string; ts: number; kind: 'todo.started'; todoId: string; threadId: string; byName: string }
-  | { id: string; ts: number; kind: 'tool.added'; toolId: string; name: string; mark: string; action: ToolAction; byName: string }
-  | { id: string; ts: number; kind: 'tool.edited'; toolId: string; name: string; mark: string; action: ToolAction; byName: string }
+  | {
+      id: string
+      ts: number
+      kind: 'tool.added'
+      toolId: string
+      name: string
+      mark: string
+      action: ToolAction
+      byName: string
+    }
+  | {
+      id: string
+      ts: number
+      kind: 'tool.edited'
+      toolId: string
+      name: string
+      mark: string
+      action: ToolAction
+      byName: string
+    }
   | { id: string; ts: number; kind: 'tool.removed'; toolId: string; byName: string }
   | { id: string; ts: number; kind: 'memory.added'; memoryId: string; text: string; agentId?: string; byName: string }
   | { id: string; ts: number; kind: 'memory.edited'; memoryId: string; text: string; agentId?: string; byName: string }
@@ -271,7 +328,16 @@ export type SessionEvent =
       threadId?: string
       reactionIds?: string[]
     }
-  | { id: string; ts: number; kind: 'agent.step'; promptId: string; agentId: string; agentLabel: string; step: AgentStep; threadId?: string }
+  | {
+      id: string
+      ts: number
+      kind: 'agent.step'
+      promptId: string
+      agentId: string
+      agentLabel: string
+      step: AgentStep
+      threadId?: string
+    }
   | {
       id: string
       ts: number

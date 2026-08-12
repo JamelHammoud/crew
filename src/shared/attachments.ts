@@ -117,7 +117,20 @@ export const DEFAULT_ATTACHMENT_MB = 10
 export const ATTACHMENT_UNLIMITED = 0
 export const ATTACHMENT_MB_LIMIT = 10_000
 export const ATTACHMENT_MB_STEPS = [
-  1, 2, 5, 10, 25, 50, 100, 250, 500, 1000, 2000, 5000, ATTACHMENT_MB_LIMIT, ATTACHMENT_UNLIMITED
+  1,
+  2,
+  5,
+  10,
+  25,
+  50,
+  100,
+  250,
+  500,
+  1000,
+  2000,
+  5000,
+  ATTACHMENT_MB_LIMIT,
+  ATTACHMENT_UNLIMITED
 ]
 
 // The sizes past half a gigabyte stand only while the crew is this machine's

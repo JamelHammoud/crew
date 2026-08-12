@@ -10,13 +10,7 @@ export type Glyph = ComponentType<{ className?: string; strokeWidth?: number }>
 // the caller already writes, so no call site has to know any of this, and a
 // strokeWidth of its own still wins.
 export function glyph(art: ReactNode, weight = STROKE): Glyph {
-  return function CrewGlyph({
-    className = 'w-4 h-4',
-    strokeWidth
-  }: {
-    className?: string
-    strokeWidth?: number
-  }) {
+  return function CrewGlyph({ className = 'w-4 h-4', strokeWidth }: { className?: string; strokeWidth?: number }) {
     return (
       <svg
         xmlns="http://www.w3.org/2000/svg"

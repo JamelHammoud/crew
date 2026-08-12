@@ -59,9 +59,7 @@ describe('threads', () => {
     expect(started.title).toContain('build the thing')
 
     const start = await ui.waitForEvent(e => e.kind === 'agent.start' && e.threadId === started.threadId)
-    const end = (await ui.waitForEvent(
-      e => e.kind === 'agent.end' && e.threadId === started.threadId
-    )) as Ended
+    const end = (await ui.waitForEvent(e => e.kind === 'agent.end' && e.threadId === started.threadId)) as Ended
     expect((start as Extract<SessionEvent, { kind: 'agent.start' }>).threadId).toBe(started.threadId)
     expect(end.ok).toBe(true)
 
@@ -80,9 +78,7 @@ describe('threads', () => {
 
     const seen = new Set<string>()
     for (let i = 0; i < 2; i++) {
-      const started = (await ui.waitForEvent(
-        e => e.kind === 'thread.started' && !seen.has(e.threadId)
-      )) as Started
+      const started = (await ui.waitForEvent(e => e.kind === 'thread.started' && !seen.has(e.threadId))) as Started
       seen.add(started.threadId)
       expect(started.agentId).toBe(fake)
     }
@@ -112,9 +108,7 @@ describe('threads', () => {
 
     ui.chat('remember apple @Fake', [fake])
     const started = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Started
-    const firstEnd = (await ui.waitForEvent(
-      e => e.kind === 'agent.end' && e.threadId === started.threadId
-    )) as Ended
+    const firstEnd = (await ui.waitForEvent(e => e.kind === 'agent.end' && e.threadId === started.threadId)) as Ended
 
     ui.chat('now say banana', [], started.threadId)
     const secondEnd = (await ui.waitForEvent(
@@ -147,9 +141,7 @@ describe('threads', () => {
     expect(starts[1].ts).toBeLessThan(firstEnd.ts)
 
     for (const start of starts) {
-      const end = (await ui.waitForEvent(
-        e => e.kind === 'agent.end' && e.promptId === start.promptId
-      )) as Ended
+      const end = (await ui.waitForEvent(e => e.kind === 'agent.end' && e.promptId === start.promptId)) as Ended
       expect(end.ok).toBe(true)
     }
   })
@@ -165,9 +157,10 @@ describe('threads', () => {
     await ui.waitForEvent(e => e.kind === 'agent.end' && e.threadId === first.threadId)
 
     ui.chat('second @Fake', [fake])
-    const second = (await ui.waitForEvent(
-      e => e.kind === 'agent.start' && e.threadId !== first.threadId
-    )) as Extract<SessionEvent, { kind: 'agent.start' }>
+    const second = (await ui.waitForEvent(e => e.kind === 'agent.start' && e.threadId !== first.threadId)) as Extract<
+      SessionEvent,
+      { kind: 'agent.start' }
+    >
 
     ui.chat('are you still there', [], first.threadId)
     const replyStart = (await ui.waitForEvent(
@@ -177,9 +170,7 @@ describe('threads', () => {
     const secondEnd = (await ui.waitForEvent(e => e.kind === 'agent.end' && e.promptId === second.promptId)) as Ended
     expect(replyStart.ts).toBeLessThanOrEqual(secondEnd.ts)
 
-    const reply = (await ui.waitForEvent(
-      e => e.kind === 'agent.end' && e.promptId === replyStart.promptId
-    )) as Ended
+    const reply = (await ui.waitForEvent(e => e.kind === 'agent.end' && e.promptId === replyStart.promptId)) as Ended
     expect(reply.ok).toBe(true)
     expect(reply.text).toContain('are you still there')
   })
@@ -288,9 +279,10 @@ describe('threads', () => {
       SessionEvent,
       { kind: 'agent.start' }
     >
-    const tokens = (await ui.waitFor(
-      m => m.type === 'agent.tokens' && m.promptId === start.promptId
-    )) as Extract<ServerMessage, { type: 'agent.tokens' }>
+    const tokens = (await ui.waitFor(m => m.type === 'agent.tokens' && m.promptId === start.promptId)) as Extract<
+      ServerMessage,
+      { type: 'agent.tokens' }
+    >
     expect(tokens.tokens).toBeGreaterThan(0)
     expect(tokens.agentId).toBe(fake)
   })

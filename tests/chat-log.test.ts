@@ -63,10 +63,7 @@ describe('the chat log', () => {
   it('gives events back in order across the legacy file and every segment', () => {
     const repo = tmpDir('chatlog')
     const store = new Store(repo)
-    fs.writeFileSync(
-      path.join(repo, '.crew', 'chat.jsonl'),
-      JSON.stringify(message('first', 1, 'oldest')) + '\n'
-    )
+    fs.writeFileSync(path.join(repo, '.crew', 'chat.jsonl'), JSON.stringify(message('first', 1, 'oldest')) + '\n')
     store.appendEvent(message('third', 30, 'newest'))
     fs.writeFileSync(
       path.join(repo, '.crew', 'chat', '0002.jsonl'),

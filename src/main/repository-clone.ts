@@ -13,7 +13,11 @@ const remotePath = (remote: string): string => {
 export function repositoryName(remote: string): string {
   const source = remote.trim()
   if (!source) throw new Error('Paste the repository URL first.')
-  const leaf = remotePath(source).replace(/[\\/]+$/, '').split(/[\\/]/).at(-1) ?? ''
+  const leaf =
+    remotePath(source)
+      .replace(/[\\/]+$/, '')
+      .split(/[\\/]/)
+      .at(-1) ?? ''
   let decoded = leaf
   try {
     decoded = decodeURIComponent(leaf)

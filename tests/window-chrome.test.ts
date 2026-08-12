@@ -35,10 +35,7 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
-const topBar = () =>
-  render(
-    createElement(TopBar)
-  )
+const topBar = () => render(createElement(TopBar))
 
 const inset = () => render(createElement(WindowCorner)).container.firstElementChild!.firstElementChild!
 

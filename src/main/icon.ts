@@ -49,8 +49,7 @@ export function chosenIcon(): AppIconId {
 function encoded(theme: IconTheme, icon: AppIconId): string {
   const picture = SKIN_ICONS[icon]
   if (picture) return picture
-  if (wearsBlueprint(app.getAppPath(), process.env))
-    return theme === 'light' ? DEV_LIGHT_ICON : DEV_DARK_ICON
+  if (wearsBlueprint(app.getAppPath(), process.env)) return theme === 'light' ? DEV_LIGHT_ICON : DEV_DARK_ICON
   return theme === 'light' ? LIGHT_ICON : DARK_ICON
 }
 

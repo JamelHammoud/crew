@@ -93,13 +93,7 @@ export class DesignTextUtil extends Configured {
     const after = growthState(editor, next)
     const contentChanged = richTextChanged(previous.props.richText, next.props.richText)
     if (!textGrowthMatters(before, after, contentChanged)) return undefined
-    const growth = compensateTextGrowth(
-      before,
-      after,
-      measure(editor, previous),
-      measure(editor, next),
-      contentChanged
-    )
+    const growth = compensateTextGrowth(before, after, measure(editor, previous), measure(editor, next), contentChanged)
     return { ...next, x: growth.x, y: growth.y, props: { ...next.props, w: growth.width } }
   }
 

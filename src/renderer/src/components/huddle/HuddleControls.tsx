@@ -107,11 +107,7 @@ export default function HuddleControls() {
         active={cameraOn}
         onClick={() => void toggleCamera()}
       >
-        {cameraOn ? (
-          <CameraGlyph className="w-[18px] h-[18px]" />
-        ) : (
-          <CameraOffGlyph className="w-[18px] h-[18px]" />
-        )}
+        {cameraOn ? <CameraGlyph className="w-[18px] h-[18px]" /> : <CameraOffGlyph className="w-[18px] h-[18px]" />}
       </Control>
       <Control
         label={sharing ? 'Stop sharing' : 'Share screen'}
@@ -121,11 +117,7 @@ export default function HuddleControls() {
         <DesktopGlyph className="w-[18px] h-[18px]" />
       </Control>
       <Control label={expanded ? 'Shrink' : 'Expand'} onClick={() => setExpanded(!expanded)}>
-        {expanded ? (
-          <CollapseGlyph className="w-[18px] h-[18px]" />
-        ) : (
-          <ExpandGlyph className="w-[18px] h-[18px]" />
-        )}
+        {expanded ? <CollapseGlyph className="w-[18px] h-[18px]" /> : <ExpandGlyph className="w-[18px] h-[18px]" />}
       </Control>
       <span className="w-px h-6 bg-fg/[0.08] mx-1" />
       <Control label="Leave" danger onClick={leave}>

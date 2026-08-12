@@ -53,10 +53,7 @@ export function boundShapeRelationship(
   return 'safe'
 }
 
-export function boundShapeInfo(
-  editor: ShapeEditor,
-  binding: ArrowBinding | undefined
-): BoundShapeInfo | undefined {
+export function boundShapeInfo(editor: ShapeEditor, binding: ArrowBinding | undefined): BoundShapeInfo | undefined {
   if (!binding) return undefined
   const shape = editor.getShape?.(binding.toId)
   if (!shape) return undefined

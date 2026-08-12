@@ -1,7 +1,4 @@
-export type MediaRange =
-  | { kind: 'whole' }
-  | { kind: 'slice'; start: number; end: number }
-  | { kind: 'unsatisfiable' }
+export type MediaRange = { kind: 'whole' } | { kind: 'slice'; start: number; end: number } | { kind: 'unsatisfiable' }
 
 const WHOLE: MediaRange = { kind: 'whole' }
 const OFF_THE_END: MediaRange = { kind: 'unsatisfiable' }

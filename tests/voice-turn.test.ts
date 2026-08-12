@@ -71,18 +71,12 @@ describe('finding the run this window just asked for', () => {
   // Once a conversation has a thread, that is what says which run is ours, and
   // the agent may have been swapped since.
   it('follows the thread once there is one', () => {
-    const events = [
-      startEvent('p1', 't1', 'a', 'sam', 'again'),
-      startEvent('p2', 't2', 'a', 'sam', 'again')
-    ]
+    const events = [startEvent('p1', 't1', 'a', 'sam', 'again'), startEvent('p2', 't2', 'a', 'sam', 'again')]
     expect(findTurn(events, { byName: 'sam', agentId: 'a', text: 'again', threadId: 't1' })?.promptId).toBe('p1')
   })
 
   it('takes the newest when the same thing was said twice', () => {
-    const events = [
-      startEvent('p1', 't1', 'a', 'sam', 'again'),
-      startEvent('p2', 't1', 'a', 'sam', 'again')
-    ]
+    const events = [startEvent('p1', 't1', 'a', 'sam', 'again'), startEvent('p2', 't1', 'a', 'sam', 'again')]
     expect(findTurn(events, { byName: 'sam', agentId: 'a', text: 'again', threadId: 't1' })?.promptId).toBe('p2')
   })
 
@@ -168,7 +162,9 @@ describe('a pause somebody took against a turn they finished', () => {
     const held = new HeldTurn()
     expect(held.add('I want to make it faster because')).toBe(null)
     expect(held.add('right now it waits like two seconds and')).toBe(null)
-    expect(held.add('then it answers.')).toBe('I want to make it faster because right now it waits like two seconds and then it answers.')
+    expect(held.add('then it answers.')).toBe(
+      'I want to make it faster because right now it waits like two seconds and then it answers.'
+    )
   })
 
   it('takes the dash off the end of a piece it joins', () => {

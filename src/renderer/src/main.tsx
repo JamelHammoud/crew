@@ -61,6 +61,4 @@ if (Aside === null) {
   applyAppIcon(storedAppIcon())
 }
 
-createRoot(root).render(
-  <React.StrictMode>{Aside === null ? <App /> : <Aside />}</React.StrictMode>
-)
+createRoot(root).render(<React.StrictMode>{Aside === null ? <App /> : <Aside />}</React.StrictMode>)

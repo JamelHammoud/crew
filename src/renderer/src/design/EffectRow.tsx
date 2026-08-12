@@ -54,7 +54,12 @@ export default function EffectRow({ effect, onChange }: { effect: Effect; onChan
       </button>
       <Popover open={open} onClose={() => setOpen(false)} align="start">
         <div className="w-56 p-1 flex flex-col gap-2">
-          <Select full value={effect.type} options={KINDS} onChange={type => onChange(retype(effect, type as Effect['type']))} />
+          <Select
+            full
+            value={effect.type}
+            options={KINDS}
+            onChange={type => onChange(retype(effect, type as Effect['type']))}
+          />
           {shadow ? (
             <>
               <SubLabel>Position</SubLabel>
@@ -64,8 +69,17 @@ export default function EffectRow({ effect, onChange }: { effect: Effect; onChan
               </Row>
               <SubLabel>Blur and spread</SubLabel>
               <Row>
-                <NumberInput label="Blur" value={shadow.blur} min={0} onChange={blur => onChange({ ...shadow, blur })} />
-                <NumberInput label="Spread" value={shadow.spread} onChange={spread => onChange({ ...shadow, spread })} />
+                <NumberInput
+                  label="Blur"
+                  value={shadow.blur}
+                  min={0}
+                  onChange={blur => onChange({ ...shadow, blur })}
+                />
+                <NumberInput
+                  label="Spread"
+                  value={shadow.spread}
+                  onChange={spread => onChange({ ...shadow, spread })}
+                />
               </Row>
               <SubLabel>Color</SubLabel>
               <div className="flex">

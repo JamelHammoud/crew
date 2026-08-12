@@ -66,12 +66,7 @@ export default function Cover({
   return (
     <span className={`relative block overflow-hidden isolate ${className}`}>
       {drawn ? (
-        <canvas
-          ref={tile}
-          aria-hidden
-          style={OVERSIZE}
-          className={`absolute ${playing ? 'animate-drift' : ''}`}
-        />
+        <canvas ref={tile} aria-hidden style={OVERSIZE} className={`absolute ${playing ? 'animate-drift' : ''}`} />
       ) : (
         <span
           aria-hidden

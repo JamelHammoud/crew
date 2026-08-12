@@ -47,9 +47,7 @@ export default function People() {
         <div className="space-y-0.5">
           {members.map(member => {
             const you = member.id === selfId
-            const face = (
-              <Avatar name={member.name} presence={member.connected ? 'online' : 'offline'} />
-            )
+            const face = <Avatar name={member.name} presence={member.connected ? 'online' : 'offline'} />
             return (
               <div
                 key={member.id}
@@ -90,9 +88,7 @@ export default function People() {
           <Row
             label={inProject ? 'In the project' : 'In the Crew app'}
             line={
-              inProject
-                ? 'Everyone who has the project has the crew.'
-                : 'Nothing is written into the project folder.'
+              inProject ? 'Everyone who has the project has the crew.' : 'Nothing is written into the project folder.'
             }
           />
           <Row
@@ -107,10 +103,7 @@ export default function People() {
             )}
           </Row>
           {!inProject && session.tracked && (
-            <Row
-              label="Sync the project"
-              line="Changes here go out as they happen, and everyone else's come in."
-            >
+            <Row label="Sync the project" line="Changes here go out as they happen, and everyone else's come in.">
               <Toggle
                 on={session.projectSync}
                 label="Sync the project"

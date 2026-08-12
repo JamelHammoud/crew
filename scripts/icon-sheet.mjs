@@ -32,7 +32,7 @@ const LINE = 15
 const SOLID = 16
 const SLASH = 'm3.9 3.9 16.2 16.2'
 
-const ENTRY = (files) => `
+const ENTRY = files => `
 import { renderToStaticMarkup } from 'react-dom/server'
 import { createElement } from 'react'
 ${files.map((file, i) => `import * as set${i} from ${JSON.stringify(path.join(root, file))}`).join('\n')}
@@ -89,12 +89,10 @@ const CAP = 18.5
 // A shape touching the live area has nowhere left to grow and is allowed to sit
 // light. A bare run already spanning the frame is the same case turned over: it
 // cannot come in without becoming a different mark, so it may sit heavy.
-const capped = box =>
-  Math.max(box.width, box.height) >= CAP || (!box.body && box.reach >= LIVE)
+const capped = box => Math.max(box.width, box.height) >= CAP || (!box.body && box.reach >= LIVE)
 
 const solid = markup =>
-  (markup.match(/<(path|rect|circle|ellipse|line)\b/g) ?? []).length === 1 &&
-  markup.includes('fill="currentColor"')
+  (markup.match(/<(path|rect|circle|ellipse|line)\b/g) ?? []).length === 1 && markup.includes('fill="currentColor"')
 
 function keyline(box, markup) {
   if (solid(markup)) return { family: 'solid', target: SOLID, size: Math.sqrt(box.width * box.height) }
@@ -120,27 +118,30 @@ function report(rows) {
       over: Math.max(0, row.box.x + row.box.width - (12 + LIVE / 2), 12 - LIVE / 2 - row.box.x)
     }
   })
-  const median = (of) => {
-    const sorted = scored.filter(row => row.family === of).map(row => row.box.ink).sort((a, b) => a - b)
+  const median = of => {
+    const sorted = scored
+      .filter(row => row.family === of)
+      .map(row => row.box.ink)
+      .sort((a, b) => a - b)
     return sorted[Math.floor(sorted.length / 2)] || 1
   }
   const middles = { line: median('line'), round: median('round'), shape: median('shape') }
   return scored.map(row => ({ ...row, weight: (row.box.ink / middles[row.family] - 1) * 100 }))
 }
 
-const svg = (markup, px) =>
-  markup.replace('<svg', `<svg width="${px}" height="${px}"`).replace(/class="[^"]*"/, '')
+const svg = (markup, px) => markup.replace('<svg', `<svg width="${px}" height="${px}"`).replace(/class="[^"]*"/, '')
 
-const astray = (row) => !row.capped && Math.abs(row.off) > 8
+const astray = row => !row.capped && Math.abs(row.off) > 8
 
-const flag = (row) => (row.over > 0.01 ? 'over' : astray(row) || row.drift > 0.5 ? 'watch' : '')
+const flag = row => (row.over > 0.01 ? 'over' : astray(row) || row.drift > 0.5 ? 'watch' : '')
 
 function page(sets) {
   const cards = sets
     .map(
-      set => `<section><h2>${set.title} <em>${set.rows.length}</em></h2><div class="grid">${set.rows
-        .map(
-          row => `<figure class="${flag(row)}">
+      set =>
+        `<section><h2>${set.title} <em>${set.rows.length}</em></h2><div class="grid">${set.rows
+          .map(
+            row => `<figure class="${flag(row)}">
   <div class="stage">
     <div class="keys"></div>
     ${svg(row.markup, 48)}
@@ -152,8 +153,8 @@ function page(sets) {
       <dt>ink</dt><dd>${row.weight > 0 ? '+' : ''}${row.weight.toFixed(0)}%</dd>
       <dt>centre</dt><dd class="${row.drift > 0.5 ? 'bad' : ''}">${row.drift.toFixed(2)}</dd></dl>
 </figure>`
-        )
-        .join('')}</div></section>`
+          )
+          .join('')}</div></section>`
     )
     .join('')
   return `<!doctype html><meta charset="utf-8"><title>Crew icons</title><style>
@@ -213,7 +214,9 @@ for (const set of sets) {
     `  off the keyline        ${off.length ? off.map(r => `${r.name} ${r.off > 0 ? '+' : ''}${r.off.toFixed(0)}%`).join(', ') : 'none'}`
   )
   const drift = set.rows.filter(row => row.drift > 0.5)
-  console.log(`  off centre             ${drift.length ? drift.map(r => `${r.name} ${r.drift.toFixed(1)}`).join(', ') : 'none'}`)
+  console.log(
+    `  off centre             ${drift.length ? drift.map(r => `${r.name} ${r.drift.toFixed(1)}`).join(', ') : 'none'}`
+  )
 }
 
 console.log(`\n${out}`)

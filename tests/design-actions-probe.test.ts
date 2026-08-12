@@ -110,8 +110,6 @@ describe('agents at work on a board', () => {
 
   it('falls back to the name the thread carries when the agent is not in the pool', () => {
     const threads = [{ id: 'thread:1', boardId: 'board:a', agentId: 'agent:gone', agentLabel: 'Kimi' }]
-    expect(busyAgents('board:a', threads, { 'thread:1': 'p1' }, {})).toEqual([
-      { id: 'agent:gone', label: 'Kimi' }
-    ])
+    expect(busyAgents('board:a', threads, { 'thread:1': 'p1' }, {})).toEqual([{ id: 'agent:gone', label: 'Kimi' }])
   })
 })

@@ -178,14 +178,7 @@ describe('the needs review list', () => {
       queues: {},
       steps: {},
       todos: [],
-      events: [
-        started('t1'),
-        said('t1', day(3)),
-        started('t2'),
-        said('t2', day(0)),
-        started('t3'),
-        said('t3', day(1))
-      ]
+      events: [started('t1'), said('t1', day(3)), started('t2'), said('t2', day(0)), started('t3'), said('t3', day(1))]
     })
     panel()
     const text = screen.getByText('Needs review').closest('section')?.textContent ?? ''
@@ -200,7 +193,16 @@ describe('the needs review list', () => {
       threads,
       threadPrompts: { t2: 'p1' },
       queues: {
-        t3: [{ promptId: 'p2', authorId: 'jamel', authorName: 'Jamel', text: 'and then this', agentId: 'a1', agentLabel: 'Bubbles' }]
+        t3: [
+          {
+            promptId: 'p2',
+            authorId: 'jamel',
+            authorName: 'Jamel',
+            text: 'and then this',
+            agentId: 'a1',
+            agentLabel: 'Bubbles'
+          }
+        ]
       },
       steps: {},
       todos: [],

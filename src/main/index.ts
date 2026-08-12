@@ -1,14 +1,4 @@
-import {
-  app,
-  BrowserWindow,
-  clipboard,
-  dialog,
-  ipcMain,
-  Menu,
-  nativeTheme,
-  shell,
-  type WebContents
-} from 'electron'
+import { app, BrowserWindow, clipboard, dialog, ipcMain, Menu, nativeTheme, shell, type WebContents } from 'electron'
 import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -56,12 +46,7 @@ import { Terminals, type TerminalSize } from './terminal'
 import { threadWindowHash } from '../shared/threadViews'
 import { Updates } from './updates'
 import { runtimeStateDir } from './runtime-state'
-import {
-  appMenuTemplate,
-  closePutsAway,
-  createThreadWindowOptions,
-  createWindowOptions
-} from './window-options'
+import { appMenuTemplate, closePutsAway, createThreadWindowOptions, createWindowOptions } from './window-options'
 
 app.setName('Crew')
 app.commandLine.appendSwitch('disable-backgrounding-occluded-windows')
@@ -559,11 +544,7 @@ app.whenReady().then(() => {
   // is in.
   ipcMain.handle('window:pop-thread', (event, threadId: string, key?: string) => {
     const asking = BrowserWindow.fromWebContents(event.sender)
-    const place = popOutTarget(
-      asking ? crews.keyInView(asking.webContents.id) : null,
-      key,
-      crews.openKeys()
-    )
+    const place = popOutTarget(asking ? crews.keyInView(asking.webContents.id) : null, key, crews.openKeys())
     // A crew that is not running has no thread to hand over, so nothing opens
     // rather than a window landing on the way in with a thread named in its URL.
     if (!place) return
@@ -596,9 +577,7 @@ app.whenReady().then(() => {
   )
   ipcMain.handle('agents:forgetServer', (_event, url: string) => crews.forgetModelServer(url))
   ipcMain.handle('agents:create', (event, input: NewAgent) => crews.inView(event.sender.id).createAgent(input))
-  ipcMain.handle('agents:remove', (event, instanceId: string) =>
-    crews.inView(event.sender.id).removeAgent(instanceId)
-  )
+  ipcMain.handle('agents:remove', (event, instanceId: string) => crews.inView(event.sender.id).removeAgent(instanceId))
   ipcMain.handle('repo:status', event => crews.inView(event.sender.id).repoStatus())
   ipcMain.handle('repo:changes', event => crews.inView(event.sender.id).repoChanges())
   ipcMain.handle('repo:pull', event => crews.inView(event.sender.id).pullRepo())
@@ -697,16 +676,12 @@ app.whenReady().then(() => {
     if (words) clipboard.writeText(words)
   })
   ipcMain.on('scribe:letGo', () => scribe.release())
-  ipcMain.on('scribe:size', (_event, width: number, height: number) =>
-    scribe.resize({ width, height })
-  )
+  ipcMain.on('scribe:size', (_event, width: number, height: number) => scribe.resize({ width, height }))
   // Where the pill stands is a decision somebody makes once by dragging it, so
   // it is this machine's own and is written down beside the rest of what the app
   // remembers for itself.
   ipcMain.on('scribe:grab', () => scribe.grab())
-  ipcMain.on('scribe:drag', (_event, x: number, y: number, settled: boolean) =>
-    scribe.drag({ x, y }, settled)
-  )
+  ipcMain.on('scribe:drag', (_event, x: number, y: number, settled: boolean) => scribe.drag({ x, y }, settled))
   ipcMain.handle('app:notify', (event, alert: AgentAlert) => {
     // Which crew this is about is read as the banner is raised rather than as it
     // is clicked, since the window that raised it may have moved on to another
@@ -769,9 +744,7 @@ app.whenReady().then(() => {
       }
     })
   })
-  ipcMain.on('terminal:write', (event, id: string, data: string) =>
-    terminalsFor(event.sender).write(id, data)
-  )
+  ipcMain.on('terminal:write', (event, id: string, data: string) => terminalsFor(event.sender).write(id, data))
   ipcMain.on('terminal:resize', (event, id: string, wanted: TerminalSize) =>
     terminalsFor(event.sender).resize(id, wanted)
   )
@@ -796,10 +769,7 @@ app.on('window-all-closed', () => {
   sharing()
   if (process.platform === 'win32' && !balloonShown) {
     balloonShown = true
-    tray.balloon(
-      'Crew is still running',
-      'Your agents stay shared with your crew. Quit from this icon to stop.'
-    )
+    tray.balloon('Crew is still running', 'Your agents stay shared with your crew. Quit from this icon to stop.')
   }
 })
 

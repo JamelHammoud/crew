@@ -70,8 +70,8 @@ function boot(selected: string[] = ['shape:a']) {
         onEditor: () => {},
         onRename: () => {},
         onAsked: () => {},
-      panels: { left: true, right: true },
-      onPanels: () => {}
+        panels: { left: true, right: true },
+        onPanels: () => {}
       })
     )
   const view = render(stage('board:a'))

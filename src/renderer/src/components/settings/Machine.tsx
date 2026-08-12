@@ -38,11 +38,7 @@ export default function Machine() {
           label="Let agents send work out"
           line="Off, and no agent on this machine sends a helper out or takes one somebody else sent."
         >
-          <Toggle
-            on={prefs.on}
-            label="Let agents send work out"
-            onChange={want => setHelperPrefs({ on: want })}
-          />
+          <Toggle on={prefs.on} label="Let agents send work out" onChange={want => setHelperPrefs({ on: want })} />
         </Row>
         {prefs.on && (
           <Row label="How many at once" line="Each one is another CLI running here.">

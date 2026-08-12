@@ -1,4 +1,11 @@
-import { BindingRecordType, createBindingId, type TLBinding, type TLBindingId, type TLShape, type TLShapeId } from '../schema'
+import {
+  BindingRecordType,
+  createBindingId,
+  type TLBinding,
+  type TLBindingId,
+  type TLShape,
+  type TLShapeId
+} from '../schema'
 import { arrowBindingBehavior } from './arrowBindings'
 import type { BindingBehavior, BindingEditor, BindingPartial } from './bindingTypes'
 

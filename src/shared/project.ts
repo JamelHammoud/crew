@@ -18,7 +18,10 @@ export const CREW_POINTER = '.crew.json'
 export async function projectKey(folder: string): Promise<string> {
   const result = await runGit(['rev-list', '--max-parents=0', 'HEAD'], folder)
   const roots = result.code === 0 ? result.stdout.trim().split('\n') : []
-  const genesis = roots.map(line => line.trim()).filter(line => /^[0-9a-f]{40}$/.test(line)).at(-1)
+  const genesis = roots
+    .map(line => line.trim())
+    .filter(line => /^[0-9a-f]{40}$/.test(line))
+    .at(-1)
   if (genesis) return genesis.slice(0, 16)
   return createHash('sha256').update(path.resolve(folder)).digest('hex').slice(0, 16)
 }

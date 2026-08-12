@@ -154,7 +154,17 @@ describe('what markdown cannot hold on its own', () => {
 
   it('gives each table its own mark', () => {
     const two = `${TABLE}\n\ntext\n\n${TABLE}`
-    expect(readDocTableWidths(writeDocTableWidths(two, [[200, 90], [50, 60]])).widths).toEqual([[200, 90], [50, 60]])
+    expect(
+      readDocTableWidths(
+        writeDocTableWidths(two, [
+          [200, 90],
+          [50, 60]
+        ])
+      ).widths
+    ).toEqual([
+      [200, 90],
+      [50, 60]
+    ])
   })
 
   it('never takes a table out of a code fence', () => {

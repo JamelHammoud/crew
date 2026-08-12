@@ -171,7 +171,9 @@ export function applyTableWidths(blocks: DocTableBlock[], widths: (number | null
     const row = widths[index++]
     if (!row?.some(usable)) return
     const content = block.content as { columnWidths?: (number | null)[] }
-    content.columnWidths = columnWidths(block).map((width, column) => (usable(row[column]) ? row[column] : (width ?? null)))
+    content.columnWidths = columnWidths(block).map((width, column) =>
+      usable(row[column]) ? row[column] : (width ?? null)
+    )
   })
   return blocks
 }

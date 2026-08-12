@@ -2,12 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { Editor } from '../src/renderer/src/canvas/editor'
 import { Vec } from '../src/renderer/src/canvas/math'
 import { createShapeId, createTLStore, type TLShapeId } from '../src/renderer/src/canvas/schema'
-import {
-  FrameShapeUtil,
-  GeoShapeUtil,
-  GroupShapeUtil,
-  TextShapeUtil
-} from '../src/renderer/src/canvas/shapes'
+import { FrameShapeUtil, GeoShapeUtil, GroupShapeUtil, TextShapeUtil } from '../src/renderer/src/canvas/shapes'
 import { SelectTool } from '../src/renderer/src/canvas/tools/select'
 
 type Call = { name: string; args: number[] }
@@ -319,9 +314,7 @@ describe('what the canvas draws over the artwork', () => {
     const first = geo(subject, 'one', 0, 0, 100, 100)
     geo(subject, 'two', 0, 200, 100, 100)
     subject.select(first)
-    subject.snaps.setIndicators([
-      { id: 'snap:one', type: 'points', points: [new Vec(50, 50), new Vec(50, 250)] }
-    ])
+    subject.snaps.setIndicators([{ id: 'snap:one', type: 'points', points: [new Vec(50, 50), new Vec(50, 250)] }])
 
     expect(activeTypes(subject)).toContain('snap_indicator')
     const drawn = paint(subject)
@@ -334,9 +327,7 @@ describe('what the canvas draws over the artwork', () => {
     const subject = editor()
     const id = geo(subject, 'one', 0, 0, 100, 100)
     subject.select(id)
-    subject.snaps.setIndicators([
-      { id: 'snap:one', type: 'points', points: [new Vec(0, 0), new Vec(100, 0)] }
-    ])
+    subject.snaps.setIndicators([{ id: 'snap:one', type: 'points', points: [new Vec(0, 0), new Vec(100, 0)] }])
 
     const drawn = paint(subject)
     const marks = drawn.named('moveTo').filter(call => call.args.length === 2)

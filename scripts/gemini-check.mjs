@@ -108,10 +108,10 @@ try {
     }
     const options = message.params?.options ?? []
     const picked =
-      options.find(o => o.kind === 'allow_always') ??
-      options.find(o => o.kind === 'allow_once') ??
-      options[0]
-    console.log(`${at()} permission ${flat(message.params?.toolCall?.title ?? '')} answered ${picked?.optionId ?? 'nothing'}`)
+      options.find(o => o.kind === 'allow_always') ?? options.find(o => o.kind === 'allow_once') ?? options[0]
+    console.log(
+      `${at()} permission ${flat(message.params?.toolCall?.title ?? '')} answered ${picked?.optionId ?? 'nothing'}`
+    )
     send({
       jsonrpc: '2.0',
       id: message.id,
@@ -187,7 +187,8 @@ try {
     waiting.clear()
   })
   child.on('exit', code => {
-    const dead = gone ?? new Error(`the CLI stopped with code ${code}${stderr ? `: ${flat(stderr).slice(0, 200)}` : ''}`)
+    const dead =
+      gone ?? new Error(`the CLI stopped with code ${code}${stderr ? `: ${flat(stderr).slice(0, 200)}` : ''}`)
     for (const [, seat] of waiting) seat.reject(dead)
     waiting.clear()
   })
@@ -255,7 +256,9 @@ try {
       ok: diffs.length > 0,
       note: diffs.length
         ? diffs
-            .map(one => `${one.path} ${String(one.oldText ?? '').length} characters to ${String(one.newText ?? '').length}`)
+            .map(
+              one => `${one.path} ${String(one.oldText ?? '').length} characters to ${String(one.newText ?? '').length}`
+            )
             .join(', ')
         : `${updates.length} tool_call_update messages, ${carried} of them carrying content, none of it a diff part with a path, oldText and newText`
     },
@@ -283,11 +286,14 @@ try {
     console.error(`\n${failed.length} of ${checks.length} checks failed off the real CLI`)
     process.exitCode = 1
   } else {
-    console.log('\nlive thinking, a streamed answer, a named tool, a real diff and an edit that landed, off the real CLI')
+    console.log(
+      '\nlive thinking, a streamed answer, a named tool, a real diff and an edit that landed, off the real CLI'
+    )
   }
 } catch (error) {
   if (absent(error)) console.error(`this check needs the gemini CLI on PATH, and there is no ${binary()} here`)
-  else if (unsigned(error)) console.error(`this check needs a signed in gemini, and this machine has none: ${flat(error.rpc?.message ?? '')}`)
+  else if (unsigned(error))
+    console.error(`this check needs a signed in gemini, and this machine has none: ${flat(error.rpc?.message ?? '')}`)
   else console.error(`the run fell over: ${error.message}`)
   process.exitCode = 1
 } finally {

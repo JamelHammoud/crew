@@ -6,9 +6,7 @@ if (process.platform !== 'darwin') process.exit(0)
 const coreGraphics = koffi.load(
   '/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/CoreGraphics'
 )
-const coreFoundation = koffi.load(
-  '/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation'
-)
+const coreFoundation = koffi.load('/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation')
 const callbackType = koffi.proto(
   'void * ScribeFunctionKeyCallback(void *proxy, uint32_t type, void *event, void *user)'
 )
@@ -22,16 +20,12 @@ const createTap = coreGraphics.func('CGEventTapCreate', 'void *', [
   'void *'
 ])
 const eventFlags = coreGraphics.func('uint64_t CGEventGetFlags(void *event)')
-const eventField = coreGraphics.func(
-  'int64_t CGEventGetIntegerValueField(void *event, uint32_t field)'
-)
+const eventField = coreGraphics.func('int64_t CGEventGetIntegerValueField(void *event, uint32_t field)')
 const createSource = coreFoundation.func(
   'void * CFMachPortCreateRunLoopSource(void *allocator, void *port, int64_t order)'
 )
 const currentRunLoop = coreFoundation.func('void * CFRunLoopGetCurrent()')
-const addSource = coreFoundation.func(
-  'void CFRunLoopAddSource(void *runLoop, void *source, void *mode)'
-)
+const addSource = coreFoundation.func('void CFRunLoopAddSource(void *runLoop, void *source, void *mode)')
 const createString = coreFoundation.func(
   'void * CFStringCreateWithCString(void *allocator, const char *text, uint32_t encoding)'
 )
@@ -45,18 +39,15 @@ const FUNCTION_KEYCODE = 63
 const SECONDARY_FN = 1n << 23n
 let down = false
 
-const callback = koffi.register(
-  (_proxy: bigint | null, type: number, event: bigint | null) => {
-    if (type !== FLAGS_CHANGED || !event) return event
-    if (Number(eventField(event, KEYBOARD_KEYCODE)) !== FUNCTION_KEYCODE) return event
-    const next = (BigInt(eventFlags(event)) & SECONDARY_FN) !== 0n
-    if (next === down) return event
-    down = next
-    fs.writeSync(1, next ? 'down\n' : 'up\n')
-    return event
-  },
-  callbackPointer
-)
+const callback = koffi.register((_proxy: bigint | null, type: number, event: bigint | null) => {
+  if (type !== FLAGS_CHANGED || !event) return event
+  if (Number(eventField(event, KEYBOARD_KEYCODE)) !== FUNCTION_KEYCODE) return event
+  const next = (BigInt(eventFlags(event)) & SECONDARY_FN) !== 0n
+  if (next === down) return event
+  down = next
+  fs.writeSync(1, next ? 'down\n' : 'up\n')
+  return event
+}, callbackPointer)
 const tap = createTap(1, 0, 1, 1n << BigInt(FLAGS_CHANGED), callback, null)
 
 if (!tap) {

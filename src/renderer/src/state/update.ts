@@ -42,8 +42,11 @@ export function pressUpdate(): void {
 }
 
 export function useUpdate(): UpdateState {
-  return useSyncExternalStore(listener => {
-    listeners.add(listener)
-    return () => listeners.delete(listener)
-  }, () => state)
+  return useSyncExternalStore(
+    listener => {
+      listeners.add(listener)
+      return () => listeners.delete(listener)
+    },
+    () => state
+  )
 }

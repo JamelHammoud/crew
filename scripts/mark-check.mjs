@@ -137,7 +137,7 @@ async function compile(dir) {
   const sheet = (await readdir(assets)).find(name => name.endsWith('.css'))
   if (!sheet) throw new Error('the probe came out with no stylesheet')
   const css = await readFile(path.join(assets, sheet), 'utf8')
-  if (!css.includes('--color-ink-900')) throw new Error('the stylesheet came out without the app\'s own tokens in it')
+  if (!css.includes('--color-ink-900')) throw new Error("the stylesheet came out without the app's own tokens in it")
 }
 
 const dir = await stage()
@@ -181,9 +181,7 @@ if (middle > 200) {
   process.exit(1)
 }
 
-const layered = seen.read
-  .filter(one => one.over > 0)
-  .sort((a, b) => b.over / b.painted - a.over / a.painted)
+const layered = seen.read.filter(one => one.over > 0).sort((a, b) => b.over / b.painted - a.over / a.painted)
 
 for (const one of layered) {
   const share = Math.round((one.over / one.painted) * 1000) / 10
@@ -192,6 +190,6 @@ for (const one of layered) {
   )
 }
 console.log(
-  `\n${seen.read.length} marks read at ${Math.round((ALPHA * 100))}%, drawn at ${middle}. ${layered.length} of them fade a stroke at a time rather than as one drawing.`
+  `\n${seen.read.length} marks read at ${Math.round(ALPHA * 100)}%, drawn at ${middle}. ${layered.length} of them fade a stroke at a time rather than as one drawing.`
 )
 if (layered.length > 0) process.exit(1)

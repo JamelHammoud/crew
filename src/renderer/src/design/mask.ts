@@ -42,7 +42,10 @@ export function useAsMask(editor: Editor): void {
   editor.run(() => {
     editor.markHistoryStoppingPoint('use as mask')
     editor.updateShape({ id: mask.id, type: 'design-node', props: { mask: true, clip: true } })
-    editor.reparentShapes(covered.map(shape => shape.id), mask.id)
+    editor.reparentShapes(
+      covered.map(shape => shape.id),
+      mask.id
+    )
     editor.setSelectedShapes([mask.id])
   })
 }

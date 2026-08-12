@@ -26,15 +26,7 @@ export function Field({ label, children }: { label: string; children: ReactNode 
 
 // Every screen the toolbox holds wears the same bar: a way back where there is
 // one, the name of the screen, and whatever that screen can do on the right.
-export function SheetHeader({
-  title,
-  onBack,
-  children
-}: {
-  title: string
-  onBack?: () => void
-  children?: ReactNode
-}) {
+export function SheetHeader({ title, onBack, children }: { title: string; onBack?: () => void; children?: ReactNode }) {
   return (
     <>
       <header className={`h-12 pr-2 flex items-center gap-1 ${onBack ? 'pl-1.5' : 'pl-3.5'}`}>
@@ -66,15 +58,7 @@ export function Footer({ children }: { children: ReactNode }) {
   )
 }
 
-export function Primary({
-  label,
-  disabled,
-  onClick
-}: {
-  label: string
-  disabled?: boolean
-  onClick: () => void
-}) {
+export function Primary({ label, disabled, onClick }: { label: string; disabled?: boolean; onClick: () => void }) {
   return (
     <button
       onClick={onClick}

@@ -111,9 +111,7 @@ export default function ScreenPicker() {
                 </span>
                 <InsetRing
                   className={`transition-colors duration-150 ${
-                    chosen === source.id
-                      ? 'border-2 border-fg'
-                      : 'border border-fg/[0.08] group-hover:border-fg/25'
+                    chosen === source.id ? 'border-2 border-fg' : 'border border-fg/[0.08] group-hover:border-fg/25'
                   }`}
                 />
               </button>

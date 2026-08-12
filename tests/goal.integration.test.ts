@@ -58,7 +58,10 @@ describe('goal runs', () => {
 
     ui.chat('finish the migration', [], thread.threadId, ['goal'])
     const goalStart = await ui.waitForEvent(
-      event => event.kind === 'agent.start' && event.threadId === thread.threadId && event.promptText === 'finish the migration'
+      event =>
+        event.kind === 'agent.start' &&
+        event.threadId === thread.threadId &&
+        event.promptText === 'finish the migration'
     )
     if (goalStart.kind !== 'agent.start') throw new Error('The goal run did not start.')
     await ui.waitForEvent(event => event.kind === 'agent.end' && event.promptId === goalStart.promptId)
@@ -67,7 +70,8 @@ describe('goal runs', () => {
 
     ui.chat('verify it @Watcher', [watcher], undefined, ['goal'])
     const chatGoal = await ui.waitForEvent(
-      event => event.kind === 'agent.start' && event.threadId !== thread.threadId && event.promptText === 'verify it @Watcher'
+      event =>
+        event.kind === 'agent.start' && event.threadId !== thread.threadId && event.promptText === 'verify it @Watcher'
     )
     if (chatGoal.kind !== 'agent.start') throw new Error('The chat goal did not start.')
     await ui.waitForEvent(event => event.kind === 'agent.end' && event.promptId === chatGoal.promptId)

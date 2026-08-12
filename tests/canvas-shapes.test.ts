@@ -231,11 +231,7 @@ describe('owned canvas shape utilities', () => {
       },
       meta: {}
     }
-    const target = shape(
-      'geo',
-      { ...new GeoShapeUtil(editor).getDefaultProps(), w: 200, h: 100 },
-      'shape:target'
-    )
+    const target = shape('geo', { ...new GeoShapeUtil(editor).getDefaultProps(), w: 200, h: 100 }, 'shape:target')
     const boundEditor: ShapeEditor = boundArrowEditor(straight, target, [binding])
     expect(getArrowTerminals(boundEditor, straight).start).toMatchObject({ x: 50, y: 75 })
     expect(new ArrowBindingUtil({}).getDefaultProps()).toEqual({

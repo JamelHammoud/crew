@@ -51,24 +51,102 @@ const QUOTED = /^(["'“”])([\s\S]*)\1$/
 const THOUGHT = /^[\s\S]*<\/think(?:ing)?>/
 
 const LOOSE = new Set([
-  'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',
-  'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen',
-  'seventeen', 'eighteen', 'nineteen', 'twenty', 'thirty', 'forty', 'fifty',
-  'sixty', 'seventy', 'eighty', 'ninety', 'hundred', 'thousand', 'million',
-  'billion', 'first', 'second', 'third', 'fourth', 'fifth', 'point', 'percent',
-  'dollar', 'dollars', 'cent', 'cents', 'pound', 'pounds', 'euro', 'euros',
-  'quarter', 'oh', 'o', 'a', 'm', 'p', 'am', 'pm', 'and', 'quote', 'unquote',
+  'zero',
+  'one',
+  'two',
+  'three',
+  'four',
+  'five',
+  'six',
+  'seven',
+  'eight',
+  'nine',
+  'ten',
+  'eleven',
+  'twelve',
+  'thirteen',
+  'fourteen',
+  'fifteen',
+  'sixteen',
+  'seventeen',
+  'eighteen',
+  'nineteen',
+  'twenty',
+  'thirty',
+  'forty',
+  'fifty',
+  'sixty',
+  'seventy',
+  'eighty',
+  'ninety',
+  'hundred',
+  'thousand',
+  'million',
+  'billion',
+  'first',
+  'second',
+  'third',
+  'fourth',
+  'fifth',
+  'point',
+  'percent',
+  'dollar',
+  'dollars',
+  'cent',
+  'cents',
+  'pound',
+  'pounds',
+  'euro',
+  'euros',
+  'quarter',
+  'oh',
+  'o',
+  'a',
+  'm',
+  'p',
+  'am',
+  'pm',
+  'and',
+  'quote',
+  'unquote',
   'end'
 ])
 
 const COMMON = new Set([
-  'a', 'an', 'the', 'and', 'or', 'of', 'to', 'in', 'is', 'it', 'this', 'that',
-  'for', 'you', 'your', 'i', 'be', 'as', 'on', 'at', 'with', 'here', 'have',
-  'has', 'was', 'are', 'my', 'me', 'so', 'up', 'out'
+  'a',
+  'an',
+  'the',
+  'and',
+  'or',
+  'of',
+  'to',
+  'in',
+  'is',
+  'it',
+  'this',
+  'that',
+  'for',
+  'you',
+  'your',
+  'i',
+  'be',
+  'as',
+  'on',
+  'at',
+  'with',
+  'here',
+  'have',
+  'has',
+  'was',
+  'are',
+  'my',
+  'me',
+  'so',
+  'up',
+  'out'
 ])
 
-const wordsIn = (text: string): string[] =>
-  [...text.toLowerCase().matchAll(WORD)].map(found => found[0])
+const wordsIn = (text: string): string[] => [...text.toLowerCase().matchAll(WORD)].map(found => found[0])
 
 const figure = (word: string): boolean => /\d/.test(word)
 
@@ -130,8 +208,7 @@ export interface Editor {
   model: string
 }
 
-const canEdit = (editor: Editor): boolean =>
-  Boolean(editor.url.trim()) && Boolean(editor.model.trim())
+const canEdit = (editor: Editor): boolean => Boolean(editor.url.trim()) && Boolean(editor.model.trim())
 
 const answerOf = (frame: any): string => {
   const held = frame?.choices?.[0]?.message?.content
@@ -157,11 +234,7 @@ async function ask(said: string, editor: Editor, signal: AbortSignal): Promise<s
   return answerOf(await answer.json())
 }
 
-export async function editSaid(
-  said: string,
-  editor: Editor,
-  signal?: AbortSignal
-): Promise<string> {
+export async function editSaid(said: string, editor: Editor, signal?: AbortSignal): Promise<string> {
   if (!canEdit(editor) || !said.trim() || said.length > EDIT_LIMIT) return said
   const capped = AbortSignal.timeout(EDIT_MS)
   const watching = signal ? AbortSignal.any([signal, capped]) : capped

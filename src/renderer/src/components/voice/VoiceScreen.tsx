@@ -165,10 +165,7 @@ export default function VoiceScreen() {
       {/* The same bar the app wears, to the pixel: its height, its padding and
           the room it leaves the traffic lights. The picker's own left padding
           is the logo button's, so the pet lands where the mark lands. */}
-      <div
-        style={{ height: TOP_BAR_H }}
-        className="app-drag shrink-0 flex items-center justify-between px-6"
-      >
+      <div style={{ height: TOP_BAR_H }} className="app-drag shrink-0 flex items-center justify-between px-6">
         <div className={`app-no-drag flex items-center gap-2 ${full ? '' : 'mac:pl-[64px]'}`}>
           <Who />
           {threadId && (
@@ -204,9 +201,7 @@ export default function VoiceScreen() {
           {problem ? (
             <p className="text-base text-danger text-center max-w-[380px]">{problem}</p>
           ) : caption ? (
-            <p
-              className={`text-center max-w-[440px] ${saying ? 'text-lg text-fg' : 'text-base text-fg-muted italic'}`}
-            >
+            <p className={`text-center max-w-[440px] ${saying ? 'text-lg text-fg' : 'text-base text-fg-muted italic'}`}>
               {caption}
             </p>
           ) : (

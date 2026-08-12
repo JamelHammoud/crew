@@ -57,25 +57,17 @@ export default function DesignAskBar({
   // Viewport, not screen: the bar is drawn in the stage's own box, which starts
   // under the top bar and beside the panels. Screen coordinates put it that far
   // off the shape it belongs to.
-  const target = useValue<Box | null>(
-    'ask bar target',
-    () => {
-      const page = editor.getSelectionPageBounds()
-      if (!page) return null
-      const from = editor.pageToViewport({ x: page.minX, y: page.minY })
-      const to = editor.pageToViewport({ x: page.maxX, y: page.maxY })
-      return { x: from.x, y: from.y, w: to.x - from.x, h: to.y - from.y }
-    },
-    [editor]
-  )
-  const stage = useValue(
-    'ask bar stage',
-    () => {
-      const box = editor.getViewportScreenBounds()
-      return { w: box.w, h: box.h }
-    },
-    [editor]
-  )
+  const target = useValue<Box | null>('ask bar target', () => {
+    const page = editor.getSelectionPageBounds()
+    if (!page) return null
+    const from = editor.pageToViewport({ x: page.minX, y: page.minY })
+    const to = editor.pageToViewport({ x: page.maxX, y: page.maxY })
+    return { x: from.x, y: from.y, w: to.x - from.x, h: to.y - from.y }
+  }, [editor])
+  const stage = useValue('ask bar stage', () => {
+    const box = editor.getViewportScreenBounds()
+    return { w: box.w, h: box.h }
+  }, [editor])
   const selected = useValue('ask bar selection', () => editor.getSelectedShapes(), [editor])
   const layers = useMemo(() => selected.map(shape => layerName(shape)).slice(0, 8), [selected])
 

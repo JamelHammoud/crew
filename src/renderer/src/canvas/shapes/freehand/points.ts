@@ -21,7 +21,11 @@ function pressureOf(point: VecLike, clamp: boolean): number {
   return clamp && z < MIN_PRESSURE ? MIN_PRESSURE : z
 }
 
-function stage(input: readonly VecLike[], size: number, simulatePressure: boolean): { points: Staged[]; trimmed: number } {
+function stage(
+  input: readonly VecLike[],
+  size: number,
+  simulatePressure: boolean
+): { points: Staged[]; trimmed: number } {
   const minDistance = (size / 3) ** 2
   const clamp = !simulatePressure
   const first = input[0]
@@ -146,14 +150,7 @@ export function strokePoints(input: readonly VecLike[], options: StrokeOptions =
 }
 
 export function computeRadii(points: StrokePoint[], options: StrokeOptions): void {
-  const {
-    size = 16,
-    thinning = 0.5,
-    simulatePressure = true,
-    easing = linear,
-    start = {},
-    end = {}
-  } = options
+  const { size = 16, thinning = 0.5, simulatePressure = true, easing = linear, start = {}, end = {} } = options
   if (points.length === 0) return
 
   const taperStartEase = start.easing ?? easeOutQuad
@@ -190,7 +187,10 @@ export function computeRadii(points: StrokePoint[], options: StrokeOptions): voi
     if (thinning) {
       const speed = Math.min(1, point.distance / size)
       const pressure = simulatePressure
-        ? Math.min(1, previousPressure + (Math.min(1, 1 - speed) - previousPressure) * (speed * RATE_OF_PRESSURE_CHANGE))
+        ? Math.min(
+            1,
+            previousPressure + (Math.min(1, 1 - speed) - previousPressure) * (speed * RATE_OF_PRESSURE_CHANGE)
+          )
         : Math.min(1, previousPressure + (point.pressure - previousPressure) * (speed * RATE_OF_PRESSURE_CHANGE))
       radius = size * easing(0.5 - thinning * (0.5 - pressure))
       previousPressure = pressure

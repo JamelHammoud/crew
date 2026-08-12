@@ -68,7 +68,7 @@ function save(read: Read): void {
 
 // Whatever was written to goes to the end, so the oldest is the first to go
 // rather than whichever happened to be opened first.
-const trim = <T,>(held: Record<string, T>, limit: number): Record<string, T> => {
+const trim = <T>(held: Record<string, T>, limit: number): Record<string, T> => {
   const keys = Object.keys(held)
   if (keys.length <= limit) return held
   const next = { ...held }

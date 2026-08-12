@@ -38,8 +38,7 @@ const folded: Attachment = {
   file: 'c.zip'
 }
 
-const draw = (attachments: Attachment[]) =>
-  render(createElement(MessageAttachments, { attachments }))
+const draw = (attachments: Attachment[]) => render(createElement(MessageAttachments, { attachments }))
 
 beforeEach(() => {
   openExternal.mockClear()

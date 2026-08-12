@@ -314,6 +314,11 @@ describe('several crews in one app', () => {
     await app.start(1, one, 'Jamel')
     await app.start(1, two, 'Jamel')
 
-    expect(app.recentProjects().map(project => project.folder).sort()).toEqual([one, two].sort())
+    expect(
+      app
+        .recentProjects()
+        .map(project => project.folder)
+        .sort()
+    ).toEqual([one, two].sort())
   })
 })

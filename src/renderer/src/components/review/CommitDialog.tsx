@@ -31,11 +31,7 @@ export default function CommitDialog({
   }
 
   return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      title={`Commit ${staged} ${staged === 1 ? 'file' : 'files'}`}
-    >
+    <Modal open={open} onClose={onClose} title={`Commit ${staged} ${staged === 1 ? 'file' : 'files'}`}>
       <TextArea
         glass
         ref={ref}

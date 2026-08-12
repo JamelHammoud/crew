@@ -11,13 +11,7 @@ import type { ModelServer } from '../shared/modelServers'
 import type { LivePlace } from '../shared/places'
 import type { Present, PresenceSnapshot } from '../shared/presence'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../shared/llm'
-import type {
-  RepoActionResult,
-  RepoChange,
-  RepoCommand,
-  RepoStatus,
-  RepoWork
-} from '../shared/repository'
+import type { RepoActionResult, RepoChange, RepoCommand, RepoStatus, RepoWork } from '../shared/repository'
 import type { RecentJoin, RecentProject } from '../shared/recent'
 import type { ScribeKeyState, ScribeSettings } from '../shared/scribe'
 import type { Said } from '../shared/scribeSaid'
@@ -53,16 +47,14 @@ const bridge = {
   projectPlan: (folder: string): Promise<ProjectPlan> => ipcRenderer.invoke('session:plan', folder),
   connectCrew: (remote: string): Promise<{ ok: boolean; message: string }> =>
     ipcRenderer.invoke('crew:connect', remote),
-  setProjectSync: (on: boolean): Promise<CurrentSession | null> =>
-    ipcRenderer.invoke('session:sync', on),
+  setProjectSync: (on: boolean): Promise<CurrentSession | null> => ipcRenderer.invoke('session:sync', on),
   setShared: (shared: boolean): Promise<CurrentSession | null> => ipcRenderer.invoke('session:share', shared),
   agentCapabilities: (): Promise<ProviderCapability[]> => ipcRenderer.invoke('agents:capabilities'),
   installProvider: (provider: string): Promise<ProviderCapability[]> => ipcRenderer.invoke('agents:install', provider),
   modelServers: (): Promise<ModelServer[]> => ipcRenderer.invoke('agents:servers'),
   addModelServer: (input: { url: string; name?: string; key?: string }): Promise<ProviderCapability[]> =>
     ipcRenderer.invoke('agents:addServer', input),
-  forgetModelServer: (url: string): Promise<ProviderCapability[]> =>
-    ipcRenderer.invoke('agents:forgetServer', url),
+  forgetModelServer: (url: string): Promise<ProviderCapability[]> => ipcRenderer.invoke('agents:forgetServer', url),
   createAgent: (input: { provider: string; name: string; settings: AgentSettings }): Promise<AgentDef> =>
     ipcRenderer.invoke('agents:create', input),
   removeAgent: (instanceId: string): Promise<void> => ipcRenderer.invoke('agents:remove', instanceId),
@@ -82,8 +74,7 @@ const bridge = {
   readFile: (path: string): Promise<RepoFile | null> => ipcRenderer.invoke('file:read', path),
   listFiles: (): Promise<string[]> => ipcRenderer.invoke('file:list'),
   readDirs: (query: string): Promise<MachineDir[]> => ipcRenderer.invoke('file:dirs', query),
-  writeFile: (path: string, text: string): Promise<RepoFile | null> =>
-    ipcRenderer.invoke('file:write', path, text),
+  writeFile: (path: string, text: string): Promise<RepoFile | null> => ipcRenderer.invoke('file:write', path, text),
   locatePath: (path: string): Promise<PathLocation> => ipcRenderer.invoke('file:locate', path),
   previewHtml: (id: string, path: string, text: string | null): Promise<string | null> =>
     ipcRenderer.invoke('preview:html', id, path, text),
@@ -141,8 +132,7 @@ const bridge = {
       ipcRenderer.off('terminal:exit', handler)
     }
   },
-  applyScribe: (settings: ScribeSettings): Promise<ScribeKeyState> =>
-    ipcRenderer.invoke('scribe:apply', settings),
+  applyScribe: (settings: ScribeSettings): Promise<ScribeKeyState> => ipcRenderer.invoke('scribe:apply', settings),
   scribeState: (): Promise<ScribeKeyState> => ipcRenderer.invoke('scribe:state'),
   openScribePermission: (): Promise<void> => ipcRenderer.invoke('scribe:permission'),
   scribeWrite: (text: string): void => ipcRenderer.send('scribe:write', text),
@@ -157,14 +147,10 @@ const bridge = {
       ipcRenderer.off('scribe:said', handler)
     }
   },
-  resizeScribe: (width: number, height: number): void =>
-    ipcRenderer.send('scribe:size', width, height),
+  resizeScribe: (width: number, height: number): void => ipcRenderer.send('scribe:size', width, height),
   grabScribe: (): void => ipcRenderer.send('scribe:grab'),
-  moveScribe: (x: number, y: number, settled: boolean): void =>
-    ipcRenderer.send('scribe:drag', x, y, settled),
-  onScribe: (
-    listener: (word: 'arm' | 'finish' | 'cancel') => void
-  ): (() => void) => {
+  moveScribe: (x: number, y: number, settled: boolean): void => ipcRenderer.send('scribe:drag', x, y, settled),
+  onScribe: (listener: (word: 'arm' | 'finish' | 'cancel') => void): (() => void) => {
     const arm = () => listener('arm')
     const finish = () => listener('finish')
     const cancel = () => listener('cancel')
@@ -216,9 +202,7 @@ const bridge = {
     }
   },
   onWindowShape: (listener: (shape: { square: boolean; full: boolean }) => void): void => {
-    ipcRenderer.on('window:shape', (_event, shape: { square: boolean; full: boolean }) =>
-      listener(shape)
-    )
+    ipcRenderer.on('window:shape', (_event, shape: { square: boolean; full: boolean }) => listener(shape))
   },
   onOpenUrl: (listener: (url: string) => void): void => {
     ipcRenderer.on('browser:open', (_event, url: string) => listener(url))

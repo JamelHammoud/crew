@@ -60,7 +60,8 @@ function tabLabel(tab: BrowserTab): string {
   if (tab.kind === 'aside') return tab.title || 'Question'
   // A helper tab says which helper you are reading, so a row of three of them
   // is read at a glance rather than being three tabs called the same thing.
-  if (tab.kind === 'agent') return tab.threadId ? (useCrew.getState().threads[tab.threadId]?.helper ?? 'Helper') : 'Helpers'
+  if (tab.kind === 'agent')
+    return tab.threadId ? (useCrew.getState().threads[tab.threadId]?.helper ?? 'Helper') : 'Helpers'
   if (tab.kind === 'review') return 'Review'
   if (tab.kind === 'music') return 'Music'
   // A games tab says which game you are in, and keeps the same mark whichever
@@ -200,11 +201,7 @@ export default function BrowserPanel() {
           >
             <ArrowRightGlyph className="w-4 h-4" />
           </button>
-          <button
-            onClick={() => useBrowser.getState().reloadTab(active.id)}
-            aria-label="Reload"
-            className={iconButton}
-          >
+          <button onClick={() => useBrowser.getState().reloadTab(active.id)} aria-label="Reload" className={iconButton}>
             <RefreshGlyph className="w-4 h-4" />
           </button>
           <FileCrumbs tab={active} />
@@ -396,14 +393,7 @@ function PanelOpens({ opens }: { opens: PanelOpen[] }) {
 function Favicon({ src }: { src: string }) {
   const [broken, setBroken] = useState(false)
   if (broken) return <GlobeGlyph className="w-4 h-4 shrink-0" />
-  return (
-    <img
-      src={src}
-      alt=""
-      className="w-4 h-4 shrink-0 rounded-sm"
-      onError={() => setBroken(true)}
-    />
-  )
+  return <img src={src} alt="" className="w-4 h-4 shrink-0 rounded-sm" onError={() => setBroken(true)} />
 }
 
 function TabPill({

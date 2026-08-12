@@ -176,13 +176,7 @@ export function strokeOutline(points: StrokePoint[], options: StrokeOptions = {}
 
   if (count === 1 && (!(taperStart || taperEnd) || isComplete)) {
     const origin = Vec.Add(firstPoint, Vec.Sub(firstPoint, lastPoint).uni().per().mul(-firstRadius))
-    const steps = arcSteps(
-      firstRadius,
-      FIXED_PI * 2,
-      capTolerance,
-      MIN_ROUNDED_CORNER_STEPS,
-      MAX_ROUNDED_CORNER_STEPS
-    )
+    const steps = arcSteps(firstRadius, FIXED_PI * 2, capTolerance, MIN_ROUNDED_CORNER_STEPS, MAX_ROUNDED_CORNER_STEPS)
     const dot: Vec[] = []
     for (let step = 1 / steps, along = step; along <= 1; along += step)
       dot.push(Vec.RotWith(origin, firstPoint, FIXED_PI * 2 * along))

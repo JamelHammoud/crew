@@ -73,8 +73,7 @@ export default function FeedbackRow() {
         />
         {stuck && (
           <p className="mt-2.5 text-sm text-danger">
-            No mail app opened. Copy it and send it to{' '}
-            <span className="select-text">{FEEDBACK_EMAIL}</span>.
+            No mail app opened. Copy it and send it to <span className="select-text">{FEEDBACK_EMAIL}</span>.
           </p>
         )}
         <div className="mt-5 flex items-center justify-end gap-2">

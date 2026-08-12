@@ -1,13 +1,6 @@
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
-import {
-  overwrittenPaths,
-  restoreAutostash,
-  runGit,
-  stashCount,
-  takeSyncLock,
-  type GitResult
-} from '../shared/git'
+import { overwrittenPaths, restoreAutostash, runGit, stashCount, takeSyncLock, type GitResult } from '../shared/git'
 import { cleanBranchName } from '../shared/branch'
 import { interruptedStates } from '../shared/gitState'
 import type {
@@ -143,7 +136,12 @@ export class GitSync {
   private async exclusive(action: () => Promise<RepoActionResult>): Promise<RepoActionResult> {
     const release = await takeSyncLock(this.repoPath)
     if (!release) {
-      return this.result(false, false, 'This project is syncing right now. Try again in a moment.', await this.readStatus())
+      return this.result(
+        false,
+        false,
+        'This project is syncing right now. Try again in a moment.',
+        await this.readStatus()
+      )
     }
     try {
       return await action()
@@ -234,12 +232,7 @@ export class GitSync {
     const pull = await this.pullRemote(true)
     const status = await this.readStatus()
     if (!pull.ok) return this.result(false, false, `Could not pull. ${pull.detail}`, status)
-    return this.result(
-      true,
-      pull.updated,
-      pull.updated ? 'Pulled the latest changes.' : 'Already up to date.',
-      status
-    )
+    return this.result(true, pull.updated, pull.updated ? 'Pulled the latest changes.' : 'Already up to date.', status)
   }
 
   private async pushAction(message: string): Promise<RepoActionResult> {
@@ -266,12 +259,7 @@ export class GitSync {
       return this.result(false, false, `Could not push. ${gitDetail(push)}`, status)
     }
     const hadChanges = commit.updated || pull.updated || before.ahead > 0 || published
-    return this.result(
-      true,
-      hadChanges,
-      hadChanges ? 'Pushed the latest changes.' : 'Already up to date.',
-      status
-    )
+    return this.result(true, hadChanges, hadChanges ? 'Pushed the latest changes.' : 'Already up to date.', status)
   }
 
   private async act(command: LocalCommand): Promise<RepoActionResult> {
@@ -397,7 +385,11 @@ export class GitSync {
     const result = await runGit(['stash', verb, found.ref], this.repoPath)
     if (result.code !== 0) {
       const detail = gitDetail(result)
-      return this.done(false, false, verb === 'pop' ? `Could not bring those changes back. ${detail}` : `Could not drop that. ${detail}`)
+      return this.done(
+        false,
+        false,
+        verb === 'pop' ? `Could not bring those changes back. ${detail}` : `Could not drop that. ${detail}`
+      )
     }
     return this.done(true, true, verb === 'pop' ? 'Brought those changes back.' : 'Dropped it.')
   }
@@ -445,10 +437,7 @@ export class GitSync {
   // agent is writing right now. A merge leaves local commits alone and touches
   // only what actually came in.
   private async upstream(): Promise<boolean> {
-    const named = await runGit(
-      ['rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{upstream}'],
-      this.repoPath
-    )
+    const named = await runGit(['rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{upstream}'], this.repoPath)
     return named.code === 0 && named.stdout.trim().length > 0
   }
 
@@ -458,7 +447,10 @@ export class GitSync {
       runGit(['remote'], this.repoPath),
       runGit(['branch', '--show-current'], this.repoPath)
     ])
-    const names = remotes.stdout.split(/\r?\n/).map(one => one.trim()).filter(Boolean)
+    const names = remotes.stdout
+      .split(/\r?\n/)
+      .map(one => one.trim())
+      .filter(Boolean)
     const target = names.includes('origin') ? 'origin' : names[0]
     const name = branch.stdout.trim()
     if (!target || !name) return { push: await runGit(['push'], this.repoPath), published: false }
@@ -557,10 +549,7 @@ export class GitSync {
   }
 
   private async readPending(): Promise<Map<string, Buffer>> {
-    const status = await runGit(
-      ['status', '--porcelain=v1', '-z', '--untracked-files=all'],
-      this.repoPath
-    )
+    const status = await runGit(['status', '--porcelain=v1', '-z', '--untracked-files=all'], this.repoPath)
     if (status.code !== 0) return new Map()
     const kept = new Map<string, Buffer>()
     for (const entry of parseStatus(status.stdout)) {
@@ -623,7 +612,14 @@ export class GitSync {
     const count = String(BRANCH_LIST_LIMIT)
     const [locals, remotes] = await Promise.all([
       runGit(
-        ['for-each-ref', '--sort=-committerdate', '--count', count, `--format=%(refname:short)${UNIT}%(HEAD)`, 'refs/heads'],
+        [
+          'for-each-ref',
+          '--sort=-committerdate',
+          '--count',
+          count,
+          `--format=%(refname:short)${UNIT}%(HEAD)`,
+          'refs/heads'
+        ],
         this.repoPath
       ),
       runGit(
@@ -656,15 +652,16 @@ export class GitSync {
       if (!times.has(name)) order.push(name)
       times.set(name, (times.get(name) ?? 0) + 1)
     }
-    return order
-      .filter(name => times.get(name) === 1)
-      .map(name => ({ name, current: false, remote: true }))
+    return order.filter(name => times.get(name) === 1).map(name => ({ name, current: false, remote: true }))
   }
 
   private async readStashes(): Promise<RepoStash[]> {
     const list = await runGit(['stash', 'list', '-z', `--format=%gd${UNIT}%gs`], this.repoPath)
     if (list.code !== 0) return []
-    return list.stdout.split('\0').filter(Boolean).map(record => stashOf(record))
+    return list.stdout
+      .split('\0')
+      .filter(Boolean)
+      .map(record => stashOf(record))
   }
 
   private async statusEntries(): Promise<StatusEntry[]> {
@@ -683,9 +680,7 @@ export class GitSync {
     const changes = await Promise.all(
       entries.flatMap(entry => sidesOf(entry).map(staged => this.readChange(entry, staged)))
     )
-    return changes.sort(
-      (a, b) => a.path.localeCompare(b.path) || Number(b.staged) - Number(a.staged)
-    )
+    return changes.sort((a, b) => a.path.localeCompare(b.path) || Number(b.staged) - Number(a.staged))
   }
 
   private async readChange(entry: StatusEntry, staged: boolean): Promise<RepoChange> {
@@ -713,11 +708,7 @@ export class GitSync {
     }
   }
 
-  private async readNewFile(
-    entry: StatusEntry,
-    kind: RepoChangeKind,
-    staged: boolean
-  ): Promise<RepoChange> {
+  private async readNewFile(entry: StatusEntry, kind: RepoChangeKind, staged: boolean): Promise<RepoChange> {
     const empty = {
       path: entry.path,
       previousPath: entry.previousPath,
@@ -778,12 +769,7 @@ export class GitSync {
     this.hasRemote = remotes.code === 0 && remotes.stdout.trim().length > 0
   }
 
-  private result(
-    ok: boolean,
-    updated: boolean,
-    message: string,
-    status: RepoStatus
-  ): RepoActionResult {
+  private result(ok: boolean, updated: boolean, message: string, status: RepoStatus): RepoActionResult {
     return { ok, updated, message, status }
   }
 

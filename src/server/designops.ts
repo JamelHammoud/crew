@@ -268,7 +268,8 @@ function applyNode(document: DesignDocument, op: Extract<DesignOp, { op: 'node' 
     return
   }
   const parent = op.parent ? shapeAt(document, op.parent) : null
-  const parentId = parent && (parent.type === 'frame' || parent.type === 'design-node') ? op.parent! : pageIdOf(document)
+  const parentId =
+    parent && (parent.type === 'frame' || parent.type === 'design-node') ? op.parent! : pageIdOf(document)
   if (!parentId) {
     applied.results.push({ error: 'Board has no page yet. Open it in the app first.' })
     return
@@ -373,12 +374,7 @@ export function boardSummary(id: string, name: string, document: DesignDocument 
         y: shape.y,
         w: props.w,
         h: props.h,
-        text:
-          shape.type === 'frame'
-            ? props.name
-            : 'richText' in props
-              ? plainTextOf(props.richText)
-              : undefined,
+        text: shape.type === 'frame' ? props.name : 'richText' in props ? plainTextOf(props.richText) : undefined,
         color: props.color,
         fill: props.fill,
         parentId: parent

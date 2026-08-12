@@ -75,9 +75,7 @@ export function DocSlashMenu({ items, selectedIndex, onItemClick }: SuggestionMe
             >
               <item.mark className="w-4 h-4 shrink-0 text-fg/55" />
               <span className="flex-1 truncate">{item.title}</span>
-              {item.shortcut && (
-                <span className="text-xs text-fg/45 shrink-0">{shortcutLabel(item.shortcut)}</span>
-              )}
+              {item.shortcut && <span className="text-xs text-fg/45 shrink-0">{shortcutLabel(item.shortcut)}</span>}
             </button>
           </div>
         )

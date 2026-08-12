@@ -138,9 +138,8 @@ describe('an agent face', () => {
 
     const worn = picture(face()).style.filter
     cleanup()
-    const bare = picture(
-      render(createElement(SubagentMark, { seed: SEED })).container.firstElementChild as HTMLElement
-    ).style.filter
+    const bare = picture(render(createElement(SubagentMark, { seed: SEED })).container.firstElementChild as HTMLElement)
+      .style.filter
 
     expect(FIELD_LIGHT).toBeLessThan(1)
     expect(worn).toContain(`brightness(${FIELD_LIGHT})`)

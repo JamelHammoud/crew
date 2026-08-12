@@ -23,12 +23,11 @@ const AREA =
 const GLASS_AREA =
   'w-full resize-none bg-fg/[0.07] rounded-xl px-3.5 py-2.5 text-sm leading-5 text-fg placeholder:text-fg/30 outline-none transition-colors duration-150 hover:bg-fg/[0.1] focus:bg-fg/[0.14]'
 
-const TextField = forwardRef<
-  HTMLInputElement,
-  InputHTMLAttributes<HTMLInputElement> & { glass?: boolean }
->(({ className = '', glass, ...rest }, ref) => (
-  <input ref={ref} className={`${glass ? GLASS : FIELD} ${className}`} {...rest} />
-))
+const TextField = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement> & { glass?: boolean }>(
+  ({ className = '', glass, ...rest }, ref) => (
+    <input ref={ref} className={`${glass ? GLASS : FIELD} ${className}`} {...rest} />
+  )
+)
 
 TextField.displayName = 'TextField'
 

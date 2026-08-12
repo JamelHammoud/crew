@@ -56,8 +56,7 @@ export function scribeAnalyser(): AnalyserNode | null {
   return live?.analyser ?? null
 }
 
-const platform = (): string =>
-  globalThis.navigator?.platform?.toLowerCase().includes('mac') ? 'darwin' : 'win32'
+const platform = (): string => (globalThis.navigator?.platform?.toLowerCase().includes('mac') ? 'darwin' : 'win32')
 
 export const useScribe = create<ScribeState>((set, get) => {
   const fetching = new Map<string, Fetching>()

@@ -79,7 +79,9 @@ describe('fonts', () => {
 
   it('gives a real fallback stack behind every family', () => {
     expect(fontStack('sans')).toContain('system-ui')
-    expect(fontStack('Inter')).toBe('"Inter", ui-sans-serif, system-ui, -apple-system, "SF Pro Text", "Segoe UI", sans-serif')
+    expect(fontStack('Inter')).toBe(
+      '"Inter", ui-sans-serif, system-ui, -apple-system, "SF Pro Text", "Segoe UI", sans-serif'
+    )
     expect(fontStack('Lora')).toContain('Georgia')
     expect(fontStack('JetBrains Mono')).toContain('ui-monospace')
     expect(fontStack('Caveat')).toContain('cursive')

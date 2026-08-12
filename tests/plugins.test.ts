@@ -276,8 +276,6 @@ describe('what the store offers', () => {
 
   it('runs every one of them, since none of them wants a key', () => {
     const held = PLUGIN_OFFERS.map((offer, i) => ({ ...offer, id: `${i}`, by: 'Jamel', ts: i }))
-    expect(Object.keys(mcpServersOf(held.slice(0, PLUGIN_LIMIT)))).toHaveLength(
-      Math.min(held.length, PLUGIN_LIMIT)
-    )
+    expect(Object.keys(mcpServersOf(held.slice(0, PLUGIN_LIMIT)))).toHaveLength(Math.min(held.length, PLUGIN_LIMIT))
   })
 })

@@ -181,12 +181,7 @@ describe('resizeShape', () => {
 
 describe('reading order', () => {
   it('reads a grid left to right then top to bottom', () => {
-    const shapes = [
-      { id: 'shape:br' },
-      { id: 'shape:tl' },
-      { id: 'shape:tr' },
-      { id: 'shape:bl' }
-    ]
+    const shapes = [{ id: 'shape:br' }, { id: 'shape:tl' }, { id: 'shape:tr' }, { id: 'shape:bl' }]
     const bounds: Record<string, Box> = {
       'shape:tl': new Box(0, 0, 10, 10),
       'shape:tr': new Box(200, 0, 10, 10),

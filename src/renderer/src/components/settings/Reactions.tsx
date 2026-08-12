@@ -105,11 +105,7 @@ export default function Reactions() {
     <Page title="Reactions">
       <Section
         title="On a message"
-        action={
-          shipped ? undefined : (
-            <Quiet label="Reset" onClick={() => setQuickReactions([...QUICK_REACTIONS])} />
-          )
-        }
+        action={shipped ? undefined : <Quiet label="Reset" onClick={() => setQuickReactions([...QUICK_REACTIONS])} />}
       >
         <div className="flex flex-wrap items-center gap-2 pt-1">
           {list.map(emoji => (

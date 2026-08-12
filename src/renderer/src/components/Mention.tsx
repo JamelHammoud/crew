@@ -110,10 +110,12 @@ export function AgentName({
 }
 
 function MentionChip({ self = false, children }: { self?: boolean; children: ReactNode }) {
-  const tint = self
-    ? 'text-attention bg-attention/20 hover:bg-attention/30'
-    : 'text-fg bg-fg/10 hover:bg-fg/[0.16]'
-  return <strong className={`font-semibold cursor-default rounded-md px-1 py-0.5 transition-colors ${tint}`}>{children}</strong>
+  const tint = self ? 'text-attention bg-attention/20 hover:bg-attention/30' : 'text-fg bg-fg/10 hover:bg-fg/[0.16]'
+  return (
+    <strong className={`font-semibold cursor-default rounded-md px-1 py-0.5 transition-colors ${tint}`}>
+      {children}
+    </strong>
+  )
 }
 
 export function AgentMention({ agent, children }: { agent: PooledAgent; children: ReactNode }) {

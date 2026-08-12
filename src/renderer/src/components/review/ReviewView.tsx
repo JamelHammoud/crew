@@ -99,7 +99,8 @@ export default function ReviewView() {
 
   const settle = async () => {
     if (!ask) return
-    const command: RepoCommand = ask.kind === 'discard' ? { do: 'discard', paths: ask.paths } : { do: 'drop', ref: ask.ref }
+    const command: RepoCommand =
+      ask.kind === 'discard' ? { do: 'discard', paths: ask.paths } : { do: 'drop', ref: ask.ref }
     setAsk(null)
     await send(command)
   }
@@ -203,7 +204,9 @@ export default function ReviewView() {
                 groups={groups}
                 stashes={stashes}
                 shut={shut}
-                onFold={title => setShut(now => (now.includes(title) ? now.filter(one => one !== title) : [...now, title]))}
+                onFold={title =>
+                  setShut(now => (now.includes(title) ? now.filter(one => one !== title) : [...now, title]))
+                }
                 rows={{
                   isViewed,
                   reading: open ? keyOf(open) : null,
@@ -249,7 +252,11 @@ export default function ReviewView() {
         onCommit={() => void commit()}
       />
 
-      <Modal open={ask !== null} onClose={() => setAsk(null)} title={ask?.kind === 'drop' ? 'Drop stash' : 'Discard changes'}>
+      <Modal
+        open={ask !== null}
+        onClose={() => setAsk(null)}
+        title={ask?.kind === 'drop' ? 'Drop stash' : 'Discard changes'}
+      >
         <p className="mt-3 text-sm text-fg/45">
           {ask?.kind === 'drop'
             ? 'What is in this stash goes for good.'

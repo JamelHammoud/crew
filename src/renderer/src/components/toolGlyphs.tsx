@@ -162,10 +162,7 @@ export const CodeGlyph = glyph(
   </>
 )
 
-export const FlagGlyph = glyph(
-  <path d="M5.8 20.5V4.6c3.6-1.7 6.8 1.7 10.4 0v8.9c-3.6 1.7-6.8-1.7-10.4 0" />
-)
-
+export const FlagGlyph = glyph(<path d="M5.8 20.5V4.6c3.6-1.7 6.8 1.7 10.4 0v8.9c-3.6 1.7-6.8-1.7-10.4 0" />)
 
 export const BoxGlyph = glyph(
   <>
@@ -208,15 +205,7 @@ export function ShowGlyph({ className = 'w-4 h-4', strokeWidth }: { className?: 
           strokeLinejoin="round"
         />
       </mask>
-      <rect
-        x={TILE_AT}
-        y={TILE_AT}
-        width={TILE}
-        height={TILE}
-        rx={TILE_R}
-        fill="currentColor"
-        mask={`url(#${id})`}
-      />
+      <rect x={TILE_AT} y={TILE_AT} width={TILE} height={TILE} rx={TILE_R} fill="currentColor" mask={`url(#${id})`} />
     </svg>
   )
 }

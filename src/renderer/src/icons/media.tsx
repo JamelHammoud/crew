@@ -110,13 +110,9 @@ export const HandGlyph = glyph(
 
 // Four corners rather than four diagonal arrows. The arrows are eight strokes
 // where the corners are four, and at 16px the eight turn into a smudge.
-export const ExpandGlyph = glyph(
-  <path d="M9.5 4.5h-5v5M14.5 4.5h5v5M19.5 14.5v5h-5M4.5 14.5v5h5" />
-)
+export const ExpandGlyph = glyph(<path d="M9.5 4.5h-5v5M14.5 4.5h5v5M19.5 14.5v5h-5M4.5 14.5v5h5" />)
 
-export const CollapseGlyph = glyph(
-  <path d="M4.5 9.5h5v-5M19.5 9.5h-5v-5M14.5 19.5v-5h5M9.5 19.5v-5h-5" />
-)
+export const CollapseGlyph = glyph(<path d="M4.5 9.5h5v-5M19.5 9.5h-5v-5M14.5 19.5v-5h5M9.5 19.5v-5h-5" />)
 
 // Two beamed notes rather than one. A single head with a flag is mostly stem at
 // 16px, where the pair reads as music from across the room. The heads follow the

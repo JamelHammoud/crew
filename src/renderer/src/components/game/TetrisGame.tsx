@@ -1,16 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { paintTetris } from './drawTetris'
 import { Field, Overlay, type Box } from './GameStage'
-import {
-  fall,
-  fallMs,
-  hardDrop,
-  moveBy,
-  newTetris,
-  softDrop,
-  turn,
-  type Tetris
-} from './tetris'
+import { fall, fallMs, hardDrop, moveBy, newTetris, softDrop, turn, type Tetris } from './tetris'
 import useGameLoop from './useGameLoop'
 
 type Phase = 'ready' | 'playing' | 'over'
@@ -108,12 +99,7 @@ export default function TetrisGame({
       }}
       overlay={
         phase === 'playing' ? null : phase === 'over' ? (
-          <Overlay
-            title="Game over"
-            note={`${game.score.toLocaleString()} points`}
-            label="Play again"
-            onStart={start}
-          >
+          <Overlay title="Game over" note={`${game.score.toLocaleString()} points`} label="Play again" onStart={start}>
             {children}
           </Overlay>
         ) : (

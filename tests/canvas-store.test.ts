@@ -426,7 +426,10 @@ describe('the squash rules the diff algebra rests on', () => {
   it('turns an add over a remove into an update', () => {
     const before = shape('a', { x: 1 })
     const after = shape('a', { x: 2 })
-    const squashed = squashRecordDiffs<Rec>([diffOf({ removed: { [before.id]: before } }), diffOf({ added: { [after.id]: after } })])
+    const squashed = squashRecordDiffs<Rec>([
+      diffOf({ removed: { [before.id]: before } }),
+      diffOf({ added: { [after.id]: after } })
+    ])
     expect(squashed.removed).toEqual({})
     expect(squashed.added).toEqual({})
     expect(squashed.updated[after.id]).toEqual([before, after])

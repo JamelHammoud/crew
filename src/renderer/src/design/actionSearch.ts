@@ -56,10 +56,7 @@ export function searchActions(rows: ActionRow[], query: string): { section: stri
     const suggested = SUGGESTED.flatMap(id => rows.filter(row => row.id === id))
     const picked = new Set(suggested.map(row => row.id))
     const rest = rows.filter(row => !picked.has(row.id))
-    return sections([
-      ...(suggested.length > 0 ? [{ section: 'Suggestions', rows: suggested }] : []),
-      ...group(rest)
-    ])
+    return sections([...(suggested.length > 0 ? [{ section: 'Suggestions', rows: suggested }] : []), ...group(rest)])
   }
   const hits = rows
     .map(row => ({ row, rank: score(row, clean) }))

@@ -9,8 +9,7 @@ import { cleanSettings, defaultSettings, type ScribeSettings } from '../../../sh
 
 const KEY = 'crew.scribe'
 
-const platform = (): string =>
-  globalThis.navigator?.platform?.toLowerCase().includes('mac') ? 'darwin' : 'win32'
+const platform = (): string => (globalThis.navigator?.platform?.toLowerCase().includes('mac') ? 'darwin' : 'win32')
 
 function read(): ScribeSettings {
   try {

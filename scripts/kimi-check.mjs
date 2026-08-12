@@ -75,7 +75,7 @@ function records(at) {
 }
 
 function summed(found) {
-  const add = (key) => found.reduce((all, one) => all + (Number.isFinite(one.usage[key]) ? one.usage[key] : 0), 0)
+  const add = key => found.reduce((all, one) => all + (Number.isFinite(one.usage[key]) ? one.usage[key] : 0), 0)
   const model = [...found].reverse().find(one => typeof one.model === 'string' && one.model.trim())
   return {
     calls: found.length,
@@ -147,10 +147,10 @@ try {
     }
     const options = message.params?.options ?? []
     const picked =
-      options.find(o => o.kind === 'allow_always') ??
-      options.find(o => o.kind === 'allow_once') ??
-      options[0]
-    console.log(`${at()} permission ${flat(message.params?.toolCall?.title ?? '')} answered ${picked?.optionId ?? 'nothing'}`)
+      options.find(o => o.kind === 'allow_always') ?? options.find(o => o.kind === 'allow_once') ?? options[0]
+    console.log(
+      `${at()} permission ${flat(message.params?.toolCall?.title ?? '')} answered ${picked?.optionId ?? 'nothing'}`
+    )
     send({
       jsonrpc: '2.0',
       id: message.id,
@@ -226,7 +226,8 @@ try {
     waiting.clear()
   })
   child.on('exit', code => {
-    const dead = gone ?? new Error(`the CLI stopped with code ${code}${stderr ? `: ${flat(stderr).slice(0, 200)}` : ''}`)
+    const dead =
+      gone ?? new Error(`the CLI stopped with code ${code}${stderr ? `: ${flat(stderr).slice(0, 200)}` : ''}`)
     for (const [, seat] of waiting) seat.reject(dead)
     waiting.clear()
   })
@@ -292,7 +293,9 @@ try {
   const editArgs = withArgs.filter(u => editIds.has(u.toolCallId)).map(u => u.rawInput)
   const bashArgs = withArgs.filter(u => bashIds.has(u.toolCallId)).map(u => u.rawInput)
   const bashOut = updates.filter(u => bashIds.has(u.toolCallId) && u.rawOutput !== undefined && u.rawOutput !== null)
-  const goodEdit = editArgs.find(a => a.old_string !== undefined && a.new_string !== undefined && (a.path ?? a.file_path) !== undefined)
+  const goodEdit = editArgs.find(
+    a => a.old_string !== undefined && a.new_string !== undefined && (a.path ?? a.file_path) !== undefined
+  )
   const tokens = counted(heard, '', [])
   const argued = new Set(withArgs.map(u => u.toolCallId))
   const silent = [...calls.entries()].filter(([id]) => !argued.has(id)).map(([id, c]) => `${c.title || id}`)
@@ -336,7 +339,12 @@ try {
     {
       name: 'the shell command was named and its output came back',
       ok: bashArgs.some(a => typeof a.command === 'string' && a.command) && bashOut.length > 0,
-      note: `${bashArgs.map(a => a.command).filter(Boolean).join(', ') || 'no command'} , output ${bashOut.length ? flat(JSON.stringify(bashOut[bashOut.length - 1].rawOutput)).slice(0, 120) : 'never came back'}`
+      note: `${
+        bashArgs
+          .map(a => a.command)
+          .filter(Boolean)
+          .join(', ') || 'no command'
+      } , output ${bashOut.length ? flat(JSON.stringify(bashOut[bashOut.length - 1].rawOutput)).slice(0, 120) : 'never came back'}`
     },
     {
       name: 'the turn ended properly',
@@ -347,7 +355,10 @@ try {
       name: 'the stream itself carries no token count, which is why the wire log is read',
       ok: tokens.length === 0,
       note: tokens.length
-        ? `a count did arrive over the wire: ${tokens.slice(0, 6).map(t => `${t.where} ${flat(JSON.stringify(t.value)).slice(0, 80)}`).join(' | ')}`
+        ? `a count did arrive over the wire: ${tokens
+            .slice(0, 6)
+            .map(t => `${t.where} ${flat(JSON.stringify(t.value)).slice(0, 80)}`)
+            .join(' | ')}`
         : 'no token, usage or cost figure anywhere in the stream, as expected'
     },
     {
@@ -358,9 +369,10 @@ try {
     {
       name: 'the wire log holds usage records for the turn',
       ok: Boolean(usage && usage.calls > 0),
-      note: usage && usage.calls
-        ? `${usage.calls} calls on ${usage.model || 'an unnamed model'}, input ${usage.input}, output ${usage.output}, cache read ${usage.cacheRead}, cache creation ${usage.cacheWrite}, total input ${usage.input + usage.cacheRead + usage.cacheWrite}`
-        : 'no usage.record with scope turn was written'
+      note:
+        usage && usage.calls
+          ? `${usage.calls} calls on ${usage.model || 'an unnamed model'}, input ${usage.input}, output ${usage.output}, cache read ${usage.cacheRead}, cache creation ${usage.cacheWrite}, total input ${usage.input + usage.cacheRead + usage.cacheWrite}`
+          : 'no usage.record with scope turn was written'
     },
     {
       name: 'the records were written live rather than only at the end',
@@ -383,7 +395,9 @@ try {
     console.error(`\n${failed.length} of ${checks.length} checks failed off the real CLI`)
     process.exitCode = 1
   } else {
-    console.log('\nlive thinking, a streamed answer, named tools with their arguments, a real edit and live token counts, off the real CLI')
+    console.log(
+      '\nlive thinking, a streamed answer, named tools with their arguments, a real edit and live token counts, off the real CLI'
+    )
   }
 } catch (error) {
   console.error(`the run fell over: ${error.message}`)

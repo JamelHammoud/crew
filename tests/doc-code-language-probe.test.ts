@@ -102,9 +102,7 @@ describe('a code block written under a short language name', () => {
     const under = pairs
       .filter(([, canonical]) => canonical !== 'text')
       .map(([alias, canonical]) => ({ alias, canonical, short: opened(fence(alias, code)) }))
-    const full = new Map(
-      [...new Set(under.map(one => one.canonical))].map(key => [key, opened(fence(key, code))])
-    )
+    const full = new Map([...new Set(under.map(one => one.canonical))].map(key => [key, opened(fence(key, code))]))
     await settle(2000)
     for (const { alias, canonical, short } of under) {
       expect(spansIn(short.host), `${alias} drew nothing`).toBeGreaterThan(0)

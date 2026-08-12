@@ -14,8 +14,7 @@ function put(name = 'clip.mp4'): { media: Media; url: string; file: string } {
   return { media, url: media.url(file), file }
 }
 
-const bytesOf = async (answer: Response): Promise<Uint8Array> =>
-  new Uint8Array(await answer.arrayBuffer())
+const bytesOf = async (answer: Response): Promise<Uint8Array> => new Uint8Array(await answer.arrayBuffer())
 
 describe('the url a file is played from', () => {
   it('says nothing about where the file is', () => {

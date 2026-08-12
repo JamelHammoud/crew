@@ -54,9 +54,7 @@ export function isDarkColor(value: string, palette: Palette = {}): boolean {
 }
 
 function paletteValue(palette: Palette, name: unknown, variant: string): string {
-  const color = (DEFAULT_COLORS as readonly string[]).includes(name as string)
-    ? (name as TLDefaultColorStyle)
-    : 'black'
+  const color = (DEFAULT_COLORS as readonly string[]).includes(name as string) ? (name as TLDefaultColorStyle) : 'black'
   const entry = palette[color]
   if (entry && typeof entry === 'object') {
     const value = (entry as Palette)[variant]

@@ -8,7 +8,11 @@ import electron from 'electron'
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
 
-const PILLS = Array.from({ length: 8 }, (_, i) => `<div class="shrink-0 h-9 px-3 rounded-full bg-ink-800 text-sm text-fg flex items-center">Pill ${i + 1}</div>`).join('')
+const PILLS = Array.from(
+  { length: 8 },
+  (_, i) =>
+    `<div class="shrink-0 h-9 px-3 rounded-full bg-ink-800 text-sm text-fg flex items-center">Pill ${i + 1}</div>`
+).join('')
 
 const ROWS = [
   ['a', 'flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none]'],
@@ -18,10 +22,13 @@ const ROWS = [
   ['g', 'h-9 flex items-center gap-1.5 overflow-x-auto'],
   ['h', 'h-9 flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none]'],
   ['i', 'h-9 flex items-center gap-1.5 overflow-x-auto overflow-y-hidden'],
-  ['j', 'h-9 flex items-start gap-1.5 overflow-x-auto'],
+  ['j', 'h-9 flex items-start gap-1.5 overflow-x-auto']
 ]
 
-const PLAIN = PILLS.replace(/class="[^"]*"/g, 'style="flex:0 0 auto;height:36px;padding:0 12px;display:flex;align-items:center;background:#222;color:#fff"')
+const PLAIN = PILLS.replace(
+  /class="[^"]*"/g,
+  'style="flex:0 0 auto;height:36px;padding:0 12px;display:flex;align-items:center;background:#222;color:#fff"'
+)
 const BARE = `<div id="row" style="width:380px;display:flex;align-items:center;gap:6px;overflow-x:auto;scrollbar-width:none">${PLAIN}</div>
 <div id="row2" style="width:380px;display:flex;align-items:center;gap:6px;overflow-x:auto">${PLAIN}</div>`
 
@@ -101,7 +108,7 @@ async function compile(dir) {
     base: './',
     logLevel: 'silent',
     plugins: [tailwind()],
-    build: { outDir: path.join(dir, 'dist'), emptyOutDir: true },
+    build: { outDir: path.join(dir, 'dist'), emptyOutDir: true }
   })
   const assets = path.join(dir, 'dist/assets')
   const files = await readdir(assets)
@@ -111,7 +118,7 @@ async function compile(dir) {
   return {
     global: /(^|\})::-webkit-scrollbar\{/.test(css) || css.includes('::-webkit-scrollbar{width:10px'),
     hidden: css.includes('::-webkit-scrollbar{display:none'),
-    none: css.includes('scrollbar-width:none'),
+    none: css.includes('scrollbar-width:none')
   }
 }
 
@@ -140,19 +147,28 @@ const SAYS = {
   g: 'a FIXED height (h-9) row, overflow-x-auto, no scrollbar-width',
   h: 'the same fixed height row + [scrollbar-width:none]',
   i: 'the same fixed height row + overflow-y-hidden, no scrollbar-width',
-  j: 'fixed height, items-start so the pill overflows the bottom edge only',
+  j: 'fixed height, items-start so the pill overflows the bottom edge only'
 }
 
 const dir = await stage()
 try {
   const css = await compile(dir)
-  console.log('stylesheet: global scrollbar rule ' + (css.global ? 'present' : 'MISSING') + ', a scoped display:none ' + (css.hidden ? 'present' : 'MISSING') + ', scrollbar-width:none ' + (css.none ? 'present' : 'MISSING'))
+  console.log(
+    'stylesheet: global scrollbar rule ' +
+      (css.global ? 'present' : 'MISSING') +
+      ', a scoped display:none ' +
+      (css.hidden ? 'present' : 'MISSING') +
+      ', scrollbar-width:none ' +
+      (css.none ? 'present' : 'MISSING')
+  )
   const seen = await run(dir)
   if (seen.failed) throw new Error(seen.failed)
   if (!seen.drawn) throw new Error('the page came up empty, so nothing was really tested')
   for (const [say, row] of Object.entries(seen.rows)) {
     console.log(`\n${say}: ${SAYS[say]}`)
-    console.log(`  offsetHeight ${row.offsetHeight}  clientHeight ${row.clientHeight}  scrollHeight ${row.scrollHeight}  (gutter ${row.offsetHeight - row.clientHeight})`)
+    console.log(
+      `  offsetHeight ${row.offsetHeight}  clientHeight ${row.clientHeight}  scrollHeight ${row.scrollHeight}  (gutter ${row.offsetHeight - row.clientHeight})`
+    )
     console.log(`  offsetWidth ${row.offsetWidth}  clientWidth ${row.clientWidth}  scrollWidth ${row.scrollWidth}`)
     console.log(`  computed overflow ${row.overflowX} / ${row.overflowY}, scrollbar-width ${row.scrollbarWidth}`)
     console.log(`  after scrollIntoView on the last pill: scrollTop ${row.scrollTop}, scrollLeft ${row.scrollLeft}`)

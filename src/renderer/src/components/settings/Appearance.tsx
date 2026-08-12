@@ -88,13 +88,7 @@ function IconTile({ icon, theme, on }: { icon: AppIconDef; theme: Theme; on: boo
       aria-pressed={on}
       className={`${CARD} ${on ? PICKED : RESTING} flex flex-col items-center p-1.5 pt-4`}
     >
-      <img
-        src={ICON_ART[icon.flips ? theme : icon.id]}
-        alt=""
-        width={TILE}
-        height={TILE}
-        draggable={false}
-      />
+      <img src={ICON_ART[icon.flips ? theme : icon.id]} alt="" width={TILE} height={TILE} draggable={false} />
       <span className="flex items-center gap-1.5 pt-3 pb-1 text-sm font-medium text-fg">
         {icon.label}
         {on && <CheckGlyph className="w-4 h-4" />}

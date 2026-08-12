@@ -30,10 +30,7 @@ function PlaceGroup({
   useScrollFade(rows)
   const scrolls = threads.length > THREADS_SHOWN
 
-  const openThread = useCallback(
-    (threadId: string) => onOpenThread(place, threadId, false),
-    [onOpenThread, place]
-  )
+  const openThread = useCallback((threadId: string) => onOpenThread(place, threadId, false), [onOpenThread, place])
   const openThreadToRight = useCallback(
     (threadId: string) => onOpenThread(place, threadId, true),
     [onOpenThread, place]

@@ -28,7 +28,6 @@ const icons = {
 const mesh = readFileSync(path.join(root, 'scripts/dmg-mesh.js'), 'utf8')
 const { DMG_WASH } = await import('./icon-dmg.mjs')
 
-
 const icon = (data, cx) =>
   `<img class="icon" style="left:${((cx - DMG.iconSize / 2) / DMG.width) * 100}%;top:${((DMG.line - DMG.iconSize / 2) / DMG.height) * 100}%;width:${(DMG.iconSize / DMG.width) * 100}%" src="data:image/png;base64,${data}" alt="">`
 
@@ -111,9 +110,7 @@ writeFileSync(
         <defs>
 ${dmgDefs()}
         </defs>
-        ${dmgArrow()
-          .replace('<line ', '<line class="shaft" ')
-          .replace('<path ', '<path class="head" ')}
+        ${dmgArrow().replace('<line ', '<line class="shaft" ').replace('<path ', '<path class="head" ')}
         
       ${HEADLINE}
       </svg>

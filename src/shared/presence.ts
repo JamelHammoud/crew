@@ -25,8 +25,7 @@ export const emptyPresence = (): PresenceSnapshot => ({
 
 // One badge everywhere: the button in the app and the menu bar say the same
 // thing about the same tasks.
-export const badgeText = (count: number): string =>
-  count <= 0 ? '' : count > 99 ? '99+' : String(count)
+export const badgeText = (count: number): string => (count <= 0 ? '' : count > 99 ? '99+' : String(count))
 
 export function presenceTooltip(state: PresenceSnapshot): string {
   if (state.waiting === 1) return 'Crew: 1 task needs review'

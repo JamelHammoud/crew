@@ -30,7 +30,11 @@ function frame(subject: Editor, id: string, x: number, y: number, w = 200, h = 2
   return shapeId
 }
 
-const targets = (subject: Editor): string[] => subject.getSnappableShapes().map(shape => shape.id).sort()
+const targets = (subject: Editor): string[] =>
+  subject
+    .getSnappableShapes()
+    .map(shape => shape.id)
+    .sort()
 
 describe('which shapes are snap targets', () => {
   it('never reaches the children of a selected frame', () => {

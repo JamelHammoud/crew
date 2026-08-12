@@ -17,9 +17,7 @@ export default function YourName({
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Avatar name={name.trim() || '?'} size="lg" />
-        <h2 className="min-w-0 text-lg font-semibold text-fg">
-          {first ? 'What should we call you?' : 'Your name'}
-        </h2>
+        <h2 className="min-w-0 text-lg font-semibold text-fg">{first ? 'What should we call you?' : 'Your name'}</h2>
       </div>
       <TextField
         autoFocus

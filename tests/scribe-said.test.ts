@@ -179,7 +179,11 @@ describe('taking one back off the page', () => {
     spoke(said, 'first')
     spoke(said, 'second')
     said.forget(said.all()[0].id)
-    expect(opened().all().map(entry => entry.text)).toEqual(['first'])
+    expect(
+      opened()
+        .all()
+        .map(entry => entry.text)
+    ).toEqual(['first'])
   })
 })
 
@@ -188,7 +192,11 @@ describe('reading the file back', () => {
     const said = opened()
     spoke(said, 'the schema is done')
     spoke(said, 'the reader is next')
-    expect(opened().all().map(entry => entry.text)).toEqual(['the reader is next', 'the schema is done'])
+    expect(
+      opened()
+        .all()
+        .map(entry => entry.text)
+    ).toEqual(['the reader is next', 'the schema is done'])
   })
 
   it('keeps the ids it was written with', () => {
@@ -205,7 +213,11 @@ describe('reading the file back', () => {
     spoke(opened(), 'the schema is done')
     const said = opened()
     spoke(said, 'the reader is next')
-    expect(opened().all().map(entry => entry.text)).toEqual(['the reader is next', 'the schema is done'])
+    expect(
+      opened()
+        .all()
+        .map(entry => entry.text)
+    ).toEqual(['the reader is next', 'the schema is done'])
   })
 })
 
@@ -225,7 +237,11 @@ describe('a file holding something else', () => {
 
   it('keeps the good rows out of an array holding bad ones', () => {
     const contents = JSON.stringify([row({ id: 'a' }), null, 'first', { id: 'b' }, row({ id: 'c' })])
-    expect(held(contents).all().map(entry => entry.id)).toEqual(['a', 'c'])
+    expect(
+      held(contents)
+        .all()
+        .map(entry => entry.id)
+    ).toEqual(['a', 'c'])
   })
 
   it('writes the clean page back over the junk', () => {
@@ -256,7 +272,12 @@ describe('what a row has to carry', () => {
 
   it('drops one with no time on it', () => {
     expect(cleanSaid([row({ at: undefined }), row({ at: Number.NaN })])).toEqual([])
-    expect(cleanSaid([{ ...row(), at: Number.POSITIVE_INFINITY }, { ...row(), at: 'today' }])).toEqual([])
+    expect(
+      cleanSaid([
+        { ...row(), at: Number.POSITIVE_INFINITY },
+        { ...row(), at: 'today' }
+      ])
+    ).toEqual([])
   })
 
   it('drops one that is not a row at all', () => {

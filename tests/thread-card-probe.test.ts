@@ -136,7 +136,9 @@ describe('what a run is doing reads on the card in the feed', () => {
       events: [opened('t1'), started('t1', 'p1')],
       threads: { t1: thread('t1') },
       threadPrompts: { t1: 'p1' },
-      steps: { p1: [step({ kind: 'thinking', status: 'running', text: 'The band is heavier than the row it sits under.' })] }
+      steps: {
+        p1: [step({ kind: 'thinking', status: 'running', text: 'The band is heavier than the row it sits under.' })]
+      }
     })
     expect(screen.getByText('Thinking')).toBeTruthy()
     expect(screen.queryByText('The band is heavier than the row it sits under.')).toBeNull()
@@ -175,7 +177,15 @@ describe('what a run is doing reads on the card in the feed', () => {
     stand({
       events: [
         opened('t1'),
-        { id: 'm1', ts: 1, kind: 'message', threadId: 't1', authorId: 'ali', authorName: 'ALI', text: `@Claude ${long}` },
+        {
+          id: 'm1',
+          ts: 1,
+          kind: 'message',
+          threadId: 't1',
+          authorId: 'ali',
+          authorName: 'ALI',
+          text: `@Claude ${long}`
+        },
         started('t1', 'p1'),
         ended('t1', 'p1', { text: 'Done.' })
       ],

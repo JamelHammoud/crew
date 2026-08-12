@@ -1,4 +1,14 @@
-export type CommandName = 'plan' | 'tickets' | 'goal' | 'ghost' | 'voice' | 'steer' | 'queue' | 'btw' | 'fork' | 'fallback'
+export type CommandName =
+  | 'plan'
+  | 'tickets'
+  | 'goal'
+  | 'ghost'
+  | 'voice'
+  | 'steer'
+  | 'queue'
+  | 'btw'
+  | 'fork'
+  | 'fallback'
 
 // Which composer offers a command. The chat's open a thread, so they are asked
 // for before there is one. A thread's are about the thread already open: where

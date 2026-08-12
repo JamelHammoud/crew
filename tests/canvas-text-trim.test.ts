@@ -64,7 +64,9 @@ describe('what a trim is worked out from', () => {
     const whole = { fontBoundingBoxAscent: 97, fontBoundingBoxDescent: 21, actualBoundingBoxAscent: 70 }
     expect(readFaceMetrics({ ...whole, actualBoundingBoxAscent: 0 } as TextMetrics, PROBE_SIZE)).toBeNull()
     expect(readFaceMetrics({ ...whole, fontBoundingBoxAscent: NaN } as TextMetrics, PROBE_SIZE)).toBeNull()
-    expect(readFaceMetrics({ ...whole, actualBoundingBoxAscent: undefined } as unknown as TextMetrics, PROBE_SIZE)).toBeNull()
+    expect(
+      readFaceMetrics({ ...whole, actualBoundingBoxAscent: undefined } as unknown as TextMetrics, PROBE_SIZE)
+    ).toBeNull()
   })
 
   it('keys a face by its family, its weight and its slant, so two faces are two measurements', () => {

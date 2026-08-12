@@ -249,11 +249,7 @@ export interface ThreadItem {
   shown?: Shown
 }
 
-const sameList = <T>(
-  a: T[] | undefined,
-  b: T[] | undefined,
-  same: (one: T, two: T) => boolean
-): boolean => {
+const sameList = <T>(a: T[] | undefined, b: T[] | undefined, same: (one: T, two: T) => boolean): boolean => {
   if (a === b) return true
   if (!a || !b || a.length !== b.length) return false
   return a.every((one, index) => same(one, b[index]))

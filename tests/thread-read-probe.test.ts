@@ -89,7 +89,9 @@ const stand = (read: SessionEvent[], steps: Record<string, AgentStep[]>): void =
     selfName: 'ALI',
     members: [{ id: 'ali', name: 'ALI', connected: true }],
     agents: [AGENT],
-    events: [{ id: 'since', ts: 900, kind: 'message', authorId: 'ali', authorName: 'ALI', text: 'since', mentions: [] }],
+    events: [
+      { id: 'since', ts: 900, kind: 'message', authorId: 'ali', authorName: 'ALI', text: 'since', mentions: [] }
+    ],
     readEvents: read,
     readSteps: steps,
     threads: {

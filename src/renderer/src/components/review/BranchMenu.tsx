@@ -1,7 +1,15 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
 import { cleanBranchName, BRANCH_NAME_LIMIT } from '../../../../shared/branch'
 import type { RepoBranch } from '../../../../shared/repository'
-import { BranchGlyph, CheckGlyph, ChevronDownGlyph, ChevronLeftGlyph, CloudGlyph, PlusGlyph, SearchGlyph } from '../../icons'
+import {
+  BranchGlyph,
+  CheckGlyph,
+  ChevronDownGlyph,
+  ChevronLeftGlyph,
+  CloudGlyph,
+  PlusGlyph,
+  SearchGlyph
+} from '../../icons'
 import { Popover } from '../Popover'
 import ScreenSwap from '../ScreenSwap'
 import { bringInto } from '../scrollInto'
@@ -91,11 +99,7 @@ export default function BranchMenu({
         onClick={() => setOpen(true)}
         className="-ml-1.5 flex h-7 min-w-0 items-center gap-1.5 rounded-full pl-1.5 pr-2 text-fg-secondary transition-colors hover:bg-fg/10 hover:text-fg active:scale-[0.97]"
       >
-        {busy ? (
-          <Spinner size={13} />
-        ) : (
-          <BranchGlyph className="h-4 w-4 shrink-0 text-fg-faint" />
-        )}
+        {busy ? <Spinner size={13} /> : <BranchGlyph className="h-4 w-4 shrink-0 text-fg-faint" />}
         <span className="min-w-0 truncate text-[13px]">{branch || 'Project'}</span>
         <ChevronDownGlyph className="h-3 w-3 shrink-0 text-fg-faint" />
       </button>

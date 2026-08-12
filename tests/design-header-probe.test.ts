@@ -110,9 +110,7 @@ describe('the design header', () => {
     const held = slots()
     render(stand(board()))
 
-    const marks = [...held.right.querySelectorAll<HTMLElement>('span')].filter(span =>
-      span.className.includes('w-px')
-    )
+    const marks = [...held.right.querySelectorAll<HTMLElement>('span')].filter(span => span.className.includes('w-px'))
     expect(marks.length).toBe(1)
 
     const redo = screen.getByRole('button', { name: 'Redo' })

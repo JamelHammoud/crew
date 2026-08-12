@@ -49,7 +49,7 @@ describe('editing messages', () => {
 
   const messageText = (events: SessionEvent[], id: string) => messageOf(events, id)?.text
 
-  it('rewrites the author\'s message for everyone and keeps it after a restart', async () => {
+  it("rewrites the author's message for everyone and keeps it after a restart", async () => {
     const alice = await TestUi.connect(host.url, 'alice', host.code)
     const bob = await TestUi.connect(host.url, 'bob', host.code)
     uis.push(alice, bob)

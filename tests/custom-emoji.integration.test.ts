@@ -128,9 +128,7 @@ describe('custom emoji', () => {
     expect(host.session.snapshot().emoji?.find(e => e.id === before.id)?.name).toBe('parrot')
 
     pat.send({ type: 'emoji.rename', emojiId: before.id, name: 'Party Parrot' })
-    const renamed = await pat.waitFor(
-      m => m.type === 'emoji.set' && emojiOf(m).some(e => e.name === 'party_parrot')
-    )
+    const renamed = await pat.waitFor(m => m.type === 'emoji.set' && emojiOf(m).some(e => e.name === 'party_parrot'))
     const after = emojiOf(renamed).find(e => e.id === before.id)
     expect(after?.file).toBe(before.file)
   })

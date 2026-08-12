@@ -121,14 +121,7 @@ describe('the agent standing on the chat composer', () => {
     fireEvent.change(composer, { target: { value: 'tidy the readme' } })
     fireEvent.click(screen.getByLabelText('Send'))
 
-    expect(sendChat).toHaveBeenCalledWith(
-      'tidy the readme',
-      undefined,
-      undefined,
-      undefined,
-      ['ali/bubbles'],
-      []
-    )
+    expect(sendChat).toHaveBeenCalledWith('tidy the readme', undefined, undefined, undefined, ['ali/bubbles'], [])
   })
 
   it('stands through a send, and takes the next message too', () => {

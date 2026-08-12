@@ -107,9 +107,12 @@ describe('session resume', () => {
     const first = await app.start(1, one, 'sam')
     const second = await app.start(1, two, 'sam')
     expect(second.wsUrl).not.toBe(first.wsUrl)
-    expect(app.places().map(place => place.key).sort()).toEqual(
-      [projectPlace(one), projectPlace(two)].sort()
-    )
+    expect(
+      app
+        .places()
+        .map(place => place.key)
+        .sort()
+    ).toEqual([projectPlace(one), projectPlace(two)].sort())
 
     const uiOne = await TestUi.connect(first.wsUrl, 'sam', first.code)
     const uiTwo = await TestUi.connect(second.wsUrl, 'sam', second.code)

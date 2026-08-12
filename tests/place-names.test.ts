@@ -6,9 +6,7 @@ import { installLocalStorage } from './helpers/local-storage'
 const storage = installLocalStorage()
 
 const { placesOf } = await import('../src/renderer/src/views/home/place')
-const { PLACE_NAME_LIMIT, cleanPlaceName, keepName, savedNames } = await import(
-  '../src/renderer/src/state/placeNames'
-)
+const { PLACE_NAME_LIMIT, cleanPlaceName, keepName, savedNames } = await import('../src/renderer/src/state/placeNames')
 
 const FOLDER = '/Users/jamel/Documents/Repositories/crew'
 const LINK = 'crew://192.0.2.10:2739/abc123'
@@ -30,8 +28,7 @@ const join: RecentJoin = {
   joinedAt: 1
 }
 
-const placeAt = (index: number, names: Record<string, string> = {}) =>
-  placesOf([project], [join], names)[index]
+const placeAt = (index: number, names: Record<string, string> = {}) => placesOf([project], [join], names)[index]
 
 describe('a place you have named yourself', () => {
   beforeEach(() => {

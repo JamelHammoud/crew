@@ -102,9 +102,7 @@ export function CrewMark({
   const id = raw.replace(/[^a-zA-Z0-9-]/g, '')
   const last = MARK_DISCS.length - 1
   const field = live ? FIELD : BOX
-  const view = live
-    ? `${-ROOM} ${-ROOM} ${MARK_WIDTH + ROOM * 2} ${STAGE}`
-    : `0 0 ${MARK_WIDTH} ${MARK_HEIGHT}`
+  const view = live ? `${-ROOM} ${-ROOM} ${MARK_WIDTH + ROOM * 2} ${STAGE}` : `0 0 ${MARK_WIDTH} ${MARK_HEIGHT}`
 
   return (
     <svg

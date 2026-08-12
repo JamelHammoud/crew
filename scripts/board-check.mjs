@@ -2362,8 +2362,7 @@ const file = await boardFile()
 const directory = await stage(file, mainSource)
 try {
   const result = await run(await compile(directory))
-  if (result.failed)
-    throw new Error(`${result.failed}${result.errors?.length ? `\n${result.errors.join('\n')}` : ''}`)
+  if (result.failed) throw new Error(`${result.failed}${result.errors?.length ? `\n${result.errors.join('\n')}` : ''}`)
   let heading = ''
   for (const check of result.checks) {
     if (check.section !== heading) {
@@ -2372,7 +2371,9 @@ try {
     }
     console.log(`  ${check.ok ? 'ok  ' : 'FAIL'}  ${check.name}${check.note ? `  (${check.note})` : ''}`)
   }
-  const problems = result.checks.filter(check => !check.ok).map(check => `${check.name}${check.note ? `: ${check.note}` : ''}`)
+  const problems = result.checks
+    .filter(check => !check.ok)
+    .map(check => `${check.name}${check.note ? `: ${check.note}` : ''}`)
   if (!result.pixels) problems.push('the window captured no pixels')
   for (const error of result.errors) problems.push(`window error: ${error}`)
   console.log(
@@ -2383,7 +2384,9 @@ try {
   for (const [name, run] of Object.entries(result.speed ?? {}))
     console.log(
       `${name.padEnd(8)} handler mean ${run.handler.mean}ms  p95 ${run.handler.p95}ms  worst ${run.handler.worst}ms, to frame p95 ${run.painted.p95}ms${
-        run.commits ? `, commits ${run.commits.canvas} canvas ${run.commits.overlay} overlay ${run.commits.app} window` : ''
+        run.commits
+          ? `, commits ${run.commits.canvas} canvas ${run.commits.overlay} overlay ${run.commits.app} window`
+          : ''
       }`
     )
   if (problems.length) throw new Error(`\n${problems.join('\n')}`)

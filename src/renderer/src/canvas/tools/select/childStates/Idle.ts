@@ -340,9 +340,7 @@ export class Idle extends StateNode<SelectEditor> {
 
     const selected = this.editor.getSelectedShapes()
     if (selected.length && selected.every((shape: any) => this.editor.isShapeOfType(shape, 'group'))) {
-      this.editor.setSelectedShapes(
-        selected.flatMap((shape: any) => this.editor.getSortedChildIdsForParent(shape.id))
-      )
+      this.editor.setSelectedShapes(selected.flatMap((shape: any) => this.editor.getSortedChildIdsForParent(shape.id)))
       return
     }
 

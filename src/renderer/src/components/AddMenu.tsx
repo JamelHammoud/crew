@@ -92,12 +92,7 @@ export default function AddMenu({
               {aiming && (
                 <>
                   {!full && <MenuDivider />}
-                  <MenuItem
-                    icon={<SparkGlyph />}
-                    label="Agent"
-                    into
-                    onClick={() => setScreen('agent')}
-                  />
+                  <MenuItem icon={<SparkGlyph />} label="Agent" into onClick={() => setScreen('agent')} />
                 </>
               )}
               {calling && (

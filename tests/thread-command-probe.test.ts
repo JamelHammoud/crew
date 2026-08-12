@@ -113,14 +113,7 @@ describe('commands in a thread', () => {
     fireEvent.change(composer, { target: { value: 'finish the migration' } })
     fireEvent.click(screen.getByLabelText('Send'))
 
-    expect(sendChat).toHaveBeenCalledWith(
-      'finish the migration',
-      'thread-1',
-      undefined,
-      undefined,
-      undefined,
-      ['goal']
-    )
+    expect(sendChat).toHaveBeenCalledWith('finish the migration', 'thread-1', undefined, undefined, undefined, ['goal'])
   })
 
   it('leaves steering and queueing out while there is no turn to go into', () => {

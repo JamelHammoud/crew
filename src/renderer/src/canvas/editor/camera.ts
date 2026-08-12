@@ -64,7 +64,11 @@ export class CameraManager {
       isLocked: options?.isLocked ?? false,
       panSpeed: finitePositive(options?.panSpeed, 1),
       zoomSpeed: finitePositive(options?.zoomSpeed, 1),
-      zoomSteps: withZoomRange([...steps].sort((a, b) => a - b), options?.zoomMin, options?.zoomMax)
+      zoomSteps: withZoomRange(
+        [...steps].sort((a, b) => a - b),
+        options?.zoomMin,
+        options?.zoomMax
+      )
     }
   }
 

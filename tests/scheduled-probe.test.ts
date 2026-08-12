@@ -51,12 +51,7 @@ const { TOOL_KINDS } = await import('../src/renderer/src/components/toolKinds')
 const { useCrew } = await import('../src/renderer/src/state/store')
 const ScheduledView = (await import('../src/renderer/src/views/Scheduled')).default
 
-const one = (
-  id: string,
-  name: string,
-  when: Cadence,
-  extra: Partial<Schedule> = {}
-): Schedule => ({
+const one = (id: string, name: string, when: Cadence, extra: Partial<Schedule> = {}): Schedule => ({
   id,
   name,
   mark: 'spark',
@@ -302,9 +297,7 @@ describe('the card one is written on', () => {
   it('opens on the agent a schedule already names', () => {
     useCrew.setState({
       agents: [{ id: 'bee', label: 'Bubbles', status: 'idle' }] as never,
-      schedules: [
-        one('a', 'Nightly tidy', MORNING, { action: { kind: 'prompt', text: 'Tidy up', agentId: 'bee' } })
-      ]
+      schedules: [one('a', 'Nightly tidy', MORNING, { action: { kind: 'prompt', text: 'Tidy up', agentId: 'bee' } })]
     })
     scheduled()
     fireEvent.click(screen.getByRole('button', { name: 'Edit Nightly tidy' }))
@@ -356,9 +349,14 @@ describe('the card one is written on', () => {
   it('opens on what a row already says when it is edited', () => {
     useCrew.setState({
       schedules: [
-        one('a', 'Nightly tidy', { kind: 'every', minutes: 120 }, {
-          action: { kind: 'say', text: 'Wrapping up' }
-        })
+        one(
+          'a',
+          'Nightly tidy',
+          { kind: 'every', minutes: 120 },
+          {
+            action: { kind: 'say', text: 'Wrapping up' }
+          }
+        )
       ]
     })
     scheduled()

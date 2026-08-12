@@ -51,7 +51,9 @@ try {
       else if (step.kind === 'text' && step.text) process.stdout.write(step.text)
       else if (step.name) {
         const files = step.files?.map(f => `${f.path} +${f.added}/-${f.removed}`).join(', ')
-        console.log(`${at()} ${step.status.padEnd(7)} ${step.name.padEnd(11)} ${step.detail ?? ''}${files ? ` [${files}] ` : ''}`)
+        console.log(
+          `${at()} ${step.status.padEnd(7)} ${step.name.padEnd(11)} ${step.detail ?? ''}${files ? ` [${files}] ` : ''}`
+        )
       }
     },
     onTokens: () => {}
@@ -70,14 +72,20 @@ try {
   if (!thinking.length) missing.push('no reasoning came through at all')
   if (!streamedText.length) missing.push('the answer never streamed, it only arrived whole')
   if (!withDiff.length) missing.push('no step carried a diff')
-  if (!withDiff.some(s => s.files.some(f => f.added > 0))) missing.push('a diff came through with nothing counted in it')
+  if (!withDiff.some(s => s.files.some(f => f.added > 0)))
+    missing.push('a diff came through with nothing counted in it')
   if (!notes.includes('third')) missing.push('the file was never really changed')
   if (named.has('Shell') === false) missing.push('no command was named as one')
 
   console.log(`\nnamed:    ${[...named].join(', ')}`)
   console.log(`thinking: ${thinking.length} stretches, first at ${(firstThought / 1000).toFixed(2)}s`)
   console.log(`answer:   ${streamedText.length} chunks, first at ${(firstWord / 1000).toFixed(2)}s`)
-  console.log(`diffs:    ${withDiff.flatMap(s => s.files).map(f => `${f.path} +${f.added}/-${f.removed}`).join(', ')}`)
+  console.log(
+    `diffs:    ${withDiff
+      .flatMap(s => s.files)
+      .map(f => `${f.path} +${f.added}/-${f.removed}`)
+      .join(', ')}`
+  )
 
   if (missing.length) {
     console.error(`\n${missing.join('\n')}`)

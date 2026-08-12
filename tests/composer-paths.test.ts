@@ -126,11 +126,7 @@ describe('what the menu offers', () => {
   })
 
   it('holds a folder above what is under it and what is under it above what is deeper', () => {
-    expect(paths('src/rend').slice(0, 3)).toEqual([
-      'src/renderer',
-      'src/renderer/src',
-      'src/renderer/src/components'
-    ])
+    expect(paths('src/rend').slice(0, 3)).toEqual(['src/renderer', 'src/renderer/src', 'src/renderer/src/components'])
   })
 
   it('takes a leading slash as the top of the project', () => {

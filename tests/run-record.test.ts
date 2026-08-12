@@ -76,13 +76,8 @@ describe('what a finished run is worth', () => {
 
     const later = await TestUi.connect(host.url, 'ali', host.code)
     uis.push(later)
-    const welcome = (await later.waitFor(m => m.type === 'welcome')) as Extract<
-      ServerMessage,
-      { type: 'welcome' }
-    >
-    const seen = welcome.snapshot.events.find(
-      (e): e is Ended => e.kind === 'agent.end' && e.promptId === end.promptId
-    )
+    const welcome = (await later.waitFor(m => m.type === 'welcome')) as Extract<ServerMessage, { type: 'welcome' }>
+    const seen = welcome.snapshot.events.find((e): e is Ended => e.kind === 'agent.end' && e.promptId === end.promptId)
     expect(seen?.ms).toBe(end.ms)
     expect(seen?.tokens).toBe(end.tokens)
   })

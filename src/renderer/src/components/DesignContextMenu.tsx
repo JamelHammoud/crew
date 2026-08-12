@@ -89,9 +89,7 @@ export default function DesignContextMenu({
     onClose()
   }
 
-  const shown = ORDER.map(group => commands.filter(command => command.group === group)).filter(
-    list => list.length > 0
-  )
+  const shown = ORDER.map(group => commands.filter(command => command.group === group)).filter(list => list.length > 0)
 
   return (
     <Popover open onClose={onClose} at={spot.screen} maxHeight={MENU_HEIGHT}>
@@ -119,12 +117,7 @@ export default function DesignContextMenu({
                 {layers.map(shape => {
                   const Icon = glyphForShape(shape)
                   return (
-                    <MenuItem
-                      key={shape.id}
-                      icon={<Icon />}
-                      label={layerName(shape)}
-                      onClick={() => pick(shape.id)}
-                    />
+                    <MenuItem key={shape.id} icon={<Icon />} label={layerName(shape)} onClick={() => pick(shape.id)} />
                   )
                 })}
               </div>

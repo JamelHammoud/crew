@@ -99,4 +99,3 @@ export function getPerfectDashProps(
     strokeDashoffset: strokeDashoffset.toString()
   }
 }
-

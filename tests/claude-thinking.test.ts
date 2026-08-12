@@ -11,10 +11,14 @@ const kimiUpdate = (update: unknown): string =>
 describe('claude thinking stream', () => {
   it('parses thinking block start, deltas, and stop', () => {
     expect(
-      parseClaudeLine(streamEvent({ type: 'content_block_start', index: 0, content_block: { type: 'thinking', thinking: '' } }))
+      parseClaudeLine(
+        streamEvent({ type: 'content_block_start', index: 0, content_block: { type: 'thinking', thinking: '' } })
+      )
     ).toEqual([{ thinkingStart: { index: 0 } }])
     expect(
-      parseClaudeLine(streamEvent({ type: 'content_block_delta', index: 0, delta: { type: 'thinking_delta', thinking: 'step one' } }))
+      parseClaudeLine(
+        streamEvent({ type: 'content_block_delta', index: 0, delta: { type: 'thinking_delta', thinking: 'step one' } })
+      )
     ).toEqual([{ thinkingDelta: { index: 0, text: 'step one' } }])
     expect(parseClaudeLine(streamEvent({ type: 'content_block_stop', index: 0 }))).toEqual([
       { blockStop: { index: 0 } }
@@ -94,7 +98,12 @@ describe('claude file changes', () => {
       type: 'assistant',
       message: {
         content: [
-          { type: 'tool_use', id: 't1', name: 'Edit', input: { file_path: '/r/a.ts', old_string: 'a', new_string: 'b' } }
+          {
+            type: 'tool_use',
+            id: 't1',
+            name: 'Edit',
+            input: { file_path: '/r/a.ts', old_string: 'a', new_string: 'b' }
+          }
         ]
       }
     })

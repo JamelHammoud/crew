@@ -195,8 +195,7 @@ describe('dragging a project up the list', () => {
   it('waits for the pointer rather than the middle of a tall one', () => {
     const { container } = render(Sidebar())
     const { groups } = lay(container)
-    groups[1]!.getBoundingClientRect = () =>
-      ({ top: 104, left: 0, height: 200, width: 240 }) as DOMRect
+    groups[1]!.getBoundingClientRect = () => ({ top: 104, left: 0, height: 200, width: 240 }) as DOMRect
 
     fireEvent.pointerDown(groups[0]!.querySelector('button')!, { button: 0, clientX: 40, clientY: 40 })
 

@@ -11,11 +11,7 @@ export function frameBackground(meta: Record<string, unknown> | undefined): stri
 function channels(hex: string): [number, number, number] {
   const body = hex.slice(1)
   const full = body.length === 3 ? body.replace(/./g, part => part + part) : body
-  return [
-    parseInt(full.slice(0, 2), 16),
-    parseInt(full.slice(2, 4), 16),
-    parseInt(full.slice(4, 6), 16)
-  ]
+  return [parseInt(full.slice(0, 2), 16), parseInt(full.slice(2, 4), 16), parseInt(full.slice(4, 6), 16)]
 }
 
 export function isLightFill(hex: string): boolean {

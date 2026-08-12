@@ -556,7 +556,10 @@ export class Editor {
     return this.getAncestorPageId(shape.parentId as TLShapeId)
   }
 
-  findCommonAncestor(shapes: readonly (TLShape | TLShapeId)[], predicate?: (shape: TLShape) => boolean): TLShapeId | undefined {
+  findCommonAncestor(
+    shapes: readonly (TLShape | TLShapeId)[],
+    predicate?: (shape: TLShape) => boolean
+  ): TLShapeId | undefined {
     if (shapes.length === 0) return undefined
     const records = shapes
       .map(shape => (typeof shape === 'string' ? this.getShape(shape) : shape))
@@ -1201,7 +1204,7 @@ export class Editor {
   }
 
   resizeShape(shapeOrId: TLShape | TLShapeId, scale: VecLike, options: TLResizeShapeOptions = {}): this {
-    const shape = options.initialShape ?? (this.liveShape(shapeOrId))
+    const shape = options.initialShape ?? this.liveShape(shapeOrId)
     if (!shape || shape.isLocked) return this
     const util = this.getShapeUtil(shape)
     if (!util.canResize(shape as never)) return this

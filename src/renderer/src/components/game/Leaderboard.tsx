@@ -30,9 +30,7 @@ export default function Leaderboard({ game }: { game: GameInfo }) {
             <span className={`flex-1 min-w-0 truncate text-xs ${mine ? 'text-white' : 'text-white/60'}`}>
               {one.name}
             </span>
-            <span
-              className={`shrink-0 text-xs font-semibold tabular-nums ${mine ? 'text-white' : 'text-white/60'}`}
-            >
+            <span className={`shrink-0 text-xs font-semibold tabular-nums ${mine ? 'text-white' : 'text-white/60'}`}>
               {one.score.toLocaleString()}
             </span>
           </li>

@@ -18,7 +18,7 @@ export function runGit(args: string[], cwd: string): Promise<GitResult> {
       args,
       { cwd, timeout: GIT_TIMEOUT_MS, env: { ...process.env, GIT_TERMINAL_PROMPT: '0' } },
       (error, stdout, stderr) => {
-        resolve({ code: error ? (error as { code?: number }).code ?? 1 : 0, stdout, stderr })
+        resolve({ code: error ? ((error as { code?: number }).code ?? 1) : 0, stdout, stderr })
       }
     )
   })

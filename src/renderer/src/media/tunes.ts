@@ -24,8 +24,7 @@ export interface Line {
 
 export const stepsOf = (line: Line): string[] => line.play.split(/[\s|]+/).filter(Boolean)
 
-export const hzOf = (line: Line, token: string): number =>
-  token === 'x' ? (line.voice.hz ?? 0) : pitch(token)
+export const hzOf = (line: Line, token: string): number => (token === 'x' ? (line.voice.hz ?? 0) : pitch(token))
 
 // Every note of one pass of the loop, in seconds from the top of it. A row that
 // is shorter than the loop is laid down again until it fills, so a drum written

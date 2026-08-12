@@ -199,7 +199,9 @@ describe('kimi parser matches the real CLI format', () => {
   })
 
   it('ends the turn on the stop reason the prompt answers with', () => {
-    expect(kimiParser().parse('{"jsonrpc":"2.0","id":3,"result":{"stopReason":"end_turn"}}')).toEqual([{ turnEnd: true }])
+    expect(kimiParser().parse('{"jsonrpc":"2.0","id":3,"result":{"stopReason":"end_turn"}}')).toEqual([
+      { turnEnd: true }
+    ])
   })
 })
 
@@ -281,9 +283,9 @@ describe('claude parser matches the real CLI format', () => {
       )
     ).toEqual([{ error: 'Credit balance is too low.' }])
 
-    expect(
-      parseClaudeLine('{"type":"assistant","is_api_error_message":true,"message":{"content":[]}}')
-    ).toEqual([{ error: 'Claude could not reach the model.' }])
+    expect(parseClaudeLine('{"type":"assistant","is_api_error_message":true,"message":{"content":[]}}')).toEqual([
+      { error: 'Claude could not reach the model.' }
+    ])
   })
 })
 
@@ -319,13 +321,24 @@ describe('a run that failed says why', () => {
 
   it('says the machine stopped a run rather than reporting no code at all', async () => {
     const run = failing("process.kill(process.pid, 'SIGKILL')").start('hi', repo, { onStep: () => {} })
-    await expect(run.done).rejects.toThrow('Fake was stopped by this machine, which usually means it ran out of memory.')
+    await expect(run.done).rejects.toThrow(
+      'Fake was stopped by this machine, which usually means it ran out of memory.'
+    )
   })
 
   it('keeps the end of what was printed on the way out, without the colors', () => {
     expect(failureText('[31mnothing to see[0m\n\n  broke here  \n')).toBe('nothing to see\n  broke here')
     const many = Array.from({ length: 40 }, (_, i) => `line ${i}`).join('\n')
-    expect(failureText(many).split('\n')).toEqual(['line 32', 'line 33', 'line 34', 'line 35', 'line 36', 'line 37', 'line 38', 'line 39'])
+    expect(failureText(many).split('\n')).toEqual([
+      'line 32',
+      'line 33',
+      'line 34',
+      'line 35',
+      'line 36',
+      'line 37',
+      'line 38',
+      'line 39'
+    ])
     expect(failureText('   \n  \n')).toBe('')
   })
 
@@ -426,7 +439,12 @@ describe('what a command printed', () => {
   })
 
   it('reads a result given as content blocks the same as a plain string', () => {
-    expect(resultText([{ type: 'text', text: 'first' }, { type: 'text', text: 'second' }])).toBe('first\nsecond')
+    expect(
+      resultText([
+        { type: 'text', text: 'first' },
+        { type: 'text', text: 'second' }
+      ])
+    ).toBe('first\nsecond')
     expect(resultText('plain')).toBe('plain')
     expect(resultText({ nope: true })).toBeUndefined()
   })
@@ -565,7 +583,8 @@ describe('idle timeout', () => {
 
   it('does not kill a slow process that keeps streaming', async () => {
     // Runs 5x longer than the idle window: only a resetting clock lets it finish.
-    const script = 'let n = 0; const t = setInterval(() => { console.log("tick"); if (++n === 10) { clearInterval(t) } }, 60)'
+    const script =
+      'let n = 0; const t = setInterval(() => { console.log("tick"); if (++n === 10) { clearInterval(t) } }, 60)'
     const provider = nodeProvider(script, 300)
     const run = provider.start('hi', repo, { onStep: () => {} })
     const { text } = await run.done

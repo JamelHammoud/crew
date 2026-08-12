@@ -5,15 +5,7 @@ import { glyphForShape } from '../design/glyphs'
 import { LEFT_PANEL_W } from '../design/headerBand'
 import { useLayerShapes } from '../design/layerShapes'
 import { canRename, layerName, renameShape } from '../design/tools'
-import {
-  ChevronRightGlyph,
-  CloseGlyph,
-  EyeGlyph,
-  EyeOffGlyph,
-  LockGlyph,
-  SearchGlyph,
-  UnlockGlyph
-} from '../icons'
+import { ChevronRightGlyph, CloseGlyph, EyeGlyph, EyeOffGlyph, LockGlyph, SearchGlyph, UnlockGlyph } from '../icons'
 import { HidePanel, PanelButton } from './DesignControls'
 import Pill from './Pill'
 import { TOP_BAR_H } from './TopBar'
@@ -37,7 +29,6 @@ export default function DesignLeftPanel({ onClose }: { onClose: () => void }) {
     </aside>
   )
 }
-
 
 interface LayerRow {
   shape: TLShape

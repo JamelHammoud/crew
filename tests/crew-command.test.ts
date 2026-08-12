@@ -33,9 +33,7 @@ describe('the command that comes with the app', () => {
   // yarn start runs the built app out of the checkout, so what it links is the
   // file standing right there rather than one in a bundle it does not have.
   it('is the one in the checkout when the app is run from source', () => {
-    expect(commandScript({ ...packaged, fromSource: true, appPath: '/work/crew' })).toBe(
-      '/work/crew/bin/crew.mjs'
-    )
+    expect(commandScript({ ...packaged, fromSource: true, appPath: '/work/crew' })).toBe('/work/crew/bin/crew.mjs')
   })
 
   it('is nothing on Windows, where there is no folder every shell reads', () => {
@@ -123,18 +121,15 @@ describe('the launcher inside the app', () => {
       .trim()
       .split('\n')
 
-  it.skipIf(process.platform === 'win32')(
-    'follows the link home, and runs the app it came with as node',
-    () => {
-      const link = bundle()
-      const said = ran(link, ['/work/api', '--name', 'Jamel'])
-      const app = path.join(room, 'Crew.app', 'Contents', 'MacOS', 'Crew')
-      expect(said[0]).toBe('1')
-      expect(said[1]).toBe(app)
-      expect(said[2]).toBe(path.join(room, 'Crew.app', 'Contents', 'Resources', 'cli', 'bin', 'crew.mjs'))
-      expect(said.slice(3)).toEqual(['/work/api', '--name', 'Jamel'])
-    }
-  )
+  it.skipIf(process.platform === 'win32')('follows the link home, and runs the app it came with as node', () => {
+    const link = bundle()
+    const said = ran(link, ['/work/api', '--name', 'Jamel'])
+    const app = path.join(room, 'Crew.app', 'Contents', 'MacOS', 'Crew')
+    expect(said[0]).toBe('1')
+    expect(said[1]).toBe(app)
+    expect(said[2]).toBe(path.join(room, 'Crew.app', 'Contents', 'Resources', 'cli', 'bin', 'crew.mjs'))
+    expect(said.slice(3)).toEqual(['/work/api', '--name', 'Jamel'])
+  })
 
   it.skipIf(process.platform === 'win32')('opens the Crew that CREW_APP names, whoever it came with', () => {
     const link = bundle()

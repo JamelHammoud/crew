@@ -30,7 +30,11 @@ describe('what whisper heard becomes what somebody meant to write', () => {
     ['drops the sounds nobody meant to make', 'um we should ship uh the fix', 'We should ship the fix.'],
     ['drops a sound at the end of a thought', 'that is done hmm', 'That is done.'],
     ['drops like where it stands as an aside', 'it was, like, huge', 'It was huge.'],
-    ['drops you know where it stands as an aside', 'the tests pass, you know, most of them', 'The tests pass most of them.'],
+    [
+      'drops you know where it stands as an aside',
+      'the tests pass, you know, most of them',
+      'The tests pass most of them.'
+    ],
     ['keeps I mean where it is really meant', 'I mean it', 'I mean it.'],
     ['keeps sort of where it is really meant', 'sort of blue', 'Sort of blue.'],
     ['keeps like inside real use', 'it looked like a wave', 'It looked like a wave.'],
@@ -41,13 +45,33 @@ describe('what whisper heard becomes what somebody meant to write', () => {
     ['collapses a longer false start', 'we should we should go', 'We should go.'],
     ['keeps a real repetition', 'very very good', 'Very very good.'],
     ['keeps a real doubled had', 'the file had had a header', 'The file had had a header.'],
-    ['cuts back to the start of the sentence', "let's use redis, scratch that, let's use postgres", "Let's use postgres."],
-    ['takes the sentence before it when the correction opens one', "we'll use redis. [0.8] actually no, postgres", 'Postgres.'],
-    ['takes the whole dictation with it', 'first the schema, scratch all that, we ship the reader', 'We ship the reader.'],
+    [
+      'cuts back to the start of the sentence',
+      "let's use redis, scratch that, let's use postgres",
+      "Let's use postgres."
+    ],
+    [
+      'takes the sentence before it when the correction opens one',
+      "we'll use redis. [0.8] actually no, postgres",
+      'Postgres.'
+    ],
+    [
+      'takes the whole dictation with it',
+      'first the schema, scratch all that, we ship the reader',
+      'We ship the reader.'
+    ],
     ['starts over takes everything before it', 'open the panel, start over, open the doc', 'Open the doc.'],
-    ['keeps forget that inside real use', "don't forget that the build is slow", "Don't forget that the build is slow."],
+    [
+      'keeps forget that inside real use',
+      "don't forget that the build is slow",
+      "Don't forget that the build is slow."
+    ],
     ['closes a sentence on a long gap', 'we shipped it [0.9] the build is green', 'We shipped it. The build is green.'],
-    ['takes a comma on a shorter gap', 'the tests are green [0.4] so I pushed it', 'The tests are green, so I pushed it.'],
+    [
+      'takes a comma on a shorter gap',
+      'the tests are green [0.4] so I pushed it',
+      'The tests are green, so I pushed it.'
+    ],
     ['leaves one or two words without a comma', 'no [0.4] it works', 'No it works.'],
     ['never doubles a mark whisper already wrote', 'it works. [0.9] now the docs', 'It works. Now the docs.'],
     ['never ends on a comma', 'we are done [0.4] and that is it [0.4]', 'We are done, and that is it.'],
@@ -167,7 +191,11 @@ describe('a correction that opens a sentence takes the one before it', () => {
 
 describe('the other ways somebody says they meant something else', () => {
   const table: Array<[string, string, string]> = [
-    ['reads actually hold on at a boundary', "we ship it today. actually hold on. we ship it tomorrow.", 'We ship it tomorrow.'],
+    [
+      'reads actually hold on at a boundary',
+      'we ship it today. actually hold on. we ship it tomorrow.',
+      'We ship it tomorrow.'
+    ],
     ['reads sorry no at a boundary', 'use redis, sorry no, use postgres', 'Use postgres.'],
     ['reads no sorry at a boundary', 'use redis, no sorry, use postgres', 'Use postgres.'],
     // A bare hold on is somebody asking for a moment, not taking back what they
@@ -180,7 +208,11 @@ describe('the other ways somebody says they meant something else', () => {
     ],
     ['keeps hold on where it opens a real sentence', 'hold on to the branch', 'Hold on to the branch.'],
     ['keeps hold on inside a sentence', 'we should hold on until Friday', 'We should hold on until Friday.'],
-    ['keeps wait where the sentence carries on', 'actually wait for the build to go green', 'Actually wait for the build to go green.']
+    [
+      'keeps wait where the sentence carries on',
+      'actually wait for the build to go green',
+      'Actually wait for the build to go green.'
+    ]
   ]
 
   for (const [name, spoken, meant] of table) it(name, () => expect(written(spoken)).toBe(meant))
@@ -243,7 +275,7 @@ describe('a whole dictation, said the way people say them', () => {
     const spoken = [
       'um so I I think the runner should read the file first',
       '[0.9]',
-      "then it, like, hands the whole thing to the CLI [0.4] and we wait for it to say something back"
+      'then it, like, hands the whole thing to the CLI [0.4] and we wait for it to say something back'
     ].join(' ')
     const meant = [
       'So I think the runner should read the file first.',

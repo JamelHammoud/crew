@@ -133,8 +133,7 @@ export const keyLabel = (key: ScribeKey, platform: string): string =>
 // The right hand modifier almost nothing else has a claim on, either way round.
 // Plain Control is offered because the rule that any other key cancels the take
 // makes it safe, not because it is a good first answer.
-export const defaultKey = (platform: string): ScribeKey =>
-  isMac(platform) ? 'fn' : 'right-ctrl'
+export const defaultKey = (platform: string): ScribeKey => (isMac(platform) ? 'fn' : 'right-ctrl')
 
 export const scribeKeys = (platform: string): ScribeKey[] => (isMac(platform) ? MAC_KEYS : OTHER_KEYS)
 
@@ -167,8 +166,7 @@ export function defaultSettings(platform: string): ScribeSettings {
   }
 }
 
-const bool = (value: unknown, fallback: boolean): boolean =>
-  typeof value === 'boolean' ? value : fallback
+const bool = (value: unknown, fallback: boolean): boolean => (typeof value === 'boolean' ? value : fallback)
 
 const one = <T extends string>(value: unknown, of: readonly T[], fallback: T): T =>
   typeof value === 'string' && (of as readonly string[]).includes(value) ? (value as T) : fallback
@@ -212,7 +210,7 @@ export function cleanSettings(input: unknown, platform: string): ScribeSettings 
     ready: bool(held.ready, base.ready),
     live: bool(held.live, base.live),
     edit: bool(held.edit, base.edit),
-    editUrl: typeof held.editUrl === 'string' ? serverUrl(held.editUrl) ?? '' : base.editUrl,
+    editUrl: typeof held.editUrl === 'string' ? (serverUrl(held.editUrl) ?? '') : base.editUrl,
     editModel: text(held.editModel),
     words: cleanWords(held.words)
   }

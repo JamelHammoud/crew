@@ -15,8 +15,7 @@ import { useTicketEvents } from './useTicketEvents'
 // worked on now is next, and what is finished is last.
 const ORDER: TicketColumn[] = ['review', 'doing', 'todo', 'done']
 
-const labelOf = (column: TicketColumn): string =>
-  TICKET_COLUMNS.find(one => one.key === column)?.label ?? column
+const labelOf = (column: TicketColumn): string => TICKET_COLUMNS.find(one => one.key === column)?.label ?? column
 
 export default function WorkView({ threadId }: { threadId: string }) {
   const steps = useThreadSteps(threadId)

@@ -105,7 +105,9 @@ describe('the board over http', () => {
     })
     await ui.waitForEvent(e => e.kind === 'ticket.moved' && e.column === 'review')
 
-    expect((await post(`/tickets/2/decision`, { promptId: run.promptId, text: 'Kept the local copy' })).status).toBe(200)
+    expect((await post(`/tickets/2/decision`, { promptId: run.promptId, text: 'Kept the local copy' })).status).toBe(
+      200
+    )
     const decided = (await ui.waitForEvent(e => e.kind === 'ticket.decided')) as Decided
     expect(decided.text).toBe('Kept the local copy')
 

@@ -21,7 +21,7 @@ const facesOut = out.replace(/\.png$/, '-faces.png')
 
 // Written into the temp folder and pointed at the repo by absolute path, so a
 // run of this leaves nothing behind in a tree that commits itself.
-const entry = (where) => `
+const entry = where => `
 import { musicItems } from '${where}/src/shared/music'
 import { coverFor } from '${where}/src/renderer/src/components/art/coverArt'
 import { coverArt } from '${where}/src/renderer/src/components/art/coverSeed'

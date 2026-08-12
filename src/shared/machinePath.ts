@@ -62,12 +62,7 @@ export function machineCandidates(dirs: readonly MachineDir[], query: string, li
   return dirs.flatMap(dir => inDir(dir, tail, limit))
 }
 
-export function pathMenu(
-  index: PathIndex,
-  dirs: readonly MachineDir[],
-  query: string,
-  limit: number
-): PathMatch[] {
+export function pathMenu(index: PathIndex, dirs: readonly MachineDir[], query: string, limit: number): PathMatch[] {
   const project = pathCandidates(index, query, limit)
   const machine = machineCandidates(dirs, query, limit)
   const seen = new Set<string>()
@@ -83,5 +78,8 @@ export function pathMenu(
 }
 
 export function revealedBy(dirs: readonly MachineDir[]): string[] {
-  return dirs.flatMap(dir => [dir.dir, ...dir.entries.map(entry => machineToken({ ...dir, repoDir: null }, entry.name))])
+  return dirs.flatMap(dir => [
+    dir.dir,
+    ...dir.entries.map(entry => machineToken({ ...dir, repoDir: null }, entry.name))
+  ])
 }

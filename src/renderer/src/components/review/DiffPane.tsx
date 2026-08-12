@@ -1,15 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { RepoChange } from '../../../../shared/repository'
-import {
-  CheckGlyph,
-  CopyGlyph,
-  CloseGlyph,
-  DocGlyph,
-  MinusGlyph,
-  MoreGlyph,
-  PlusGlyph,
-  UndoGlyph
-} from '../../icons'
+import { CheckGlyph, CopyGlyph, CloseGlyph, DocGlyph, MinusGlyph, MoreGlyph, PlusGlyph, UndoGlyph } from '../../icons'
 import { useBrowser } from '../../state/browser'
 import { toast } from '../../state/toast'
 import Counts from '../Counts'
@@ -151,7 +142,9 @@ export default function DiffPane({
             wrap
             more={
               change.truncated ? (
-                <p className="px-3 pt-2 text-xs text-fg-faint">The rest is too long to show. Open the file to read it.</p>
+                <p className="px-3 pt-2 text-xs text-fg-faint">
+                  The rest is too long to show. Open the file to read it.
+                </p>
               ) : undefined
             }
           />

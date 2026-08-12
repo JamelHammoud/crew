@@ -22,7 +22,10 @@ const CASES = [
 ]
 
 const DOCS = {
-  ideas: { title: 'Ideas', text: '# Ideas\n\nTesting!\n\nA paragraph of ordinary writing so the measure can be read off the shot.\n' },
+  ideas: {
+    title: 'Ideas',
+    text: '# Ideas\n\nTesting!\n\nA paragraph of ordinary writing so the measure can be read off the shot.\n'
+  },
   'everything-9f2a': { title: "Everything I've added", text: 'A list of it.\n' },
   'handbook-a1b2': { title: 'This is a parent page', text: 'The parent.\n' },
   'handbook-a1b2/setup-c3d4': { title: 'Setting up', text: '# Setting up\n\nHow to get going.\n' }
@@ -238,11 +241,15 @@ try {
     console.log(`  Docs row ${read.navRow?.height} tall, painted ${read.navPaint}`)
     console.log(`  a page row ${read.firstRow?.height} tall, ${read.firstRow?.left} to ${read.firstRow?.right}`)
     console.log(`  lit row paint ${read.litPaint}`)
-    console.log(`  rule ${read.rule ? `${read.rule.left} to ${read.rule.right}` : 'none'} against the rail 0 to ${read.rail?.right}`)
+    console.log(
+      `  rule ${read.rule ? `${read.rule.left} to ${read.rule.right}` : 'none'} against the rail 0 to ${read.rail?.right}`
+    )
     console.log(`  title ${read.title?.left} to ${read.title?.right}, top ${read.title?.top}`)
     console.log(`  body ${read.body?.left} to ${read.body?.right} (${read.body?.width} across)`)
     const page = read.rail ? width - read.rail.right : width
-    const middle = read.body ? Math.round(read.body.left + read.body.width / 2 - (read.rail?.right ?? 0) - page / 2) : null
+    const middle = read.body
+      ? Math.round(read.body.left + read.body.width / 2 - (read.rail?.right ?? 0) - page / 2)
+      : null
     console.log(`  writing sits ${middle} off the middle of the page`)
     console.log(`  trail ${read.trail ? `starts at ${read.trailAt}, title at ${read.title?.left}` : 'none'}`)
   })

@@ -26,27 +26,23 @@ function rounds(shape: { type: string; props: unknown }): boolean {
 }
 
 export default function SelectionOverlay({ editor, asking }: { editor: Editor | null; asking?: boolean }) {
-  const view = useValue(
-    'design selection overlay',
-    () => {
-      if (!editor || !selectionChromeVisible(editor)) return null
-      const shapes = editor.getSelectedShapes()
-      if (shapes.length === 0) return null
-      const bounds = editor.getSelectionPageBounds()
-      if (!bounds) return null
-      const topLeft = editor.pageToViewport({ x: bounds.minX, y: bounds.minY })
-      const bottomRight = editor.pageToViewport({ x: bounds.maxX, y: bounds.maxY })
-      const only = shapes.length === 1 ? shapes[0] : null
-      return {
-        rect: { x: topLeft.x, y: topLeft.y, w: bottomRight.x - topLeft.x, h: bottomRight.y - topLeft.y } as Rect,
-        size: { w: bounds.w, h: bounds.h },
-        zoom: editor.getZoomLevel(),
-        stroke: selectionStroke(editor),
-        node: only && rounds(only) && only.rotation === 0 ? (only as DesignNodeShape) : null
-      }
-    },
-    [editor]
-  )
+  const view = useValue('design selection overlay', () => {
+    if (!editor || !selectionChromeVisible(editor)) return null
+    const shapes = editor.getSelectedShapes()
+    if (shapes.length === 0) return null
+    const bounds = editor.getSelectionPageBounds()
+    if (!bounds) return null
+    const topLeft = editor.pageToViewport({ x: bounds.minX, y: bounds.minY })
+    const bottomRight = editor.pageToViewport({ x: bounds.maxX, y: bounds.maxY })
+    const only = shapes.length === 1 ? shapes[0] : null
+    return {
+      rect: { x: topLeft.x, y: topLeft.y, w: bottomRight.x - topLeft.x, h: bottomRight.y - topLeft.y } as Rect,
+      size: { w: bounds.w, h: bounds.h },
+      zoom: editor.getZoomLevel(),
+      stroke: selectionStroke(editor),
+      node: only && rounds(only) && only.rotation === 0 ? (only as DesignNodeShape) : null
+    }
+  }, [editor])
 
   if (!editor || !view) return null
   const { rect, size, node, zoom, stroke } = view

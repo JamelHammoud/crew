@@ -1,10 +1,5 @@
 import { useSyncExternalStore } from 'react'
-import {
-  customEmojiNameIn,
-  customEmojiUrl,
-  findCustomEmoji,
-  type CustomEmoji
-} from '../../../shared/customEmoji'
+import { customEmojiNameIn, customEmojiUrl, findCustomEmoji, type CustomEmoji } from '../../../shared/customEmoji'
 
 // The crew's own emoji, looked up the way the sheet's are: by name, from here,
 // with nothing handed in. A picture drawn from a name has to be reachable from a

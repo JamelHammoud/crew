@@ -12,10 +12,7 @@ import { useLive } from './useLive'
 
 type Size = 'sm' | 'md' | 'lg'
 
-const LOOK: Record<
-  Size,
-  { corner: string; avatar: 'sm' | 'md' | 'lg'; label: string; pad: string; bloom: string }
-> = {
+const LOOK: Record<Size, { corner: string; avatar: 'sm' | 'md' | 'lg'; label: string; pad: string; bloom: string }> = {
   sm: {
     corner: 'rounded-xl',
     avatar: 'sm',

@@ -260,13 +260,15 @@ describe('what a geometry says about itself', () => {
     expect(Math.abs(new Rectangle2d({ width: 100, height: 50, isFilled: true }).area)).toBeCloseTo(5000, 6)
     expect(new Edge2d({ start: new Vec(0, 0), end: new Vec(3, 4) }).length).toBeCloseTo(5, 10)
     expect(new Stadium2d({ width: 120, height: 40, isFilled: true }).length).toBeCloseTo((PI * 20 + 80) * 2, 6)
-    expect(new Arc2d({
-      center: new Vec(0, 0),
-      start: new Vec(50, 0),
-      end: new Vec(0, 50),
-      sweepFlag: 1,
-      largeArcFlag: 0
-    }).length).toBeCloseTo((PI / 2) * 50, 6)
+    expect(
+      new Arc2d({
+        center: new Vec(0, 0),
+        start: new Vec(50, 0),
+        end: new Vec(0, 50),
+        sweepFlag: 1,
+        largeArcFlag: 0
+      }).length
+    ).toBeCloseTo((PI / 2) * 50, 6)
   })
 })
 
@@ -298,7 +300,14 @@ describe('a group of geometries', () => {
   })
 
   it('keeps a child out of its bounds when that child says so', () => {
-    const hidden = new Rectangle2d({ x: 500, y: 500, width: 10, height: 10, isFilled: true, excludeFromShapeBounds: true })
+    const hidden = new Rectangle2d({
+      x: 500,
+      y: 500,
+      width: 10,
+      height: 10,
+      isFilled: true,
+      excludeFromShapeBounds: true
+    })
     const withHidden = new Group2d({ children: [body, hidden] })
     expect(withHidden.bounds).toBeInstanceOf(Box)
     expect(withHidden.bounds.maxX).toBe(100)

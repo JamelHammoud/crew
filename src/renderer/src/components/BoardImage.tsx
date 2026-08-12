@@ -20,14 +20,7 @@ export default function BoardImage({ document }: { document: DesignDocument }) {
           <Skeleton />
         </span>
       )}
-      {source && (
-        <img
-          src={source}
-          alt=""
-          className="h-full w-full object-contain"
-          onLoad={() => setPainted(source)}
-        />
-      )}
+      {source && <img src={source} alt="" className="h-full w-full object-contain" onLoad={() => setPainted(source)} />}
     </div>
   )
 }

@@ -21,7 +21,11 @@ const root = path.resolve(here, '..')
 const LIBRARY = ['@xterm/xterm/css/xterm.css', '@blocknote/mantine/style.css']
 
 const FIXTURE = [
-  ['what somebody wrote', 'content', '<div class="md select-text"><p>a message somebody wrote, worth copying</p></div>'],
+  [
+    'what somebody wrote',
+    'content',
+    '<div class="md select-text"><p>a message somebody wrote, worth copying</p></div>'
+  ],
   ['a heading', 'chrome', '<h2 class="text-lg font-semibold text-fg">A heading</h2>'],
   ['a label', 'chrome', '<span class="text-xs text-fg-muted">A label</span>'],
   ['a button', 'chrome', '<button class="px-3 h-9 rounded-full bg-ink-800 text-fg-secondary">Mark done</button>'],
@@ -29,8 +33,12 @@ const FIXTURE = [
   ['an empty state', 'chrome', '<p class="text-sm text-fg-muted">Nothing on the board yet</p>'],
   ['a status', 'chrome', '<span class="text-sm text-fg">Ready for review</span>'],
   ['a count', 'chrome', '<span class="text-xs tabular-nums text-positive">18 files changed</span>'],
-  ['a placeholder', 'chrome', '<textarea rows="2" placeholder="Send a message or @ someone" class="w-72 bg-ink-800 text-fg"></textarea>'],
-  ['a search placeholder', 'chrome', '<input placeholder="Find in project" class="w-72 bg-ink-800 text-fg">'],
+  [
+    'a placeholder',
+    'chrome',
+    '<textarea rows="2" placeholder="Send a message or @ someone" class="w-72 bg-ink-800 text-fg"></textarea>'
+  ],
+  ['a search placeholder', 'chrome', '<input placeholder="Find in project" class="w-72 bg-ink-800 text-fg">']
 ]
 
 const PAGE = `<!doctype html>
@@ -118,7 +126,7 @@ async function compile(dir) {
     logLevel: 'silent',
     plugins: [tailwind()],
     resolve: { alias: LIBRARY.map(name => ({ find: name, replacement: resolve(name) })) },
-    build: { outDir: path.join(dir, 'dist'), emptyOutDir: true },
+    build: { outDir: path.join(dir, 'dist'), emptyOutDir: true }
   })
   const assets = path.join(dir, 'dist/assets')
   const files = await readdir(assets)
@@ -153,8 +161,10 @@ try {
   const problems = []
   seen.boxes.forEach((box, at) => {
     const moved = seen.moved[at]
-    if (box.kind === 'content' && moved === 0) problems.push(`${box.say} was not painted, and it is the one thing that should be`)
-    if (box.kind === 'chrome' && moved > 0) problems.push(`${box.say} was painted by the selection, ${moved} pixels of it`)
+    if (box.kind === 'content' && moved === 0)
+      problems.push(`${box.say} was not painted, and it is the one thing that should be`)
+    if (box.kind === 'chrome' && moved > 0)
+      problems.push(`${box.say} was painted by the selection, ${moved} pixels of it`)
   })
   if (!seen.took.includes('worth copying')) problems.push('content did not come away with the selection')
   for (const [say] of FIXTURE) {

@@ -1,12 +1,6 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import {
-  APP_ICONS,
-  appIconLabel,
-  cleanAppIcon,
-  DEFAULT_APP_ICON,
-  PICTURE_ICONS
-} from '../src/shared/appIcon'
+import { APP_ICONS, appIconLabel, cleanAppIcon, DEFAULT_APP_ICON, PICTURE_ICONS } from '../src/shared/appIcon'
 import { applyAppIcon, storedAppIcon } from '../src/renderer/src/state/appIcon'
 
 const store = new Map<string, string>()
@@ -44,9 +38,7 @@ describe('the icons there are', () => {
   })
 
   it('counts the pictures as everything but the default', () => {
-    expect(PICTURE_ICONS).toEqual(
-      APP_ICONS.filter(icon => icon.id !== DEFAULT_APP_ICON).map(icon => icon.id)
-    )
+    expect(PICTURE_ICONS).toEqual(APP_ICONS.filter(icon => icon.id !== DEFAULT_APP_ICON).map(icon => icon.id))
     expect(PICTURE_ICONS).not.toContain(DEFAULT_APP_ICON)
   })
 })

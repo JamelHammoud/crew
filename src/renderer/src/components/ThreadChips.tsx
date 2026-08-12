@@ -22,11 +22,7 @@ export default function ThreadChips({ thread }: { thread: ThreadMeta }) {
       {chips.map(name => {
         const Mark = COMMAND_MARKS[name]
         return (
-          <StrandPill
-            key={name}
-            mark={<Mark className="w-[18px] h-[18px] shrink-0" />}
-            label={COMMAND_LABELS[name]}
-          />
+          <StrandPill key={name} mark={<Mark className="w-[18px] h-[18px] shrink-0" />} label={COMMAND_LABELS[name]} />
         )
       })}
     </>

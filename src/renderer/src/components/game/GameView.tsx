@@ -28,9 +28,7 @@ function GameRow({ game, onOpen }: { game: GameInfo; onOpen: (gameId: string) =>
       </span>
       {top && (
         <span className="shrink-0 pr-1 text-right">
-          <span className="block text-sm font-medium text-fg tabular-nums">
-            {top.score.toLocaleString()}
-          </span>
+          <span className="block text-sm font-medium text-fg tabular-nums">{top.score.toLocaleString()}</span>
           <span className="block truncate max-w-24 text-xs text-fg-faint">{top.name}</span>
         </span>
       )}

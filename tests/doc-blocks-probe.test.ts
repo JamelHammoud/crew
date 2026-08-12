@@ -18,13 +18,14 @@ const { docSlashItems } = await import('../src/renderer/src/components/doc/DocSl
 const { docSchema, docDictionary } = await import('../src/renderer/src/components/doc/docSchema')
 const { CODE_LANGUAGES } = await import('../src/renderer/src/components/doc/docCode')
 
-const editor = () => BlockNoteEditor.create({ schema: docSchema as never }) as never as {
-  document: Array<{ type: string; props: Record<string, unknown> }>
-  replaceBlocks: (a: unknown[], b: unknown[]) => void
-  insertBlocks: (blocks: unknown[], at: unknown, place: string) => void
-  blocksToMarkdownLossy: (blocks: unknown[]) => string
-  tryParseMarkdownToBlocks: (markdown: string) => unknown[]
-}
+const editor = () =>
+  BlockNoteEditor.create({ schema: docSchema as never }) as never as {
+    document: Array<{ type: string; props: Record<string, unknown> }>
+    replaceBlocks: (a: unknown[], b: unknown[]) => void
+    insertBlocks: (blocks: unknown[], at: unknown, place: string) => void
+    blocksToMarkdownLossy: (blocks: unknown[]) => string
+    tryParseMarkdownToBlocks: (markdown: string) => unknown[]
+  }
 
 describe('doc blocks', () => {
   it('offers a mark, a title and aliases for every block', () => {

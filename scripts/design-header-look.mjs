@@ -297,18 +297,26 @@ try {
     console.log(`  window corner ends at ${read.corner?.right}`)
     console.log(`  canvas ${read.canvas?.left} to ${read.canvas?.right}`)
     console.log(`  board name ${read.name?.left} to ${read.name?.right}`)
-    console.log(`  undo at ${read.undo?.left}, zoom ends at ${read.zoom?.right}, your face ${read.face?.left} to ${read.face?.right}`)
-    console.log(`  band behind the header ${read.band}, fade ${read.scrim ? `${read.scrim.left} to ${read.scrim.right}` : 'none'}`)
+    console.log(
+      `  undo at ${read.undo?.left}, zoom ends at ${read.zoom?.right}, your face ${read.face?.left} to ${read.face?.right}`
+    )
+    console.log(
+      `  band behind the header ${read.band}, fade ${read.scrim ? `${read.scrim.left} to ${read.scrim.right}` : 'none'}`
+    )
     console.log(`  fade over the canvas ${read.scrimPaint} against the canvas itself ${read.canvasPaint}`)
     const nameOn = read.name && read.canvas && read.name.left === read.canvas.left
     const zoomOn = read.zoom && read.canvas && read.zoom.right === read.canvas.right
-    console.log(`  name on the canvas edge: ${nameOn ? 'yes' : 'NO'}   zoom on the canvas edge: ${zoomOn ? 'yes' : 'NO'}`)
+    console.log(
+      `  name on the canvas edge: ${nameOn ? 'yes' : 'NO'}   zoom on the canvas edge: ${zoomOn ? 'yes' : 'NO'}`
+    )
     const [, left] = CASES[i]
     const onCanvas = read.canvas && read.corner && read.canvas.left >= read.corner.right
     if (!left && onCanvas && read.letters && read.face) {
       const front = read.letters.left - read.canvas.left
       const back = read.width - read.face.right
-      console.log(`  name letters ${front} from the canvas edge, face ${back} from the window edge: ${front === back ? 'level' : 'OFF BY ' + (front - back)}`)
+      console.log(
+        `  name letters ${front} from the canvas edge, face ${back} from the window edge: ${front === back ? 'level' : 'OFF BY ' + (front - back)}`
+      )
     }
     const menu = read.menu
     if (menu?.card && read.name && read.letters) {

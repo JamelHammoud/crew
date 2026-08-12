@@ -14,13 +14,69 @@ export type Cell = [number, number]
 // Each piece is drawn in a box of its own size, which is what the turn happens
 // in: a square box is the only place a rotation lands where the eye expects it.
 const SHAPES: Record<Kind, { size: number; cells: Cell[] }> = {
-  I: { size: 4, cells: [[0, 1], [1, 1], [2, 1], [3, 1]] },
-  J: { size: 3, cells: [[0, 0], [0, 1], [1, 1], [2, 1]] },
-  L: { size: 3, cells: [[2, 0], [0, 1], [1, 1], [2, 1]] },
-  O: { size: 2, cells: [[0, 0], [1, 0], [0, 1], [1, 1]] },
-  S: { size: 3, cells: [[1, 0], [2, 0], [0, 1], [1, 1]] },
-  T: { size: 3, cells: [[1, 0], [0, 1], [1, 1], [2, 1]] },
-  Z: { size: 3, cells: [[0, 0], [1, 0], [1, 1], [2, 1]] }
+  I: {
+    size: 4,
+    cells: [
+      [0, 1],
+      [1, 1],
+      [2, 1],
+      [3, 1]
+    ]
+  },
+  J: {
+    size: 3,
+    cells: [
+      [0, 0],
+      [0, 1],
+      [1, 1],
+      [2, 1]
+    ]
+  },
+  L: {
+    size: 3,
+    cells: [
+      [2, 0],
+      [0, 1],
+      [1, 1],
+      [2, 1]
+    ]
+  },
+  O: {
+    size: 2,
+    cells: [
+      [0, 0],
+      [1, 0],
+      [0, 1],
+      [1, 1]
+    ]
+  },
+  S: {
+    size: 3,
+    cells: [
+      [1, 0],
+      [2, 0],
+      [0, 1],
+      [1, 1]
+    ]
+  },
+  T: {
+    size: 3,
+    cells: [
+      [1, 0],
+      [0, 1],
+      [1, 1],
+      [2, 1]
+    ]
+  },
+  Z: {
+    size: 3,
+    cells: [
+      [0, 0],
+      [1, 0],
+      [1, 1],
+      [2, 1]
+    ]
+  }
 }
 
 export const shapeOf = (kind: Kind): { size: number; cells: Cell[] } => ({
@@ -128,10 +184,7 @@ const cleared = (game: Tetris): Tetris => {
     else rows.push(row)
   }
   if (full === 0) return game
-  const board = [
-    ...Array.from({ length: full }, () => Array<Kind | null>(COLS).fill(null)),
-    ...rows
-  ].flat()
+  const board = [...Array.from({ length: full }, () => Array<Kind | null>(COLS).fill(null)), ...rows].flat()
   const lines = game.lines + full
   return { ...game, board, lines, score: game.score + LINE_SCORE[full] * levelOf(game) }
 }

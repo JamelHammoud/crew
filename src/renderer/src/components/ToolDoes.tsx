@@ -93,9 +93,7 @@ export default function ToolDoes({
   const [say, setSay] = useState(wordsOf(initial, 'say'))
   const [task, setTask] = useState(wordsOf(initial, 'todo'))
   const [line, setLine] = useState(wordsOf(initial, 'note'))
-  const [page, setPage] = useState(
-    initial?.kind === 'note' || initial?.kind === 'doc' ? initial.page : ''
-  )
+  const [page, setPage] = useState(initial?.kind === 'note' || initial?.kind === 'doc' ? initial.page : '')
   const [boardId, setBoardId] = useState(initial?.kind === 'board' ? initial.boardId : '')
   const [trackId, setTrackId] = useState(initial?.kind === 'music' ? (initial.trackId ?? '') : '')
   const [playlistId, setPlaylistId] = useState(initial?.kind === 'music' ? (initial.playlistId ?? '') : '')
@@ -136,12 +134,24 @@ export default function ToolDoes({
       if (kind === 'board') return heldBoard ? { kind: 'board', boardId: heldBoard } : null
       if (kind === 'copy') return copy.trim() ? { kind: 'copy', text: copy } : null
       if (kind === 'prompt')
-        return ask.trim() ? (whoId ? { kind: 'prompt', text: ask, agentId: whoId } : { kind: 'prompt', text: ask }) : null
+        return ask.trim()
+          ? whoId
+            ? { kind: 'prompt', text: ask, agentId: whoId }
+            : { kind: 'prompt', text: ask }
+          : null
       if (kind === 'post')
-        return post.trim() ? (whoId ? { kind: 'post', text: post, agentId: whoId } : { kind: 'post', text: post }) : null
+        return post.trim()
+          ? whoId
+            ? { kind: 'post', text: post, agentId: whoId }
+            : { kind: 'post', text: post }
+          : null
       if (kind === 'say') return say.trim() ? { kind: 'say', text: say } : null
       if (kind === 'todo')
-        return task.trim() ? (whoId ? { kind: 'todo', text: task, agentId: whoId } : { kind: 'todo', text: task }) : null
+        return task.trim()
+          ? whoId
+            ? { kind: 'todo', text: task, agentId: whoId }
+            : { kind: 'todo', text: task }
+          : null
       if (kind === 'note') return heldPage && line.trim() ? { kind: 'note', page: heldPage, text: line } : null
       if (kind === 'music') {
         if (list) return { kind: 'music', playlistId: list }
@@ -234,8 +244,7 @@ export default function ToolDoes({
         {(kind === 'prompt' || kind === 'post') && who('Ask')}
         {kind === 'todo' && who('For')}
 
-        {(kind === 'doc' || kind === 'note') &&
-          (pages.length > 0 ? doc : <Empty>No docs yet</Empty>)}
+        {(kind === 'doc' || kind === 'note') && (pages.length > 0 ? doc : <Empty>No docs yet</Empty>)}
 
         {kind === 'board' &&
           (boards.length > 0 ? (
@@ -306,12 +315,7 @@ export default function ToolDoes({
         <Words value={command} label="Command" placeholder="yarn dev" mono onWrite={setCommand} />
       )}
       {kind === 'copy' && (
-        <Words
-          value={copy}
-          label="What to copy"
-          placeholder="The bit everyone keeps looking up"
-          onWrite={setCopy}
-        />
+        <Words value={copy} label="What to copy" placeholder="The bit everyone keeps looking up" onWrite={setCopy} />
       )}
       {kind === 'prompt' && (
         <Words value={ask} label="What to ask" placeholder="Run the tests and fix what fails" onWrite={setAsk} />
@@ -323,12 +327,7 @@ export default function ToolDoes({
         <Words value={say} label="What to say" placeholder="Standup in ten minutes" onWrite={setSay} />
       )}
       {kind === 'todo' && (
-        <Words
-          value={task}
-          label="What to add"
-          placeholder="Read what the agents left overnight"
-          onWrite={setTask}
-        />
+        <Words value={task} label="What to add" placeholder="Read what the agents left overnight" onWrite={setTask} />
       )}
       {kind === 'note' && (
         <Words value={line} label="What to write" placeholder="Where everything got to today" onWrite={setLine} />

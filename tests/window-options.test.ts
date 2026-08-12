@@ -12,7 +12,7 @@ import {
 const SIZE = { width: 272, height: 64 }
 
 function everyItem(template: MenuItemConstructorOptions[]): MenuItemConstructorOptions[] {
-  return template.flatMap((item) => {
+  return template.flatMap(item => {
     const submenu = item.submenu
     return [item, ...(Array.isArray(submenu) ? everyItem(submenu) : [])]
   })
@@ -20,13 +20,13 @@ function everyItem(template: MenuItemConstructorOptions[]): MenuItemConstructorO
 
 function everyRole(template: MenuItemConstructorOptions[]): string[] {
   return everyItem(template)
-    .map((item) => item.role)
+    .map(item => item.role)
     .filter((role): role is NonNullable<typeof role> => typeof role === 'string')
 }
 
 function viewRows(template: MenuItemConstructorOptions[]): MenuItemConstructorOptions[] {
   const view = everyItem(template).find(
-    (item) => Array.isArray(item.submenu) && item.submenu.some((row) => row.role === 'reload')
+    item => Array.isArray(item.submenu) && item.submenu.some(row => row.role === 'reload')
   )
   const submenu = view?.submenu
   return Array.isArray(submenu) ? submenu : []
@@ -66,21 +66,13 @@ describe('tray panel options', () => {
 
 describe('dictation pill options', () => {
   it('opens the dev tools where it was told it may', () => {
-    expect(createScribeOptions('darwin', 'preload.mjs', SIZE, true).webPreferences?.devTools).toBe(
-      true
-    )
-    expect(createScribeOptions('win32', 'preload.mjs', SIZE, true).webPreferences?.devTools).toBe(
-      true
-    )
+    expect(createScribeOptions('darwin', 'preload.mjs', SIZE, true).webPreferences?.devTools).toBe(true)
+    expect(createScribeOptions('win32', 'preload.mjs', SIZE, true).webPreferences?.devTools).toBe(true)
   })
 
   it('cannot open the dev tools where it was told it may not', () => {
-    expect(createScribeOptions('darwin', 'preload.mjs', SIZE, false).webPreferences?.devTools).toBe(
-      false
-    )
-    expect(createScribeOptions('win32', 'preload.mjs', SIZE, false).webPreferences?.devTools).toBe(
-      false
-    )
+    expect(createScribeOptions('darwin', 'preload.mjs', SIZE, false).webPreferences?.devTools).toBe(false)
+    expect(createScribeOptions('win32', 'preload.mjs', SIZE, false).webPreferences?.devTools).toBe(false)
   })
 })
 
@@ -123,21 +115,13 @@ describe('window options', () => {
 
 describe('thread window options', () => {
   it('opens the dev tools where it was told it may', () => {
-    expect(createThreadWindowOptions('darwin', 'preload.mjs', true).webPreferences?.devTools).toBe(
-      true
-    )
-    expect(createThreadWindowOptions('win32', 'preload.mjs', true).webPreferences?.devTools).toBe(
-      true
-    )
+    expect(createThreadWindowOptions('darwin', 'preload.mjs', true).webPreferences?.devTools).toBe(true)
+    expect(createThreadWindowOptions('win32', 'preload.mjs', true).webPreferences?.devTools).toBe(true)
   })
 
   it('cannot open the dev tools where it was told it may not', () => {
-    expect(createThreadWindowOptions('darwin', 'preload.mjs', false).webPreferences?.devTools).toBe(
-      false
-    )
-    expect(createThreadWindowOptions('win32', 'preload.mjs', false).webPreferences?.devTools).toBe(
-      false
-    )
+    expect(createThreadWindowOptions('darwin', 'preload.mjs', false).webPreferences?.devTools).toBe(false)
+    expect(createThreadWindowOptions('win32', 'preload.mjs', false).webPreferences?.devTools).toBe(false)
   })
 
   it('is a narrower column than the app window and may be taken in further', () => {
@@ -176,8 +160,8 @@ describe('the application menu', () => {
   it('offers them from a submenu rather than from the menu bar itself', () => {
     const template = appMenuTemplate('darwin', true)
 
-    expect(template.some((item) => item.role === 'toggleDevTools')).toBe(false)
-    expect(everyItem(template).some((item) => item.role === 'toggleDevTools')).toBe(true)
+    expect(template.some(item => item.role === 'toggleDevTools')).toBe(false)
+    expect(everyItem(template).some(item => item.role === 'toggleDevTools')).toBe(true)
   })
 
   it('holds them nowhere at all where they are not allowed', () => {
@@ -190,7 +174,7 @@ describe('the application menu', () => {
 
     for (const platform of ['darwin', 'win32'] as const) {
       for (const devTools of [true, false]) {
-        const rows = viewRows(appMenuTemplate(platform, devTools)).map((row) => row.role)
+        const rows = viewRows(appMenuTemplate(platform, devTools)).map(row => row.role)
 
         for (const role of kept) expect(rows).toContain(role)
       }

@@ -77,9 +77,7 @@ function writeText(subject: Editor, x: number, y: number): TLShape {
     ctrlKey: false,
     accelKey: false
   })
-  const shape = subject
-    .getCurrentPageShapes()
-    .find(candidate => candidate.type === 'text' && !before.has(candidate.id))
+  const shape = subject.getCurrentPageShapes().find(candidate => candidate.type === 'text' && !before.has(candidate.id))
   if (!shape) throw new Error('no text shape was made')
   return shape
 }

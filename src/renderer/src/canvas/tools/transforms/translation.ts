@@ -227,9 +227,7 @@ export class Translating<Shape extends TLShape = TLShape> extends TransformState
 
   private handleStart(): void {
     this.applyLifecycle('start')
-    const shapes = this.snapshots
-      .map(snapshot => this.editor.getShape(snapshot.shape.id))
-      .filter(Boolean) as TLShape[]
+    const shapes = this.snapshots.map(snapshot => this.editor.getShape(snapshot.shape.id)).filter(Boolean) as TLShape[]
     this.dragTargets?.startDraggingShapes(shapes, Vec.From(this.editor.inputs.getOriginPagePoint()), () =>
       this.refreshParentTransforms()
     )
@@ -266,9 +264,7 @@ export class Translating<Shape extends TLShape = TLShape> extends TransformState
   }
 
   private update(): void {
-    const shapes = this.snapshots
-      .map(snapshot => this.editor.getShape(snapshot.shape.id))
-      .filter(Boolean) as TLShape[]
+    const shapes = this.snapshots.map(snapshot => this.editor.getShape(snapshot.shape.id)).filter(Boolean) as TLShape[]
     this.dragTargets?.startDraggingShapes(shapes, Vec.From(this.editor.inputs.getOriginPagePoint()), () =>
       this.refreshParentTransforms()
     )
@@ -347,9 +343,7 @@ export class Translating<Shape extends TLShape = TLShape> extends TransformState
 
   private complete(): void {
     this.update()
-    const moving = this.snapshots
-      .map(snapshot => this.editor.getShape(snapshot.shape.id))
-      .filter(Boolean) as TLShape[]
+    const moving = this.snapshots.map(snapshot => this.editor.getShape(snapshot.shape.id)).filter(Boolean) as TLShape[]
     this.dragTargets?.dropShapes(moving)
     this.recordDuplicateProps(moving)
     this.applyLifecycle('end')

@@ -11,7 +11,9 @@ import {
   type TextMeasurer
 } from '../src/renderer/src/canvas/text'
 
-const JSDOM = createRequire(import.meta.url)('jsdom').JSDOM as new (html: string) => {
+const JSDOM = createRequire(import.meta.url)('jsdom').JSDOM as new (
+  html: string
+) => {
   window: Window & typeof globalThis
 }
 

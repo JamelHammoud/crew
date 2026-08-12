@@ -156,19 +156,23 @@ export class SavedSessionStore {
       return {
         active: legacy,
         recentJoins:
-          legacy.mode === 'join'
-            ? [{ folder: legacy.folder, name: legacy.name, link: legacy.link, joinedAt: 0 }]
-            : [],
+          legacy.mode === 'join' ? [{ folder: legacy.folder, name: legacy.name, link: legacy.link, joinedAt: 0 }] : [],
         projects: []
       }
     }
     const data = parsed as Partial<{ active: unknown; recentJoins: unknown; projects: unknown }> | null
     if (!data) return { active: null, recentJoins: [], projects: [] }
     const recentJoins = Array.isArray(data.recentJoins)
-      ? data.recentJoins.map(recentFrom).filter((recent): recent is RecentJoin => recent !== null).slice(0, RECENT_LIMIT)
+      ? data.recentJoins
+          .map(recentFrom)
+          .filter((recent): recent is RecentJoin => recent !== null)
+          .slice(0, RECENT_LIMIT)
       : []
     const projects = Array.isArray(data.projects)
-      ? data.projects.map(projectFrom).filter((project): project is RecentProject => project !== null).slice(0, PROJECT_LIMIT)
+      ? data.projects
+          .map(projectFrom)
+          .filter((project): project is RecentProject => project !== null)
+          .slice(0, PROJECT_LIMIT)
       : []
     return { active: sessionFrom(data.active), recentJoins, projects }
   }

@@ -6,13 +6,7 @@ import type { DesignPanelsOpen } from './designPanelsOpen'
 import { BoardSwitcher, DesignZoom } from './DesignPanels'
 import HeaderSlot from './HeaderSlot'
 
-export default function DesignHeader({
-  editor,
-  panels
-}: {
-  editor: Editor | null
-  panels: DesignPanelsOpen
-}) {
+export default function DesignHeader({ editor, panels }: { editor: Editor | null; panels: DesignPanelsOpen }) {
   const pinned = useSidebar(s => s.pinned)
   const corner = useHeaderSlot(s => s.corner)
   const own = useHeaderSlot(s => s.own)

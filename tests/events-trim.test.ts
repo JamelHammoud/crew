@@ -59,8 +59,20 @@ describe('trimEvents', () => {
       memberId: 'm1',
       name: 'A'
     })
-    const online = (): SessionEvent => ({ id: `o${seq++}`, ts: seq, kind: 'agent.online', agentId: 'ag', label: 'Agent' })
-    const events = [message(), message(), ...Array.from({ length: 400 }, joined), ...Array.from({ length: 400 }, online), message()]
+    const online = (): SessionEvent => ({
+      id: `o${seq++}`,
+      ts: seq,
+      kind: 'agent.online',
+      agentId: 'ag',
+      label: 'Agent'
+    })
+    const events = [
+      message(),
+      message(),
+      ...Array.from({ length: 400 }, joined),
+      ...Array.from({ length: 400 }, online),
+      message()
+    ]
     const trimmed = trimEvents(events, 5)
     expect(trimmed.filter(e => e.kind === 'message')).toHaveLength(3)
     expect(trimmed.some(e => e.kind === 'person.joined' || e.kind === 'agent.online')).toBe(false)

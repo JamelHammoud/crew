@@ -20,13 +20,7 @@ export default function DefaultAgentChip() {
   if (!agent) return null
   return (
     <ComposerChip
-      mark={
-        <AgentIcon
-          seed={agent.id}
-          size="xs"
-          presence={agent.status === 'offline' ? 'offline' : 'online'}
-        />
-      }
+      mark={<AgentIcon seed={agent.id} size="xs" presence={agent.status === 'offline' ? 'offline' : 'online'} />}
       label={agent.label}
       removeLabel={`Stop sending to ${agent.label}`}
       onRemove={() => aim(null)}

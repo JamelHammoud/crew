@@ -111,9 +111,7 @@ export class Group2d extends Geometry2d {
     zoom = 0,
     filters: Geometry2dFilters = Geometry2dFilters.EXCLUDE_LABELS
   ): boolean {
-    return this.children.some(
-      child => !child.isExcludedByFilter(filters) && child.hitTestLineSegment(a, b, zoom)
-    )
+    return this.children.some(child => !child.isExcludedByFilter(filters) && child.hitTestLineSegment(a, b, zoom))
   }
 
   override overlapsPolygon(polygon: VecLike[]): boolean {

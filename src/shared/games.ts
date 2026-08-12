@@ -20,8 +20,7 @@ export const GAMES: readonly GameInfo[] = [
   { id: 'flappy', name: 'Birdie', note: 'Fly through the gaps', unit: 'pipes' }
 ]
 
-export const gameFor = (gameId: string): GameInfo | null =>
-  GAMES.find(game => game.id === gameId) ?? null
+export const gameFor = (gameId: string): GameInfo | null => GAMES.find(game => game.id === gameId) ?? null
 
 export interface GameScore {
   gameId: string
@@ -49,9 +48,7 @@ const key = (gameId: string, name: string): string => `${gameId}\n${name.toLower
 // The board for one game, best first. Two people on the same score are read in
 // the order they got there, so whoever did it first stands higher.
 export function boardFor(scores: GameScore[], gameId: string): GameScore[] {
-  return scores
-    .filter(one => one.gameId === gameId)
-    .sort((a, b) => b.score - a.score || a.ts - b.ts)
+  return scores.filter(one => one.gameId === gameId).sort((a, b) => b.score - a.score || a.ts - b.ts)
 }
 
 export function bestFor(scores: GameScore[], gameId: string, name: string): number {

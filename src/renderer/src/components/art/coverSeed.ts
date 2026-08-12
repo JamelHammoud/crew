@@ -402,13 +402,16 @@ export function coverArt(subject: CoverSubject): CoverArt {
     const off = roll() * Math.PI * 2
     const away = recipe.scatter * Math.sqrt(roll())
     // Held inside the picture, because the whole of the length above is worked
-     // out from where the spine crosses the frame, and a spine that passes
+    // out from where the spine crosses the frame, and a spine that passes
     // outside it never crosses at all. A root scattered to the far edge or hung
     // off a corner is barely moved by this, and one placed outside is put back on
     // the picture it is meant to be in.
     const at: [number, number] = (
       recipe.from
-        ? [recipe.from[0] + Math.cos(lie) * -0.55 + (roll() - 0.5) * 0.1, recipe.from[1] + Math.sin(lie) * -0.55 + (roll() - 0.5) * 0.1]
+        ? [
+            recipe.from[0] + Math.cos(lie) * -0.55 + (roll() - 0.5) * 0.1,
+            recipe.from[1] + Math.sin(lie) * -0.55 + (roll() - 0.5) * 0.1
+          ]
         : [0.5 + Math.cos(off) * away, 0.5 + Math.sin(off) * away]
     ).map(one => Math.min(1 - ROOM * 2, Math.max(ROOM * 2, one))) as [number, number]
     // Petals take the palette in turn rather than at random, so all three of a

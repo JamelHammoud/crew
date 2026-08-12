@@ -35,8 +35,7 @@ function installWorklet(): void {
   )
   vi.stubGlobal('navigator', {
     mediaDevices: {
-      getUserMedia: () =>
-        Promise.resolve({ getAudioTracks: () => [{ stop: () => {}, getSettings: () => ({}) }] })
+      getUserMedia: () => Promise.resolve({ getAudioTracks: () => [{ stop: () => {}, getSettings: () => ({}) }] })
     }
   })
 }
@@ -145,8 +144,7 @@ describe('the microphone a dictation is taken through', () => {
 
 const quiet = (frames: number): number[] => new Array(frames * FRAME).fill(0.0004)
 
-const loud = (frames: number): number[] =>
-  Array.from({ length: frames * FRAME }, (_, i) => (i % 2 === 0 ? 0.3 : -0.3))
+const loud = (frames: number): number[] => Array.from({ length: frames * FRAME }, (_, i) => (i % 2 === 0 ? 0.3 : -0.3))
 
 describe('the quiet at both ends of a dictation', () => {
   it('takes the room off the front and the back', () => {

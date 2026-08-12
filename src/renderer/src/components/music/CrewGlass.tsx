@@ -44,23 +44,11 @@ export default function CrewGlass({ className = '' }: { className?: string }) {
   // whole stack reopens the gaps.
   const discs = (fill: string): ReactElement[] =>
     AT.map((x, index) => (
-      <circle
-        key={index}
-        cx={x}
-        cy={MIDDLE}
-        r={MARK_RADIUS}
-        fill={fill}
-        mask={paint(`cut-${index}`)}
-      />
+      <circle key={index} cx={x} cy={MIDDLE} r={MARK_RADIUS} fill={fill} mask={paint(`cut-${index}`)} />
     ))
 
   return (
-    <svg
-      aria-hidden
-      viewBox={`0 0 ${BOX} ${BOX}`}
-      preserveAspectRatio="xMidYMid meet"
-      className={className}
-    >
+    <svg aria-hidden viewBox={`0 0 ${BOX} ${BOX}`} preserveAspectRatio="xMidYMid meet" className={className}>
       <defs>
         <radialGradient id={name('body')} cx="0.34" cy="0.27" r="0.94">
           {BODY.map(([offset, opacity]) => (
@@ -121,15 +109,7 @@ export default function CrewGlass({ className = '' }: { className?: string }) {
         </mask>
 
         {AT.map((_, index) => (
-          <mask
-            key={index}
-            id={name(`cut-${index}`)}
-            maskUnits="userSpaceOnUse"
-            x="0"
-            y="0"
-            width={BOX}
-            height={BOX}
-          >
+          <mask key={index} id={name(`cut-${index}`)} maskUnits="userSpaceOnUse" x="0" y="0" width={BOX} height={BOX}>
             <rect x="0" y="0" width={BOX} height={BOX} fill="#ffffff" />
             {AT.slice(index + 1).map((x, ahead) => (
               <circle key={ahead} cx={x} cy={MIDDLE} r={MARK_CUT} fill="#000000" />

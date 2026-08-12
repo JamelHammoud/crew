@@ -160,7 +160,10 @@ export const useHuddle = create<HuddleState>((set, get) => {
       for (const peer of before.peers) {
         if (peer.peerId !== self && !peerIn(msg.room, peer.peerId)) playSound('leave')
       }
-      mesh.sync(self, msg.room.peers.map(peer => peer.peerId))
+      mesh.sync(
+        self,
+        msg.room.peers.map(peer => peer.peerId)
+      )
       const shared = sharingPeer(msg.room)
       if (shared && shared.peerId !== self) set({ expanded: true })
     }
@@ -230,7 +233,10 @@ export const useHuddle = create<HuddleState>((set, get) => {
         problem: mic.problem
       })
       sendHuddle({ type: 'huddle.join', peerId, muted: mic.track === null, camera: false })
-      mesh.sync(peerId, get().room.peers.map(peer => peer.peerId))
+      mesh.sync(
+        peerId,
+        get().room.peers.map(peer => peer.peerId)
+      )
       publish()
       refreshStreams()
     },

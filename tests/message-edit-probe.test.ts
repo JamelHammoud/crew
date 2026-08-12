@@ -91,8 +91,7 @@ function stand(box: HTMLTextAreaElement, page: HTMLElement, full: number): void 
   Object.defineProperty(box, 'scrollHeight', { configurable: true, get: () => full })
   let height = `${full}px`
   let top = 0
-  const max = (): number =>
-    Math.max(0, ABOVE + (height === 'auto' ? ROW : parseFloat(height) || 0) - VIEW)
+  const max = (): number => Math.max(0, ABOVE + (height === 'auto' ? ROW : parseFloat(height) || 0) - VIEW)
   Object.defineProperty(box.style, 'height', {
     configurable: true,
     get: () => height,

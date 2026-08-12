@@ -97,7 +97,12 @@ describe('resizing a text shape', () => {
     const bounds = editor.getShapePageBounds(id) as Box
     const before = editor.getShape(id)!.props as { w: number; scale: number }
 
-    drag(editor, 'top', new Vec(bounds.center.x, bounds.minY), new Vec(bounds.center.x, bounds.maxY - bounds.height * 3))
+    drag(
+      editor,
+      'top',
+      new Vec(bounds.center.x, bounds.minY),
+      new Vec(bounds.center.x, bounds.maxY - bounds.height * 3)
+    )
 
     const after = editor.getShape(id)!.props as { w: number; scale: number; autoSize: boolean }
     expect(after.scale).toBeCloseTo(before.scale * 3, 4)

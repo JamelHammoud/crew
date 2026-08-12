@@ -437,9 +437,7 @@ function geoBody(shape: GeoShape, dv: GeoDisplayValues): ReactNode {
       : path.toD({ onlyFilled: true })
 
   return [
-    fill === 'none'
-      ? null
-      : createElement('path', { key: 'fill', fill: dv.fillColor, d: fillPath, stroke: 'none' }),
+    fill === 'none' ? null : createElement('path', { key: 'fill', fill: dv.fillColor, d: fillPath, stroke: 'none' }),
     createElement(
       'g',
       { key: 'stroke' },

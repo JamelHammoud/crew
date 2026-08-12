@@ -104,10 +104,7 @@ function Session() {
 
   useEffect(() => watchUpdates(), [])
 
-  useEffect(
-    () => window.crew?.onCrewTrouble?.(message => toast.fail(message, { key: 'crew-sync' })),
-    []
-  )
+  useEffect(() => window.crew?.onCrewTrouble?.(message => toast.fail(message, { key: 'crew-sync' })), [])
 
   const switchTab = (next: Tab) => {
     if (next === 'chat') closeThreads()

@@ -88,11 +88,7 @@ function Inline({ tokens, refs }: { tokens: Token[]; refs: Refs }) {
             )
           case 'codespan': {
             const code = plain(token.text)
-            return parseFileRef(code) ? (
-              <TextWithFileLinks key={index} text={code} />
-            ) : (
-              <code key={index}>{code}</code>
-            )
+            return parseFileRef(code) ? <TextWithFileLinks key={index} text={code} /> : <code key={index}>{code}</code>
           }
           case 'link':
             return (
@@ -287,10 +283,7 @@ export default function MessageText({
   className?: string
   tail?: ReactNode
 }) {
-  const refs = useMemo(
-    () => ({ mentionRefs, docMentions, boardMentions }),
-    [mentionRefs, docMentions, boardMentions]
-  )
+  const refs = useMemo(() => ({ mentionRefs, docMentions, boardMentions }), [mentionRefs, docMentions, boardMentions])
   const blocks = useMemo(() => marked.lexer(text, LEX), [text])
   return (
     <div className={`md md-said select-text ${className}`}>

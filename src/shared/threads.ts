@@ -37,10 +37,7 @@ const stirs = (event: SessionEvent): string | undefined => {
   }
 }
 
-export function activeThreads(
-  events: SessionEvent[],
-  working: (threadId: string) => boolean
-): LiveThread[] {
+export function activeThreads(events: SessionEvent[], working: (threadId: string) => boolean): LiveThread[] {
   const open = new Map<string, { title: string; agentLabel: string; at: number }>()
   for (const event of events) {
     switch (event.kind) {

@@ -12,9 +12,7 @@ vi.mock('../src/renderer/src/media/sounds', () => ({
 
 const { default: CrewLogo } = await import('../src/renderer/src/components/CrewLogo')
 const { CrewMark } = await import('../src/renderer/src/components/CrewMark')
-const { MARK_DISCS, MARK_HEIGHT, MARK_RADIUS, MARK_WIDTH } = await import(
-  '../src/renderer/src/components/crew-mark'
-)
+const { MARK_DISCS, MARK_HEIGHT, MARK_RADIUS, MARK_WIDTH } = await import('../src/renderer/src/components/crew-mark')
 
 beforeEach(() => {
   played.length = 0
@@ -41,7 +39,11 @@ describe('the mark in the top left', () => {
 
   it('replays the arrival without redrawing anything, so a hover cannot feed itself', () => {
     const replayed: string[] = []
-    const held = { name: 'crew-join', cancel: () => void replayed.push('cancel'), play: () => void replayed.push('play') }
+    const held = {
+      name: 'crew-join',
+      cancel: () => void replayed.push('cancel'),
+      play: () => void replayed.push('play')
+    }
     const drift = { name: 'crew-blob', cancel: () => void replayed.push('no'), play: () => void replayed.push('no') }
     const { container } = render(createElement(CrewLogo))
     const first = container.querySelector('mask')
@@ -89,9 +91,7 @@ describe('the mark in the top left', () => {
 
   it('stands the mark in a box with room round it, so an overshooting disc is never cut flat', () => {
     const { container } = render(createElement(CrewLogo))
-    const [x, y, width, height] = (container.querySelector('svg')?.getAttribute('viewBox') ?? '')
-      .split(' ')
-      .map(Number)
+    const [x, y, width, height] = (container.querySelector('svg')?.getAttribute('viewBox') ?? '').split(' ').map(Number)
     const reach = MARK_RADIUS * 1.09 - MARK_RADIUS
     expect(x).toBeLessThanOrEqual(-reach)
     expect(y).toBeLessThanOrEqual(-reach)

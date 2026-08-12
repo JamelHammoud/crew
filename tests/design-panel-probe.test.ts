@@ -64,7 +64,10 @@ describe('design panel', () => {
 
   it('paints a triangle from the same hex field a rectangle uses', () => {
     const edits: Edit[] = []
-    const { container } = panelFor(node('triangle', { fills: [{ type: 'solid', color: '#222222', opacity: 1, visible: true }] }), edits)
+    const { container } = panelFor(
+      node('triangle', { fills: [{ type: 'solid', color: '#222222', opacity: 1, visible: true }] }),
+      edits
+    )
     const hex = container.querySelector('input[aria-label="Hex"]') as HTMLInputElement
     fireEvent.change(hex, { target: { value: '#ff0055' } })
     fireEvent.blur(hex)
@@ -117,7 +120,12 @@ describe('design panel', () => {
 
   it('shows a frame its background and nothing it cannot hold', () => {
     const edits: Edit[] = []
-    const frame = { id: 'shape:frame', type: 'frame', meta: { background: '#101010' }, props: { name: 'Home' } } as unknown as TLShape
+    const frame = {
+      id: 'shape:frame',
+      type: 'frame',
+      meta: { background: '#101010' },
+      props: { name: 'Home' }
+    } as unknown as TLShape
     const { container } = panelFor(frame, edits)
     expect(sections(container)).toEqual(['Fill'])
     const hex = container.querySelector('input[aria-label="Hex"]') as HTMLInputElement

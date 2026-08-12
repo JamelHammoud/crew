@@ -42,10 +42,7 @@ export default function SubagentMark({
   const path = useMemo(() => shapePath(subagentShape(seed), box), [seed, box])
 
   return (
-    <span
-      className={`relative inline-block align-middle shrink-0 ${className}`}
-      style={{ width: box, height: box }}
-    >
+    <span className={`relative inline-block align-middle shrink-0 ${className}`} style={{ width: box, height: box }}>
       <GeneratedField seed={seed} box={box} clip={`path('${path}')`} />
       {/* Nothing is drawn around the outside: an edge painted there is cropped
           the moment the mark lands in a scroller or a card that clips. The ring

@@ -50,8 +50,14 @@ describe('the songs themselves', () => {
   it('keeps time and carries a tune, in every one of them', () => {
     for (const tune of MUSIC_TUNES) {
       const notes = strikesOf(tune)
-      expect(notes.some(note => note.hz < 200), `${tune.name} has nothing low`).toBe(true)
-      expect(notes.some(note => note.hz > 400), `${tune.name} has nothing high`).toBe(true)
+      expect(
+        notes.some(note => note.hz < 200),
+        `${tune.name} has nothing low`
+      ).toBe(true)
+      expect(
+        notes.some(note => note.hz > 400),
+        `${tune.name} has nothing high`
+      ).toBe(true)
     }
   })
 })
@@ -127,7 +133,11 @@ describe('playing a track', () => {
   it('plays what the tune says, in the order it says it', () => {
     player.play(overworld, 0)
     const moments = (times: number[]) => [...new Set(times.map(at => Math.round(at * 1000)))].sort((a, b) => a - b)
-    const written = moments(strikesOf(overworld).filter(note => note.at < 0.6).map(note => note.at))
+    const written = moments(
+      strikesOf(overworld)
+        .filter(note => note.at < 0.6)
+        .map(note => note.at)
+    )
     const played = moments(audio.notes().map(note => note.at - 100))
     expect(played).toEqual(written)
   })

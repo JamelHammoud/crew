@@ -27,7 +27,12 @@ const repo: Record<string, RepoFile> = {
   },
   src: { kind: 'dir', path: 'src', entries: [{ name: 'app.ts', dir: false }] },
   'src/renderer': { kind: 'dir', path: 'src/renderer', entries: [{ name: 'app.tsx', dir: false }] },
-  'src/renderer/app.tsx': { kind: 'file', path: 'src/renderer/app.tsx', text: 'export const app = 1', truncated: false },
+  'src/renderer/app.tsx': {
+    kind: 'file',
+    path: 'src/renderer/app.tsx',
+    text: 'export const app = 1',
+    truncated: false
+  },
   'src/app.ts': {
     kind: 'file',
     path: 'src/app.ts',
@@ -158,9 +163,7 @@ describe('folder links', () => {
 
   it('leaves a link and a domain alone', () => {
     const tokens = fileTokens('see https://roxie.com/film/backrooms/ and example.com/ tonight')
-    expect(tokens.flatMap(t => (t.kind === 'url' ? [t.text] : []))).toEqual([
-      'https://roxie.com/film/backrooms/'
-    ])
+    expect(tokens.flatMap(t => (t.kind === 'url' ? [t.text] : []))).toEqual(['https://roxie.com/film/backrooms/'])
     expect(tokens.flatMap(t => (t.kind === 'file' ? [t.path] : []))).toEqual([])
     expect(parseFileRef('https://example.com/a/')).toBeNull()
   })
@@ -265,10 +268,7 @@ describe('markdown tables', () => {
     const wrapper = document.querySelector('.md > .table-scroll')
     expect(wrapper).not.toBeNull()
     expect(wrapper?.firstElementChild?.tagName).toBe('TABLE')
-    expect([...document.querySelectorAll('th')].map(cell => cell.textContent)).toEqual([
-      'Control',
-      'Click behavior'
-    ])
+    expect([...document.querySelectorAll('th')].map(cell => cell.textContent)).toEqual(['Control', 'Click behavior'])
     expect([...document.querySelectorAll('tbody td')].map(cell => cell.textContent)).toEqual([
       'Pointer',
       'Selects and moves'
@@ -380,9 +380,14 @@ describe('changed file lists', () => {
 })
 
 describe('changed lines', () => {
-  const EDIT = ['- export function old() {', '-   return 1', '- }', '+ export function other() {', '+   return 2', '+ }'].join(
-    '\n'
-  )
+  const EDIT = [
+    '- export function old() {',
+    '-   return 1',
+    '- }',
+    '+ export function other() {',
+    '+   return 2',
+    '+ }'
+  ].join('\n')
   const LAST = ['- export const last = 8', '+ export const last = 9'].join('\n')
 
   const toolItem = (files: FileChange[]): ThreadItem => ({
@@ -585,8 +590,22 @@ describe('changed lines', () => {
 
   it('marks every place a file was touched across the steps behind it', async () => {
     const steps: AgentStep[] = [
-      { id: 't1', kind: 'tool', status: 'done', ts: 0, name: 'Edit', files: [{ path: 'src/panel.ts', added: 3, removed: 3, diff: EDIT }] },
-      { id: 't2', kind: 'tool', status: 'done', ts: 1, name: 'Edit', files: [{ path: 'src/panel.ts', added: 1, removed: 1, diff: LAST }] }
+      {
+        id: 't1',
+        kind: 'tool',
+        status: 'done',
+        ts: 0,
+        name: 'Edit',
+        files: [{ path: 'src/panel.ts', added: 3, removed: 3, diff: EDIT }]
+      },
+      {
+        id: 't2',
+        kind: 'tool',
+        status: 'done',
+        ts: 1,
+        name: 'Edit',
+        files: [{ path: 'src/panel.ts', added: 1, removed: 1, diff: LAST }]
+      }
     ]
     render(createElement(FilesChanged, { steps }))
     fireEvent.click(screen.getByRole('button'))
@@ -772,14 +791,10 @@ describe('file editing', () => {
     const editor = screen.getByRole('textbox', { name: 'File contents' }) as HTMLTextAreaElement
     expect(editor.value).toContain('const one = 1')
     fireEvent.change(editor, { target: { value: 'const four = 4\nconst five = 5' } })
-    await waitFor(() =>
-      expect(document.querySelector('[data-line="2"]')?.textContent).toContain('const five = 5')
-    )
+    await waitFor(() => expect(document.querySelector('[data-line="2"]')?.textContent).toContain('const five = 5'))
     expect(document.querySelectorAll('[data-line]').length).toBe(2)
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
-    await waitFor(() =>
-      expect(writes).toEqual([{ path: 'src/app.ts', text: 'const four = 4\nconst five = 5' }])
-    )
+    await waitFor(() => expect(writes).toEqual([{ path: 'src/app.ts', text: 'const four = 4\nconst five = 5' }]))
     await waitFor(() => expect(screen.queryByRole('button', { name: 'Save' })).toBeNull())
     expect((screen.getByRole('textbox', { name: 'File contents' }) as HTMLTextAreaElement).value).toBe(
       'const four = 4\nconst five = 5'
@@ -792,9 +807,7 @@ describe('file editing', () => {
     await screen.findByText('const one = 1')
     const editor = screen.getByRole('textbox', { name: 'File contents' }) as HTMLTextAreaElement
     fireEvent.change(editor, { target: { value: 'const one = 1\nconst two = 2\nconst three = 3\nconst four = 4' } })
-    await waitFor(() =>
-      expect(document.querySelector('[data-line="4"]')?.textContent).toContain('const four = 4')
-    )
+    await waitFor(() => expect(document.querySelector('[data-line="4"]')?.textContent).toContain('const four = 4'))
     expect(document.querySelectorAll('[data-line]').length).toBe(4)
     await waitFor(() => {
       const last = document.querySelector('[data-line="4"]')
@@ -811,9 +824,7 @@ describe('file editing', () => {
     fireEvent.change(editor, { target: { value: 'scrapped' } })
     await waitFor(() => expect(document.querySelector('[data-line="1"]')?.textContent).toContain('scrapped'))
     fireEvent.keyDown(editor, { key: 'Escape' })
-    await waitFor(() =>
-      expect(document.querySelector('[data-line="1"]')?.textContent).toContain('const one = 1')
-    )
+    await waitFor(() => expect(document.querySelector('[data-line="1"]')?.textContent).toContain('const one = 1'))
     expect(editor.value).toBe('const one = 1\nconst two = 2\nconst three = 3')
     expect(screen.queryByRole('button', { name: 'Save' })).toBeNull()
   })

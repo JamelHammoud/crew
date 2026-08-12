@@ -214,9 +214,7 @@ describe('playlists', () => {
     // Anyone can take a track off the shelf, and a list holding it is read back
     // against what is really there rather than keeping a row that plays nothing.
     pat.send({ type: 'music.remove', trackId: upload.id })
-    const left = await pat.waitFor(
-      m => m.type === 'music.playlists' && listsOf(m)[0]?.trackIds.join() === 'credits'
-    )
+    const left = await pat.waitFor(m => m.type === 'music.playlists' && listsOf(m)[0]?.trackIds.join() === 'credits')
     expect(listsOf(left)[0].trackIds).toEqual(['credits'])
     expect(new CrewSession(host.store).snapshot().musicPlaylists?.[0].trackIds).toEqual(['credits'])
   })

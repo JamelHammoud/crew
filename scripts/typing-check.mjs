@@ -373,7 +373,12 @@ async function compile(dir) {
   const { build } = await import('vite')
   const tailwind = (await import('@tailwindcss/vite')).default
   const swap = OLD
-    ? [{ find: path.join(root, 'src/renderer/src/components/useAutoResize'), replacement: path.join(dir, 'useAutoResize.ts') }]
+    ? [
+        {
+          find: path.join(root, 'src/renderer/src/components/useAutoResize'),
+          replacement: path.join(dir, 'useAutoResize.ts')
+        }
+      ]
     : []
   await build({
     root: dir,
@@ -413,11 +418,17 @@ const say = result => {
   const what = result.contained ? `${result.rows} rows, contained` : `${result.rows} rows`
   const pad = ''.padEnd(22)
   console.log(`  ${what.padEnd(22)} ${result.drawn} rows drawn, ${result.tall}px of thread`)
-  console.log(`  ${pad} keystroke mean ${result.sync.mean}ms  median ${result.sync.median}ms  p95 ${result.sync.p95}ms  worst ${result.sync.worst}ms`)
+  console.log(
+    `  ${pad} keystroke mean ${result.sync.mean}ms  median ${result.sync.median}ms  p95 ${result.sync.p95}ms  worst ${result.sync.worst}ms`
+  )
   if (result.growing) {
-    console.log(`  ${pad} a line more mean ${result.growing.mean}ms  median ${result.growing.median}ms  worst ${result.growing.worst}ms, ${result.lines} of them`)
+    console.log(
+      `  ${pad} a line more mean ${result.growing.mean}ms  median ${result.growing.median}ms  worst ${result.growing.worst}ms, ${result.lines} of them`
+    )
   }
-  console.log(`  ${pad} to frame  mean ${result.frame.mean}ms  median ${result.frame.median}ms  p95 ${result.frame.p95}ms`)
+  console.log(
+    `  ${pad} to frame  mean ${result.frame.mean}ms  median ${result.frame.median}ms  p95 ${result.frame.p95}ms`
+  )
   console.log(`  ${pad} the reflow itself, one read ${result.once}ms, two reads ${result.twice}ms`)
 }
 
@@ -427,7 +438,9 @@ try {
   const seen = await run(await compile(dir))
   if (seen.failed) throw new Error(seen.failed)
   const [short, long, contained] = seen.results
-  console.log(`${OLD ? 'the hook as it was, reading twice' : 'the hook as it is, reading once'}, ${LINE.length} characters typed ${PASSES} times over`)
+  console.log(
+    `${OLD ? 'the hook as it was, reading twice' : 'the hook as it is, reading once'}, ${LINE.length} characters typed ${PASSES} times over`
+  )
   say(short)
   say(long)
   say(contained)
@@ -437,7 +450,9 @@ try {
   console.log(`\n  the rows cost ${cost}ms a keystroke, and ${left}ms of that is left with the scroller contained`)
   console.log(`  reads a keystroke ${seen.perKey}`)
   console.log(`  ${JSON.stringify(seen.ways)}`)
-  console.log(`  the day divider ${seen.layers.dividerDrawn ? 'draws' : 'does not draw'} inside a contained scroller and is still ${seen.layers.dividerSticky ? 'sticky' : 'not sticky'}`)
+  console.log(
+    `  the day divider ${seen.layers.dividerDrawn ? 'draws' : 'does not draw'} inside a contained scroller and is still ${seen.layers.dividerSticky ? 'sticky' : 'not sticky'}`
+  )
   for (const error of seen.errors ?? []) console.log(`  window error: ${error}`)
 
   if (long.keystrokes < LINE.length) {
@@ -449,7 +464,9 @@ try {
     bad = true
   }
   if (cost > 1) {
-    console.error(`a thread of ${LONG} rows costs ${cost}ms a keystroke, which is a composer that drags as a thread grows`)
+    console.error(
+      `a thread of ${LONG} rows costs ${cost}ms a keystroke, which is a composer that drags as a thread grows`
+    )
     bad = true
   }
   if (long.sync.p95 > 4) {

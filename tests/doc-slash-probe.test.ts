@@ -25,7 +25,10 @@ const stand = (query: string, onItemClick: (item: unknown) => void, selectedInde
   const mount = document.createElement('div')
   document.body.appendChild(mount)
   editor.mount(mount)
-  const items = slashMatches(docSlashItems(editor as never, () => {}), query)
+  const items = slashMatches(
+    docSlashItems(editor as never, () => {}),
+    query
+  )
   render(
     createElement(
       BlockNoteContext.Provider,
@@ -43,7 +46,10 @@ const stand = (query: string, onItemClick: (item: unknown) => void, selectedInde
 
 const titles = (query: string) => {
   const editor = BlockNoteEditor.create({ schema: docSchema as never })
-  return slashMatches(docSlashItems(editor as never, () => {}), query).map(item => item.title)
+  return slashMatches(
+    docSlashItems(editor as never, () => {}),
+    query
+  ).map(item => item.title)
 }
 
 describe('the doc slash menu', () => {
@@ -98,7 +104,10 @@ describe('what the slash menu matches', () => {
     for (const query of ['ta', 't', 'list', 'e', 'o']) {
       const groups: string[] = []
       const editor = BlockNoteEditor.create({ schema: docSchema as never })
-      for (const item of slashMatches(docSlashItems(editor as never, () => {}), query)) {
+      for (const item of slashMatches(
+        docSlashItems(editor as never, () => {}),
+        query
+      )) {
         if (groups.at(-1) !== item.group) groups.push(item.group)
       }
       expect(new Set(groups).size, query).toBe(groups.length)

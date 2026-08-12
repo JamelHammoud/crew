@@ -3,14 +3,7 @@ import { dirname } from 'node:path'
 import type { BrowserWindow } from 'electron'
 import type { AppUpdater } from 'electron-updater'
 import electronUpdater from 'electron-updater'
-import {
-  mayInstall,
-  nextUpdate,
-  worthChecking,
-  NO_UPDATE,
-  type UpdateState,
-  type UpdateWord
-} from '../shared/update'
+import { mayInstall, nextUpdate, worthChecking, NO_UPDATE, type UpdateState, type UpdateWord } from '../shared/update'
 
 const AGAIN_MS = 60 * 60 * 1000
 const GONE_MS = 60 * 1000
@@ -64,9 +57,7 @@ export class Updates {
     up.autoInstallOnAppQuit = false
     up.on('update-available', info => this.say({ word: 'found', version: info.version }))
     up.on('update-not-available', () => this.say({ word: 'nothing' }))
-    up.on('download-progress', progress =>
-      this.say({ word: 'progress', percent: progress.percent })
-    )
+    up.on('download-progress', progress => this.say({ word: 'progress', percent: progress.percent }))
     up.on('update-downloaded', info => {
       this.landed = true
       this.say({ word: 'ready', version: info.version })

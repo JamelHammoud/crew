@@ -10,9 +10,7 @@ import { SelectTool } from '../src/renderer/src/canvas/tools/select'
 import { nodeDefaults } from '../src/shared/designNode'
 import { fakeBoard, type FakeShape } from './helpers/design-editor'
 
-const { default: DesignContextMenu, useContextMenu } = await import(
-  '../src/renderer/src/components/DesignContextMenu'
-)
+const { default: DesignContextMenu, useContextMenu } = await import('../src/renderer/src/components/DesignContextMenu')
 
 const node = (id: string, name: string): FakeShape => ({
   id,
@@ -69,7 +67,10 @@ describe('design right click menu', () => {
       'Hide',
       'Delete'
     ]) {
-      expect(shown.some(row => row.startsWith(label)), label).toBe(true)
+      expect(
+        shown.some(row => row.startsWith(label)),
+        label
+      ).toBe(true)
     }
   })
 

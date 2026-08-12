@@ -20,7 +20,9 @@ export default function RunFigures({
     <>
       <span className={`${tone} tabular-nums`}>{formatElapsed(ms)}</span>
       {prefs.tokens && tokens > 0 && <span className={`${tone} tabular-nums`}>{formatTokens(tokens)} tokens</span>}
-      {prefs.cost && cost !== undefined && cost > 0 && <span className={`${tone} tabular-nums`}>{formatCost(cost)}</span>}
+      {prefs.cost && cost !== undefined && cost > 0 && (
+        <span className={`${tone} tabular-nums`}>{formatCost(cost)}</span>
+      )}
     </>
   )
 }

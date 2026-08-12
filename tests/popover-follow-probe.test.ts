@@ -27,7 +27,17 @@ const frame = (): void => {
 const tops = new WeakMap<Element, number>()
 Element.prototype.getBoundingClientRect = function (this: Element) {
   const top = tops.get(this) ?? 0
-  return { x: 0, y: top, top, bottom: top + 20, left: 0, right: 100, width: 100, height: 20, toJSON: () => ({}) } as DOMRect
+  return {
+    x: 0,
+    y: top,
+    top,
+    bottom: top + 20,
+    left: 0,
+    right: 100,
+    width: 100,
+    height: 20,
+    toJSON: () => ({})
+  } as DOMRect
 }
 
 const panel = (): HTMLElement => document.querySelector('.glass.fixed') as HTMLElement
@@ -36,7 +46,12 @@ describe('a popover while the page under it moves', () => {
   it('follows the anchor it hangs off rather than closing', () => {
     const onClose = vi.fn()
     const view = render(
-      h('div', { 'data-testid': 'row' }, h('button', null, 'anchor'), h(Popover, { open: true, onClose, children: 'menu' }))
+      h(
+        'div',
+        { 'data-testid': 'row' },
+        h('button', null, 'anchor'),
+        h(Popover, { open: true, onClose, children: 'menu' })
+      )
     )
     expect(panel().style.top).toBe('28px')
 

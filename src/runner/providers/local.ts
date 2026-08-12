@@ -1,11 +1,6 @@
 import { goalBrief, goalCondition } from '../../shared/goal'
 import { resolveSettings, type AgentSettingField } from '../../shared/llm'
-import {
-  serverName,
-  serverProviderName,
-  serverUrl,
-  type ModelServer
-} from '../../shared/modelServers'
+import { serverName, serverProviderName, serverUrl, type ModelServer } from '../../shared/modelServers'
 import { commandExists } from './cli'
 import type { Tuning } from './local-chat'
 import { startLoop, type LocalRun } from './local-loop'
@@ -290,8 +285,7 @@ export const localProvider: Provider = {
         // list warmed in one place and read in another can be cold, and
         // resolveSettings drops a choice its options do not carry, which would
         // quietly send a run to a different server than the one it was made for.
-        address: resolved =>
-          serverUrl(settings['address'] || resolved.address || candidateUrls()[0]) ?? '',
+        address: resolved => serverUrl(settings['address'] || resolved.address || candidateUrls()[0]) ?? '',
         models: localModels
       },
       prompt,

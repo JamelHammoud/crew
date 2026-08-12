@@ -183,9 +183,7 @@ const sakuraBlossoms = ({ CENTRE }) => {
     { x: 560, y: 202, r: 58, look: SAKURA_MID, soft: 'sakura-mid' },
     { x: 470, y: 856, r: 62, look: SAKURA_MID, soft: 'sakura-mid' }
   ]
-  const flowers = laid.map(({ x, y, r, look, soft }) =>
-    blossom({ x, y, r, turn: between(pick, 0, 72), ...look, soft })
-  )
+  const flowers = laid.map(({ x, y, r, look, soft }) => blossom({ x, y, r, turn: between(pick, 0, 72), ...look, soft }))
   // Loose petals, which is what says the tree is dropping them.
   const drifting = [
     { x: 640, y: 760, r: 46, soft: null },
@@ -288,9 +286,7 @@ const SCAN_WEIGHT = 4
 const scanlines = ({ TILE }) => {
   const lines = []
   for (let y = TILE.y; y < TILE.y + TILE.size; y += SCAN_STEP) {
-    lines.push(
-      `    <rect x="${TILE.x}" y="${round(y)}" width="${TILE.size}" height="${SCAN_WEIGHT}" />`
-    )
+    lines.push(`    <rect x="${TILE.x}" y="${round(y)}" width="${TILE.size}" height="${SCAN_WEIGHT}" />`)
   }
   return lines.join('\n')
 }
@@ -319,10 +315,40 @@ const CODE_GAP = 20
 // Every line is an indent and a run of tokens, each token a width, so the shape
 // of the block is the shape of real code rather than a row of equal bars.
 const CODE = [
-  { y: 176, indent: 0, run: [['keyword', 86], ['name', 118], ['quiet', 34]] },
-  { y: 176 + CODE_STEP, indent: 1, run: [['name', 74], ['string', 152]] },
-  { y: 176 + CODE_STEP * 2, indent: 1, run: [['keyword', 60], ['number', 46], ['quiet', 88]] },
-  { y: 692, indent: 1, run: [['name', 104], ['string', 74]] },
+  {
+    y: 176,
+    indent: 0,
+    run: [
+      ['keyword', 86],
+      ['name', 118],
+      ['quiet', 34]
+    ]
+  },
+  {
+    y: 176 + CODE_STEP,
+    indent: 1,
+    run: [
+      ['name', 74],
+      ['string', 152]
+    ]
+  },
+  {
+    y: 176 + CODE_STEP * 2,
+    indent: 1,
+    run: [
+      ['keyword', 60],
+      ['number', 46],
+      ['quiet', 88]
+    ]
+  },
+  {
+    y: 692,
+    indent: 1,
+    run: [
+      ['name', 104],
+      ['string', 74]
+    ]
+  },
   { y: 692 + CODE_STEP, indent: 0, run: [['quiet', 40]] }
 ]
 

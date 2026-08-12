@@ -41,15 +41,7 @@ import { useFindQuery } from '../components/find'
 import { useStickToBottom } from '../components/useStickToBottom'
 import { commandTyped, threadCommands, type CommandName } from '../../../shared/commands'
 import { mentionsIn } from '../../../shared/llm'
-import {
-  ArchiveGlyph,
-  CheckGlyph,
-  ChevronLeftGlyph,
-  CloseGlyph,
-  EyeGlyph,
-  StopGlyph,
-  WarningGlyph
-} from '../icons'
+import { ArchiveGlyph, CheckGlyph, ChevronLeftGlyph, CloseGlyph, EyeGlyph, StopGlyph, WarningGlyph } from '../icons'
 import { pendingCount, useCrew } from '../state/store'
 
 const BACK_WIDTH = 40
@@ -299,12 +291,7 @@ export default function ThreadView({
   return (
     <div className="h-full flex">
       <div className="flex-1 min-w-0 relative">
-        <FindBar
-          containerRef={contentRef}
-          scrollerRef={scrollRef}
-          placeholder="Find in thread"
-          listens={focused}
-        />
+        <FindBar containerRef={contentRef} scrollerRef={scrollRef} placeholder="Find in thread" listens={focused} />
         <div
           ref={scrollRef}
           onScroll={scrolled}
@@ -386,12 +373,7 @@ export default function ThreadView({
                       </span>
                     </MemberName>
                     {ask && nameWidth >= ASK_MIN_WIDTH && (
-                      <ThreadAsk
-                        ask={ask}
-                        whole={opening?.text}
-                        mentionRefs={opening?.mentionRefs}
-                        onJump={reachTop}
-                      />
+                      <ThreadAsk ask={ask} whole={opening?.text} mentionRefs={opening?.mentionRefs} onJump={reachTop} />
                     )}
                   </div>
                   <div ref={setHeaderStatus} className="ml-auto flex items-center gap-2 shrink-0">
@@ -449,11 +431,7 @@ export default function ThreadView({
                           : 'Send'
                   }
                   ghost={thread.ghost}
-                  chips={
-                    command && (
-                      <CommandChip name={command} onRemove={() => setThreadCommands(threadId, [])} />
-                    )
-                  }
+                  chips={command && <CommandChip name={command} onRemove={() => setThreadCommands(threadId, [])} />}
                 >
                   <MentionMenu
                     matches={mention.matches}

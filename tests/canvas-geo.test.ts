@@ -198,7 +198,9 @@ describe('geo painting', () => {
 
   it('gives the label a box of its own inside the shape', () => {
     const util = new GeoShapeUtil(editor)
-    const withText = geo({ richText: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'hello' }] }] } })
+    const withText = geo({
+      richText: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'hello' }] }] }
+    })
     const geometry = util.getGeometry(withText) as unknown as { children: { isLabel: boolean }[] }
     expect(geometry.children.length).toBe(2)
     expect(geometry.children[1].isLabel).toBe(true)
@@ -386,9 +388,7 @@ describe('dash maths', () => {
     const dashed = getPerfectDashProps(100, 2, { style: 'dashed' })
     const dotted = getPerfectDashProps(100, 2, { style: 'dotted' })
     expect(dashed.strokeDasharray).not.toEqual(dotted.strokeDasharray)
-    expect(Number(dotted.strokeDasharray.split(' ')[0])).toBeLessThan(
-      Number(dashed.strokeDasharray.split(' ')[0])
-    )
+    expect(Number(dotted.strokeDasharray.split(' ')[0])).toBeLessThan(Number(dashed.strokeDasharray.split(' ')[0]))
   })
 
   it('holds a short line to one dash', () => {
@@ -425,8 +425,14 @@ describe('path builder', () => {
 
   it('is the same wobble for the same seed', () => {
     const path = () =>
-      new PathBuilder().moveTo(0, 0, { geometry: { isFilled: true } }).lineTo(50, 0).lineTo(50, 50).close()
-    expect(path().toDrawD({ strokeWidth: 4, randomSeed: 'a' })).toBe(path().toDrawD({ strokeWidth: 4, randomSeed: 'a' }))
+      new PathBuilder()
+        .moveTo(0, 0, { geometry: { isFilled: true } })
+        .lineTo(50, 0)
+        .lineTo(50, 50)
+        .close()
+    expect(path().toDrawD({ strokeWidth: 4, randomSeed: 'a' })).toBe(
+      path().toDrawD({ strokeWidth: 4, randomSeed: 'a' })
+    )
     expect(path().toDrawD({ strokeWidth: 4, randomSeed: 'a' })).not.toBe(
       path().toDrawD({ strokeWidth: 4, randomSeed: 'b' })
     )

@@ -113,8 +113,8 @@ export function samplePath(d, steps = 16) {
   for (const [code, args] of tokenize(d)) {
     const key = code.toUpperCase()
     const rel = code !== key
-    const at = (i) => (rel ? args[i] + x : args[i])
-    const atY = (i) => (rel ? args[i] + y : args[i])
+    const at = i => (rel ? args[i] + x : args[i])
+    const atY = i => (rel ? args[i] + y : args[i])
     if (key === 'M') {
       close()
       x = at(0)
@@ -221,8 +221,7 @@ export function shapesOf(markup) {
       const rx = tag === 'circle' ? num(attrs, 'r') : num(attrs, 'rx')
       const ry = tag === 'circle' ? num(attrs, 'r') : num(attrs, 'ry')
       d = `M${cx - rx} ${cy}A${rx} ${ry} 0 0 1 ${cx + rx} ${cy}A${rx} ${ry} 0 0 1 ${cx - rx} ${cy}Z`
-    } else if (tag === 'line')
-      d = `M${num(attrs, 'x1')} ${num(attrs, 'y1')}L${num(attrs, 'x2')} ${num(attrs, 'y2')}`
+    } else if (tag === 'line') d = `M${num(attrs, 'x1')} ${num(attrs, 'y1')}L${num(attrs, 'x2')} ${num(attrs, 'y2')}`
     if (d) out.push({ d, filled, weight })
   }
   return out
@@ -283,8 +282,7 @@ export function measure(markup, stroke = 1.5) {
       // will close them, and they enclose all the same. What tells them from a
       // chevron is that their ends come back near each other.
       const encloses = area >= ENCLOSING && gap < 0.5 * length
-      if (encloses && area > (body?.area ?? 0))
-        body = { area, width: hi[0] - lo[0], height: hi[1] - lo[1] }
+      if (encloses && area > (body?.area ?? 0)) body = { area, width: hi[0] - lo[0], height: hi[1] - lo[1] }
     }
   }
   if (minX === Infinity) return null
@@ -307,10 +305,7 @@ export function measure(markup, stroke = 1.5) {
     // is most of the icon: the lens of a magnifier is round, the magnifier is
     // not, and holding it to the circle keyline makes the whole thing too big.
     round: Boolean(
-      body &&
-        body.area / (body.width * body.height) < 0.88 &&
-        body.width >= 0.9 * width &&
-        body.height >= 0.9 * height
+      body && body.area / (body.width * body.height) < 0.88 && body.width >= 0.9 * width && body.height >= 0.9 * height
     )
   }
 }

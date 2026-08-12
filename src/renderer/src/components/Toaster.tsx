@@ -72,12 +72,7 @@ function Row({ toast }: { toast: Toast }) {
       </div>
       <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined} className="min-w-52">
         {action?.menu?.map(item => (
-          <MenuItem
-            key={item.label}
-            icon={item.mark}
-            label={item.label}
-            onClick={() => takeMenuAction(item.onPress)}
-          />
+          <MenuItem key={item.label} icon={item.mark} label={item.label} onClick={() => takeMenuAction(item.onPress)} />
         ))}
       </Popover>
     </div>

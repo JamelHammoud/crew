@@ -1,4 +1,4 @@
-import { act, cleanup, render, } from '@testing-library/react'
+import { act, cleanup, render } from '@testing-library/react'
 import { createRequire } from 'node:module'
 import { StrictMode, createElement } from 'react'
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
@@ -178,9 +178,11 @@ describe('placing a text shape with the text tool', () => {
 
     const id = editor().getCurrentPageShapes()[0].id
     await act(async () => {
-      const commands = (editor().getRichTextEditor() as unknown as {
-        commands: Record<string, (value?: unknown) => unknown>
-      }).commands
+      const commands = (
+        editor().getRichTextEditor() as unknown as {
+          commands: Record<string, (value?: unknown) => unknown>
+        }
+      ).commands
       commands.insertContent('typed')
       await new Promise(resolve => setTimeout(resolve, 10))
     })

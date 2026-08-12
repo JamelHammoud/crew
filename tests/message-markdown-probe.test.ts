@@ -136,7 +136,7 @@ describe('the characters somebody really typed', () => {
   })
 
   it('reads them as themselves in backticks and in a fence', () => {
-    const body = drawn("A `<br>` in a cell, and `a && b`\n\n```\nconst a = b < c && d > e\n```")
+    const body = drawn('A `<br>` in a cell, and `a && b`\n\n```\nconst a = b < c && d > e\n```')
 
     expect([...body.querySelectorAll('p code')].map(code => code.textContent)).toEqual(['<br>', 'a && b'])
     expect(body.querySelector('pre code')?.textContent).toBe('const a = b < c && d > e')
@@ -159,7 +159,7 @@ describe('the characters somebody really typed', () => {
   it('reads an escape a person wrote themselves, and leaves the rest of them alone', () => {
     const body = drawn('&amp; and &#39; and &#x3c; and &hellip; and &notreally;')
 
-    expect(body.textContent).toBe('& and \' and < and &hellip; and &notreally;')
+    expect(body.textContent).toBe("& and ' and < and &hellip; and &notreally;")
   })
 })
 

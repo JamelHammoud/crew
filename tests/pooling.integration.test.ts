@@ -76,9 +76,10 @@ describe('pooling', () => {
       import('../src/shared/events').SessionEvent,
       { kind: 'agent.start' }
     >
-    const end = (await ui.waitForEvent(
-      e => e.kind === 'agent.end' && e.promptId === start.promptId
-    )) as Extract<import('../src/shared/events').SessionEvent, { kind: 'agent.end' }>
+    const end = (await ui.waitForEvent(e => e.kind === 'agent.end' && e.promptId === start.promptId)) as Extract<
+      import('../src/shared/events').SessionEvent,
+      { kind: 'agent.end' }
+    >
 
     expect(end.ok).toBe(true)
     expect(end.text).toContain('fake[')
@@ -124,9 +125,10 @@ describe('pooling', () => {
     await ui.waitForEvent(e => e.kind === 'agent.offline')
 
     ui.chat('you there @Fake', [agentId('jamel', 'fake')])
-    const note = (await ui.waitForEvent(
-      e => e.kind === 'message' && e.authorId === 'crew'
-    )) as Extract<import('../src/shared/events').SessionEvent, { kind: 'message' }>
+    const note = (await ui.waitForEvent(e => e.kind === 'message' && e.authorId === 'crew')) as Extract<
+      import('../src/shared/events').SessionEvent,
+      { kind: 'message' }
+    >
     expect(note.text).toContain('not here')
   })
 
@@ -175,9 +177,10 @@ describe('pooling', () => {
     >
     ui.cancel(start.promptId)
 
-    const end = (await ui.waitForEvent(
-      e => e.kind === 'agent.end' && e.promptId === start.promptId
-    )) as Extract<import('../src/shared/events').SessionEvent, { kind: 'agent.end' }>
+    const end = (await ui.waitForEvent(e => e.kind === 'agent.end' && e.promptId === start.promptId)) as Extract<
+      import('../src/shared/events').SessionEvent,
+      { kind: 'agent.end' }
+    >
     expect(end.ok).toBe(false)
     expect(end.error).toBe('Stopped')
   })

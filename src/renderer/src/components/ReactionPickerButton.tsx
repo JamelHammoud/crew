@@ -26,24 +26,11 @@ export default function ReactionPickerButton({
   return (
     <span className="relative flex">
       <Tooltip label={label} disabled={open}>
-        <button
-          type="button"
-          aria-label={label}
-          aria-expanded={open}
-          onClick={onToggle}
-          className={className}
-        >
+        <button type="button" aria-label={label} aria-expanded={open} onClick={onToggle} className={className}>
           <SmileGlyph className="h-4 w-4" />
         </button>
       </Tooltip>
-      <Popover
-        open={open}
-        onClose={onClose}
-        side="top"
-        align={align}
-        flush
-        className="overflow-hidden !rounded-card"
-      >
+      <Popover open={open} onClose={onClose} side="top" align={align} flush className="overflow-hidden !rounded-card">
         <EmojiPicker selected={selected} onPick={onPick} />
       </Popover>
     </span>

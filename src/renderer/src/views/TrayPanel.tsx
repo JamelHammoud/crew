@@ -65,11 +65,7 @@ export default function TrayPanel(): ReactElement {
           onClick={() => window.crew.openWindow()}
         />
       )}
-      <MenuItem
-        icon={<ExternalLinkGlyph />}
-        label="Open Crew"
-        onClick={() => window.crew.openWindow()}
-      />
+      <MenuItem icon={<ExternalLinkGlyph />} label="Open Crew" onClick={() => window.crew.openWindow()} />
     </div>
   )
 }

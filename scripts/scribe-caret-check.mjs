@@ -94,9 +94,7 @@ function say(who, printed, landing) {
 }
 
 async function running() {
-  const { printed, problem } = await run(
-    'tell application "System Events" to return name of every application process'
-  )
+  const { printed, problem } = await run('tell application "System Events" to return name of every application process')
   if (problem) return []
   return printed
     .split(',')

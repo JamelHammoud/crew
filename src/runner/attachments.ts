@@ -65,8 +65,7 @@ export class AttachmentCache {
   }
 }
 
-const listOf = (attachments: LocalAttachment[]): string =>
-  attachments.map(a => `- ${a.path} (${a.name})`).join('\n')
+const listOf = (attachments: LocalAttachment[]): string => attachments.map(a => `- ${a.path} (${a.name})`).join('\n')
 
 export function promptWithAttachments(text: string, attachments: LocalAttachment[]): string {
   if (attachments.length === 0) return text

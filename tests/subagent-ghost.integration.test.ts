@@ -58,7 +58,13 @@ describe('a helper sent out of a ghost thread', () => {
     const spawned = await fetch(`${base}/agents/spawn`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ promptId: parent.promptId, name: 'Scout', provider: 'fake', subject: 'quiet', task: 'read the file' })
+      body: JSON.stringify({
+        promptId: parent.promptId,
+        name: 'Scout',
+        provider: 'fake',
+        subject: 'quiet',
+        task: 'read the file'
+      })
     }).then(r => r.json())
     expect(spawned.threadId).toBeTruthy()
 
@@ -104,7 +110,13 @@ describe('a helper sent out of a ghost thread', () => {
     const spawned = await fetch(`${base}/agents/spawn`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ promptId: parent.promptId, name: 'Scout', provider: 'fake', subject: 'quiet', task: 'take a while' })
+      body: JSON.stringify({
+        promptId: parent.promptId,
+        name: 'Scout',
+        provider: 'fake',
+        subject: 'quiet',
+        task: 'take a while'
+      })
     }).then(r => r.json())
     await mine.waitForEvent(e => e.kind === 'agent.start' && e.threadId === spawned.threadId)
 

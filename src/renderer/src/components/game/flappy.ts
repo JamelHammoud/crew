@@ -77,8 +77,7 @@ export function newFlappy(width: number = SKY_WIDTH, rand: Rand = Math.random): 
 
 // The panel can be dragged while a round is running, so the sky takes the width
 // it is given and the pipes keep the place they had in it.
-export const widen = (game: Flappy, width: number): Flappy =>
-  width === game.width ? game : { ...game, width }
+export const widen = (game: Flappy, width: number): Flappy => (width === game.width ? game : { ...game, width })
 
 export function flap(game: Flappy): Flappy {
   if (game.over) return game
@@ -114,9 +113,7 @@ export function tick(game: Flappy, dt: number, rand: Rand = Math.random): Flappy
   const kept = moved.filter(pipe => pipe.x + PIPE.width > -4)
   const last = kept[kept.length - 1]
   const pipes =
-    last && last.x < game.width
-      ? [...kept, { x: last.x + PIPE.spacing, gap: gapAt(rand), passed: false }]
-      : kept
+    last && last.x < game.width ? [...kept, { x: last.x + PIPE.spacing, gap: gapAt(rand), passed: false }] : kept
   const next: Flappy = { ...game, y, vy, pipes, score: game.score + scored }
   return hits(next) ? { ...next, over: true, y: Math.min(next.y, floor - BIRD.r) } : next
 }

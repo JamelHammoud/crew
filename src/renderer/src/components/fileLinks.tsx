@@ -23,10 +23,7 @@ const ROOMY_SLASH = String.raw`(?:\.\/)?(?:${ROOMY_PART}\/)+${ROOMY_END}`
 
 const FULL_RE = new RegExp(`^(${ROOMY_ABS}|${ROOMY_SLASH}|${BARE_FILE})(${TAIL})?$`)
 const SUFFIX_RE = new RegExp(`(${TAIL})$`)
-const PROSE_RE = new RegExp(
-  String.raw`(?<![\w/.@:~-])(${ABS_PATH}|${SLASH_PATH}|${BARE_FILE})(${TAIL})?(?![\w/])`,
-  'g'
-)
+const PROSE_RE = new RegExp(String.raw`(?<![\w/.@:~-])(${ABS_PATH}|${SLASH_PATH}|${BARE_FILE})(${TAIL})?(?![\w/])`, 'g')
 
 const URL_RE = /https?:\/\/[^\s<>"'`]+/gi
 const URL_TAIL_RE = /[.,;:!?'"]+$/

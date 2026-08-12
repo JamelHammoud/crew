@@ -278,7 +278,11 @@ describe('a huddle you are in', () => {
   beforeEach(() => {
     session()
     useHuddle.setState({
-      room: { id: 'call-1', peers: [peer('me', 'Jamel', { muted: true }), peer('a', 'Ali')], startedAt: Date.now() - 65_000 },
+      room: {
+        id: 'call-1',
+        peers: [peer('me', 'Jamel', { muted: true }), peer('a', 'Ali')],
+        startedAt: Date.now() - 65_000
+      },
       peerId: 'me',
       joined: true,
       joining: false,
@@ -347,9 +351,7 @@ describe('a huddle you are in', () => {
   it('marks the screen you picked inside its own thumbnail', async () => {
     const sources = bridge.screenSources
     bridge.screenSources = () =>
-      Promise.resolve([
-        { id: 'screen:1', name: 'Screen 1', kind: 'screen' as const, thumbnail: 'data:,', icon: null }
-      ])
+      Promise.resolve([{ id: 'screen:1', name: 'Screen 1', kind: 'screen' as const, thumbnail: 'data:,', icon: null }])
     render(createElement(App))
     fireEvent.click(screen.getByLabelText('Share screen'))
 

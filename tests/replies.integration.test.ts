@@ -74,9 +74,7 @@ describe('message replies', () => {
     await ui.waitForEvent(event => event.kind === 'agent.online' && event.agentId === fake)
     ui.chat('start here @Fake', [fake])
     const thread = (await ui.waitForEvent(event => event.kind === 'thread.started')) as Started
-    const end = await ui.waitForEvent(
-      event => event.kind === 'agent.end' && event.threadId === thread.threadId
-    )
+    const end = await ui.waitForEvent(event => event.kind === 'agent.end' && event.threadId === thread.threadId)
     const step = host.store
       .loadEvents()
       .find(
@@ -96,9 +94,7 @@ describe('message replies', () => {
       threadId: thread.threadId,
       replyTo: targetId
     })
-    const reply = (await ui.waitForEvent(
-      event => event.kind === 'message' && event.text === 'Tell me more'
-    )) as Message
+    const reply = (await ui.waitForEvent(event => event.kind === 'message' && event.text === 'Tell me more')) as Message
 
     expect(reply.replyTo).toEqual({
       targetId,
@@ -138,9 +134,7 @@ describe('message replies', () => {
       threadId: thread.threadId,
       replyTo: targetId
     })
-    const reply = (await ui.waitForEvent(
-      event => event.kind === 'message' && event.text === 'this one'
-    )) as Message
+    const reply = (await ui.waitForEvent(event => event.kind === 'message' && event.text === 'this one')) as Message
 
     expect(reply.replyTo).toEqual({
       targetId,
@@ -173,9 +167,7 @@ describe('message replies', () => {
 
     const targetId = messageReactionTarget(inThread.id)
     ui.send({ type: 'chat.send', text: 'out here', mentions: [], replyTo: targetId })
-    const reply = (await ui.waitForEvent(
-      event => event.kind === 'message' && event.text === 'out here'
-    )) as Message
+    const reply = (await ui.waitForEvent(event => event.kind === 'message' && event.text === 'out here')) as Message
 
     expect(reply.replyTo?.targetId).toBe(targetId)
     expect(reply.replyTo?.text).toBe('inside a thread @Fake')

@@ -50,9 +50,7 @@ export default function Playlists({ query, onOpen }: { query: string; onOpen: (p
   const found = useMemo(() => findPlaylists(playlists, query), [playlists, query])
   const sets = useMemo(() => findPlaylists(MUSIC_SETS, query), [query])
   const mine = found.filter(playlist => isMine(playlist, selfName))
-  const theirs = found
-    .filter(playlist => !isMine(playlist, selfName))
-    .sort((a, b) => a.by.localeCompare(b.by))
+  const theirs = found.filter(playlist => !isMine(playlist, selfName)).sort((a, b) => a.by.localeCompare(b.by))
   const rows: { playlist: MusicPlaylist; who: string }[] = [
     ...sets.map(playlist => ({ playlist, who: '' })),
     ...mine.map(playlist => ({ playlist, who: '' })),

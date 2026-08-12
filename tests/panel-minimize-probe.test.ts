@@ -30,9 +30,7 @@ const dragTo = (start: number, ...steps: number[]) => {
 }
 
 beforeEach(() => {
-  act(() =>
-    useBrowser.setState({ tabs: [], activeTabId: null, open: false, width: DEFAULT_WIDTH })
-  )
+  act(() => useBrowser.setState({ tabs: [], activeTabId: null, open: false, width: DEFAULT_WIDTH }))
   act(() => useBrowser.getState().addTab())
 })
 

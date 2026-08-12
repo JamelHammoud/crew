@@ -145,7 +145,9 @@ export class VoiceMouth {
     this.nextAt = at + buffer.duration
     // The caption turns over when the sentence is heard rather than when it is
     // handed over, which on a long reply is several seconds apart.
-    this.captions.push(globalThis.setTimeout(() => this.ears.onSaying(text), Math.max(0, (at - ctx.currentTime) * 1000)))
+    this.captions.push(
+      globalThis.setTimeout(() => this.ears.onSaying(text), Math.max(0, (at - ctx.currentTime) * 1000))
+    )
   }
 
   private wire(ctx: AudioContext): void {

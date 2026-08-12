@@ -180,9 +180,7 @@ describe('what is marked out in the box', () => {
   })
 
   it('marks a folder it has read, with the slash it was written with', () => {
-    expect(pathRuns('/Users/jamel/Downloads/', index, known)).toEqual([
-      { text: '/Users/jamel/Downloads/', path: true }
-    ])
+    expect(pathRuns('/Users/jamel/Downloads/', index, known)).toEqual([{ text: '/Users/jamel/Downloads/', path: true }])
   })
 
   it('leaves a path nothing here has ever seen as plain words', () => {

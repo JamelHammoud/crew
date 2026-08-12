@@ -92,8 +92,7 @@ export function nearestAdjacentShape(
     const along = Math.abs(horizontal ? center.x - currentCenter.x : center.y - currentCenter.y)
     const across = Math.abs(horizontal ? center.y - currentCenter.y : center.x - currentCenter.x)
     const angle = Math.abs(Vec.Angle(currentCenter, center) * (180 / Math.PI))
-    const score =
-      distance + across * 2 + (distance - along) * 1.5 + Math.abs(angle - DIRECTION_ANGLE[direction]) * 0.5
+    const score = distance + across * 2 + (distance - along) * 1.5 + Math.abs(angle - DIRECTION_ANGLE[direction]) * 0.5
     if (score < bestScore) {
       bestScore = score
       best = candidate
@@ -117,8 +116,7 @@ export function selectAdjacentShape(editor: SelectEditor, direction: AdjacentDir
     .getCurrentPageShapes()
     .filter((shape: any) => (inContainer ? shape.parentId === firstParentId : !shape.parentId.startsWith('shape:')))
   const ordered = shapesInReadingOrder(editor, shapes)
-  const currentId =
-    selected.length === 1 ? selected[0] : ordered.find((shape: any) => selected.includes(shape.id))?.id
+  const currentId = selected.length === 1 ? selected[0] : ordered.find((shape: any) => selected.includes(shape.id))?.id
 
   let nextId: string | undefined
   if (direction === 'next' || direction === 'prev') {

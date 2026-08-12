@@ -169,9 +169,7 @@ describe('step rows', () => {
   })
 
   it('leaves a row with nothing more to show alone', () => {
-    const { container } = render(
-      createElement(StepRow, { item: item({ name: 'WebSearch', detail: 'pooling llms' }) })
-    )
+    const { container } = render(createElement(StepRow, { item: item({ name: 'WebSearch', detail: 'pooling llms' }) }))
     fireEvent.click(container.querySelector('button') as HTMLButtonElement)
     expect(useBrowser.getState().tabs.length).toBe(0)
     expect(container.querySelectorAll('svg').length).toBe(1)
@@ -191,9 +189,7 @@ describe('step rows', () => {
   it('shows what the command printed under the command itself', async () => {
     const command = 'yarn tsc --noEmit'
     const output = 'src/app.ts(12,3): error TS2345: wrong type'
-    const { container } = render(
-      createElement(StepRow, { item: item({ name: 'Bash', detail: command, output }) })
-    )
+    const { container } = render(createElement(StepRow, { item: item({ name: 'Bash', detail: command, output }) }))
     fireEvent.click(container.querySelector('button') as HTMLButtonElement)
     expect(container.textContent).toContain(output)
     const buttons = container.querySelectorAll('button')

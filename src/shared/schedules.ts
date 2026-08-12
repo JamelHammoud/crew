@@ -29,8 +29,7 @@ export const SCHEDULE_FULL = `The crew has as many scheduled tasks as it can hol
 
 export const SCHEDULABLE = ['prompt', 'post', 'say', 'todo', 'note', 'music', 'chain'] as const
 
-export const schedulable = (action: ToolAction): boolean =>
-  (SCHEDULABLE as readonly string[]).includes(action?.kind)
+export const schedulable = (action: ToolAction): boolean => (SCHEDULABLE as readonly string[]).includes(action?.kind)
 
 const whole = (raw: unknown, low: number, high: number): number | null => {
   const n = typeof raw === 'number' ? Math.floor(raw) : NaN

@@ -60,10 +60,7 @@ export default function TopBar() {
 
       <div className="col-start-3 relative flex items-center justify-end">
         <div ref={hold.right} className="app-no-drag flex items-center" />
-        <div
-          ref={ownRef}
-          className={`app-no-drag flex items-center ${compact ? 'pl-1 gap-1' : 'pl-2 gap-2'}`}
-        >
+        <div ref={ownRef} className={`app-no-drag flex items-center ${compact ? 'pl-1 gap-1' : 'pl-2 gap-2'}`}>
           {connection === 'reconnecting' && (
             <span className="text-xs text-fg-muted animate-pulse mr-1">Connection lost. Trying again…</span>
           )}

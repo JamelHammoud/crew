@@ -86,7 +86,10 @@ describe('what the command hands the app', () => {
 })
 
 describe('the Crew it opens', () => {
-  const has = (...found: string[]) => (target: string) => found.includes(target)
+  const has =
+    (...found: string[]) =>
+    (target: string) =>
+      found.includes(target)
 
   it('is the one CREW_APP names', () => {
     const launch = appLaunch('darwin', { CREW_APP: '/opt/mine/Crew' }, '/Users/jamel', '/repo', () => false)

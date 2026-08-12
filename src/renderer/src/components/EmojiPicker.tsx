@@ -185,9 +185,7 @@ export default function EmojiPicker({
                 aria-pressed={!searching && active === section.id}
                 onClick={() => jump(section.id)}
                 className={`flex h-8 w-8 items-center justify-center rounded-full transition-[background-color,color] duration-150 ${
-                  !searching && active === section.id
-                    ? 'bg-fg/12 text-fg'
-                    : 'text-fg/45 hover:bg-fg/6 hover:text-fg/70'
+                  !searching && active === section.id ? 'bg-fg/12 text-fg' : 'text-fg/45 hover:bg-fg/6 hover:text-fg/70'
                 }`}
               >
                 {section.icon ? <Emoji char={section.icon} size={18} /> : <ClockGlyph className="h-4 w-4" />}

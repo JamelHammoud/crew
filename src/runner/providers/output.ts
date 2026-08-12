@@ -1,6 +1,7 @@
 // Colors, cursor moves and the noise a progress bar leaves behind. A card is
 // not a terminal, so none of it survives the trip.
-const ANSI = /\u001b\[[0-9;?]*[ -/]*[@-~]|\u001b\][^\u0007]*(?:\u0007|\u001b\\)|\r(?!\n)|[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g
+const ANSI =
+  /\u001b\[[0-9;?]*[ -/]*[@-~]|\u001b\][^\u0007]*(?:\u0007|\u001b\\)|\r(?!\n)|[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g
 
 const LINE_CHARS = 400
 const HEAD_LINES = 12
@@ -19,7 +20,9 @@ const clip = (line: string): string => (line.length > LINE_CHARS ? `${line.slice
 // middle rather than either end.
 export function commandOutput(raw: unknown): string | undefined {
   if (typeof raw !== 'string') return undefined
-  const clean = stripAnsi(raw).replace(/[ \t]+$/gm, '').trim()
+  const clean = stripAnsi(raw)
+    .replace(/[ \t]+$/gm, '')
+    .trim()
   if (!clean) return undefined
   const lines = clean.split('\n').map(clip)
   const whole = lines.join('\n')

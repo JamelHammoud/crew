@@ -65,7 +65,9 @@ export default function Design() {
           <div className="h-full flex flex-col">
             <DesignHeader editor={editor} panels={panels} />
             <div className="flex-1 min-h-0 flex">
-              {panels.left && editor && <DesignLeftPanel onClose={() => setPanels(value => ({ ...value, left: false }))} />}
+              {panels.left && editor && (
+                <DesignLeftPanel onClose={() => setPanels(value => ({ ...value, left: false }))} />
+              )}
               <DesignStage
                 boardId={current}
                 editor={editor}
@@ -76,10 +78,7 @@ export default function Design() {
                 onPanels={setPanels}
               />
               {panels.right && editor && (
-                <DesignRightPanel
-                  boardId={current}
-                  onClose={() => setPanels(value => ({ ...value, right: false }))}
-                />
+                <DesignRightPanel boardId={current} onClose={() => setPanels(value => ({ ...value, right: false }))} />
               )}
             </div>
           </div>

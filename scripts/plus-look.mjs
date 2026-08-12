@@ -184,13 +184,19 @@ await compile(dir)
 const seen = await run(dir)
 if (seen.failed) throw new Error(seen.failed)
 
-console.log(`\nthe rows        ${seen.menu.width} x ${seen.menu.height}, bottom at ${seen.menu.bottom}, left at ${seen.menu.left}`)
-console.log(`the faces       ${seen.agents.width} x ${seen.agents.height}, bottom at ${seen.agents.bottom}, left at ${seen.agents.left}`)
+console.log(
+  `\nthe rows        ${seen.menu.width} x ${seen.menu.height}, bottom at ${seen.menu.bottom}, left at ${seen.menu.left}`
+)
+console.log(
+  `the faces       ${seen.agents.width} x ${seen.agents.height}, bottom at ${seen.agents.bottom}, left at ${seen.agents.left}`
+)
 console.log(`what moves      ${seen.agents.box}`)
 console.log(`corner          ${seen.agents.radius}`)
 console.log(`rows in it      ${JSON.stringify(seen.rows)}`)
 
-console.log(`the GIFs        ${seen.gif.width} x ${seen.gif.height}, bottom at ${seen.gif.bottom}, left at ${seen.gif.left}`)
+console.log(
+  `the GIFs        ${seen.gif.width} x ${seen.gif.height}, bottom at ${seen.gif.bottom}, left at ${seen.gif.left}`
+)
 
 function movement(say, frames) {
   const bottoms = new Set(frames.map(f => f.bottom))
@@ -200,8 +206,12 @@ function movement(say, frames) {
   console.log(`\n${say}, frame by frame`)
   console.log(`  width   ${widths.join(' ')}`)
   console.log(`  height  ${heights.join(' ')}`)
-  console.log(`  bottom edge held: ${bottoms.size === 1 ? `yes, at ${[...bottoms][0]}` : `NO, it moved through ${[...bottoms].join(' ')}`}`)
-  console.log(`  left edge held: ${lefts.size === 1 ? `yes, at ${[...lefts][0]}` : `NO, it moved through ${[...lefts].join(' ')}`}`)
+  console.log(
+    `  bottom edge held: ${bottoms.size === 1 ? `yes, at ${[...bottoms][0]}` : `NO, it moved through ${[...bottoms].join(' ')}`}`
+  )
+  console.log(
+    `  left edge held: ${lefts.size === 1 ? `yes, at ${[...lefts][0]}` : `NO, it moved through ${[...lefts].join(' ')}`}`
+  )
   const steps = new Set(widths.concat(heights)).size
   console.log(`  ${steps > 4 ? `it travels, ${steps} sizes on the way` : 'IT CUTS, nothing between the two'}`)
 }

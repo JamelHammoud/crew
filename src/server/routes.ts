@@ -122,7 +122,12 @@ function sendJson(res: http.ServerResponse, status: number, body: unknown): void
   res.end(JSON.stringify(body))
 }
 
-function receiveDesignOps(session: CrewSession, boardId: string, req: http.IncomingMessage, res: http.ServerResponse): void {
+function receiveDesignOps(
+  session: CrewSession,
+  boardId: string,
+  req: http.IncomingMessage,
+  res: http.ServerResponse
+): void {
   const chunks: Buffer[] = []
   let size = 0
   req.on('data', chunk => {

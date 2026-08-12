@@ -38,7 +38,10 @@ const SLACK = plugin({
   keys: [{ name: 'SLACK_BOT_TOKEN', label: 'Bot token' }]
 })
 
-const reader = (settings: Record<string, string> = {}) => (key: string) => settings[key] ?? ''
+const reader =
+  (settings: Record<string, string> = {}) =>
+  (key: string) =>
+    settings[key] ?? ''
 
 const opened: McpRun[] = []
 
@@ -216,26 +219,41 @@ describe('what the spawned command really gets', () => {
 
   const run = async (provider: Provider, options: RunOptions) => {
     const said: string[] = []
-    const started = provider.start('go', process.cwd(), { onStep: step => step.text && said.push(step.text) }, {}, options)
+    const started = provider.start(
+      'go',
+      process.cwd(),
+      { onStep: step => step.text && said.push(step.text) },
+      {},
+      options
+    )
     await started.done
     return said.join('\n')
   }
 
   it('hands the real claude flags and a config the process can read', async () => {
     const mcp = open([FIGMA], 'file', 'spawned')!
-    const said = await run(echo(options => claudeArgs('go', reader(), options)), { mcp })
+    const said = await run(
+      echo(options => claudeArgs('go', reader(), options)),
+      { mcp }
+    )
     expect(said).toContain(`"--mcp-config","${mcp.file}"`)
     expect(said).toContain('READ {"mcpServers":{"figma":{"type":"http","url":"https://mcp.figma.com/mcp"}}}')
   }, 20000)
 
   it('hands the real codex overrides', async () => {
     const mcp = open([FIGMA], 'inline', 'spawned-codex')!
-    const said = await run(echo(options => codexArgs('go', reader(), options)), { mcp })
+    const said = await run(
+      echo(options => codexArgs('go', reader(), options)),
+      { mcp }
+    )
     expect(said).toContain('mcp_servers.figma={url=\\"https://mcp.figma.com/mcp\\"}')
   }, 20000)
 
   it('hands no mcp flag at all when the crew has no plugins', async () => {
-    const said = await run(echo(options => claudeArgs('go', reader(), options)), {})
+    const said = await run(
+      echo(options => claudeArgs('go', reader(), options)),
+      {}
+    )
     expect(said).not.toContain('--mcp-config')
     expect(said).not.toContain('READ ')
   }, 20000)

@@ -43,18 +43,12 @@ export default function HuddleDock({
     >
       <div
         onPointerDown={onGrab}
-        className={`flex items-center gap-2 px-1 pt-0.5 ${
-          dragging ? 'cursor-grabbing' : 'cursor-grab'
-        }`}
+        className={`flex items-center gap-2 px-1 pt-0.5 ${dragging ? 'cursor-grabbing' : 'cursor-grab'}`}
       >
         <Live />
-        <span className="text-sm font-semibold text-fg truncate flex-1">
-          {huddleTitle(room, peerId)}
-        </span>
+        <span className="text-sm font-semibold text-fg truncate flex-1">{huddleTitle(room, peerId)}</span>
         {room.startedAt !== null && (
-          <span className="text-xs font-mono text-fg-muted tabular-nums">
-            {formatClock(now - room.startedAt)}
-          </span>
+          <span className="text-xs font-mono text-fg-muted tabular-nums">{formatClock(now - room.startedAt)}</span>
         )}
       </div>
 

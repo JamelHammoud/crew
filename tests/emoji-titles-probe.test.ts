@@ -56,8 +56,7 @@ const seed = (state: Partial<Parameters<typeof useCrew.setState>[0]> = {}) =>
 const pictures = (root: HTMLElement): string[] =>
   [...root.querySelectorAll('img')].map(el => el.getAttribute('src') ?? '').filter(src => src === PICTURE)
 
-const written = (root: HTMLElement): string[] =>
-  [...root.querySelectorAll('.sr-only')].map(el => el.textContent ?? '')
+const written = (root: HTMLElement): string[] => [...root.querySelectorAll('.sr-only')].map(el => el.textContent ?? '')
 
 beforeEach(() => {
   vi.stubGlobal(
@@ -114,9 +113,7 @@ describe('what somebody wrote, read back as pictures', () => {
       events: [started(title)]
     })
     useTasks.setState({ pinned: true, peeking: false })
-    const { container } = render(
-      createElement(TasksPanel, { onOpenThread: () => {}, onOpenThreadBeside: () => {} })
-    )
+    const { container } = render(createElement(TasksPanel, { onOpenThread: () => {}, onOpenThreadBeside: () => {} }))
 
     expect(pictures(container)).toHaveLength(2)
     expect(written(container).filter(text => text === HEART)).toHaveLength(2)

@@ -6,7 +6,6 @@ import Chat from '../views/Chat'
 import ThreadView from '../views/ThreadView'
 import Tooltip from './Tooltip'
 
-
 export const COLUMN_MIN = 400
 
 export default function ThreadColumns({ ids }: { ids: string[] }) {
@@ -48,10 +47,7 @@ export default function ThreadColumns({ ids }: { ids: string[] }) {
         )}
       </div>
       {room && near && (
-        <Tooltip
-          label="Chat"
-          className="absolute right-3 top-1/2 z-30 animate-edge"
-        >
+        <Tooltip label="Chat" className="absolute right-3 top-1/2 z-30 animate-edge">
           <button
             onClick={() => setChatColumn(!chatColumn)}
             aria-label="Chat"

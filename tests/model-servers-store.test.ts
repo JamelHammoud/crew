@@ -52,9 +52,7 @@ describe('model server store', () => {
   it('forgets one and leaves the rest', () => {
     rememberServer({ url: 'http://one.example.com/v1', key: 'sk-one' })
     rememberServer({ url: 'http://two.example.com/v1', key: 'sk-two' })
-    expect(forgetServer('http://one.example.com/v1')).toEqual([
-      { url: 'http://two.example.com/v1', key: 'sk-two' }
-    ])
+    expect(forgetServer('http://one.example.com/v1')).toEqual([{ url: 'http://two.example.com/v1', key: 'sk-two' }])
     reopen()
     expect(knownServers().map(one => one.url)).toEqual(['http://two.example.com/v1'])
     expect(serverKey('http://one.example.com/v1')).toBeUndefined()

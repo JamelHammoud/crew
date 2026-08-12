@@ -60,20 +60,10 @@ export default function AgentIcon({
       style={px ? { width: px, height: px } : undefined}
     >
       {src ? (
-        <img
-          src={src}
-          alt=""
-          draggable={false}
-          className="block w-full h-full rounded-full object-cover"
-        />
+        <img src={src} alt="" draggable={false} className="block w-full h-full rounded-full object-cover" />
       ) : (
         <>
-          <GeneratedField
-            seed={seed}
-            box={box}
-            light={FIELD_LIGHT}
-            className="rounded-full overflow-hidden"
-          />
+          <GeneratedField seed={seed} box={box} light={FIELD_LIGHT} className="rounded-full overflow-hidden" />
           {/* The eyes are cut out rather than painted on, the way the arrow is
               cut out of the tile it stands in, so what comes through them is
               whatever the picture is doing behind rather than one fixed colour

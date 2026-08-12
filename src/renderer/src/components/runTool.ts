@@ -34,8 +34,7 @@ const steps = (action: ToolAction): ToolAction[] => toolSteps(action, useCrew.ge
 // a run of tools built around one word is asked for that word once.
 export function toolSlots(action: ToolAction): string[] {
   const asked: string[] = []
-  for (const step of steps(action))
-    for (const slot of slotsIn(step)) if (!asked.includes(slot)) asked.push(slot)
+  for (const step of steps(action)) for (const slot of slotsIn(step)) if (!asked.includes(slot)) asked.push(slot)
   return asked
 }
 
@@ -44,7 +43,8 @@ function runStep(action: ToolAction): void {
     if (action.external) void window.crew?.openExternal(action.url)
     else useBrowser.getState().openUrl(action.url)
   }
-  if (action.kind === 'terminal') useBrowser.getState().addTerminal(action.command && typed(action.command), useCrew.getState().folder)
+  if (action.kind === 'terminal')
+    useBrowser.getState().addTerminal(action.command && typed(action.command), useCrew.getState().folder)
   if (action.kind === 'file') useBrowser.getState().openFile(action.path)
   if (action.kind === 'doc') useCrew.getState().openDoc(action.page)
   if (action.kind === 'board') useCrew.getState().openBoard(action.boardId)

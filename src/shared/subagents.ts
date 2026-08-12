@@ -73,7 +73,12 @@ const room = (left: number): string =>
 // because only the machine running the agent knows the address it reaches the
 // session at, which is the same reason the design board's own preamble is
 // written where it is.
-export function subagentPreamble(apiBase: string, promptId: string, left: number, providers: string[] = []): string | null {
+export function subagentPreamble(
+  apiBase: string,
+  promptId: string,
+  left: number,
+  providers: string[] = []
+): string | null {
   if (left <= 0) return null
   return [
     `## Helpers`,
@@ -84,7 +89,10 @@ export function subagentPreamble(apiBase: string, promptId: string, left: number
     ``,
     `That returns an id straight away. It does not wait.`,
     ...(providers.length > 0
-      ? [``, `Add "provider" to run it on a particular CLI: ${providers.join(', ')}. Add "model" to pin the model. Leave both out and it runs where you are.`]
+      ? [
+          ``,
+          `Add "provider" to run it on a particular CLI: ${providers.join(', ')}. Add "model" to pin the model. Leave both out and it runs where you are.`
+        ]
       : []),
     ``,
     `Then carry on with your own work. When a helper finishes, its answer arrives in the middle of what you are doing, the way a message from a person does. You do not poll for it and you do not have to stop.`,
@@ -138,7 +146,10 @@ export function returnText(finished: readonly SubagentReturn[], stillOut: readon
   )
   const out = lines.flatMap((pair, index) => (index === 0 ? pair : ['', ...pair]))
   if (stillOut.length > 0) {
-    out.push('', stillOut.length === 1 ? `${stillOut[0]} is still going.` : `${stillOut.join(' and ')} are still going.`)
+    out.push(
+      '',
+      stillOut.length === 1 ? `${stillOut[0]} is still going.` : `${stillOut.join(' and ')} are still going.`
+    )
   }
   return out.join('\n')
 }

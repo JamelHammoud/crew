@@ -35,7 +35,9 @@ function WindowRow({ window, now }: { window: UsageWindow; now: number }) {
           style={{ width: `${Math.min(100, Math.max(0, window.percent))}%` }}
         />
       </div>
-      <span className={`w-11 shrink-0 text-right text-sm font-semibold tabular-nums ${hot ? 'text-danger' : 'text-fg'}`}>
+      <span
+        className={`w-11 shrink-0 text-right text-sm font-semibold tabular-nums ${hot ? 'text-danger' : 'text-fg'}`}
+      >
         {Math.round(window.percent)}%
       </span>
       <span className="w-32 shrink-0 text-right text-xs text-fg/45 truncate">

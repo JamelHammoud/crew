@@ -2,12 +2,7 @@
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import {
-  emojiForShortcode,
-  lookupEmoji,
-  searchEmoji,
-  spriteStyle
-} from '../src/renderer/src/components/emojiData'
+import { emojiForShortcode, lookupEmoji, searchEmoji, spriteStyle } from '../src/renderer/src/components/emojiData'
 import MessageReactions from '../src/renderer/src/components/MessageReactions'
 import { useCrew } from '../src/renderer/src/state/store'
 import { isReactionEmoji } from '../src/shared/reactions'
@@ -51,9 +46,7 @@ describe('emoji reactions', () => {
     const entry = lookupEmoji('❤️')!
 
     expect(sprite.style.backgroundImage).toMatch(/64\.png/)
-    expect(sprite.style.backgroundPosition).toBe(
-      `${(entry.x / 61) * 100}% ${(entry.y / 61) * 100}%`
-    )
+    expect(sprite.style.backgroundPosition).toBe(`${(entry.x / 61) * 100}% ${(entry.y / 61) * 100}%`)
   })
 
   it('opens the full set from the more reactions button and reacts from a search', () => {

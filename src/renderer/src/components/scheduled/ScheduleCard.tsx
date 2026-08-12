@@ -55,9 +55,7 @@ export default function ScheduleCard({
 
   const send = () => {
     if (!action || !name.trim()) return
-    const said = schedule
-      ? editSchedule(schedule.id, name, mark, when, action)
-      : addSchedule(name, mark, when, action)
+    const said = schedule ? editSchedule(schedule.id, name, mark, when, action) : addSchedule(name, mark, when, action)
     if (said) setTrouble(said)
     else onClose()
   }
@@ -81,13 +79,7 @@ export default function ScheduleCard({
         />
 
         <Rule />
-        <ToolDoes
-          kinds={SCHEDULABLE}
-          kind={kind}
-          onKind={setKind}
-          initial={schedule?.action ?? null}
-          onChange={took}
-        />
+        <ToolDoes kinds={SCHEDULABLE} kind={kind} onKind={setKind} initial={schedule?.action ?? null} onChange={took} />
         <Rule />
         <ScheduleWhen when={when} onChange={setWhen} />
       </div>

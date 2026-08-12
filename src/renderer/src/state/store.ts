@@ -307,13 +307,7 @@ interface CrewState {
   addPlugin: (plugin: unknown) => string | null
   removePlugin: (pluginId: string) => void
   addSchedule: (name: string, mark: string, when: Cadence, action: ToolAction) => string | null
-  editSchedule: (
-    scheduleId: string,
-    name: string,
-    mark: string,
-    when: Cadence,
-    action: ToolAction
-  ) => string | null
+  editSchedule: (scheduleId: string, name: string, mark: string, when: Cadence, action: ToolAction) => string | null
   removeSchedule: (scheduleId: string) => void
   pauseSchedule: (scheduleId: string, paused: boolean) => void
   runSchedule: (scheduleId: string) => void
@@ -436,7 +430,7 @@ export const CHAT_KEY = 'chat'
 
 const byTime = (a: AgentStep, b: AgentStep): number => a.ts - b.ts
 
-const upsertStep =(steps: AgentStep[] | undefined, step: AgentStep): AgentStep[] => {
+const upsertStep = (steps: AgentStep[] | undefined, step: AgentStep): AgentStep[] => {
   const held = steps ?? []
   const last = held[held.length - 1]
   if (!last) return [step]
@@ -448,7 +442,7 @@ const upsertStep =(steps: AgentStep[] | undefined, step: AgentStep): AgentStep[]
   return [...held.filter(one => one.id !== step.id), step].sort(byTime)
 }
 
-const settleSteps =(gathered: Record<string, AgentStep[]>): Record<string, AgentStep[]> => {
+const settleSteps = (gathered: Record<string, AgentStep[]>): Record<string, AgentStep[]> => {
   const steps: Record<string, AgentStep[]> = {}
   for (const [promptId, held] of Object.entries(gathered)) {
     const byId = new Map<string, AgentStep>()
@@ -818,9 +812,7 @@ export const useCrew = create<CrewState>((set, get) => {
           return {
             events,
             memories: state.memories.map(one =>
-              one.id === event.memoryId
-                ? { ...one, text: event.text, by: event.byName, byAgentId: event.agentId }
-                : one
+              one.id === event.memoryId ? { ...one, text: event.text, by: event.byName, byAgentId: event.agentId } : one
             )
           }
         case 'memory.removed':
@@ -1109,9 +1101,7 @@ export const useCrew = create<CrewState>((set, get) => {
             selfName: mine ? msg.member.name : state.selfName,
             members: [...members, msg.member],
             agents: state.agents.map(agent =>
-              agent.ownerId === msg.fromId
-                ? { ...agent, ownerId: msg.member.id, ownerName: msg.member.name }
-                : agent
+              agent.ownerId === msg.fromId ? { ...agent, ownerId: msg.member.id, ownerName: msg.member.name } : agent
             ),
             events,
             threads: Object.fromEntries(
@@ -1472,7 +1462,9 @@ export const useCrew = create<CrewState>((set, get) => {
       if (status === 'done') playSound('task.done')
       // Archiving keeps the old message so a newer UI can still archive on an
       // older host; the other transitions only exist on hosts that know them.
-      socket.send(status === 'archived' ? { type: 'thread.archive', threadId } : { type: 'thread.status', threadId, status })
+      socket.send(
+        status === 'archived' ? { type: 'thread.archive', threadId } : { type: 'thread.status', threadId, status }
+      )
     },
     implementPlan: threadId => {
       socket.send({ type: 'plan.implement', threadId })
@@ -1774,7 +1766,13 @@ useCrew.subscribe(state => holdCustomEmoji(state.emoji, state.httpBase))
 
 useCrew.subscribe((state, prev) => {
   if (state.pending === prev.pending) return
-  keepPreviews(new Set(Object.values(state.pending).flat().map(item => item.id)))
+  keepPreviews(
+    new Set(
+      Object.values(state.pending)
+        .flat()
+        .map(item => item.id)
+    )
+  )
 })
 
 // What is waiting to be sent, read at the moment it is asked for. A picked GIF is

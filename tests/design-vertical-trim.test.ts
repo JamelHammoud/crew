@@ -2,7 +2,13 @@ import { createRequire } from 'node:module'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { CSSProperties, ReactElement } from 'react'
 import { Editor, type TLTextShape } from '../src/renderer/src/canvas'
-import { createShapeId, createTLStore, fromPlainText, getSnapshot, loadSnapshot } from '../src/renderer/src/canvas/schema'
+import {
+  createShapeId,
+  createTLStore,
+  fromPlainText,
+  getSnapshot,
+  loadSnapshot
+} from '../src/renderer/src/canvas/schema'
 import { clearFaceMetrics, resolveLineHeight } from '../src/renderer/src/canvas/text'
 import { DesignTextUtil, textTrim } from '../src/renderer/src/design/TextUtil'
 import { setTextShapeType, textShapeType } from '../src/renderer/src/design/textType'

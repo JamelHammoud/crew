@@ -1,12 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  boundary,
-  gapOf,
-  landing,
-  landingAt,
-  room,
-  shift
-} from '../src/renderer/src/components/reorder'
+import { boundary, gapOf, landing, landingAt, room, shift } from '../src/renderer/src/components/reorder'
 
 // Three of one width and a wide one on the end, laid out with a gap of 10.
 const boxes = [

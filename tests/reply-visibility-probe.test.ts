@@ -32,7 +32,12 @@ const theirs: SessionEvent = {
   authorName: 'Jamel',
   text: 'On it.',
   mentions: [],
-  replyTo: { targetId: 'message:mine', authorId: 'ali', authorName: 'ALI', text: mine.kind === 'message' ? mine.text : '' }
+  replyTo: {
+    targetId: 'message:mine',
+    authorId: 'ali',
+    authorName: 'ALI',
+    text: mine.kind === 'message' ? mine.text : ''
+  }
 }
 
 const openChat = (events: SessionEvent[], sendChat = vi.fn()): void => {
@@ -129,7 +134,9 @@ describe('seeing a reply', () => {
 
     const thumbnails = screen.getAllByAltText('image.png')
     expect(thumbnails.some(node => node.className.includes('h-5'))).toBe(true)
-    expect(thumbnails.some(node => node.getAttribute('src') === 'http://localhost:7788/attachments/shot.png')).toBe(true)
+    expect(thumbnails.some(node => node.getAttribute('src') === 'http://localhost:7788/attachments/shot.png')).toBe(
+      true
+    )
   })
 
   it('says the message is gone when the one it answers was deleted', () => {

@@ -46,7 +46,9 @@ export function designView(editor: Editor, shape: DesignNodeShape): NodeView {
         }),
       remove: at => patch({ effects: props.effects.filter((_, index) => index !== at) })
     },
-    layout: holdsChildren(kind) ? { value: props.layout, set: next => patch({ layout: { ...props.layout, ...next } }) } : null,
+    layout: holdsChildren(kind)
+      ? { value: props.layout, set: next => patch({ layout: { ...props.layout, ...next } }) }
+      : null,
     radius: hasCorners(kind) ? { value: props.radius, set: radius => patch({ radius }) } : null,
     text: props.text
       ? {

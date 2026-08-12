@@ -149,8 +149,7 @@ const cutMasks = () =>
 
 const discs = () =>
   BACK_TO_FRONT.map(
-    (x, index) =>
-      `    <circle cx="${x}" cy="${CENTRE}" r="${RADIUS}" mask="url(#cut-${index})" />`
+    (x, index) => `    <circle cx="${x}" cy="${CENTRE}" r="${RADIUS}" mask="url(#cut-${index})" />`
   ).join('\n')
 
 // The specular sits where the light is, up and to the left, and is an ellipse
@@ -305,9 +304,7 @@ function mark({ box, ink }) {
   const shift = round((box.width - MARK.width) / 2)
   const middle = round(box.height / 2)
   const cuts = MARK_DISCS.map(x => x + shift).flatMap((x, index) => [
-    ...(index === 0
-      ? []
-      : [`    <circle cx="${x}" cy="${middle}" r="${RADIUS + GAP}" fill="#000000" />`]),
+    ...(index === 0 ? [] : [`    <circle cx="${x}" cy="${middle}" r="${RADIUS + GAP}" fill="#000000" />`]),
     `    <circle cx="${x}" cy="${middle}" r="${RADIUS}" fill="#ffffff" />`
   ])
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${box.width} ${box.height}" width="${box.width}" height="${box.height}">
@@ -453,13 +450,7 @@ writeFileSync(
   `// Written by yarn icon from scripts/make-icon.mjs. Never edited by hand.
 
 export const ICON_ART: Record<string, string> = {
-${[
-  ['dark', dark],
-  ['light', light],
-  ...skins
-]
-  .map(([id, source]) => `  ${id}: '${artFor(id, source)}'`)
-  .join(',\n')}
+${[['dark', dark], ['light', light], ...skins].map(([id, source]) => `  ${id}: '${artFor(id, source)}'`).join(',\n')}
 }
 `
 )
@@ -474,5 +465,7 @@ writeFileSync(
 console.log(
   `wrote resources/icon.svg, icon-light.svg, icon-dev.svg, icon-dev-light.svg, ${skins
     .map(([id]) => `icon-${id}.svg`)
-    .join(', ')}, crew-logo.svg, tray.svg, icon.icns, icon.png, dmg-background.svg, dmg-background.png, src/main/icon-png.ts, src/main/tray-png.ts, src/renderer/src/components/crew-mark.ts and src/renderer/src/components/settings/icon-art.ts`
+    .join(
+      ', '
+    )}, crew-logo.svg, tray.svg, icon.icns, icon.png, dmg-background.svg, dmg-background.png, src/main/icon-png.ts, src/main/tray-png.ts, src/renderer/src/components/crew-mark.ts and src/renderer/src/components/settings/icon-art.ts`
 )

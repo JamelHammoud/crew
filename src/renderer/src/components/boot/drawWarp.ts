@@ -63,13 +63,7 @@ function paintNebula(
 // A star is a line from where it was to where it is. At speed that line crosses
 // the window, and as the field slows the two ends close up until what is left
 // is a point, which is the whole of dropping out of lightspeed.
-function paintStars(
-  ctx: CanvasRenderingContext2D,
-  stars: Star[],
-  view: View,
-  speed: number,
-  dt: number
-): void {
+function paintStars(ctx: CanvasRenderingContext2D, stars: Star[], view: View, speed: number, dt: number): void {
   ctx.lineCap = 'round'
   ctx.globalCompositeOperation = 'lighter'
   const smear = speed * dt * TRAIL

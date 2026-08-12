@@ -18,9 +18,7 @@ export const OPEN_FLAG: string
 export const HELP: string
 
 export function parseArgs(argv: string[], cwd: string): CliArgs
-export function childEnv(
-  env: Record<string, string | undefined>
-): Record<string, string | undefined>
+export function childEnv(env: Record<string, string | undefined>): Record<string, string | undefined>
 export function openFlag(request: CliRequest): string
 export function appLaunch(
   platform: string,

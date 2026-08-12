@@ -57,12 +57,7 @@ function getXBoxPath(w: number, h: number, sw: number, dash: CrewDashStyle, isFi
   const cx = w / 2
   const cy = h / 2
 
-  const path = new PathBuilder()
-    .moveTo(0, 0, { geometry: { isFilled } })
-    .lineTo(w, 0)
-    .lineTo(w, h)
-    .lineTo(0, h)
-    .close()
+  const path = new PathBuilder().moveTo(0, 0, { geometry: { isFilled } }).lineTo(w, 0).lineTo(w, h).lineTo(0, h).close()
 
   if (dash === 'none') return path
 
@@ -275,12 +270,7 @@ export const defaultGeoTypeDefinitions: Record<GeoKind, GeoTypeDefinition> = {
     snapType: 'polygon',
     getPath(w, h, shape) {
       const isFilled = shape.props.fill !== 'none'
-      return new PathBuilder()
-        .moveTo(0, 0, { geometry: { isFilled } })
-        .lineTo(w, 0)
-        .lineTo(w, h)
-        .lineTo(0, h)
-        .close()
+      return new PathBuilder().moveTo(0, 0, { geometry: { isFilled } }).lineTo(w, 0).lineTo(w, h).lineTo(0, h).close()
     }
   },
   ellipse: {

@@ -13,8 +13,7 @@ const plain = (address: string): string => address.replace(/\\/g, '')
 
 const allowed = (address: string): boolean => ALLOWED.some(start => address.startsWith(start))
 
-const offenders = (text: string): string[] =>
-  (text.match(ADDRESS) ?? []).map(plain).filter(one => !allowed(one))
+const offenders = (text: string): string[] => (text.match(ADDRESS) ?? []).map(plain).filter(one => !allowed(one))
 
 const files = (dir: string): string[] =>
   readdirSync(dir, { withFileTypes: true }).flatMap(entry => {

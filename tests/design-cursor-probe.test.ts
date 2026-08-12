@@ -129,9 +129,7 @@ describe('design cursors', () => {
     expect(paths[0].getAttribute('fill')).toBe('oklch(0.7 0.22 120)')
     expect(paths[1].getAttribute('stroke')).toBe('white')
     expect(paths[0].getAttribute('d')).toBe(drawn.svg.match(/<path d='([^']+)'/)![1])
-    expect(container.querySelector('g')!.getAttribute('transform')).toBe(
-      drawn.svg.match(/<g transform='([^']+)'/)![1]
-    )
+    expect(container.querySelector('g')!.getAttribute('transform')).toBe(drawn.svg.match(/<g transform='([^']+)'/)![1])
   })
 
   it('hands them to the canvas, which declares its own', () => {

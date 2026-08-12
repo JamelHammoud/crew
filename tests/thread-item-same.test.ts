@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { sameItem, sameItems, sameShown, sameSubagentRuns, type ThreadItem } from '../src/renderer/src/components/thread'
+import {
+  sameItem,
+  sameItems,
+  sameShown,
+  sameSubagentRuns,
+  type ThreadItem
+} from '../src/renderer/src/components/thread'
 
 const base: Required<ThreadItem> = {
   key: 'prompt-1:step-4',
@@ -30,7 +36,9 @@ const base: Required<ThreadItem> = {
   replyTo: { targetId: 'm0', authorId: 'ali', authorName: 'ALI', text: 'before' },
   editedTs: 1300,
   voice: false,
-  runs: [{ threadId: 't2', name: 'Scout', subject: 'reading', agentId: 'ali/claude', ok: true, ms: 90, stopped: false }],
+  runs: [
+    { threadId: 't2', name: 'Scout', subject: 'reading', agentId: 'ali/claude', ok: true, ms: 90, stopped: false }
+  ],
   shown: { pages: ['/tmp/one.html'], title: 'The page' }
 }
 
@@ -64,7 +72,12 @@ describe('telling a redrawn row from a changed one', () => {
   it('reads the lists it rebuilds by what is in them', () => {
     expect(sameShown({ pages: ['a'], title: 'One' }, { pages: ['a'], title: 'One' })).toBe(true)
     expect(sameShown({ pages: ['a'], title: 'One' }, { pages: ['b'], title: 'One' })).toBe(false)
-    expect(sameSubagentRuns(base.runs, base.runs.map(run => ({ ...run })))).toBe(true)
+    expect(
+      sameSubagentRuns(
+        base.runs,
+        base.runs.map(run => ({ ...run }))
+      )
+    ).toBe(true)
     expect(sameSubagentRuns(base.runs, [{ ...base.runs[0], ok: false }])).toBe(false)
     expect(sameItems([base], [rebuilt(base)])).toBe(true)
     expect(sameItems([base], [base, base])).toBe(false)

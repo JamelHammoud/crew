@@ -25,7 +25,12 @@ const GREP_FILES = 5000
 const GLOB_HITS = 300
 const LS_ENTRIES = 500
 
-const spec = (name: string, description: string, properties: Record<string, unknown>, required: string[]): ToolSpec => ({
+const spec = (
+  name: string,
+  description: string,
+  properties: Record<string, unknown>,
+  required: string[]
+): ToolSpec => ({
   type: 'function',
   function: { name, description, parameters: { type: 'object', properties, required } }
 })
@@ -85,10 +90,18 @@ export const LOCAL_TOOLS: ToolSpec[] = [
   spec(
     'Glob',
     'Find files by path. ** matches any folders, * matches anything within one name, ? matches one character.',
-    { pattern: text('The pattern to match, like **/*.ts.'), path: text('The folder to search. The project folder by default.') },
+    {
+      pattern: text('The pattern to match, like **/*.ts.'),
+      path: text('The folder to search. The project folder by default.')
+    },
     ['pattern']
   ),
-  spec('LS', 'List what is in a folder, saying which entries are folders.', { path: text('The folder to list. The project folder by default.') }, []),
+  spec(
+    'LS',
+    'List what is in a folder, saying which entries are folders.',
+    { path: text('The folder to list. The project folder by default.') },
+    []
+  ),
   spec(
     'TodoWrite',
     'Publish the list of what you are doing. Send the whole list every time, with one item in progress at most.',
@@ -101,7 +114,11 @@ export const LOCAL_TOOLS: ToolSpec[] = [
           properties: {
             content: text('The task, named: "Draw the rows".'),
             activeForm: text('The same task, narrated: "Drawing the rows".'),
-            status: { type: 'string', enum: ['pending', 'in_progress', 'completed'], description: 'Where the task has got to.' }
+            status: {
+              type: 'string',
+              enum: ['pending', 'in_progress', 'completed'],
+              description: 'Where the task has got to.'
+            }
           },
           required: ['content', 'activeForm', 'status']
         }
@@ -126,10 +143,13 @@ const num = (value: unknown): number | undefined => {
 
 const truthy = (value: unknown): boolean => value === true || value === 'true'
 
-const at = (cwd: string, target: string): string => (path.isAbsolute(target) ? path.resolve(target) : path.resolve(cwd, target))
+const at = (cwd: string, target: string): string =>
+  path.isAbsolute(target) ? path.resolve(target) : path.resolve(cwd, target)
 
 const cut = (body: string, limit: number): string =>
-  body.length > limit ? `${body.slice(0, limit)}\n\n[Cut here. That is the first ${limit} of ${body.length} characters.]` : body
+  body.length > limit
+    ? `${body.slice(0, limit)}\n\n[Cut here. That is the first ${limit} of ${body.length} characters.]`
+    : body
 
 async function readText(file: string): Promise<string> {
   const stat = await fs.stat(file)
@@ -150,7 +170,8 @@ async function toolRead(args: Record<string, unknown>, cwd: string): Promise<Too
     }
     const lines = body.split('\n')
     const from = Math.max(0, (offset ?? 1) - 1)
-    if (from >= lines.length) return bad(`${target} has ${lines.length} lines, so there is nothing at line ${from + 1}.`)
+    if (from >= lines.length)
+      return bad(`${target} has ${lines.length} lines, so there is nothing at line ${from + 1}.`)
     const taken = lines.slice(from, limit === undefined ? undefined : from + Math.max(0, limit))
     return ok(cut(taken.join('\n'), READ_CHARS))
   } catch (error) {
@@ -188,13 +209,16 @@ async function toolEdit(args: Record<string, unknown>, cwd: string): Promise<Too
     const body = await readText(file)
     const parts = body.split(before)
     const hits = parts.length - 1
-    if (hits === 0) return bad(`That old_string is not in ${target}. Read the file and copy the lines exactly as they stand.`)
+    if (hits === 0)
+      return bad(`That old_string is not in ${target}. Read the file and copy the lines exactly as they stand.`)
     if (hits > 1 && !all) {
       return bad(
         `That old_string appears ${hits} times in ${target}. Take in more of the lines around it so it matches once, or set replace_all to true.`
       )
     }
-    const written = all ? parts.join(after) : body.slice(0, body.indexOf(before)) + after + body.slice(body.indexOf(before) + before.length)
+    const written = all
+      ? parts.join(after)
+      : body.slice(0, body.indexOf(before)) + after + body.slice(body.indexOf(before) + before.length)
     await fs.writeFile(file, written, 'utf8')
     return ok(all && hits > 1 ? `Replaced ${hits} occurrences in ${target}.` : `Edited ${target}.`)
   } catch (error) {
@@ -219,15 +243,20 @@ interface Ran {
 function runShell(command: string, cwd: string, timeout: number): Promise<Ran> {
   const shell = loginShell()
   return new Promise(resolve => {
-    execFile(shell.file, [...shell.args, command], { cwd, timeout, maxBuffer: BASH_BUFFER }, (error, stdout, stderr) => {
-      const out = [stdout, stderr].filter(Boolean).join('')
-      const failure = error as (Error & { code?: number; killed?: boolean; signal?: string }) | null
-      resolve({
-        out,
-        code: failure ? (typeof failure.code === 'number' ? failure.code : 1) : 0,
-        timedOut: Boolean(failure?.killed || failure?.signal)
-      })
-    })
+    execFile(
+      shell.file,
+      [...shell.args, command],
+      { cwd, timeout, maxBuffer: BASH_BUFFER },
+      (error, stdout, stderr) => {
+        const out = [stdout, stderr].filter(Boolean).join('')
+        const failure = error as (Error & { code?: number; killed?: boolean; signal?: string }) | null
+        resolve({
+          out,
+          code: failure ? (typeof failure.code === 'number' ? failure.code : 1) : 0,
+          timedOut: Boolean(failure?.killed || failure?.signal)
+        })
+      }
+    )
   })
 }
 
@@ -280,7 +309,11 @@ function ripgrep(pattern: string, target: string, glob: string, cwd: string): Pr
   return new Promise(resolve => {
     execFile(rg, args, { cwd, timeout: BASH_TIMEOUT_MS, maxBuffer: BASH_BUFFER }, (error, stdout) => {
       const failure = error as (Error & { code?: number }) | null
-      resolve({ out: stdout, code: failure ? (typeof failure.code === 'number' ? failure.code : 1) : 0, timedOut: false })
+      resolve({
+        out: stdout,
+        code: failure ? (typeof failure.code === 'number' ? failure.code : 1) : 0,
+        timedOut: false
+      })
     })
   })
 }
@@ -317,9 +350,7 @@ async function toolGrep(args: Record<string, unknown>, cwd: string): Promise<Too
   try {
     const ran = await ripgrep(pattern, target, glob, cwd)
     const hits =
-      ran.code >= 0
-        ? ran.out.split('\n').filter(Boolean).map(clip)
-        : await grepByHand(pattern, cwd, target, glob)
+      ran.code >= 0 ? ran.out.split('\n').filter(Boolean).map(clip) : await grepByHand(pattern, cwd, target, glob)
     if (hits.length === 0) return ok(`No matches for ${pattern}.`)
     const kept = hits.slice(0, GREP_HITS)
     const more = hits.length > kept.length ? `\n\n[Cut here. The first ${GREP_HITS} matches are above.]` : ''
@@ -339,7 +370,8 @@ async function toolGlob(args: Record<string, unknown>, cwd: string): Promise<Too
     const found = (await listRepoFiles(root)).filter(file => match.test(file))
     if (found.length === 0) return ok(`Nothing matches ${pattern}.`)
     const kept = found.slice(0, GLOB_HITS).map(file => (target ? `${target.replace(/\/+$/, '')}/${file}` : file))
-    const more = found.length > kept.length ? `\n\n[Cut here. The first ${GLOB_HITS} of ${found.length} are above.]` : ''
+    const more =
+      found.length > kept.length ? `\n\n[Cut here. The first ${GLOB_HITS} of ${found.length} are above.]` : ''
     return ok(kept.join('\n') + more)
   } catch (error) {
     return bad(reason(error))
@@ -355,7 +387,8 @@ async function toolLs(args: Record<string, unknown>, cwd: string): Promise<ToolR
       .sort((a, b) => (a.dir === b.dir ? a.name.localeCompare(b.name) : a.dir ? -1 : 1))
     if (entries.length === 0) return ok(`${target} is empty.`)
     const kept = entries.slice(0, LS_ENTRIES).map(entry => (entry.dir ? `${entry.name}/` : entry.name))
-    const more = entries.length > kept.length ? `\n\n[Cut here. The first ${LS_ENTRIES} of ${entries.length} are above.]` : ''
+    const more =
+      entries.length > kept.length ? `\n\n[Cut here. The first ${LS_ENTRIES} of ${entries.length} are above.]` : ''
     return ok(kept.join('\n') + more)
   } catch (error) {
     return bad(reason(error))
@@ -381,7 +414,9 @@ const DOING: Record<string, Doing> = {
   TodoWrite: toolTodoWrite
 }
 
-const BY_LOWER: Record<string, Doing> = Object.fromEntries(Object.entries(DOING).map(([name, run]) => [name.toLowerCase(), run]))
+const BY_LOWER: Record<string, Doing> = Object.fromEntries(
+  Object.entries(DOING).map(([name, run]) => [name.toLowerCase(), run])
+)
 
 export async function runTool(name: string, args: Record<string, unknown>, cwd: string): Promise<ToolResult> {
   const run = DOING[name] ?? BY_LOWER[(name ?? '').toLowerCase()]

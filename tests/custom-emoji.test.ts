@@ -56,9 +56,7 @@ describe('the name somebody types', () => {
   it('cuts a long one at the limit rather than turning it away', () => {
     const long = 'a'.repeat(CUSTOM_EMOJI_NAME_LIMIT + 8)
     expect(cleanCustomEmojiName(long)).toBe('a'.repeat(CUSTOM_EMOJI_NAME_LIMIT))
-    expect(cleanCustomEmojiName('a'.repeat(CUSTOM_EMOJI_NAME_LIMIT))).toHaveLength(
-      CUSTOM_EMOJI_NAME_LIMIT
-    )
+    expect(cleanCustomEmojiName('a'.repeat(CUSTOM_EMOJI_NAME_LIMIT))).toHaveLength(CUSTOM_EMOJI_NAME_LIMIT)
   })
 })
 

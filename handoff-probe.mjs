@@ -19,7 +19,9 @@ const page = head + `<section><h2>Look</h2><div class="grid">${cards}</div></sec
 
 const dir = await mkdtemp(path.join(tmpdir(), 'handoff-'))
 await writeFile(path.join(dir, 'page.html'), page)
-await writeFile(path.join(dir, 'main.mjs'), `import { app, BrowserWindow } from 'electron'
+await writeFile(
+  path.join(dir, 'main.mjs'),
+  `import { app, BrowserWindow } from 'electron'
 import { writeFileSync } from 'node:fs'
 import path from 'node:path'
 app.whenReady().then(async () => {
@@ -30,6 +32,7 @@ app.whenReady().then(async () => {
   writeFileSync(path.join(import.meta.dirname, 'shot.png'), img.toPNG())
   console.log('DONE')
   app.exit(0)
-})`)
+})`
+)
 const run = spawn(electron, [path.join(dir, 'main.mjs')], { stdio: 'inherit' })
 run.on('exit', () => console.log(path.join(dir, 'shot.png')))

@@ -24,14 +24,7 @@ import { useAutoResize } from './useAutoResize'
 import useScrollEdges from './useScrollEdges'
 import { Popover } from './Popover'
 import { StateIcon } from './ThreadCard'
-import {
-  describeStep,
-  endPreview,
-  lastEnd,
-  threadState,
-  workingThreads,
-  type ThreadState
-} from './thread'
+import { describeStep, endPreview, lastEnd, threadState, workingThreads, type ThreadState } from './thread'
 import { formatFullTime, formatShortDay } from './time'
 import Tooltip from './Tooltip'
 import { ThreadOpenItems } from './threadMenu'
@@ -212,9 +205,7 @@ export default function TasksPanel({
       if (thread.parentThreadId || thread.aside) continue
       const promptId = threadPrompts[thread.id]
       const working = busy.has(thread.id)
-      const detail = promptId
-        ? describeStep((steps[promptId] ?? []).at(-1))
-        : endPreview(lastEnd(thread.id, ends))
+      const detail = promptId ? describeStep((steps[promptId] ?? []).at(-1)) : endPreview(lastEnd(thread.id, ends))
       list.push({ thread, state: threadState(thread, ends, working), detail })
     }
     return list.reverse()
@@ -251,11 +242,14 @@ export default function TasksPanel({
     titleOf(row.thread).toLowerCase().includes(q) || row.thread.agentLabel.toLowerCase().includes(q)
   const todoMatches = (todo: Todo) =>
     todo.text.toLowerCase().includes(q) ||
-    (agents.find(a => a.id === todo.agentId)?.label.toLowerCase().includes(q) ?? false)
+    (agents
+      .find(a => a.id === todo.agentId)
+      ?.label.toLowerCase()
+      .includes(q) ??
+      false)
 
   const visible = q ? rows.filter(rowMatches) : rows
-  const byRecency = (a: Row, b: Row) =>
-    (lastMessageAt[b.thread.id] ?? 0) - (lastMessageAt[a.thread.id] ?? 0)
+  const byRecency = (a: Row, b: Row) => (lastMessageAt[b.thread.id] ?? 0) - (lastMessageAt[a.thread.id] ?? 0)
   const inProgress = visible.filter(r => r.state === 'working' && r.thread.status !== 'archived')
   const needsReview = visible
     .filter(r => r.state === 'ready' || r.state === 'stopped' || r.state === 'failed')
@@ -288,55 +282,55 @@ export default function TasksPanel({
   const item = (row: Row, action?: RowAction, ts = 0) => {
     const agent = agents.find(a => a.id === row.thread.agentId)
     return (
-    <div key={row.thread.id} className="group relative">
-      <button
-        onClick={() => onOpenThread(row.thread.id)}
-        onContextMenu={(event: MouseEvent) => {
-          event.preventDefault()
-          setThreadMenu({ threadId: row.thread.id, at: { x: event.clientX, y: event.clientY } })
-        }}
-        className="w-full text-left px-3 py-2.5 rounded-xl flex items-start gap-3 transition-colors duration-150 group-hover:bg-ink-hover"
-      >
-        <span className="h-[22px] shrink-0 flex items-center">
-          <StateIcon state={row.state} />
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="flex items-center gap-1.5 text-base text-fg">
-            {row.thread.ghost && <GhostGlyph className="w-4 h-4 shrink-0 text-fg-muted" />}
-            <span className="min-w-0 truncate">
-              <EmojiText text={stripMention(titleOf(row.thread), row.thread.agentLabel) || titleOf(row.thread)} />
+      <div key={row.thread.id} className="group relative">
+        <button
+          onClick={() => onOpenThread(row.thread.id)}
+          onContextMenu={(event: MouseEvent) => {
+            event.preventDefault()
+            setThreadMenu({ threadId: row.thread.id, at: { x: event.clientX, y: event.clientY } })
+          }}
+          className="w-full text-left px-3 py-2.5 rounded-xl flex items-start gap-3 transition-colors duration-150 group-hover:bg-ink-hover"
+        >
+          <span className="h-[22px] shrink-0 flex items-center">
+            <StateIcon state={row.state} />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="flex items-center gap-1.5 text-base text-fg">
+              {row.thread.ghost && <GhostGlyph className="w-4 h-4 shrink-0 text-fg-muted" />}
+              <span className="min-w-0 truncate">
+                <EmojiText text={stripMention(titleOf(row.thread), row.thread.agentLabel) || titleOf(row.thread)} />
+              </span>
+            </span>
+            <span className="block text-sm text-fg-muted truncate">
+              {agent ? (
+                <AgentName agent={agent}>
+                  <span className="cursor-default rounded-md px-0.5 -mx-0.5 transition-colors hover:bg-fg/10">
+                    {row.thread.agentLabel}
+                  </span>
+                </AgentName>
+              ) : (
+                row.thread.agentLabel
+              )}
+              {row.detail ? ` · ${row.detail}` : ''}
             </span>
           </span>
-          <span className="block text-sm text-fg-muted truncate">
-            {agent ? (
-              <AgentName agent={agent}>
-                <span className="cursor-default rounded-md px-0.5 -mx-0.5 transition-colors hover:bg-fg/10">
-                  {row.thread.agentLabel}
-                </span>
-              </AgentName>
-            ) : (
-              row.thread.agentLabel
-            )}
-            {row.detail ? ` · ${row.detail}` : ''}
+          {dayStamp(ts)}
+        </button>
+        {action && (
+          <span className="absolute inset-y-0 right-0 rounded-r-xl bg-ink-hover pl-1 pr-2 flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+            <span className="absolute right-full inset-y-0 w-10 bg-gradient-to-l from-ink-hover to-transparent pointer-events-none" />
+            <Tooltip label={action.label}>
+              <button
+                onClick={() => setThreadStatus(row.thread.id, action.status)}
+                aria-label={action.label}
+                className="w-8 h-8 rounded-full bg-ink-800 text-fg-muted flex items-center justify-center transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95"
+              >
+                {action.icon}
+              </button>
+            </Tooltip>
           </span>
-        </span>
-        {dayStamp(ts)}
-      </button>
-      {action && (
-        <span className="absolute inset-y-0 right-0 rounded-r-xl bg-ink-hover pl-1 pr-2 flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-          <span className="absolute right-full inset-y-0 w-10 bg-gradient-to-l from-ink-hover to-transparent pointer-events-none" />
-          <Tooltip label={action.label}>
-            <button
-              onClick={() => setThreadStatus(row.thread.id, action.status)}
-              aria-label={action.label}
-              className="w-8 h-8 rounded-full bg-ink-800 text-fg-muted flex items-center justify-center transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95"
-            >
-              {action.icon}
-            </button>
-          </Tooltip>
-        </span>
-      )}
-    </div>
+        )}
+      </div>
     )
   }
 
@@ -433,7 +427,9 @@ export default function TasksPanel({
           </Tooltip>
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block text-base text-fg-muted line-through whitespace-pre-wrap break-words">{todo.text}</span>
+          <span className="block text-base text-fg-muted line-through whitespace-pre-wrap break-words">
+            {todo.text}
+          </span>
           <span className="block text-sm text-fg-faint truncate">Done by hand</span>
         </span>
         {dayStamp(ts)}
@@ -464,11 +460,7 @@ export default function TasksPanel({
       onClick={onToggle}
       className="px-3 -ml-1 mb-1 flex items-center gap-1.5 text-sm font-semibold text-fg-muted transition-colors hover:text-fg-secondary"
     >
-      {shown ? (
-        <ChevronDownGlyph className="w-3.5 h-3.5" />
-      ) : (
-        <ChevronRightGlyph className="w-3.5 h-3.5" />
-      )}
+      {shown ? <ChevronDownGlyph className="w-3.5 h-3.5" /> : <ChevronRightGlyph className="w-3.5 h-3.5" />}
       {title} <span className="text-fg-faint">{count}</span>
     </button>
   )
@@ -568,9 +560,7 @@ export default function TasksPanel({
                   Threads you start with an agent will show up here.
                 </p>
               )}
-              {noMatches && (
-                <p className="text-base text-fg-muted text-center mt-16 px-6">No tasks match.</p>
-              )}
+              {noMatches && <p className="text-base text-fg-muted text-center mt-16 px-6">No tasks match.</p>}
               {inProgress.length > 0 && (
                 <section>
                   {heading('In progress', inProgress.length)}
@@ -587,9 +577,7 @@ export default function TasksPanel({
               )}
               {doneEntries.length > 0 && (
                 <section>
-                  {toggleHeading('Done', doneEntries.length, showDone || q !== '', () =>
-                    setShowDone(v => !v)
-                  )}
+                  {toggleHeading('Done', doneEntries.length, showDone || q !== '', () => setShowDone(v => !v))}
                   {(showDone || q !== '') &&
                     doneEntries.map(entry =>
                       entry.row
@@ -604,9 +592,7 @@ export default function TasksPanel({
               )}
               {archived.length > 0 && (
                 <section>
-                  {toggleHeading('Archived', archived.length, showArchived || q !== '', () =>
-                    setShowArchived(v => !v)
-                  )}
+                  {toggleHeading('Archived', archived.length, showArchived || q !== '', () => setShowArchived(v => !v))}
                   {(showArchived || q !== '') &&
                     archived.map(row =>
                       item(
@@ -622,13 +608,7 @@ export default function TasksPanel({
           </div>
         </aside>
       </div>
-      <Popover
-        open={picker !== null}
-        onClose={() => setPicker(null)}
-        at={picker?.at}
-        maxHeight={224}
-        className="w-64"
-      >
+      <Popover open={picker !== null} onClose={() => setPicker(null)} at={picker?.at} maxHeight={224} className="w-64">
         {online.length === 0 ? (
           <p className="px-3 py-2 text-sm text-fg-muted whitespace-nowrap">No agents online</p>
         ) : (
@@ -644,12 +624,7 @@ export default function TasksPanel({
           ))
         )}
       </Popover>
-      <Popover
-        open={threadMenu !== null}
-        onClose={() => setThreadMenu(null)}
-        at={threadMenu?.at}
-        className="min-w-52"
-      >
+      <Popover open={threadMenu !== null} onClose={() => setThreadMenu(null)} at={threadMenu?.at} className="min-w-52">
         {threadMenu && (
           <ThreadOpenItems
             threadId={threadMenu.threadId}

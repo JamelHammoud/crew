@@ -16,8 +16,7 @@ const PLAYED = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' ', 
 
 export type Box = { width: number; height: number }
 
-const SAME = (box: Box, width: number, height: number): boolean =>
-  box.width === width && box.height === height
+const SAME = (box: Box, width: number, height: number): boolean => box.width === width && box.height === height
 
 // The field is the room the panel leaves, so it is measured rather than guessed
 // at: a game is drawn in world units and has to be told the size it is really

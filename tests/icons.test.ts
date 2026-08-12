@@ -32,8 +32,7 @@ const drawn: Art[] = Object.entries(icons as Record<string, unknown>)
 // and are not this: they are three marks rather than one form.
 const drawnShapes = (markup: string) => markup.match(/<(path|rect|circle|ellipse|line)\b/g) ?? []
 
-const solid = (markup: string) =>
-  drawnShapes(markup).length === 1 && markup.includes('fill="currentColor"')
+const solid = (markup: string) => drawnShapes(markup).length === 1 && markup.includes('fill="currentColor"')
 
 const keyline = (markup: string, box: Box) => {
   if (solid(markup)) return { family: 'solid', target: SOLID, size: Math.sqrt(box.width * box.height) }

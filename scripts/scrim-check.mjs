@@ -182,7 +182,8 @@ try {
     console.log(
       `${say.padEnd(16)} biggest step ${String(step.d).padStart(5)} at y=${String(step.y).padStart(3)}   biggest kink ${String(kink.d).padStart(5)} at y=${String(kink.y).padStart(3)}`
     )
-    if (lit) console.log(`${''.padEnd(16)} ink left standing  ${SAMPLE.map(y => `${y}:${alpha[y].toFixed(2)}`).join('  ')}`)
+    if (lit)
+      console.log(`${''.padEnd(16)} ink left standing  ${SAMPLE.map(y => `${y}:${alpha[y].toFixed(2)}`).join('  ')}`)
     else console.log(`${''.padEnd(16)} row brightness     ${SAMPLE.map(y => `${y}:${rows[y].toFixed(0)}`).join('  ')}`)
     console.log('')
   }

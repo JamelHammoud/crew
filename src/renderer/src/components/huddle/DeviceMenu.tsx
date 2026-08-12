@@ -18,15 +18,7 @@ const FIX: Record<InputKind, string> = {
   camera: 'Open camera settings'
 }
 
-export default function DeviceMenu({
-  kind,
-  open,
-  onClose
-}: {
-  kind: InputKind
-  open: boolean
-  onClose: () => void
-}) {
+export default function DeviceMenu({ kind, open, onClose }: { kind: InputKind; open: boolean; onClose: () => void }) {
   const devices = useInputDevices(kind, open)
   const chosen = useHuddle(s => (kind === 'microphone' ? s.micId : s.cameraId))
   const pickInput = useHuddle(s => s.pickInput)

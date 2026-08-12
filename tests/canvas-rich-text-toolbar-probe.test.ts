@@ -36,9 +36,7 @@ describe('rich text toolbar', () => {
 
   it('survives the double mount the app runs under', () => {
     const editor = textEditor()
-    expect(() =>
-      render(createElement(StrictMode, null, createElement(RichTextToolbar, { editor })))
-    ).not.toThrow()
+    expect(() => render(createElement(StrictMode, null, createElement(RichTextToolbar, { editor })))).not.toThrow()
   })
 
   it('takes a live editor without reaching for a document of its own', () => {

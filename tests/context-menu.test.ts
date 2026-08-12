@@ -110,12 +110,7 @@ describe('the web browser context menu', () => {
 
   it('opens and copies links from the page', () => {
     const page = contents()
-    const menu = contextMenuTemplate(
-      page.target,
-      params({ linkURL: 'https://crew.example/thread/7' }),
-      true,
-      false
-    )
+    const menu = contextMenuTemplate(page.target, params({ linkURL: 'https://crew.example/thread/7' }), true, false)
 
     press(menu, 'Open Link in New Tab')
     press(menu, 'Open Link in Your Browser')
@@ -190,19 +185,8 @@ describe('the app context menu', () => {
   })
 
   it('keeps text field actions without browser navigation', () => {
-    const menu = contextMenuTemplate(
-      contents().target,
-      params({ isEditable: true }),
-      false,
-      false
-    )
+    const menu = contextMenuTemplate(contents().target, params({ isEditable: true }), false, false)
 
-    expect(menu.map(one => one.label ?? one.type)).toEqual([
-      'Cut',
-      'Copy',
-      'Paste',
-      'separator',
-      'Select All'
-    ])
+    expect(menu.map(one => one.label ?? one.type)).toEqual(['Cut', 'Copy', 'Paste', 'separator', 'Select All'])
   })
 })

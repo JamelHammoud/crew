@@ -95,7 +95,11 @@ export class Door {
     res.end()
   }
 
-  private upgrade(req: http.IncomingMessage, socket: NodeJS.WritableStream & { destroy: () => void }, head: Buffer): void {
+  private upgrade(
+    req: http.IncomingMessage,
+    socket: NodeJS.WritableStream & { destroy: () => void },
+    head: Buffer
+  ): void {
     const found = this.crewAt(req.url ?? '')
     if (!found || found.rest !== '/ws') {
       socket.destroy()

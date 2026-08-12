@@ -31,13 +31,7 @@ export default function AvatarStack({
   const at = (index: number): number => radius + step * index
 
   return (
-    <svg
-      width={width}
-      height={face}
-      viewBox={`0 0 ${width} ${face}`}
-      aria-hidden
-      className="shrink-0"
-    >
+    <svg width={width} height={face} viewBox={`0 0 ${width} ${face}`} aria-hidden className="shrink-0">
       <defs>
         {shown.slice(0, -1).map((_, index) => (
           <mask key={index} id={`${id}-${index}`} maskUnits="userSpaceOnUse">

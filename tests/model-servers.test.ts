@@ -13,7 +13,7 @@ import {
   serverUrlIn,
   withServer,
   withoutServer,
-  type ModelServer,
+  type ModelServer
 } from '../src/shared/modelServers'
 
 const listOf = (count: number): ModelServer[] =>
@@ -66,11 +66,9 @@ describe('reading an address somebody wrote down', () => {
 
 describe('where the openai routes stand under a base', () => {
   it('takes the rest as it is where the base already names the version', () => {
-    expect(openaiUrl('http://192.0.2.10:39862/v1', '/models')).toBe(
-      'http://192.0.2.10:39862/v1/models',
-    )
+    expect(openaiUrl('http://192.0.2.10:39862/v1', '/models')).toBe('http://192.0.2.10:39862/v1/models')
     expect(openaiUrl('http://192.0.2.10:39862/v1', '/chat/completions')).toBe(
-      'http://192.0.2.10:39862/v1/chat/completions',
+      'http://192.0.2.10:39862/v1/chat/completions'
     )
   })
 
@@ -80,17 +78,13 @@ describe('where the openai routes stand under a base', () => {
 
   it('gives a bare host the one every server of this kind serves on', () => {
     expect(openaiUrl('http://127.0.0.1:11434', '/models')).toBe('http://127.0.0.1:11434/v1/models')
-    expect(openaiUrl('http://127.0.0.1:11434', '/chat/completions')).toBe(
-      'http://127.0.0.1:11434/v1/chat/completions',
-    )
+    expect(openaiUrl('http://127.0.0.1:11434', '/chat/completions')).toBe('http://127.0.0.1:11434/v1/chat/completions')
   })
 
   it('reads another version number the same way', () => {
-    expect(openaiUrl('http://192.0.2.10:39862/v2', '/models')).toBe(
-      'http://192.0.2.10:39862/v2/models',
-    )
+    expect(openaiUrl('http://192.0.2.10:39862/v2', '/models')).toBe('http://192.0.2.10:39862/v2/models')
     expect(openaiUrl('http://192.0.2.10:39862/v2', '/chat/completions')).toBe(
-      'http://192.0.2.10:39862/v2/chat/completions',
+      'http://192.0.2.10:39862/v2/chat/completions'
     )
   })
 })
@@ -190,7 +184,7 @@ describe('writing a server down', () => {
     const held = [{ url: 'http://127.0.0.1:11434' }]
     expect(withServer(held, { url: 'http://192.0.2.10:39862/v1' })).toEqual([
       { url: 'http://192.0.2.10:39862/v1' },
-      { url: 'http://127.0.0.1:11434' },
+      { url: 'http://127.0.0.1:11434' }
     ])
   })
 
@@ -198,21 +192,21 @@ describe('writing a server down', () => {
     const held = [{ url: 'http://192.0.2.10:39862/v1' }, { url: 'http://127.0.0.1:11434' }]
     expect(withServer(held, { url: 'http://192.0.2.10:39862/v1/' })).toEqual([
       { url: 'http://192.0.2.10:39862/v1/' },
-      { url: 'http://127.0.0.1:11434' },
+      { url: 'http://127.0.0.1:11434' }
     ])
   })
 
   it('keeps a key already held where the same address is written down again with none', () => {
     const held = [{ url: 'http://192.0.2.10:39862/v1', key: 'sk-held' }]
     expect(withServer(held, { url: 'http://192.0.2.10:39862/v1' })).toEqual([
-      { url: 'http://192.0.2.10:39862/v1', key: 'sk-held' },
+      { url: 'http://192.0.2.10:39862/v1', key: 'sk-held' }
     ])
   })
 
   it('takes a key given again in place of the one before it', () => {
     const held = [{ url: 'http://192.0.2.10:39862/v1', key: 'sk-held' }]
     expect(withServer(held, { url: 'http://192.0.2.10:39862/v1', key: 'sk-new' })).toEqual([
-      { url: 'http://192.0.2.10:39862/v1', key: 'sk-new' },
+      { url: 'http://192.0.2.10:39862/v1', key: 'sk-new' }
     ])
   })
 
@@ -229,9 +223,7 @@ describe('writing a server down', () => {
 describe('taking a server off the list', () => {
   it('leaves the rest where they are', () => {
     const held = [{ url: 'http://192.0.2.10:39862/v1' }, { url: 'http://127.0.0.1:11434' }]
-    expect(withoutServer(held, 'http://192.0.2.10:39862/v1')).toEqual([
-      { url: 'http://127.0.0.1:11434' },
-    ])
+    expect(withoutServer(held, 'http://192.0.2.10:39862/v1')).toEqual([{ url: 'http://127.0.0.1:11434' }])
   })
 
   it('takes off one named with a trailing slash or in another case', () => {

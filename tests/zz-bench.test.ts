@@ -31,17 +31,27 @@ function time(label: string, runs: number, fn: () => void) {
 describe('engine cost on a 433 shape board', () => {
   it('measures the per pointer move primitives', () => {
     const { e, ids } = board()
-    time('getCurrentPageShapesSorted (cached)', 200, () => { e.getCurrentPageShapesSorted() })
+    time('getCurrentPageShapesSorted (cached)', 200, () => {
+      e.getCurrentPageShapesSorted()
+    })
     let n = 0
     time('getCurrentPageShapesSorted after a move', 200, () => {
       const s = e.getShape(ids[0])!
       e.updateShape({ id: ids[0], type: s.type, x: s.x + (n++ % 2 ? 1 : -1) })
       e.getCurrentPageShapesSorted()
     })
-    time('getCurrentPageRenderingShapesSorted', 200, () => { (e as any).getCurrentPageRenderingShapesSorted?.() })
-    time('getViewportPageBounds', 500, () => { e.getViewportPageBounds() })
-    time('one shape page bounds', 500, () => { e.getShapePageBounds(ids[5]) })
-    time('all shape page bounds', 20, () => { for (const id of ids) e.getShapePageBounds(id) })
+    time('getCurrentPageRenderingShapesSorted', 200, () => {
+      ;(e as any).getCurrentPageRenderingShapesSorted?.()
+    })
+    time('getViewportPageBounds', 500, () => {
+      e.getViewportPageBounds()
+    })
+    time('one shape page bounds', 500, () => {
+      e.getShapePageBounds(ids[5])
+    })
+    time('all shape page bounds', 20, () => {
+      for (const id of ids) e.getShapePageBounds(id)
+    })
     time('updateShape alone', 200, () => {
       const s = e.getShape(ids[1])!
       e.updateShape({ id: ids[1], type: s.type, x: s.x + (n++ % 2 ? 1 : -1) })

@@ -191,8 +191,7 @@ export class InputsManager {
     const screen = new Vec(source.x - view.screenBounds.x, source.y - view.screenBounds.y)
     const nx = screen.x / cz - cx
     const ny = screen.y / cz - cy
-    const page =
-      isFinite(nx) && isFinite(ny) ? new Vec(nx, ny, info.point?.z ?? 0.5) : Vec.From(this.pagePoint.get())
+    const page = isFinite(nx) && isFinite(ny) ? new Vec(nx, ny, info.point?.z ?? 0.5) : Vec.From(this.pagePoint.get())
     this.update(screen, page)
     if (typeof info.isPen === 'boolean') this.pen = info.isPen
 
@@ -237,7 +236,8 @@ export class InputsManager {
   pointerMove(screenPoint: VecLike, pagePoint: VecLike, modifiers: InputModifiers, dragDistanceSquared = 16): void {
     this.updateModifiers(modifiers)
     this.update(screenPoint, pagePoint)
-    if (this.pointing.get() && Vec.Dist2(this.originScreenPoint, screenPoint) > dragDistanceSquared) this.dragging = true
+    if (this.pointing.get() && Vec.Dist2(this.originScreenPoint, screenPoint) > dragDistanceSquared)
+      this.dragging = true
   }
 
   pointerUp(screenPoint: VecLike, pagePoint: VecLike, modifiers: InputModifiers): void {

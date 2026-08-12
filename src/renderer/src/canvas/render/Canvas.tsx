@@ -39,17 +39,13 @@ export function Canvas<Shape extends CanvasShapeRecord>({
   const pageLayerRef = useRef<HTMLDivElement>(null)
   const rootRef = useRef<HTMLDivElement | null>(null)
 
-  useQuickReactor(
-    'canvas camera transform',
-    () => {
-      const camera = host.getCamera()
-      setStyle(pageLayerRef.current, 'transform', cameraCssTransform(camera))
-      const { zoom, scale } = cameraZoomVariables(camera.z)
-      setStyle(rootRef.current, CANVAS_ZOOM_VARIABLE, zoom)
-      setStyle(rootRef.current, CANVAS_SCALE_VARIABLE, scale)
-    },
-    [host]
-  )
+  useQuickReactor('canvas camera transform', () => {
+    const camera = host.getCamera()
+    setStyle(pageLayerRef.current, 'transform', cameraCssTransform(camera))
+    const { zoom, scale } = cameraZoomVariables(camera.z)
+    setStyle(rootRef.current, CANVAS_ZOOM_VARIABLE, zoom)
+    setStyle(rootRef.current, CANVAS_SCALE_VARIABLE, scale)
+  }, [host])
 
   useQuickReactor('canvas state attributes', () => {
     rootRef.current?.setAttribute(

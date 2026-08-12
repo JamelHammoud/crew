@@ -20,7 +20,17 @@ const { default: DesignChat } = await import('../src/renderer/src/components/Des
 const { useCrew } = await import('../src/renderer/src/state/store')
 
 const agent = (id: string, label: string) =>
-  ({ id, label, provider: 'claude', ownerId: 'jamel', ownerName: 'Jamel', status: 'idle', runs: {}, settings: {}, fields: [] }) as never
+  ({
+    id,
+    label,
+    provider: 'claude',
+    ownerId: 'jamel',
+    ownerName: 'Jamel',
+    status: 'idle',
+    runs: {},
+    settings: {},
+    fields: []
+  }) as never
 
 const thread = (id: string, agentId: string, agentLabel: string, title: string) =>
   ({

@@ -1,5 +1,13 @@
 import type { CSSProperties } from 'react'
-import { nodeShapeOf, type DesignNodeProps, type Effect, type Layout, type Paint, type Stroke, type TypeStyle } from '../../../shared/designNode'
+import {
+  nodeShapeOf,
+  type DesignNodeProps,
+  type Effect,
+  type Layout,
+  type Paint,
+  type Stroke,
+  type TypeStyle
+} from '../../../shared/designNode'
 import { trimEdges, trimStyle, type TrimFont } from '../canvas/text/trim'
 import { fontStack } from './fonts'
 import { polygonClip, type UnitPoint } from './nodeShape'
@@ -24,7 +32,8 @@ function stopList(stops: Array<{ color: string; at: number }>): string {
 }
 
 function paintLayer(paint: Paint): string | null {
-  if (paint.type === 'solid') return `linear-gradient(${withOpacity(paint.color, paint.opacity)}, ${withOpacity(paint.color, paint.opacity)})`
+  if (paint.type === 'solid')
+    return `linear-gradient(${withOpacity(paint.color, paint.opacity)}, ${withOpacity(paint.color, paint.opacity)})`
   if (paint.type === 'linear') return `linear-gradient(${paint.angle}deg, ${stopList(paint.stops)})`
   if (paint.type === 'radial') return `radial-gradient(circle at 50% 50%, ${stopList(paint.stops)})`
   return null
@@ -56,7 +65,8 @@ function effectStyle(effects: Effect[]): { shadows: string[]; filter: string[]; 
   const backdrop: string[] = []
   for (const effect of effects) {
     if (!effect.visible) continue
-    if (effect.type === 'shadow') shadows.push(`${effect.x}px ${effect.y}px ${effect.blur}px ${effect.spread}px ${effect.color}`)
+    if (effect.type === 'shadow')
+      shadows.push(`${effect.x}px ${effect.y}px ${effect.blur}px ${effect.spread}px ${effect.color}`)
     else if (effect.type === 'inner-shadow')
       shadows.push(`inset ${effect.x}px ${effect.y}px ${effect.blur}px ${effect.spread}px ${effect.color}`)
     else if (effect.type === 'layer-blur') filter.push(`blur(${effect.blur}px)`)
@@ -174,7 +184,8 @@ export function polygonStyle(props: DesignNodeProps): CSSProperties {
   const filter: string[] = []
   for (const effect of props.effects) {
     if (!effect.visible) continue
-    if (effect.type === 'shadow') filter.push(`drop-shadow(${effect.x}px ${effect.y}px ${effect.blur}px ${effect.color})`)
+    if (effect.type === 'shadow')
+      filter.push(`drop-shadow(${effect.x}px ${effect.y}px ${effect.blur}px ${effect.color})`)
     else if (effect.type === 'layer-blur') filter.push(`blur(${effect.blur}px)`)
   }
   return {

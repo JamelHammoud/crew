@@ -101,7 +101,12 @@ export default function ChangeList({
                 label="Discard all changes"
                 icon={<UndoGlyph className="w-3.5 h-3.5" />}
                 danger
-                onClick={() => rows.onDiscard(groups.loose.map(one => one.path), many(groups.loose.length))}
+                onClick={() =>
+                  rows.onDiscard(
+                    groups.loose.map(one => one.path),
+                    many(groups.loose.length)
+                  )
+                }
               />
               <SectionAction
                 label="Stage all changes"

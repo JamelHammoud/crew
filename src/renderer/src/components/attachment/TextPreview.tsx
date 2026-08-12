@@ -41,7 +41,10 @@ export default function TextPreview({
       <div className="min-h-full py-3 min-w-max font-mono text-xs leading-5 select-text">
         {rows.map(row => (
           <div key={row.line} className="flex px-4">
-            <span style={{ minWidth: gutter }} className="shrink-0 mr-4 text-right select-none tabular-nums text-fg-faint">
+            <span
+              style={{ minWidth: gutter }}
+              className="shrink-0 mr-4 text-right select-none tabular-nums text-fg-faint"
+            >
               {row.line}
             </span>
             <span className="whitespace-pre text-fg-secondary pr-4">

@@ -40,9 +40,7 @@ describe('game scores', () => {
 
     sam.send({ type: 'game.score', gameId: 'tetris', score: 1200 })
     const landed = await ali.waitFor(m => m.type === 'game.scores')
-    expect(scoresOf(landed)).toEqual([
-      expect.objectContaining({ gameId: 'tetris', name: 'sam', score: 1200 })
-    ])
+    expect(scoresOf(landed)).toEqual([expect.objectContaining({ gameId: 'tetris', name: 'sam', score: 1200 })])
   })
 
   it('holds one row per person per game, their best', async () => {
@@ -107,9 +105,7 @@ describe('game scores', () => {
     await new Promise(r => setTimeout(r, 250))
     runner.close()
 
-    expect(host.session.snapshot().gameScores).toEqual([
-      expect.objectContaining({ name: 'sam', score: 500 })
-    ])
+    expect(host.session.snapshot().gameScores).toEqual([expect.objectContaining({ name: 'sam', score: 500 })])
   })
 
   // A high score lasts, so it is written down and read back. The last one in the

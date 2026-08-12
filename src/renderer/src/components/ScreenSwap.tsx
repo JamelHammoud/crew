@@ -89,9 +89,7 @@ export default function ScreenSwap({
     if (fill || !el) return
     const measure = () =>
       setBox(was =>
-        was && was.h === el.offsetHeight && was.w === el.offsetWidth
-          ? was
-          : { h: el.offsetHeight, w: el.offsetWidth }
+        was && was.h === el.offsetHeight && was.w === el.offsetWidth ? was : { h: el.offsetHeight, w: el.offsetWidth }
       )
     measure()
     if (typeof ResizeObserver === 'undefined') return
@@ -115,9 +113,7 @@ export default function ScreenSwap({
             data-screen={gone ? gone.screen : screen}
             aria-hidden={gone ? true : undefined}
             className={`absolute inset-0 [--screen-travel:24px] ${
-              gone
-                ? `pointer-events-none ${gone.back ? 'animate-screen-out-back' : 'animate-screen-out'}`
-                : arriving
+              gone ? `pointer-events-none ${gone.back ? 'animate-screen-out-back' : 'animate-screen-out'}` : arriving
             }`}
           >
             {gone ? gone.node : children}
@@ -132,11 +128,7 @@ export default function ScreenSwap({
       style={box === null ? undefined : { height: box.h, width: width ? box.w : undefined }}
       className={`relative rounded-[inherit] transition-[height,width] duration-200 ease-out ${moving ? 'overflow-hidden' : 'overflow-visible'}`}
     >
-      <div
-        key={screen}
-        ref={inner}
-        className={`rounded-[inherit] ${width ? 'w-max' : ''} ${arriving}`}
-      >
+      <div key={screen} ref={inner} className={`rounded-[inherit] ${width ? 'w-max' : ''} ${arriving}`}>
         {children}
       </div>
     </div>

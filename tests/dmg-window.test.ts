@@ -10,13 +10,17 @@ const dmg = build.dmg
 const half = DMG.iconSize / 2
 
 const hex = (...channels: number[]): string =>
-  `#${channels.map(one => Math.round(one * 255).toString(16).padStart(2, '0')).join('')}`
+  `#${channels
+    .map(one =>
+      Math.round(one * 255)
+        .toString(16)
+        .padStart(2, '0')
+    )
+    .join('')}`
 
 const luminance = (colour: string): number => {
   const channels = [1, 3, 5].map(from => parseInt(colour.slice(from, from + 2), 16) / 255)
-  const [red, green, blue] = channels.map(one =>
-    one <= 0.03928 ? one / 12.92 : ((one + 0.055) / 1.055) ** 2.4
-  )
+  const [red, green, blue] = channels.map(one => (one <= 0.03928 ? one / 12.92 : ((one + 0.055) / 1.055) ** 2.4))
   return red * 0.2126 + green * 0.7152 + blue * 0.0722
 }
 

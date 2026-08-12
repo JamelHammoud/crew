@@ -159,12 +159,17 @@ describe('the whole of what a thread was asked, off its own header', () => {
 
   // A card that says what the line already says is a card earning nothing.
   it('says nothing where the whole of it is already on the line', () => {
-    const { container } = open('@Bubbles the composer header fits this one', '@Bubbles the composer header fits this one')
+    const { container } = open(
+      '@Bubbles the composer header fits this one',
+      '@Bubbles the composer header fits this one'
+    )
 
     fireEvent.mouseEnter(
-      ([...container.querySelectorAll('button')].find(el =>
-        (el.textContent ?? '').startsWith('the composer header')
-      ) as HTMLElement).parentElement as HTMLElement
+      (
+        [...container.querySelectorAll('button')].find(el =>
+          (el.textContent ?? '').startsWith('the composer header')
+        ) as HTMLElement
+      ).parentElement as HTMLElement
     )
     act(() => {
       vi.advanceTimersByTime(400)

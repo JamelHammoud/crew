@@ -345,7 +345,9 @@ describe('what a saved board is worth once it is open', () => {
 })
 
 describe('the geometry every saved shape stands on', () => {
-  const JSDOM = createRequire(import.meta.url)('jsdom').JSDOM as new (html: string) => {
+  const JSDOM = createRequire(import.meta.url)('jsdom').JSDOM as new (
+    html: string
+  ) => {
     window: Window & typeof globalThis
   }
   const previousWindow = Object.getOwnPropertyDescriptor(globalThis, 'window')
@@ -370,7 +372,9 @@ describe('the geometry every saved shape stands on', () => {
     const { defaultShapeUtils } = await import('../src/renderer/src/canvas/shapes')
     const { DesignNodeUtil } = await import('../src/renderer/src/design/DesignNodeUtil')
     const utils = new Map<string, { getGeometry(shape: TLRecord): { bounds: Box; vertices: Vec[] } }>()
-    for (const Util of [...defaultShapeUtils, DesignNodeUtil] as unknown as (new (editor: object) => {
+    for (const Util of [...defaultShapeUtils, DesignNodeUtil] as unknown as (new (
+      editor: object
+    ) => {
       getGeometry(shape: TLRecord): { bounds: Box; vertices: Vec[] }
     })[]) {
       utils.set((Util as unknown as { type: string }).type, new Util({}))

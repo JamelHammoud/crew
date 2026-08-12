@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { DOC_EDGE, DOC_GUTTER, DOC_MAX_W, DOC_TOP, docLeft, trailInset } from '../src/renderer/src/components/doc/docsLayout'
+import {
+  DOC_EDGE,
+  DOC_GUTTER,
+  DOC_MAX_W,
+  DOC_TOP,
+  docLeft,
+  trailInset
+} from '../src/renderer/src/components/doc/docsLayout'
 import { HEADER_EDGE } from '../src/renderer/src/state/headerSlot'
 
 const RAIL = 264

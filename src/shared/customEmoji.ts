@@ -96,10 +96,7 @@ export function customEmojiUrl(httpBase: string, file: string): string {
   return `${httpBase}/emoji/${file}`
 }
 
-export function findCustomEmoji(
-  list: readonly CustomEmoji[],
-  name: string
-): CustomEmoji | undefined {
+export function findCustomEmoji(list: readonly CustomEmoji[], name: string): CustomEmoji | undefined {
   return list.find(emoji => emoji.name === name)
 }
 

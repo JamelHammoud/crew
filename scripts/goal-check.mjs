@@ -77,7 +77,8 @@ try {
 
   const missing = []
   if (prompt.length <= 4000) missing.push('the prompt is short enough that this check never tries the case that broke')
-  if (/limited to \d+ characters/i.test(said)) missing.push('the CLI read the whole prompt as the condition and refused it')
+  if (/limited to \d+ characters/i.test(said))
+    missing.push('the CLI read the whole prompt as the condition and refused it')
   if (!notes.includes('third')) missing.push('what the prompt asked for never happened')
   if (!notes.includes('fourth')) missing.push('the run stopped without meeting the condition, so the goal never landed')
 

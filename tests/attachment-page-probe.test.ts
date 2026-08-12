@@ -116,9 +116,7 @@ describe('a page somebody attached', () => {
     render(createElement(BrowserPanel))
 
     await waitFor(() => expect(drawing()).not.toBeNull())
-    expect(drawing()!.getAttribute('src')).toBe(
-      `data:image/svg+xml;utf8,${encodeURIComponent(DRAWING)}`
-    )
+    expect(drawing()!.getAttribute('src')).toBe(`data:image/svg+xml;utf8,${encodeURIComponent(DRAWING)}`)
     expect(stood).toEqual([])
 
     fireEvent.click(screen.getByLabelText('Show the text'))

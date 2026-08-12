@@ -1,22 +1,8 @@
 import type { Editor } from '../canvas'
-import {
-  activateTool,
-  addFrame,
-  FRAME_PRESETS,
-  type DesignTool,
-  type DesignToolGroup
-} from '../design/tools'
+import { activateTool, addFrame, FRAME_PRESETS, type DesignTool, type DesignToolGroup } from '../design/tools'
 import { MenuDivider, MenuItem, Popover } from './Popover'
 
-function Row({
-  tool,
-  active,
-  onPick
-}: {
-  tool: DesignTool
-  active: boolean
-  onPick: () => void
-}) {
+function Row({ tool, active, onPick }: { tool: DesignTool; active: boolean; onPick: () => void }) {
   return (
     <button
       onClick={onPick}

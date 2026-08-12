@@ -177,7 +177,13 @@ export function cleanPaint(value: unknown): Paint | null {
   if (paint.type === 'linear') {
     const stops = cleanStops((paint as { stops?: unknown }).stops)
     if (stops.length === 0) return null
-    return { type: 'linear', angle: clamp((paint as { angle?: number }).angle, -360, 360, 180), stops, opacity, visible }
+    return {
+      type: 'linear',
+      angle: clamp((paint as { angle?: number }).angle, -360, 360, 180),
+      stops,
+      opacity,
+      visible
+    }
   }
   if (paint.type === 'radial') {
     const stops = cleanStops((paint as { stops?: unknown }).stops)

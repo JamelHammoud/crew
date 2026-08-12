@@ -1,12 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-  type RefObject
-} from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs'
 import workerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url'
 import type { PDFDocumentLoadingTask, PDFDocumentProxy, PDFPageProxy, RenderTask } from 'pdfjs-dist'
@@ -184,18 +176,8 @@ export default function PdfPreview({ url, name }: { url: string; name: string })
   return (
     <div className="absolute inset-0">
       <style>{TEXT_CSS}</style>
-      <FindBar
-        containerRef={column}
-        scrollerRef={scroller}
-        placeholder="Find in this file"
-        className="top-4 right-4"
-      />
-      <div
-        ref={scroller}
-        data-pdf
-        aria-label={name}
-        className="absolute inset-0 overflow-auto select-text"
-      >
+      <FindBar containerRef={column} scrollerRef={scroller} placeholder="Find in this file" className="top-4 right-4" />
+      <div ref={scroller} data-pdf aria-label={name} className="absolute inset-0 overflow-auto select-text">
         <div ref={column} className="w-max min-w-full flex flex-col items-center gap-4 p-3">
           {Array.from({ length: doc?.numPages ?? 1 }, (_, i) => (
             <Paper
@@ -368,10 +350,10 @@ function useNear(ref: RefObject<HTMLElement | null>): boolean {
       setNear(true)
       return
     }
-    const watch = new IntersectionObserver(
-      marks => setNear(marks[marks.length - 1].isIntersecting),
-      { root: el.closest('[data-pdf]'), rootMargin: NEAR }
-    )
+    const watch = new IntersectionObserver(marks => setNear(marks[marks.length - 1].isIntersecting), {
+      root: el.closest('[data-pdf]'),
+      rootMargin: NEAR
+    })
     watch.observe(el)
     return () => watch.disconnect()
   }, [ref])

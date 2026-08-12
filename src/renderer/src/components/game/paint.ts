@@ -32,11 +32,7 @@ export const GROUND_COLOR = '#2c3a5e'
 // screen packs into a point, or every edge in the game comes out soft on a
 // retina display. The context comes back already scaled, so nothing that draws
 // has to know any of it.
-export function fitCanvas(
-  canvas: HTMLCanvasElement,
-  width: number,
-  height: number
-): CanvasRenderingContext2D | null {
+export function fitCanvas(canvas: HTMLCanvasElement, width: number, height: number): CanvasRenderingContext2D | null {
   const dpr = window.devicePixelRatio || 1
   const w = Math.max(1, Math.round(width * dpr))
   const h = Math.max(1, Math.round(height * dpr))
@@ -50,14 +46,7 @@ export function fitCanvas(
   return ctx
 }
 
-export function roundRect(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  r: number
-): void {
+export function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number): void {
   const radius = Math.max(0, Math.min(r, Math.min(w, h) / 2))
   ctx.beginPath()
   ctx.moveTo(x + radius, y)
@@ -70,13 +59,7 @@ export function roundRect(
 
 // One block of a piece. The lighter face along the top is what tells a stack of
 // them from a wall of one color.
-export function block(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  size: number,
-  color: string
-): void {
+export function block(ctx: CanvasRenderingContext2D, x: number, y: number, size: number, color: string): void {
   const pad = Math.max(0.5, size * 0.07)
   const side = size - pad * 2
   roundRect(ctx, x + pad, y + pad, side, side, Math.max(1.5, size * 0.22))
@@ -88,13 +71,7 @@ export function block(
   ctx.fill()
 }
 
-export function outline(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  size: number,
-  color: string
-): void {
+export function outline(ctx: CanvasRenderingContext2D, x: number, y: number, size: number, color: string): void {
   const pad = Math.max(0.5, size * 0.07)
   roundRect(ctx, x + pad, y + pad, size - pad * 2, size - pad * 2, Math.max(1.5, size * 0.22))
   ctx.strokeStyle = color
@@ -132,13 +109,7 @@ export function pipe(
 
 // The bird tips with what it is doing rather than staying level, so a fall reads
 // as a fall and a flap reads as one without anything else being drawn.
-export function bird(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  vy: number,
-  r = BIRD.r
-): void {
+export function bird(ctx: CanvasRenderingContext2D, x: number, y: number, vy: number, r = BIRD.r): void {
   ctx.save()
   ctx.translate(x, y)
   ctx.rotate(Math.max(-0.5, Math.min(0.9, vy / 420)))

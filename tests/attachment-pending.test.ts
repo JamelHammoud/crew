@@ -32,8 +32,7 @@ const bytes = (size: number): Uint8Array => {
   return made
 }
 
-const fileOf = (name: string, mime: string, size = BIG): File =>
-  new page.File([bytes(size)], name, { type: mime })
+const fileOf = (name: string, mime: string, size = BIG): File => new page.File([bytes(size)], name, { type: mime })
 
 let painted: Array<{ width: number; height: number }> = []
 let handed: string[] = []

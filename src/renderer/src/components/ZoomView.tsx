@@ -1,11 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type PointerEvent as ReactPointerEvent,
-  type ReactNode
-} from 'react'
+import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
 import Tooltip from './Tooltip'
 import { FIT, panBy, pinchFactor, settle, zoomBy, zoomPercent, type Box, type Point, type View } from './zoom'
 

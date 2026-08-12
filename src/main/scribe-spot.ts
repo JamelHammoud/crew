@@ -43,12 +43,8 @@ export const PILL_LARGEST = {
 
 export function fits(size: Size): Size {
   return {
-    width: Math.round(
-      Math.max(PILL_SMALLEST.width, Math.min(size.width, PILL_LARGEST.width))
-    ),
-    height: Math.round(
-      Math.max(PILL_SMALLEST.height, Math.min(size.height, PILL_LARGEST.height))
-    )
+    width: Math.round(Math.max(PILL_SMALLEST.width, Math.min(size.width, PILL_LARGEST.width))),
+    height: Math.round(Math.max(PILL_SMALLEST.height, Math.min(size.height, PILL_LARGEST.height)))
   }
 }
 

@@ -154,11 +154,7 @@ export function Popover({
       return { left, top }
     }
     let left =
-      align === 'start'
-        ? rect.left
-        : align === 'center'
-          ? rect.left + rect.width / 2 - size.w / 2
-          : rect.right - size.w
+      align === 'start' ? rect.left : align === 'center' ? rect.left + rect.width / 2 - size.w / 2 : rect.right - size.w
     left = Math.max(8, Math.min(left, window.innerWidth - size.w - 8))
     const fits = (choice: 'top' | 'bottom') =>
       choice === 'bottom' ? rect.bottom + 8 + size.h <= window.innerHeight - 8 : rect.top - 8 - size.h >= 8
@@ -296,12 +292,7 @@ export function SubMenu({
   const menu = useHoverMenu(rowRef)
 
   return (
-    <div
-      ref={rowRef}
-      onPointerEnter={menu.show}
-      onPointerLeave={menu.leave}
-      className="relative"
-    >
+    <div ref={rowRef} onPointerEnter={menu.show} onPointerLeave={menu.leave} className="relative">
       <div
         onClick={menu.press}
         className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm whitespace-nowrap transition-colors ${
@@ -313,14 +304,7 @@ export function SubMenu({
         <ChevronRightGlyph className="w-3.5 h-3.5 shrink-0 text-fg/40" />
       </div>
       {menu.open && menu.at && (
-        <Popover
-          open
-          onClose={menu.close}
-          at={menu.at}
-          anchor={rowRef}
-          maxHeight={maxHeight}
-          flush
-        >
+        <Popover open onClose={menu.close} at={menu.at} anchor={rowRef} maxHeight={maxHeight} flush>
           <div className="p-1.5" onPointerEnter={menu.hold} onPointerLeave={menu.leave}>
             {children}
           </div>

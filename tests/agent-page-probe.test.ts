@@ -24,8 +24,7 @@ beforeEach(() => {
   for (const key of Object.keys(located)) delete located[key]
   useBrowser.setState({ tabs: [], activeTabId: null, open: false })
   vi.stubGlobal('crew', {
-    locatePath: (path: string): Promise<PathLocation> =>
-      Promise.resolve(located[path] ?? { kind: 'private' })
+    locatePath: (path: string): Promise<PathLocation> => Promise.resolve(located[path] ?? { kind: 'private' })
   })
 })
 
@@ -55,18 +54,11 @@ describe('what a shown file opens in', () => {
     inRepo(`${REPO}/theme.css`, 'theme.css')
     inRepo(`${REPO}/Button.tsx`, 'Button.tsx')
 
-    await openShown([
-      `file://${REPO}/theme.css`,
-      `file://${REPO}/Button.tsx`,
-      'http://localhost:5173'
-    ])
+    await openShown([`file://${REPO}/theme.css`, `file://${REPO}/Button.tsx`, 'http://localhost:5173'])
 
     const tabs = useBrowser.getState().tabs
     // They stand in the order they were named.
-    expect(tabs.filter(tab => tab.kind === 'file').map(tab => tab.path)).toEqual([
-      'theme.css',
-      'Button.tsx'
-    ])
+    expect(tabs.filter(tab => tab.kind === 'file').map(tab => tab.path)).toEqual(['theme.css', 'Button.tsx'])
     expect(tabs.filter(tab => tab.kind === 'web').map(tab => tab.url)).toEqual(['http://localhost:5173'])
     // Showing something stands the panel up, and the first one named is the one
     // being read.
@@ -112,9 +104,7 @@ describe('the row a showing leaves behind', () => {
     // A crew that showed a page before a call could name several wrote one url,
     // and that row still stands.
     const old = buildThread([shownEvent({ url: 'file:///Users/sam/site/index.html' })], {}, 'sam')
-    expect(old.find(item => item.kind === 'page')?.shown?.pages).toEqual([
-      'file:///Users/sam/site/index.html'
-    ])
+    expect(old.find(item => item.kind === 'page')?.shown?.pages).toEqual(['file:///Users/sam/site/index.html'])
   })
 })
 
@@ -161,7 +151,9 @@ const ranEvent = (ts: number): SessionEvent =>
     threadId: 't1'
   }) as SessionEvent
 
-const thought = { [RUN]: [{ id: 's1', ts: 1, kind: 'thinking' as const, status: 'done' as const, text: 'weighing it' }] }
+const thought = {
+  [RUN]: [{ id: 's1', ts: 1, kind: 'thinking' as const, status: 'done' as const, text: 'weighing it' }]
+}
 
 const alsoRead = {
   [RUN]: [
@@ -171,7 +163,17 @@ const alsoRead = {
 }
 
 const endedEvent = (ts: number): SessionEvent =>
-  ({ id: `end-${ts}`, ts, kind: 'agent.end', promptId: RUN, agentId: 'a1', agentLabel: 'Bubbles', ok: true, text: '', threadId: 't1' }) as SessionEvent
+  ({
+    id: `end-${ts}`,
+    ts,
+    kind: 'agent.end',
+    promptId: RUN,
+    agentId: 'a1',
+    agentLabel: 'Bubbles',
+    ok: true,
+    text: '',
+    threadId: 't1'
+  }) as SessionEvent
 
 describe('where a page row sits in the run that showed it', () => {
   const rowOf = (word: string): HTMLElement | null => screen.getByText(word).closest('div')
@@ -186,10 +188,7 @@ describe('where a page row sits in the run that showed it', () => {
   })
 
   it('stands clear of a run that is not its own', () => {
-    const events = [
-      ranEvent(1),
-      shownEvent({ ts: 2, promptId: 'other', pages: ['http://localhost:5173'] })
-    ]
+    const events = [ranEvent(1), shownEvent({ ts: 2, promptId: 'other', pages: ['http://localhost:5173'] })]
     render(createElement(ThreadItems, { items: buildThread(events, thought, 'sam'), threadId: 't1' }))
     expect(rowOf('Showed')?.className).not.toContain('-mt-3')
   })

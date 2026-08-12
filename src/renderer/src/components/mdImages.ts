@@ -34,9 +34,7 @@ const bare = (src: string): string => {
 export function imagePath(file: string, src: string): string {
   const target = bare(src)
   const local = file.startsWith('/')
-  const parts = target.startsWith('/')
-    ? target.split('/')
-    : [...file.split('/').slice(0, -1), ...target.split('/')]
+  const parts = target.startsWith('/') ? target.split('/') : [...file.split('/').slice(0, -1), ...target.split('/')]
   const stack: string[] = []
   for (const part of parts) {
     if (part === '' || part === '.') continue

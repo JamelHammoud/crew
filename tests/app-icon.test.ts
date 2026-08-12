@@ -6,13 +6,7 @@ import { fromSource, wearsBlueprint } from '../src/main/from-source'
 import { DARK_ICON, DEV_DARK_ICON, DEV_LIGHT_ICON, LIGHT_ICON, SKIN_ICONS } from '../src/main/icon-png'
 import { APP_ICONS, PICTURE_ICONS } from '../src/shared/appIcon'
 import { ICON_ART } from '../src/renderer/src/components/settings/icon-art'
-import {
-  MARK_CUT,
-  MARK_DISCS,
-  MARK_HEIGHT,
-  MARK_RADIUS,
-  MARK_WIDTH
-} from '../src/renderer/src/components/crew-mark'
+import { MARK_CUT, MARK_DISCS, MARK_HEIGHT, MARK_RADIUS, MARK_WIDTH } from '../src/renderer/src/components/crew-mark'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const svg = (name: string) => readFileSync(path.join(root, 'resources', name), 'utf8')
@@ -32,13 +26,10 @@ const stack = (source: string) => {
       depth: Number(match[4])
     }))
     .sort((a, b) => a.x - b.x)
-  return drawn.filter(
-    (disc, index) => drawn.findIndex(other => other.x === disc.x) === index
-  )
+  return drawn.filter((disc, index) => drawn.findIndex(other => other.x === disc.x) === index)
 }
 
-const layer = (source: string, id: string) =>
-  source.match(new RegExp(`<g fill="url\\(#${id}\\)"[^]*?</g>`))?.[0] ?? ''
+const layer = (source: string, id: string) => source.match(new RegExp(`<g fill="url\\(#${id}\\)"[^]*?</g>`))?.[0] ?? ''
 
 const cuts = (source: string, depth: number) => {
   const mask = source.match(new RegExp(`<mask id="cut-${depth}"[^]*?</mask>`))?.[0] ?? ''
@@ -133,9 +124,7 @@ describe('app icon', () => {
 
   it('keeps every specular inside the disc it shines on', () => {
     for (const name of BLUEPRINT) {
-      const shines = [
-        ...layer(svg(name), 'gloss').matchAll(/<ellipse [^>]*mask="url\(#cut-(\d)\)"/g)
-      ]
+      const shines = [...layer(svg(name), 'gloss').matchAll(/<ellipse [^>]*mask="url\(#cut-(\d)\)"/g)]
 
       expect(shines.map(shine => shine[1])).toEqual(['0', '1', '2'])
     }
@@ -209,9 +198,7 @@ describe('the pictures', () => {
   // The Gradient tile is a real generated cover rather than a drawing of one, so
   // the picture itself has to be in the file.
   it('photographs the gradient tile with the shader the music uses', () => {
-    expect(svg('icon-gradient.svg')).toMatch(
-      /<image [^>]*href="data:image\/png;base64,[A-Za-z0-9+/=]{2000,}"/
-    )
+    expect(svg('icon-gradient.svg')).toMatch(/<image [^>]*href="data:image\/png;base64,[A-Za-z0-9+/=]{2000,}"/)
   })
 
   it('ships one square image per picture for the dock', () => {
@@ -241,9 +228,7 @@ describe('dev blueprint', () => {
   it('rules the paper square and keeps it inside the tile', () => {
     for (const name of BLUEPRINT) {
       const source = svg(name)
-      const vertical = [...source.matchAll(/<line x1="([\d.]+)" y1="100"/g)].map(match =>
-        Number(match[1])
-      )
+      const vertical = [...source.matchAll(/<line x1="([\d.]+)" y1="100"/g)].map(match => Number(match[1]))
       const gaps = vertical.slice(1).map((at, index) => Math.round(at - vertical[index]))
 
       expect(source).toContain('clip-path="url(#tile-clip)"')
@@ -257,9 +242,7 @@ describe('dev blueprint', () => {
 
   it('divides the tile into four squares each way, one rule through the middle', () => {
     for (const name of BLUEPRINT) {
-      const vertical = [...svg(name).matchAll(/<line x1="([\d.]+)" y1="100"/g)].map(match =>
-        Number(match[1])
-      )
+      const vertical = [...svg(name).matchAll(/<line x1="([\d.]+)" y1="100"/g)].map(match => Number(match[1]))
 
       expect(vertical).toHaveLength(3)
       expect(vertical[1]).toBe(100 + 824 / 2)
@@ -286,9 +269,7 @@ describe('picking an icon', () => {
   // yarn dev renames the binary to Crew, which is what app.isPackaged reads,
   // so the dev build claimed to be packaged and wore the shipping icon.
   it('is not fooled by a dev binary named like the shipping app', () => {
-    expect(
-      fromSource('/Users/someone/crew/node_modules/electron/dist/Crew.app/Contents/MacOS/Crew')
-    ).toBe(true)
+    expect(fromSource('/Users/someone/crew/node_modules/electron/dist/Crew.app/Contents/MacOS/Crew')).toBe(true)
   })
 
   it('wears the shipping icon once installed', () => {
@@ -315,9 +296,7 @@ describe('picking an icon', () => {
     const scripts = JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8')).scripts
     const [, asked] = scripts.start.match(/CREW_SHIPPING_ICON=(\S+)/) ?? []
 
-    expect(wearsBlueprint('/Users/someone/Repositories/crew', { CREW_SHIPPING_ICON: asked })).toBe(
-      false
-    )
+    expect(wearsBlueprint('/Users/someone/Repositories/crew', { CREW_SHIPPING_ICON: asked })).toBe(false)
     expect(scripts.preview).not.toContain('CREW_SHIPPING_ICON')
   })
 

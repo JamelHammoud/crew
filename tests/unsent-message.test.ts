@@ -30,8 +30,7 @@ const { CHAT_KEY, useCrew } = await import('../src/renderer/src/state/store')
 
 const socket = (): FakeSocket => sockets[0]
 
-const refuse = (text: string, where?: string): void =>
-  socket().onMessage({ type: 'notice', text, unsent: true, where })
+const refuse = (text: string, where?: string): void => socket().onMessage({ type: 'notice', text, unsent: true, where })
 
 const picture = (id: string) => ({ id, name: 'shot.png', mime: 'image/png', size: 4, data: 'aaaa' })
 

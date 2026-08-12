@@ -100,22 +100,13 @@ async function within<T>(work: Promise<T>, instead: T): Promise<T> {
   }
 }
 
-export async function askCaret(
-  ours: OwnCaret = elsewhere,
-  platform: string = process.platform
-): Promise<Landing> {
-  const own = await within(
-    Promise.resolve().then(ours),
-    null
-  )
+export async function askCaret(ours: OwnCaret = elsewhere, platform: string = process.platform): Promise<Landing> {
+  const own = await within(Promise.resolve().then(ours), null)
   if (own) return own
   if (platform !== 'darwin') return 'unknown'
   return new Promise(answer => {
-    execFile(
-      'osascript',
-      ['-e', CARET_SCRIPT],
-      { timeout: PATIENCE_MS },
-      (problem, printed) => answer(problem ? 'unknown' : landingOf(printed))
+    execFile('osascript', ['-e', CARET_SCRIPT], { timeout: PATIENCE_MS }, (problem, printed) =>
+      answer(problem ? 'unknown' : landingOf(printed))
     )
   })
 }

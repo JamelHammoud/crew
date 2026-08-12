@@ -9,8 +9,7 @@ import { BANDS, bandsFrom, restingOrb, stepOrb } from './orb'
 // and reads as a straight line across the side of a sphere.
 const ROOM = 0.56
 
-const stillness = (): boolean =>
-  globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true
+const stillness = (): boolean => globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true
 
 export default function VoiceOrb({ className = '' }: { className?: string }) {
   const box = useRef<HTMLDivElement>(null)

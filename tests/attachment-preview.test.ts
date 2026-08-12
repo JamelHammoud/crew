@@ -49,14 +49,18 @@ describe('a sheet', () => {
 
   it('reads every sheet in a workbook under its own name', () => {
     const book = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(book, XLSX.utils.aoa_to_sheet([['a', 'b'], [1, 2]]), 'First')
+    XLSX.utils.book_append_sheet(
+      book,
+      XLSX.utils.aoa_to_sheet([
+        ['a', 'b'],
+        [1, 2]
+      ]),
+      'First'
+    )
     XLSX.utils.book_append_sheet(book, XLSX.utils.aoa_to_sheet([['c'], ['three']]), 'Second')
     const bytes = XLSX.write(book, { type: 'array', bookType: 'xlsx' }) as ArrayBuffer
 
-    const sheets = sheetsFrom(
-      bytes,
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    )
+    const sheets = sheetsFrom(bytes, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
     expect(sheets.map(one => one.name)).toEqual(['First', 'Second'])
     expect(sheets[0]!.rows).toEqual([

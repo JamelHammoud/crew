@@ -13,7 +13,15 @@ function tidy(hex: string): string {
   return clean.length === 9 && clean.endsWith('ff') ? clean.slice(0, 7) : clean
 }
 
-function OpacitySlider({ color, value, onChange }: { color: string; value: number; onChange: (value: number) => void }) {
+function OpacitySlider({
+  color,
+  value,
+  onChange
+}: {
+  color: string
+  value: number
+  onChange: (value: number) => void
+}) {
   return (
     <span className="design-picker__opacity" style={{ '--opacity-color': color.slice(0, 7) } as CSSProperties}>
       <input
@@ -62,10 +70,7 @@ export default function ColorPicker({
       {opacity !== undefined && onOpacity && <OpacitySlider color={value} value={opacity} onChange={onOpacity} />}
       <div className="flex items-center gap-1">
         <span className="flex-1 min-w-0 h-8 flex items-center gap-2 rounded-full bg-fg/[0.06] px-3 focus-within:bg-fg/[0.12] transition-colors">
-          <span
-            style={{ background: value }}
-            className="w-4 h-4 shrink-0 rounded-full ring-1 ring-inset ring-fg/15"
-          />
+          <span style={{ background: value }} className="w-4 h-4 shrink-0 rounded-full ring-1 ring-inset ring-fg/15" />
           <input
             value={draft}
             onChange={event => setDraft(event.target.value)}

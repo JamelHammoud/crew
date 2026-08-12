@@ -3,9 +3,7 @@ import { fireEvent, render } from '@testing-library/react'
 import { createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 
-const { FIT, panBy, pinchFactor, settle, zoomBy, zoomPercent } = await import(
-  '../src/renderer/src/components/zoom'
-)
+const { FIT, panBy, pinchFactor, settle, zoomBy, zoomPercent } = await import('../src/renderer/src/components/zoom')
 const ImageView = (await import('../src/renderer/src/components/ImageView')).default
 
 const IMAGE = { width: 400, height: 200 }
@@ -26,11 +24,9 @@ function view() {
   return { container, frame, image, drawn: drawnIn(container) }
 }
 
-const drawnIn = (container: Element): HTMLElement =>
-  container.querySelector('[data-zoom-content]') as HTMLElement
+const drawnIn = (container: Element): HTMLElement => container.querySelector('[data-zoom-content]') as HTMLElement
 
-const scaleOf = (drawn: HTMLElement): number =>
-  Number(/scale\(([\d.]+)\)/.exec(drawn.style.transform)?.[1] ?? 0)
+const scaleOf = (drawn: HTMLElement): number => Number(/scale\(([\d.]+)\)/.exec(drawn.style.transform)?.[1] ?? 0)
 
 const offsetOf = (drawn: HTMLElement): { x: number; y: number } => {
   const match = /translate3d\((-?[\d.]+)px, (-?[\d.]+)px/.exec(drawn.style.transform)

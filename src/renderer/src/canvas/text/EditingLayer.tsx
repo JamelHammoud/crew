@@ -36,14 +36,10 @@ export function EditingLayer({ editor }: { editor: Editor }) {
 function EditingRichText({ editor, shape }: { editor: Editor; shape: EditableTextShape }) {
   const [textEditor, setTextEditor] = useState<TipTapEditor | null>(null)
   const mark = useRef<string | null>(null)
-  const transform = useValue(
-    'canvas editing transform',
-    () => {
-      const matrix = editor.getShapePageTransform(shape.id)
-      return matrix ? shapeCssTransform(matrix) : ''
-    },
-    [editor, shape.id]
-  )
+  const transform = useValue('canvas editing transform', () => {
+    const matrix = editor.getShapePageTransform(shape.id)
+    return matrix ? shapeCssTransform(matrix) : ''
+  }, [editor, shape.id])
   const width = useValue('canvas editing width', () => Math.max(1, editingBounds(editor, shape.id).w), [
     editor,
     shape.id

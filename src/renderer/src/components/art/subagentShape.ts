@@ -42,8 +42,7 @@ export const MIN_WAIST = 0.52
 
 // More lobes at the same depth is a tighter waist between each pair, so how far
 // they may stand out comes down as they multiply.
-const deepest = (lobes: number): number =>
-  ((1 - MIN_WAIST) / (1 + MIN_WAIST)) * (1 - (lobes - MIN_LOBES) * 0.07)
+const deepest = (lobes: number): number => ((1 - MIN_WAIST) / (1 + MIN_WAIST)) * (1 - (lobes - MIN_LOBES) * 0.07)
 
 // A page of flowers is a page of flowers. The covers hold the same rule with
 // their six casts, and it is what stops every mark being the same picture in a
@@ -92,7 +91,9 @@ const round = (n: number): number => Math.round(n * 1000) / 1000
 function smooth(points: Array<[number, number]>): string {
   const mid = (a: [number, number], b: [number, number]): [number, number] => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]
   const count = points.length
-  let path = `M ${mid(points[count - 1], points[0]).map(round).join(' ')}`
+  let path = `M ${mid(points[count - 1], points[0])
+    .map(round)
+    .join(' ')}`
   for (let i = 0; i < count; i++) {
     const next = points[(i + 1) % count]
     path += ` Q ${points[i].map(round).join(' ')} ${mid(points[i], next).map(round).join(' ')}`

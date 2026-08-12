@@ -50,7 +50,11 @@ describe('design nodes', () => {
         op: 'node',
         x: 0,
         y: 0,
-        fills: [{ type: 'solid', color: 'red', opacity: 1 }, { type: 'nonsense' }, { type: 'solid', color: '#ff0000', opacity: 0.5 }],
+        fills: [
+          { type: 'solid', color: 'red', opacity: 1 },
+          { type: 'nonsense' },
+          { type: 'solid', color: '#ff0000', opacity: 0.5 }
+        ],
         strokes: [{ color: 'not a hex', weight: 4 }],
         effects: [{ type: 'shadow', color: '#00000040' }, { type: 'made-up' }]
       }
@@ -91,7 +95,16 @@ describe('design nodes', () => {
   it('merges set onto what is already there and nests inside another node', () => {
     const document = freshDocument()
     const [card] = applyDesignOps(document, [
-      { op: 'node', x: 0, y: 0, w: 400, h: 300, name: 'Card', radius: 16, fills: [{ type: 'solid', color: '#141414', opacity: 1 }] }
+      {
+        op: 'node',
+        x: 0,
+        y: 0,
+        w: 400,
+        h: 300,
+        name: 'Card',
+        radius: 16,
+        fills: [{ type: 'solid', color: '#141414', opacity: 1 }]
+      }
     ]).results
     const [label] = applyDesignOps(document, [
       { op: 'node', x: 20, y: 20, parent: card.id, text: 'Revenue', type: { size: 20, weight: 600, color: '#ffffff' } }
@@ -116,9 +129,7 @@ describe('design nodes', () => {
 
   it('reads nodes back with every property an agent needs to keep designing', () => {
     const document = freshDocument()
-    applyDesignOps(document, [
-      { op: 'node', x: 10, y: 20, w: 100, h: 40, name: 'Pill', radius: 999, text: 'Live' }
-    ])
+    applyDesignOps(document, [{ op: 'node', x: 10, y: 20, w: 100, h: 40, name: 'Pill', radius: 999, text: 'Live' }])
     const summary = boardSummary('b-1abc', 'Board', document) as {
       shapes: Array<{ kind: string; name?: string; radius?: number[]; text?: string; x?: number }>
     }
@@ -134,7 +145,16 @@ describe('node styling', () => {
       ...nodeDefaults(),
       radius: [20, 20, 0, 0],
       fills: [
-        { type: 'linear', angle: 160, stops: [{ color: '#1e293b', at: 0 }, { color: '#0f172a', at: 1 }], opacity: 1, visible: true }
+        {
+          type: 'linear',
+          angle: 160,
+          stops: [
+            { color: '#1e293b', at: 0 },
+            { color: '#0f172a', at: 1 }
+          ],
+          opacity: 1,
+          visible: true
+        }
       ],
       strokes: [{ color: '#ffffff14', weight: 1, align: 'inside', style: 'solid', visible: true }],
       effects: [{ type: 'shadow', x: 0, y: 8, blur: 24, spread: -4, color: '#00000059', visible: true }]
@@ -166,7 +186,16 @@ describe('node styling', () => {
   it('lays out a container with flexbox when it has auto layout', () => {
     const style = nodeStyle({
       ...nodeDefaults(),
-      layout: { direction: 'row', gap: 12, padding: [8, 16, 8, 16], align: 'center', justify: 'between', wrap: false, sizeW: 'fixed', sizeH: 'hug' }
+      layout: {
+        direction: 'row',
+        gap: 12,
+        padding: [8, 16, 8, 16],
+        align: 'center',
+        justify: 'between',
+        wrap: false,
+        sizeW: 'fixed',
+        sizeH: 'hug'
+      }
     })
     expect(style.display).toBe('flex')
     expect(style.flexDirection).toBe('row')
@@ -183,7 +212,11 @@ describe('design nodes over HTTP', () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
 
     ui.send({ type: 'design.create', boardId: 'node-1abc', name: 'Nodes' })
-    ui.send({ type: 'design.init', boardId: 'node-1abc', document: { store: { 'page:page': { ...PAGE } }, schema: null } })
+    ui.send({
+      type: 'design.init',
+      boardId: 'node-1abc',
+      document: { store: { 'page:page': { ...PAGE } }, schema: null }
+    })
     await ui.waitFor(m => m.type === 'design.boards')
 
     const post = await fetch(`${base}/design/node-1abc/ops`, {

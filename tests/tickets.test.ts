@@ -109,7 +109,10 @@ describe('the board an agent keeps', () => {
   })
 
   it('moves one as the agent says so', () => {
-    const board = boardOf([], [added('1', 'Read the loop'), added('2', 'Seal a segment'), moved('1', 'done'), moved('2', 'doing')])
+    const board = boardOf(
+      [],
+      [added('1', 'Read the loop'), added('2', 'Seal a segment'), moved('1', 'done'), moved('2', 'doing')]
+    )
     expect(board.tickets.map(ticket => ticket.column)).toEqual(['done', 'doing'])
   })
 
@@ -145,7 +148,10 @@ describe('the board an agent keeps', () => {
   })
 
   it('puts a decision on the ticket it names even when another one is being worked on', () => {
-    const board = boardOf([], [added('1', 'Read the loop'), added('2', 'Seal it'), moved('2', 'doing'), decided('1', 'Read it twice')])
+    const board = boardOf(
+      [],
+      [added('1', 'Read the loop'), added('2', 'Seal it'), moved('2', 'doing'), decided('1', 'Read it twice')]
+    )
     expect(board.tickets[0].decisions).toEqual(['Read it twice'])
   })
 
@@ -159,7 +165,10 @@ describe('the board an agent keeps', () => {
 
   it('counts what answering a question late would cost', () => {
     const events = [added('1', 'Cache it'), moved('1', 'doing')]
-    const question = asked('q1', 'Key the cache on the commit or on the path?', 'the commit', ['the commit', 'the path'])
+    const question = asked('q1', 'Key the cache on the commit or on the path?', 'the commit', [
+      'the commit',
+      'the path'
+    ])
     const steps = [editStep('src/one.ts'), editStep('src/two.ts')]
     const board = boardOf(steps, [...events, question])
     expect(board.questions).toHaveLength(1)

@@ -19,7 +19,9 @@ export default function PanelToggle({ className = '' }: { className?: string }) 
     <div
       aria-hidden={!stands}
       className={`shrink-0 overflow-hidden transition-all ease-out ${
-        stands ? 'w-10 opacity-100 translate-x-0 duration-200' : 'w-0 opacity-0 translate-x-2 pointer-events-none duration-150'
+        stands
+          ? 'w-10 opacity-100 translate-x-0 duration-200'
+          : 'w-0 opacity-0 translate-x-2 pointer-events-none duration-150'
       } ${className}`}
     >
       <Tooltip label="Show panel">

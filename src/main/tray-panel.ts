@@ -100,11 +100,7 @@ export class TrayPanel {
   private window(): BrowserWindow {
     if (this.win) return this.win
     const win = new BrowserWindow(
-      createPanelOptions(
-        this.page.preload,
-        { width: PANEL_WIDTH, height: MIN_HEIGHT },
-        this.page.devTools
-      )
+      createPanelOptions(this.page.preload, { width: PANEL_WIDTH, height: MIN_HEIGHT }, this.page.devTools)
     )
     // Above a full screen app and on whichever space is in front, the way the
     // menu bar itself is. Never `skipTaskbar`, and never this call without

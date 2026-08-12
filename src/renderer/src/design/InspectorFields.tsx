@@ -205,7 +205,15 @@ export function NumberInput({
   )
 }
 
-export function MixedInput({ label, icon, onChange }: { label: string; icon?: ReactNode; onChange: (value: number) => void }) {
+export function MixedInput({
+  label,
+  icon,
+  onChange
+}: {
+  label: string
+  icon?: ReactNode
+  onChange: (value: number) => void
+}) {
   const [draft, setDraft] = useState('')
   return (
     <Shell>
@@ -232,7 +240,12 @@ export function MixedInput({ label, icon, onChange }: { label: string; icon?: Re
 }
 
 function Percent({ value, onChange }: { value: number; onChange: (value: number) => void }) {
-  const { input, gesture } = useNumberField({ value: Math.round(value * 100), onChange: next => onChange(next / 100), min: 0, max: 100 })
+  const { input, gesture } = useNumberField({
+    value: Math.round(value * 100),
+    onChange: next => onChange(next / 100),
+    min: 0,
+    max: 100
+  })
   return (
     <span className="shrink-0 flex items-center gap-0.5">
       <input

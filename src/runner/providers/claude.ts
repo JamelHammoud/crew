@@ -153,10 +153,7 @@ export const parseClaudeLine: OutputParser = line => {
 
 export const NO_THINKING = 'off'
 
-const EFFORTS = [
-  ...choices(['low', 'medium', 'high', 'xhigh', 'max']),
-  { value: NO_THINKING, label: 'Off' }
-]
+const EFFORTS = [...choices(['low', 'medium', 'high', 'xhigh', 'max']), { value: NO_THINKING, label: 'Off' }]
 
 const FALLBACKS = [{ value: '', label: 'None' }, ...CLAUDE_MODELS.slice(1)]
 
@@ -259,9 +256,7 @@ export const claudeArgs = (_prompt: string, get: SettingReader, run: RunOptions 
     '--thinking-display',
     'summarized',
     ...flag('--model', claudeModel(get)),
-    ...(get('effort') === NO_THINKING
-      ? ['--thinking', 'disabled']
-      : flag('--effort', get('effort'))),
+    ...(get('effort') === NO_THINKING ? ['--thinking', 'disabled'] : flag('--effort', get('effort'))),
     ...flag('--mcp-config', run.mcp?.file ?? ''),
     ...flag('--append-system-prompt', get('instructions').trim()),
     ...flag('--fallback-model', get('fallbackModel')),

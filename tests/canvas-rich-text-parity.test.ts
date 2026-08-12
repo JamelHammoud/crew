@@ -67,10 +67,27 @@ const documents: [name: string, doc: TLRichText][] = [
       content: [{ type: 'text', marks: [{ type: 'link', attrs: { href: 'https://example.com' } }], text: 'go' }]
     })
   ],
-  ['a hard break', doc({ type: 'paragraph', content: [{ type: 'text', text: 'a' }, { type: 'hardBreak' }, { type: 'text', text: 'b' }] })],
+  [
+    'a hard break',
+    doc({
+      type: 'paragraph',
+      content: [{ type: 'text', text: 'a' }, { type: 'hardBreak' }, { type: 'text', text: 'b' }]
+    })
+  ],
   ['characters that have to be escaped', doc(paragraph('a & b < c > d'))],
   ['a non breaking space', doc(paragraph('a b'))],
-  ['a heading inside a list item', doc({ type: 'bulletList', content: [{ type: 'listItem', content: [{ type: 'heading', attrs: { level: 3 }, content: [{ type: 'text', text: 'deep' }] }] }] })]
+  [
+    'a heading inside a list item',
+    doc({
+      type: 'bulletList',
+      content: [
+        {
+          type: 'listItem',
+          content: [{ type: 'heading', attrs: { level: 3 }, content: [{ type: 'text', text: 'deep' }] }]
+        }
+      ]
+    })
+  ]
 ]
 
 describe('the measurement html a shape is sized from', () => {
@@ -107,7 +124,9 @@ describe('the measurement html a shape is sized from', () => {
   })
 
   it('keeps a heading at the level it was written', () => {
-    const html = renderHtmlFromRichText(doc({ type: 'heading', attrs: { level: 3 }, content: [{ type: 'text', text: 'x' }] }))
+    const html = renderHtmlFromRichText(
+      doc({ type: 'heading', attrs: { level: 3 }, content: [{ type: 'text', text: 'x' }] })
+    )
     expect(html).toBe('<h3 dir="auto">x</h3>')
   })
 
@@ -127,7 +146,12 @@ describe('the words taken out of rich text', () => {
 
   it('reads a hard break as a new line', () => {
     expect(
-      toPlainText(doc({ type: 'paragraph', content: [{ type: 'text', text: 'a' }, { type: 'hardBreak' }, { type: 'text', text: 'b' }] }))
+      toPlainText(
+        doc({
+          type: 'paragraph',
+          content: [{ type: 'text', text: 'a' }, { type: 'hardBreak' }, { type: 'text', text: 'b' }]
+        })
+      )
     ).toBe('a\nb')
   })
 

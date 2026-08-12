@@ -107,9 +107,7 @@ describe('thread status', () => {
     const started = await startThread(sam)
 
     sam.send({ type: 'thread.archive', threadId: started.threadId })
-    const archived = (await sam.waitForEvent(
-      e => e.kind === 'thread.status' && e.status === 'archived'
-    )) as Status
+    const archived = (await sam.waitForEvent(e => e.kind === 'thread.status' && e.status === 'archived')) as Status
     expect(archived.threadId).toBe(started.threadId)
 
     // Already archived: the old-style message must not fire a second event.
@@ -176,9 +174,7 @@ describe('thread status', () => {
     await sam.waitForEvent(e => e.kind === 'thread.status' && e.status === 'done')
 
     sam.chat('one more thing', [], started.threadId)
-    const reopened = (await sam.waitForEvent(
-      e => e.kind === 'thread.status' && e.status === 'open'
-    )) as Status
+    const reopened = (await sam.waitForEvent(e => e.kind === 'thread.status' && e.status === 'open')) as Status
     expect(reopened.threadId).toBe(started.threadId)
     expect(reopened.byName).toBe('sam')
   })

@@ -194,9 +194,7 @@ function ChatMessage({
         ) : item.kind === 'reply' ? (
           <div
             className={
-              item.error
-                ? `select-text text-base mt-1.5 ${item.stopped ? 'text-fg-muted' : 'text-danger'}`
-                : 'mt-1.5'
+              item.error ? `select-text text-base mt-1.5 ${item.stopped ? 'text-fg-muted' : 'text-danger'}` : 'mt-1.5'
             }
           >
             {item.error ? item.text : <Markdown text={item.text || '…'} stream={item.streaming} />}

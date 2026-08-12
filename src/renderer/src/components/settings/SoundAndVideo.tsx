@@ -82,7 +82,11 @@ export default function SoundAndVideo() {
               aria-label={muted ? 'Unmute music' : 'Mute music'}
               className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-fg/45 transition-colors hover:text-fg hover:bg-fg/[0.07] active:scale-95"
             >
-              {muted ? <SpeakerOffGlyph className="w-[18px] h-[18px]" /> : <SpeakerGlyph className="w-[18px] h-[18px]" />}
+              {muted ? (
+                <SpeakerOffGlyph className="w-[18px] h-[18px]" />
+              ) : (
+                <SpeakerGlyph className="w-[18px] h-[18px]" />
+              )}
             </button>
             <Slider className="flex-1" value={muted ? 0 : volume} label="Music volume" onChange={setVolume} />
           </div>

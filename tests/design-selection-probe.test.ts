@@ -34,18 +34,14 @@ describe('design selection overlay', () => {
   })
 
   it('hides them while the element is being moved', () => {
-    const { container, rerender } = render(
-      createElement(SelectionOverlay, { editor: editorIn({ active: true }) })
-    )
+    const { container, rerender } = render(createElement(SelectionOverlay, { editor: editorIn({ active: true }) }))
     rerender(createElement(SelectionOverlay, { editor: editorIn({ active: false }) }))
     expect(container.textContent).not.toContain('200 × 160')
     expect(container.querySelectorAll('button')).toHaveLength(0)
   })
 
   it('stands the size down while the ask bar is hanging off the same edge', () => {
-    const { container } = render(
-      createElement(SelectionOverlay, { editor: editorIn({ active: true }), asking: true })
-    )
+    const { container } = render(createElement(SelectionOverlay, { editor: editorIn({ active: true }), asking: true }))
     expect(container.textContent).not.toContain('200 × 160')
     expect(container.querySelectorAll('button')).toHaveLength(4)
   })

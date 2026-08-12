@@ -50,9 +50,7 @@ export default function ScribeHeld() {
         {/* Where the words were going, said as the thing to do about it rather
             than as what went wrong. Nothing here names the caret or the paste: a
             person knows what they were about to type in. */}
-        <p className="flex-1 min-w-0 text-xs text-fg/45 leading-tight">
-          Click into a text box, then dictate
-        </p>
+        <p className="flex-1 min-w-0 text-xs text-fg/45 leading-tight">Click into a text box, then dictate</p>
         <PillButton label="Close" onClick={letGo}>
           <CloseGlyph className="w-3.5 h-3.5" strokeWidth={STROKE_BOLD} />
         </PillButton>

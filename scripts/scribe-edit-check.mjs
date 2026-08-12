@@ -148,9 +148,13 @@ async function check(app) {
     `\n${checks.length - failed.length} of ${checks.length} held, and ${refused} of ${CASES.length} came back unchanged`
   )
   if (failed.length) {
-    console.error(`\n${failed.length} of ${checks.length} checks failed off the real model, which is the model rather than the code`)
+    console.error(
+      `\n${failed.length} of ${checks.length} checks failed off the real model, which is the model rather than the code`
+    )
   } else {
-    console.log('\nsentences, times, amounts, acronyms, a correction and a voice left alone, off a real model on this computer')
+    console.log(
+      '\nsentences, times, amounts, acronyms, a correction and a voice left alone, off a real model on this computer'
+    )
   }
 }
 

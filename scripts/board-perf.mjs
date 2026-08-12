@@ -426,7 +426,9 @@ try {
   const wide = result.results.find(run => run.label === 'marquee across the board')
   if (!wide) throw new Error('the wide marquee performance check did not run')
   if (wide.covered < wide.topLevel / 2)
-    throw new Error(`the wide marquee covered ${wide.covered} of ${wide.topLevel} shapes, so the expensive case went unmeasured`)
+    throw new Error(
+      `the wide marquee covered ${wide.covered} of ${wide.topLevel} shapes, so the expensive case went unmeasured`
+    )
   for (const error of result.errors ?? []) console.log(`window error: ${error}`)
 } finally {
   await rm(directory, { recursive: true, force: true })

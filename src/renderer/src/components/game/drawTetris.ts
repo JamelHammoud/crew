@@ -4,8 +4,7 @@ import { COLS, ROWS, restY, type Tetris } from './tetris'
 // The field is the whole of the room the panel leaves and this board is one
 // shape whatever that room is, so the well keeps a surround of its own. Run edge
 // to edge it stops being a well and becomes the field.
-const surround = (width: number, height: number): number =>
-  Math.min(24, Math.round(Math.min(width, height) * 0.05))
+const surround = (width: number, height: number): number => Math.min(24, Math.round(Math.min(width, height) * 0.05))
 
 export function paintTetris(canvas: HTMLCanvasElement, game: Tetris): void {
   const width = canvas.clientWidth

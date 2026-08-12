@@ -16,9 +16,7 @@ export default function Plugins() {
 
   const held = useMemo(() => new Set(plugins.map(one => pluginKey(one.name))), [plugins])
   const installed = plugins.filter(one => matches(find, one.label, one.blurb, one.name))
-  const offers = PLUGIN_OFFERS.filter(
-    one => !held.has(one.name) && matches(find, one.label, one.blurb, one.name)
-  )
+  const offers = PLUGIN_OFFERS.filter(one => !held.has(one.name) && matches(find, one.label, one.blurb, one.name))
   const grouped: Array<[string, PluginOffer[]]> = PLUGIN_GROUPS.map(group => [
     group,
     offers.filter(one => one.group === group)

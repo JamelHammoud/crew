@@ -169,8 +169,7 @@ function reveal(open: string[], path: string): string[] {
   return [...open, ...folders.filter(folder => !open.includes(folder))]
 }
 
-const sameAddress = (a: string, b: string): boolean =>
-  Boolean(a) && a.replace(/\/+$/, '') === b.replace(/\/+$/, '')
+const sameAddress = (a: string, b: string): boolean => Boolean(a) && a.replace(/\/+$/, '') === b.replace(/\/+$/, '')
 
 function clampWidth(width: number): number {
   const max = Math.max(MIN_WIDTH, window.innerWidth - 440)
@@ -614,8 +613,7 @@ export const useBrowser = create<BrowserState>((write, get) => {
       })
       settle()
     },
-    navigateTab: (id, url) =>
-      set(s => ({ tabs: s.tabs.map(t => (t.id === id ? { ...t, initialUrl: url, url } : t)) })),
+    navigateTab: (id, url) => set(s => ({ tabs: s.tabs.map(t => (t.id === id ? { ...t, initialUrl: url, url } : t)) })),
     navigateFile: (id, path) =>
       set(s => ({
         tabs: s.tabs.map(t =>
@@ -640,9 +638,7 @@ export const useBrowser = create<BrowserState>((write, get) => {
           return { ...t, path, line: null, diff: null, back: [...t.back, t.path], forward: t.forward.slice(1) }
         })
       })),
-    reloadTab: id =>
-      set(s => ({ tabs: s.tabs.map(t => (t.id === id ? { ...t, generation: t.generation + 1 } : t)) })),
-    updateTab: (id, patch) =>
-      set(s => ({ tabs: s.tabs.map(t => (t.id === id ? { ...t, ...patch } : t)) }))
+    reloadTab: id => set(s => ({ tabs: s.tabs.map(t => (t.id === id ? { ...t, generation: t.generation + 1 } : t)) })),
+    updateTab: (id, patch) => set(s => ({ tabs: s.tabs.map(t => (t.id === id ? { ...t, ...patch } : t)) }))
   }
 })

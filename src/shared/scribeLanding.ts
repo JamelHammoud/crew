@@ -49,13 +49,7 @@ const NOT_TEXT = new Set(['AXWebArea', 'AXStaticText'])
 // off its attributes. This is the belt to the caret's braces rather than the rule
 // itself: a text field is somewhere to type whatever else it does or does not say
 // about itself.
-const TEXT = new Set([
-  'AXTextField',
-  'AXTextArea',
-  'AXSearchField',
-  'AXComboBox',
-  'AXSecureTextField'
-])
+const TEXT = new Set(['AXTextField', 'AXTextArea', 'AXSearchField', 'AXComboBox', 'AXSecureTextField'])
 
 export function landingFrom(role: string, attributes: readonly string[]): Landing {
   const named = role.trim()
@@ -140,16 +134,14 @@ export const FOCUSED_IN_PAGE = `(() => {
 // the answer to wanting the words on the clipboard, so a dictation aimed there is
 // never held: it has somewhere to go and it goes there. Everything else turns on
 // the one answer that had to be earned.
-export const holdsBack = (finish: 'paste' | 'copy', aim: Landing): boolean =>
-  finish === 'paste' && aim === 'none'
+export const holdsBack = (finish: 'paste' | 'copy', aim: Landing): boolean => finish === 'paste' && aim === 'none'
 
 // Stretches of one dictation, joined into the thing somebody said. They already
 // carry the space that keeps them off the end of the one before them, so nothing
 // goes between them, and only the first is trimmed: a card that opened on a space
 // would read as a card holding nothing for as long as it took the first word to
 // be read.
-export const joinHeld = (held: string, text: string): string =>
-  held ? held + text : text.trimStart()
+export const joinHeld = (held: string, text: string): string => (held ? held + text : text.trimStart())
 
 // What the machine printed, which is one line for the role and one for the
 // attributes it holds. A shape this does not recognise is 'unknown' rather than a

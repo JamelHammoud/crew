@@ -38,8 +38,7 @@ export const byShapeTypes = store =>
       .map(record => record.type)
   ).size
 
-export const byShapeCount = store =>
-  Object.values(store).filter(record => record.typeName === 'shape').length
+export const byShapeCount = store => Object.values(store).filter(record => record.typeName === 'shape').length
 
 export async function boardFile(score = byShapeTypes) {
   if (process.env.CREW_BOARD_CHECK) return realpath(process.env.CREW_BOARD_CHECK)

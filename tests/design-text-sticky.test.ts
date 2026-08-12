@@ -5,7 +5,9 @@ import { createShapeId, createTLStore, fromPlainText } from '../src/renderer/src
 import { DesignTextUtil } from '../src/renderer/src/design/TextUtil'
 import { setTextShapeType, textShapeType } from '../src/renderer/src/design/textType'
 
-const JSDOM = createRequire(import.meta.url)('jsdom').JSDOM as new (html: string) => {
+const JSDOM = createRequire(import.meta.url)('jsdom').JSDOM as new (
+  html: string
+) => {
   window: Window & typeof globalThis
 }
 

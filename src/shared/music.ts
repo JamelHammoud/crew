@@ -473,7 +473,10 @@ export function trackAfter(
 }
 
 export function cleanUploadName(name: string): string {
-  const trimmed = name.trim().replace(/\.[a-z0-9]{1,5}$/i, '').slice(0, UPLOAD_NAME_LIMIT)
+  const trimmed = name
+    .trim()
+    .replace(/\.[a-z0-9]{1,5}$/i, '')
+    .slice(0, UPLOAD_NAME_LIMIT)
   return trimmed || 'Untitled'
 }
 

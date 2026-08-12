@@ -160,9 +160,7 @@ describe('repo branches', () => {
 
     expect(result.ok).toBe(true)
     expect((await git(here, ['branch', '--show-current'])).trim()).toBe('remote-work')
-    expect((await git(here, ['rev-parse', '--abbrev-ref', 'remote-work@{upstream}'])).trim()).toBe(
-      'origin/remote-work'
-    )
+    expect((await git(here, ['rev-parse', '--abbrev-ref', 'remote-work@{upstream}'])).trim()).toBe('origin/remote-work')
     expect(fs.readFileSync(path.join(here, 'remote-work.ts'), 'utf8')).toContain('remote = true')
     expect((await sync.work()).branches.find(one => one.name === 'remote-work')).toEqual({
       name: 'remote-work',
@@ -184,9 +182,7 @@ describe('repo branches', () => {
     expect(result.updated).toBe(true)
     expect(result.status.branch).toBe('fresh')
     expect(result.status.ahead).toBe(0)
-    expect((await git(here, ['rev-parse', '--abbrev-ref', 'fresh@{upstream}'])).trim()).toBe(
-      'origin/fresh'
-    )
+    expect((await git(here, ['rev-parse', '--abbrev-ref', 'fresh@{upstream}'])).trim()).toBe('origin/fresh')
     expect(await git(origin, ['branch', '--list'])).toContain('fresh')
     expect(await git(origin, ['show', 'fresh:fresh.ts'])).toContain('fresh = true')
   })

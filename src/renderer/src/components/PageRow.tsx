@@ -61,7 +61,4 @@ function PageRow({ shown, linked }: { shown: Shown; linked?: boolean }) {
   )
 }
 
-export default memo(
-  PageRow,
-  (before, after) => before.linked === after.linked && sameShown(before.shown, after.shown)
-)
+export default memo(PageRow, (before, after) => before.linked === after.linked && sameShown(before.shown, after.shown))

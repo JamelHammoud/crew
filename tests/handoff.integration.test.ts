@@ -41,7 +41,9 @@ describe('handoff', () => {
     const welcome = ui2.messages.find(m => m.type === 'welcome') as Extract<ServerMessage, { type: 'welcome' }>
 
     const messageTexts = welcome.snapshot.events
-      .filter((e): e is Extract<import('../src/shared/events').SessionEvent, { kind: 'message' }> => e.kind === 'message')
+      .filter(
+        (e): e is Extract<import('../src/shared/events').SessionEvent, { kind: 'message' }> => e.kind === 'message'
+      )
       .map(e => e.text)
     expect(messageTexts).toContain('handoff note @Fake')
 

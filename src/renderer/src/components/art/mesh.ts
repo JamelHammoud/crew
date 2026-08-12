@@ -52,15 +52,7 @@ const span = (share: number): number => share * (100 / (1 + OVER * 2))
 // colors rather than the whole of both. It fades to its own color at zero alpha
 // and never to `transparent`, which is transparent black and would drag every
 // edge through grey on the way out.
-const field = (
-  color: string,
-  x: number,
-  y: number,
-  wide: number,
-  tall: number,
-  core: number,
-  alpha: number
-): string =>
+const field = (color: string, x: number, y: number, wide: number, tall: number, core: number, alpha: number): string =>
   `radial-gradient(${at(span(wide))}% ${at(span(tall))}% at ${at(spot(x))}% ${at(spot(y))}%, ${rgba(color, alpha)} 0%, ${rgba(color, alpha)} ${at(core)}%, ${rgba(color, 0)} 100%)`
 
 // The petals. Blurred, a conic gradient's spokes bow into the lobed shapes the

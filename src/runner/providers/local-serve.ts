@@ -102,11 +102,7 @@ export async function probeServer(
   }
 }
 
-export async function answering(
-  url: string,
-  timeoutMs = PROBE_MS,
-  key = serverKey(url)
-): Promise<LocalRuntime | null> {
+export async function answering(url: string, timeoutMs = PROBE_MS, key = serverKey(url)): Promise<LocalRuntime | null> {
   return (await probeServer(url, key, timeoutMs)).runtime
 }
 

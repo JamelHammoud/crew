@@ -137,9 +137,7 @@ function mountBoard(): { view: ReturnType<typeof render>; editor: () => Editor }
     ])
     return undefined
   }
-  const view = render(
-    createElement(CrewCanvas, { store, shapeUtils: [TextShapeUtil, GeoShapeUtil], onMount })
-  )
+  const view = render(createElement(CrewCanvas, { store, shapeUtils: [TextShapeUtil, GeoShapeUtil], onMount }))
   return { view, editor: () => made! }
 }
 
@@ -268,9 +266,7 @@ describe('canvas text editing', () => {
     act(() => {
       editor().updateShape({ id: textId, type: 'text', rotation: Math.PI / 6 })
     })
-    await waitFor(() =>
-      expect(layer().style.transform).toBe(shapeCssTransform(editor().getShapePageTransform(textId)))
-    )
+    await waitFor(() => expect(layer().style.transform).toBe(shapeCssTransform(editor().getShapePageTransform(textId))))
   })
 
   it('writes what is typed back onto the shape and leaves editing on escape', async () => {

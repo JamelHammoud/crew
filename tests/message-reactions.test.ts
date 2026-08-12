@@ -180,9 +180,7 @@ describe('message reaction controls', () => {
     expect(reactorLine({ names: ['Ali'], self: false })).toBe('Ali')
     expect(reactorLine({ names: ['Jamel', 'Ali'], self: true })).toBe('You and Ali')
     expect(reactorLine({ names: ['Ali', 'Ben', 'Cat', 'Dee'], self: false })).toBe('Ali, Ben, Cat and Dee')
-    expect(reactorLine({ names: ['Jamel', 'Ali', 'Ben', 'Cat', 'Dee'], self: true })).toBe(
-      'You, Ali, Ben and 2 others'
-    )
+    expect(reactorLine({ names: ['Jamel', 'Ali', 'Ben', 'Cat', 'Dee'], self: true })).toBe('You, Ali, Ben and 2 others')
     expect(emojiName('🔥')).toBe(':fire:')
   })
 

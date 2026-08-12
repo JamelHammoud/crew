@@ -17,7 +17,7 @@ if (process.platform === 'darwin') {
   const pathFile = path.join(electronDir, 'path.txt')
   const relative = `${NAME}.app/Contents/MacOS/${NAME}`
 
-  const read = (file) => (fs.existsSync(file) ? fs.readFileSync(file, 'utf8').trim() : '')
+  const read = file => (fs.existsSync(file) ? fs.readFileSync(file, 'utf8').trim() : '')
   const version = read(path.join(dist, 'version'))
 
   if (fs.existsSync(source) && (read(stamp) !== version || !fs.existsSync(executable))) {

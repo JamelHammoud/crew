@@ -11,7 +11,8 @@ type Frame = Record<string, unknown>
 
 const line = (frame: Frame) => JSON.stringify(frame) + '\n'
 
-const say = (content: string, extra: Frame = {}) => line({ message: { role: 'assistant', content }, done: false, ...extra })
+const say = (content: string, extra: Frame = {}) =>
+  line({ message: { role: 'assistant', content }, done: false, ...extra })
 
 const think = (thinking: string) => line({ message: { role: 'assistant', content: '', thinking }, done: false })
 
@@ -29,7 +30,9 @@ const event = (delta: Frame) => `data: ${JSON.stringify({ choices: [{ delta }] }
 const sseSay = (content: string) => event({ content })
 
 const sseCalls = (name: string, args: Record<string, unknown>) =>
-  event({ tool_calls: [{ index: 0, id: 'call_1', type: 'function', function: { name, arguments: JSON.stringify(args) } }] })
+  event({
+    tool_calls: [{ index: 0, id: 'call_1', type: 'function', function: { name, arguments: JSON.stringify(args) } }]
+  })
 
 const sseEnd = () => 'data: [DONE]\n\n'
 
@@ -144,8 +147,18 @@ describe('a local agent', () => {
     await stand([[think('Working it out.'), say('All done.'), end()]])
     const { steps, counted, started } = run('say hello')
     expect((await started.done).text).toBe('All done.')
-    expect(steps.filter(s => s.kind === 'thinking').map(s => s.text).join('')).toBe('Working it out.')
-    expect(steps.filter(s => s.kind === 'text').map(s => s.text).join('')).toBe('All done.')
+    expect(
+      steps
+        .filter(s => s.kind === 'thinking')
+        .map(s => s.text)
+        .join('')
+    ).toBe('Working it out.')
+    expect(
+      steps
+        .filter(s => s.kind === 'text')
+        .map(s => s.text)
+        .join('')
+    ).toBe('All done.')
     expect(counted.at(-1)?.tokens).toBe(44)
   })
 

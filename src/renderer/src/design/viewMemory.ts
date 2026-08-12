@@ -114,11 +114,7 @@ export function rememberView(editor: Editor, boardId: string): void {
 }
 
 export function viewChanged(changes: Changes): boolean {
-  const ids = [
-    ...Object.keys(changes.added),
-    ...Object.keys(changes.updated),
-    ...Object.keys(changes.removed)
-  ]
+  const ids = [...Object.keys(changes.added), ...Object.keys(changes.updated), ...Object.keys(changes.removed)]
   return ids.some(id => id.startsWith('camera:') || id.startsWith('instance_page_state:'))
 }
 

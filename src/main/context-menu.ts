@@ -102,11 +102,7 @@ export function contextMenuTemplate(
   return items
 }
 
-export function installContextMenu(
-  contents: WebContents,
-  browser: boolean,
-  inspectable: boolean
-): void {
+export function installContextMenu(contents: WebContents, browser: boolean, inspectable: boolean): void {
   contents.on('context-menu', (_event, params) => {
     const items = contextMenuTemplate(contents, params, browser, inspectable)
     if (items.length === 0) return

@@ -28,9 +28,7 @@ export default function ScribeWindow() {
   useEffect(() => {
     const box = boxRef.current
     if (!box) return
-    const observer = new ResizeObserver(() =>
-      window.crew.resizeScribe(box.offsetWidth, box.offsetHeight)
-    )
+    const observer = new ResizeObserver(() => window.crew.resizeScribe(box.offsetWidth, box.offsetHeight))
     observer.observe(box)
     return () => observer.disconnect()
   }, [])

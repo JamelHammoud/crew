@@ -132,12 +132,7 @@ const sameNames = (a: string[], b: string[]): boolean =>
   a === b || (a.length === b.length && a.every((name, index) => name === b[index]))
 
 export const sameHuddleRecord = (a: HuddleRecord, b: HuddleRecord): boolean =>
-  a.id === b.id &&
-  a.ts === b.ts &&
-  a.by === b.by &&
-  a.byId === b.byId &&
-  a.ms === b.ms &&
-  sameNames(a.names, b.names)
+  a.id === b.id && a.ts === b.ts && a.by === b.by && a.byId === b.byId && a.ms === b.ms && sameNames(a.names, b.names)
 
 export function sameEntry(a: FeedEntry, b: FeedEntry): boolean {
   if (a === b) return true

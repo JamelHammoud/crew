@@ -304,11 +304,7 @@ class SelectionForegroundOverlayUtil implements ToolOverlayUtil {
         if ((handle === 'top' || handle === 'bottom') && state.hideVerticalEdges) continue
         if ((handle === 'left' || handle === 'right') && state.hideHorizontalEdges) continue
         result.push(
-          overlay(
-            'resize_handle',
-            handle,
-            edgeRect(handle, state.width, state.height, state.hitX, state.hitY)
-          )
+          overlay('resize_handle', handle, edgeRect(handle, state.width, state.height, state.hitX, state.hitY))
         )
       }
     }
@@ -496,11 +492,9 @@ class ShapeIndicatorOverlayUtil implements ToolOverlayUtil {
   private pathOf(shape: TLShape): Path2D | null {
     let value = this.paths.get(shape.id)
     if (!value) {
-      const outlined = computed(
-        `overlay.indicatorShape:${shape.id}`,
-        () => this.editor.getShape(shape.id),
-        { isEqual: (a: TLShape | undefined, b: TLShape | undefined) => a?.props === b?.props }
-      )
+      const outlined = computed(`overlay.indicatorShape:${shape.id}`, () => this.editor.getShape(shape.id), {
+        isEqual: (a: TLShape | undefined, b: TLShape | undefined) => a?.props === b?.props
+      })
       value = computed(`overlay.indicatorPath:${shape.id}`, () => {
         const current = outlined.get()
         if (!current) return null

@@ -101,9 +101,17 @@ function stubEditor(arrow: TLShape, targets: Target[], geometries: Record<string
 const BOX: Target = { id: 'shape:target', x: 20, y: 40, w: 200, h: 100, size: 'm' }
 const rect = (w: number, h: number) => new Rectangle2d({ width: w, height: h, isFilled: true })
 
-function terminals(arrow: TLShape<'arrow'>, targets: Target[], geometries: Record<string, Geometry2d>, bindings: TLBinding<'arrow'>[]) {
+function terminals(
+  arrow: TLShape<'arrow'>,
+  targets: Target[],
+  geometries: Record<string, Geometry2d>,
+  bindings: TLBinding<'arrow'>[]
+) {
   const editor = stubEditor(arrow, targets, geometries)
-  const pair = { start: bindings.find(b => b.props.terminal === 'start'), end: bindings.find(b => b.props.terminal === 'end') }
+  const pair = {
+    start: bindings.find(b => b.props.terminal === 'start'),
+    end: bindings.find(b => b.props.terminal === 'end')
+  }
   const points = straightArrowTerminals(editor, arrow, pair)
   const handles = terminalsInArrowSpace(editor, arrow, pair)
   return {
@@ -146,48 +154,61 @@ describe('where a bound arrow stops', () => {
   })
 
   it('follows the outline of an ellipse rather than the box around it', () => {
-    const round = terminals(arrowShape(), [BOX], { 'shape:target': new Ellipse2d({ width: 200, height: 100, isFilled: true }) }, [
-      binding('end', 'shape:target')
-    ])
+    const round = terminals(
+      arrowShape(),
+      [BOX],
+      { 'shape:target': new Ellipse2d({ width: 200, height: 100, isFilled: true }) },
+      [binding('end', 'shape:target')]
+    )
     const square = terminals(arrowShape(), [BOX], { 'shape:target': rect(200, 100) }, [binding('end', 'shape:target')])
     expect(round.end).toEqual([54.1534, 40.6151])
     expect(round.end).not.toEqual(square.end)
   })
 
   it('leaves both ends where they are when one shape holds them both', () => {
-    const result = terminals(
-      arrowShape({ arrowheadStart: 'arrow' }),
-      [BOX],
-      { 'shape:target': rect(200, 100) },
-      [binding('start', 'shape:target'), binding('end', 'shape:target', { isPrecise: true, normalizedAnchor: { x: 0.9, y: 0.9 } })]
-    )
+    const result = terminals(arrowShape({ arrowheadStart: 'arrow' }), [BOX], { 'shape:target': rect(200, 100) }, [
+      binding('start', 'shape:target'),
+      binding('end', 'shape:target', { isPrecise: true, normalizedAnchor: { x: 0.9, y: 0.9 } })
+    ])
     expect(result.start).toEqual([120, 90])
     expect(result.end).toEqual([200, 130])
   })
 
   it('stands off each end by that shape own stroke as well as the arrow one', () => {
     const targets: Target[] = [BOX, { id: 'shape:second', x: 400, y: 40, w: 100, h: 100, size: 'l' }]
-    const result = terminals(arrowShape({ arrowheadStart: 'arrow' }), targets, {
-      'shape:target': rect(200, 100),
-      'shape:second': rect(100, 100)
-    }, [binding('start', 'shape:target'), binding('end', 'shape:second')])
+    const result = terminals(
+      arrowShape({ arrowheadStart: 'arrow' }),
+      targets,
+      {
+        'shape:target': rect(200, 100),
+        'shape:second': rect(100, 100)
+      },
+      [binding('start', 'shape:target'), binding('end', 'shape:second')]
+    )
     expect(result.start).toEqual([233.5, 90])
     expect(result.end).toEqual([385.75, 90])
   })
 
   it('turns the stand off inward when the two shapes are too close together', () => {
     const targets: Target[] = [BOX, { id: 'shape:second', x: 225, y: 40, w: 40, h: 100, size: 's' }]
-    const result = terminals(arrowShape({ arrowheadStart: 'arrow' }), targets, {
-      'shape:target': rect(200, 100),
-      'shape:second': rect(40, 100)
-    }, [binding('start', 'shape:target'), binding('end', 'shape:second')])
+    const result = terminals(
+      arrowShape({ arrowheadStart: 'arrow' }),
+      targets,
+      {
+        'shape:target': rect(200, 100),
+        'shape:second': rect(40, 100)
+      },
+      [binding('start', 'shape:target'), binding('end', 'shape:second')]
+    )
     expect(result.start).toEqual([233.5, 90])
     expect(result.end).toEqual([212.25, 90])
   })
 
   it('reads the anchor through the rotation of the shape it is on', () => {
     const targets: Target[] = [{ ...BOX, rotation: 0.6 }]
-    const result = terminals(arrowShape(), targets, { 'shape:target': rect(200, 100) }, [binding('end', 'shape:target')])
+    const result = terminals(arrowShape(), targets, { 'shape:target': rect(200, 100) }, [
+      binding('end', 'shape:target')
+    ])
     expect(result.handles[1]).toEqual([74.3014, 137.731])
     expect(result.end).toEqual([16.0926, 29.8305])
   })

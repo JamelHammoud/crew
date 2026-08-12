@@ -155,7 +155,11 @@ describe('huddles', () => {
     sam.send({ type: 'huddle.update', sharing: true })
     await waitUntil(() => latest(kim).peers.some(peer => peer.peerId === 'peer-sam' && peer.sharing))
 
-    expect(latest(kim).peers.filter(peer => peer.sharing).map(peer => peer.peerId)).toEqual(['peer-sam'])
+    expect(
+      latest(kim)
+        .peers.filter(peer => peer.sharing)
+        .map(peer => peer.peerId)
+    ).toEqual(['peer-sam'])
   })
 
   it('keeps the place a returning window had in the room', async () => {

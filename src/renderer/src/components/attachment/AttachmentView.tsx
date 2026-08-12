@@ -94,14 +94,7 @@ export default function AttachmentView({ tab }: { tab: BrowserTab }) {
       url={tab.initialUrl}
       tools={bothWays(tab.mime, tab.title) ? <ReadSwitch id={tab.id} kind={kind} asPage={tab.preview} /> : null}
     >
-      <Body
-        id={tab.id}
-        url={tab.initialUrl}
-        name={tab.title}
-        mime={tab.mime}
-        kind={kind}
-        asPage={tab.preview}
-      />
+      <Body id={tab.id} url={tab.initialUrl} name={tab.title} mime={tab.mime} kind={kind} asPage={tab.preview} />
     </Frame>
   )
 }

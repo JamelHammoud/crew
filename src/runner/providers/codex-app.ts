@@ -102,8 +102,6 @@ export function codexDialog(prompt: string, cwd: string, get: SettingReader, opt
       return msg.error ? [] : answered(stage, msg.result)
     },
     steer: text =>
-      threadId && turnId
-        ? ask('steer', 'turn/steer', { threadId, expectedTurnId: turnId, input: input(text) })
-        : null
+      threadId && turnId ? ask('steer', 'turn/steer', { threadId, expectedTurnId: turnId, input: input(text) }) : null
   }
 }

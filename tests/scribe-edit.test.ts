@@ -1,12 +1,6 @@
 import { createServer, type Server } from 'node:http'
 import { afterEach, describe, expect, it } from 'vitest'
-import {
-  EDIT_BRIEF,
-  EDIT_LIMIT,
-  edited,
-  editModels,
-  editSaid
-} from '../src/shared/scribeEdit'
+import { EDIT_BRIEF, EDIT_LIMIT, edited, editModels, editSaid } from '../src/shared/scribeEdit'
 import { cleanSettings, editorOf } from '../src/shared/scribe'
 import { tidy, TIDY_RULES, type ScribeChunk } from '../src/shared/scribeTidy'
 import { ScribeFlow } from '../src/shared/scribeLive'
@@ -100,9 +94,12 @@ describe('what a model is allowed to have written', () => {
   })
 
   it('takes an acronym list and a technology capitalized properly', () => {
-    expect(edited('the ceo asked the it team to review the api crm and vpn settings', 'The CEO asked the IT team to review the API, CRM, and VPN settings.')).toBe(
-      'The CEO asked the IT team to review the API, CRM, and VPN settings.'
-    )
+    expect(
+      edited(
+        'the ceo asked the it team to review the api crm and vpn settings',
+        'The CEO asked the IT team to review the API, CRM, and VPN settings.'
+      )
+    ).toBe('The CEO asked the IT team to review the API, CRM, and VPN settings.')
   })
 
   it('cuts a preamble off its own line', () => {
@@ -177,9 +174,7 @@ describe('what a model is allowed to have written', () => {
   })
 
   it('keeps a name it does not know', () => {
-    expect(edited('ask nguyen about the branch', 'Ask Nguyen about the branch.')).toBe(
-      'Ask Nguyen about the branch.'
-    )
+    expect(edited('ask nguyen about the branch', 'Ask Nguyen about the branch.')).toBe('Ask Nguyen about the branch.')
   })
 
   it('leaves a swapped word to the model, since no rule here can see one', () => {
@@ -280,18 +275,13 @@ describe('a dictation written as it is said, read again on the way out', () => {
   it('hands the rules their own writing when there is no model to ask', async () => {
     const flow = new ScribeFlow()
     const editor = editorOf(cleanSettings({ edit: false }, 'darwin'))
-    expect(flow.mark(await editSaid(tidy(heard('open the file', 0, 1.4), TIDY_RULES), editor))).toBe(
-      'Open the file.'
-    )
+    expect(flow.mark(await editSaid(tidy(heard('open the file', 0, 1.4), TIDY_RULES), editor))).toBe('Open the file.')
   })
 })
 
 describe('what the settings hand the editor', () => {
   it('holds nothing while it is off, whatever is written down', () => {
-    const settings = cleanSettings(
-      { edit: false, editUrl: 'http://127.0.0.1:11434', editModel: 'a-model' },
-      'darwin'
-    )
+    const settings = cleanSettings({ edit: false, editUrl: 'http://127.0.0.1:11434', editModel: 'a-model' }, 'darwin')
     expect(editorOf(settings)).toEqual({ url: '', model: 'a-model' })
   })
 

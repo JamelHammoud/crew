@@ -83,7 +83,11 @@ export default function DocToolbar() {
     )
 
   return (
-    <div role="toolbar" aria-label="Text" className="glass flex h-9 w-fit items-center gap-0.5 px-1.5 rounded-full animate-pop">
+    <div
+      role="toolbar"
+      aria-label="Text"
+      className="glass flex h-9 w-fit items-center gap-0.5 px-1.5 rounded-full animate-pop"
+    >
       {kind && (
         <span className="relative flex items-center">
           <button
@@ -95,7 +99,9 @@ export default function DocToolbar() {
             }`}
           >
             <span className="whitespace-nowrap">{kind.title}</span>
-            <ChevronDownGlyph className={`w-3.5 h-3.5 text-fg/45 transition-transform ${turnOpen ? 'rotate-180' : ''}`} />
+            <ChevronDownGlyph
+              className={`w-3.5 h-3.5 text-fg/45 transition-transform ${turnOpen ? 'rotate-180' : ''}`}
+            />
           </button>
           <Popover open={turnOpen} onClose={() => setTurnOpen(false)} align="start" className="min-w-48">
             {DOC_BLOCKS.filter(option => option.convert).map(option => (

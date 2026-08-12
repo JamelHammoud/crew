@@ -106,7 +106,9 @@ export default function ChangeRow({
       {/* Both slots are held whether or not the pointer is there, so nothing on
           the row travels as it is reached for and the counts down the list line
           up on one right edge however wide each one is. */}
-      <span className={`w-[62px] shrink-0 text-right transition-opacity duration-150 ${viewed && !reading ? 'opacity-40' : ''}`}>
+      <span
+        className={`w-[62px] shrink-0 text-right transition-opacity duration-150 ${viewed && !reading ? 'opacity-40' : ''}`}
+      >
         <Counts added={change.added} removed={change.removed} />
       </span>
       <span className="flex w-[72px] shrink-0 items-center justify-end">

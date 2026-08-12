@@ -83,7 +83,9 @@ describe('plan mode', () => {
 
     sam.send({ type: 'plan.implement', threadId: thread.threadId })
     await sam.waitForEvent(e => e.kind === 'thread.implement' && e.threadId === thread.threadId)
-    await sam.waitForEvent(e => e.kind === 'message' && e.threadId === thread.threadId && e.text === 'Implement the plan.')
+    await sam.waitForEvent(
+      e => e.kind === 'message' && e.threadId === thread.threadId && e.text === 'Implement the plan.'
+    )
 
     const endsInThread = () => sam.events.filter(e => e.kind === 'agent.end' && e.threadId === thread.threadId)
     await waitUntil(() => endsInThread().length === 2)
@@ -179,9 +181,7 @@ describe('plan mode', () => {
     const started = revived.events.find(
       (e): e is ThreadStarted => e.kind === 'thread.started' && e.threadId === thread.threadId
     )
-    const kept = revived.events.find(
-      (e): e is ThreadPlan => e.kind === 'thread.plan' && e.threadId === thread.threadId
-    )
+    const kept = revived.events.find((e): e is ThreadPlan => e.kind === 'thread.plan' && e.threadId === thread.threadId)
     expect(started?.mode).toBe('plan')
     expect(kept?.text).toBe(plan.text)
   })

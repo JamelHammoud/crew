@@ -51,5 +51,4 @@ const LIGHT: ITheme = {
 
 export const terminalTheme = (theme: Theme): ITheme => (theme === 'light' ? LIGHT : DARK)
 
-export const TERMINAL_FONT =
-  '"Cascadia Mono", ui-monospace, "SF Mono", Menlo, monospace'
+export const TERMINAL_FONT = '"Cascadia Mono", ui-monospace, "SF Mono", Menlo, monospace'

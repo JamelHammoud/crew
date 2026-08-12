@@ -45,18 +45,30 @@ export interface ToolAction {
   terminal?: boolean
 }
 
-const AGENT: ToolAction = { icon: SparkGlyph, run: 'Asking an agent', done: 'Asked an agent', many: 'Asked agents', prose: true }
+const AGENT: ToolAction = {
+  icon: SparkGlyph,
+  run: 'Asking an agent',
+  done: 'Asked an agent',
+  many: 'Asked agents',
+  prose: true
+}
 const WORKING: ToolAction = { icon: BoxGlyph, run: 'Working', done: 'Working', prose: true }
 
 export const THINKING: ToolAction = { icon: ThinkingGlyph, run: 'Thinking', done: 'Thought', prose: true }
 
 const TABLE: Array<[string, ToolAction]> = [
-  ['read readfile viewfile view cat openfile readmediafile', { icon: ReadGlyph, run: 'Reading', done: 'Read', many: 'Read files' }],
+  [
+    'read readfile viewfile view cat openfile readmediafile',
+    { icon: ReadGlyph, run: 'Reading', done: 'Read', many: 'Read files' }
+  ],
   [
     'edit editfile edits multiedit strreplace strreplacefile strreplaceeditor applypatch patch filechange write writefile createfile create newfile savefile',
     { icon: EditGlyph, run: 'Editing', done: 'Edited', many: 'Edited files' }
   ],
-  ['notebookedit notebook', { icon: NotebookGlyph, run: 'Editing a notebook', done: 'Edited a notebook', many: 'Edited notebooks' }],
+  [
+    'notebookedit notebook',
+    { icon: NotebookGlyph, run: 'Editing a notebook', done: 'Edited a notebook', many: 'Edited notebooks' }
+  ],
   [SHELL_TOOLS, { icon: ShellGlyph, run: 'Running', done: 'Ran', many: 'Ran commands', terminal: true }],
   [
     'bashoutput shelloutput processoutput readoutput',
@@ -90,10 +102,7 @@ const TABLE: Array<[string, ToolAction]> = [
     { icon: ChecklistGlyph, run: 'Writing a plan', done: 'Wrote a plan', prose: true }
   ],
   ['task agent subagent delegate dispatchagent launchagent', AGENT],
-  [
-    'askuserquestion ask question',
-    { icon: QuestionGlyph, run: 'Asking', done: 'Asked', prose: true }
-  ],
+  ['askuserquestion ask question', { icon: QuestionGlyph, run: 'Asking', done: 'Asked', prose: true }],
   ['skill slashcommand command', { icon: BoltGlyph, run: 'Running a skill', done: 'Ran a skill', prose: true }],
   [
     'generateimage createimage editimage imagegen',
@@ -111,10 +120,7 @@ const TABLE: Array<[string, ToolAction]> = [
     'taskcreate taskupdate tasklist taskget taskoutput taskstop',
     { icon: DoneGlyph, run: 'Updating tasks', done: 'Updated tasks', prose: true }
   ],
-  [
-    'sendmessage message',
-    { icon: PlaneGlyph, run: 'Sending a message', done: 'Sent a message', prose: true }
-  ],
+  ['sendmessage message', { icon: PlaneGlyph, run: 'Sending a message', done: 'Sent a message', prose: true }],
   ['pushnotification notify', { icon: BellGlyph, run: 'Sending a notice', done: 'Sent a notice', prose: true }],
   [
     'croncreate crondelete cronlist schedulewakeup schedule',

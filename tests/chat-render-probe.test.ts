@@ -221,8 +221,7 @@ const seed = (steps: AgentStep[]) => ({
   loadingHistory: false
 })
 
-const composer = (): HTMLTextAreaElement =>
-  screen.getByPlaceholderText('Ask Crew') as HTMLTextAreaElement
+const composer = (): HTMLTextAreaElement => screen.getByPlaceholderText('Ask Crew') as HTMLTextAreaElement
 
 const openChat = (steps: AgentStep[]): void => {
   useCrew.setState(seed(steps))

@@ -34,8 +34,6 @@ describe('the window a thread was popped out into', () => {
   })
 
   it('cannot be read two ways by a folder with the separator in its name', () => {
-    expect(poppedKey(projectPlace('/one'), 'two three')).not.toBe(
-      poppedKey(projectPlace('/one two'), 'three')
-    )
+    expect(poppedKey(projectPlace('/one'), 'two three')).not.toBe(poppedKey(projectPlace('/one two'), 'three'))
   })
 })

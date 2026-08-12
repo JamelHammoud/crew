@@ -39,9 +39,7 @@ describe('reading a folder off this machine', () => {
   })
 
   it('reads a leading slash at the root and then under your own folder', async () => {
-    expect((await readMachineDirs(null, '/Documents')).map(dir => dir.dir)).toEqual([
-      path.join(temp, 'Documents')
-    ])
+    expect((await readMachineDirs(null, '/Documents')).map(dir => dir.dir)).toEqual([path.join(temp, 'Documents')])
     expect((await readMachineDirs(null, '/')).map(dir => dir.dir)).toEqual(['/', temp])
   })
 

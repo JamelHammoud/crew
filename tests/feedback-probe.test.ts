@@ -19,8 +19,7 @@ beforeEach(() => {
     configurable: true,
     value: {
       appVersion: () => Promise.resolve('0.1.0'),
-      systemInfo: () =>
-        Promise.resolve({ version: '0.1.0', platform: 'darwin', release: '25.5.0', arch: 'arm64' }),
+      systemInfo: () => Promise.resolve({ version: '0.1.0', platform: 'darwin', release: '25.5.0', arch: 'arm64' }),
       openExternal: (url: string) => {
         opened.push(url)
         return Promise.resolve(opens)
@@ -87,9 +86,7 @@ describe('submitting feedback', () => {
 
     await waitFor(() => expect(within(card()).getByText(/No mail app opened/)).toBeTruthy())
     expect(within(card()).getByText('devjamel@gmail.com')).toBeTruthy()
-    expect((within(card()).getByLabelText('Feedback') as HTMLTextAreaElement).value).toBe(
-      'The panel went blank'
-    )
+    expect((within(card()).getByLabelText('Feedback') as HTMLTextAreaElement).value).toBe('The panel went blank')
 
     fireEvent.click(within(card()).getByRole('button', { name: 'Copy' }))
     await waitFor(() => expect(copied).toEqual(['The panel went blank\n\nCrew 0.1.0\nmacOS 25.5.0 arm64']))

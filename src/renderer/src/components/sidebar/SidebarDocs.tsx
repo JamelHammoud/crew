@@ -116,7 +116,9 @@ export default function SidebarDocs({ open }: { open: boolean }) {
               node.children.length === 0 ? 'invisible' : ''
             }`}
           >
-            <ChevronRightGlyph className={`w-3.5 h-3.5 transition-transform duration-150 ${shown ? 'rotate-90' : ''}`} />
+            <ChevronRightGlyph
+              className={`w-3.5 h-3.5 transition-transform duration-150 ${shown ? 'rotate-90' : ''}`}
+            />
           </button>
           <button
             onClick={() => go(node.slug)}

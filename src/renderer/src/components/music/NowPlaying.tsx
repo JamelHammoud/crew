@@ -96,7 +96,11 @@ export default function NowPlaying({ track }: { track: MusicItem }) {
               aria-label={room.playing ? 'Pause' : 'Play'}
               className={`${solidButton} w-10 h-10 shadow-lg shadow-black/20`}
             >
-              {room.playing ? <PauseGlyph className="w-[18px] h-[18px]" /> : <PlayGlyph className="w-[18px] h-[18px]" />}
+              {room.playing ? (
+                <PauseGlyph className="w-[18px] h-[18px]" />
+              ) : (
+                <PlayGlyph className="w-[18px] h-[18px]" />
+              )}
             </button>
           </Tooltip>
           <Tooltip label="Next">
@@ -130,7 +134,11 @@ export default function NowPlaying({ track }: { track: MusicItem }) {
           </Tooltip>
           <Volume />
           <Tooltip label="Turn it off">
-            <button onClick={() => useMusic.getState().off()} aria-label="Turn it off" className={`${barButton} w-7 h-7`}>
+            <button
+              onClick={() => useMusic.getState().off()}
+              aria-label="Turn it off"
+              className={`${barButton} w-7 h-7`}
+            >
               <StopGlyph className="w-4 h-4" />
             </button>
           </Tooltip>

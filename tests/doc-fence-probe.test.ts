@@ -47,8 +47,7 @@ function type(view: EditorView, text: string) {
   }
 }
 
-const text = (block: Block) =>
-  ((block.content ?? []) as Array<{ text?: string }>).map(part => part.text ?? '').join('')
+const text = (block: Block) => ((block.content ?? []) as Array<{ text?: string }>).map(part => part.text ?? '').join('')
 
 describe('doc fence', () => {
   it('starts a code block on the third backtick', () => {

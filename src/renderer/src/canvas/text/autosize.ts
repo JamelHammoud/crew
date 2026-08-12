@@ -57,11 +57,7 @@ export function richTextChanged(previous: RichTextDocument, next: RichTextDocume
   return JSON.stringify(previous) !== JSON.stringify(next)
 }
 
-export function textGrowthMatters(
-  previous: TextGrowthState,
-  next: TextGrowthState,
-  contentChanged: boolean
-): boolean {
+export function textGrowthMatters(previous: TextGrowthState, next: TextGrowthState, contentChanged: boolean): boolean {
   if (!next.autoSize) return false
   if (contentChanged || previous.style !== next.style) return true
   return previous.scale !== 1 && next.scale === 1

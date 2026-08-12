@@ -76,7 +76,11 @@ beforeEach(() => {
   played.length = 0
   copied = []
   useBrowser.setState({ tabs: [], activeTabId: null, open: false })
-  useMusic.setState({ uploads: [], playlists: [], put: (trackId, playlistId = null) => void played.push({ trackId, playlistId }) })
+  useMusic.setState({
+    uploads: [],
+    playlists: [],
+    put: (trackId, playlistId = null) => void played.push({ trackId, playlistId })
+  })
   useHuddle.setState({ joined: false })
   Object.assign(navigator, { clipboard: { writeText: (text: string) => void copied.push(text) } })
 })
@@ -87,8 +91,7 @@ afterEach(() => {
 })
 
 const build = () => fireEvent.click(screen.getByText('New tool'))
-const name = (value: string) =>
-  fireEvent.change(screen.getByPlaceholderText('What to call it'), { target: { value } })
+const name = (value: string) => fireEvent.change(screen.getByPlaceholderText('What to call it'), { target: { value } })
 
 const pick = (control: string, option: string | RegExp) => {
   fireEvent.click(screen.getByRole('button', { name: control }))
@@ -142,7 +145,10 @@ describe('the toolbox', () => {
   })
 
   it('runs a built tool: a page opens in the side panel, a command opens a terminal', () => {
-    toolbox([tool(), tool({ id: 'tool-2', name: 'Dev', mark: 'terminal', action: { kind: 'terminal', command: 'yarn dev' } })])
+    toolbox([
+      tool(),
+      tool({ id: 'tool-2', name: 'Dev', mark: 'terminal', action: { kind: 'terminal', command: 'yarn dev' } })
+    ])
 
     fireEvent.click(screen.getByText('Figma'))
     expect(useBrowser.getState().tabs[0]).toMatchObject({ kind: 'web', url: 'https://figma.com' })
@@ -156,7 +162,12 @@ describe('the toolbox', () => {
   it('opens a file, and hands a command written over several lines to the shell a line at a time', () => {
     toolbox([
       tool({ id: 'tool-3', name: 'Notes', mark: 'doc', action: { kind: 'file', path: 'docs/notes.md' } }),
-      tool({ id: 'tool-4', name: 'Ship', mark: 'terminal', action: { kind: 'terminal', command: 'yarn build\nyarn dist' } })
+      tool({
+        id: 'tool-4',
+        name: 'Ship',
+        mark: 'terminal',
+        action: { kind: 'terminal', command: 'yarn build\nyarn dist' }
+      })
     ])
 
     fireEvent.click(screen.getByText('Notes'))
@@ -167,10 +178,17 @@ describe('the toolbox', () => {
   })
 
   it('asks the agent a tool names, and opens nothing in the panel for it', () => {
-    toolbox([tool({ id: 'tool-5', name: 'Tests', mark: 'chat', action: { kind: 'prompt', text: 'Run the tests', agentId: 'a2' } })], [
-      agent('a1', 'Fable'),
-      agent('a2', 'Bubbles')
-    ])
+    toolbox(
+      [
+        tool({
+          id: 'tool-5',
+          name: 'Tests',
+          mark: 'chat',
+          action: { kind: 'prompt', text: 'Run the tests', agentId: 'a2' }
+        })
+      ],
+      [agent('a1', 'Fable'), agent('a2', 'Bubbles')]
+    )
 
     fireEvent.click(screen.getByText('Tests'))
     expect(asked).toEqual([{ text: '@Bubbles Run the tests', aimedAt: ['a2'] }])
@@ -178,9 +196,17 @@ describe('the toolbox', () => {
   })
 
   it('asks whoever is here when the agent a tool names has gone', () => {
-    toolbox([tool({ id: 'tool-6', name: 'Tests', mark: 'chat', action: { kind: 'prompt', text: 'Run the tests', agentId: 'gone' } })], [
-      agent('a1', 'Fable')
-    ])
+    toolbox(
+      [
+        tool({
+          id: 'tool-6',
+          name: 'Tests',
+          mark: 'chat',
+          action: { kind: 'prompt', text: 'Run the tests', agentId: 'gone' }
+        })
+      ],
+      [agent('a1', 'Fable')]
+    )
 
     fireEvent.click(screen.getByText('Tests'))
     expect(asked).toEqual([{ text: '@Fable Run the tests', aimedAt: ['a1'] }])
@@ -215,9 +241,7 @@ describe('the toolbox', () => {
     fireEvent.change(screen.getByPlaceholderText('figma.com'), { target: { value: 'crew.dev' } })
     fireEvent.click(screen.getByText('Add to toolbox'))
 
-    expect(sent).toEqual([
-      { type: 'tool.add', name: 'Staging', mark: '🚀', action: { kind: 'web', url: 'crew.dev' } }
-    ])
+    expect(sent).toEqual([{ type: 'tool.add', name: 'Staging', mark: '🚀', action: { kind: 'web', url: 'crew.dev' } }])
   })
 
   it('builds a page that opens in your own browser', () => {
@@ -329,9 +353,7 @@ describe('the toolbox', () => {
     pick('Which doc', 'Notes')
     fireEvent.click(screen.getByText('Add to toolbox'))
 
-    expect(sent).toEqual([
-      { type: 'tool.add', name: 'Notes', mark: 'star', action: { kind: 'doc', page: 'notes' } }
-    ])
+    expect(sent).toEqual([{ type: 'tool.add', name: 'Notes', mark: 'star', action: { kind: 'doc', page: 'notes' } }])
 
     sent.length = 0
     build()
@@ -340,9 +362,7 @@ describe('the toolbox', () => {
     pick('Which board', 'Onboarding')
     fireEvent.click(screen.getByText('Add to toolbox'))
 
-    expect(sent).toEqual([
-      { type: 'tool.add', name: 'Board', mark: 'star', action: { kind: 'board', boardId: 'b1' } }
-    ])
+    expect(sent).toEqual([{ type: 'tool.add', name: 'Board', mark: 'star', action: { kind: 'board', boardId: 'b1' } }])
   })
 
   it('builds a tool that copies something, and leaves the toolbox open to say so', () => {
@@ -361,7 +381,9 @@ describe('the toolbox', () => {
     ])
 
     cleanup()
-    toolbox([tool({ id: 'tool-7', name: 'Join link', mark: 'copy', action: { kind: 'copy', text: 'crew://join/abc' } })])
+    toolbox([
+      tool({ id: 'tool-7', name: 'Join link', mark: 'copy', action: { kind: 'copy', text: 'crew://join/abc' } })
+    ])
 
     fireEvent.click(screen.getByText('Join link'))
     expect(copied).toEqual(['crew://join/abc'])
@@ -372,7 +394,12 @@ describe('the toolbox', () => {
     toolbox(
       [
         tool({ id: 's', name: 'Heads up', mark: 'chat', action: { kind: 'say', text: 'Pushing now' } }),
-        tool({ id: 't', name: 'Overnight', mark: 'checklist', action: { kind: 'todo', text: 'Read what came in', agentId: 'a1' } }),
+        tool({
+          id: 't',
+          name: 'Overnight',
+          mark: 'checklist',
+          action: { kind: 'todo', text: 'Read what came in', agentId: 'a1' }
+        }),
         tool({ id: 'n', name: 'Log it', mark: 'pencil', action: { kind: 'note', page: 'journal', text: 'Shipped' } })
       ],
       [],
@@ -440,7 +467,12 @@ describe('the toolbox', () => {
 
   it('asks for a blank before it runs, and drops what was typed into every place it is named', () => {
     toolbox([
-      tool({ id: 'q', name: 'Search', mark: 'search', action: { kind: 'web', url: 'https://crew.dev/search?q={what}' } })
+      tool({
+        id: 'q',
+        name: 'Search',
+        mark: 'search',
+        action: { kind: 'web', url: 'https://crew.dev/search?q={what}' }
+      })
     ])
 
     fireEvent.click(screen.getByText('Search'))
@@ -460,7 +492,12 @@ describe('the toolbox', () => {
 
   it('asks a chain for its blanks once, and leaves a shell variable alone', () => {
     toolbox([
-      tool({ id: 'a', name: 'Branch', mark: 'terminal', action: { kind: 'terminal', command: 'git checkout {branch}' } }),
+      tool({
+        id: 'a',
+        name: 'Branch',
+        mark: 'terminal',
+        action: { kind: 'terminal', command: 'git checkout {branch}' }
+      }),
       tool({ id: 'b', name: 'Tell', mark: 'chat', action: { kind: 'say', text: 'On {branch} now, from ${PWD}' } }),
       tool({ id: 'c', name: 'Switch', mark: 'group', action: { kind: 'chain', toolIds: ['a', 'b'] } })
     ])
@@ -500,7 +537,12 @@ describe('the toolbox', () => {
     fireEvent.click(screen.getByText('Add to toolbox'))
 
     expect(sent).toEqual([
-      { type: 'tool.add', name: 'Start the day', mark: 'star', action: { kind: 'chain', toolIds: ['tool-2', 'tool-1'] } }
+      {
+        type: 'tool.add',
+        name: 'Start the day',
+        mark: 'star',
+        action: { kind: 'chain', toolIds: ['tool-2', 'tool-1'] }
+      }
     ])
   })
 
@@ -545,7 +587,13 @@ describe('the toolbox', () => {
     fireEvent.change(field, { target: { value: 'Design' } })
     fireEvent.click(screen.getByText('Save'))
     expect(sent).toEqual([
-      { type: 'tool.edit', toolId: 'tool-1', name: 'Design', mark: 'globe', action: { kind: 'web', url: 'https://figma.com' } }
+      {
+        type: 'tool.edit',
+        toolId: 'tool-1',
+        name: 'Design',
+        mark: 'globe',
+        action: { kind: 'web', url: 'https://figma.com' }
+      }
     ])
 
     sent.length = 0

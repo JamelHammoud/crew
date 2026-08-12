@@ -16,9 +16,7 @@ export interface HuddleRoom {
   startedAt: number | null
 }
 
-export type HuddleSignal =
-  | { kind: 'description'; description: unknown }
-  | { kind: 'candidate'; candidate: unknown }
+export type HuddleSignal = { kind: 'description'; description: unknown } | { kind: 'candidate'; candidate: unknown }
 
 export const MAX_HUDDLE_PEERS = 12
 export const MAX_SIGNAL_CHARS = 256 * 1024
@@ -26,9 +24,7 @@ export const PEER_ID_CHARS = 64
 
 // Public STUN only. A crew is usually on one network or on a link that already
 // reaches the host, so a relay of our own would sit idle.
-export const ICE_SERVERS: RTCIceServer[] = [
-  { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }
-]
+export const ICE_SERVERS: RTCIceServer[] = [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }]
 
 export function emptyRoom(): HuddleRoom {
   return { id: null, peers: [], startedAt: null }

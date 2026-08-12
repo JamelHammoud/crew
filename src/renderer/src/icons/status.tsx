@@ -126,9 +126,7 @@ export const SunGlyph = glyph(
   </>
 )
 
-export const MoonGlyph = glyph(
-  <path d="M20.4 14.7A8.9 8.9 0 0 1 9.3 3.6 8.85 8.85 0 1 0 20.4 14.7Z" />
-)
+export const MoonGlyph = glyph(<path d="M20.4 14.7A8.9 8.9 0 0 1 9.3 3.6 8.85 8.85 0 1 0 20.4 14.7Z" />)
 
 // The eye is the flattest thing in the set. It cannot reach the keyline without
 // becoming a different shape, so it takes the full width instead and is allowed

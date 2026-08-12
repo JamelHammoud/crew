@@ -31,11 +31,7 @@ export function paletteHex(editor: Editor, name: unknown): string {
 function channels(hex: string): [number, number, number] {
   const clean = hex.replace('#', '')
   const full = clean.length === 3 ? clean.replace(/./g, part => part + part) : clean
-  return [
-    parseInt(full.slice(0, 2), 16) || 0,
-    parseInt(full.slice(2, 4), 16) || 0,
-    parseInt(full.slice(4, 6), 16) || 0
-  ]
+  return [parseInt(full.slice(0, 2), 16) || 0, parseInt(full.slice(2, 4), 16) || 0, parseInt(full.slice(4, 6), 16) || 0]
 }
 
 export function nearestColor(editor: Editor, hex: string): TLDefaultColorStyle {
@@ -54,9 +50,7 @@ export function nearestColor(editor: Editor, hex: string): TLDefaultColorStyle {
 }
 
 function nearest(steps: Record<TLDefaultSizeStyle, number>, value: number): TLDefaultSizeStyle {
-  return SIZES.reduce((best, size) =>
-    Math.abs(steps[size] - value) < Math.abs(steps[best] - value) ? size : best
-  )
+  return SIZES.reduce((best, size) => (Math.abs(steps[size] - value) < Math.abs(steps[best] - value) ? size : best))
 }
 
 export function sizeWeight(size: unknown): number {

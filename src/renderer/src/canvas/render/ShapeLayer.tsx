@@ -120,14 +120,10 @@ function ShapeContentView<Shape extends CanvasShapeRecord>({
   shape,
   behind
 }: ShapeContentProps<Shape>): ReactNode {
-  return useStateTracking(
-    `canvas shape content ${shape.type}`,
-    () => {
-      const latest = unsafe__withoutCapture(() => host.getShape(shape.id)) ?? shape
-      return behind ? renderer.renderBackground?.(latest) : renderer.render(latest)
-    },
-    [host, renderer, shape.id, behind]
-  )
+  return useStateTracking(`canvas shape content ${shape.type}`, () => {
+    const latest = unsafe__withoutCapture(() => host.getShape(shape.id)) ?? shape
+    return behind ? renderer.renderBackground?.(latest) : renderer.render(latest)
+  }, [host, renderer, shape.id, behind])
 }
 
 function sameShapeContentProps<Shape extends CanvasShapeRecord>(
@@ -157,31 +153,27 @@ function CanvasShapeView<Shape extends CanvasShapeRecord>({ host, renderer, resu
   const memoized = useRef({ transform: '', clipPath: '', width: '', height: '' })
   const culling = useMountedShapeCulling()
 
-  useCanvasLayoutReactor(
-    `canvas shape ${result.id}`,
-    () => {
-      const shape = host.getShape(result.id)
-      const transform = host.getShapePageTransform(result.id)
-      if (!shape || !transform) return
-      const bounds = host.getShapeGeometry(shape).bounds
-      const clipPath = host.getShapeClipPath(result.id) ?? 'none'
-      const next = {
-        transform: shapeCssTransform(transform),
-        clipPath,
-        width: `${Math.max(bounds.w, 1)}px`,
-        height: `${Math.max(bounds.h, 1)}px`
-      }
-      const previous = memoized.current
-      for (const key of Object.keys(next) as Array<keyof typeof next>) {
-        if (next[key] === previous[key]) continue
-        const property = key === 'clipPath' ? 'clip-path' : key
-        setStyle(foregroundRef.current, property, next[key])
-        setStyle(backgroundRef.current, property, next[key])
-        previous[key] = next[key]
-      }
-    },
-    [host, result.id]
-  )
+  useCanvasLayoutReactor(`canvas shape ${result.id}`, () => {
+    const shape = host.getShape(result.id)
+    const transform = host.getShapePageTransform(result.id)
+    if (!shape || !transform) return
+    const bounds = host.getShapeGeometry(shape).bounds
+    const clipPath = host.getShapeClipPath(result.id) ?? 'none'
+    const next = {
+      transform: shapeCssTransform(transform),
+      clipPath,
+      width: `${Math.max(bounds.w, 1)}px`,
+      height: `${Math.max(bounds.h, 1)}px`
+    }
+    const previous = memoized.current
+    for (const key of Object.keys(next) as Array<keyof typeof next>) {
+      if (next[key] === previous[key]) continue
+      const property = key === 'clipPath' ? 'clip-path' : key
+      setStyle(foregroundRef.current, property, next[key])
+      setStyle(backgroundRef.current, property, next[key])
+      previous[key] = next[key]
+    }
+  }, [host, result.id])
 
   useLayoutEffect(() => {
     setStyle(foregroundRef.current, 'opacity', String(result.opacity))

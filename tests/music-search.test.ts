@@ -1,12 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  findMusic,
-  findPlaylists,
-  isMine,
-  musicItems,
-  type MusicPlaylist,
-  type MusicUpload
-} from '../src/shared/music'
+import { findMusic, findPlaylists, isMine, musicItems, type MusicPlaylist, type MusicUpload } from '../src/shared/music'
 import { span, tracks } from '../src/renderer/src/components/music/say'
 
 // What the search bar in the music panel does. A row says three things about

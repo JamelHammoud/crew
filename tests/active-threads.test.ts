@@ -87,10 +87,7 @@ describe('the threads a place is showing', () => {
   })
 
   it('leaves the agent name out and capitalizes the first letter', () => {
-    const list = activeThreads(
-      [started('a', '@Bubbles draw the rail'), started('b', 'check the sync @Bubbles')],
-      none
-    )
+    const list = activeThreads([started('a', '@Bubbles draw the rail'), started('b', 'check the sync @Bubbles')], none)
     expect(list.map(thread => thread.title)).toEqual(['Check the sync', 'Draw the rail'])
   })
 

@@ -78,7 +78,12 @@ describe('toolbox', () => {
     const ask = (await sam.waitForEvent(e => e.kind === 'tool.added' && e.name === 'Tests')) as Added
     expect(ask.action).toEqual({ kind: 'prompt', text: 'Run the tests', agentId: 'agent-1' })
 
-    sam.send({ type: 'tool.add', name: 'Docs', mark: 'globe', action: { kind: 'web', url: 'crew.dev', external: true } })
+    sam.send({
+      type: 'tool.add',
+      name: 'Docs',
+      mark: 'globe',
+      action: { kind: 'web', url: 'crew.dev', external: true }
+    })
     const page = (await sam.waitForEvent(e => e.kind === 'tool.added' && e.name === 'Docs')) as Added
     expect(page.action).toEqual({ kind: 'web', url: 'https://crew.dev', external: true })
   })
@@ -128,7 +133,12 @@ describe('toolbox', () => {
     const note = (await sam.waitForEvent(e => e.kind === 'tool.added' && e.name === 'Log it')) as Added
     expect(note.action).toEqual({ kind: 'note', page: 'journal', text: 'Shipped' })
 
-    sam.send({ type: 'tool.add', name: 'Focus', mark: 'music', action: { kind: 'music', playlistId: 'set-ambient-lofi' } })
+    sam.send({
+      type: 'tool.add',
+      name: 'Focus',
+      mark: 'music',
+      action: { kind: 'music', playlistId: 'set-ambient-lofi' }
+    })
     const music = (await sam.waitForEvent(e => e.kind === 'tool.added' && e.name === 'Focus')) as Added
     expect(music.action).toEqual({ kind: 'music', playlistId: 'set-ambient-lofi' })
   })

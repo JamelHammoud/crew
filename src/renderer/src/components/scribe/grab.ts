@@ -15,8 +15,7 @@ export function grab(event: Pressed<HTMLElement>): void {
   window.crew.grabScribe()
   box.setPointerCapture(event.pointerId)
 
-  const move = (moved: PointerEvent) =>
-    window.crew.moveScribe(moved.screenX - from.x, moved.screenY - from.y, false)
+  const move = (moved: PointerEvent) => window.crew.moveScribe(moved.screenX - from.x, moved.screenY - from.y, false)
 
   // A drag that is let go of and one the system takes away both settle where
   // the pill stands, so a gesture interrupted by anything at all still leaves

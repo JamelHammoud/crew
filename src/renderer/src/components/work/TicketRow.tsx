@@ -35,7 +35,11 @@ export default function TicketRow({
           {inside && (
             <span className="mt-0.5 block text-xs text-fg-faint">
               {[
-                ticket.decisions.length === 1 ? '1 decision' : ticket.decisions.length > 1 ? `${ticket.decisions.length} decisions` : '',
+                ticket.decisions.length === 1
+                  ? '1 decision'
+                  : ticket.decisions.length > 1
+                    ? `${ticket.decisions.length} decisions`
+                    : '',
                 ticket.files.length === 1 ? '1 file' : ticket.files.length > 1 ? `${ticket.files.length} files` : ''
               ]
                 .filter(Boolean)

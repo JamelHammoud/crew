@@ -1,13 +1,5 @@
 import { kindOf, type AttachmentKind } from '../../../shared/attachments'
-import {
-  ArchiveGlyph,
-  DocGlyph,
-  FileGlyph,
-  FilmGlyph,
-  MusicGlyph,
-  PhotoGlyph,
-  type Glyph
-} from '../icons'
+import { ArchiveGlyph, DocGlyph, FileGlyph, FilmGlyph, MusicGlyph, PhotoGlyph, type Glyph } from '../icons'
 
 const MARKS: Record<AttachmentKind, Glyph> = {
   image: PhotoGlyph,

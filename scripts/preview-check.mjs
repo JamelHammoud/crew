@@ -167,7 +167,8 @@ function judge(seen, how) {
   if (how === 'alone' && seen.base !== seen.url) problems.push(`a page with no folder was handed one: ${seen.base}`)
   if (how === 'held' && seen.url.includes('crew-previews'))
     problems.push(`the page was copied rather than read where it stands: ${seen.url}`)
-  if (how === 'held' && seen.base !== seen.url) problems.push(`a page read where it stands was handed a base: ${seen.base}`)
+  if (how === 'held' && seen.base !== seen.url)
+    problems.push(`a page read where it stands was handed a base: ${seen.base}`)
   return problems
 }
 

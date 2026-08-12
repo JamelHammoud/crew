@@ -7,12 +7,7 @@ export const BAND_BINS = 2048
 export const BAND_LOW = 55
 export const BAND_HIGH = 7000
 
-export function bandsFrom(
-  reading: Uint8Array,
-  sampleRate: number,
-  count: number,
-  out: number[]
-): number[] {
+export function bandsFrom(reading: Uint8Array, sampleRate: number, count: number, out: number[]): number[] {
   out.fill(0)
   const per = sampleRate / 2 / reading.length
   for (let bin = 1; bin < reading.length; bin++) {

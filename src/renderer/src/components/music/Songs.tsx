@@ -29,13 +29,7 @@ export default function Songs({ query }: { query: string }) {
   return (
     <ul className="p-2 flex flex-col gap-1">
       {items.map(one => (
-        <TrackRow
-          key={one.id}
-          item={one}
-          on={one.id === room.trackId}
-          playing={room.playing}
-          onPlay={() => put(one)}
-        />
+        <TrackRow key={one.id} item={one} on={one.id === room.trackId} playing={room.playing} onPlay={() => put(one)} />
       ))}
 
       {items.length === 0 && <li className="px-3 py-6 text-center text-sm text-fg-muted">No tracks found</li>}

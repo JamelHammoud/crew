@@ -199,8 +199,7 @@ export const useMusic = create<MusicState>((set, get) => {
 
     // A track put on from a playlist carries the list it came from, so Next and
     // Back walk that list rather than the whole shelf.
-    put: (trackId, playlistId = null) =>
-      sendMusic({ type: 'music.set', trackId, playing: true, at: 0, playlistId }),
+    put: (trackId, playlistId = null) => sendMusic({ type: 'music.set', trackId, playing: true, at: 0, playlistId }),
 
     toggle: () => {
       const room = get().room

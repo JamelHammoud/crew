@@ -10,11 +10,7 @@ export function getShapeParent(editor: TreeEditor, shape: any): any {
   return editor.getShape(shape.parentId)
 }
 
-export function findShapeAncestor(
-  editor: TreeEditor,
-  shape: any,
-  predicate: (ancestor: any) => boolean
-): any {
+export function findShapeAncestor(editor: TreeEditor, shape: any, predicate: (ancestor: any) => boolean): any {
   if (editor.findShapeAncestor) return editor.findShapeAncestor(shape, predicate)
   if (!shape) return undefined
   const ancestors = editor.getShapeAncestors?.(shape) ?? []
@@ -29,11 +25,7 @@ export function hasAncestor(editor: TreeEditor, shape: any, ancestorId: string):
   return (editor.getShapeAncestors?.(shape) ?? []).some((ancestor: any) => ancestor.id === ancestorId)
 }
 
-export function visitDescendants(
-  editor: TreeEditor,
-  id: string,
-  visitor: (id: string) => false | undefined
-): void {
+export function visitDescendants(editor: TreeEditor, id: string, visitor: (id: string) => false | undefined): void {
   for (const childId of editor.getSortedChildIdsForParent?.(id) ?? []) {
     if (visitor(childId) === false) continue
     visitDescendants(editor, childId, visitor)

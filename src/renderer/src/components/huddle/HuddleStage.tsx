@@ -39,9 +39,7 @@ function Shared({ stream, name, mine }: { stream: MediaStream | null; name: stri
       <div className={`${SCREEN} overflow-hidden flex items-center justify-center`}>
         <div className="flex flex-col items-center gap-3">
           <Spinner size={20} className="text-fg-muted" />
-          <p className="text-sm text-fg-muted">
-            {mine ? 'Setting up your screen' : `Waiting for ${name}'s screen`}
-          </p>
+          <p className="text-sm text-fg-muted">{mine ? 'Setting up your screen' : `Waiting for ${name}'s screen`}</p>
         </div>
       </div>
     )
@@ -77,8 +75,7 @@ export default function HuddleStage() {
 
   const shared = sharingPeer(room)
   const screen = shared ? (shared.peerId === peerId ? localScreen : (remote[shared.peerId]?.screen ?? null)) : null
-  const cameraFor = (id: string): MediaStream | null =>
-    id === peerId ? localCamera : (remote[id]?.camera ?? null)
+  const cameraFor = (id: string): MediaStream | null => (id === peerId ? localCamera : (remote[id]?.camera ?? null))
 
   const grid = fitTiles(room.peers.length, box.width, box.height, GAP)
   const tile = (peer: (typeof room.peers)[number], size: 'sm' | 'lg') => (
@@ -96,16 +93,12 @@ export default function HuddleStage() {
 
   return (
     <div className={`fixed inset-0 z-50 bg-ink-900 flex flex-col ${picking ? '' : 'animate-pop'}`}>
-      <header
-        className={`app-drag shrink-0 h-[70px] flex items-center gap-3 px-6 ${full ? '' : 'mac:pl-[92px]'}`}
-      >
+      <header className={`app-drag shrink-0 h-[70px] flex items-center gap-3 px-6 ${full ? '' : 'mac:pl-[92px]'}`}>
         <Live />
         <AvatarStack names={room.peers.map(peer => peer.name)} size="md" />
         <span className="text-lg font-semibold text-fg truncate">{huddleTitle(room, peerId)}</span>
         {room.startedAt !== null && (
-          <span className="text-sm font-mono text-fg-muted tabular-nums">
-            {formatClock(now - room.startedAt)}
-          </span>
+          <span className="text-sm font-mono text-fg-muted tabular-nums">{formatClock(now - room.startedAt)}</span>
         )}
       </header>
 

@@ -34,11 +34,7 @@ export default function You({ onDone }: { onDone: () => void }) {
     <Page title={selfName || 'You'}>
       <div className="flex items-center gap-4 pb-2">
         <PhotoPicker has={hasPhoto} onChange={setMyPhoto}>
-          <Avatar
-            name={selfName || '?'}
-            px={72}
-            presence={connection === 'online' ? 'online' : 'offline'}
-          />
+          <Avatar name={selfName || '?'} px={72} presence={connection === 'online' ? 'online' : 'offline'} />
         </PhotoPicker>
         <div className="min-w-0">
           <div className="flex items-center gap-2">

@@ -19,7 +19,15 @@ const HOME_DIRS = [
   'bin'
 ]
 
-const SYSTEM_DIRS = ['/opt/homebrew/bin', '/opt/homebrew/sbin', '/usr/local/bin', '/usr/bin', '/bin', '/usr/sbin', '/sbin']
+const SYSTEM_DIRS = [
+  '/opt/homebrew/bin',
+  '/opt/homebrew/sbin',
+  '/usr/local/bin',
+  '/usr/bin',
+  '/bin',
+  '/usr/sbin',
+  '/sbin'
+]
 
 function nodeVersionDirs(home: string): string[] {
   const root = join(home, '.nvm/versions/node')
@@ -39,14 +47,16 @@ function loginShellDirs(): string[] {
   if (shell && process.platform !== 'win32') {
     const result = spawnSync(shell, ['-ilc', `echo ${MARKER}$PATH`], { encoding: 'utf8', timeout: 5000 })
     const line = (result.stdout ?? '').split('\n').find(l => l.includes(MARKER))
-    if (line) shellDirs = line.slice(line.indexOf(MARKER) + MARKER.length).trim().split(delimiter)
+    if (line)
+      shellDirs = line
+        .slice(line.indexOf(MARKER) + MARKER.length)
+        .trim()
+        .split(delimiter)
   }
   return shellDirs
 }
 
-export function searchDirs(
-  options: { home?: string; path?: string; loginShell?: boolean } = {}
-): string[] {
+export function searchDirs(options: { home?: string; path?: string; loginShell?: boolean } = {}): string[] {
   const home = options.home ?? process.env.HOME ?? homedir()
   const all = [
     ...(options.path ?? process.env.PATH ?? '').split(delimiter),

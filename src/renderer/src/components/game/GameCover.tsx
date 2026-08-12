@@ -43,12 +43,7 @@ const DRAW: Record<string, (ctx: CanvasRenderingContext2D, width: number, height
   flappy
 }
 
-export function drawCover(
-  gameId: string,
-  ctx: CanvasRenderingContext2D,
-  width: number,
-  height: number
-): void {
+export function drawCover(gameId: string, ctx: CanvasRenderingContext2D, width: number, height: number): void {
   DRAW[gameId]?.(ctx, width, height)
 }
 

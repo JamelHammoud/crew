@@ -88,11 +88,7 @@ export function closePutsAway(platform: NodeJS.Platform, quitting: boolean): boo
 // stood out on its own is the same window in a narrower column, so the shape,
 // the transparency and what the page is allowed are decided once here rather
 // than written down twice and left to drift apart.
-function windowShell(
-  platform: NodeJS.Platform,
-  preload: string,
-  devTools: boolean
-): BrowserWindowConstructorOptions {
+function windowShell(platform: NodeJS.Platform, preload: string, devTools: boolean): BrowserWindowConstructorOptions {
   const isWindows = platform === 'win32'
 
   return {
@@ -154,10 +150,7 @@ export function createThreadWindowOptions(
 // because that role carries Toggle Developer Tools and its accelerator, and a
 // shipped Crew has no dev tools to toggle. Reload and the zoom stay: `⌘R` is
 // the app's own and the canvas is written around it.
-export function appMenuTemplate(
-  platform: NodeJS.Platform,
-  devTools: boolean
-): MenuItemConstructorOptions[] {
+export function appMenuTemplate(platform: NodeJS.Platform, devTools: boolean): MenuItemConstructorOptions[] {
   const isMac = platform === 'darwin'
   return [
     ...(isMac ? [{ role: 'appMenu' as const }] : []),

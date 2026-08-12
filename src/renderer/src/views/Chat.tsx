@@ -85,19 +85,13 @@ export default function Chat() {
   const reachBack = useLoadOlder(scrollRef, { more: moreHistory, loading: loadingHistory, load: loadHistory })
   const { ref: overlayRef, room } = useComposerRoom()
 
-  const feed = useMemo<FeedEntry[]>(
-    () => buildFeed(events, threads, agents, selfId),
-    [agents, events, threads, selfId]
-  )
+  const feed = useMemo<FeedEntry[]>(() => buildFeed(events, threads, agents, selfId), [agents, events, threads, selfId])
 
   useLayoutEffect(() => {
     follow(feed.length > 0)
   }, [feed, steps, threadPrompts, room, follow])
 
-  const cardIds = useMemo(
-    () => feed.flatMap(entry => (entry.kind === 'card' ? [entry.thread.id] : [])),
-    [feed]
-  )
+  const cardIds = useMemo(() => feed.flatMap(entry => (entry.kind === 'card' ? [entry.thread.id] : [])), [feed])
 
   const resting = useMemo(() => {
     const ends = lastEnds(events)
@@ -114,10 +108,7 @@ export default function Chat() {
   // What every card in the feed has changed, counted in one pass. A step
   // landing replaces one run's own steps, so all but that run answer off the
   // cache rather than being counted again on every frame.
-  const changed = useMemo(
-    () => changedIn(cardIds, events, steps, threads),
-    [cardIds, events, steps, threads]
-  )
+  const changed = useMemo(() => changedIn(cardIds, events, steps, threads), [cardIds, events, steps, threads])
 
   const threadStatus = (thread: ThreadMeta): ThreadStatus => {
     const counted = changed.get(thread.id) ?? NOTHING
@@ -196,7 +187,7 @@ export default function Chat() {
             ) : (
               <div className="mt-16 flex flex-col items-center gap-4">
                 {agents.length === 0 ? (
-                <CreateAgent compact />
+                  <CreateAgent compact />
                 ) : (
                   <p className="text-base text-fg-muted text-center">Say hi, or mention someone with @.</p>
                 )}
@@ -234,9 +225,7 @@ export default function Chat() {
             <Composer
               attachmentKey={CHAT_KEY}
               value={text}
-              placeholder={
-                ghost ? 'Send a message nobody else will see' : 'Ask Crew'
-              }
+              placeholder={ghost ? 'Send a message nobody else will see' : 'Ask Crew'}
               inputRef={inputRef}
               onChange={mention.onChange}
               onKeyDown={onKeyDown}

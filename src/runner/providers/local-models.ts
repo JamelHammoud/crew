@@ -39,9 +39,7 @@ function names(at: string, wanted: 'dir' | 'file'): string[] {
 function filesUnder(root: string, depth = WALK_DEPTH): string[][] {
   const here = names(root, 'file').map(name => [name])
   if (depth <= 0) return here
-  const below = names(root, 'dir').flatMap(dir =>
-    filesUnder(join(root, dir), depth - 1).map(rest => [dir, ...rest])
-  )
+  const below = names(root, 'dir').flatMap(dir => filesUnder(join(root, dir), depth - 1).map(rest => [dir, ...rest]))
   return [...below, ...here]
 }
 

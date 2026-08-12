@@ -500,7 +500,9 @@ function dragReport(drag) {
   say(
     typeof drag.saved.text === 'string' && drag.saved.text.length > 0,
     3,
-    drag.saved.text ? 'the real DocEditor save path ran and handed back markdown' : 'the real save path handed back nothing'
+    drag.saved.text
+      ? 'the real DocEditor save path ran and handed back markdown'
+      : 'the real save path handed back nothing'
   )
   if (composed !== null && drag.saved.text && composed !== drag.saved.text)
     console.log('  note: the composed save and the real save disagree')
@@ -509,7 +511,13 @@ function dragReport(drag) {
 
   const mark = markdown.split('\n').find(line => line.trim().startsWith(`<!-- ${WIDTHS_MARK}`))
   say(!!mark, 4, mark ? `the markdown carries ${mark.trim()}` : 'the markdown carries no crew:cols line')
-  if (mark) console.log(`  numbers in it: ${mark.replace(/<!--\s*crew:cols\s*/, '').replace(/-->\s*$/, '').trim()}`)
+  if (mark)
+    console.log(
+      `  numbers in it: ${mark
+        .replace(/<!--\s*crew:cols\s*/, '')
+        .replace(/-->\s*$/, '')
+        .trim()}`
+    )
 
   const back = firstWidth(drag.back?.widths)
   console.log(`  read back off the mark: ${JSON.stringify(drag.back?.marks)}`)
@@ -559,7 +567,8 @@ try {
       console.log(
         `  ${what}: ${chrome ? `${chrome.box.w}x${chrome.box.h} at ${chrome.box.x},${chrome.box.y}, paint ${chrome.paint}, radius ${chrome.radius}` : 'not there'}`
       )
-    if (read.bar) console.log(`  bar: ${read.bar.box.w}x${read.bar.box.h}, paint ${read.bar.paint}, radius ${read.bar.radius}`)
+    if (read.bar)
+      console.log(`  bar: ${read.bar.box.w}x${read.bar.box.h}, paint ${read.bar.paint}, radius ${read.bar.radius}`)
     if (read.wide)
       console.log(
         `  a wide one: table ${read.wide.table} in ${read.wide.clientW}, scrolls ${read.wide.scrollW}, corner ${read.wide.corner}`

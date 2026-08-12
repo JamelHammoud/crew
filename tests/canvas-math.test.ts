@@ -588,9 +588,7 @@ describe('what a matrix does and undoes', () => {
       const y = spread()
       const rotation = (random() - 0.5) * PI
       const scale = 0.5 + random() * 3
-      const decomposed = Mat.Decompose(
-        Mat.Compose(Mat.Translate(x, y), Mat.Rotate(rotation), Mat.Scale(scale, scale))
-      )
+      const decomposed = Mat.Decompose(Mat.Compose(Mat.Translate(x, y), Mat.Rotate(rotation), Mat.Scale(scale, scale)))
       expect(decomposed.x).toBeCloseTo(x, 5)
       expect(decomposed.y).toBeCloseTo(y, 5)
       expect(decomposed.scaleX).toBeCloseTo(scale, 5)

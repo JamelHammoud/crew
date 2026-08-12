@@ -4,12 +4,7 @@ import { createElement } from 'react'
 import { afterEach, describe, expect, it } from 'vitest'
 import SubagentChips from '../src/renderer/src/components/SubagentChips'
 import ThreadCard from '../src/renderer/src/components/ThreadCard'
-import {
-  buildThread,
-  threadState,
-  THREAD_STATE_LABELS,
-  type SubagentRun
-} from '../src/renderer/src/components/thread'
+import { buildThread, threadState, THREAD_STATE_LABELS, type SubagentRun } from '../src/renderer/src/components/thread'
 import ThreadView from '../src/renderer/src/views/ThreadView'
 import { soundFor } from '../src/renderer/src/media/sounds'
 import { useCrew, type ThreadMeta } from '../src/renderer/src/state/store'
@@ -95,8 +90,7 @@ const load = (events: SessionEvent[]) => {
   })
 }
 
-const reds = (): HTMLElement[] =>
-  [...document.querySelectorAll('[class*="text-danger"]')] as HTMLElement[]
+const reds = (): HTMLElement[] => [...document.querySelectorAll('[class*="text-danger"]')] as HTMLElement[]
 
 describe('a run somebody stopped', () => {
   afterEach(cleanup)

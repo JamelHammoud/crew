@@ -161,7 +161,10 @@ describe('what the rail draws again', () => {
       usePlaces.setState({
         live: liveOf(null).map(place =>
           place.key === keyOf(2)
-            ? { ...place, threads: [{ id: `${keyOf(2)}/fresh`, title: 'something new', working: false }, ...place.threads] }
+            ? {
+                ...place,
+                threads: [{ id: `${keyOf(2)}/fresh`, title: 'something new', working: false }, ...place.threads]
+              }
             : place
         )
       })

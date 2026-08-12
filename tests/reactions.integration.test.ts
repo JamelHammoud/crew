@@ -51,10 +51,7 @@ describe('message reactions', () => {
     bob.send({ type: 'chat.react', targetId, emoji: '❤️' })
     const removed = (await alice.waitForEvent(
       event =>
-        event.kind === 'message.reaction' &&
-        event.targetId === targetId &&
-        event.id !== added.id &&
-        !event.active
+        event.kind === 'message.reaction' && event.targetId === targetId && event.id !== added.id && !event.active
     )) as Reaction
 
     expect(removed.memberId).toBe(added.memberId)
@@ -77,9 +74,7 @@ describe('message reactions', () => {
     )) as Reaction
 
     expect(added.emoji).toBe('🏳️‍🌈')
-    expect(
-      host.session.snapshot().events.filter(event => event.kind === 'message.reaction')
-    ).toHaveLength(1)
+    expect(host.session.snapshot().events.filter(event => event.kind === 'message.reaction')).toHaveLength(1)
   })
 
   it('delivers feedback on an agent reply only to that agent on its next start', async () => {
@@ -105,9 +100,7 @@ describe('message reactions', () => {
     await ui.waitForEvent(event => event.kind === 'agent.online' && event.agentId === idB)
 
     ui.chat('first task @Fake A', [idA])
-    const thread = (await ui.waitForEvent(
-      event => event.kind === 'thread.started' && event.agentId === idA
-    )) as Started
+    const thread = (await ui.waitForEvent(event => event.kind === 'thread.started' && event.agentId === idA)) as Started
     const firstEnd = (await ui.waitForEvent(
       event => event.kind === 'agent.end' && event.threadId === thread.threadId
     )) as AgentEnd
@@ -122,9 +115,7 @@ describe('message reactions', () => {
     ui.chat('second task', [], thread.threadId)
     const current = (await ui.waitForEvent(
       event =>
-        event.kind === 'agent.start' &&
-        event.threadId === thread.threadId &&
-        event.promptId !== firstEnd.promptId
+        event.kind === 'agent.start' && event.threadId === thread.threadId && event.promptId !== firstEnd.promptId
     )) as AgentStart
 
     const targetId = agentStepReactionTarget(firstEnd.promptId, reply!.step.id)

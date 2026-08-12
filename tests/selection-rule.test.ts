@@ -54,10 +54,7 @@ describe('the band a page of paper takes', () => {
   })
 
   it('is the one a pdf paints its selection in, since the window band vanishes on white', () => {
-    const view = readFileSync(
-      path.join(root, 'src/renderer/src/components/attachment/PdfPreview.tsx'),
-      'utf8'
-    )
+    const view = readFileSync(path.join(root, 'src/renderer/src/components/attachment/PdfPreview.tsx'), 'utf8')
     const at = view.indexOf('.pdf-text span::selection')
     expect(at).toBeGreaterThan(-1)
     expect(view.slice(at, view.indexOf('}', at))).toContain('var(--color-selection-paper)')

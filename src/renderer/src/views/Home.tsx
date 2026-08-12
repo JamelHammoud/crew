@@ -223,9 +223,7 @@ export default function Home() {
         <CrewAway
           busy={busy}
           onRetry={() => void open(away.folder, key, name.trim(), { share: away.share }, true)}
-          onOwn={() =>
-            void open(away.folder, key, name.trim(), { home: 'private', own: true, share: away.share })
-          }
+          onOwn={() => void open(away.folder, key, name.trim(), { home: 'private', own: true, share: away.share })}
         />
       )
     }

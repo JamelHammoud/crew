@@ -184,8 +184,11 @@ export const toast = Object.assign(open, {
 })
 
 export function useToasts(): Toast[] {
-  return useSyncExternalStore(listener => {
-    listeners.add(listener)
-    return () => listeners.delete(listener)
-  }, () => toasts)
+  return useSyncExternalStore(
+    listener => {
+      listeners.add(listener)
+      return () => listeners.delete(listener)
+    },
+    () => toasts
+  )
 }

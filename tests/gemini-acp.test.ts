@@ -15,8 +15,7 @@ const reply = (id: number, result: unknown) => JSON.stringify({ jsonrpc: '2.0', 
 const failed = (id: number, message: string, code = -32000) =>
   JSON.stringify({ jsonrpc: '2.0', id, error: { code, message } })
 
-const request = (id: number, method: string, params: unknown) =>
-  JSON.stringify({ jsonrpc: '2.0', id, method, params })
+const request = (id: number, method: string, params: unknown) => JSON.stringify({ jsonrpc: '2.0', id, method, params })
 
 const note = (body: Record<string, unknown>) =>
   JSON.stringify({ jsonrpc: '2.0', method: 'session/update', params: { sessionId: 'session_abc', update: body } })
@@ -119,9 +118,7 @@ describe('what the model says', () => {
       { textStart: { index: 2 } },
       { textDelta: { index: 2, text: 'Added' } }
     ])
-    expect(parse(chunk('agent_message_chunk', ' the line.'))).toEqual([
-      { textDelta: { index: 2, text: ' the line.' } }
-    ])
+    expect(parse(chunk('agent_message_chunk', ' the line.'))).toEqual([{ textDelta: { index: 2, text: ' the line.' } }])
   })
 
   it('never reuses a lane, so closing one cannot close another', () => {

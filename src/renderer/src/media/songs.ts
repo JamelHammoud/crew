@@ -130,7 +130,12 @@ const STAR_ROAD: Line[] = [
       d2 - a2 - | b2 - fs2 - | g2 - a2 - | d2 -  -  -
     `
   },
-  { voice: SPARK, per: 1, pan: 0.2, play: 'd6 . . . | . . a5 . | . . . . | fs6 . . . | . . . . | . . b5 . | . . . . | a5 . . .' },
+  {
+    voice: SPARK,
+    per: 1,
+    pan: 0.2,
+    play: 'd6 . . . | . . a5 . | . . . . | fs6 . . . | . . . . | . . b5 . | . . . . | a5 . . .'
+  },
   { voice: KICK, per: 2, hold: 0.2, play: 'x . . x . . x .' },
   { voice: HAT, per: 2, hold: 0.05, gain: 0.8, pan: -0.14, play: '. x . x . x . x' },
   { voice: SNAP, per: 2, hold: 0.16, gain: 0.65, play: '. . . . x . . .' }

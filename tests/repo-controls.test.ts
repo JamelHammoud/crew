@@ -38,8 +38,7 @@ afterEach(() => {
   vi.unstubAllEnvs()
 })
 
-const topBar = () =>
-  createElement(TopBar)
+const topBar = () => createElement(TopBar)
 
 describe('project sync controls', () => {
   it('sends the changes to the review tab rather than showing them twice', async () => {

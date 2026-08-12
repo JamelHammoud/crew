@@ -172,8 +172,7 @@ try {
   await compile(dir)
   const seen = await run(dir)
   if (seen.failed) throw new Error(seen.failed)
-  const shape = read =>
-    read.stroke > 0 ? 'ring' : read.radius === '50%' ? 'disc' : `square (${read.radius})`
+  const shape = read => (read.stroke > 0 ? 'ring' : read.radius === '50%' ? 'disc' : `square (${read.radius})`)
   seen.forEach(read => {
     console.log(`\nlevel ${read.depth}  ${read.says}`)
     console.log(`  ${shape(read)}, ${read.size} across, stroke ${read.stroke}`)

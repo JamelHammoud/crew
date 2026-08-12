@@ -153,10 +153,8 @@ describe('what the crew has put on a clock', () => {
     }
   })
 
-  it('adds a task to the crew\'s own list when that is what it is for', async () => {
-    const slept = await startHost(
-      shutSince(7, { name: 'Water', action: { kind: 'todo', text: 'Water the plants' } })
-    )
+  it("adds a task to the crew's own list when that is what it is for", async () => {
+    const slept = await startHost(shutSince(7, { name: 'Water', action: { kind: 'todo', text: 'Water the plants' } }))
     try {
       await waitUntil(() => slept.session.snapshot().todos.some(one => one.text === 'Water the plants'))
     } finally {

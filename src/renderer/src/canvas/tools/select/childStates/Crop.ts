@@ -170,9 +170,13 @@ export class Crop extends StateNode<SelectEditor> {
   static initial = 'idle'
 
   static children(): StateNodeConstructor<SelectEditor>[] {
-    return [CroppingIdle, PointingCrop, PointingCropHandle, TranslatingCrop, Cropping] as StateNodeConstructor<
-      SelectEditor
-    >[]
+    return [
+      CroppingIdle,
+      PointingCrop,
+      PointingCropHandle,
+      TranslatingCrop,
+      Cropping
+    ] as StateNodeConstructor<SelectEditor>[]
   }
 
   onEnter(): void {

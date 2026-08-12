@@ -28,17 +28,7 @@ function columns(gifs: Gif[]): Gif[][] {
   return held
 }
 
-function Tile({
-  gif,
-  sending,
-  refused,
-  onPick
-}: {
-  gif: Gif
-  sending: boolean
-  refused: boolean
-  onPick: () => void
-}) {
+function Tile({ gif, sending, refused, onPick }: { gif: Gif; sending: boolean; refused: boolean; onPick: () => void }) {
   const [loaded, setLoaded] = useState(false)
   return (
     <button
@@ -170,11 +160,7 @@ export default function GifPicker({
   return (
     <div className={`flex flex-col overflow-hidden rounded-[inherit] ${className}`}>
       <SearchField value={query} onChange={setQuery} placeholder="Search GIFs" />
-      <div
-        ref={scrollRef}
-        onScroll={onScroll}
-        className="min-h-0 flex-1 overflow-y-auto p-2.5 no-scrollbar"
-      >
+      <div ref={scrollRef} onScroll={onScroll} className="min-h-0 flex-1 overflow-y-auto p-2.5 no-scrollbar">
         {note ? (
           <p className="flex h-full items-center justify-center text-sm text-fg/40">{note}</p>
         ) : (

@@ -82,8 +82,7 @@ export const RADIUS_TILE = 0.25
 
 export const TILE = 17.5
 
-export const corner = (side: number, share = RADIUS): number =>
-  Math.round(side * share * 4) / 4
+export const corner = (side: number, share = RADIUS): number => Math.round(side * share * 4) / 4
 
 // One diagonal for every icon that is turned off, drawn at the same angle and
 // the same length wherever it lands. The form underneath crosses it rather than

@@ -16,10 +16,9 @@ import { NO_UPDATE, type UpdateState } from '../src/shared/update'
 const said = vi.fn()
 const failed = vi.fn()
 vi.mock('../src/renderer/src/state/toast', () => ({
-  toast: Object.assign(
-    (text: string, opts?: unknown) => said(text, opts),
-    { fail: (text: string, opts?: unknown) => failed(text, opts) }
-  )
+  toast: Object.assign((text: string, opts?: unknown) => said(text, opts), {
+    fail: (text: string, opts?: unknown) => failed(text, opts)
+  })
 }))
 
 const pressed = vi.fn()

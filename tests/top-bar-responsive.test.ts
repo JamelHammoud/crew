@@ -53,9 +53,7 @@ const setHeaderWidth = (width: number) => {
 
 describe('responsive top bar', () => {
   it('leaves the pages to the rail and keeps the controls at the end of the bar', () => {
-    render(
-      createElement(TopBar)
-    )
+    render(createElement(TopBar))
 
     expect(screen.queryByRole('navigation')).toBeNull()
     expect(screen.queryByRole('button', { name: 'Docs' })).toBeNull()
@@ -131,9 +129,7 @@ describe('responsive top bar', () => {
       agents: [],
       activePrompts: {}
     })
-    render(
-      createElement(TopBar)
-    )
+    render(createElement(TopBar))
 
     const faces = screen.getByRole('button', { name: "Who's here" })
     const you = screen.getByRole('button', { name: 'Settings' })
@@ -153,9 +149,7 @@ describe('responsive top bar', () => {
       agents: [],
       activePrompts: {}
     })
-    render(
-      createElement(TopBar)
-    )
+    render(createElement(TopBar))
 
     setHeaderWidth(600)
 
@@ -167,7 +161,6 @@ describe('responsive top bar', () => {
     expect(screen.getByText('Ali')).toBeTruthy()
     expect(screen.getByText('Bo')).toBeTruthy()
   })
-
 })
 
 describe('the way back to the side panel', () => {

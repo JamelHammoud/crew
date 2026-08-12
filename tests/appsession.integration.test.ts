@@ -130,15 +130,12 @@ describe('app session', () => {
     ])
     const target = parseLink(linkOf(info))
     const ui = await TestUi.connect(joinInfo.wsUrl, 'jamel', target.code)
-    await waitUntil(
-      () => {
-        const names = welcomeOf(ui).snapshot.members.map(m => m.name)
-        const joined = ui.events.filter(e => e.kind === 'person.joined').map(e => (e as { name: string }).name)
-        const seen = new Set([...names, ...joined])
-        return seen.has('sam') && seen.has('jamel')
-      },
-      15000
-    )
+    await waitUntil(() => {
+      const names = welcomeOf(ui).snapshot.members.map(m => m.name)
+      const joined = ui.events.filter(e => e.kind === 'person.joined').map(e => (e as { name: string }).name)
+      const seen = new Set([...names, ...joined])
+      return seen.has('sam') && seen.has('jamel')
+    }, 15000)
 
     ui.close()
     await guest.leave()

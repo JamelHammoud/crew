@@ -205,9 +205,7 @@ export const ImageGlyph = mark(
   </>
 )
 
-export const BoldGlyph = mark(
-  <path d={`M8 ${MIDDLE}h4.6a3.2 3.2 0 0 1 0 6.4H8V${CAP}h4.1a3.2 3.2 0 0 1 0 6.4`} />
-)
+export const BoldGlyph = mark(<path d={`M8 ${MIDDLE}h4.6a3.2 3.2 0 0 1 0 6.4H8V${CAP}h4.1a3.2 3.2 0 0 1 0 6.4`} />)
 
 export const ItalicGlyph = mark(
   <>

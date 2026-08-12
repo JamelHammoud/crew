@@ -31,7 +31,7 @@ const made = (over: Partial<Schedule> = {}): Schedule => ({
 })
 
 describe('what a schedule may be', () => {
-  it('takes the actions that are the crew\'s own', () => {
+  it("takes the actions that are the crew's own", () => {
     expect(schedulable({ kind: 'say', text: 'hi' })).toBe(true)
     expect(schedulable({ kind: 'prompt', text: 'review the diff' })).toBe(true)
     expect(schedulable({ kind: 'todo', text: 'water the plants' })).toBe(true)
@@ -46,9 +46,9 @@ describe('what a schedule may be', () => {
       mark: 'clock',
       action: { kind: 'post', text: 'Say what changed' }
     })
-    expect(cleanTool('Standup', 'clock', { kind: 'post', text: 'Say what changed', agentId: 'mac/fake' })?.action).toEqual(
-      { kind: 'post', text: 'Say what changed', agentId: 'mac/fake' }
-    )
+    expect(
+      cleanTool('Standup', 'clock', { kind: 'post', text: 'Say what changed', agentId: 'mac/fake' })?.action
+    ).toEqual({ kind: 'post', text: 'Say what changed', agentId: 'mac/fake' })
     expect(cleanTool('Standup', 'clock', { kind: 'post', text: '   ' })).toBeNull()
     expect(cleanTool('', 'clock', { kind: 'post', text: 'Say what changed' })).toBeNull()
 
@@ -66,7 +66,9 @@ describe('what a schedule may be', () => {
     expect(schedulable({ kind: 'terminal', command: 'ls' })).toBe(false)
     expect(schedulable({ kind: 'web', url: 'https://example.com' })).toBe(false)
     expect(schedulable({ kind: 'file', path: '/tmp/one' })).toBe(false)
-    expect(cleanSchedule('Build', 'star', { kind: 'daily', at: 60 }, { kind: 'terminal', command: 'yarn build' }, LISBON)).toBeNull()
+    expect(
+      cleanSchedule('Build', 'star', { kind: 'daily', at: 60 }, { kind: 'terminal', command: 'yarn build' }, LISBON)
+    ).toBeNull()
   })
 
   it('is nothing without a name, an action or a cadence', () => {
@@ -81,11 +83,15 @@ describe('what a schedule may be', () => {
     expect(cleanCadence({ kind: 'every', minutes: EVERY_MIN })).toEqual({ kind: 'every', minutes: EVERY_MIN })
     expect(cleanCadence({ kind: 'daily', at: DAY_MINUTES })).toBeNull()
     expect(cleanCadence({ kind: 'weekly', days: [], at: 60 })).toBeNull()
-    expect(cleanCadence({ kind: 'weekly', days: [3, 1, 1, 9], at: 60 })).toEqual({ kind: 'weekly', days: [1, 3], at: 60 })
+    expect(cleanCadence({ kind: 'weekly', days: [3, 1, 1, 9], at: 60 })).toEqual({
+      kind: 'weekly',
+      days: [1, 3],
+      at: 60
+    })
     expect(cleanCadence({ kind: 'monthly', day: 31, at: 60 })).toBeNull()
   })
 
-  it('falls back to this machine\'s zone rather than throwing on a bad one', () => {
+  it("falls back to this machine's zone rather than throwing on a bad one", () => {
     expect(cleanZone('Mars/Olympus')).toBe(cleanZone(''))
     expect(cleanZone(LISBON)).toBe(LISBON)
   })

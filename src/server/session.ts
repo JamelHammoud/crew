@@ -24,13 +24,7 @@ import {
   type DocPage
 } from '../shared/docs'
 import { stripDocTableMarks } from '../shared/docTables'
-import {
-  boardMentionsOf,
-  crewRefs,
-  docMentionsOf,
-  refsIn,
-  type CrewRef
-} from '../shared/refs'
+import { boardMentionsOf, crewRefs, docMentionsOf, refsIn, type CrewRef } from '../shared/refs'
 import {
   huddleRecordId,
   markDeletedReplies,
@@ -89,13 +83,7 @@ import {
   shortId,
   type CrewMemory
 } from '../shared/memory'
-import {
-  cleanPlugin,
-  pluginKey,
-  PLUGIN_FULL,
-  PLUGIN_LIMIT,
-  type CrewPlugin
-} from '../shared/plugins'
+import { cleanPlugin, pluginKey, PLUGIN_FULL, PLUGIN_LIMIT, type CrewPlugin } from '../shared/plugins'
 import { cleanCommands, type CommandName } from '../shared/commands'
 import { goalCondition } from '../shared/goal'
 import { IMPLEMENT_PROMPT, PLAN_INSTRUCTIONS } from '../shared/plan'
@@ -1067,8 +1055,7 @@ export class CrewSession {
         if (meta.role === 'ui') this.handlePluginRemove(member, msg.pluginId)
         break
       case 'schedule.add':
-        if (meta.role === 'ui')
-          this.handleScheduleAdd(ws, member, msg.name, msg.mark, msg.when, msg.action, msg.zone)
+        if (meta.role === 'ui') this.handleScheduleAdd(ws, member, msg.name, msg.mark, msg.when, msg.action, msg.zone)
         break
       case 'schedule.edit':
         if (meta.role === 'ui')
@@ -1712,7 +1699,15 @@ export class CrewSession {
     if (todo.text === trimmed && todo.agentId === agentId) return
     todo.text = trimmed
     todo.agentId = agentId
-    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'todo.edited', todoId, text: trimmed, agentId, byName: member.name })
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'todo.edited',
+      todoId,
+      text: trimmed,
+      agentId,
+      byName: member.name
+    })
   }
 
   private handleTodoRemove(member: Member, todoId: string): void {
@@ -1839,11 +1834,7 @@ export class CrewSession {
     return null
   }
 
-  private writePlugin(
-    said: NonNullable<ReturnType<typeof cleanPlugin>>,
-    byName: string,
-    agentId?: string
-  ): string {
+  private writePlugin(said: NonNullable<ReturnType<typeof cleanPlugin>>, byName: string, agentId?: string): string {
     const plugin: CrewPlugin = {
       id: shortId(new Set(this.plugins.keys())),
       ...said,
@@ -2330,7 +2321,8 @@ export class CrewSession {
     if (!parent) return { error: 'That thread is not open.' }
     const cleanTask = task.trim().slice(0, TASK_LIMIT)
     if (!cleanTask) return { error: 'Say what the helper should do.' }
-    if ((parent.depth ?? 0) >= DEPTH_LIMIT) return { error: 'A helper this far down cannot send out helpers of its own.' }
+    if ((parent.depth ?? 0) >= DEPTH_LIMIT)
+      return { error: 'A helper this far down cannot send out helpers of its own.' }
     const born = this.subagentThreads(from.threadId)
     if (born.length >= RUN_LIMIT) return { error: `This thread has already run ${RUN_LIMIT} helpers.` }
     const parentAgent = this.agents.get(parent.agentId)
@@ -2612,7 +2604,10 @@ export class CrewSession {
   // that was away still gets its mention brought along when it is renamed.
   private agentRefs(ids: string[], text = ''): AgentMentionRef[] {
     const refs = new Map<string, AgentMentionRef>()
-    const written = agentMentionRefsIn(text, [...this.agents.values()].map(agent => this.pooled(agent)))
+    const written = agentMentionRefsIn(
+      text,
+      [...this.agents.values()].map(agent => this.pooled(agent))
+    )
     for (const ref of written) refs.set(ref.id, ref)
     for (const id of ids) {
       const agent = this.agents.get(id)
@@ -2779,10 +2774,7 @@ export class CrewSession {
     for (const agent of this.agents.values()) {
       for (const [promptId, run] of agent.runs) {
         for (const entry of run.steps.values()) {
-          if (
-            entry.step.kind !== 'text' ||
-            agentStepReactionTarget(promptId, entry.step.id) !== targetId
-          ) {
+          if (entry.step.kind !== 'text' || agentStepReactionTarget(promptId, entry.step.id) !== targetId) {
             continue
           }
           return {
@@ -3022,10 +3014,7 @@ export class CrewSession {
       }
     }
     if (titlesChanged) this.store.saveTitles(Object.fromEntries(this.docTitles))
-    this.emit(
-      { id: randomUUID(), ts: Date.now(), kind: 'doc.deleted', page, byName: member.name },
-      { persist: false }
-    )
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'doc.deleted', page, byName: member.name }, { persist: false })
     this.onSyncNeeded?.()
   }
 
@@ -3159,9 +3148,7 @@ export class CrewSession {
   }
 
   private dropDesignPresence(member: Member): void {
-    const stillHere = [...this.meta.values()].some(
-      m => m.role === 'ui' && m.memberKey === member.name.toLowerCase()
-    )
+    const stillHere = [...this.meta.values()].some(m => m.role === 'ui' && m.memberKey === member.name.toLowerCase())
     if (stillHere) return
     for (const board of this.designs.values()) {
       if (!board.presence.delete(member.id)) continue
@@ -3257,13 +3244,7 @@ export class CrewSession {
 
   // A dropped socket takes a while to close, so a client coming back with the
   // peer id it already had takes its own place over rather than doubling up.
-  private handleHuddleJoin(
-    ws: WebSocket,
-    member: Member,
-    rawPeerId: string,
-    muted: boolean,
-    camera: boolean
-  ): void {
+  private handleHuddleJoin(ws: WebSocket, member: Member, rawPeerId: string, muted: boolean, camera: boolean): void {
     if (typeof rawPeerId !== 'string' || rawPeerId.trim().length === 0) return
     const peerId = rawPeerId.trim().slice(0, PEER_ID_CHARS)
     let existing = this.huddle.get(ws)
@@ -3336,10 +3317,7 @@ export class CrewSession {
     this.emit({ id: randomUUID(), ts, kind: 'huddle.ended', huddleId, ms: ts - startedAt })
   }
 
-  private handleHuddleUpdate(
-    ws: WebSocket,
-    change: { muted?: boolean; camera?: boolean; sharing?: boolean }
-  ): void {
+  private handleHuddleUpdate(ws: WebSocket, change: { muted?: boolean; camera?: boolean; sharing?: boolean }): void {
     const peer = this.huddle.get(ws)
     if (!peer) return
     if (typeof change.muted === 'boolean') peer.muted = change.muted
@@ -3666,8 +3644,7 @@ export class CrewSession {
       by: member.name.slice(0, BY_LIMIT),
       // One of the app's own lists is in nobody's map, so it is asked for by
       // name rather than looked up, or Next would fall out of it after a track.
-      playlistId:
-        playlistId && (this.playlists.has(playlistId) || isMusicSet(playlistId)) ? playlistId : null,
+      playlistId: playlistId && (this.playlists.has(playlistId) || isMusicSet(playlistId)) ? playlistId : null,
       // Looping is a setting rather than something about the track, so it stays
       // where it was set across a skip and a pause.
       loop: this.music?.loop === true
@@ -3765,15 +3742,26 @@ export class CrewSession {
       timer.unref?.()
       timers.push(timer)
     })
-    const done = setTimeout(() => {
-      board.presence.delete(agentKey)
-      this.designCursorTimers.delete(key)
-      this.broadcast({
-        type: 'design.presence',
-        boardId: board.id,
-        presence: { userId: agentKey, name: label, kind: 'agent', cursor: null, selection: [], pageId: null, ts: Date.now() }
-      })
-    }, steps.length * DESIGN_CURSOR_STEP_MS + 6000)
+    const done = setTimeout(
+      () => {
+        board.presence.delete(agentKey)
+        this.designCursorTimers.delete(key)
+        this.broadcast({
+          type: 'design.presence',
+          boardId: board.id,
+          presence: {
+            userId: agentKey,
+            name: label,
+            kind: 'agent',
+            cursor: null,
+            selection: [],
+            pageId: null,
+            ts: Date.now()
+          }
+        })
+      },
+      steps.length * DESIGN_CURSOR_STEP_MS + 6000
+    )
     done.unref?.()
     timers.push(done)
     this.designCursorTimers.set(key, timers)
@@ -3935,7 +3923,13 @@ export class CrewSession {
         clearTimeout(pending.timer)
         this.stepFlushes.delete(`${promptId}:${step.id}`)
       }
-      this.toThread(ref.threadId, { type: 'agent.step', promptId, agentId: agent.id, threadId: ref.threadId, step: merged })
+      this.toThread(ref.threadId, {
+        type: 'agent.step',
+        promptId,
+        agentId: agent.id,
+        threadId: ref.threadId,
+        step: merged
+      })
       this.persistStep(agent, promptId, ref.threadId, step.id)
       return
     }
@@ -4084,7 +4078,14 @@ export class CrewSession {
     text: string,
     threadId: string,
     attachments: Attachment[],
-    route?: { messageId: string; mentions: string[]; replyTo?: MessageReply; voice?: boolean; holding?: boolean; goal?: boolean }
+    route?: {
+      messageId: string
+      mentions: string[]
+      replyTo?: MessageReply
+      voice?: boolean
+      holding?: boolean
+      goal?: boolean
+    }
   ): void {
     const thread = this.threads.get(threadId)
     if (!thread) return
@@ -4278,7 +4279,11 @@ export class CrewSession {
     }
   }
 
-  private finishPrompt(agent: AgentState, promptId: string, result: { ok: boolean; text?: string; error?: string }): void {
+  private finishPrompt(
+    agent: AgentState,
+    promptId: string,
+    result: { ok: boolean; text?: string; error?: string }
+  ): void {
     const threadId = this.prompts.get(promptId)?.threadId
     this.prompts.delete(promptId)
     agent.running.delete(promptId)
@@ -4359,12 +4364,7 @@ export class CrewSession {
     }
   }
 
-  private postReturn(
-    thread: Thread,
-    agent: AgentState,
-    text: string,
-    run: { ok: boolean; stopped: boolean }
-  ): void {
+  private postReturn(thread: Thread, agent: AgentState, text: string, run: { ok: boolean; stopped: boolean }): void {
     this.ghosts.delete(thread.id)
     this.threads.delete(thread.id)
     thread.queue = []
@@ -4407,9 +4407,7 @@ export class CrewSession {
         event.kind === 'agent.start' && event.promptId === promptId
     )
     const ids = new Set(start?.reactionIds ?? [])
-    return this.events.filter(
-      (event): event is ReactionEvent => event.kind === 'message.reaction' && ids.has(event.id)
-    )
+    return this.events.filter((event): event is ReactionEvent => event.kind === 'message.reaction' && ids.has(event.id))
   }
 
   private threadContext(

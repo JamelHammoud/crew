@@ -13,12 +13,8 @@ export function viewOf(editor: Editor, shape: TLShape): NodeView {
 
 export function useNodeView(): NodeView | null {
   const editor = useEditor()
-  return useValue(
-    'design node view',
-    () => {
-      const selected = editor.getSelectedShapes()
-      return selected.length === 1 ? viewOf(editor, selected[0]) : null
-    },
-    [editor]
-  )
+  return useValue('design node view', () => {
+    const selected = editor.getSelectedShapes()
+    return selected.length === 1 ? viewOf(editor, selected[0]) : null
+  }, [editor])
 }

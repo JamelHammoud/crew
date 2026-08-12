@@ -26,11 +26,7 @@ export function settle(view: View, image: Box, frame: Box): View {
 export function zoomBy(view: View, factor: number, at: Point, image: Box, frame: Box): View {
   const scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, view.scale * factor))
   const ratio = scale / view.scale
-  return settle(
-    { scale, x: at.x - (at.x - view.x) * ratio, y: at.y - (at.y - view.y) * ratio },
-    image,
-    frame
-  )
+  return settle({ scale, x: at.x - (at.x - view.x) * ratio, y: at.y - (at.y - view.y) * ratio }, image, frame)
 }
 
 export function panBy(view: View, dx: number, dy: number, image: Box, frame: Box): View {

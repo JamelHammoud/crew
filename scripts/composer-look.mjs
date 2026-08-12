@@ -184,8 +184,12 @@ if (seen.failed) throw new Error(seen.failed)
 
 function say(name, at) {
   console.log(`\n${name}`)
-  console.log(`  card            top ${at.card.top}, bottom ${at.card.bottom}, ${at.card.height} tall, overflow ${at.clips}`)
-  console.log(`  the box         top ${at.area.top}, bottom ${at.area.bottom}, ${at.area.height} tall, room ${at.scroll.room}`)
+  console.log(
+    `  card            top ${at.card.top}, bottom ${at.card.bottom}, ${at.card.height} tall, overflow ${at.clips}`
+  )
+  console.log(
+    `  the box         top ${at.area.top}, bottom ${at.area.bottom}, ${at.area.height} tall, room ${at.scroll.room}`
+  )
   console.log(`  scrolled        ${at.scroll.top} of ${at.scroll.height}, highlights at ${at.sync}`)
   console.log(`  the controls    top ${at.rows.top}, gap under the box ${at.rows.top - at.area.bottom}`)
   console.log(`  gap over        ${at.area.top - at.card.top}`)

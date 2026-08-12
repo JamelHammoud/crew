@@ -23,8 +23,7 @@ interface Fake {
 
 const KEY = 'sk-written-down'
 
-const sse = (content: string) =>
-  `data: ${JSON.stringify({ choices: [{ delta: { content } }] })}\n\ndata: [DONE]\n\n`
+const sse = (content: string) => `data: ${JSON.stringify({ choices: [{ delta: { content } }] })}\n\ndata: [DONE]\n\n`
 
 async function fakeServer(wantsKey: boolean, prefix = '/v1'): Promise<Fake> {
   const asked: Asked[] = []
@@ -130,9 +129,12 @@ describe('a server written down by hand', () => {
     const provider = allProviders().find(one => one.name === serverProviderName(fake!.url))
     expect(provider?.label).toBe('The rack')
     expect(await provider!.detect()).toBe(true)
-    expect(provider!.fields().find(field => field.key === 'model')?.options?.map(option => option.value)).toEqual([
-      'far/model'
-    ])
+    expect(
+      provider!
+        .fields()
+        .find(field => field.key === 'model')
+        ?.options?.map(option => option.value)
+    ).toEqual(['far/model'])
   })
 
   it('is called by its own host where nobody named it', async () => {

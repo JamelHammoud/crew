@@ -39,9 +39,9 @@ const row = (open: boolean, here = true, placeKey = HERE): void => {
 }
 
 const rows = (): string[] =>
-  Array.from(document.querySelectorAll('[role="menuitem"], button')).
-    map(one => one.textContent ?? '').
-    filter(text => text.startsWith('Open') || text === 'Close')
+  Array.from(document.querySelectorAll('[role="menuitem"], button'))
+    .map(one => one.textContent ?? '')
+    .filter(text => text.startsWith('Open') || text === 'Close')
 
 const said = (): string[] =>
   Array.from(document.querySelectorAll('[role="menuitem"], button')).map(one => one.textContent ?? '')

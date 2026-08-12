@@ -191,12 +191,18 @@ describe('what a Design text shape is measured with', () => {
   it('measures with the markup it paints', () => {
     const docs = [
       fromPlainText('Hello'),
-      { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Hi', marks: [{ type: 'bold' }] }] }] },
+      {
+        type: 'doc',
+        content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Hi', marks: [{ type: 'bold' }] }] }]
+      },
       { type: 'doc', content: [{ type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: 'H' }] }] },
       {
         type: 'doc',
         content: [
-          { type: 'bulletList', content: [{ type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'a' }] }] }] }
+          {
+            type: 'bulletList',
+            content: [{ type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'a' }] }] }]
+          }
         ]
       }
     ]

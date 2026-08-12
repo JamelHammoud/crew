@@ -31,9 +31,7 @@ export default function StepCode({ text, prompt, output }: { text: string; promp
         <div className="w-max min-w-full">
           {shown.map((row, index) => (
             <div key={index} className="flex px-3">
-              {prompt && (
-                <span className="shrink-0 w-4 select-none text-fg-faint">{index === 0 ? '$' : ''}</span>
-              )}
+              {prompt && <span className="shrink-0 w-4 select-none text-fg-faint">{index === 0 ? '$' : ''}</span>}
               <span className="whitespace-pre text-fg-secondary pr-10">
                 <LineText row={row} tokens={tokensFor(row)} tint="" />
               </span>
@@ -44,11 +42,7 @@ export default function StepCode({ text, prompt, output }: { text: string; promp
           )}
         </div>
       </div>
-      <CopyButton
-        text={text}
-        label={output ? 'Copy command' : undefined}
-        className="absolute top-1 right-1"
-      />
+      <CopyButton text={text} label={output ? 'Copy command' : undefined} className="absolute top-1 right-1" />
       {output && <Output text={output} />}
     </div>
   )

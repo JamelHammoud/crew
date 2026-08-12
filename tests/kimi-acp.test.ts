@@ -4,15 +4,17 @@ import { makeCliProvider } from '../src/runner/providers/cli'
 import { tmpDir } from './helpers/session'
 import type { ParsedActivity, ParsedOutput } from '../src/runner/providers/types'
 
-const reader = (settings: Record<string, string> = {}) => (key: string) => settings[key] ?? ''
+const reader =
+  (settings: Record<string, string> = {}) =>
+  (key: string) =>
+    settings[key] ?? ''
 
 const reply = (id: number, result: unknown) => JSON.stringify({ jsonrpc: '2.0', id, result })
 
 const failed = (id: number, message: string, code = -32603) =>
   JSON.stringify({ jsonrpc: '2.0', id, error: { code, message } })
 
-const request = (id: number, method: string, params: unknown) =>
-  JSON.stringify({ jsonrpc: '2.0', id, method, params })
+const request = (id: number, method: string, params: unknown) => JSON.stringify({ jsonrpc: '2.0', id, method, params })
 
 const note = (body: Record<string, unknown>) =>
   JSON.stringify({ jsonrpc: '2.0', method: 'session/update', params: { sessionId: 'session_abc', update: body } })

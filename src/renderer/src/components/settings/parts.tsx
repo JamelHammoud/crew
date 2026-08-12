@@ -22,15 +22,7 @@ export function Page({ title, line, children }: { title: string; line?: string; 
 // about the whole list rather than about any row in it. Standing in a row of its
 // own underneath, it would need a label, and the only label there is to write is
 // the button read back in longer words.
-export function Section({
-  title,
-  action,
-  children
-}: {
-  title?: string
-  action?: ReactNode
-  children: ReactNode
-}) {
+export function Section({ title, action, children }: { title?: string; action?: ReactNode; children: ReactNode }) {
   return (
     <div className="pt-7 first:pt-0">
       {title && (

@@ -71,9 +71,7 @@ describe('a pdf in the panel', () => {
 
     for (const [at, line] of words.entries()) {
       const page = await doc.getPage(at + 1)
-      const said = (await page.getTextContent()).items
-        .map(item => ('str' in item ? item.str : ''))
-        .join(' ')
+      const said = (await page.getTextContent()).items.map(item => ('str' in item ? item.str : '')).join(' ')
       expect(said).toContain(line)
     }
     await task.destroy()

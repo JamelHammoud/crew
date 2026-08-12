@@ -5,7 +5,10 @@ import { parseCodexLine } from '../src/runner/providers/codex'
 import { makeCliProvider } from '../src/runner/providers/cli'
 import type { ParsedOutput } from '../src/runner/providers/types'
 
-const reader = (settings: Record<string, string> = {}) => (key: string) => settings[key] ?? ''
+const reader =
+  (settings: Record<string, string> = {}) =>
+  (key: string) =>
+    settings[key] ?? ''
 
 const note = (method: string, params: unknown) => JSON.stringify({ jsonrpc: '2.0', method, params })
 const reply = (id: number, result: unknown) => JSON.stringify({ jsonrpc: '2.0', id, result })
@@ -57,7 +60,10 @@ describe('the codex handshake', () => {
       status: 'active'
     })
     expect(messages[4].params.input).toEqual([
-      { type: 'text', text: 'You are an agent here.\n\nfinish the migration\n\ncurl -s -X POST http://127.0.0.1:1/agents/spawn' }
+      {
+        type: 'text',
+        text: 'You are an agent here.\n\nfinish the migration\n\ncurl -s -X POST http://127.0.0.1:1/agents/spawn'
+      }
     ])
   })
 
@@ -138,19 +144,19 @@ describe('what codex says while it works', () => {
   })
 
   it('streams the answer token by token and never on an index reasoning holds', () => {
-    expect(parsed('item/started', { item: { type: 'agentMessage', id: 'm1', text: '', phase: 'final_answer' } })).toEqual(
-      [{ textStart: { index: 0, aside: false } }]
-    )
+    expect(
+      parsed('item/started', { item: { type: 'agentMessage', id: 'm1', text: '', phase: 'final_answer' } })
+    ).toEqual([{ textStart: { index: 0, aside: false } }])
     expect(parsed('item/agentMessage/delta', { delta: 'Do' })).toEqual([{ textDelta: { index: 0, text: 'Do' } }])
-    const done = parsed('item/completed', { item: { type: 'agentMessage', id: 'm1', text: 'Done.', phase: 'final_answer' } })
+    const done = parsed('item/completed', {
+      item: { type: 'agentMessage', id: 'm1', text: 'Done.', phase: 'final_answer' }
+    })
     expect(done).toEqual([{ blockStop: { index: 0 } }, { text: 'Done.' }])
   })
 
   it('shows what it says on the way as it goes, and keeps it out of the answer', () => {
     const item = { type: 'agentMessage', id: 'm0', text: 'I will read the file first.', phase: 'commentary' }
-    expect(parsed('item/started', { item: { ...item, text: '' } })).toEqual([
-      { textStart: { index: 0, aside: true } }
-    ])
+    expect(parsed('item/started', { item: { ...item, text: '' } })).toEqual([{ textStart: { index: 0, aside: true } }])
     expect(parsed('item/completed', { item })).toEqual([{ blockStop: { index: 0 } }])
   })
 
@@ -204,12 +210,19 @@ describe('what codex says while it works', () => {
 
 describe('what codex says it did', () => {
   it('names a command by what codex already parsed it into', () => {
-    expect(commandTool({ command: "/bin/zsh -lc 'cat notes.txt'", commandActions: [{ type: 'read', name: 'notes.txt', path: '/repo/notes.txt', command: 'cat notes.txt' }] })).toEqual({ name: 'Read', detail: '/repo/notes.txt' })
+    expect(
+      commandTool({
+        command: "/bin/zsh -lc 'cat notes.txt'",
+        commandActions: [{ type: 'read', name: 'notes.txt', path: '/repo/notes.txt', command: 'cat notes.txt' }]
+      })
+    ).toEqual({ name: 'Read', detail: '/repo/notes.txt' })
     expect(commandTool({ commandActions: [{ type: 'listFiles', command: 'ls -la', path: null }] })).toEqual({
       name: 'ListFiles',
       detail: 'ls -la'
     })
-    expect(commandTool({ commandActions: [{ type: 'search', query: 'zzz', path: 'src', command: 'grep -rn zzz src' }] })).toEqual({ name: 'Search', detail: 'zzz in src' })
+    expect(
+      commandTool({ commandActions: [{ type: 'search', query: 'zzz', path: 'src', command: 'grep -rn zzz src' }] })
+    ).toEqual({ name: 'Search', detail: 'zzz in src' })
   })
 
   it('falls back to the command with the shell wrapper taken off', () => {
@@ -217,7 +230,12 @@ describe('what codex says it did', () => {
       name: 'Shell',
       detail: 'yarn test'
     })
-    expect(commandTool({ command: "/bin/zsh -lc 'echo a && sleep 1'", commandActions: [{ type: 'unknown', command: 'echo a && sleep 1' }] })).toEqual({ name: 'Shell', detail: 'echo a && sleep 1' })
+    expect(
+      commandTool({
+        command: "/bin/zsh -lc 'echo a && sleep 1'",
+        commandActions: [{ type: 'unknown', command: 'echo a && sleep 1' }]
+      })
+    ).toEqual({ name: 'Shell', detail: 'echo a && sleep 1' })
   })
 
   it('reads several piped actions as one command', () => {
@@ -233,7 +251,9 @@ describe('what codex says it did', () => {
   })
 
   it('counts a hunk the way the file changed', () => {
-    expect(codexFile({ path: '/repo/notes.txt', kind: { type: 'update' }, diff: '@@ -2 +2,2 @@\n two\n+hello\n' })).toEqual({
+    expect(
+      codexFile({ path: '/repo/notes.txt', kind: { type: 'update' }, diff: '@@ -2 +2,2 @@\n two\n+hello\n' })
+    ).toEqual({
       path: '/repo/notes.txt',
       added: 1,
       removed: 0,
@@ -276,7 +296,12 @@ describe('what codex says it did', () => {
 
   it('names a web search by the queries it really ran', () => {
     const out = parsed('item/completed', {
-      item: { type: 'webSearch', id: 'w1', query: 'truncated …', action: { type: 'search', queries: ['rust 2026', 'cargo'] } }
+      item: {
+        type: 'webSearch',
+        id: 'w1',
+        query: 'truncated …',
+        action: { type: 'search', queries: ['rust 2026', 'cargo'] }
+      }
     })
     expect(out[0].activity).toMatchObject({ name: 'WebSearch', detail: 'rust 2026, cargo' })
   })
@@ -341,14 +366,21 @@ describe('what the commentary reads as', () => {
     note('item/started', { item: { type: 'agentMessage', id: 'c0', phase: 'commentary' } }),
     note('item/agentMessage/delta', { itemId: 'c0', delta: 'Reading the file and working out the pattern.' }),
     note('item/completed', {
-      item: { type: 'agentMessage', id: 'c0', phase: 'commentary', text: 'Reading the file and working out the pattern.' }
+      item: {
+        type: 'agentMessage',
+        id: 'c0',
+        phase: 'commentary',
+        text: 'Reading the file and working out the pattern.'
+      }
     })
   ]
 
   const answer = [
     note('item/started', { item: { type: 'agentMessage', id: 'a0', phase: 'final_answer' } }),
     note('item/agentMessage/delta', { itemId: 'a0', delta: 'Appended the line.' }),
-    note('item/completed', { item: { type: 'agentMessage', id: 'a0', phase: 'final_answer', text: 'Appended the line.' } })
+    note('item/completed', {
+      item: { type: 'agentMessage', id: 'a0', phase: 'final_answer', text: 'Appended the line.' }
+    })
   ]
 
   it('draws what codex says on the way as a thought, and the answer as the answer', async () => {

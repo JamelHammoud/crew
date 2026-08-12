@@ -33,7 +33,10 @@ describe('what a Kimi turn cost', () => {
   })
 
   it('leaves a session total out, so nothing lands twice', () => {
-    const text = [call(100, 10), record({ inputOther: 100, output: 10, inputCacheRead: 0, inputCacheCreation: 0 }, 'session')].join('\n')
+    const text = [
+      call(100, 10),
+      record({ inputOther: 100, output: 10, inputCacheRead: 0, inputCacheCreation: 0 }, 'session')
+    ].join('\n')
     expect(kimiUsage(text)).toMatchObject({ input: 100, output: 10 })
   })
 

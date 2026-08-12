@@ -697,8 +697,7 @@ const file = await boardFile(byShapeCount)
 const directory = await stage(file, mainSource)
 try {
   const result = await run(await compile(directory), 'SNAP')
-  if (result.failed)
-    throw new Error(`${result.failed}${result.errors?.length ? `\n${result.errors.join('\n')}` : ''}`)
+  if (result.failed) throw new Error(`${result.failed}${result.errors?.length ? `\n${result.errors.join('\n')}` : ''}`)
   for (const check of result.checks)
     console.log(`${check.ok ? 'ok  ' : 'FAIL'}  ${check.name}${check.note ? `  (${check.note})` : ''}`)
   console.log('')
@@ -715,7 +714,9 @@ try {
   const problems = result.checks.filter(check => !check.ok).map(check => `${check.name}: ${check.note}`)
   if (widths.length === 2 && widths.every(width => width > 0)) {
     const ratio = Math.max(...widths) / Math.min(...widths)
-    console.log(`\nthe guide is ${widths.map(width => width.toFixed(2)).join(' and ')} css px wide, a ratio of ${ratio.toFixed(2)}`)
+    console.log(
+      `\nthe guide is ${widths.map(width => width.toFixed(2)).join(' and ')} css px wide, a ratio of ${ratio.toFixed(2)}`
+    )
     if (ratio > 2) problems.push(`the guide changes width with zoom, ${ratio.toFixed(2)} times over`)
   } else if (widths.length === 2) problems.push('no guide was painted at one of the two zooms')
   if (!result.painted) problems.push('the window captured no pixels')

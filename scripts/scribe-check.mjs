@@ -20,8 +20,7 @@ const root = path.resolve(here, '..')
 
 // Every rule the tidying has, said out loud in one breath. A filler, a word said
 // twice, and a correction that reaches back over the sentence in front of it.
-const SAID =
-  'So um I think we should we should ship it today. Actually, wait. Let us ship it tomorrow.'
+const SAID = 'So um I think we should we should ship it today. Actually, wait. Let us ship it tomorrow.'
 const WANTED = ['ship it tomorrow']
 const UNWANTED = [' um ', ' uh ', 'today', 'actually', 'we should we should']
 
@@ -101,63 +100,63 @@ if (process.argv[2] !== 'run') {
 }
 
 async function check() {
-const dir = await mkdtemp(path.join(tmpdir(), 'crew-scribe-'))
-let bad = false
-try {
-  const problem = keys()
-  console.log(problem ? `keys:  ${problem}` : 'keys:  the hook loads and knows every key Scribe uses')
-  if (problem) bad = true
+  const dir = await mkdtemp(path.join(tmpdir(), 'crew-scribe-'))
+  let bad = false
+  try {
+    const problem = keys()
+    console.log(problem ? `keys:  ${problem}` : 'keys:  the hook loads and knows every key Scribe uses')
+    if (problem) bad = true
 
-  const [audio, { LISTEN_MODEL, askedOf }, { tidy, TIDY_RULES }] = await Promise.all([
-    speech(dir),
-    bundled(dir, 'src/renderer/src/media/voice/models.ts', 'models.mjs'),
-    bundled(dir, 'src/shared/scribeTidy.ts', 'tidy.mjs')
-  ])
-  const { env, pipeline } = await import('@huggingface/transformers')
-  env.allowLocalModels = false
-  const listen = await pipeline('automatic-speech-recognition', LISTEN_MODEL, {
-    dtype: { encoder_model: 'q8', decoder_model_merged: 'q8' }
-  })
-  const result = await listen(audio, { ...askedOf(LISTEN_MODEL), return_timestamps: true })
-  const chunks = (result.chunks ?? []).map(one => ({
-    text: (one.text ?? '').trim(),
-    start: one.timestamp?.[0] ?? 0,
-    end: one.timestamp?.[1] ?? 0
-  }))
-  if (chunks.length === 0) throw new Error('whisper handed back no timestamps at all')
-  const spread = chunks[chunks.length - 1].end - chunks[0].start
-  if (!(spread > 1)) throw new Error('every chunk came back at the same moment, so there are no gaps to read')
+    const [audio, { LISTEN_MODEL, askedOf }, { tidy, TIDY_RULES }] = await Promise.all([
+      speech(dir),
+      bundled(dir, 'src/renderer/src/media/voice/models.ts', 'models.mjs'),
+      bundled(dir, 'src/shared/scribeTidy.ts', 'tidy.mjs')
+    ])
+    const { env, pipeline } = await import('@huggingface/transformers')
+    env.allowLocalModels = false
+    const listen = await pipeline('automatic-speech-recognition', LISTEN_MODEL, {
+      dtype: { encoder_model: 'q8', decoder_model_merged: 'q8' }
+    })
+    const result = await listen(audio, { ...askedOf(LISTEN_MODEL), return_timestamps: true })
+    const chunks = (result.chunks ?? []).map(one => ({
+      text: (one.text ?? '').trim(),
+      start: one.timestamp?.[0] ?? 0,
+      end: one.timestamp?.[1] ?? 0
+    }))
+    if (chunks.length === 0) throw new Error('whisper handed back no timestamps at all')
+    const spread = chunks[chunks.length - 1].end - chunks[0].start
+    if (!(spread > 1)) throw new Error('every chunk came back at the same moment, so there are no gaps to read')
 
-  const written = tidy(chunks, TIDY_RULES)
-  console.log(`said:    ${SAID}`)
-  console.log(`chunks:  ${chunks.length}, over ${spread.toFixed(1)}s`)
-  console.log(`written: ${written}`)
+    const written = tidy(chunks, TIDY_RULES)
+    console.log(`said:    ${SAID}`)
+    console.log(`chunks:  ${chunks.length}, over ${spread.toFixed(1)}s`)
+    console.log(`written: ${written}`)
 
-  const low = ` ${written.toLowerCase()} `
-  const missed = WANTED.filter(word => !low.includes(word))
-  const left = UNWANTED.filter(word => low.includes(word))
-  if (missed.length > 0) {
-    console.error(`nothing was written for ${missed.join(', ')}`)
+    const low = ` ${written.toLowerCase()} `
+    const missed = WANTED.filter(word => !low.includes(word))
+    const left = UNWANTED.filter(word => low.includes(word))
+    if (missed.length > 0) {
+      console.error(`nothing was written for ${missed.join(', ')}`)
+      bad = true
+    }
+    if (left.length > 0) {
+      console.error(`the tidying left ${left.map(word => word.trim()).join(', ')} in`)
+      bad = true
+    }
+    if (!/[.!?]$/.test(written)) {
+      console.error('what was written does not end on a mark')
+      bad = true
+    }
+    if (!bad) console.log('real speech, the real model, a written sentence out the other end')
+  } catch (error) {
+    console.error(`scribe fell over: ${error.message}`)
     bad = true
+  } finally {
+    await rm(dir, { recursive: true, force: true })
   }
-  if (left.length > 0) {
-    console.error(`the tidying left ${left.map(word => word.trim()).join(', ')} in`)
-    bad = true
-  }
-  if (!/[.!?]$/.test(written)) {
-    console.error('what was written does not end on a mark')
-    bad = true
-  }
-  if (!bad) console.log('real speech, the real model, a written sentence out the other end')
-} catch (error) {
-  console.error(`scribe fell over: ${error.message}`)
-  bad = true
-} finally {
-  await rm(dir, { recursive: true, force: true })
-}
 
-// The paste itself is not checked here and cannot be: it needs a desktop with
-// somewhere to type, and on macOS an Accessibility permission a script cannot
-// grant itself.
-console.log(`${VERDICT} ${bad ? 'failed' : 'passed'}`)
+  // The paste itself is not checked here and cannot be: it needs a desktop with
+  // somewhere to type, and on macOS an Accessibility permission a script cannot
+  // grant itself.
+  console.log(`${VERDICT} ${bad ? 'failed' : 'passed'}`)
 }

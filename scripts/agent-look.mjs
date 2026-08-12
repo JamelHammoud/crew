@@ -127,7 +127,9 @@ await build({
   logLevel: 'silent',
   plugins: [tailwind()],
   esbuild: { jsx: 'automatic' },
-  resolve: { alias: { react: path.join(root, 'node_modules/react'), 'react-dom': path.join(root, 'node_modules/react-dom') } },
+  resolve: {
+    alias: { react: path.join(root, 'node_modules/react'), 'react-dom': path.join(root, 'node_modules/react-dom') }
+  },
   build: { outDir: path.join(dir, 'dist'), emptyOutDir: true }
 })
 
@@ -137,7 +139,12 @@ await new Promise((accept, reject) => {
   child.stdout.on('data', chunk => (out += chunk))
   child.stderr.on('data', () => {})
   child.on('exit', () => {
-    process.stdout.write(out.split('\n').filter(l => l.startsWith('LOG ')).join('\n'))
+    process.stdout.write(
+      out
+        .split('\n')
+        .filter(l => l.startsWith('LOG '))
+        .join('\n')
+    )
     return out.includes('SHOT ok') ? accept() : reject(new Error(out || 'nothing came back'))
   })
   child.on('error', reject)

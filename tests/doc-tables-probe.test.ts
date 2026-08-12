@@ -15,12 +15,13 @@ window.matchMedia = ((query: string) => ({
 const { BlockNoteEditor } = await import('@blocknote/core')
 const { docSchema } = await import('../src/renderer/src/components/doc/docSchema')
 
-const editor = () => BlockNoteEditor.create({ schema: docSchema as never }) as never as {
-  document: any[]
-  replaceBlocks: (a: unknown[], b: unknown[]) => void
-  blocksToMarkdownLossy: (blocks: unknown[]) => string
-  tryParseMarkdownToBlocks: (markdown: string) => unknown[]
-}
+const editor = () =>
+  BlockNoteEditor.create({ schema: docSchema as never }) as never as {
+    document: any[]
+    replaceBlocks: (a: unknown[], b: unknown[]) => void
+    blocksToMarkdownLossy: (blocks: unknown[]) => string
+    tryParseMarkdownToBlocks: (markdown: string) => unknown[]
+  }
 
 const roundTrip = (extra: Record<string, unknown>) => {
   const one = editor()
@@ -95,7 +96,12 @@ describe('what a table keeps once Crew carries the rest', () => {
     one.replaceBlocks(one.document, [
       {
         type: 'table',
-        content: { type: 'tableContent', headerRows: 1, columnWidths: [200, 90], rows: [{ cells: ['a', 'b'] }, { cells: ['c', 'd'] }] }
+        content: {
+          type: 'tableContent',
+          headerRows: 1,
+          columnWidths: [200, 90],
+          rows: [{ cells: ['a', 'b'] }, { cells: ['c', 'd'] }]
+        }
       }
     ])
     expect(only(load(save(one))).content.columnWidths).toEqual([200, 90])

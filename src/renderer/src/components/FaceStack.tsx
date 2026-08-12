@@ -1,14 +1,6 @@
 import { Children, type ReactNode } from 'react'
 
-export default function FaceStack({
-  face,
-  gap = 3,
-  children
-}: {
-  face: number
-  gap?: number
-  children: ReactNode
-}) {
+export default function FaceStack({ face, gap = 3, children }: { face: number; gap?: number; children: ReactNode }) {
   const faces = Children.toArray(children)
   if (faces.length === 0) return null
 

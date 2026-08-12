@@ -182,10 +182,7 @@ describe('settings across the session', () => {
     expect(updated.settings.model).toBe('large')
 
     ali.chat('run it @Fake', [id])
-    const end = (await ali.waitForEvent(e => e.kind === 'agent.end')) as Extract<
-      SessionEvent,
-      { kind: 'agent.end' }
-    >
+    const end = (await ali.waitForEvent(e => e.kind === 'agent.end')) as Extract<SessionEvent, { kind: 'agent.end' }>
     expect(end.ok).toBe(true)
     expect(end.text).toContain('flags: --model large')
   })
