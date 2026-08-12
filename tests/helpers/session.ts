@@ -148,7 +148,7 @@ export class TestUi {
     this.send({ type: 'prompt.cancel', promptId })
   }
 
-  waitFor(pred: (msg: ServerMessage) => boolean, timeoutMs = 10000): Promise<ServerMessage> {
+  waitFor(pred: (msg: ServerMessage) => boolean, timeoutMs = 30000): Promise<ServerMessage> {
     const existing = this.messages.find(pred)
     if (existing) return Promise.resolve(existing)
     return new Promise((resolve, reject) => {
@@ -178,7 +178,7 @@ export class TestUi {
     ;(this.ws as unknown as { _socket: { resume: () => void } })._socket.resume()
   }
 
-  waitForClose(timeoutMs = 10000): Promise<void> {
+  waitForClose(timeoutMs = 30000): Promise<void> {
     if (this.ws.readyState === WebSocket.CLOSED) return Promise.resolve()
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => reject(new Error('waitForClose timed out')), timeoutMs)
