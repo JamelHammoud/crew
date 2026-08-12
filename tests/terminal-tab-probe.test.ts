@@ -65,15 +65,15 @@ describe('opening something new in the side panel', () => {
     render(createElement(BrowserPanel))
     newTab()
 
-    expect(screen.getByText('Web page')).toBeTruthy()
-    expect(screen.getByText('Terminal')).toBeTruthy()
+    expect(within(menu()).getByText('Web page')).toBeTruthy()
+    expect(within(menu()).getByText('Terminal')).toBeTruthy()
     expect(useBrowser.getState().tabs).toHaveLength(0)
   })
 
   it('leaves a blank page waiting for an address', () => {
     render(createElement(BrowserPanel))
     newTab()
-    fireEvent.click(screen.getByText('Web page'))
+    pick('Web page')
 
     expect(only().kind).toBe('web')
     expect(only().url).toBe('')
@@ -83,7 +83,7 @@ describe('opening something new in the side panel', () => {
   it('starts a shell for a terminal', async () => {
     render(createElement(BrowserPanel))
     newTab()
-    fireEvent.click(screen.getByText('Terminal'))
+    pick('Terminal')
 
     expect(only().kind).toBe('terminal')
     await waitFor(() => expect(opened).toHaveLength(1))
