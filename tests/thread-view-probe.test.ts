@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../src/renderer/src/App'
+import { THREAD_STATE_LABELS } from '../src/renderer/src/components/thread'
 import { useCrew } from '../src/renderer/src/state/store'
 import type { SessionEvent } from '../src/shared/events'
 import type { PooledAgent } from '../src/shared/llm'
@@ -104,7 +105,8 @@ describe('thread navigation', () => {
     })
 
     render(createElement(App))
-    fireEvent.click(screen.getAllByText('I want to follow up with another agent')[0])
+    const card = document.querySelector<HTMLElement>('[data-thread="thread-1"]')!
+    fireEvent.click(within(card).getByRole('button', { name: THREAD_STATE_LABELS.failed }))
 
     expect(screen.getByLabelText('Back to chat')).toBeTruthy()
     expect(screen.getByPlaceholderText('Send a message or @ someone')).toBeTruthy()
