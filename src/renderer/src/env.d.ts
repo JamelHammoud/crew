@@ -14,6 +14,7 @@ import type { LivePlace } from '../../shared/places'
 import type { Present, PresenceSnapshot } from '../../shared/presence'
 import type { RepoActionResult, RepoChange, RepoCommand, RepoStatus, RepoWork } from '../../shared/repository'
 import type { RecentJoin, RecentProject } from '../../shared/recent'
+import type { ScanReport } from '../../shared/scan'
 import type { ScribeKeyState, ScribeSettings } from '../../shared/scribe'
 import type { Said } from '../../shared/scribeSaid'
 import type { CurrentSession, OpenOptions, ProjectPlan } from '../../shared/session'
@@ -66,6 +67,7 @@ declare global {
     readDirs(query: string): Promise<MachineDir[]>
     writeFile(path: string, text: string): Promise<RepoFile | null>
     locatePath(path: string): Promise<PathLocation>
+    scanProject(): Promise<ScanReport>
     previewHtml(id: string, path: string, text: string | null): Promise<string | null>
     dropPreview(id: string): Promise<void>
     revealFile(path: string): Promise<void>

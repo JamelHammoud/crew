@@ -40,8 +40,10 @@ import {
   type MediaHost
 } from './files'
 import { locatePath } from './locate'
+import { Scans } from './scan'
 import { SavedSessionStore } from './saved-session'
 import type { PathLocation, RepoFile } from '../shared/files'
+import type { ScanReport } from '../shared/scan'
 import type { MachineDir } from '../shared/machinePath'
 import { cleanMemberName } from '../shared/people'
 
@@ -79,6 +81,7 @@ export class AppSession {
   private runner: Runner | null = null
   private git: GitSync | null = null
   private crewGit: GitSync | null = null
+  private scans = new Scans()
   private agentsPath: string | null = null
   private sessionPath: string | null = null
   private projectsPath: string | null = null
@@ -213,6 +216,10 @@ export class AppSession {
 
   async listFiles(): Promise<string[]> {
     return this.folder ? listRepoFiles(this.folder) : []
+  }
+
+  async scanProject(): Promise<ScanReport> {
+    return this.scans.scan(this.folder)
   }
 
   async readDirs(query: string): Promise<MachineDir[]> {

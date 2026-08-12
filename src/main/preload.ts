@@ -19,6 +19,7 @@ import type {
   RepoWork
 } from '../shared/repository'
 import type { RecentJoin, RecentProject } from '../shared/recent'
+import type { ScanReport } from '../shared/scan'
 import type { ScribeKeyState, ScribeSettings } from '../shared/scribe'
 import type { Said } from '../shared/scribeSaid'
 import type { UpdateState } from '../shared/update'
@@ -85,6 +86,7 @@ const bridge = {
   writeFile: (path: string, text: string): Promise<RepoFile | null> =>
     ipcRenderer.invoke('file:write', path, text),
   locatePath: (path: string): Promise<PathLocation> => ipcRenderer.invoke('file:locate', path),
+  scanProject: (): Promise<ScanReport> => ipcRenderer.invoke('scan:project'),
   previewHtml: (id: string, path: string, text: string | null): Promise<string | null> =>
     ipcRenderer.invoke('preview:html', id, path, text),
   dropPreview: (id: string): Promise<void> => ipcRenderer.invoke('preview:drop', id),

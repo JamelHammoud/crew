@@ -21,6 +21,7 @@ import {
   PlusGlyph,
   QuestionGlyph,
   RefreshGlyph,
+  ShieldGlyph,
   TerminalGlyph,
   TicketGlyph,
   XCircleGlyph
@@ -40,6 +41,7 @@ import ImageView from './ImageView'
 import MusicView from './music/MusicView'
 import PlanView from './PlanView'
 import ReviewView from './review/ReviewView'
+import ScanView from './scan/ScanView'
 import WorkView from './work/WorkView'
 import SubagentMark from './SubagentMark'
 import SubagentPanel from './subagents/SubagentPanel'
@@ -62,6 +64,7 @@ function tabLabel(tab: BrowserTab): string {
   // is read at a glance rather than being three tabs called the same thing.
   if (tab.kind === 'agent') return tab.threadId ? (useCrew.getState().threads[tab.threadId]?.helper ?? 'Helper') : 'Helpers'
   if (tab.kind === 'review') return 'Review'
+  if (tab.kind === 'scan') return 'Security'
   if (tab.kind === 'music') return 'Music'
   // A games tab says which game you are in, and keeps the same mark whichever
   // one that is. Out of a game it is the tab's own name again.
@@ -344,6 +347,7 @@ export default function BrowserPanel() {
         {active && active.kind === 'plan' && <PlanView threadId={active.threadId} />}
         {active && active.kind === 'work' && <WorkView threadId={active.threadId} />}
         {active && active.kind === 'review' && <ReviewView />}
+        {active && active.kind === 'scan' && <ScanView />}
         {active && active.kind === 'music' && <MusicView />}
         {active && active.kind === 'game' && <GameView tabId={active.id} />}
         {active && active.kind === 'web' && !active.initialUrl && (
@@ -466,6 +470,8 @@ function TabPill({
           <QuestionGlyph className="w-4 h-4 shrink-0" />
         ) : tab.kind === 'review' ? (
           <BranchGlyph className="w-4 h-4 shrink-0" />
+        ) : tab.kind === 'scan' ? (
+          <ShieldGlyph className="w-4 h-4 shrink-0" />
         ) : tab.kind === 'music' ? (
           <MusicGlyph className="w-4 h-4 shrink-0" />
         ) : tab.kind === 'game' ? (

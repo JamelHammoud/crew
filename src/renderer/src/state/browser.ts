@@ -16,6 +16,7 @@ export type BrowserTab = {
     | 'aside'
     | 'agent'
     | 'review'
+    | 'scan'
   initialUrl: string
   url: string
   title: string
@@ -100,6 +101,7 @@ type BrowserState = {
   openMusic(): void
   openGame(): void
   openReview(): void
+  openScan(): void
   openAside(threadId: string, title: string): void
   openSubagent(threadId: string, parentThreadId: string): void
   showSubagents(parentThreadId: string): void
@@ -412,6 +414,21 @@ export const useBrowser = create<BrowserState>((write, get) => {
         return
       }
       const tab = { ...makeTab(), kind: 'review' as const }
+      set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
+    },
+    openScan: () => {
+      const { tabs, activeTabId } = get()
+      const existing = tabs.find(t => t.kind === 'scan')
+      if (existing) {
+        set({ activeTabId: existing.id })
+        return
+      }
+      const active = tabs.find(t => t.id === activeTabId)
+      if (active && active.kind === 'web' && !active.initialUrl) {
+        set(s => ({ tabs: s.tabs.map(t => (t.id === active.id ? { ...t, kind: 'scan' as const } : t)) }))
+        return
+      }
+      const tab = { ...makeTab(), kind: 'scan' as const }
       set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
     },
     // A helper opens in a tab of its own, and opening one that is already in a

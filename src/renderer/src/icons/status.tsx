@@ -91,6 +91,8 @@ export const SignalGlyph = glyph(
   </>
 )
 
+export const ShieldGlyph = glyph(<path d="M12 2.8 19.85 6v6.2c0 4.3-3.45 7.7-7.85 9-4.4-1.3-7.85-4.7-7.85-9V6Z" />)
+
 const SHACKLE_BODY = { x: 4.5, y: 10.5, width: 15, height: 10, rx: 2.75 }
 
 export const LockGlyph = glyph(

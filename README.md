@@ -57,6 +57,7 @@ Browser is a multi-purpose right-panel that is home to:
 - **Review**: stage files, inspect changes, commit, pull, push, and stash work
 - **Terminal**: full CLI access without leaving crew
 - **Files**: a file explorer for your folder
+- **Security**: scan the project for secrets and vulnerabilities, and open the file each one is in
 - **Preview**: previewing files like images, videos, PDFs & HTML
 - **Web**: browse the web
 - **Music**: a way to listen to music together, in sync
