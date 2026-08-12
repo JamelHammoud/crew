@@ -19,6 +19,10 @@ const view = () => render(createElement('div', null, createElement(PanelToggle),
 
 const handle = () => document.querySelector('.cursor-col-resize') as Element
 
+// The way back is never taken out of the tree, so it can travel in and out. What
+// says it is standing is whether it is in the accessibility tree at all.
+const wayBack = () => screen.queryByRole('button', { name: 'Show panel' })
+
 const dragTo = (start: number, ...steps: number[]) => {
   fireEvent.pointerDown(handle(), { clientX: start })
   for (const at of steps) act(() => void fireEvent.pointerMove(window, { clientX: at }))
