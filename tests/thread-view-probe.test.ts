@@ -104,7 +104,18 @@ describe('thread navigation', () => {
     })
 
     render(createElement(App))
-    fireEvent.click(screen.getAllByText('I want to follow up with another agent')[0])
+    const hits = screen.getAllByText('I want to follow up with another agent')
+    for (const hit of hits) {
+      let node: HTMLElement | null = hit as HTMLElement
+      const chain: string[] = []
+      while (node) {
+        chain.push(`${node.tagName}.${(node.className || '').toString().slice(0, 40)}`)
+        node = node.parentElement
+      }
+      console.log('HIT', chain.slice(0, 8).join(' < '))
+    }
+    console.log('BUTTONS', screen.getAllByRole('button').map(b => b.getAttribute('aria-label') || b.textContent?.slice(0, 40)).join(' | '))
+    fireEvent.click(hits[0])
 
     expect(screen.getByLabelText('Back to chat')).toBeTruthy()
     expect(screen.getByPlaceholderText('Send a message or @ someone')).toBeTruthy()
