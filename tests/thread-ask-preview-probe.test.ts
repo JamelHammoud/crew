@@ -185,11 +185,21 @@ describe('the whole of what a thread was asked, off its own header', () => {
     expect(card()).not.toBeNull()
   })
 
-  it('goes with the page moving under it', () => {
+  it('stands while the thread scrolls under it, since the line it hangs off has not moved', () => {
     const { container } = open('@Bubbles the composer header only has one line for this,…', WHOLE)
     hover(askLine(container))
 
     fireEvent.scroll(container.querySelector('.overflow-y-auto') as HTMLElement)
+
+    expect(card()).not.toBeNull()
+  })
+
+  it('goes when the box the line stands in is the one that moved', () => {
+    const { container } = open('@Bubbles the composer header only has one line for this,…', WHOLE)
+    const line = askLine(container)
+    hover(line)
+
+    fireEvent.scroll(line.closest('div') as HTMLElement)
 
     expect(card()).toBeNull()
   })
