@@ -183,7 +183,12 @@ describe('what a run is doing reads on the card in the feed', () => {
     })
     const written = screen.getByText(/older things here/)
     expect(written.textContent).toContain('It is one of the older things here, so make it belong.')
-    expect(written.textContent).toContain('\n\n')
+    const box = written.closest('.preview-line')!.parentElement!
+    expect([...box.querySelectorAll('.preview-line')].map(row => row.textContent)).toEqual([
+      '@Claude Redraw the thread card',
+      '',
+      'It is one of the older things here, so make it belong.'
+    ])
   })
 
   it('spends no row on whose machine it ran, since the agent it names already says so', () => {
