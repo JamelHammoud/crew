@@ -55,6 +55,8 @@ beforeEach(() => {
 afterEach(() => cleanup())
 
 const newTab = (): void => void fireEvent.click(screen.getByLabelText('New tab'))
+const menu = () => document.querySelector('.animate-pop') as HTMLElement
+const pick = (label: string): void => void fireEvent.click(within(menu()).getByText(label))
 const only = () => useBrowser.getState().tabs[0]!
 const screenText = (): string => document.querySelector('.xterm-rows')?.textContent ?? ''
 
