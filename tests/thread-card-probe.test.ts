@@ -241,10 +241,10 @@ describe('reacting to what opened a thread', () => {
     const pill = screen.getByLabelText('🎉, 1 reaction')
     const words = document.querySelector('.preview-line')!
     const strand = screen.getByText('Ready for review')
-    const after = (a: Element, b: Element) =>
+    const precedes = (a: Element, b: Element) =>
       Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING)
-    expect(after(words, pill)).toBe(true)
-    expect(after(pill, strand)).toBe(true)
+    expect(precedes(words, pill)).toBe(true)
+    expect(precedes(pill, strand)).toBe(true)
   })
 
   it('reacts to the message the preview is, rather than to a card of its own', () => {
