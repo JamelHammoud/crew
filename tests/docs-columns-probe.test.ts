@@ -22,6 +22,8 @@ class Watcher {
 globalThis.ResizeObserver = Watcher as unknown as typeof ResizeObserver
 
 const { default: Docs } = await import('../src/renderer/src/views/Docs')
+const { default: SidebarDocs } = await import('../src/renderer/src/components/sidebar/SidebarDocs')
+const { useDocs } = await import('../src/renderer/src/state/docs')
 const { useHeaderSlot } = await import('../src/renderer/src/state/headerSlot')
 const { useCrew } = await import('../src/renderer/src/state/store')
 

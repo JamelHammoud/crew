@@ -65,6 +65,8 @@
         "noImportantStyles": "off",
         "noUselessContinue": "off",
         "noUselessFragments": "off",
+        "noUselessStringRaw": "off",
+        "noUselessThisAlias": "off",
         "noUselessUndefinedInitialization": "off",
         "useArrowFunction": "off",
         "useLiteralKeys": "off",
