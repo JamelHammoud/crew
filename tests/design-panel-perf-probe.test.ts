@@ -23,7 +23,7 @@ vi.mock('../src/renderer/src/design/layerShapes', async () => {
     ...actual,
     useLayerShapes: (editor: Parameters<typeof actual.useLayerShapes>[0]) => {
       drawn.layers += 1
-      return REGRESSION.useValue('unmemoed layers', () => editor.getCurrentPageShapesSorted(), [editor])
+      return actual.useLayerShapes(editor)
     }
   }
 })
