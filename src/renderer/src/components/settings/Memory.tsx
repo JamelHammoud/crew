@@ -185,7 +185,7 @@ export default function Memory() {
           <Toggle on={enabled} label="Let agents use memory" onChange={setEnabled} />
         </Row>
       </Section>
-      <div aria-hidden className="mt-7 -mx-8 border-t border-fg/[0.07]" />
+      <hr className="mt-7 -mx-8 border-t border-fg/[0.07]" />
       <Section>
         {memories.length > 0 && (
           <div className="space-y-0.5 mb-4">
