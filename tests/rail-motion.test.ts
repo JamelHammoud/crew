@@ -20,13 +20,14 @@ const opacity = (css: string): number =>
   Number(/(?:background|--glass-bg):\s*rgb\([^)]*\/\s*(\d*\.?\d+)\)/.exec(css)?.[1])
 
 describe('the glass the hovered rail wears', () => {
-  it('lets more of the page through without giving up its blur', () => {
+  it('is the tint any panel over the app wears, and blurs harder than one', () => {
     const sidebar = rule('.sidebar-glass {')
-    expect(opacity(sidebar)).toBeLessThan(opacity(rule(':root {')))
+    expect(opacity(sidebar)).toBe(opacity(rule(':root {')))
     expect(sidebar).toMatch(/backdrop-filter:\s*blur\(32px\)/)
+    expect(rule('.glass {')).toMatch(/backdrop-filter:\s*blur\(24px\)/)
   })
 
-  it('stays lighter over the design canvas too', () => {
+  it('stays lighter over the design canvas', () => {
     expect(opacity(rule('.sidebar-glass.glass-strong {'))).toBeLessThan(opacity(rule('.glass-strong {')))
   })
 })

@@ -87,9 +87,9 @@ describe('a server in the list of providers', () => {
     await openCard()
     fireEvent.click(picker('Provider'))
     fireEvent.click(screen.getByRole('button', { name: 'The rack' }))
-    expect(screen.getByRole('button', { name: /Modelfar:70b/ })).toBeTruthy()
-    expect(screen.queryByRole('button', { name: /Modelhere:8b/ })).toBeNull()
-    expect(screen.queryByRole('button', { name: /Server/ })).toBeNull()
+    expect(picker('Model').textContent).toContain('far:70b')
+    expect(screen.queryByText('here:8b')).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Server' })).toBeNull()
   })
 
   it('makes an agent that is written down against the address rather than the name', async () => {
@@ -137,7 +137,7 @@ describe('adding one', () => {
     await waitFor(() =>
       expect(addModelServer).toHaveBeenCalledWith({ url: RACK, name: 'The rack', key: 'sk-one' })
     )
-    await waitFor(() => expect(screen.getByRole('button', { name: /ProviderThe rack/ })).toBeTruthy())
+    await waitFor(() => expect(picker('Provider').textContent).toContain('The rack'))
   })
 
   it('says why it did not happen on the card the address was typed on', async () => {
