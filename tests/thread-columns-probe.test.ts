@@ -313,6 +313,10 @@ describe('the chat standing beside a thread', () => {
     return standing()!
   }
   const chatColumn = (): HTMLElement => document.querySelector<HTMLElement>('[data-column="chat"]')!
+  // The way into a card is the strand under it, which says where the thread has
+  // got to. The reactions on the ask are buttons in the same card.
+  const wayIn = (card: HTMLElement): HTMLElement =>
+    within(card).getByRole('button', { name: new RegExp(THREAD_STATE_LABELS.ready) })
 
   it('stands the chat beside the thread and puts it away again', () => {
     open(['thread-1'], 'thread-1')
@@ -334,7 +338,7 @@ describe('the chat standing beside a thread', () => {
     fireEvent.click(slot())
 
     const card = chatColumn().querySelector<HTMLElement>('[data-thread="thread-2"]')!
-    fireEvent.click(within(card).getByRole('button'))
+    fireEvent.click(wayIn(card))
 
     expect(useCrew.getState().openThreadIds).toEqual(['thread-1', 'thread-2'])
     expect(useCrew.getState().openThreadId).toBe('thread-2')
