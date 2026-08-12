@@ -360,15 +360,17 @@ describe('the sidebar', () => {
     await waitFor(() => expect(useSidebar.getState().peeking).toBe(false))
   })
 
-  it('scrolls its projects on their own, under a heading that holds still', () => {
+  it('scrolls as one column, with the projects under their own heading', () => {
     const { container } = render(Sidebar())
     const scroller = container.querySelector('.overflow-y-auto') as HTMLElement
+    const nav = container.querySelector('nav[aria-label="Main navigation"]') as HTMLElement
+    const heading = container.querySelector('h2') as HTMLElement
+    expect(container.querySelectorAll('.overflow-y-auto').length).toBe(1)
     expect(scroller.className).toContain('scroll-fade')
-    expect(scroller.previousElementSibling?.textContent).toBe('Projects')
-    expect(scroller.className).toContain('pt-2')
-    expect(scroller.querySelector('.flex-col')?.className).toContain('gap-3')
-    expect(container.querySelector('nav[aria-label="Main navigation"]')?.className).toContain('shrink-0')
-    expect(container.querySelector('h2')?.parentElement?.className).toContain('shrink-0')
+    expect(heading.textContent).toBe('Projects')
+    expect(scroller.contains(nav)).toBe(true)
+    expect(scroller.contains(heading)).toBe(true)
+    expect(heading.parentElement?.nextElementSibling?.className).toContain('gap-3')
   })
 
   it('fades only the end of the list that is really hiding something', async () => {

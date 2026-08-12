@@ -105,8 +105,8 @@ describe('thread navigation', () => {
     })
 
     render(createElement(App))
-    const card = document.querySelector<HTMLElement>('[data-thread="thread-1"]')!
-    fireEvent.click(within(card).getByRole('button', { name: THREAD_STATE_LABELS.failed }))
+    const feedCard = document.querySelector<HTMLElement>('[data-thread="thread-1"]')!
+    fireEvent.click(within(feedCard).getByRole('button', { name: THREAD_STATE_LABELS.failed }))
 
     expect(screen.getByLabelText('Back to chat')).toBeTruthy()
     expect(screen.getByPlaceholderText('Send a message or @ someone')).toBeTruthy()
