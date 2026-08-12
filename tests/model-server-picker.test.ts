@@ -66,8 +66,6 @@ async function openCard() {
   fireEvent.click(add)
 }
 
-// The label stands in the row rather than in the control, so the button is
-// named by the row and says what it is set to in its own words.
 const picker = (label: string) => screen.getByRole('button', { name: label })
 
 afterEach(() => {
