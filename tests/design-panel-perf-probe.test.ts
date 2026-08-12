@@ -14,7 +14,6 @@ const COUNT = 200
 const MOVES = 20
 
 const drawn = vi.hoisted(() => ({ layers: 0 }))
-const REGRESSION = await import('../src/renderer/src/canvas')
 
 vi.mock('../src/renderer/src/design/layerShapes', async () => {
   const actual = await vi.importActual<typeof import('../src/renderer/src/design/layerShapes')>(
