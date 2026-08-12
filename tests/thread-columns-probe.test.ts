@@ -246,17 +246,17 @@ describe('several threads open side by side', () => {
     act(() => useBrowser.getState().closePanel())
 
     const [first, second] = columns()
-    expect(screen.getAllByLabelText('Show panel')).toHaveLength(1)
-    expect(within(first!).queryByLabelText('Show panel')).toBeNull()
-    expect(within(second!).queryByLabelText('Show panel')).toBeNull()
+    expect(screen.getAllByRole('button', { name: 'Show panel' })).toHaveLength(1)
+    expect(within(first!).queryByRole('button', { name: 'Show panel' })).toBeNull()
+    expect(within(second!).queryByRole('button', { name: 'Show panel' })).toBeNull()
 
     fireEvent.pointerDown(first!)
     expect(useCrew.getState().openThreadId).toBe('thread-1')
-    expect(screen.getAllByLabelText('Show panel')).toHaveLength(1)
+    expect(screen.getAllByRole('button', { name: 'Show panel' })).toHaveLength(1)
 
-    fireEvent.click(screen.getByLabelText('Show panel'))
+    fireEvent.click(screen.getByRole('button', { name: 'Show panel' }))
     expect(useBrowser.getState().open).toBe(true)
-    expect(screen.queryByLabelText('Show panel')).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Show panel' })).toBeNull()
   })
 
   it('pops a column out from a right click on the thread itself', () => {
