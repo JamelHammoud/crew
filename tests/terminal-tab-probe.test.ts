@@ -97,7 +97,7 @@ describe('a terminal tab', () => {
   const openTerminal = async (): Promise<string> => {
     render(createElement(BrowserPanel))
     newTab()
-    fireEvent.click(screen.getByText('Terminal'))
+    pick('Terminal')
     await waitFor(() => expect(opened).toHaveLength(1))
     return only().id
   }
