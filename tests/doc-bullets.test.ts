@@ -13,7 +13,7 @@ const rungs = (): Rung[] => {
   const wanted = "bulletListItem']::before"
   for (let at = styles.indexOf(wanted); at > -1; at = styles.indexOf(wanted, at + 1)) {
     const opens = styles.indexOf('{', at)
-    const head = styles.slice(styles.lastIndexOf('\n\n', at) + 2, opens)
+    const head = styles.slice(styles.lastIndexOf('\n\n', at) + 2, opens).replace(/\s+/g, ' ')
     if (!head.includes('.doc ')) continue
     const deep = head.split('.bn-block-group').length - 1
     found.push({ level: deep || 1, body: styles.slice(opens, styles.indexOf('\n}', opens)) })
