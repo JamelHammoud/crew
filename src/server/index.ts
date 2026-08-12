@@ -7,7 +7,7 @@ export interface CrewServer {
   close: () => Promise<void>
 }
 
-export { openDoor, Door, type DoorOptions }
+export { openDoor, type Door, type DoorOptions }
 
 export function createCrewServer(session: CrewSession, opts: DoorOptions = {}): Promise<CrewServer> {
   return openDoor(opts).then(door => {
