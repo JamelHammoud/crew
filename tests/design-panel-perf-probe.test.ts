@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act, cleanup, render } from '@testing-library/react'
+import { act, cleanup, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { EditorContext } from '../src/renderer/src/canvas/react'
@@ -115,7 +115,10 @@ describe('the layer list while a shape is being dragged', () => {
 
   it('is drawn again for none of the frames of a drag', () => {
     const view = stand()
+    const x = () => (screen.getByLabelText('X') as HTMLInputElement).value
+    const before = x()
     drag(view.editor, view.ids[0])
+    expect(x()).not.toBe(before)
     expect(view.layers()).toBe(0)
   })
 
