@@ -3,6 +3,7 @@ import { act, cleanup, fireEvent, render, screen, within } from '@testing-librar
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../src/renderer/src/App'
+import { THREAD_STATE_LABELS } from '../src/renderer/src/components/thread'
 import ThreadView from '../src/renderer/src/views/ThreadView'
 import { useBrowser } from '../src/renderer/src/state/browser'
 import { useCrew } from '../src/renderer/src/state/store'
