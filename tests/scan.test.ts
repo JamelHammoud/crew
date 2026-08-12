@@ -5,22 +5,40 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { Scans } from '../src/main/scan'
 import { countsOf, readScan, sortFindings, worstOf, type ScanFinding } from '../src/shared/scan'
 
-const finding = (severity: ScanFinding['severity'], file: string, line: number, type = 'A problem') => ({
-  type,
+const finding = (severity: ScanFinding['severity'], file: string, line: number, title = 'A problem') => ({
+  ruleId: 'secret-generic-credential',
+  title,
+  file,
+  line,
   severity,
-  message: 'Something worth reading about',
-  location: `${file}:${line}`,
-  details: { file, line, snippet: 'const key = "aaa"', ruleId: 'js-rule', confidence: 'pattern' }
+  confidence: 'evidence',
+  message: 'Possible Hardcoded Credential detected',
+  consequence: 'A password in source is a password in every clone of that source.',
+  cwe: 'CWE-798',
+  excerpt: 'const token = "tok_visa"',
+  sensitive: true,
+  category: 'secret'
 })
 
 const answer = (findings: unknown[]) =>
   JSON.stringify({
-    type: 'scan',
+    tool: 'threatcrush',
+    version: '0.11.0',
     target: '.',
-    findings,
-    severity_summary: { critical: 0, high: 0, medium: 0, low: 0, info: 0 },
-    summary: `${findings.length} issue(s)`
+    filesScanned: 114,
+    unreadable: [],
+    suppressed: 0,
+    summary: { critical: 0, high: 0, medium: 0, low: 0, info: 0 },
+    findings
   })
+
+const daemonShaped = (severity: ScanFinding['severity'], file: string, line: number) => ({
+  type: 'A problem',
+  severity,
+  message: 'Something worth reading about',
+  location: `${file}:${line}`,
+  details: { file, line, snippet: 'const key = "aaa"', ruleId: 'js-rule' }
+})
 
 const held = process.env.PATH
 
@@ -43,11 +61,17 @@ function scannerThatSays(payload: string, code = 0, said = ''): string {
 }
 
 describe('what the scanner said', () => {
-  it('reads a finding off the pair of fields rather than off the one string', () => {
+  it('reads a finding off the fields the scanner really writes', () => {
     const findings = readScan(answer([finding('high', 'src/db.ts', 42)]))
 
     expect(findings).toHaveLength(1)
     expect(findings?.[0]).toMatchObject({ file: 'src/db.ts', line: 42, severity: 'high', title: 'A problem' })
+  })
+
+  it('reads the shape the daemon writes as well', () => {
+    const findings = readScan(answer([daemonShaped('high', 'src/db.ts', 42)]))
+
+    expect(findings?.[0]).toMatchObject({ file: 'src/db.ts', line: 42, title: 'A problem' })
   })
 
   it('falls back to where a finding says it is when there are no fields', () => {
@@ -57,13 +81,13 @@ describe('what the scanner said', () => {
   })
 
   it('never reports a finding on line zero', () => {
-    const findings = readScan(answer([{ type: 'A problem', severity: 'low', message: 'x', location: 'README.md' }]))
+    const findings = readScan(answer([{ ...finding('low', 'README.md', 0), line: 0 }]))
 
     expect(findings?.[0]?.line).toBe(1)
   })
 
   it('leaves out anything with nowhere to go', () => {
-    const findings = readScan(answer([{ type: 'A problem', severity: 'low' }, finding('low', 'a.ts', 2)]))
+    const findings = readScan(answer([{ title: 'A problem', severity: 'low' }, finding('low', 'a.ts', 2)]))
 
     expect(findings).toHaveLength(1)
   })

@@ -50,32 +50,40 @@ const detailsOf = (raw: unknown): Record<string, unknown> => {
   return said && typeof said === 'object' ? (said as Record<string, unknown>) : {}
 }
 
-function whereIn(raw: unknown, details: Record<string, unknown>): { file: string; line: number } {
-  const file = text(details.file)
-  const line =
-    typeof details.line === 'number' && Number.isFinite(details.line) ? Math.max(1, Math.trunc(details.line)) : 0
-  if (file) return { file, line: line || 1 }
+const counted = (raw: unknown): number =>
+  typeof raw === 'number' && Number.isFinite(raw) ? Math.max(1, Math.trunc(raw)) : 0
+
+function fromLocation(raw: unknown): { file: string; line: number } {
   const said = text((raw as { location?: unknown })?.location)
+  if (!said) return { file: '', line: 1 }
   const cut = said.lastIndexOf(':')
   const tail = cut === -1 ? '' : said.slice(cut + 1)
-  const counted = Number.parseInt(tail, 10)
-  if (cut > 0 && Number.isFinite(counted)) return { file: said.slice(0, cut), line: Math.max(1, counted) }
+  const number = Number.parseInt(tail, 10)
+  if (cut > 0 && Number.isFinite(number)) return { file: said.slice(0, cut), line: Math.max(1, number) }
   return { file: said, line: 1 }
 }
 
+function whereIn(raw: unknown, details: Record<string, unknown>): { file: string; line: number } {
+  const said = raw as { file?: unknown; line?: unknown }
+  const file = text(said?.file) || text(details.file)
+  if (file) return { file, line: counted(said?.line) || counted(details.line) || 1 }
+  return fromLocation(raw)
+}
+
 function findingFrom(raw: unknown, index: number): ScanFinding | null {
+  const said = raw as { title?: unknown; type?: unknown; message?: unknown; ruleId?: unknown; severity?: unknown }
   const details = detailsOf(raw)
   const { file, line } = whereIn(raw, details)
   if (!file) return null
-  const title = text((raw as { type?: unknown })?.type)
-  const message = text((raw as { message?: unknown })?.message)
+  const title = text(said?.title) || text(said?.type)
+  const message = text(said?.message)
   if (!title && !message) return null
   return {
-    id: `${text(details.ruleId) || 'finding'}-${file}-${line}-${index}`,
+    id: `${text(said?.ruleId) || text(details.ruleId) || 'finding'}-${file}-${line}-${index}`,
     title: title || message,
     file,
     line,
-    severity: severityOf((raw as { severity?: unknown })?.severity)
+    severity: severityOf(said?.severity)
   }
 }
 
