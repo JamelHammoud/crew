@@ -6,7 +6,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { boardFile, byShapeCount, root, run } from './board-window.mjs'
 
-const here = path.dirname(fileURLToPath(import.meta.url))
+const _here = path.dirname(fileURLToPath(import.meta.url))
 const resolve = createRequire(path.join(root, 'package.json')).resolve
 
 const MOVES = 60
@@ -82,7 +82,7 @@ createRoot(document.getElementById('root')).render(React.createElement(Board))
 `
 }
 
-const driveSource = String.raw`(async () => {
+const driveSource = `(async () => {
   const editor = window.canvasEditor
   if (!editor) return { failed: 'the editor never mounted' }
   const perf = window.__perf

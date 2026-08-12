@@ -181,14 +181,7 @@ export default function Sidebar({
       }`}
     >
       <div className="app-drag h-[70px] shrink-0" />
-      <div
-        ref={node => {
-          scroller.current = node
-          order.ref(node)
-        }}
-        className="scroll-fade relative flex-1 min-h-0 overflow-y-auto app-no-drag px-2 pb-3"
-      >
-        <nav aria-label="Main navigation" className="flex flex-col gap-0.5">
+      <nav aria-label="Main navigation" className="shrink-0 flex flex-col gap-0.5 app-no-drag px-2">
           {TABS.map(one => (
             <div key={one.id} className="contents">
               <NavRow
@@ -203,13 +196,20 @@ export default function Sidebar({
               {one.id === 'docs' && <SidebarDocs open={tab === 'docs'} />}
             </div>
           ))}
-          <SidebarTasks />
-          <SidebarMore tab={tab} onTab={goToTab} />
-        </nav>
-        <div className="group pl-2 pt-5 pb-2.5 flex items-center justify-between">
-          <h2 className="text-xs font-medium text-fg/45">Projects</h2>
-          <NewPlace busy={busyKey !== null} onOpen={addPlace} />
-        </div>
+        <SidebarTasks />
+        <SidebarMore tab={tab} onTab={goToTab} />
+      </nav>
+      <div className="group shrink-0 app-no-drag pl-4 pr-2 pt-5 pb-2.5 flex items-center justify-between">
+        <h2 className="text-xs font-medium text-fg/45">Projects</h2>
+        <NewPlace busy={busyKey !== null} onOpen={addPlace} />
+      </div>
+      <div
+        ref={node => {
+          scroller.current = node
+          order.ref(node)
+        }}
+        className="scroll-fade relative flex-1 min-h-0 overflow-y-auto app-no-drag px-2 pt-2 pb-3"
+      >
         {order.view}
         <div className="flex flex-col gap-3">
           {places.map(place => (

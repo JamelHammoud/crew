@@ -40,7 +40,7 @@ async function groupedBoard() {
   return withGroups[0].file
 }
 
-const driveSource = String.raw`(async () => {
+const driveSource = `(async () => {
   const editor = window.canvasEditor
   if (!editor) return { failed: 'the editor never mounted' }
   const { availableCommands, shapesUnder } = window.designCommands

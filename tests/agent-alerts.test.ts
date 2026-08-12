@@ -350,8 +350,10 @@ describe('the tasks row', () => {
     const row = screen.getByRole('button', { name: /Tasks/ })
 
     expect(count).toBe(2)
-    expect(row.textContent).toBe(`Tasks${count}`)
-    expect(row.lastElementChild?.textContent).toBe(String(count))
+    expect(row.textContent).toBe('Tasks')
+    const slot = row.parentElement as HTMLElement
+    expect(slot.textContent).toBe(`Tasks${count}`)
+    expect(slot.lastElementChild?.textContent).toBe(String(count))
   })
 
   it('says nothing where there is nothing to review', () => {

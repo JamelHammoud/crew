@@ -286,8 +286,10 @@ describe('canvas text editing', () => {
     await waitFor(() => expect(editor().getRichTextEditor?.()).toBeTruthy())
 
     await act(async () => {
-      const commands = (editor().getRichTextEditor?.() as { commands: Record<string, (value?: unknown) => unknown> })
-        .commands
+      const rich = editor().getRichTextEditor?.() as
+        | { commands: Record<string, (value?: unknown) => unknown> }
+        | undefined
+      const commands = rich!.commands
       commands.focus('end')
       commands.insertContent(' crew')
       await new Promise(resolve => setTimeout(resolve, 10))

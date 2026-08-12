@@ -95,8 +95,7 @@ function configureShapeUtil<Constructor extends ShapeUtilConstructor>(
   this: Constructor,
   options: Record<string, unknown>
 ): Constructor {
-  const Parent: any = this
-  class ConfiguredShapeUtil extends Parent {
+  class ConfiguredShapeUtil extends (this as any) {
     constructor(...args: any[]) {
       super(...args)
       this.options = { ...this.options, ...options }

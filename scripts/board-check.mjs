@@ -2,7 +2,7 @@ import { rm } from 'node:fs/promises'
 import path from 'node:path'
 import { boardFile, compile, run, stage } from './board-window.mjs'
 
-const driveSource = String.raw`(async () => {
+const driveSource = `(async () => {
   const editor = window.canvasEditor
   if (!editor) return { failed: 'the editor never mounted' }
   const probe = window.__probe

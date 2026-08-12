@@ -154,7 +154,7 @@ describe('the helpers a thread sent out', () => {
   })
 
   it('brings the panel back with the helpers still in it', () => {
-    const { getByLabelText, queryByLabelText } = render(
+    const { getByLabelText } = render(
       createElement(
         'div',
         null,
@@ -166,7 +166,7 @@ describe('the helpers a thread sent out', () => {
     sent(spawned(CHILD, 'reading the schema'))
     act(() => useBrowser.getState().showSubagents(PARENT))
 
-    expect(queryByLabelText('Show panel')).toBeNull()
+    expect(getByLabelText('Show panel').closest('[aria-hidden="true"]')).not.toBeNull()
     act(() => useBrowser.getState().closePanel())
 
     fireEvent.click(getByLabelText('Show panel'))

@@ -1,5 +1,5 @@
 function sameValue(a: unknown, b: unknown): boolean {
-  return a === b || (a !== a && b !== b)
+  return a === b || (typeof a === 'number' && typeof b === 'number' && Number.isNaN(a) && Number.isNaN(b))
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -23,7 +23,7 @@ export function sameRecordValue(a: unknown, b: unknown): boolean {
     const keys = Object.keys(a)
     if (keys.length !== Object.keys(b).length) return false
     for (const key of keys) {
-      if (!Object.prototype.hasOwnProperty.call(b, key)) return false
+      if (!Object.hasOwn(b, key)) return false
       if (!sameRecordValue(a[key], b[key])) return false
     }
     return true

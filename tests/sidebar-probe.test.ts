@@ -180,7 +180,7 @@ describe('the sidebar', () => {
   it('holds the three pages at its head, then the tasks, then More under them', () => {
     const { container } = render(Sidebar())
     const nav = container.querySelector('nav[aria-label="Main navigation"]') as HTMLElement
-    expect([...nav.querySelectorAll('button')].map(one => one.textContent)).toEqual([
+    expect([...nav.querySelectorAll('button')].map(one => one.textContent).filter(Boolean)).toEqual([
       'Chat',
       'Docs',
       'Design',
@@ -774,7 +774,7 @@ describe('the sidebar', () => {
     await act(async () => {
       await usePlaces.getState().load()
     })
-    const { container } = render(Sidebar())
+    render(Sidebar())
     const list = screen.getByRole('button', { name: 'Thread 0' }).parentElement as HTMLElement
     expect(list.className).not.toContain('overflow-y-auto')
     expect(list.className).not.toContain('rail-threads')

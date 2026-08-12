@@ -4,7 +4,7 @@ import { boardFile, byShapeCount, compile, root, run, stage } from './board-wind
 
 const shots = path.join(root, 'out', 'snap-check')
 
-const probeSource = String.raw`(() => {
+const probeSource = `(() => {
   const editor = window.canvasEditor
   if (!editor) return 'no editor'
 

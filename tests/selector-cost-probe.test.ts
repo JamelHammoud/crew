@@ -238,6 +238,18 @@ const seed = () => ({
   pending: {}
 })
 
+// Half of them point at a message the window still holds and half at one that has
+// fallen out of it, which is the walk that finds nothing.
+const quoteAt = (index: number): ReactNode =>
+  createElement(ReplyQuote, {
+    key: index,
+    targetId: `message:msg-${index % 2 === 0 ? READ_EVENTS + index * 10 : index}`,
+    authorId: 'ali',
+    authorName: 'ALI',
+    label: 'Replying to ALI',
+    text: `quoted line ${index}`
+  })
+
 // A screenful of a thread column: the quotes on the messages in it, the helpers
 // it sent out, and the two hooks everything else in the column hangs off.
 function Screen(): ReactNode {
@@ -246,18 +258,7 @@ function Screen(): ReactNode {
   return createElement(
     Fragment,
     null,
-    ...Array.from({ length: QUOTES }, (_, index) =>
-      createElement(ReplyQuote, {
-        key: index,
-        // Half of them point at a message the window still holds and half at one
-        // that has fallen out of it, which is the walk that finds nothing.
-        targetId: `message:msg-${index % 2 === 0 ? READ_EVENTS + index * 10 : index}`,
-        authorId: 'ali',
-        authorName: 'ALI',
-        label: 'Replying to ALI',
-        text: `quoted line ${index}`
-      })
-    ),
+    ...Array.from({ length: QUOTES }, (_, index) => quoteAt(index)),
     createElement(SubagentList, { key: 'helpers', parentThreadId: THREAD, onOpen: () => {} })
   )
 }

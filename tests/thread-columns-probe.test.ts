@@ -256,7 +256,7 @@ describe('several threads open side by side', () => {
 
     fireEvent.click(screen.getByLabelText('Show panel'))
     expect(useBrowser.getState().open).toBe(true)
-    expect(screen.queryByLabelText('Show panel')).toBeNull()
+    expect(screen.getByLabelText('Show panel').closest('[aria-hidden="true"]')).not.toBeNull()
   })
 
   it('pops a column out from a right click on the thread itself', () => {
@@ -333,7 +333,8 @@ describe('the chat standing beside a thread', () => {
     fireEvent.click(slot())
 
     const card = chatColumn().querySelector<HTMLElement>('[data-thread="thread-2"]')!
-    fireEvent.click(within(card).getByRole('button'))
+    const box = within(card).getAllByRole('button').find(one => !one.getAttribute('aria-label'))!
+    fireEvent.click(box)
 
     expect(useCrew.getState().openThreadIds).toEqual(['thread-1', 'thread-2'])
     expect(useCrew.getState().openThreadId).toBe('thread-2')

@@ -181,9 +181,12 @@ describe('what a run is doing reads on the card in the feed', () => {
       ],
       threads: { t1: thread('t1', { title: '@Claude Redraw the thread card It is one of the older…' }) }
     })
-    const written = screen.getByText(/older things here/)
-    expect(written.textContent).toContain('It is one of the older things here, so make it belong.')
-    expect(written.textContent).toContain('\n\n')
+    const rows = [...document.querySelectorAll('.preview-line')].map(one => one.textContent)
+    expect(rows).toEqual([
+      '@Claude Redraw the thread card',
+      '',
+      'It is one of the older things here, so make it belong.'
+    ])
   })
 
   it('spends no row on whose machine it ran, since the agent it names already says so', () => {
@@ -241,10 +244,10 @@ describe('reacting to what opened a thread', () => {
     const pill = screen.getByLabelText('🎉, 1 reaction')
     const words = document.querySelector('.preview-line')!
     const strand = screen.getByText('Ready for review')
-    const after = (a: Element, b: Element) =>
+    const isAfter = (a: Element, b: Element) =>
       Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING)
-    expect(after(words, pill)).toBe(true)
-    expect(after(pill, strand)).toBe(true)
+    expect(isAfter(words, pill)).toBe(true)
+    expect(isAfter(pill, strand)).toBe(true)
   })
 
   it('reacts to the message the preview is, rather than to a card of its own', () => {
