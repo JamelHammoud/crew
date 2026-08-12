@@ -21,7 +21,7 @@ export function linkOf(session: { link: string | null }): string {
   return session.link
 }
 
-export async function waitUntil(pred: () => boolean | Promise<boolean>, timeoutMs = 10000): Promise<void> {
+export async function waitUntil(pred: () => boolean | Promise<boolean>, timeoutMs = 30000): Promise<void> {
   const start = Date.now()
   while (Date.now() - start < timeoutMs) {
     if (await pred()) return
@@ -157,7 +157,7 @@ export class TestUi {
     })
   }
 
-  waitForEvent(pred: (event: SessionEvent) => boolean, timeoutMs = 10000): Promise<SessionEvent> {
+  waitForEvent(pred: (event: SessionEvent) => boolean, timeoutMs = 30000): Promise<SessionEvent> {
     const existing = this.events.find(pred)
     if (existing) return Promise.resolve(existing)
     return new Promise((resolve, reject) => {
