@@ -110,12 +110,16 @@ function context(): CanvasRenderingContext2D {
     strokeRect: vi.fn(),
     fillRect: vi.fn(),
     beginPath: vi.fn(),
+    closePath: vi.fn(),
     arc: vi.fn(),
+    roundRect: vi.fn(),
     fill: vi.fn(),
     stroke: vi.fn(),
     moveTo: vi.fn(),
     lineTo: vi.fn(),
-    setLineDash: vi.fn()
+    setLineDash: vi.fn(),
+    fillText: vi.fn(),
+    measureText: vi.fn(() => ({ width: 0 }) as TextMetrics)
   } as unknown as CanvasRenderingContext2D
 }
 
