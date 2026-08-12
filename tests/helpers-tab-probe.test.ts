@@ -166,10 +166,10 @@ describe('the helpers a thread sent out', () => {
     sent(spawned(CHILD, 'reading the schema'))
     act(() => useBrowser.getState().showSubagents(PARENT))
 
-    expect(queryByLabelText('Show panel')).toBeNull()
+    expect(queryByRole('button', { name: 'Show panel' })).toBeNull()
     act(() => useBrowser.getState().closePanel())
 
-    fireEvent.click(getByLabelText('Show panel'))
+    fireEvent.click(getByRole('button', { name: 'Show panel' }))
 
     expect(useBrowser.getState().open).toBe(true)
     expect(helperTab()!.parentThreadId).toBe(PARENT)
