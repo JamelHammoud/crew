@@ -3,10 +3,8 @@ import { mkdtemp, readFile, realpath, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { createRequire } from 'node:module'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { boardFile, byShapeCount, root, run } from './board-window.mjs'
 
-const here = path.dirname(fileURLToPath(import.meta.url))
 const resolve = createRequire(path.join(root, 'package.json')).resolve
 
 const MOVES = 60

@@ -774,7 +774,7 @@ describe('the sidebar', () => {
     await act(async () => {
       await usePlaces.getState().load()
     })
-    const { container } = render(Sidebar())
+    render(Sidebar())
     const list = screen.getByRole('button', { name: 'Thread 0' }).parentElement as HTMLElement
     expect(list.className).not.toContain('overflow-y-auto')
     expect(list.className).not.toContain('rail-threads')
