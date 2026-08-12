@@ -64,14 +64,23 @@ describe('the docs page under the header', () => {
     expect(left.querySelector('[data-docs-trail]')).toBeNull()
   })
 
-  it('lights the page you are reading the way every other list in the app does', () => {
+  it('leaves the list of pages to the rail rather than drawing one of its own', () => {
     header()
     stock('welcome')
     const { container } = render(createElement(Docs))
-    const list = container.querySelector('[data-docs-list]')!
+    expect(container.querySelector('[data-docs-tree]')).toBeNull()
+  })
+})
+
+describe('the list of pages in the rail', () => {
+  it('lights the page you are reading the way every other list in the app does', () => {
+    stock('welcome')
+    useDocs.getState().open('welcome')
+    const { container } = render(createElement(SidebarDocs, { open: true }))
+    const list = container.querySelector('[data-docs-tree]')!
     const lit = list.querySelector('[aria-current="page"]')!
     expect(lit.textContent).toContain('Welcome')
-    expect(lit.parentElement!.className).toContain('bg-fg/[0.08]')
+    expect(lit.parentElement!.className).toContain('bg-fg/[0.10]')
     expect(list.innerHTML).not.toContain('bg-ink-800')
   })
 })
