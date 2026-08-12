@@ -107,7 +107,7 @@ describe('doc mentions in the thread preview', () => {
   it('renders the agent name once and pills both mentions', () => {
     boot()
     const pill = screen.getByText('@Bob (Kimi K3)')
-    const preview = pill.closest('p')!
+    const preview = pill.closest('.preview-line')!
     expect(preview.textContent).toBe(title.replace('#Plan', 'Plan'))
     const doc = screen.getByText('Plan')
     expect(doc.className).toContain('text-sky-300')
