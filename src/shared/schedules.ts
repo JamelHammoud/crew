@@ -1,4 +1,4 @@
-import { cleanTool, NAME_LIMIT, type ToolAction } from './toolbox'
+import { cleanTool, type ToolAction } from './toolbox'
 
 export interface Schedule {
   id: string

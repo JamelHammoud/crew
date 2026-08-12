@@ -4,12 +4,10 @@ import { Box, Mat, Vec, pointInPolygon } from '../math'
 import { atom, computed, transact, unsafe__withoutCapture, type Atom, type Computed } from '../signals'
 import {
   DocumentRecordType,
-  BindingRecordType,
   PageRecordType,
   TLDOCUMENT_ID,
   ZERO_INDEX_KEY,
   createShapeId,
-  createBindingId,
   getSnapshot,
   getIndexAbove,
   getIndicesBetween,

@@ -1,5 +1,4 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { flushSync } from 'react-dom'
 import { Editor } from './editor'
 import { EditorContext } from './react'
 import { Canvas, type CanvasShapeRenderer } from './render'

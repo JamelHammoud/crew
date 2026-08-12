@@ -1,6 +1,5 @@
 import { spawn } from 'node:child_process'
 import { mkdtemp, readdir, readFile, realpath, rm, writeFile } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import electron from 'electron'
