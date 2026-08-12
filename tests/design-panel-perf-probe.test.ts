@@ -14,6 +14,7 @@ const COUNT = 200
 const MOVES = 20
 
 const drawn = vi.hoisted(() => ({ layers: 0 }))
+const REGRESSION = await import('../src/renderer/src/canvas')
 
 vi.mock('../src/renderer/src/design/layerShapes', async () => {
   const actual = await vi.importActual<typeof import('../src/renderer/src/design/layerShapes')>(
@@ -23,7 +24,7 @@ vi.mock('../src/renderer/src/design/layerShapes', async () => {
     ...actual,
     useLayerShapes: (editor: Parameters<typeof actual.useLayerShapes>[0]) => {
       drawn.layers += 1
-      return actual.useLayerShapes(editor)
+      return REGRESSION.useValue('unmemoed layers', () => editor.getCurrentPageShapesSorted(), [editor])
     }
   }
 })
