@@ -69,22 +69,25 @@ async function turn(tts, voice, sentences) {
 
 window.check = async () => {
   const watch = new Map()
+  const built = speakBuild((await hasGpu()) ? 'webgpu' : 'wasm')
   let tts = null
   let cold = 0
   try {
     const started = performance.now()
-    tts = await open(watch)
+    tts = await open(built, watch)
     cold = Math.round(performance.now() - started)
   } catch (error) {
-    return { dead: String(error && error.message) }
+    return { dead: String(error && error.message), built }
   }
   const bytes = [...watch.values()].reduce((all, one) => all + one, 0)
   say('the model loaded in ' + (cold / 1000).toFixed(2) + 's, now saying three sentences')
 
   const warmStarted = performance.now()
-  await open(new Map())
+  await open(built, new Map())
   const warm = Math.round(performance.now() - warmStarted)
 
+  const first = await turn(tts, DEFAULT_VOICE, SAID)
+  say('the first turn came back in ' + first.length + ' chunks, now saying it again')
   const chunks = await turn(tts, DEFAULT_VOICE, SAID)
   say('the turn came back in ' + chunks.length + ' chunks, now trying every voice')
 
