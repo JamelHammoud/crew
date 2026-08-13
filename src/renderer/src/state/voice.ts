@@ -62,7 +62,7 @@ let live: { ear: VoiceEar; mouth: VoiceMouth } | null = null
 
 export function voiceAnalyser(): AnalyserNode | null {
   if (!live) return null
-  return live.mouth.speaking ? live.mouth.analyser : live.ear.analyser
+  return live.mouth.talking ? live.mouth.analyser : live.ear.analyser
 }
 
 export const useVoice = create<VoiceState>((set, get) => {
