@@ -234,6 +234,22 @@ describe('the voice coming out of the speakers', () => {
     expect(worker.sent.filter(message => message.type === 'push')).toHaveLength(0)
   })
 
+  it('is not talking while it is still waiting on the model', async () => {
+    const ears = freshEars()
+    const mouth = await mouthWith(ears)
+    mouth.open('af_heart')
+    expect(mouth.speaking).toBe(true)
+    expect(mouth.talking).toBe(false)
+
+    const worker = FakeWorker.last!
+    worker.says({ type: 'said', turn: 1, text: 'One.', audio: seconds(1) })
+    expect(mouth.talking).toBe(true)
+
+    worker.says({ type: 'done', turn: 1 })
+    audio.sources[0].finish()
+    expect(mouth.talking).toBe(false)
+  })
+
   it('says why when the model will not start', async () => {
     const ears = freshEars()
     const mouth = await mouthWith(ears)
