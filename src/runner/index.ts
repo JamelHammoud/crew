@@ -408,6 +408,7 @@ export class Runner {
   ): void {
     const agent = this.agents.get(forAgentId)
     if (!agent) {
+      this.spoken.delete(promptId)
       this.send({ type: 'agent.error', promptId, message: 'That agent is not on this machine.' })
       return
     }

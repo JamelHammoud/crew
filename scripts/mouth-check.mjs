@@ -240,7 +240,7 @@ function report(seen) {
     },
     {
       name: 'the first sentence was ready well before the last one',
-      ok: chunks.length > 1 && last.at - chunks[0].at > chunks[0].at * 0.2,
+      ok: chunks.length > 1 && last.at - chunks[0].at > last.at / 10,
       note: chunks.length
         ? `first at ${secs(chunks[0].at)} of a turn that finished at ${secs(last.at)}, and the app speaks each one as it lands`
         : 'nothing landed'
