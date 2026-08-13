@@ -141,8 +141,6 @@ describe('somebody making a noise while the agent is working', () => {
     })
   })
 
-  // The whole wait for an answer used to read as the agent talking, so a cough
-  // in it threw the question away and the answer arrived with nothing to say it.
   it('still speaks the answer after a cough while it was thinking', async () => {
     const useVoice = await conversation()
     heard = { text: ASKED }
