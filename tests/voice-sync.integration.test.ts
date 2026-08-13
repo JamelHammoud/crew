@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import type { SessionEvent } from '../src/shared/events'
 import type { Runner } from '../src/runner'
 import { makeFakeProvider } from './helpers/fake-provider'
+import { agentId } from '../src/shared/llm'
 import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
 import { testRunner } from './helpers/runner'
 
@@ -57,7 +58,7 @@ describe('a spoken turn and the sync pass in front of it', () => {
   }
 
   async function ui(name: string) {
-    const one = await TestUi.join(host.url, name)
+    const one = await TestUi.connect(host.url, name, host.code)
     uis.push(one)
     return one
   }
@@ -65,9 +66,10 @@ describe('a spoken turn and the sync pass in front of it', () => {
   const startsSeen = (one: TestUi) => one.events.filter(event => event.kind === 'agent.start') as Started[]
 
   it('says its first word without waiting for the pass to settle', async () => {
-    await connect('mac')
     const sam = await ui('sam')
-    const fake = sam.agents[0].id
+    await connect('mac')
+    await sam.waitForEvent(e => e.kind === 'agent.online')
+    const fake = agentId('mac', 'fake')
 
     sam.chat('what is in this project', [fake], undefined, ['voice'])
 
@@ -77,9 +79,10 @@ describe('a spoken turn and the sync pass in front of it', () => {
   })
 
   it('still holds a typed turn behind it', async () => {
-    await connect('mac')
     const sam = await ui('sam')
-    const fake = sam.agents[0].id
+    await connect('mac')
+    await sam.waitForEvent(e => e.kind === 'agent.online')
+    const fake = agentId('mac', 'fake')
 
     sam.chat('what is in this project', [fake])
 
