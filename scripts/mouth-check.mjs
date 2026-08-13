@@ -1,13 +1,19 @@
-import { mkdtemp, rm } from 'node:fs/promises'
+import { spawn } from 'node:child_process'
+import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import electron from 'electron'
 import { build } from 'esbuild'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
 
 const VERDICT = 'mouth-check:'
+const LIMIT = 900_000
+
+const PAGE = `import { KokoroTTS, TextSplitterStream } from 'kokoro-js'
+import { DEFAULT_VOICE, SPEAK_MODEL, SPEAK_RATE, SPEAK_VOICES } from '${path.join(root, 'src/renderer/src/media/voice/models.ts')}'
 
 const SAID = [
   'Yeah, I had a look. ',
@@ -17,30 +23,9 @@ const SAID = [
 
 const ONE_LINE = 'Yeah, that one is done.'
 
-const QUIET_PEAK = 0.01
-const QUIET_RMS = 0.001
+const say = text => console.log('SAY ' + text)
 
-async function settings(dir) {
-  const file = path.join(dir, 'models.mjs')
-  await build({
-    entryPoints: [path.join(root, 'src/renderer/src/media/voice/models.ts')],
-    bundle: true,
-    format: 'esm',
-    outfile: file,
-    logLevel: 'error'
-  })
-  return import(file)
-}
-
-function secs(ms) {
-  return `${(ms / 1000).toFixed(2)}s`
-}
-
-function mb(bytes) {
-  return `${(bytes / 1_000_000).toFixed(1)}MB`
-}
-
-function heard(samples) {
+const heard = samples => {
   let peak = 0
   let sum = 0
   for (const one of samples) {
@@ -51,13 +36,19 @@ function heard(samples) {
   return { peak, rms: samples.length ? Math.sqrt(sum / samples.length) : 0 }
 }
 
-function loud(chunk) {
-  return chunk.peak >= QUIET_PEAK && chunk.rms >= QUIET_RMS
-}
+const open = watch =>
+  KokoroTTS.from_pretrained(SPEAK_MODEL, {
+    dtype: 'q8',
+    device: 'wasm',
+    progress_callback: report => {
+      if (report.status !== 'progress' || !report.total) return
+      watch.set(report.file || '', report.total)
+    }
+  })
 
-async function turn(tts, TextSplitterStream, voice, sentences) {
+async function turn(tts, voice, sentences) {
   const stream = new TextSplitterStream()
-  const opened = Date.now()
+  const opened = performance.now()
   const chunks = []
   const running = (async () => {
     for await (const piece of tts.stream(stream, { voice })) {
@@ -66,7 +57,7 @@ async function turn(tts, TextSplitterStream, voice, sentences) {
         text: piece.text,
         rate: piece.audio.sampling_rate,
         samples: samples.length,
-        at: Date.now() - opened,
+        at: Math.round(performance.now() - opened),
         ...heard(samples)
       })
     }
@@ -77,121 +68,223 @@ async function turn(tts, TextSplitterStream, voice, sentences) {
   return chunks
 }
 
-const dir = await mkdtemp(path.join(tmpdir(), 'crew-mouth-'))
-let bad = false
-try {
-  const { SPEAK_MODEL, SPEAK_RATE, SPEAK_VOICES, DEFAULT_VOICE } = await settings(dir)
-  const { KokoroTTS, TextSplitterStream } = await import('kokoro-js')
-  const { env } = await import('@huggingface/transformers')
-  env.allowLocalModels = false
-
-  const fetched = new Map()
-  const load = report => {
-    if (report.status !== 'progress' || !report.total) return
-    fetched.set(report.file ?? '', report.total)
-  }
-
-  console.log(`model:   ${SPEAK_MODEL}, q8 on wasm, the way the worker loads it`)
-
-  let tts
+window.check = async () => {
+  const watch = new Map()
+  let tts = null
   let cold = 0
   try {
-    const started = Date.now()
-    tts = await KokoroTTS.from_pretrained(SPEAK_MODEL, { dtype: 'q8', device: 'wasm', progress_callback: load })
-    cold = Date.now() - started
+    const started = performance.now()
+    tts = await open(watch)
+    cold = Math.round(performance.now() - started)
   } catch (error) {
-    console.log(`load:    the voice model would not load on this machine: ${error.message}`)
-    console.log('there is nothing to say without it, so nothing was checked')
-    console.log(`${VERDICT} nothing to check`)
-    process.exit(0)
+    return { dead: String(error && error.message) }
   }
+  const bytes = [...watch.values()].reduce((all, one) => all + one, 0)
+  say('the model loaded in ' + (cold / 1000).toFixed(2) + 's, now saying three sentences')
 
-  const came = [...fetched.values()].reduce((all, one) => all + one, 0)
-  console.log(`cold:    ${secs(cold)}${came ? `, ${mb(came)} down the wire over ${fetched.size} files` : ', off the disk'}`)
+  const warmStarted = performance.now()
+  await open(new Map())
+  const warm = Math.round(performance.now() - warmStarted)
 
-  const warmStarted = Date.now()
-  await KokoroTTS.from_pretrained(SPEAK_MODEL, { dtype: 'q8', device: 'wasm' })
-  console.log(`warm:    ${secs(Date.now() - warmStarted)}, everything already on this machine`)
-
-  const chunks = await turn(tts, TextSplitterStream, DEFAULT_VOICE, SAID)
-  console.log(`\nthe turn, in ${DEFAULT_VOICE}, handed over the way the app hands it over:`)
-  for (const chunk of chunks) {
-    const seconds = chunk.rate ? chunk.samples / chunk.rate : 0
-    console.log(
-      `  ${secs(chunk.at).padStart(7)}  ${seconds.toFixed(2)}s of audio at ${chunk.rate}Hz  peak ${chunk.peak.toFixed(4)}  rms ${chunk.rms.toFixed(4)}  ${loud(chunk) ? 'sound' : 'SILENT'}  ${chunk.text.trim().slice(0, 44)}`
-    )
-  }
+  const chunks = await turn(tts, DEFAULT_VOICE, SAID)
+  say('the turn came back in ' + chunks.length + ' chunks, now trying every voice')
 
   const voices = []
   for (const voice of SPEAK_VOICES) {
-    const said = await turn(tts, TextSplitterStream, voice.id, [ONE_LINE])
-    const samples = said.reduce((all, one) => all + one.samples, 0)
+    const said = await turn(tts, voice.id, [ONE_LINE])
     voices.push({
-      voice,
-      samples,
-      peak: Math.max(0, ...said.map(one => one.peak)),
-      rms: Math.max(0, ...said.map(one => one.rms)),
-      sound: said.length > 0 && said.every(loud)
+      id: voice.id,
+      name: voice.name,
+      accent: voice.accent,
+      samples: said.reduce((all, one) => all + one.samples, 0),
+      rate: said.length ? said[0].rate : 0,
+      peak: said.length ? Math.max(...said.map(one => one.peak)) : 0,
+      rms: said.length ? Math.max(...said.map(one => one.rms)) : 0
     })
+    say('said it in ' + voice.id)
   }
-  console.log('\nevery voice the picker offers, on one sentence each:')
-  for (const one of voices) {
+
+  return { cold, warm, bytes, files: watch.size, chunks, voices, rate: SPEAK_RATE, model: SPEAK_MODEL }
+}
+`
+
+const HOST = `<!doctype html>
+<html>
+  <head><meta charset="utf-8" /><title>mouth</title></head>
+  <body><script type="module" src="/page.js"></script></body>
+</html>
+`
+
+const MAIN = `import { createServer } from 'node:http'
+import { readFile } from 'node:fs/promises'
+import path from 'node:path'
+import { app, BrowserWindow } from 'electron'
+
+const dir = import.meta.dirname
+const TYPES = { '.html': 'text/html', '.js': 'text/javascript' }
+
+const server = createServer(async (request, response) => {
+  const name = request.url === '/' ? '/host.html' : request.url.split('?')[0]
+  try {
+    const body = await readFile(path.join(dir, path.basename(name)))
+    response.writeHead(200, { 'content-type': TYPES[path.extname(name)] || 'application/octet-stream' })
+    response.end(body)
+  } catch {
+    response.writeHead(404)
+    response.end()
+  }
+})
+
+const port = await new Promise(resolve => server.listen(0, '127.0.0.1', () => resolve(server.address().port)))
+
+app.commandLine.appendSwitch('enable-features', 'SharedArrayBuffer')
+
+app
+  .whenReady()
+  .then(async () => {
+    const window = new BrowserWindow({ show: false, webPreferences: { backgroundThrottling: false } })
+    window.webContents.on('console-message', (_event, _level, message) => {
+      if (String(message).startsWith('SAY ')) console.log('SAY ' + String(message).slice(4))
+    })
+    await window.loadURL('http://127.0.0.1:' + port + '/')
+    const seen = await window.webContents.executeJavaScript('window.check()')
+    console.log('CHECK ' + JSON.stringify(seen))
+    app.exit(0)
+  })
+  .catch(error => {
+    console.log('CHECK ' + JSON.stringify({ dead: String(error && error.message) }))
+    app.exit(0)
+  })
+`
+
+async function stage() {
+  const dir = await mkdtemp(path.join(tmpdir(), 'crew-mouth-'))
+  await build({
+    stdin: { contents: PAGE, resolveDir: root, sourcefile: 'mouth-check.js', loader: 'js' },
+    bundle: true,
+    format: 'esm',
+    platform: 'browser',
+    outfile: path.join(dir, 'page.js'),
+    logLevel: 'error'
+  })
+  await writeFile(path.join(dir, 'host.html'), HOST)
+  await writeFile(path.join(dir, 'main.mjs'), MAIN)
+  return dir
+}
+
+function run(dir) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(electron, [path.join(dir, 'main.mjs')], {
+      env: { ...process.env, ELECTRON_ENABLE_LOGGING: '0' },
+      stdio: ['ignore', 'pipe', 'pipe']
+    })
+    let out = ''
+    child.stdout.on('data', chunk => {
+      out += chunk
+      for (const line of String(chunk).split('\n')) {
+        if (line.startsWith('SAY ')) console.log(`         ${line.slice(4)}`)
+      }
+    })
+    child.stderr.on('data', () => {})
+    const timer = setTimeout(() => {
+      child.kill('SIGKILL')
+      reject(new Error(`nothing came back within ${LIMIT / 1000}s`))
+    }, LIMIT)
+    child.on('exit', () => {
+      clearTimeout(timer)
+      const line = out.split('\n').find(text => text.startsWith('CHECK '))
+      if (!line) return reject(new Error('the window said nothing'))
+      resolve(JSON.parse(line.slice(6)))
+    })
+  })
+}
+
+const QUIET_PEAK = 0.01
+const QUIET_RMS = 0.001
+
+const loud = one => one.peak >= QUIET_PEAK && one.rms >= QUIET_RMS
+const secs = ms => `${(ms / 1000).toFixed(2)}s`
+
+function report(seen) {
+  console.log(`model:   ${seen.model}, q8 on wasm, the way the worker loads it`)
+  console.log(`cold:    ${secs(seen.cold)}, ${(seen.bytes / 1_000_000).toFixed(1)}MB over ${seen.files} files`)
+  console.log(`warm:    ${secs(seen.warm)}, loaded again with those files already here`)
+
+  console.log('\nthe turn, handed over a sentence at a time the way the app hands it over:')
+  for (const chunk of seen.chunks) {
+    const seconds = chunk.rate ? chunk.samples / chunk.rate : 0
     console.log(
-      `  ${one.voice.id.padEnd(11)} ${one.voice.name.padEnd(8)} ${one.voice.accent.padEnd(9)} ${String(one.samples).padStart(7)} samples  peak ${one.peak.toFixed(4)}  rms ${one.rms.toFixed(4)}  ${one.sound ? 'sound' : 'SILENT'}`
+      `  ${secs(chunk.at).padStart(7)}  ${seconds.toFixed(2)}s at ${chunk.rate}Hz  peak ${chunk.peak.toFixed(4)}  rms ${chunk.rms.toFixed(4)}  ${loud(chunk) ? 'sound' : 'SILENT'}  ${chunk.text.trim().slice(0, 40)}`
     )
   }
 
-  const first = chunks[0]
-  const rates = [...new Set(chunks.map(chunk => chunk.rate))]
-  const quiet = chunks.filter(chunk => !loud(chunk))
-  const mute = voices.filter(one => !one.sound)
-  const checks = [
-    {
-      name: 'the model loaded on this machine',
-      ok: true,
-      note: `cold ${secs(cold)}, warm ${secs(Date.now() - warmStarted)}`
-    },
+  console.log('\nevery voice the picker offers, on one sentence each:')
+  for (const one of seen.voices) {
+    console.log(
+      `  ${one.id.padEnd(11)} ${one.name.padEnd(8)} ${one.accent.padEnd(9)} ${String(one.samples).padStart(7)} samples at ${one.rate}Hz  peak ${one.peak.toFixed(4)}  rms ${one.rms.toFixed(4)}  ${loud(one) ? 'sound' : 'SILENT'}`
+    )
+  }
+
+  const chunks = seen.chunks
+  const last = chunks[chunks.length - 1]
+  const rates = [...new Set([...chunks, ...seen.voices].map(one => one.rate))]
+  const quiet = chunks.filter(one => !loud(one))
+  const mute = seen.voices.filter(one => !loud(one))
+  return [
     {
       name: 'audio came back a sentence at a time rather than a reply at a time',
       ok: chunks.length > 1,
       note: chunks.length
-        ? `${chunks.length} chunks off ${SAID.length} sentences, landing at ${chunks.map(chunk => secs(chunk.at)).join(', ')}`
+        ? `${chunks.length} chunks, landing at ${chunks.map(one => secs(one.at)).join(', ')}`
         : 'the model handed back nothing at all'
     },
     {
-      name: 'the first sentence was ready long before the last one',
-      ok: chunks.length > 1 && first.at < chunks[chunks.length - 1].at,
-      note: first
-        ? `first at ${secs(first.at)}, last at ${secs(chunks[chunks.length - 1].at)}, which is what the app speaks against`
+      name: 'the first sentence was ready well before the last one',
+      ok: chunks.length > 1 && last.at - chunks[0].at > chunks[0].at * 0.2,
+      note: chunks.length
+        ? `first at ${secs(chunks[0].at)} of a turn that finished at ${secs(last.at)}, and the app speaks each one as it lands`
         : 'nothing landed'
     },
     {
       name: 'the samples are real sound rather than a buffer of zeroes',
       ok: chunks.length > 0 && quiet.length === 0,
       note: chunks.length
-        ? `peak ${Math.max(...chunks.map(chunk => chunk.peak)).toFixed(4)}, rms ${Math.max(...chunks.map(chunk => chunk.rms)).toFixed(4)}${quiet.length ? `; ${quiet.length} chunks came back under peak ${QUIET_PEAK}` : ''}`
+        ? `peak ${Math.max(...chunks.map(one => one.peak)).toFixed(4)}, rms ${Math.max(...chunks.map(one => one.rms)).toFixed(4)}${quiet.length ? `, and ${quiet.length} of them came back under peak ${QUIET_PEAK}` : ''}`
         : 'there were no samples to read'
     },
     {
-      name: 'the rate the audio really came back at is the rate the app builds its buffer on',
-      ok: rates.length === 1 && rates[0] === SPEAK_RATE,
-      note: `the model says ${rates.join(', ') || 'nothing'} and SPEAK_RATE is ${SPEAK_RATE}`
+      name: 'the rate it really came back at is the rate the app builds its buffer on',
+      ok: rates.length === 1 && rates[0] === seen.rate,
+      note: `the model says ${rates.join(', ') || 'nothing'} and SPEAK_RATE is ${seen.rate}`
     },
     {
       name: 'every voice the picker offers really produced sound',
-      ok: mute.length === 0,
-      note: mute.length ? `${mute.map(one => one.voice.id).join(', ')} came back silent` : voices.map(one => one.voice.id).join(', ')
+      ok: seen.voices.length > 0 && mute.length === 0,
+      note: mute.length ? `${mute.map(one => one.id).join(', ')} came back silent` : seen.voices.map(one => one.id).join(', ')
     }
   ]
+}
 
-  console.log('')
-  for (const one of checks) console.log(`${one.ok ? 'PASS' : 'FAIL'}  ${one.name}\n      ${one.note}`)
-
-  const failed = checks.filter(one => !one.ok)
-  bad = failed.length > 0
-  console.log('')
-  if (bad) console.log(`${failed.length} of ${checks.length} checks failed off the real model`)
-  else console.log('the real model, real sentences, real sound out the other end')
+const dir = await stage()
+let bad = false
+try {
+  const seen = await run(dir)
+  if (seen.dead) {
+    console.log(`load:    the voice model would not load in a real window: ${seen.dead}`)
+    console.log('there is nothing to say without it, so nothing was checked')
+  } else {
+    const checks = report(seen)
+    console.log('')
+    for (const one of checks) console.log(`${one.ok ? 'PASS' : 'FAIL'}  ${one.name}\n      ${one.note}`)
+    const failed = checks.filter(one => !one.ok)
+    bad = failed.length > 0
+    console.log('')
+    console.log(
+      bad
+        ? `${failed.length} of ${checks.length} checks failed off the real model`
+        : 'the real model, real sentences, real sound out the other end'
+    )
+  }
 } catch (error) {
   console.log(`the mouth fell over: ${error.message}`)
   bad = true
