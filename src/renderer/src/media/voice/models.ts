@@ -13,9 +13,6 @@ export const SPEAK_MODEL = 'onnx-community/Kokoro-82M-v1.0-ONNX'
 export const askedOf = (model: string): { language?: string; task?: string } =>
   model.endsWith('.en') ? {} : { language: 'en', task: 'transcribe' }
 
-// Asked of the machine rather than assumed, and asked the same way by both
-// models, since a card that will not hand out an adapter is the one thing that
-// decides which build either of them loads.
 export async function hasGpu(): Promise<boolean> {
   const gpu = (globalThis.navigator as { gpu?: { requestAdapter(): Promise<unknown> } } | undefined)?.gpu
   if (!gpu) return false
