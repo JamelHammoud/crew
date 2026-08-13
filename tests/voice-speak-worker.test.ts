@@ -1,6 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { SpeakIn, SpeakOut } from '../src/renderer/src/media/voice/speak.worker'
 
+const built: string[] = []
+let breaks: string | null = null
+
 // kokoro's own splitter, held to the one rule that matters here: it is closed
 // once, and the second close throws. The model is a sentence per push.
 vi.mock('kokoro-js', () => {
