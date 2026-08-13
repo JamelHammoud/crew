@@ -15,6 +15,7 @@ type Said = Extract<SessionEvent, { kind: 'message' }>
 // readable off its reply. These are lines out of the brief itself.
 const SAID_OUT_LOUD = 'read back by a voice'
 const A_CARD = 'fenced block'
+const HELPERS = 'split work off to a helper'
 
 describe('a thread somebody spoke', () => {
   let host: TestHost
