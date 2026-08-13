@@ -97,6 +97,7 @@
     "format:check": "biome format --changed --no-errors-on-unmatched .",
     "media-check": "node scripts/media-check.mjs",
     "voice-check": "node scripts/voice-check.mjs",
+    "mouth-check": "node scripts/mouth-check.mjs",
     "selection-check": "node scripts/selection-check.mjs",
     "typing-check": "node scripts/typing-check.mjs",
     "board-check": "node scripts/board-check.mjs",
