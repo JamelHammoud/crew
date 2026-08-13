@@ -9,6 +9,7 @@ const caught: { ear: EarEars | null; mouth: MouthEars | null } = { ear: null, mo
 
 const spoken: string[] = []
 let talking = false
+let pending = false
 
 vi.mock('../src/renderer/src/media/voice/ear', () => ({
   VoiceEar: class {
