@@ -4258,7 +4258,7 @@ export class CrewSession {
     const room = Math.max(0, Math.min(fan - out, RUN_LIMIT - born.length))
     // A question on the side answers itself. Sending work out of one would put
     // helpers on a thread nobody can see and nobody asked for work in.
-    const canSend = prefs.on && !thread.aside && (thread.depth ?? 0) < DEPTH_LIMIT
+    const canSend = prefs.on && !thread.aside && !thread.voice && (thread.depth ?? 0) < DEPTH_LIMIT
     return {
       type: 'prompt',
       promptId: entry.promptId,
