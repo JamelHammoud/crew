@@ -445,7 +445,8 @@ export class Runner {
     goal?: string,
     plugins: CrewPlugin[] = []
   ): Promise<void> {
-    await this.opts.onBeforeRun?.().catch(() => {})
+    const pass = this.opts.onBeforeRun?.().catch(() => {})
+    if (!this.spoken.delete(promptId)) await pass
     const local = await this.attachments.ensure(attachments, this.httpBase, ghost ? promptId : undefined)
     // A cancel can land before the provider process exists (during the pull or
     // attachment fetch, or while queued behind another run in this thread), so
