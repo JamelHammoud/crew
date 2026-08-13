@@ -85,6 +85,23 @@ describe('a thread somebody spoke', () => {
     expect(second.text).toContain(SAID_OUT_LOUD)
   })
 
+  // A spoken turn is answered while somebody waits, so it is never handed the
+  // words about sending work out. A typed thread still gets them.
+  it('is not told how to send work out, where a typed thread is', async () => {
+    const sam = await ready()
+    sam.chat('what broke', [fake], undefined, ['voice'])
+    const spoke = (await sam.waitForEvent(e => e.kind === 'thread.started')) as Started
+    const spoken = (await sam.waitForEvent(e => e.kind === 'agent.end' && e.threadId === spoke.threadId)) as Ended
+    expect(spoken.text).not.toContain(HELPERS)
+
+    sam.chat('and this one I typed @Fake', [fake])
+    const typedThread = (await sam.waitForEvent(
+      e => e.kind === 'thread.started' && e.threadId !== spoke.threadId
+    )) as Started
+    const typed = (await sam.waitForEvent(e => e.kind === 'agent.end' && e.threadId === typedThread.threadId)) as Ended
+    expect(typed.text).toContain(HELPERS)
+  })
+
   it('says none of it in a thread somebody typed', async () => {
     const sam = await ready()
     sam.chat('what broke @Fake', [fake])
