@@ -6,7 +6,7 @@ import { agentId } from '../src/shared/llm'
 import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
 import { testRunner } from './helpers/runner'
 
-type Started = Extract<SessionEvent, { kind: 'agent.start' }>
+type Ended = Extract<SessionEvent, { kind: 'agent.end' }>
 
 describe('a spoken turn and the sync pass in front of it', () => {
   let host: TestHost
@@ -63,7 +63,7 @@ describe('a spoken turn and the sync pass in front of it', () => {
     return one
   }
 
-  const startsSeen = (one: TestUi) => one.events.filter(event => event.kind === 'agent.start') as Started[]
+  const ran = (one: TestUi) => one.events.filter(event => event.kind === 'agent.end') as Ended[]
 
   it('says its first word without waiting for the pass to settle', async () => {
     const sam = await ui('sam')
@@ -73,7 +73,7 @@ describe('a spoken turn and the sync pass in front of it', () => {
 
     sam.chat('what is in this project', [fake], undefined, ['voice'])
 
-    await waitUntil(() => startsSeen(sam).length === 1)
+    await waitUntil(() => ran(sam).length === 1)
     expect(passes).toBe(1)
     expect(release).not.toBeNull()
   })
@@ -87,10 +87,10 @@ describe('a spoken turn and the sync pass in front of it', () => {
     sam.chat('what is in this project', [fake])
 
     await waitUntil(() => passes === 1)
-    await new Promise(resolve => setTimeout(resolve, 200))
-    expect(startsSeen(sam)).toHaveLength(0)
+    await new Promise(resolve => setTimeout(resolve, 300))
+    expect(ran(sam)).toHaveLength(0)
 
     release?.()
-    await waitUntil(() => startsSeen(sam).length === 1)
+    await waitUntil(() => ran(sam).length === 1)
   })
 })
