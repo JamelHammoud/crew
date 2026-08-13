@@ -280,6 +280,9 @@ export type ServerMessage =
       goal?: string
       memories?: CrewMemory[]
       plugins?: CrewPlugin[]
+      // Somebody is sitting in silence waiting for this one to say its first
+      // word, so the machine does not hold it behind a sync pass.
+      voice?: boolean
     }
   | {
       type: 'steer'
