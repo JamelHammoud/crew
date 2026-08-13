@@ -25,16 +25,34 @@ const post = (message: SpeakOut, transfer: Transferable[] = []) =>
   (globalThis as unknown as Worker).postMessage(message, transfer)
 
 let mouth: Promise<KokoroTTS> | null = null
+let onGpu = false
+
+const fetching = (report: { status: string; file?: string; loaded?: number; total?: number }) => {
+  if (report.status !== 'progress') return
+  post({ type: 'fetching', file: report.file ?? '', loaded: report.loaded ?? 0, total: report.total ?? 0 })
+}
+
+const build = (device: 'webgpu' | 'wasm'): Promise<KokoroTTS> =>
+  KokoroTTS.from_pretrained(SPEAK_MODEL, { ...speakBuild(device), progress_callback: fetching })
+
+const onCpu = (): Promise<KokoroTTS> => {
+  onGpu = false
+  return build('wasm')
+}
+
+async function make(): Promise<KokoroTTS> {
+  if (!(await hasGpu())) return onCpu()
+  try {
+    const built = await build('webgpu')
+    onGpu = true
+    return built
+  } catch {
+    return onCpu()
+  }
+}
 
 const load = (): Promise<KokoroTTS> => {
-  mouth ??= KokoroTTS.from_pretrained(SPEAK_MODEL, {
-    dtype: 'q8',
-    device: 'wasm',
-    progress_callback: (report: { status: string; file?: string; loaded?: number; total?: number }) => {
-      if (report.status !== 'progress') return
-      post({ type: 'fetching', file: report.file ?? '', loaded: report.loaded ?? 0, total: report.total ?? 0 })
-    }
-  })
+  mouth ??= make()
   return mouth
 }
 
