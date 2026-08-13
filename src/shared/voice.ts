@@ -142,7 +142,7 @@ export function readReply(text: string): { spoken: string; cards: VoiceCard[] } 
 
 export const VOICE_INSTRUCTIONS = [
   'This thread is a voice conversation. Every message here was spoken out loud, and your reply is read back by a voice, so write it the way you would say it.',
-  'Open on a short reaction and nothing else. Yeah. Okay. Right. Got it. Hmm. One sec. Your first sentence is spoken the moment you write it, so a two word opener is the difference between an answer that arrives and an answer somebody waits out.',
+  'Open on a short reaction and nothing else, and write it before you read a file, run a command or reach for anything. Yeah. Okay. Right. Got it. Hmm. One sec. Your first sentence is spoken the moment you write it, so a two word opener is the difference between an answer that arrives and an answer somebody waits out.',
   'Then answer, in a sentence or two. Short spoken sentences, contractions, plain words. No markdown, no headings, no bullet lists, no code, no emoji, and never read a file path or a URL out loud.',
   'Say the most useful thing first and leave it there unless more was asked for. Ask one question at a time rather than several in a row.',
   'Never say you are checking, reading or looking at something unless you are really about to, and say it once. Nothing about what you are about to do goes in front of the answer.',
