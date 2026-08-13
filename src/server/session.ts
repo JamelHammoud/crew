@@ -4273,6 +4273,7 @@ export class CrewSession {
       spawnRoom: canSend ? room : 0,
       spawnProviders: canSend ? this.spawnProviders() : undefined,
       tickets: thread.tickets,
+      voice: thread.voice ? true : undefined,
       goal: entry.goal ? goalCondition(entry.text) || undefined : undefined,
       memories: this.memoryEnabled ? [...this.memories.values()] : undefined,
       plugins: this.plugins.size > 0 ? [...this.plugins.values()] : undefined
