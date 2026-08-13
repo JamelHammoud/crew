@@ -126,12 +126,8 @@ self.onmessage = (event: MessageEvent<SpeakIn>) => {
   if (message.type === 'stop') return hush()
   if (message.type === 'open') {
     hush()
-    // Made here rather than inside the run, so words pushed in the same breath
-    // as the turn opens are not dropped while the model is still loading.
-    const stream = new TextSplitterStream()
     turn = message.turn
-    splitter = stream
-    run(message.turn, stream, message.voice || DEFAULT_VOICE).catch(error => {
+    run(message.turn, message.voice || DEFAULT_VOICE).catch(error => {
       if (turn === message.turn) {
         post({ type: 'failed', message: error instanceof Error ? error.message : 'The voice stopped.' })
       }
@@ -139,6 +135,12 @@ self.onmessage = (event: MessageEvent<SpeakIn>) => {
     return
   }
   if (turn !== message.turn) return
-  if (message.type === 'push') splitter?.push(message.text)
-  if (message.type === 'close') seal()
+  if (message.type === 'push') {
+    written.push(message.text)
+    splitter?.push(message.text)
+  }
+  if (message.type === 'close') {
+    sealed = true
+    seal()
+  }
 }
