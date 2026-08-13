@@ -260,7 +260,9 @@ function report(seen) {
     {
       name: 'every voice the picker offers really produced sound',
       ok: seen.voices.length > 0 && mute.length === 0,
-      note: mute.length ? `${mute.map(one => one.id).join(', ')} came back silent` : seen.voices.map(one => one.id).join(', ')
+      note: mute.length
+        ? `${mute.map(one => one.id).join(', ')} came back silent`
+        : seen.voices.map(one => one.id).join(', ')
     }
   ]
 }
