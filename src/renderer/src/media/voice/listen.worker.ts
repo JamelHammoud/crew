@@ -59,16 +59,6 @@ const report = (report: Fetched) => {
   post({ type: 'fetching', file: report.file ?? '', loaded: report.loaded ?? 0, total: report.total ?? 0 })
 }
 
-async function hasGpu(): Promise<boolean> {
-  const gpu = (globalThis.navigator as { gpu?: { requestAdapter(): Promise<unknown> } }).gpu
-  if (!gpu) return false
-  try {
-    return (await gpu.requestAdapter()) !== null
-  } catch {
-    return false
-  }
-}
-
 const onCpu = (): Promise<AutomaticSpeechRecognitionPipeline> => {
   onGpu = false
   return build('automatic-speech-recognition', LISTEN_MODEL, {
