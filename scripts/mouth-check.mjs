@@ -36,10 +36,9 @@ const heard = samples => {
   return { peak, rms: samples.length ? Math.sqrt(sum / samples.length) : 0 }
 }
 
-const open = watch =>
+const open = (built, watch) =>
   KokoroTTS.from_pretrained(SPEAK_MODEL, {
-    dtype: 'q8',
-    device: 'wasm',
+    ...built,
     progress_callback: report => {
       if (report.status !== 'progress' || !report.total) return
       watch.set(report.file || '', report.total)
