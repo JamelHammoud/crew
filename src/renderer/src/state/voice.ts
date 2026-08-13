@@ -137,7 +137,7 @@ export const useVoice = create<VoiceState>((set, get) => {
       // Left behind, it finds its own run again on the next event and waits on
       // a reply that was dropped, which is a conversation that never speaks
       // again. Only a voice that can be heard is one worth cutting in on.
-      if (mouth.talking) {
+      if (mouth.speaking) {
         forget()
         promptId = null
         reply = null
