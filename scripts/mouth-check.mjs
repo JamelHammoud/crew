@@ -106,7 +106,7 @@ window.check = async () => {
     say('said it in ' + voice.id)
   }
 
-  return { cold, warm, bytes, files: watch.size, chunks, voices, rate: SPEAK_RATE, model: SPEAK_MODEL }
+  return { cold, warm, bytes, files: watch.size, built, first, chunks, voices, rate: SPEAK_RATE, model: SPEAK_MODEL }
 }
 `
 
