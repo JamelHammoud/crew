@@ -65,18 +65,9 @@ const NOBODY = -1
 
 let turn = NOBODY
 let splitter: TextSplitterStream | null = null
-
-async function run(mine: number, stream: TextSplitterStream, voice: string): Promise<void> {
-  const tts = await load()
-  for await (const piece of tts.stream(stream, { voice: voice as KokoroVoice })) {
-    if (turn !== mine) return
-    // Copied rather than handed straight over, so transferring the buffer can
-    // never detach one the model is still holding.
-    const audio = new Float32Array(piece.audio.audio)
-    post({ type: 'said', turn: mine, text: piece.text, audio }, [audio.buffer])
-  }
-  if (turn === mine) post({ type: 'done', turn: mine })
-}
+let written: string[] = []
+let sealed = false
+let said = 0
 
 // A stream is closed once and kokoro throws on the second, so the one that has
 // been let go of is forgotten rather than left for a later hush to close again.
@@ -85,8 +76,41 @@ const seal = () => {
   splitter = null
 }
 
+async function speak(mine: number, voice: string): Promise<void> {
+  const tts = await load()
+  if (turn !== mine) return
+  const stream = new TextSplitterStream()
+  splitter = stream
+  for (const text of written) stream.push(text)
+  if (sealed) seal()
+  let seen = 0
+  for await (const piece of tts.stream(stream, { voice: voice as KokoroVoice })) {
+    if (turn !== mine) return
+    if (++seen <= said) continue
+    said = seen
+    // Copied rather than handed straight over, so transferring the buffer can
+    // never detach one the model is still holding.
+    const audio = new Float32Array(piece.audio.audio)
+    post({ type: 'said', turn: mine, text: piece.text, audio }, [audio.buffer])
+  }
+  if (turn === mine) post({ type: 'done', turn: mine })
+}
+
+async function run(mine: number, voice: string): Promise<void> {
+  try {
+    await speak(mine, voice)
+  } catch (error) {
+    if (!onGpu || turn !== mine) throw error
+    mouth = onCpu()
+    await speak(mine, voice)
+  }
+}
+
 const hush = () => {
   turn = NOBODY
+  written = []
+  sealed = false
+  said = 0
   seal()
 }
 
