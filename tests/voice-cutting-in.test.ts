@@ -36,6 +36,7 @@ vi.mock('../src/renderer/src/media/voice/mouth', () => ({
       caught.mouth?.onReady()
     }
     open() {
+      pending = true
       talking = false
     }
     push(text: string) {
@@ -44,10 +45,11 @@ vi.mock('../src/renderer/src/media/voice/mouth', () => ({
     }
     seal() {}
     stop() {
+      pending = false
       talking = false
     }
     get speaking() {
-      return talking
+      return pending || talking
     }
     get talking() {
       return talking
