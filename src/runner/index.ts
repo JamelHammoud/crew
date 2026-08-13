@@ -303,6 +303,7 @@ export class Runner {
         break
       }
       case 'prompt':
+        if (msg.voice) this.spoken.add(msg.promptId)
         this.runPrompt(
           msg.promptId,
           msg.agentId,
