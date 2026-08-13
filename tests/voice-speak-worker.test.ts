@@ -117,6 +117,31 @@ describe('the speak worker', () => {
     expect(spoken()).toEqual(['Something.', 'After the stop.'])
   })
 
+  it('says it on the card where there is one', async () => {
+    card(true)
+    say({ type: 'open', turn: 1, voice: 'af_heart' })
+    say({ type: 'push', turn: 1, text: 'On the card.' })
+    say({ type: 'close', turn: 1 })
+    await settle()
+
+    expect(built).toEqual(['webgpu'])
+    expect(spoken()).toEqual(['On the card.'])
+  })
+
+  it('says it anyway when the card took the model and then could not run it', async () => {
+    card(true)
+    breaks = 'webgpu'
+    say({ type: 'open', turn: 1, voice: 'af_heart' })
+    say({ type: 'push', turn: 1, text: 'The first thing.' })
+    say({ type: 'push', turn: 1, text: 'The second thing.' })
+    say({ type: 'close', turn: 1 })
+    await settle()
+
+    expect(built).toEqual(['webgpu', 'wasm'])
+    expect(spoken()).toEqual(['The first thing.', 'The second thing.'])
+    expect(said.filter(out => out.type === 'failed')).toEqual([])
+  })
+
   it('drops what the turn before it was still saying', async () => {
     say({ type: 'open', turn: 1, voice: 'af_heart' })
     say({ type: 'push', turn: 1, text: 'The old turn.' })
