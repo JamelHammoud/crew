@@ -61,6 +61,7 @@ export class Runner {
   private running = new Map<string, RunningPrompt>()
   private accepted = new Set<string>()
   private cancelled = new Set<string>()
+  private spoken = new Set<string>()
   private tails = new Map<string, Promise<void>>()
   private stopped = false
   private attempts = 0
