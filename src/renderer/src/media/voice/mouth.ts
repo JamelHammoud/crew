@@ -42,10 +42,8 @@ export class VoiceMouth {
     return !this.drained || this.waiting > 0
   }
 
-  // Whether sound is really coming out right now, which is a different question
-  // from whether the turn is over. A turn is opened before the model has drawn
-  // a word, so the whole of the wait for an answer reads as speaking, and the
-  // room was being read for an interruption against a voice nobody had heard.
+  // Sound is really coming out right now, which is not the same question as
+  // whether the turn is over.
   get talking(): boolean {
     return this.waiting > 0
   }
