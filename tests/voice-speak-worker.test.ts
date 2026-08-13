@@ -36,10 +36,13 @@ vi.mock('kokoro-js', () => {
   }
 
   class KokoroTTS {
-    static async from_pretrained(): Promise<KokoroTTS> {
-      return new KokoroTTS()
+    constructor(readonly device: string) {}
+    static async from_pretrained(_model: string, options: { device: string }): Promise<KokoroTTS> {
+      built.push(options.device)
+      return new KokoroTTS(options.device)
     }
     async *stream(stream: TextSplitterStream): AsyncGenerator<{ text: string; audio: { audio: Float32Array } }> {
+      if (this.device === breaks) throw new Error('Failed to run JSEP kernel')
       for await (const text of stream) yield { text, audio: { audio: new Float32Array([0.5]) } }
     }
   }
