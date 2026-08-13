@@ -13,7 +13,7 @@ const VERDICT = 'mouth-check:'
 const LIMIT = 900_000
 
 const PAGE = `import { KokoroTTS, TextSplitterStream } from 'kokoro-js'
-import { DEFAULT_VOICE, SPEAK_MODEL, SPEAK_RATE, SPEAK_VOICES } from '${path.join(root, 'src/renderer/src/media/voice/models.ts')}'
+import { DEFAULT_VOICE, hasGpu, SPEAK_MODEL, SPEAK_RATE, SPEAK_VOICES, speakBuild } from '${path.join(root, 'src/renderer/src/media/voice/models.ts')}'
 
 const SAID = [
   'Yeah, I had a look. ',
