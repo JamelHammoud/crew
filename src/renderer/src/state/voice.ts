@@ -150,7 +150,10 @@ export const useVoice = create<VoiceState>((set, get) => {
     },
     onEnd: audio => {
       if (audio) return void heard(audio)
-      if (get().phase === 'hearing') set({ phase: 'listening' })
+      if (get().phase !== 'hearing') return
+      // A cough is not the end of the agent's turn, so what it goes back to is
+      // whatever was already going on.
+      set({ phase: asked ? 'thinking' : 'listening' })
     }
   })
 
