@@ -63,8 +63,9 @@ const settle = async (): Promise<void> => {
 
 const spoken = (): string[] => said.filter(out => out.type === 'said').map(out => (out as { text: string }).text)
 
-const card = (there: boolean): void =>
+const card = (there: boolean): void => {
   vi.stubGlobal('navigator', there ? { gpu: { requestAdapter: async () => ({}) } } : {})
+}
 
 describe('the speak worker', () => {
   beforeEach(async () => {
