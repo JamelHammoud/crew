@@ -42,6 +42,14 @@ export class VoiceMouth {
     return !this.drained || this.waiting > 0
   }
 
+  // Whether sound is really coming out right now, which is a different question
+  // from whether the turn is over. A turn is opened before the model has drawn
+  // a word, so the whole of the wait for an answer reads as speaking, and the
+  // room was being read for an interruption against a voice nobody had heard.
+  get talking(): boolean {
+    return this.waiting > 0
+  }
+
   // A turn is opened before there is anything to say, so the first sentence the
   // agent writes is already on its way to the model as it lands.
   open(voice: string): void {
