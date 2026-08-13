@@ -136,11 +136,7 @@ export const useVoice = create<VoiceState>((set, get) => {
       // Everything about the turn being cut in on goes, the question included.
       // Left behind, it finds its own run again on the next event and waits on
       // a reply that was dropped, which is a conversation that never speaks
-      // again. Only a voice that can be heard is one worth cutting in on: read
-      // off whether the turn was over, the whole wait for an answer counted as
-      // the agent talking, so a cough while it was still thinking threw the
-      // question away and the answer landed in the thread with nothing left to
-      // say it out loud.
+      // again. Only a voice that can be heard is one worth cutting in on.
       if (mouth.talking) {
         forget()
         promptId = null
