@@ -129,6 +129,7 @@ describe('somebody making a noise while the agent is working', () => {
     caught.mouth = null
     spoken.length = 0
     talking = false
+    pending = false
     heard = null
     watchers = []
     crew.events = []
