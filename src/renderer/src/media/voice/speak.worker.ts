@@ -1,5 +1,5 @@
 import { KokoroTTS, TextSplitterStream } from 'kokoro-js'
-import { DEFAULT_VOICE, SPEAK_MODEL } from './models'
+import { DEFAULT_VOICE, hasGpu, SPEAK_MODEL, speakBuild } from './models'
 
 // Kokoro on this machine. It answers a sentence at a time rather than a reply
 // at a time, so the first words are in the air while the last ones are still
