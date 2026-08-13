@@ -208,9 +208,10 @@ const loud = one => one.peak >= QUIET_PEAK && one.rms >= QUIET_RMS
 const secs = ms => `${(ms / 1000).toFixed(2)}s`
 
 function report(seen) {
-  console.log(`model:   ${seen.model}, q8 on wasm, the way the worker loads it`)
+  console.log(`model:   ${seen.model}, ${seen.built.dtype} on ${seen.built.device}, the way the worker loads it`)
   console.log(`cold:    ${secs(seen.cold)}, ${(seen.bytes / 1_000_000).toFixed(1)}MB over ${seen.files} files`)
   console.log(`warm:    ${secs(seen.warm)}, loaded again with those files already here`)
+  console.log(`first:   ${secs(seen.first[0]?.at ?? 0)} to the first sentence of the first turn after the load`)
 
   console.log('\nthe turn, handed over a sentence at a time the way the app hands it over:')
   for (const chunk of seen.chunks) {
