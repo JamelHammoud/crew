@@ -220,7 +220,10 @@ export function cleanPlugin(raw: unknown): Omit<CrewPlugin, 'id' | 'by' | 'ts'> 
   const name = cleanPluginName(said.name)
   if (!name) return null
   const catalog = catalogPlugin(said.catalogId ?? name)
-  if (catalog) return offerFromCatalog(catalog)
+  if (catalog) {
+    const { group: _group, ...plugin } = offerFromCatalog(catalog)
+    return plugin
+  }
   const label = line(said.label, PLUGIN_NAME_LIMIT) || name
   const blurb = line(said.blurb, PLUGIN_BLURB_LIMIT)
   const held = keys(said.keys)
