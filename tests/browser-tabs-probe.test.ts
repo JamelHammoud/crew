@@ -445,6 +445,50 @@ describe('a page an agent shows', () => {
 
     expect(useBrowser.getState().tabs).toHaveLength(1)
   })
+
+  it('keeps Raylight in one named tab as the project changes', () => {
+    useBrowser.getState().openPlugin({
+      name: 'raylight',
+      label: 'Raylight',
+      appUrl: 'https://www.raylight.app/projects'
+    })
+    const tab = useBrowser.getState().tabs[0]!
+    useBrowser.getState().updateTab(tab.id, {
+      url: 'https://www.raylight.app/editor/first-video',
+      title: 'First video'
+    })
+    useBrowser.getState().closePanel()
+
+    useBrowser.getState().showPage('https://raylight.app/editor/second-video')
+
+    const state = useBrowser.getState()
+    expect(state.tabs).toHaveLength(1)
+    expect(state.tabs[0]).toMatchObject({
+      id: tab.id,
+      plugin: 'raylight',
+      pluginLabel: 'Raylight',
+      initialUrl: 'https://raylight.app/editor/second-video'
+    })
+    expect(state.open).toBe(true)
+    const { container } = render(createElement(BrowserPanel))
+    expect(pillFor(container, tab.id)?.textContent).toContain('Raylight')
+  })
+
+  it('returns to the live Raylight editor instead of its project list', () => {
+    const raylight = {
+      name: 'raylight',
+      label: 'Raylight',
+      appUrl: 'https://www.raylight.app/projects'
+    }
+    useBrowser.getState().openPlugin(raylight)
+    const tab = useBrowser.getState().tabs[0]!
+    useBrowser.getState().updateTab(tab.id, { url: 'https://www.raylight.app/editor/live-project' })
+
+    useBrowser.getState().openPlugin(raylight)
+
+    expect(useBrowser.getState().tabs).toHaveLength(1)
+    expect(useBrowser.getState().tabs[0]!.url).toBe('https://www.raylight.app/editor/live-project')
+  })
 })
 
 // What the app says about a question the agent raised turns on whether that
