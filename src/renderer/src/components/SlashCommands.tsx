@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import { slashCandidates, type CommandName, type SlashCommand } from '../../../shared/commands'
-import { pluginCanLaunch, resolvePlugins, type CrewPlugin } from '../../../shared/plugins'
+import { pluginCanLaunch, resolvePlugin, type CrewPlugin } from '../../../shared/plugins'
 import { PlugGlyph } from '../icons'
 import { COMMAND_MARKS } from './CommandChip'
 import PluginMark from './plugins/PluginMark'
@@ -19,9 +19,10 @@ const pluginQuery = (value: string): string | null => {
 }
 
 const pluginMatches = (plugins: readonly CrewPlugin[], query: string): CrewPlugin[] =>
-  resolvePlugins(plugins).filter(plugin =>
-    [plugin.name, plugin.label, plugin.blurb].some(word => word.toLowerCase().includes(query))
-  )
+  plugins.filter(plugin => {
+    const resolved = resolvePlugin(plugin)
+    return [resolved.name, resolved.label, resolved.blurb].some(word => word.toLowerCase().includes(query))
+  })
 
 export function useSlashCommands(
   value: string,
@@ -43,7 +44,7 @@ export function useSlashCommands(
     if (direct === null) return found
     if ('plugin'.startsWith(direct)) found.push({ kind: 'plugins' })
     if (direct) {
-      for (const plugin of resolvePlugins(plugins)) {
+      for (const plugin of plugins) {
         if (pluginCanLaunch(plugin) && plugin.name.startsWith(direct) && plugin.name !== 'plugin') {
           found.push({ kind: 'plugin', plugin })
         }
@@ -166,7 +167,8 @@ export function SlashMenu({
             </button>
           )
         }
-        const launchable = pluginCanLaunch(match.plugin)
+        const plugin = resolvePlugin(match.plugin)
+        const launchable = pluginCanLaunch(plugin)
         return (
           <button
             key={`plugin:${match.plugin.id}`}
@@ -181,10 +183,10 @@ export function SlashMenu({
                   : 'text-fg-secondary hover:bg-fg/[0.08] hover:text-fg'
             }`}
           >
-            <PluginMark seed={match.plugin.name} box={16} />
-            <span className="shrink-0">{launchable ? `/${match.plugin.name}` : match.plugin.label}</span>
+            <PluginMark seed={plugin.name} box={16} />
+            <span className="shrink-0">{launchable ? `/${plugin.name}` : plugin.label}</span>
             <span className="text-xs text-fg-muted truncate">
-              {launchable ? match.plugin.label : 'Available to agents'}
+              {launchable ? plugin.label : 'Available to agents'}
             </span>
           </button>
         )

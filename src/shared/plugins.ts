@@ -162,14 +162,11 @@ export function resolvePlugin<T extends PluginReference>(plugin: T): ResolvedPlu
     } as ResolvedPlugin<T>
   }
   const offer = offerFromCatalog(catalog)
+  const { url: _url, appUrl: _appUrl, command: _command, args: _args, keys: _keys, ...saved } = plugin
+  const { group: _group, ...canonical } = offer
   return {
-    ...plugin,
-    ...offer,
-    command: offer.command,
-    args: offer.args,
-    keys: offer.keys,
-    url: offer.url,
-    appUrl: offer.appUrl,
+    ...saved,
+    ...canonical,
     trusted: true,
     authentication: catalog.authentication,
     allowedOrigins: catalog.allowedOrigins,
@@ -302,8 +299,7 @@ export const pluginNamed = (value: string, plugins: readonly CrewPlugin[]): Crew
   const match = /^\/(\S+)\s*$/.exec(value)
   if (!match) return null
   const name = pluginKey(match[1])
-  const saved = plugins.find(plugin => pluginKey(plugin.name) === name && pluginCanLaunch(plugin))
-  return saved ? resolvePlugin(saved) : null
+  return plugins.find(plugin => pluginKey(plugin.name) === name && pluginCanLaunch(plugin)) ?? null
 }
 
 export const pluginTyped = (value: string, plugins: readonly CrewPlugin[]): CrewPlugin | null =>
