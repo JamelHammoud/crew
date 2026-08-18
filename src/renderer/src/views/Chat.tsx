@@ -30,7 +30,7 @@ import { CHAT_KEY, pendingCount, useCrew, type ThreadMeta } from '../state/store
 import { useVoice } from '../state/voice'
 import { cleanCommands, commandsIn, commandTyped, type CommandName } from '../../../shared/commands'
 import { aimOf } from '../../../shared/llm'
-import { pluginMenuInput, pluginNamed, pluginTyped } from '../../../shared/plugins'
+import { pluginCanLaunch, pluginMenuInput, pluginNamed, pluginTyped } from '../../../shared/plugins'
 import { useBrowser } from '../state/browser'
 
 export default function Chat() {
@@ -83,7 +83,7 @@ export default function Chat() {
   const ghost = commands.includes('ghost')
   const inputRef = useAutoResize(text, COMPOSER_MAX)
   const pluginSlashes = useMemo(
-    () => ['plugin', ...plugins.filter(plugin => plugin.appUrl).map(plugin => plugin.name)],
+    () => ['plugin', ...plugins.filter(pluginCanLaunch).map(plugin => plugin.name)],
     [plugins]
   )
   const mention = useMentionAutocomplete(text, write, inputRef, { commands: offered, slashes: pluginSlashes })

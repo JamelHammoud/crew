@@ -1,5 +1,12 @@
 import { useMemo, useState } from 'react'
-import { PLUGIN_GROUPS, PLUGIN_OFFERS, pluginKey, type PluginOffer } from '../../../shared/plugins'
+import {
+  PLUGIN_GROUPS,
+  PLUGIN_OFFERS,
+  pluginCanLaunch,
+  pluginKey,
+  resolvePlugins,
+  type PluginOffer
+} from '../../../shared/plugins'
 import AddPlugin from '../components/plugins/AddPlugin'
 import PluginRow from '../components/plugins/PluginRow'
 import { SearchGlyph } from '../icons'
@@ -16,7 +23,7 @@ export default function Plugins() {
   const [find, setFind] = useState('')
 
   const held = useMemo(() => new Set(plugins.map(one => pluginKey(one.name))), [plugins])
-  const installed = plugins.filter(one => matches(find, one.label, one.blurb, one.name))
+  const installed = resolvePlugins(plugins).filter(one => matches(find, one.label, one.blurb, one.name))
   const offers = PLUGIN_OFFERS.filter(one => !held.has(one.name) && matches(find, one.label, one.blurb, one.name))
   const grouped: Array<[string, PluginOffer[]]> = PLUGIN_GROUPS.map(group => [
     group,
@@ -54,7 +61,7 @@ export default function Plugins() {
                   seed={one.name}
                   label={one.label}
                   blurb={one.blurb}
-                  onOpen={one.appUrl ? () => useBrowser.getState().openPlugin(one) : undefined}
+                  onOpen={pluginCanLaunch(one) ? () => useBrowser.getState().openPlugin(one) : undefined}
                   onRemove={() => removePlugin(one.id)}
                 />
               ))}

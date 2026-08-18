@@ -41,7 +41,7 @@ import { useFindQuery } from '../components/find'
 import { useStickToBottom } from '../components/useStickToBottom'
 import { commandTyped, threadCommands, type CommandName } from '../../../shared/commands'
 import { mentionsIn } from '../../../shared/llm'
-import { pluginMenuInput, pluginNamed, pluginTyped } from '../../../shared/plugins'
+import { pluginCanLaunch, pluginMenuInput, pluginNamed, pluginTyped } from '../../../shared/plugins'
 import { ArchiveGlyph, CheckGlyph, ChevronLeftGlyph, CloseGlyph, EyeGlyph, StopGlyph, WarningGlyph } from '../icons'
 import { pendingCount, useCrew } from '../state/store'
 import { useBrowser } from '../state/browser'
@@ -143,7 +143,7 @@ export default function ThreadView({
   }
 
   const pluginSlashes = useMemo(
-    () => ['plugin', ...plugins.filter(plugin => plugin.appUrl).map(plugin => plugin.name)],
+    () => ['plugin', ...plugins.filter(pluginCanLaunch).map(plugin => plugin.name)],
     [plugins]
   )
   const mention = useMentionAutocomplete(text, write, inputRef, { commands: offered, slashes: pluginSlashes })
