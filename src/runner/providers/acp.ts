@@ -1,4 +1,5 @@
 import type { McpServer } from '../../shared/plugins'
+import { AcpTerminalHost } from './acp-terminal'
 import type { Dialog, ParsedOutput, RunOptions } from './types'
 
 export const PROTOCOL = 1
@@ -6,7 +7,7 @@ export const PROTOCOL = 1
 // Crew never reads or writes a file on the agent's behalf. The CLI already runs
 // in the project folder and does its own work everywhere else, so the two file
 // capabilities are declined and the agent uses the hands it has.
-export const CAPABILITIES = { fs: { readTextFile: false, writeTextFile: false }, terminal: false }
+export const CAPABILITIES = { fs: { readTextFile: false, writeTextFile: false }, terminal: true }
 
 export const CANCELLED = 'cancelled'
 
@@ -58,6 +59,7 @@ export interface AcpDialogOptions {
 }
 
 export function acpDialog({ prompt, cwd, run = {}, config = [], servers = acpServers }: AcpDialogOptions): Dialog {
+  const terminal = new AcpTerminalHost(cwd)
   const pending = new Map<number, Stage>()
   const settings = [...config]
   const steers: string[] = []
@@ -105,6 +107,10 @@ export function acpDialog({ prompt, cwd, run = {}, config = [], servers = acpSer
       const outcome = optionId ? { outcome: 'selected', optionId } : { outcome: 'cancelled' }
       return [rpc({ id, result: { outcome } })]
     }
+    if (method.startsWith('terminal/')) {
+      const answer = terminal.serve(id, method, params)
+      return answer ? [answer] : []
+    }
     return [rpc({ id, error: { code: -32601, message: `Crew does not answer ${method}.` } })]
   }
 
@@ -137,7 +143,9 @@ export function acpDialog({ prompt, cwd, run = {}, config = [], servers = acpSer
       if (!sessionId || !turning) return null
       steers.push(text)
       return rpc({ method: 'session/cancel', params: { sessionId } })
-    }
+    },
+    connect: send => terminal.connect(send),
+    close: () => terminal.close()
   }
 }
 

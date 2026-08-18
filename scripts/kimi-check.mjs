@@ -234,7 +234,7 @@ try {
 
   await ask('initialize', {
     protocolVersion: 1,
-    clientCapabilities: { fs: { readTextFile: false, writeTextFile: false }, terminal: false }
+    clientCapabilities: { fs: { readTextFile: false, writeTextFile: false }, terminal: true }
   })
   console.log(`${at()} ready`)
 

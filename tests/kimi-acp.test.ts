@@ -85,7 +85,7 @@ describe('the kimi handshake', () => {
     expect(sent.every(m => m.jsonrpc === '2.0')).toBe(true)
     expect(sent[0].params).toEqual({
       protocolVersion: 1,
-      clientCapabilities: { fs: { readTextFile: false, writeTextFile: false }, terminal: false }
+      clientCapabilities: { fs: { readTextFile: false, writeTextFile: false }, terminal: true }
     })
     expect(sent[1].params).toEqual({ cwd: '/repo', mcpServers: [] })
     expect(sent[2].params).toEqual({ sessionId: 'session_abc', configId: 'mode', value: 'yolo' })
