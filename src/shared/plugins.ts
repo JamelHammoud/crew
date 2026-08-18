@@ -333,12 +333,17 @@ export const PLUGIN_OFFERS: readonly PluginOffer[] = [
 export const offerOf = (name: string): PluginOffer | undefined =>
   PLUGIN_OFFERS.find(one => one.name === pluginKey(name))
 
-export const pluginTyped = (value: string, plugins: readonly CrewPlugin[]): CrewPlugin | null => {
-  const match = /^\/(\S+)\s$/.exec(value)
+export const pluginNamed = (value: string, plugins: readonly CrewPlugin[]): CrewPlugin | null => {
+  const match = /^\/(\S+)\s*$/.exec(value)
   if (!match) return null
   const name = pluginKey(match[1])
   return plugins.find(plugin => pluginKey(plugin.name) === name && Boolean(plugin.appUrl)) ?? null
 }
+
+export const pluginTyped = (value: string, plugins: readonly CrewPlugin[]): CrewPlugin | null =>
+  /\s$/.test(value) ? pluginNamed(value, plugins) : null
+
+export const pluginMenuInput = (value: string): boolean => /^\/plugin(?:\s.*)?$/i.test(value)
 
 export const offerForAppUrl = (raw: string): PluginOffer | undefined => {
   let url: URL

@@ -30,7 +30,7 @@ import { CHAT_KEY, pendingCount, useCrew, type ThreadMeta } from '../state/store
 import { useVoice } from '../state/voice'
 import { cleanCommands, commandsIn, commandTyped, type CommandName } from '../../../shared/commands'
 import { aimOf } from '../../../shared/llm'
-import { pluginTyped } from '../../../shared/plugins'
+import { pluginMenuInput, pluginNamed, pluginTyped } from '../../../shared/plugins'
 import { useBrowser } from '../state/browser'
 
 export default function Chat() {
@@ -148,6 +148,14 @@ export default function Chat() {
   )
 
   const send = () => {
+    const plugin = pluginNamed(text, plugins)
+    if (plugin) {
+      useBrowser.getState().openPlugin(plugin)
+      setChatDraft('')
+      slash.close()
+      return
+    }
+    if (pluginMenuInput(text)) return
     if (!text.trim() && pendingCount(CHAT_KEY) === 0) return
     sendChat(text, undefined, undefined, replyTo?.reactionTargetId, aimOf(text, agents, aimed), commands)
     setReplyTo(null)
