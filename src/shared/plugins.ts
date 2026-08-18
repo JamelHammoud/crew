@@ -20,9 +20,9 @@ export interface CrewPlugin {
   id: string
   catalogId?: string
   name: string
-  label: string
-  blurb: string
-  transport: PluginTransport
+  label?: string
+  blurb?: string
+  transport?: PluginTransport
   url?: string
   appUrl?: string
   command?: string
@@ -33,7 +33,19 @@ export interface CrewPlugin {
   ts: number
 }
 
-export type PluginOffer = Omit<CrewPlugin, 'id' | 'by' | 'byAgentId' | 'ts'> & { group: string }
+export interface PluginOffer {
+  catalogId: string
+  group: string
+  name: string
+  label: string
+  blurb: string
+  transport: PluginTransport
+  url?: string
+  appUrl?: string
+  command?: string
+  args?: string[]
+  keys?: PluginKey[]
+}
 
 export type PluginReference = Pick<CrewPlugin, 'name'> &
   Partial<
@@ -229,8 +241,7 @@ export function cleanPlugin(raw: unknown): Omit<CrewPlugin, 'id' | 'by' | 'ts'> 
   if (!name) return null
   const catalog = catalogPlugin(said.catalogId ?? name)
   if (catalog) {
-    const { group: _group, ...plugin } = offerFromCatalog(catalog)
-    return plugin
+    return { catalogId: catalog.id, name: catalog.name }
   }
   const label = line(said.label, PLUGIN_NAME_LIMIT) || name
   const blurb = line(said.blurb, PLUGIN_BLURB_LIMIT)
