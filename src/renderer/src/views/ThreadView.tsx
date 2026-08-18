@@ -142,7 +142,10 @@ export default function ThreadView({
     setThreadDraft(threadId, '')
   }
 
-  const pluginSlashes = useMemo(() => ['plugin', ...plugins.map(plugin => plugin.name)], [plugins])
+  const pluginSlashes = useMemo(
+    () => ['plugin', ...plugins.filter(plugin => plugin.appUrl).map(plugin => plugin.name)],
+    [plugins]
+  )
   const mention = useMentionAutocomplete(text, write, inputRef, { commands: offered, slashes: pluginSlashes })
   const slash = useSlashCommands(text, write, takeCommand, inputRef, offered, plugins, plugin =>
     useBrowser.getState().openPlugin(plugin)
