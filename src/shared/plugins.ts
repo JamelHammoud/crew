@@ -1,3 +1,14 @@
+import {
+  catalogPlugin,
+  catalogPluginForUrl,
+  PLUGIN_CATALOG,
+  PLUGIN_GROUPS,
+  type PluginAuthentication,
+  type PluginCatalogEntry,
+  type PluginCatalogTransport,
+  type PluginLaunch
+} from './pluginCatalog'
+
 export type PluginTransport = 'stdio' | 'http'
 
 export interface PluginKey {
@@ -7,6 +18,7 @@ export interface PluginKey {
 
 export interface CrewPlugin {
   id: string
+  catalogId?: string
   name: string
   label: string
   blurb: string
@@ -22,6 +34,23 @@ export interface CrewPlugin {
 }
 
 export type PluginOffer = Omit<CrewPlugin, 'id' | 'by' | 'byAgentId' | 'ts'> & { group: string }
+
+export type PluginReference = Pick<CrewPlugin, 'name'> &
+  Partial<Pick<CrewPlugin, 'catalogId' | 'label' | 'blurb' | 'transport' | 'url' | 'appUrl' | 'command' | 'args' | 'keys'>>
+
+export type ResolvedPlugin<T extends PluginReference = CrewPlugin> = T & {
+  catalogId?: string
+  label: string
+  blurb: string
+  transport: PluginTransport
+  trusted: boolean
+  authentication: PluginAuthentication
+  allowedOrigins: readonly string[]
+  documentationUrl?: string
+  catalogTransport: PluginCatalogTransport | null
+  launch: PluginLaunch
+  packageId?: string
+}
 
 export type McpServer =
   | { type: 'http'; url: string; headers?: Record<string, string> }

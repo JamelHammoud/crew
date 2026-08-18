@@ -1,4 +1,4 @@
-export type PluginAuthentication = 'none' | 'oauth'
+export type PluginAuthentication = 'keys' | 'none' | 'oauth'
 
 export type PluginCatalogTransport =
   | { kind: 'http'; protocol: 'streamable-http'; url: string }
