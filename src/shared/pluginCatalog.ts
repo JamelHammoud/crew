@@ -329,9 +329,10 @@ export const catalogPluginForUrl = (raw: string): PluginCatalogEntry | undefined
   }
   return PLUGIN_CATALOG.find(plugin => {
     if (plugin.launch.kind !== 'browser') return false
-    return plugin.launch.routes.some(route =>
-      url.origin === route.origin &&
-      route.paths.some(path => (path.endsWith('/') ? url.pathname.startsWith(path) : url.pathname === path))
+    return plugin.launch.routes.some(
+      route =>
+        url.origin === route.origin &&
+        route.paths.some(path => (path.endsWith('/') ? url.pathname.startsWith(path) : url.pathname === path))
     )
   })
 }

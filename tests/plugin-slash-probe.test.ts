@@ -31,13 +31,7 @@ const figma: CrewPlugin = {
   ts: 1
 }
 
-function Harness({
-  plugins,
-  open = () => {}
-}: {
-  plugins: CrewPlugin[]
-  open?: (plugin: CrewPlugin) => void
-}) {
+function Harness({ plugins, open = () => {} }: { plugins: CrewPlugin[]; open?: (plugin: CrewPlugin) => void }) {
   const [value, setValue] = useState('')
   const ref = useRef<HTMLTextAreaElement>(null)
   const write = (next: string) => {

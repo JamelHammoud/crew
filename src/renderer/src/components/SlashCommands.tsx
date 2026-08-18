@@ -185,9 +185,7 @@ export function SlashMenu({
           >
             <PluginMark seed={plugin.name} box={16} />
             <span className="shrink-0">{launchable ? `/${plugin.name}` : plugin.label}</span>
-            <span className="text-xs text-fg-muted truncate">
-              {launchable ? plugin.label : 'Available to agents'}
-            </span>
+            <span className="text-xs text-fg-muted truncate">{launchable ? plugin.label : 'Available to agents'}</span>
           </button>
         )
       })}

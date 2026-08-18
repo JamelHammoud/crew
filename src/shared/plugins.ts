@@ -36,7 +36,9 @@ export interface CrewPlugin {
 export type PluginOffer = Omit<CrewPlugin, 'id' | 'by' | 'byAgentId' | 'ts'> & { group: string }
 
 export type PluginReference = Pick<CrewPlugin, 'name'> &
-  Partial<Pick<CrewPlugin, 'catalogId' | 'label' | 'blurb' | 'transport' | 'url' | 'appUrl' | 'command' | 'args' | 'keys'>>
+  Partial<
+    Pick<CrewPlugin, 'catalogId' | 'label' | 'blurb' | 'transport' | 'url' | 'appUrl' | 'command' | 'args' | 'keys'>
+  >
 
 export type ResolvedPlugin<T extends PluginReference = CrewPlugin> = T & {
   catalogId?: string
@@ -192,8 +194,10 @@ export const pluginOwnsUrl = (plugin: PluginReference, raw: string): boolean => 
   } catch {
     return false
   }
-  return launch.routes.some(route =>
-    route.origin === url.origin && route.paths.some(path => (path.endsWith('/') ? url.pathname.startsWith(path) : url.pathname === path))
+  return launch.routes.some(
+    route =>
+      route.origin === url.origin &&
+      route.paths.some(path => (path.endsWith('/') ? url.pathname.startsWith(path) : url.pathname === path))
   )
 }
 
