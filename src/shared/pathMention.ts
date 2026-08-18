@@ -24,8 +24,18 @@ const LEADING_SLASH = /^\/+/
 
 // A path is what has a slash in it. A bare word is a word, and a menu that
 // opened on one would open on every word anybody types.
-export function pathQuery(value: string, caret: number, offered: readonly SlashCommand[] = []): string | null {
+export function pathQuery(
+  value: string,
+  caret: number,
+  offered: readonly SlashCommand[] = [],
+  reserved: readonly string[] = []
+): string | null {
   if (slashCandidates(value, offered).length > 0) return null
+  const slash = /^\/(\S*)$/.exec(value)
+  if (slash) {
+    const query = slash[1].toLowerCase()
+    if (reserved.some(name => name.toLowerCase().startsWith(query))) return null
+  }
   const run = RUN.exec(value.slice(0, caret))?.[1] ?? ''
   if (!run.includes('/') || run.includes('//')) return null
   if (run.startsWith('#') || run.includes('@')) return null

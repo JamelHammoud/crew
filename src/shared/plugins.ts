@@ -12,6 +12,7 @@ export interface CrewPlugin {
   blurb: string
   transport: PluginTransport
   url?: string
+  appUrl?: string
   command?: string
   args?: string[]
   keys?: PluginKey[]
@@ -83,8 +84,17 @@ export function cleanPlugin(raw: unknown): Omit<CrewPlugin, 'id' | 'by' | 'ts'> 
   const blurb = line(said.blurb, PLUGIN_BLURB_LIMIT)
   const held = keys(said.keys)
   const url = address(said.url)
+  const appUrl = address(said.appUrl)
   if (url) {
-    return { name, label, blurb, transport: 'http', url, ...(held.length ? { keys: held } : {}) }
+    return {
+      name,
+      label,
+      blurb,
+      transport: 'http',
+      url,
+      ...(appUrl ? { appUrl } : {}),
+      ...(held.length ? { keys: held } : {})
+    }
   }
   const command = line(said.command, 200)
   if (!command) return null
@@ -96,6 +106,7 @@ export function cleanPlugin(raw: unknown): Omit<CrewPlugin, 'id' | 'by' | 'ts'> 
     transport: 'stdio',
     command,
     ...(rest.length ? { args: rest } : {}),
+    ...(appUrl ? { appUrl } : {}),
     ...(held.length ? { keys: held } : {})
   }
 }
@@ -138,6 +149,15 @@ export function mcpServersOf(
 }
 
 export const PLUGIN_OFFERS: readonly PluginOffer[] = [
+  {
+    group: 'Video',
+    name: 'raylight',
+    label: 'Raylight',
+    blurb: 'Make and edit product videos',
+    transport: 'http',
+    url: 'https://api.raylight.app/mcp',
+    appUrl: 'https://www.raylight.app/projects'
+  },
   {
     group: 'Design',
     name: 'figma',
@@ -312,5 +332,26 @@ export const PLUGIN_OFFERS: readonly PluginOffer[] = [
 
 export const offerOf = (name: string): PluginOffer | undefined =>
   PLUGIN_OFFERS.find(one => one.name === pluginKey(name))
+
+export const pluginTyped = (value: string, plugins: readonly CrewPlugin[]): CrewPlugin | null => {
+  const match = /^\/(\S+)\s$/.exec(value)
+  if (!match) return null
+  const name = pluginKey(match[1])
+  return plugins.find(plugin => pluginKey(plugin.name) === name && Boolean(plugin.appUrl)) ?? null
+}
+
+export const offerForAppUrl = (raw: string): PluginOffer | undefined => {
+  let url: URL
+  try {
+    url = new URL(raw)
+  } catch {
+    return undefined
+  }
+  return PLUGIN_OFFERS.find(offer => {
+    if (!offer.appUrl) return false
+    const app = new URL(offer.appUrl)
+    return url.protocol === app.protocol && url.hostname === app.hostname
+  })
+}
 
 export const PLUGIN_GROUPS: readonly string[] = [...new Set(PLUGIN_OFFERS.map(one => one.group))]

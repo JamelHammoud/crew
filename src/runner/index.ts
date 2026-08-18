@@ -6,6 +6,7 @@ import { pagePreamble } from '../shared/showPage'
 import { subagentPreamble } from '../shared/subagents'
 import { memoryPreamble, type CrewMemory } from '../shared/memory'
 import type { CrewPlugin } from '../shared/plugins'
+import { pluginPreamble } from '../shared/pluginPreamble'
 import { ticketPreamble } from '../shared/tickets'
 import { MAX_FRAME_BYTES } from '../shared/protocol'
 import type { ClientMessage, RegisteredLlm, ServerMessage } from '../shared/protocol'
@@ -421,6 +422,7 @@ export class Runner {
       boardsPreamble(this.httpBase, forAgentId, designBoard, designBoards),
       subagentPreamble(this.httpBase, promptId, spawnRoom, spawnProviders),
       pagePreamble(this.httpBase, promptId),
+      pluginPreamble(this.httpBase, promptId, plugins ?? [], Boolean(agent.provider.mcp)),
       tickets ? ticketPreamble(this.httpBase, promptId) : ''
     ].filter(Boolean)
     const body = [text, ...preambles].join('\n\n')

@@ -43,7 +43,11 @@ export function useMentionAutocomplete(
   value: string,
   setValue: (text: string) => void,
   inputRef: RefObject<HTMLTextAreaElement>,
-  { members: includeMembers = true, commands }: { members?: boolean; commands?: readonly SlashCommand[] } = {}
+  {
+    members: includeMembers = true,
+    commands,
+    slashes = []
+  }: { members?: boolean; commands?: readonly SlashCommand[]; slashes?: readonly string[] } = {}
 ) {
   const agents = useCrew(s => s.agents)
   const members = useCrew(s => s.members)
@@ -120,7 +124,7 @@ export function useMentionAutocomplete(
     setValue(next)
     const mention = MENTION_QUERY.exec(head)
     const emoji = EMOJI_QUERY.exec(head)
-    const path = pathQuery(next, caret, commands)
+    const path = pathQuery(next, caret, commands, slashes)
     if (mention) setQuery({ trigger: mention[1] as Query['trigger'], text: mention[2] })
     else if (emoji) setQuery({ trigger: ':', text: emoji[1] })
     else setQuery(path === null ? null : { trigger: '/', text: path })
