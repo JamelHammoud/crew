@@ -30,6 +30,8 @@ import { CHAT_KEY, pendingCount, useCrew, type ThreadMeta } from '../state/store
 import { useVoice } from '../state/voice'
 import { cleanCommands, commandsIn, commandTyped, type CommandName } from '../../../shared/commands'
 import { aimOf } from '../../../shared/llm'
+import { pluginTyped } from '../../../shared/plugins'
+import { useBrowser } from '../state/browser'
 
 export default function Chat() {
   const events = useCrew(s => s.events)
@@ -44,6 +46,7 @@ export default function Chat() {
   const text = useCrew(s => s.chatDraft)
   const setChatDraft = useCrew(s => s.setChatDraft)
   const commands = useCrew(s => s.chatCommands)
+  const plugins = useCrew(s => s.plugins)
   const setChatCommands = useCrew(s => s.setChatCommands)
   const agents = useCrew(s => s.agents)
   const connection = useCrew(s => s.connection)
@@ -62,6 +65,12 @@ export default function Chat() {
   // A command typed out and one picked from the menu land on the same chip,
   // because both paths into the draft come through here.
   const write = (value: string) => {
+    const plugin = pluginTyped(value, plugins)
+    if (plugin) {
+      useBrowser.getState().openPlugin(plugin)
+      setChatDraft('')
+      return
+    }
     const typed = commandTyped(value, offered)
     if (!typed) {
       setChatDraft(value)
@@ -73,8 +82,11 @@ export default function Chat() {
 
   const ghost = commands.includes('ghost')
   const inputRef = useAutoResize(text, COMPOSER_MAX)
-  const mention = useMentionAutocomplete(text, write, inputRef, { commands: offered })
-  const slash = useSlashCommands(text, write, takeCommand, inputRef, offered)
+  const pluginSlashes = useMemo(() => ['plugin', ...plugins.map(plugin => plugin.name)], [plugins])
+  const mention = useMentionAutocomplete(text, write, inputRef, { commands: offered, slashes: pluginSlashes })
+  const slash = useSlashCommands(text, write, takeCommand, inputRef, offered, plugins, plugin =>
+    useBrowser.getState().openPlugin(plugin)
+  )
   const scrollRef = useRef<HTMLDivElement>(null)
   const place = useCrew(s => s.place)
   const aimed = useDefaultAgent(s => s.agentId)
@@ -259,6 +271,7 @@ export default function Chat() {
                 activeIndex={slash.activeIndex}
                 onPick={slash.pick}
                 onHover={slash.setActive}
+                empty={slash.empty}
               />
             </Composer>
             <TypingLine />
