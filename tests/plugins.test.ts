@@ -6,13 +6,18 @@ import {
   cleanPluginName,
   mcpServersOf,
   offerForAppUrl,
+  pluginApprovalFingerprint,
+  pluginApprovalTarget,
+  pluginCanLaunch,
   PLUGIN_BLURB_LIMIT,
+  PLUGIN_CATALOG,
   PLUGIN_FULL,
   PLUGIN_LIMIT,
   PLUGIN_OFFERS,
   pluginMenuInput,
   pluginNamed,
   pluginTyped,
+  resolvePlugin,
   type CrewPlugin
 } from '../src/shared/plugins'
 import type { RegisteredLlm, ServerMessage } from '../src/shared/protocol'
@@ -36,7 +41,7 @@ const LINEAR = {
   label: 'Linear',
   blurb: 'The issues and what is on them',
   transport: 'http',
-  url: 'https://mcp.example.com/linear'
+  url: 'https://mcp.linear.app/sse'
 }
 
 const add = (plugin: unknown) => ({ type: 'plugin.add' as const, plugin })
@@ -98,7 +103,8 @@ describe('what the crew has plugged in', () => {
       blurb: 'Open a page and click through it',
       transport: 'stdio',
       command: 'npx',
-      args: ['-y', '@playwright/mcp@latest'],
+      args: ['-y', '@playwright/mcp@0.0.79'],
+      catalogId: 'playwright',
       by: 'sam'
     })
     expect(plugin.id).toMatch(/^[0-9a-f]{6}$/)
@@ -108,7 +114,8 @@ describe('what the crew has plugged in', () => {
     expect(pluginsIn(host)[1]).toMatchObject({
       name: 'linear',
       transport: 'http',
-      url: 'https://mcp.example.com/linear',
+      url: 'https://mcp.linear.app/mcp',
+      catalogId: 'linear',
       by: 'pat'
     })
   })
@@ -257,6 +264,48 @@ describe('what the store offers', () => {
       appUrl: 'https://www.raylight.app/projects'
     })
     expect(offerForAppUrl('https://raylight.app/editor/launch-video')?.name).toBe('raylight')
+    expect(offerForAppUrl('https://raylight.app/account')).toBeUndefined()
+    expect(offerForAppUrl('https://not-raylight.app/editor/launch-video')).toBeUndefined()
+  })
+
+  it('refreshes a legacy Raylight installation without reinstalling it', () => {
+    const legacy: CrewPlugin = {
+      id: 'old-raylight',
+      name: 'raylight',
+      label: 'Old Raylight',
+      blurb: 'Old copy',
+      transport: 'http',
+      url: 'https://api.raylight.app/old',
+      by: 'Jamel',
+      ts: 1
+    }
+    const resolved = resolvePlugin(legacy)
+    expect(resolved).toMatchObject({
+      id: legacy.id,
+      catalogId: 'raylight',
+      label: 'Raylight',
+      url: 'https://api.raylight.app/mcp',
+      appUrl: 'https://www.raylight.app/projects',
+      trusted: true,
+      authentication: 'oauth'
+    })
+    expect(pluginCanLaunch(legacy)).toBe(true)
+    expect(pluginNamed('/raylight', [legacy])).toBe(legacy)
+  })
+
+  it('refreshes Linear from its retired SSE endpoint', () => {
+    const legacy: CrewPlugin = {
+      id: 'old-linear',
+      name: 'linear',
+      label: 'Linear',
+      blurb: '',
+      transport: 'http',
+      url: 'https://mcp.linear.app/sse',
+      by: 'Jamel',
+      ts: 1
+    }
+    expect(resolvePlugin(legacy).url).toBe('https://mcp.linear.app/mcp')
+    expect(mcpServersOf([legacy])).toEqual({ linear: { type: 'http', url: 'https://mcp.linear.app/mcp' } })
   })
 
   it('opens only an installed plugin with a page of its own', () => {
@@ -284,6 +333,53 @@ describe('what the store offers', () => {
 
   it('offers nothing that wants a key typed in', () => {
     for (const offer of PLUGIN_OFFERS) expect(offer.keys ?? []).toEqual([])
+  })
+
+  it('holds runtime identity and trust policy outside saved installations', () => {
+    const playwright = PLUGIN_CATALOG.find(plugin => plugin.id === 'playwright')!
+    const chrome = PLUGIN_CATALOG.find(plugin => plugin.id === 'chrome-devtools')!
+    expect(playwright.transport).toMatchObject({
+      kind: 'stdio',
+      packageId: 'playwright-mcp',
+      packageName: '@playwright/mcp',
+      version: '0.0.79'
+    })
+    expect(chrome.transport).toMatchObject({
+      kind: 'stdio',
+      packageId: 'chrome-devtools-mcp',
+      version: '1.7.0'
+    })
+    expect(JSON.stringify(PLUGIN_CATALOG)).not.toContain('@latest')
+    for (const plugin of PLUGIN_CATALOG) {
+      expect(plugin.allowedOrigins).toBeInstanceOf(Array)
+      expect(plugin.documentationUrl).toMatch(/^https:\/\//)
+    }
+  })
+
+  it('fingerprints only custom endpoints and commands for approval', async () => {
+    const remote = {
+      name: 'private-service',
+      transport: 'http' as const,
+      url: 'https://mcp.example.com/tools'
+    }
+    const command = {
+      name: 'private-command',
+      transport: 'stdio' as const,
+      command: '/opt/private-mcp',
+      args: ['--safe']
+    }
+    expect(pluginApprovalTarget(remote)).toBe('origin:https://mcp.example.com')
+    expect(await pluginApprovalFingerprint(remote)).toMatch(/^sha256:[0-9a-f]{64}$/)
+    expect(await pluginApprovalFingerprint({ ...remote, url: 'https://mcp.example.com/other' })).toBe(
+      await pluginApprovalFingerprint(remote)
+    )
+    expect(await pluginApprovalFingerprint({ ...remote, url: 'https://other.example.com/tools' })).not.toBe(
+      await pluginApprovalFingerprint(remote)
+    )
+    expect(await pluginApprovalFingerprint(command)).not.toBe(
+      await pluginApprovalFingerprint({ ...command, args: ['--unsafe'] })
+    )
+    expect(pluginApprovalTarget({ name: 'raylight' })).toBeNull()
   })
 
   it('names each one once', () => {

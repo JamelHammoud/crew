@@ -38,7 +38,7 @@ const RAYLIGHT = plugin({
 })
 
 const SLACK = plugin({
-  name: 'slack',
+  name: 'private-slack',
   transport: 'stdio',
   command: 'npx',
   args: ['-y', '@modelcontextprotocol/server-slack'],
@@ -89,8 +89,8 @@ describe('the config the crew plugins become', () => {
   })
 
   it('reads a key named for one plugin ahead of the plain one', () => {
-    const env = { 'slack:SLACK_BOT_TOKEN': 'xoxb-scoped', SLACK_BOT_TOKEN: 'xoxb-plain' }
-    expect(machineKeys([SLACK], env)).toEqual({ 'slack:SLACK_BOT_TOKEN': 'xoxb-scoped' })
+    const env = { 'private-slack:SLACK_BOT_TOKEN': 'xoxb-scoped', SLACK_BOT_TOKEN: 'xoxb-plain' }
+    expect(machineKeys([SLACK], env)).toEqual({ 'private-slack:SLACK_BOT_TOKEN': 'xoxb-scoped' })
   })
 
   it('writes nothing at all when the crew has no plugins', () => {
