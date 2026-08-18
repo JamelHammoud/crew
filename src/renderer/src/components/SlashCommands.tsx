@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import { slashCandidates, type CommandName, type SlashCommand } from '../../../shared/commands'
-import type { CrewPlugin } from '../../../shared/plugins'
+import { pluginCanLaunch, resolvePlugins, type CrewPlugin } from '../../../shared/plugins'
 import { PlugGlyph } from '../icons'
 import { COMMAND_MARKS } from './CommandChip'
 import PluginMark from './plugins/PluginMark'
@@ -19,7 +19,7 @@ const pluginQuery = (value: string): string | null => {
 }
 
 const pluginMatches = (plugins: readonly CrewPlugin[], query: string): CrewPlugin[] =>
-  plugins.filter(plugin =>
+  resolvePlugins(plugins).filter(plugin =>
     [plugin.name, plugin.label, plugin.blurb].some(word => word.toLowerCase().includes(query))
   )
 
@@ -43,8 +43,8 @@ export function useSlashCommands(
     if (direct === null) return found
     if ('plugin'.startsWith(direct)) found.push({ kind: 'plugins' })
     if (direct) {
-      for (const plugin of plugins) {
-        if (plugin.appUrl && plugin.name.startsWith(direct) && plugin.name !== 'plugin') {
+      for (const plugin of resolvePlugins(plugins)) {
+        if (pluginCanLaunch(plugin) && plugin.name.startsWith(direct) && plugin.name !== 'plugin') {
           found.push({ kind: 'plugin', plugin })
         }
       }
@@ -65,7 +65,7 @@ export function useSlashCommands(
       return
     }
     if (match.kind === 'plugin') {
-      if (!match.plugin.appUrl) return
+      if (!pluginCanLaunch(match.plugin)) return
       onPlugin(match.plugin)
     } else {
       onCommand(match.command.name)
@@ -166,7 +166,7 @@ export function SlashMenu({
             </button>
           )
         }
-        const launchable = Boolean(match.plugin.appUrl)
+        const launchable = pluginCanLaunch(match.plugin)
         return (
           <button
             key={`plugin:${match.plugin.id}`}
