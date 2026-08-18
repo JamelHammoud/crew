@@ -38,7 +38,7 @@ export function kimiDialog(prompt: string, cwd: string, get: SettingReader, opti
   const config: Array<[string, string]> = [['mode', get('mode') || MODE]]
   if (model) config.push(['model', model])
   if (thinking === 'on' || thinking === 'off') config.push(['thinking', thinking])
-  return acpDialog({ prompt, cwd, run: options, config, servers: kimiServers })
+  return acpDialog({ prompt, cwd, run: options, config, servers: kimiServers, terminal: true })
 }
 
 const outputText = (update: any): string => {
