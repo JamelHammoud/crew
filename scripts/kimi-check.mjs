@@ -119,6 +119,7 @@ try {
   const kinds = new Map()
   const calls = new Map()
   const updates = []
+  const terminalOutputs = []
   const thoughts = []
   const messages = []
   const waiting = new Map()
@@ -151,6 +152,7 @@ try {
   const finishTerminal = (terminal, exitCode, signal) => {
     if (terminal.exit) return
     terminal.exit = { exitCode, signal }
+    terminalOutputs.push({ output: terminal.output, exit: terminal.exit })
     for (const waiter of terminal.waiters.splice(0)) terminalResult(waiter, terminal.exit)
   }
 
@@ -381,6 +383,7 @@ try {
   const editArgs = withArgs.filter(u => editIds.has(u.toolCallId)).map(u => u.rawInput)
   const bashArgs = withArgs.filter(u => bashIds.has(u.toolCallId)).map(u => u.rawInput)
   const bashOut = updates.filter(u => bashIds.has(u.toolCallId) && u.rawOutput !== undefined && u.rawOutput !== null)
+  const commandOut = [...bashOut.map(one => String(one.rawOutput)), ...terminalOutputs.map(one => one.output)]
   const goodEdit = editArgs.find(
     a => a.old_string !== undefined && a.new_string !== undefined && (a.path ?? a.file_path) !== undefined
   )
@@ -428,14 +431,14 @@ try {
       name: 'the shell command was named and its output came back',
       ok:
         bashArgs.some(a => typeof a.command === 'string' && a.command) &&
-        bashOut.some(one => /\bdone\b/.test(String(one.rawOutput))) &&
-        bashOut.every(one => !String(one.rawOutput).includes('terminal capability is unavailable')),
+        commandOut.some(output => /\bdone\b/.test(output)) &&
+        commandOut.every(output => !output.includes('terminal capability is unavailable')),
       note: `${
         bashArgs
           .map(a => a.command)
           .filter(Boolean)
           .join(', ') || 'no command'
-      } , output ${bashOut.length ? flat(JSON.stringify(bashOut[bashOut.length - 1].rawOutput)).slice(0, 120) : 'never came back'}`
+      } , output ${commandOut.length ? flat(JSON.stringify(commandOut[commandOut.length - 1])).slice(0, 120) : 'never came back'}`
     },
     {
       name: 'the turn ended properly',
