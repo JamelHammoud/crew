@@ -618,7 +618,11 @@ describe('real CLI smoke (CREW_REAL_CLI=1)', () => {
       const { text } = await run.done
       expect(text).toContain('tool-ok')
       expect(steps).toContainEqual({ name: 'run_terminal_command', status: 'running', output: undefined })
-      expect(steps).toContainEqual({ name: 'run_terminal_command', status: 'done', output: `exit: 0\n${cwd}` })
+      expect(steps).toContainEqual({
+        name: 'run_terminal_command',
+        status: 'done',
+        output: `exit: 0\n${fs.realpathSync(cwd)}`
+      })
     },
     90000
   )
