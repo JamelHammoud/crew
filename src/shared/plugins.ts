@@ -141,12 +141,13 @@ const originsOf = (plugin: PluginReference): string[] => {
 export function resolvePlugin<T extends PluginReference>(plugin: T): ResolvedPlugin<T> {
   const catalog = catalogPlugin(plugin.catalogId ?? plugin.name)
   if (!catalog) {
-    const launch: PluginLaunch = plugin.appUrl
+    const appUrl = address(plugin.appUrl)
+    const launch: PluginLaunch = appUrl
       ? {
           kind: 'browser',
-          url: plugin.appUrl,
+          url: appUrl,
           reuse: 'plugin',
-          routes: [{ origin: new URL(plugin.appUrl).origin, paths: ['/'] }]
+          routes: [{ origin: new URL(appUrl).origin, paths: ['/'] }]
         }
       : { kind: 'none' }
     return {
@@ -199,7 +200,13 @@ export const pluginOwnsUrl = (plugin: PluginReference, raw: string): boolean => 
 export const pluginApprovalTarget = (plugin: PluginReference): string | null => {
   const resolved = resolvePlugin(plugin)
   if (resolved.trusted) return null
-  if (resolved.transport === 'http' && resolved.url) return `origin:${new URL(resolved.url).origin}`
+  if (resolved.transport === 'http' && resolved.url) {
+    try {
+      return `origin:${new URL(resolved.url).origin}`
+    } catch {
+      return null
+    }
+  }
   if (resolved.command) return `command:${JSON.stringify([resolved.command, ...(resolved.args ?? [])])}`
   return null
 }
