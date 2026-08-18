@@ -55,7 +55,8 @@ export default function BrowserTabView({ tab, active }: { tab: BrowserTab; activ
 
   useEffect(() => {
     const view = ref.current
-    if (!view || !tab.initialUrl || view.getURL() === tab.initialUrl) return
+    if (!view || typeof view.getURL !== 'function' || typeof view.loadURL !== 'function' || !tab.initialUrl) return
+    if (view.getURL() === tab.initialUrl) return
     void view.loadURL(tab.initialUrl).catch(() => undefined)
   }, [tab.initialUrl])
 
