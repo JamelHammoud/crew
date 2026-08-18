@@ -1,7 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process'
 import { StringDecoder } from 'node:string_decoder'
-import { rpc, str } from './acp'
 import { commandInvocation, detachCliProcess } from './cli'
 
 interface ExitStatus {
@@ -24,6 +23,10 @@ interface Terminal {
 type Send = (body: string) => void
 
 const DEFAULT_OUTPUT_LIMIT = 4 * 1024 * 1024
+
+const str = (value: unknown): string => (typeof value === 'string' ? value : '')
+
+const rpc = (body: Record<string, unknown>): string => JSON.stringify({ jsonrpc: '2.0', ...body })
 
 const pairs = (raw: unknown): Record<string, string> => {
   const out: Record<string, string> = {}

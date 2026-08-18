@@ -207,6 +207,60 @@ describe('what kimi asks the client', () => {
     expect(dialog.answer(chunk('agent_message_chunk', 'I will read it'))).toEqual([])
     expect(dialog.answer(JSON.stringify({ jsonrpc: '2.0', method: 'session/update', params: {} }))).toEqual([])
   })
+
+  it('runs a terminal command, keeps valid bounded output, waits, and releases it', async () => {
+    const dialog = kimiDialog('go', tmpDir('kimi-terminal'), reader())
+    const sent: string[] = []
+    dialog.connect?.(line => sent.push(line))
+    const opened = dialog.answer(
+      request(20, 'terminal/create', {
+        command: process.execPath,
+        args: ['-e', 'process.stdout.write("zero🙂last")'],
+        env: [{ name: 'CREW_TERMINAL_TEST', value: 'yes' }],
+        outputByteLimit: 8
+      })
+    )
+    expect(opened).toHaveLength(1)
+    const terminalId = JSON.parse(opened[0]).result.terminalId
+
+    expect(dialog.answer(request(21, 'terminal/wait_for_exit', { terminalId }))).toEqual([])
+    while (!sent.length) await new Promise(resolve => setTimeout(resolve, 10))
+    expect(JSON.parse(sent[0])).toEqual({
+      jsonrpc: '2.0',
+      id: 21,
+      result: { exitCode: 0, signal: null }
+    })
+
+    const output = JSON.parse(dialog.answer(request(22, 'terminal/output', { terminalId }))[0])
+    expect(output.result).toEqual({
+      output: '🙂last',
+      truncated: true,
+      exitStatus: { exitCode: 0, signal: null }
+    })
+    expect(JSON.parse(dialog.answer(request(23, 'terminal/release', { terminalId }))[0]).result).toEqual({})
+    expect(JSON.parse(dialog.answer(request(24, 'terminal/output', { terminalId }))[0]).error.code).toBe(-32602)
+    dialog.close?.()
+  })
+
+  it('kills a terminal command and still reports how it ended', async () => {
+    const dialog = kimiDialog('go', tmpDir('kimi-terminal-kill'), reader())
+    const sent: string[] = []
+    dialog.connect?.(line => sent.push(line))
+    const opened = dialog.answer(
+      request(30, 'terminal/create', {
+        command: process.execPath,
+        args: ['-e', 'setInterval(() => {}, 1000)']
+      })
+    )
+    const terminalId = JSON.parse(opened[0]).result.terminalId
+    expect(JSON.parse(dialog.answer(request(31, 'terminal/kill', { terminalId }))[0]).result).toEqual({})
+    expect(dialog.answer(request(32, 'terminal/wait_for_exit', { terminalId }))).toEqual([])
+    while (!sent.length) await new Promise(resolve => setTimeout(resolve, 10))
+    const ended = JSON.parse(sent[0]).result
+    expect(ended.exitCode).toBeNull()
+    expect(ended.signal).toBe('SIGKILL')
+    dialog.close?.()
+  })
 })
 
 describe('what kimi says while it works', () => {
