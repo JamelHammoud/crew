@@ -1,25 +1,75 @@
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import { slashCandidates, type CommandName, type SlashCommand } from '../../../shared/commands'
+import type { CrewPlugin } from '../../../shared/plugins'
+import { PlugGlyph } from '../icons'
 import { COMMAND_MARKS } from './CommandChip'
+import PluginMark from './plugins/PluginMark'
 import { bringInto } from './scrollInto'
+
+export type SlashMatch =
+  | { kind: 'command'; command: SlashCommand }
+  | { kind: 'plugins' }
+  | { kind: 'plugin'; plugin: CrewPlugin }
+
+const directQuery = (value: string): string | null => /^\/(\S*)$/.exec(value)?.[1].toLowerCase() ?? null
+
+const pluginQuery = (value: string): string | null => {
+  const match = /^\/plugin\s(.*)$/i.exec(value)
+  return match ? match[1].trim().toLowerCase() : null
+}
+
+const pluginMatches = (plugins: readonly CrewPlugin[], query: string): CrewPlugin[] =>
+  plugins.filter(plugin =>
+    [plugin.name, plugin.label, plugin.blurb].some(word => word.toLowerCase().includes(query))
+  )
 
 export function useSlashCommands(
   value: string,
   setValue: (text: string) => void,
   onCommand: (name: CommandName) => void,
   inputRef: RefObject<HTMLTextAreaElement>,
-  offered: readonly SlashCommand[]
+  offered: readonly SlashCommand[],
+  plugins: readonly CrewPlugin[],
+  onPlugin: (plugin: CrewPlugin) => void
 ) {
   const [dismissed, setDismissed] = useState<string | null>(null)
   const [active, setActive] = useState(0)
-  const matches = useMemo(
-    () => (value === dismissed ? [] : slashCandidates(value, offered)),
-    [dismissed, offered, value]
-  )
+  const nested = pluginQuery(value)
+  const matches = useMemo<SlashMatch[]>(() => {
+    if (value === dismissed) return []
+    if (nested !== null) return pluginMatches(plugins, nested).map(plugin => ({ kind: 'plugin', plugin }))
+    const found: SlashMatch[] = slashCandidates(value, offered).map(command => ({ kind: 'command', command }))
+    const direct = directQuery(value)
+    if (direct === null) return found
+    if ('plugin'.startsWith(direct)) found.push({ kind: 'plugins' })
+    if (direct) {
+      for (const plugin of plugins) {
+        if (plugin.appUrl && plugin.name.startsWith(direct) && plugin.name !== 'plugin') {
+          found.push({ kind: 'plugin', plugin })
+        }
+      }
+    }
+    return found
+  }, [dismissed, nested, offered, plugins, value])
+  const open = value !== dismissed && (matches.length > 0 || nested !== null)
   const activeIndex = Math.min(active, Math.max(matches.length - 1, 0))
 
-  const pick = (command: SlashCommand) => {
-    onCommand(command.name)
+  useEffect(() => setActive(0), [value])
+
+  const pick = (match: SlashMatch) => {
+    if (match.kind === 'plugins') {
+      setValue('/plugin ')
+      setDismissed(null)
+      setActive(0)
+      inputRef.current?.focus()
+      return
+    }
+    if (match.kind === 'plugin') {
+      if (!match.plugin.appUrl) return
+      onPlugin(match.plugin)
+    } else {
+      onCommand(match.command.name)
+    }
     setValue('')
     setDismissed(null)
     setActive(0)
@@ -29,8 +79,8 @@ export function useSlashCommands(
   const close = () => setDismissed(value)
 
   const onKeyDown = (e: React.KeyboardEvent): boolean => {
-    if (matches.length === 0) return false
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    if (!open) return false
+    if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && matches.length > 0) {
       e.preventDefault()
       const delta = e.key === 'ArrowDown' ? 1 : -1
       setActive((activeIndex + delta + matches.length) % matches.length)
@@ -43,25 +93,29 @@ export function useSlashCommands(
     }
     if ((e.key === 'Enter' && !e.shiftKey) || e.key === 'Tab') {
       e.preventDefault()
-      pick(matches[activeIndex])
+      const match = matches[activeIndex]
+      if (match) pick(match)
       return true
     }
     return false
   }
 
-  return { matches, activeIndex, setActive, pick, close, onKeyDown }
+  const empty = nested === null || matches.length > 0 ? null : nested ? 'No plugins found' : 'No plugins installed'
+  return { matches, activeIndex, setActive, pick, close, onKeyDown, empty }
 }
 
 export function SlashMenu({
   matches,
   activeIndex,
   onPick,
-  onHover
+  onHover,
+  empty
 }: {
-  matches: SlashCommand[]
+  matches: SlashMatch[]
   activeIndex: number
-  onPick: (command: SlashCommand) => void
+  onPick: (match: SlashMatch) => void
   onHover: (index: number) => void
+  empty?: string | null
 }) {
   const listRef = useRef<HTMLDivElement>(null)
 
@@ -70,26 +124,68 @@ export function SlashMenu({
     if (row instanceof HTMLElement) bringInto(row, listRef.current)
   }, [activeIndex])
 
-  if (matches.length === 0) return null
+  if (matches.length === 0 && !empty) return null
   return (
     <div
       ref={listRef}
-      className="glass absolute bottom-full mb-2 left-0 rounded-2xl p-1.5 min-w-64 max-h-56 overflow-y-auto animate-pop z-50"
+      className="glass absolute bottom-full mb-2 left-0 rounded-2xl p-1.5 min-w-64 max-h-56 overflow-y-auto animate-pop z-[70]"
     >
-      {matches.map((command, index) => {
-        const Icon = COMMAND_MARKS[command.name]
+      {empty && <p className="px-3 py-2.5 text-sm text-fg/45">{empty}</p>}
+      {matches.map((match, index) => {
+        const active = index === activeIndex
+        if (match.kind === 'command') {
+          const Icon = COMMAND_MARKS[match.command.name]
+          return (
+            <button
+              key={`command:${match.command.name}`}
+              onClick={() => onPick(match)}
+              onMouseEnter={() => onHover(index)}
+              className={`w-full text-left px-2.5 py-2 rounded-xl text-sm flex items-center gap-2.5 transition-colors ${
+                active ? 'bg-fg/[0.08] text-fg' : 'text-fg-secondary hover:bg-fg/[0.08] hover:text-fg'
+              }`}
+            >
+              <Icon className="w-4 h-4 shrink-0 text-fg-muted" />
+              <span className="shrink-0">/{match.command.name}</span>
+              <span className="text-xs text-fg-muted truncate">{match.command.hint}</span>
+            </button>
+          )
+        }
+        if (match.kind === 'plugins') {
+          return (
+            <button
+              key="plugins"
+              onClick={() => onPick(match)}
+              onMouseEnter={() => onHover(index)}
+              className={`w-full text-left px-2.5 py-2 rounded-xl text-sm flex items-center gap-2.5 transition-colors ${
+                active ? 'bg-fg/[0.08] text-fg' : 'text-fg-secondary hover:bg-fg/[0.08] hover:text-fg'
+              }`}
+            >
+              <PlugGlyph className="w-4 h-4 shrink-0 text-fg-muted" />
+              <span className="shrink-0">/plugin</span>
+              <span className="text-xs text-fg-muted truncate">Open an installed plugin</span>
+            </button>
+          )
+        }
+        const launchable = Boolean(match.plugin.appUrl)
         return (
           <button
-            key={command.name}
-            onClick={() => onPick(command)}
+            key={`plugin:${match.plugin.id}`}
+            onClick={() => onPick(match)}
             onMouseEnter={() => onHover(index)}
+            disabled={!launchable}
             className={`w-full text-left px-2.5 py-2 rounded-xl text-sm flex items-center gap-2.5 transition-colors ${
-              index === activeIndex ? 'bg-fg/[0.08] text-fg' : 'text-fg-secondary hover:bg-fg/[0.08] hover:text-fg'
+              !launchable
+                ? 'text-fg/35'
+                : active
+                  ? 'bg-fg/[0.08] text-fg'
+                  : 'text-fg-secondary hover:bg-fg/[0.08] hover:text-fg'
             }`}
           >
-            <Icon className="w-4 h-4 shrink-0 text-fg-muted" />
-            <span className="shrink-0">/{command.name}</span>
-            <span className="text-xs text-fg-muted truncate">{command.hint}</span>
+            <PluginMark seed={match.plugin.name} box={16} />
+            <span className="shrink-0">{launchable ? `/${match.plugin.name}` : match.plugin.label}</span>
+            <span className="text-xs text-fg-muted truncate">
+              {launchable ? match.plugin.label : 'Available to agents'}
+            </span>
           </button>
         )
       })}
