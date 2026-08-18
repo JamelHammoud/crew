@@ -104,11 +104,109 @@ const address = (raw: unknown): string => {
   }
 }
 
+const offerFromCatalog = (plugin: PluginCatalogEntry): PluginOffer => {
+  const base = {
+    catalogId: plugin.id,
+    group: plugin.group,
+    name: plugin.name,
+    label: plugin.label,
+    blurb: plugin.blurb,
+    ...(plugin.launch.kind === 'browser' ? { appUrl: plugin.launch.url } : {})
+  }
+  if (plugin.transport.kind === 'http') {
+    return { ...base, transport: 'http', url: plugin.transport.url }
+  }
+  return {
+    ...base,
+    transport: 'stdio',
+    command: 'npx',
+    args: ['-y', `${plugin.transport.packageName}@${plugin.transport.version}`]
+  }
+}
+
+export const PLUGIN_OFFERS: readonly PluginOffer[] = PLUGIN_CATALOG.map(offerFromCatalog)
+
+const originsOf = (plugin: PluginReference): string[] => {
+  const values = [plugin.url, plugin.appUrl]
+  const found = new Set<string>()
+  for (const value of values) {
+    if (!value) continue
+    try {
+      found.add(new URL(value).origin)
+    } catch {}
+  }
+  return [...found]
+}
+
+export function resolvePlugin<T extends PluginReference>(plugin: T): ResolvedPlugin<T> {
+  const catalog = catalogPlugin(plugin.catalogId ?? plugin.name)
+  if (!catalog) {
+    const launch: PluginLaunch = plugin.appUrl
+      ? {
+          kind: 'browser',
+          url: plugin.appUrl,
+          reuse: 'plugin',
+          routes: [{ origin: new URL(plugin.appUrl).origin, paths: ['/'] }]
+        }
+      : { kind: 'none' }
+    return {
+      ...plugin,
+      label: plugin.label || plugin.name,
+      blurb: plugin.blurb ?? '',
+      transport: plugin.transport ?? (plugin.url ? 'http' : 'stdio'),
+      trusted: false,
+      authentication: plugin.keys?.length ? 'keys' : 'none',
+      allowedOrigins: originsOf(plugin),
+      catalogTransport: null,
+      launch
+    } as ResolvedPlugin<T>
+  }
+  const offer = offerFromCatalog(catalog)
+  return {
+    ...plugin,
+    ...offer,
+    command: offer.command,
+    args: offer.args,
+    keys: offer.keys,
+    url: offer.url,
+    appUrl: offer.appUrl,
+    trusted: true,
+    authentication: catalog.authentication,
+    allowedOrigins: catalog.allowedOrigins,
+    documentationUrl: catalog.documentationUrl,
+    catalogTransport: catalog.transport,
+    launch: catalog.launch,
+    ...(catalog.transport.kind === 'stdio' ? { packageId: catalog.transport.packageId } : {})
+  } as ResolvedPlugin<T>
+}
+
+export const resolvePlugins = <T extends PluginReference>(plugins: readonly T[]): ResolvedPlugin<T>[] =>
+  plugins.map(resolvePlugin)
+
+export const pluginCanLaunch = (plugin: PluginReference): boolean => resolvePlugin(plugin).launch.kind === 'browser'
+
+export const pluginApprovalTarget = (plugin: PluginReference): string | null => {
+  const resolved = resolvePlugin(plugin)
+  if (resolved.trusted) return null
+  if (resolved.transport === 'http' && resolved.url) return `origin:${new URL(resolved.url).origin}`
+  if (resolved.command) return `command:${JSON.stringify([resolved.command, ...(resolved.args ?? [])])}`
+  return null
+}
+
+export const pluginApprovalFingerprint = async (plugin: PluginReference): Promise<string | null> => {
+  const target = pluginApprovalTarget(plugin)
+  if (!target) return null
+  const digest = await globalThis.crypto.subtle.digest('SHA-256', new TextEncoder().encode(target))
+  return `sha256:${[...new Uint8Array(digest)].map(byte => byte.toString(16).padStart(2, '0')).join('')}`
+}
+
 export function cleanPlugin(raw: unknown): Omit<CrewPlugin, 'id' | 'by' | 'ts'> | null {
   const said = raw as Partial<CrewPlugin> | null
   if (!said) return null
   const name = cleanPluginName(said.name)
   if (!name) return null
+  const catalog = catalogPlugin(said.catalogId ?? name)
+  if (catalog) return offerFromCatalog(catalog)
   const label = line(said.label, PLUGIN_NAME_LIMIT) || name
   const blurb = line(said.blurb, PLUGIN_BLURB_LIMIT)
   const held = keys(said.keys)
