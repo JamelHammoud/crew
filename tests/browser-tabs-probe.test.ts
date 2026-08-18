@@ -483,6 +483,19 @@ describe('a page an agent shows', () => {
         initialUrl: 'https://www.raylight.app/projects'
       })
     ])
+    const { container } = render(createElement(BrowserPanel))
+    expect(container.querySelector('webview')?.getAttribute('partition')).toBe('persist:crew-plugin-raylight')
+  })
+
+  it('shows a useful failure instead of an empty plugin page', () => {
+    useBrowser.getState().openPlugin({ name: 'raylight' })
+    const tab = useBrowser.getState().tabs[0]!
+    useBrowser.getState().updateTab(tab.id, { loading: false, error: 'The network connection was lost' })
+    const { getByText, getByRole } = render(createElement(BrowserPanel))
+    expect(getByText('Raylight could not open')).toBeTruthy()
+    expect(getByText('The network connection was lost')).toBeTruthy()
+    expect(getByRole('button', { name: 'Retry' })).toBeTruthy()
+    expect(getByRole('button', { name: 'Open in browser' })).toBeTruthy()
   })
 
   it('routes only trusted Raylight editor pages into its plugin tab', () => {

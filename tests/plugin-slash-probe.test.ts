@@ -121,9 +121,13 @@ describe('the plugin slash launcher', () => {
     expect(screen.getByText('No plugins installed')).toBeTruthy()
   })
 
-  it('keeps an MCP-only plugin in the list without making it a launcher', () => {
-    render(createElement(Harness, { plugins: [figma] }))
+  it('opens an MCP-only plugin from the list', () => {
+    const open = vi.fn()
+    render(createElement(Harness, { plugins: [figma], open }))
     type('/plugin ')
-    expect(screen.getByRole('button', { name: /Figma/ }).hasAttribute('disabled')).toBe(true)
+    const row = screen.getByRole('button', { name: /Figma/ })
+    expect(row.hasAttribute('disabled')).toBe(false)
+    fireEvent.click(row)
+    expect(open).toHaveBeenCalledWith(figma)
   })
 })

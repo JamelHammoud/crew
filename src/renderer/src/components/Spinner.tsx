@@ -7,7 +7,7 @@ export default function Spinner({ size = 18, className = '' }: { size?: number; 
     // CSS animations start at mount, so spinners drift out of phase with each
     // other. Pinning startTime to 0 on the shared document timeline keeps
     // every instance rotating in lockstep.
-    for (const anim of ref.current?.getAnimations() ?? []) anim.startTime = 0
+    for (const anim of ref.current?.getAnimations?.() ?? []) anim.startTime = 0
   }, [])
 
   return (

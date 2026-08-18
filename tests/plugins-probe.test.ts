@@ -116,6 +116,15 @@ describe('the plugins store', () => {
     expect(screen.getByText('Make and edit product videos')).toBeTruthy()
   })
 
+  it('opens the trusted page for an installed service plugin', () => {
+    useCrew.setState({ plugins: [held('figma')] })
+    plugins()
+    fireEvent.click(screen.getByRole('button', { name: 'Open Figma' }))
+    expect(useBrowser.getState().tabs).toEqual([
+      expect.objectContaining({ initialUrl: 'https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Dev-Mode-MCP-Server' })
+    ])
+  })
+
   it('searches what is installed and what is offered together', () => {
     useCrew.setState({ plugins: [held('github')] })
     plugins()
