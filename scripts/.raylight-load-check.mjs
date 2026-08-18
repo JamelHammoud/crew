@@ -2,6 +2,10 @@ import { app, BrowserWindow } from 'electron'
 
 const url = 'https://www.raylight.app/projects'
 
+app.on('web-contents-created', (_event, contents) => {
+  contents.on('console-message', event => console.log(`PAGE ${event.level} ${event.message}`))
+})
+
 app.whenReady().then(async () => {
   const window = new BrowserWindow({
     show: false,
@@ -12,20 +16,23 @@ app.whenReady().then(async () => {
   const view = window.webContents.hostWebContents
   const result = await window.webContents.executeJavaScript(`new Promise(resolve => {
     const view = document.getElementById('view')
+    let settled = false
     const done = async event => {
+      if (settled) return
+      settled = true
       try {
         resolve({
           event,
           url: view.getURL(),
           title: view.getTitle(),
-          body: await view.executeJavaScript('document.body.innerText.slice(0, 1000)'),
-          html: await view.executeJavaScript('document.documentElement.outerHTML.slice(0, 1000)')
+          body: await view.executeJavaScript('document.body.innerText.slice(0, 2000)'),
+          html: await view.executeJavaScript('document.getElementById("root").outerHTML.slice(0, 2000)')
         })
       } catch (error) {
         resolve({ event, url: view.getURL(), error: String(error) })
       }
     }
-    view.addEventListener('did-finish-load', () => done('finish'), { once: true })
+    view.addEventListener('did-finish-load', () => setTimeout(() => done('finish'), 5000), { once: true })
     view.addEventListener('did-fail-load', event => done('fail:' + event.errorCode + ':' + event.errorDescription), { once: true })
     setTimeout(() => done('timeout'), 30000)
   })`)
