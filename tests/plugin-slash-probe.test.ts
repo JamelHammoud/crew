@@ -110,6 +110,17 @@ describe('the plugin slash launcher', () => {
     expect((screen.getByPlaceholderText('Message') as HTMLTextAreaElement).value).toBe('')
   })
 
+  it('opens a legacy Raylight record that has no saved editor address', () => {
+    const { appUrl: _appUrl, ...legacy } = raylight
+    const open = vi.fn()
+    render(createElement(Harness, { plugins: [{ ...legacy, label: 'Old Raylight' }], open }))
+    type('/plugin ray')
+    expect(screen.getByText('/raylight')).toBeTruthy()
+    expect(screen.getByText('Raylight')).toBeTruthy()
+    fireEvent.click(screen.getByText('/raylight'))
+    expect(open).toHaveBeenCalledWith(expect.objectContaining({ id: 'raylight' }))
+  })
+
   it('shows when there are no installed plugins', () => {
     render(createElement(Harness, { plugins: [] }))
     type('/plugin ')

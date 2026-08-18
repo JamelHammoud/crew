@@ -104,14 +104,16 @@ describe('the plugins store', () => {
     expect(gone).toEqual(['id-figma'])
   })
 
-  it('opens an installed plugin that has a page', () => {
-    useCrew.setState({ plugins: [held('raylight')] })
+  it('opens a legacy installed plugin from current catalog data', () => {
+    const { appUrl: _appUrl, ...legacy } = held('raylight')
+    useCrew.setState({ plugins: [{ ...legacy, label: 'Old Raylight', blurb: 'Old copy' }] })
     plugins()
     fireEvent.click(screen.getByRole('button', { name: 'Open Raylight' }))
     expect(useBrowser.getState().tabs).toEqual([
       expect.objectContaining({ plugin: 'raylight', initialUrl: 'https://www.raylight.app/projects' })
     ])
     expect(useBrowser.getState().open).toBe(true)
+    expect(screen.getByText('Make and edit product videos')).toBeTruthy()
   })
 
   it('searches what is installed and what is offered together', () => {

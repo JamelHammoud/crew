@@ -474,6 +474,26 @@ describe('a page an agent shows', () => {
     expect(pillFor(container, tab.id)?.textContent).toContain('Raylight')
   })
 
+  it('opens a legacy Raylight installation from the current catalog', () => {
+    useBrowser.getState().openPlugin({ name: 'raylight', label: 'Old Raylight' })
+    expect(useBrowser.getState().tabs).toEqual([
+      expect.objectContaining({
+        plugin: 'raylight',
+        pluginLabel: 'Raylight',
+        initialUrl: 'https://www.raylight.app/projects'
+      })
+    ])
+  })
+
+  it('routes only trusted Raylight editor pages into its plugin tab', () => {
+    useBrowser.getState().showPage('https://raylight.app/account')
+    expect(useBrowser.getState().tabs[0]).toMatchObject({ plugin: null })
+
+    useBrowser.getState().showPage('https://raylight.app/editor/video-one')
+    expect(useBrowser.getState().tabs).toHaveLength(2)
+    expect(useBrowser.getState().tabs[1]).toMatchObject({ plugin: 'raylight', pluginLabel: 'Raylight' })
+  })
+
   it('returns to the live Raylight editor instead of its project list', () => {
     const raylight = {
       name: 'raylight',
