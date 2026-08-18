@@ -48,6 +48,7 @@ window.matchMedia = ((query: string) => ({
 const { PLUGIN_GROUPS, PLUGIN_OFFERS, offerOf } = await import('../src/shared/plugins')
 const { PLUGIN_ART } = await import('../src/renderer/src/components/plugins/pluginArt')
 const { useCrew } = await import('../src/renderer/src/state/store')
+const { useBrowser } = await import('../src/renderer/src/state/browser')
 const PluginsView = (await import('../src/renderer/src/views/Plugins')).default
 
 const held = (name: string): CrewPlugin => {
@@ -62,6 +63,7 @@ const plugins = () => render(createElement(PluginsView))
 describe('the plugins store', () => {
   beforeEach(() => {
     useCrew.setState({ plugins: [], addPlugin: () => null, removePlugin: () => {} })
+    useBrowser.setState({ tabs: [], activeTabId: null, open: false, width: 480 })
   })
 
   afterEach(cleanup)
@@ -100,6 +102,16 @@ describe('the plugins store', () => {
     plugins()
     fireEvent.click(screen.getByRole('button', { name: 'Take Figma out' }))
     expect(gone).toEqual(['id-figma'])
+  })
+
+  it('opens an installed plugin that has a page', () => {
+    useCrew.setState({ plugins: [held('raylight')] })
+    plugins()
+    fireEvent.click(screen.getByRole('button', { name: 'Open Raylight' }))
+    expect(useBrowser.getState().tabs).toEqual([
+      expect.objectContaining({ plugin: 'raylight', initialUrl: 'https://www.raylight.app/projects' })
+    ])
+    expect(useBrowser.getState().open).toBe(true)
   })
 
   it('searches what is installed and what is offered together', () => {

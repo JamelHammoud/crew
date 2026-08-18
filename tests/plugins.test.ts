@@ -5,10 +5,12 @@ import {
   cleanPlugin,
   cleanPluginName,
   mcpServersOf,
+  offerForAppUrl,
   PLUGIN_BLURB_LIMIT,
   PLUGIN_FULL,
   PLUGIN_LIMIT,
   PLUGIN_OFFERS,
+  pluginTyped,
   type CrewPlugin
 } from '../src/shared/plugins'
 import type { RegisteredLlm, ServerMessage } from '../src/shared/protocol'
@@ -242,6 +244,40 @@ describe('what the crew has plugged in', () => {
 })
 
 describe('what the store offers', () => {
+  it('keeps Raylight editing separate from the MCP it gives agents', () => {
+    const raylight = PLUGIN_OFFERS.find(offer => offer.name === 'raylight')!
+    expect(raylight).toMatchObject({
+      url: 'https://api.raylight.app/mcp',
+      appUrl: 'https://www.raylight.app/projects'
+    })
+    expect(cleanPlugin(raylight)).toMatchObject({
+      url: 'https://api.raylight.app/mcp',
+      appUrl: 'https://www.raylight.app/projects'
+    })
+    expect(offerForAppUrl('https://raylight.app/editor/launch-video')?.name).toBe('raylight')
+  })
+
+  it('opens only an installed plugin with a page of its own', () => {
+    const raylight = { ...PLUGIN_OFFERS.find(offer => offer.name === 'raylight')!, id: 'r', by: 'Jamel', ts: 1 }
+    const figma = { ...PLUGIN_OFFERS.find(offer => offer.name === 'figma')!, id: 'f', by: 'Jamel', ts: 1 }
+    expect(pluginTyped('/raylight ', [raylight, figma])).toBe(raylight)
+    expect(pluginTyped('/figma ', [raylight, figma])).toBeNull()
+    expect(pluginTyped('/raylight', [raylight])).toBeNull()
+  })
+
+  it('drops an unsafe editing address without dropping the MCP', () => {
+    const clean = cleanPlugin({
+      name: 'unsafe-app',
+      label: 'Unsafe app',
+      blurb: '',
+      transport: 'http',
+      url: 'https://mcp.example.com',
+      appUrl: 'javascript:alert(1)'
+    })
+    expect(clean).toMatchObject({ url: 'https://mcp.example.com/' })
+    expect(clean).not.toHaveProperty('appUrl')
+  })
+
   it('offers nothing that wants a key typed in', () => {
     for (const offer of PLUGIN_OFFERS) expect(offer.keys ?? []).toEqual([])
   })

@@ -85,6 +85,11 @@ describe('what counts as a path being typed', () => {
     expect(pathQuery('/', 1, chat)).toBeNull()
   })
 
+  it('leaves local plugin launchers out of the path menu', () => {
+    expect(pathQuery('/plug', 5, chat, ['plugin', 'raylight'])).toBeNull()
+    expect(pathQuery('/ray', 4, chat, ['plugin', 'raylight'])).toBeNull()
+  })
+
   it('takes the slash over once no command answers to it', () => {
     expect(pathQuery('/Doc', 4, chat)).toBe('/Doc')
     expect(pathQuery('/src/shared', 11, chat)).toBe('/src/shared')

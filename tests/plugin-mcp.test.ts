@@ -13,6 +13,7 @@ import { localProvider } from '../src/runner/providers/local'
 import { claudeProvider } from '../src/runner/providers/claude'
 import { codexProvider } from '../src/runner/providers/codex'
 import { kimiProvider } from '../src/runner/providers/kimi'
+import { geminiProvider } from '../src/runner/providers/gemini'
 import { makeCliProvider } from '../src/runner/providers/cli'
 import type { McpRun, Provider, RunOptions, RunningPrompt } from '../src/runner/providers/types'
 import type { CrewPlugin } from '../src/shared/plugins'
@@ -29,6 +30,12 @@ const plugin = (one: Partial<CrewPlugin> & { name: string }): CrewPlugin => ({
 })
 
 const FIGMA = plugin({ name: 'figma', transport: 'http', url: 'https://mcp.figma.com/mcp' })
+const RAYLIGHT = plugin({
+  name: 'raylight',
+  transport: 'http',
+  url: 'https://api.raylight.app/mcp',
+  appUrl: 'https://www.raylight.app/projects'
+})
 
 const SLACK = plugin({
   name: 'slack',
@@ -62,6 +69,11 @@ describe('the config the crew plugins become', () => {
     expect(JSON.parse(readFileSync(run.file, 'utf8'))).toEqual({
       mcpServers: { figma: { type: 'http', url: 'https://mcp.figma.com/mcp' } }
     })
+  })
+
+  it('hands Raylight to agents without putting its editor into MCP config', () => {
+    const run = open([RAYLIGHT], 'inline', 'raylight')!
+    expect(run.servers).toEqual({ raylight: { type: 'http', url: 'https://api.raylight.app/mcp' } })
   })
 
   it('leaves out a plugin whose keys this machine does not have', () => {
@@ -194,6 +206,7 @@ describe('what each CLI is really handed', () => {
     expect(claudeProvider.mcp).toBe('file')
     expect(codexProvider.mcp).toBe('inline')
     expect(kimiProvider.mcp).toBe('inline')
+    expect(geminiProvider.mcp).toBe('inline')
     expect(grokProvider.mcp).toBeUndefined()
     expect(localProvider.mcp).toBeUndefined()
   })
