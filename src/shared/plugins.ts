@@ -321,7 +321,7 @@ export const pluginNamed = (value: string, plugins: readonly CrewPlugin[]): Crew
   const match = /^\/(\S+)\s*$/.exec(value)
   if (!match) return null
   const name = pluginKey(match[1])
-  return plugins.find(plugin => pluginKey(plugin.name) === name && pluginCanLaunch(plugin)) ?? null
+  return plugins.find(plugin => pluginKey(plugin.name) === name) ?? null
 }
 
 export const pluginTyped = (value: string, plugins: readonly CrewPlugin[]): CrewPlugin | null =>

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import { slashCandidates, type CommandName, type SlashCommand } from '../../../shared/commands'
-import { pluginCanLaunch, resolvePlugin, type CrewPlugin } from '../../../shared/plugins'
+import { resolvePlugin, type CrewPlugin } from '../../../shared/plugins'
 import { PlugGlyph } from '../icons'
 import { COMMAND_MARKS } from './CommandChip'
 import PluginMark from './plugins/PluginMark'
@@ -45,7 +45,7 @@ export function useSlashCommands(
     if ('plugin'.startsWith(direct)) found.push({ kind: 'plugins' })
     if (direct) {
       for (const plugin of plugins) {
-        if (pluginCanLaunch(plugin) && plugin.name.startsWith(direct) && plugin.name !== 'plugin') {
+        if (plugin.name.startsWith(direct) && plugin.name !== 'plugin') {
           found.push({ kind: 'plugin', plugin })
         }
       }
@@ -66,7 +66,6 @@ export function useSlashCommands(
       return
     }
     if (match.kind === 'plugin') {
-      if (!pluginCanLaunch(match.plugin)) return
       onPlugin(match.plugin)
     } else {
       onCommand(match.command.name)
@@ -168,24 +167,20 @@ export function SlashMenu({
           )
         }
         const plugin = resolvePlugin(match.plugin)
-        const launchable = pluginCanLaunch(plugin)
         return (
           <button
             key={`plugin:${match.plugin.id}`}
             onClick={() => onPick(match)}
             onMouseEnter={() => onHover(index)}
-            disabled={!launchable}
             className={`w-full text-left px-2.5 py-2 rounded-xl text-sm flex items-center gap-2.5 transition-colors ${
-              !launchable
-                ? 'text-fg/35'
-                : active
-                  ? 'bg-fg/[0.08] text-fg'
-                  : 'text-fg-secondary hover:bg-fg/[0.08] hover:text-fg'
+              active
+                ? 'bg-fg/[0.08] text-fg'
+                : 'text-fg-secondary hover:bg-fg/[0.08] hover:text-fg'
             }`}
           >
             <PluginMark seed={plugin.name} box={16} />
-            <span className="shrink-0">{launchable ? `/${plugin.name}` : plugin.label}</span>
-            <span className="text-xs text-fg-muted truncate">{launchable ? plugin.label : 'Available to agents'}</span>
+            <span className="shrink-0">/{plugin.name}</span>
+            <span className="text-xs text-fg-muted truncate">{plugin.label}</span>
           </button>
         )
       })}

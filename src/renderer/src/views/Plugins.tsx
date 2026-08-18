@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import {
   PLUGIN_GROUPS,
   PLUGIN_OFFERS,
-  pluginCanLaunch,
   pluginKey,
   resolvePlugins,
   type PluginOffer
@@ -12,6 +11,7 @@ import PluginRow from '../components/plugins/PluginRow'
 import { SearchGlyph } from '../icons'
 import { useCrew } from '../state/store'
 import { useBrowser } from '../state/browser'
+import { runPluginAction } from '../state/pluginState'
 
 const matches = (find: string, ...words: string[]): boolean =>
   !find || words.some(word => word.toLowerCase().includes(find.toLowerCase().trim()))
@@ -36,7 +36,6 @@ export default function Plugins() {
         <div className="flex items-end justify-between gap-6">
           <div>
             <h1 className="text-2xl font-semibold text-fg">Plugins</h1>
-            <p className="mt-1 text-base text-fg-muted">Every agent in the crew gets these.</p>
           </div>
           <div className="relative shrink-0">
             <SearchGlyph className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-fg-muted pointer-events-none" />
@@ -61,7 +60,7 @@ export default function Plugins() {
                   seed={one.name}
                   label={one.label}
                   blurb={one.blurb}
-                  onOpen={pluginCanLaunch(one) ? () => useBrowser.getState().openPlugin(one) : undefined}
+                  onOpen={() => runPluginAction(one)}
                   onRemove={() => removePlugin(one.id)}
                 />
               ))}

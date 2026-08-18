@@ -31,10 +31,15 @@ export default function BrowserTabView({ tab, active }: { tab: BrowserTab; activ
     const onTitle = (event: Event) => update(tab.id, { title: (event as Event & { title: string }).title })
     const onFavicon = (event: Event) =>
       update(tab.id, { favicon: (event as Event & { favicons: string[] }).favicons[0] ?? null })
-    const onStart = () => update(tab.id, { loading: true })
+    const onStart = () => update(tab.id, { loading: true, error: '' })
     const onStop = () => {
       update(tab.id, { loading: false })
       sync()
+    }
+    const onFail = (event: Event) => {
+      const failed = event as Event & { errorCode: number; errorDescription: string; isMainFrame?: boolean }
+      if (failed.errorCode === -3 || failed.isMainFrame === false) return
+      update(tab.id, { loading: false, error: failed.errorDescription || 'The page could not be opened' })
     }
     view.addEventListener('did-navigate', sync)
     view.addEventListener('did-navigate-in-page', sync)
@@ -42,6 +47,7 @@ export default function BrowserTabView({ tab, active }: { tab: BrowserTab; activ
     view.addEventListener('page-favicon-updated', onFavicon)
     view.addEventListener('did-start-loading', onStart)
     view.addEventListener('did-stop-loading', onStop)
+    view.addEventListener('did-fail-load', onFail)
     return () => {
       views.delete(tab.id)
       view.removeEventListener('did-navigate', sync)
@@ -50,6 +56,7 @@ export default function BrowserTabView({ tab, active }: { tab: BrowserTab; activ
       view.removeEventListener('page-favicon-updated', onFavicon)
       view.removeEventListener('did-start-loading', onStart)
       view.removeEventListener('did-stop-loading', onStop)
+      view.removeEventListener('did-fail-load', onFail)
     }
   }, [tab.id])
 
@@ -76,6 +83,7 @@ export default function BrowserTabView({ tab, active }: { tab: BrowserTab; activ
     <webview
       ref={ref}
       src={tab.initialUrl}
+      partition={tab.plugin ? `persist:crew-plugin-${tab.plugin}` : undefined}
       {...PLUGINS}
       className="absolute inset-0 w-full h-full"
       style={{ visibility: active ? 'visible' : 'hidden' }}

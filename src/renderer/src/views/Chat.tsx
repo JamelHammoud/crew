@@ -30,8 +30,8 @@ import { CHAT_KEY, pendingCount, useCrew, type ThreadMeta } from '../state/store
 import { useVoice } from '../state/voice'
 import { cleanCommands, commandsIn, commandTyped, type CommandName } from '../../../shared/commands'
 import { aimOf } from '../../../shared/llm'
-import { pluginCanLaunch, pluginMenuInput, pluginNamed, pluginTyped } from '../../../shared/plugins'
-import { useBrowser } from '../state/browser'
+import { pluginMenuInput, pluginNamed, pluginTyped } from '../../../shared/plugins'
+import { runPluginAction } from '../state/pluginState'
 
 export default function Chat() {
   const events = useCrew(s => s.events)
@@ -67,7 +67,7 @@ export default function Chat() {
   const write = (value: string) => {
     const plugin = pluginTyped(value, plugins)
     if (plugin) {
-      useBrowser.getState().openPlugin(plugin)
+      runPluginAction(plugin)
       setChatDraft('')
       return
     }
@@ -83,13 +83,11 @@ export default function Chat() {
   const ghost = commands.includes('ghost')
   const inputRef = useAutoResize(text, COMPOSER_MAX)
   const pluginSlashes = useMemo(
-    () => ['plugin', ...plugins.filter(pluginCanLaunch).map(plugin => plugin.name)],
+    () => ['plugin', ...plugins.map(plugin => plugin.name)],
     [plugins]
   )
   const mention = useMentionAutocomplete(text, write, inputRef, { commands: offered, slashes: pluginSlashes })
-  const slash = useSlashCommands(text, write, takeCommand, inputRef, offered, plugins, plugin =>
-    useBrowser.getState().openPlugin(plugin)
-  )
+  const slash = useSlashCommands(text, write, takeCommand, inputRef, offered, plugins, runPluginAction)
   const scrollRef = useRef<HTMLDivElement>(null)
   const place = useCrew(s => s.place)
   const aimed = useDefaultAgent(s => s.agentId)
@@ -153,7 +151,7 @@ export default function Chat() {
   const send = () => {
     const plugin = pluginNamed(text, plugins)
     if (plugin) {
-      useBrowser.getState().openPlugin(plugin)
+      runPluginAction(plugin)
       setChatDraft('')
       slash.close()
       return

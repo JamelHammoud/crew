@@ -22,6 +22,7 @@ export type BrowserTab = {
   title: string
   favicon: string | null
   loading: boolean
+  error: string
   canGoBack: boolean
   canGoForward: boolean
   path: string
@@ -144,7 +145,8 @@ function makeTab(url = ''): BrowserTab {
     url,
     title: '',
     favicon: null,
-    loading: false,
+    loading: Boolean(url),
+    error: '',
     canGoBack: false,
     canGoForward: false,
     path: '',

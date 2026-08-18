@@ -351,6 +351,34 @@ export default function BrowserPanel() {
             <p className="text-sm text-fg-muted">Search or enter a web address above</p>
           </div>
         )}
+        {active?.kind === 'web' && active.initialUrl && active.loading && (
+          <div className="absolute inset-0 z-10 bg-ink-900 flex items-center justify-center">
+            <Spinner size={20} />
+          </div>
+        )}
+        {active?.kind === 'web' && active.initialUrl && active.error && (
+          <div className="absolute inset-0 z-10 bg-ink-900 flex flex-col items-center justify-center gap-4 px-8 text-center">
+            <XCircleGlyph className="w-8 h-8 text-fg-faint" />
+            <div>
+              <p className="text-base text-fg">{active.pluginLabel || 'This page'} could not open</p>
+              <p className="mt-1 text-sm text-fg-muted">{active.error}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => useBrowser.getState().reloadTab(active.id)}
+                className="h-9 px-4 rounded-full bg-fg text-ink-900 text-sm font-medium hover:bg-fg/90 active:scale-95"
+              >
+                Retry
+              </button>
+              <button
+                onClick={() => void window.crew.openExternal(active.url || active.initialUrl)}
+                className="h-9 px-4 rounded-full border border-fg/15 text-sm text-fg-secondary hover:border-fg/25 hover:bg-fg/[0.04] hover:text-fg active:scale-95"
+              >
+                Open in browser
+              </button>
+            </div>
+          </div>
+        )}
         {tabs.length === 0 && <PanelOpens opens={opens} />}
       </div>
     </div>

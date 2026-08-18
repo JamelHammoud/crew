@@ -41,10 +41,10 @@ import { useFindQuery } from '../components/find'
 import { useStickToBottom } from '../components/useStickToBottom'
 import { commandTyped, threadCommands, type CommandName } from '../../../shared/commands'
 import { mentionsIn } from '../../../shared/llm'
-import { pluginCanLaunch, pluginMenuInput, pluginNamed, pluginTyped } from '../../../shared/plugins'
+import { pluginMenuInput, pluginNamed, pluginTyped } from '../../../shared/plugins'
 import { ArchiveGlyph, CheckGlyph, ChevronLeftGlyph, CloseGlyph, EyeGlyph, StopGlyph, WarningGlyph } from '../icons'
 import { pendingCount, useCrew } from '../state/store'
-import { useBrowser } from '../state/browser'
+import { runPluginAction } from '../state/pluginState'
 
 const BACK_WIDTH = 40
 const AVATAR_WIDTH = 52
@@ -129,7 +129,7 @@ export default function ThreadView({
   const write = (value: string) => {
     const plugin = pluginTyped(value, plugins)
     if (plugin) {
-      useBrowser.getState().openPlugin(plugin)
+      runPluginAction(plugin)
       setThreadDraft(threadId, '')
       return
     }
@@ -143,13 +143,11 @@ export default function ThreadView({
   }
 
   const pluginSlashes = useMemo(
-    () => ['plugin', ...plugins.filter(pluginCanLaunch).map(plugin => plugin.name)],
+    () => ['plugin', ...plugins.map(plugin => plugin.name)],
     [plugins]
   )
   const mention = useMentionAutocomplete(text, write, inputRef, { commands: offered, slashes: pluginSlashes })
-  const slash = useSlashCommands(text, write, takeCommand, inputRef, offered, plugins, plugin =>
-    useBrowser.getState().openPlugin(plugin)
-  )
+  const slash = useSlashCommands(text, write, takeCommand, inputRef, offered, plugins, runPluginAction)
   const items = useMemo(() => buildThread(threadEvents, steps, selfId, agents), [threadEvents, steps, selfId, agents])
   const tail = useDrawnTail(items.length, THREAD_PAGE, scrollRef)
   const drawn = useMemo(() => (tail.from === 0 ? items : items.slice(tail.from)), [items, tail.from])
