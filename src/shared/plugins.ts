@@ -185,6 +185,20 @@ export const resolvePlugins = <T extends PluginReference>(plugins: readonly T[])
 
 export const pluginCanLaunch = (plugin: PluginReference): boolean => resolvePlugin(plugin).launch.kind === 'browser'
 
+export const pluginOwnsUrl = (plugin: PluginReference, raw: string): boolean => {
+  const launch = resolvePlugin(plugin).launch
+  if (launch.kind !== 'browser') return false
+  let url: URL
+  try {
+    url = new URL(raw)
+  } catch {
+    return false
+  }
+  return launch.routes.some(route =>
+    route.origin === url.origin && route.paths.some(path => (path.endsWith('/') ? url.pathname.startsWith(path) : url.pathname === path))
+  )
+}
+
 export const pluginApprovalTarget = (plugin: PluginReference): string | null => {
   const resolved = resolvePlugin(plugin)
   if (resolved.trusted) return null

@@ -1,5 +1,5 @@
 import { canPreview } from '../../../shared/files'
-import { offerForAppUrl, type CrewPlugin } from '../../../shared/plugins'
+import { offerForAppUrl, pluginOwnsUrl, resolvePlugin, type PluginReference } from '../../../shared/plugins'
 import { create } from 'zustand'
 
 export type BrowserTab = {
@@ -94,7 +94,7 @@ type BrowserState = {
   openPanel(): void
   closePanel(): void
   openUrl(url: string): void
-  openPlugin(plugin: Pick<CrewPlugin, 'name' | 'label' | 'appUrl'>, url?: string): void
+  openPlugin(plugin: PluginReference, url?: string): void
   showPage(url: string): void
   showFile(path: string): void
   openImage(src: string, name: string): void
@@ -273,10 +273,11 @@ export const useBrowser = create<BrowserState>((write, get) => {
       set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
     },
     openPlugin: (plugin, url) => {
-      if (!plugin.appUrl) return
-      const target = url ?? plugin.appUrl
+      const resolved = resolvePlugin(plugin)
+      if (resolved.launch.kind !== 'browser' || (url && !pluginOwnsUrl(resolved, url))) return
+      const target = url ?? resolved.launch.url
       const width = clampWidth(Math.max(get().width, PLUGIN_WIDTH))
-      const existing = get().tabs.find(t => t.kind === 'web' && t.plugin === plugin.name)
+      const existing = get().tabs.find(t => t.kind === 'web' && t.plugin === resolved.name)
       if (existing) {
         write(s => ({
           activeTabId: existing.id,
@@ -287,7 +288,7 @@ export const useBrowser = create<BrowserState>((write, get) => {
               ? tab
               : {
                   ...tab,
-                  pluginLabel: plugin.label,
+                  pluginLabel: resolved.label,
                   ...(url
                     ? {
                         initialUrl: target,
@@ -300,7 +301,7 @@ export const useBrowser = create<BrowserState>((write, get) => {
         }))
         return
       }
-      const tab = { ...makeTab(target), plugin: plugin.name, pluginLabel: plugin.label }
+      const tab = { ...makeTab(target), plugin: resolved.name, pluginLabel: resolved.label }
       set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id, width }))
     },
     // A page an agent asked somebody to look at. It stands the panel up rather
