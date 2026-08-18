@@ -236,9 +236,7 @@ describe('what the crew has plugged in', () => {
     sam.chat('open the signup page', [agentId('mac', 'fake')])
     await waitUntil(() => runner.messages.some(m => m.type === 'prompt'))
     const prompt = runner.messages.find(m => m.type === 'prompt') as Prompt
-    expect(prompt.plugins).toEqual([
-      expect.objectContaining({ catalogId: 'playwright', name: 'playwright' })
-    ])
+    expect(prompt.plugins).toEqual([expect.objectContaining({ catalogId: 'playwright', name: 'playwright' })])
   })
 
   it('says nothing about plugins on a prompt when the crew has none', async () => {
