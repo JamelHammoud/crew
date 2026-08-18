@@ -44,6 +44,8 @@ afterEach(() => {
   Reflect.deleteProperty(HTMLElement.prototype, 'getBoundingClientRect')
   Reflect.deleteProperty(HTMLElement.prototype, 'clientWidth')
   Reflect.deleteProperty(HTMLElement.prototype, 'clientHeight')
+  Reflect.deleteProperty(HTMLElement.prototype, 'getURL')
+  Reflect.deleteProperty(HTMLElement.prototype, 'loadURL')
 })
 
 const pillFor = (root: HTMLElement, id: string) => root.querySelector(`[data-tab="${id}"]`)
@@ -485,6 +487,27 @@ describe('a page an agent shows', () => {
     ])
     const { container } = render(createElement(BrowserPanel))
     expect(container.querySelector('webview')?.getAttribute('partition')).toBe('persist:crew-plugin-raylight')
+  })
+
+  it('waits for a new web view before asking it to navigate', () => {
+    let ready = false
+    const loadURL = vi.fn(async () => undefined)
+    Object.defineProperty(HTMLElement.prototype, 'getURL', {
+      configurable: true,
+      value: () => {
+        if (!ready) throw new Error('The WebView must be attached to the DOM and the dom-ready event emitted')
+        return ''
+      }
+    })
+    Object.defineProperty(HTMLElement.prototype, 'loadURL', { configurable: true, value: loadURL })
+
+    useBrowser.getState().openUrl('https://example.com/plugin')
+    const { container } = render(createElement(BrowserPanel))
+
+    expect(loadURL).not.toHaveBeenCalled()
+    ready = true
+    fireEvent(container.querySelector('webview')!, new Event('dom-ready'))
+    expect(loadURL).toHaveBeenCalledWith('https://example.com/plugin')
   })
 
   it('shows a useful failure instead of an empty plugin page', () => {

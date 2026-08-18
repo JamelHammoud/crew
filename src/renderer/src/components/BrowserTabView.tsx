@@ -69,8 +69,15 @@ export default function BrowserTabView({ tab, active }: { tab: BrowserTab; activ
   useEffect(() => {
     const view = ref.current
     if (!view || typeof view.getURL !== 'function' || typeof view.loadURL !== 'function' || !tab.initialUrl) return
-    if (view.getURL() === tab.initialUrl) return
-    void view.loadURL(tab.initialUrl).catch(() => undefined)
+    const load = () => {
+      try {
+        if (view.getURL() === tab.initialUrl) return
+        void view.loadURL(tab.initialUrl).catch(() => undefined)
+      } catch {}
+    }
+    load()
+    view.addEventListener('dom-ready', load)
+    return () => view.removeEventListener('dom-ready', load)
   }, [tab.initialUrl])
 
   // Asking for a page that is already open loads it again. The src has not
