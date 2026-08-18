@@ -82,10 +82,7 @@ export default function Chat() {
 
   const ghost = commands.includes('ghost')
   const inputRef = useAutoResize(text, COMPOSER_MAX)
-  const pluginSlashes = useMemo(
-    () => ['plugin', ...plugins.map(plugin => plugin.name)],
-    [plugins]
-  )
+  const pluginSlashes = useMemo(() => ['plugin', ...plugins.map(plugin => plugin.name)], [plugins])
   const mention = useMentionAutocomplete(text, write, inputRef, { commands: offered, slashes: pluginSlashes })
   const slash = useSlashCommands(text, write, takeCommand, inputRef, offered, plugins, runPluginAction)
   const scrollRef = useRef<HTMLDivElement>(null)

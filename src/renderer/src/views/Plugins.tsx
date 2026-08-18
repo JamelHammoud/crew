@@ -1,11 +1,5 @@
 import { useMemo, useState } from 'react'
-import {
-  PLUGIN_GROUPS,
-  PLUGIN_OFFERS,
-  pluginKey,
-  resolvePlugins,
-  type PluginOffer
-} from '../../../shared/plugins'
+import { PLUGIN_GROUPS, PLUGIN_OFFERS, pluginKey, resolvePlugins, type PluginOffer } from '../../../shared/plugins'
 import AddPlugin from '../components/plugins/AddPlugin'
 import PluginRow from '../components/plugins/PluginRow'
 import { SearchGlyph } from '../icons'

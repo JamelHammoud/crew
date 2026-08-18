@@ -121,7 +121,9 @@ describe('the plugins store', () => {
     plugins()
     fireEvent.click(screen.getByRole('button', { name: 'Open Figma' }))
     expect(useBrowser.getState().tabs).toEqual([
-      expect.objectContaining({ initialUrl: 'https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Dev-Mode-MCP-Server' })
+      expect.objectContaining({
+        initialUrl: 'https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Dev-Mode-MCP-Server'
+      })
     ])
   })
 
