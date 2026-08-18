@@ -10,6 +10,8 @@ import {
   PLUGIN_FULL,
   PLUGIN_LIMIT,
   PLUGIN_OFFERS,
+  pluginMenuInput,
+  pluginNamed,
   pluginTyped,
   type CrewPlugin
 } from '../src/shared/plugins'
@@ -261,8 +263,10 @@ describe('what the store offers', () => {
     const raylight = { ...PLUGIN_OFFERS.find(offer => offer.name === 'raylight')!, id: 'r', by: 'Jamel', ts: 1 }
     const figma = { ...PLUGIN_OFFERS.find(offer => offer.name === 'figma')!, id: 'f', by: 'Jamel', ts: 1 }
     expect(pluginTyped('/raylight ', [raylight, figma])).toBe(raylight)
+    expect(pluginNamed('/raylight', [raylight, figma])).toBe(raylight)
     expect(pluginTyped('/figma ', [raylight, figma])).toBeNull()
     expect(pluginTyped('/raylight', [raylight])).toBeNull()
+    expect(pluginMenuInput('/plugin ray')).toBe(true)
   })
 
   it('drops an unsafe editing address without dropping the MCP', () => {

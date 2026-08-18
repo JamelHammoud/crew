@@ -236,6 +236,14 @@ export default function ThreadView({
   }, [items, room, follow])
 
   const send = () => {
+    const plugin = pluginNamed(text, plugins)
+    if (plugin) {
+      useBrowser.getState().openPlugin(plugin)
+      setThreadDraft(threadId, '')
+      slash.close()
+      return
+    }
+    if (pluginMenuInput(text)) return
     if (!text.trim() && pendingCount(threadId) === 0) return
     // A question on the side is answered in the panel and a fork carries on in a
     // thread of its own. Neither lands here, so neither is a reply to anything in

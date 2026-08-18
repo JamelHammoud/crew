@@ -16,6 +16,6 @@ export function pluginPreamble(
     ``,
     `  curl -s -X POST ${apiBase}/page -H 'content-type: application/json' -d '{"promptId":"${promptId}","url":"EDIT_URL","title":"Raylight"}'`,
     ``,
-    `Wait until get_editor_status says the editor is connected before making changes. Use Raylight's render and frame review tools to check the result. When the work is ready to review, show the exact editUrl beside the conversation again. Never guess a Raylight project URL.`
+    `Wait until get_editor_status says the editor is connected before making changes. Use Raylight's render and frame review tools to check the result. When the work is ready to review, show the exact editUrl beside the conversation again. If a render returns a video or review URL, show that exact URL too. Never guess a Raylight project URL.`
   ].join('\n')
 }
