@@ -11,7 +11,7 @@ app.whenReady().then(async () => {
     show: false,
     webPreferences: { nodeIntegration: true, contextIsolation: false, webviewTag: true }
   })
-  const html = `<webview id="view" src="${url}" style="position:absolute;inset:0;width:100%;height:100%"></webview>`
+  const html = `<webview id="view" src="${url}" plugins="" style="position:absolute;inset:0;width:100%;height:100%"></webview>`
   await window.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(html)}`)
   const view = window.webContents.hostWebContents
   const result = await window.webContents.executeJavaScript(`new Promise(resolve => {
