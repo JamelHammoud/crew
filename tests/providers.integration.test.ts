@@ -599,6 +599,30 @@ describe('real CLI smoke (CREW_REAL_CLI=1)', () => {
     90000
   )
 
+  realCli('grok')(
+    'grok runs a tool',
+    async () => {
+      const { grokProvider } = await import('../src/runner/providers/grok')
+      const cwd = tmpDir('real-grok-tool')
+      const steps: Array<{ name?: string; status: string; output?: string }> = []
+      const run = grokProvider.start(
+        'Use run_terminal_command to run pwd, then reply with exactly: tool-ok',
+        cwd,
+        {
+          onStep: step => {
+            if (step.kind === 'tool') steps.push({ name: step.name, status: step.status, output: step.output })
+          }
+        },
+        { model: 'grok-4.6' }
+      )
+      const { text } = await run.done
+      expect(text).toContain('tool-ok')
+      expect(steps).toContainEqual({ name: 'run_terminal_command', status: 'running', output: undefined })
+      expect(steps).toContainEqual({ name: 'run_terminal_command', status: 'done', output: `exit: 0\n${cwd}` })
+    },
+    90000
+  )
+
   realCli('kimi')(
     'kimi answers',
     async () => {
