@@ -92,20 +92,23 @@ describe('what the crew has plugged in', () => {
     sam.send(add(PLAYWRIGHT))
     const landed = await pat.waitForEvent(e => e.kind === 'plugin.added')
     if (landed.kind !== 'plugin.added') throw new Error('expected plugin.added')
-    expect(landed.plugin).toMatchObject({ name: 'playwright', transport: 'stdio', command: 'npx' })
+    expect(landed.plugin).toEqual({ catalogId: 'playwright', name: 'playwright' })
     expect(landed.byName).toBe('sam')
 
     const [plugin] = pluginsIn(host)
     expect(plugin).toMatchObject({
       id: landed.pluginId,
       name: 'playwright',
+      catalogId: 'playwright',
+      by: 'sam'
+    })
+    expect(resolvePlugin(plugin)).toMatchObject({
       label: 'Playwright',
       blurb: 'Open a page and click through it',
       transport: 'stdio',
       command: 'npx',
       args: ['-y', '@playwright/mcp@0.0.79'],
-      catalogId: 'playwright',
-      by: 'sam'
+      packageId: 'playwright-mcp'
     })
     expect(plugin.id).toMatch(/^[0-9a-f]{6}$/)
 
@@ -113,10 +116,12 @@ describe('what the crew has plugged in', () => {
     await waitUntil(() => pluginsIn(host).length === 2)
     expect(pluginsIn(host)[1]).toMatchObject({
       name: 'linear',
-      transport: 'http',
-      url: 'https://mcp.linear.app/mcp',
       catalogId: 'linear',
       by: 'pat'
+    })
+    expect(resolvePlugin(pluginsIn(host)[1]!)).toMatchObject({
+      transport: 'http',
+      url: 'https://mcp.linear.app/mcp'
     })
   })
 
@@ -150,7 +155,7 @@ describe('what the crew has plugged in', () => {
     await new Promise(r => setTimeout(r, 250))
 
     expect(pluginsIn(host)).toHaveLength(1)
-    expect(pluginsIn(host)[0]).toMatchObject({ id: first.pluginId, label: 'Playwright', command: 'npx' })
+    expect(pluginsIn(host)[0]).toMatchObject({ id: first.pluginId, catalogId: 'playwright', name: 'playwright' })
     expect(sam.events.filter(e => e.kind === 'plugin.added')).toHaveLength(1)
   })
 
@@ -232,7 +237,7 @@ describe('what the crew has plugged in', () => {
     await waitUntil(() => runner.messages.some(m => m.type === 'prompt'))
     const prompt = runner.messages.find(m => m.type === 'prompt') as Prompt
     expect(prompt.plugins).toEqual([
-      expect.objectContaining({ name: 'playwright', transport: 'stdio', command: 'npx' })
+      expect.objectContaining({ catalogId: 'playwright', name: 'playwright' })
     ])
   })
 
@@ -259,7 +264,9 @@ describe('what the store offers', () => {
       url: 'https://api.raylight.app/mcp',
       appUrl: 'https://www.raylight.app/projects'
     })
-    expect(cleanPlugin(raylight)).toMatchObject({
+    const saved = cleanPlugin(raylight)!
+    expect(saved).toEqual({ catalogId: 'raylight', name: 'raylight' })
+    expect(resolvePlugin(saved)).toMatchObject({
       url: 'https://api.raylight.app/mcp',
       appUrl: 'https://www.raylight.app/projects'
     })
@@ -393,7 +400,8 @@ describe('what the store offers', () => {
       const clean = cleanPlugin(offer)
       expect(clean, offer.name).not.toBeNull()
       expect(clean?.name).toBe(offer.name)
-      expect(clean?.transport).toBe(offer.transport)
+      expect(clean?.catalogId).toBe(offer.catalogId)
+      expect(resolvePlugin(clean!).transport).toBe(offer.transport)
       expect(offer.blurb.length).toBeLessThanOrEqual(PLUGIN_BLURB_LIMIT)
     }
   })
