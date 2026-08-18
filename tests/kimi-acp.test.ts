@@ -1,3 +1,4 @@
+import { realpathSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { kimiDialog, kimiParser } from '../src/runner/providers/kimi-acp'
 import { makeCliProvider } from '../src/runner/providers/cli'
@@ -279,7 +280,7 @@ describe('what kimi asks the client', () => {
     dialog.answer(request(41, 'terminal/wait_for_exit', { terminalId }))
     while (!sent.length) await new Promise(resolve => setTimeout(resolve, 10))
     const output = JSON.parse(dialog.answer(request(42, 'terminal/output', { terminalId }))[0]).result.output
-    expect(output).toBe(`yes|${cwd}`)
+    expect(output).toBe(`yes|${realpathSync(cwd)}`)
     dialog.close?.()
   })
 })
