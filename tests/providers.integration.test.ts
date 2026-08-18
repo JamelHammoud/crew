@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { parseClaudeLine } from '../src/runner/providers/claude'
-import { parseGrokLine } from '../src/runner/providers/grok'
+import { grokArgs, grokFields, grokParser } from '../src/runner/providers/grok'
 import { kimiParser } from '../src/runner/providers/kimi-acp'
 import { tmpDir } from './helpers/session'
 import { makeFakeProvider, fakeCliPath } from './helpers/fake-provider'
@@ -381,38 +381,109 @@ describe('a step says what it is about', () => {
   })
 })
 
-describe('grok parser matches the documented streaming-json format', () => {
-  const parse = (event: unknown) => parseGrokLine(JSON.stringify(event))
+describe('grok parser matches the real streaming-json format', () => {
+  const parser = grokParser()
+  const parse = (event: unknown) => parser.parse(JSON.stringify(event))
 
   it('ignores noise and unparseable lines', () => {
-    expect(parseGrokLine('not json')).toEqual([])
-    expect(parse({ type: 'session.start', session_id: 'x' })).toEqual([])
-    expect(parse({ type: 'tool.call' })).toEqual([])
+    expect(parser.parse('not json')).toEqual([])
+    expect(parse({ type: 'available_commands', tools: [] })).toEqual([])
+    expect(parse({ type: 'tool_call' })).toEqual([])
   })
 
-  it('parses messages and thinking under either field name', () => {
-    expect(parse({ type: 'model.message', text: 'ok' })).toEqual([{ text: 'ok' }])
-    expect(parse({ type: 'model.message', content: 'ok' })).toEqual([{ text: 'ok' }])
-    expect(parse({ type: 'model.thinking', text: 'let me check' })).toEqual([{ thinking: 'let me check' }])
+  it('streams text and thinking fragments into separate lanes', () => {
+    expect(parse({ type: 'thought', data: 'let ' })).toEqual([
+      { thinkingStart: { index: 1 } },
+      { thinkingDelta: { index: 1, text: 'let ' } }
+    ])
+    expect(parse({ type: 'thought', data: 'me check' })).toEqual([
+      { thinkingDelta: { index: 1, text: 'me check' } }
+    ])
+    expect(parse({ type: 'text', data: 'ok' })).toEqual([
+      { blockStop: { index: 1 } },
+      { textStart: { index: 2 } },
+      { textDelta: { index: 2, text: 'ok' } }
+    ])
   })
 
   it('tracks tool calls and results, spotting subagents', () => {
-    const call = parse({ type: 'tool.call', id: 'c1', name: 'Bash', arguments: '{"command":"ls -la"}' })
-    expect(call).toEqual([{ activity: { id: 'c1', kind: 'tool', name: 'Bash', status: 'started', detail: 'ls -la' } }])
+    const call = parse({
+      type: 'tool_call',
+      toolCallId: 'c1',
+      toolName: 'run_terminal_command',
+      status: 'pending',
+      rawInput: { command: 'ls -la' }
+    })
+    expect(call).toEqual([
+      { blockStop: { index: 2 } },
+      {
+        activity: {
+          id: 'c1',
+          kind: 'tool',
+          name: 'run_terminal_command',
+          status: 'started',
+          detail: 'ls -la'
+        }
+      }
+    ])
 
-    const sub = parse({ type: 'tool.call', id: 'c2', name: 'Task', arguments: { description: 'explore' } })
+    const sub = parse({
+      type: 'tool_call',
+      toolCallId: 'c2',
+      toolName: 'spawn_subagent',
+      status: 'pending',
+      rawInput: { description: 'explore' }
+    })
     expect(sub[0].activity?.kind).toBe('subagent')
     expect(sub[0].activity?.detail).toBe('explore')
 
-    expect(parse({ type: 'tool.result', id: 'c1', output: 'done' })).toEqual([
-      { activity: { id: 'c1', kind: 'tool', name: '', status: 'finished', output: 'done' } }
+    expect(parse({
+      type: 'tool_call_update',
+      toolCallId: 'c1',
+      status: 'completed',
+      rawOutput: { output_for_prompt: 'exit: 0\ndone' }
+    })).toEqual([
+      {
+        activity: {
+          id: 'c1',
+          kind: 'tool',
+          name: 'run_terminal_command',
+          status: 'finished',
+          output: 'exit: 0\ndone'
+        }
+      }
     ])
-    expect(parse({ type: 'tool.result', id: 'c1', content: 'done' })[0].activity?.output).toBe('done')
   })
 
-  it('reports tokens and errors', () => {
-    expect(parse({ type: 'session.end', usage: { output_tokens: 7 } })).toEqual([{ usage: { output: 7 } }])
+  it('reports final tokens, cost, completion, and errors', () => {
+    expect(
+      parse({
+        type: 'end',
+        usage: { input_tokens: 10, output_tokens: 7, cache_read_input_tokens: 4 },
+        total_cost_usd: 0.01,
+        modelUsage: { 'grok-4.6-build': {} }
+      })
+    ).toEqual([
+      {
+        usage: {
+          model: 'grok-4.6-build',
+          input: 10,
+          output: 7,
+          cacheRead: 4,
+          cacheWrite: undefined,
+          cost: 0.01,
+          total: true
+        }
+      },
+      { turnEnd: true }
+    ])
     expect(parse({ type: 'error', message: 'Not signed in.' })).toEqual([{ error: 'Not signed in.' }])
+  })
+
+  it('offers Grok 4.6 and passes it to the CLI', () => {
+    const model = grokFields()[0]
+    expect(model.options?.map(option => option.value)).toEqual(['', 'grok-4.6', 'grok-4.5'])
+    expect(grokArgs('hi', key => (key === 'model' ? 'grok-4.6' : ''))).toContain('grok-4.6')
   })
 })
 
@@ -512,6 +583,50 @@ const REAL = process.env.CREW_REAL_CLI === '1'
 const realCli = (name: string) => (REAL && commandExists(name) ? it : it.skip)
 
 describe('real CLI smoke (CREW_REAL_CLI=1)', () => {
+  realCli('grok')(
+    'grok answers',
+    async () => {
+      const { grokProvider } = await import('../src/runner/providers/grok')
+      const run = grokProvider.start(
+        'Reply with exactly: crew-ok',
+        tmpDir('real-grok'),
+        { onStep: () => {} },
+        { model: 'grok-4.6' }
+      )
+      const { text } = await run.done
+      expect(text).toContain('crew-ok')
+    },
+    90000
+  )
+
+  realCli('grok')(
+    'grok runs a tool',
+    async () => {
+      const { grokProvider } = await import('../src/runner/providers/grok')
+      const cwd = tmpDir('real-grok-tool')
+      const steps: Array<{ name?: string; status: string; output?: string }> = []
+      const run = grokProvider.start(
+        'Use run_terminal_command to run pwd, then reply with exactly: tool-ok',
+        cwd,
+        {
+          onStep: step => {
+            if (step.kind === 'tool') steps.push({ name: step.name, status: step.status, output: step.output })
+          }
+        },
+        { model: 'grok-4.6' }
+      )
+      const { text } = await run.done
+      expect(text).toContain('tool-ok')
+      expect(steps).toContainEqual({ name: 'run_terminal_command', status: 'running', output: undefined })
+      expect(steps).toContainEqual({
+        name: 'run_terminal_command',
+        status: 'done',
+        output: `exit: 0\n${fs.realpathSync(cwd)}`
+      })
+    },
+    90000
+  )
+
   realCli('kimi')(
     'kimi answers',
     async () => {

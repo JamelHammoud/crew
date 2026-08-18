@@ -1,4 +1,5 @@
 import type { McpServer } from '../../shared/plugins'
+import { AcpTerminalHost } from './acp-terminal'
 import type { Dialog, ParsedOutput, RunOptions } from './types'
 
 export const PROTOCOL = 1
@@ -50,13 +51,23 @@ export interface AcpDialogOptions {
   prompt: string
   cwd: string
   run?: RunOptions
+  servers?: (servers: Record<string, McpServer>) => unknown[]
+  terminal?: boolean
   // Said over the wire once the session exists, one at a time, for a CLI whose
   // run is set up that way. A CLI that takes the same answers as flags passes
   // none, and the walk goes straight from the session to the turn.
   config?: Array<[string, string]>
 }
 
-export function acpDialog({ prompt, cwd, run = {}, config = [] }: AcpDialogOptions): Dialog {
+export function acpDialog({
+  prompt,
+  cwd,
+  run = {},
+  config = [],
+  servers = acpServers,
+  terminal: hasTerminal = false
+}: AcpDialogOptions): Dialog {
+  const terminal = new AcpTerminalHost(cwd)
   const pending = new Map<number, Stage>()
   const settings = [...config]
   const steers: string[] = []
@@ -89,7 +100,7 @@ export function acpDialog({ prompt, cwd, run = {}, config = [] }: AcpDialogOptio
   }
 
   const answered = (stage: Stage, result: any): string[] => {
-    if (stage === 'init') return [ask('session', 'session/new', { cwd, mcpServers: acpServers(run.mcp?.servers) })]
+    if (stage === 'init') return [ask('session', 'session/new', { cwd, mcpServers: servers(run.mcp?.servers ?? {}) })]
     if (stage === 'session') {
       sessionId = str(result?.sessionId)
       return sessionId ? [step()] : []
@@ -104,11 +115,20 @@ export function acpDialog({ prompt, cwd, run = {}, config = [] }: AcpDialogOptio
       const outcome = optionId ? { outcome: 'selected', optionId } : { outcome: 'cancelled' }
       return [rpc({ id, result: { outcome } })]
     }
+    if (method.startsWith('terminal/')) {
+      const answer = terminal.serve(id, method, params)
+      return answer ? [answer] : []
+    }
     return [rpc({ id, error: { code: -32601, message: `Crew does not answer ${method}.` } })]
   }
 
   return {
-    begin: () => [ask('init', 'initialize', { protocolVersion: PROTOCOL, clientCapabilities: CAPABILITIES })],
+    begin: () => [
+      ask('init', 'initialize', {
+        protocolVersion: PROTOCOL,
+        clientCapabilities: { ...CAPABILITIES, terminal: hasTerminal }
+      })
+    ],
     answer: line => {
       let msg: any
       try {
@@ -136,7 +156,9 @@ export function acpDialog({ prompt, cwd, run = {}, config = [] }: AcpDialogOptio
       if (!sessionId || !turning) return null
       steers.push(text)
       return rpc({ method: 'session/cancel', params: { sessionId } })
-    }
+    },
+    connect: send => terminal.connect(send),
+    close: () => terminal.close()
   }
 }
 

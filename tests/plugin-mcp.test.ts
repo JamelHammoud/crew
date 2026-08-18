@@ -184,7 +184,13 @@ describe('what each CLI is really handed', () => {
 
   it('carries them on the session kimi opens', () => {
     const dialog = kimiDialog('go', '/repo', reader(), {
-      mcp: { file: '', servers: { figma: { type: 'http', url: 'https://mcp.figma.com/mcp' } } }
+      mcp: {
+        file: '',
+        servers: {
+          figma: { type: 'http', url: 'https://mcp.figma.com/mcp' },
+          chrome: { command: 'npx', args: ['-y', 'chrome-devtools-mcp@latest'] }
+        }
+      }
     })
     dialog.begin()
     const sent = dialog.answer(JSON.stringify({ jsonrpc: '2.0', id: 1, result: { protocolVersion: 1 } }))

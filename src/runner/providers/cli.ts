@@ -201,6 +201,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       // SIGTERM first, but a wedged process can ignore it and leave the thread
       // queue blocked forever, so escalate to SIGKILL.
       const terminate = () => {
+        dialog?.close?.()
         signalTree('SIGTERM')
         killTimer = setTimeout(() => signalTree('SIGKILL'), KILL_GRACE_MS)
         killTimer.unref()
@@ -269,6 +270,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
           if (settled) return
           settled = true
           clearTimers()
+          dialog?.close?.()
           if (exitTimer) clearTimeout(exitTimer)
           if (buffer.trim()) handleLine(buffer)
           buffer = ''
@@ -294,6 +296,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
           if (settled) return
           settled = true
           clearTimers()
+          dialog?.close?.()
           if (exitTimer) clearTimeout(exitTimer)
           reject(spawnFailure(err, cwd))
         })
@@ -305,6 +308,9 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       })
 
       if (dialog) {
+        dialog.connect?.(body => {
+          write(body)
+        })
         for (const body of dialog.begin()) write(body)
       } else if (opts.stdinPrompt) {
         child.stdin?.end(body)

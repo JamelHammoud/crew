@@ -68,6 +68,8 @@ export interface Dialog {
   begin(): string[]
   answer(line: string): string[]
   steer(text: string): string | null
+  connect?(send: (body: string) => void): void
+  close?(): void
 }
 
 export interface RunHooks {
