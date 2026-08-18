@@ -1,4 +1,5 @@
 import { spawn } from 'node:child_process'
+import { randomUUID } from 'node:crypto'
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { homedir, tmpdir } from 'node:os'
@@ -92,11 +93,16 @@ const work = path.join(dir, 'work')
 let child = null
 let killer = null
 let watcher = null
+const terminals = new Map()
 
 function stop() {
   if (killer) clearTimeout(killer)
   if (watcher) clearInterval(watcher)
   if (child && child.exitCode === null && child.signalCode === null) child.kill('SIGKILL')
+  for (const terminal of terminals.values()) {
+    if (!terminal.exit) terminal.child.kill('SIGKILL')
+  }
+  terminals.clear()
 }
 
 try {
@@ -140,7 +146,89 @@ try {
     })
   }
 
+  const terminalResult = (id, result) => send({ jsonrpc: '2.0', id, result })
+
+  const finishTerminal = (terminal, exitCode, signal) => {
+    if (terminal.exit) return
+    terminal.exit = { exitCode, signal }
+    for (const waiter of terminal.waiters.splice(0)) terminalResult(waiter, terminal.exit)
+  }
+
+  const appendTerminal = (terminal, data) => {
+    terminal.output += data.toString()
+    const bytes = Buffer.from(terminal.output)
+    if (bytes.length <= terminal.limit) return
+    let start = bytes.length - terminal.limit
+    while (start < bytes.length && (bytes[start] & 0xc0) === 0x80) start += 1
+    terminal.output = bytes.subarray(start).toString()
+    terminal.truncated = true
+  }
+
+  const answerTerminal = message => {
+    const params = message.params ?? {}
+    if (message.method === 'terminal/create') {
+      const env = Object.fromEntries((params.env ?? []).map(one => [one.name, one.value]))
+      const process = spawn(params.command, params.args ?? [], {
+        cwd: params.cwd || work,
+        env: { ...globalThis.process.env, ...env },
+        stdio: ['ignore', 'pipe', 'pipe']
+      })
+      const terminalId = randomUUID()
+      const terminal = {
+        child: process,
+        output: '',
+        truncated: false,
+        limit: Number.isSafeInteger(params.outputByteLimit) ? params.outputByteLimit : 4 * 1024 * 1024,
+        exit: null,
+        waiters: []
+      }
+      terminals.set(terminalId, terminal)
+      process.stdout.on('data', data => appendTerminal(terminal, data))
+      process.stderr.on('data', data => appendTerminal(terminal, data))
+      process.on('error', error => {
+        appendTerminal(terminal, error.message)
+        finishTerminal(terminal, 1, null)
+      })
+      process.on('close', (code, signal) => finishTerminal(terminal, code, signal))
+      terminalResult(message.id, { terminalId })
+      return
+    }
+    const terminalId = params.terminalId ?? ''
+    const terminal = terminals.get(terminalId)
+    if (!terminal) {
+      send({ jsonrpc: '2.0', id: message.id, error: { code: -32602, message: 'terminal not found' } })
+      return
+    }
+    if (message.method === 'terminal/output') {
+      terminalResult(message.id, {
+        output: terminal.output,
+        truncated: terminal.truncated,
+        exitStatus: terminal.exit
+      })
+      return
+    }
+    if (message.method === 'terminal/wait_for_exit') {
+      if (terminal.exit) terminalResult(message.id, terminal.exit)
+      else terminal.waiters.push(message.id)
+      return
+    }
+    if (message.method === 'terminal/kill') {
+      terminal.child.kill('SIGKILL')
+      terminalResult(message.id, {})
+      return
+    }
+    if (message.method === 'terminal/release') {
+      if (!terminal.exit) terminal.child.kill('SIGKILL')
+      terminals.delete(terminalId)
+      terminalResult(message.id, {})
+    }
+  }
+
   const answer = message => {
+    if (message.method.startsWith('terminal/')) {
+      answerTerminal(message)
+      return
+    }
     if (message.method !== 'session/request_permission') {
       send({ jsonrpc: '2.0', id: message.id, error: { code: -32601, message: 'method not found' } })
       return
@@ -338,7 +426,10 @@ try {
     },
     {
       name: 'the shell command was named and its output came back',
-      ok: bashArgs.some(a => typeof a.command === 'string' && a.command) && bashOut.length > 0,
+      ok:
+        bashArgs.some(a => typeof a.command === 'string' && a.command) &&
+        bashOut.some(one => /\bdone\b/.test(String(one.rawOutput))) &&
+        bashOut.every(one => !String(one.rawOutput).includes('terminal capability is unavailable')),
       note: `${
         bashArgs
           .map(a => a.command)
