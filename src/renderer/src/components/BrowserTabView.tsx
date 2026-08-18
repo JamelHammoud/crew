@@ -22,6 +22,7 @@ export default function BrowserTabView({ tab, active }: { tab: BrowserTab; activ
     if (!view) return
     views.set(tab.id, view)
     const update = useBrowser.getState().updateTab
+    let stopped: ReturnType<typeof setTimeout> | null = null
     const sync = () =>
       update(tab.id, {
         url: view.getURL(),
@@ -31,10 +32,14 @@ export default function BrowserTabView({ tab, active }: { tab: BrowserTab; activ
     const onTitle = (event: Event) => update(tab.id, { title: (event as Event & { title: string }).title })
     const onFavicon = (event: Event) =>
       update(tab.id, { favicon: (event as Event & { favicons: string[] }).favicons[0] ?? null })
-    const onStart = () => update(tab.id, { loading: true, error: '' })
+    const onStart = () => {
+      if (stopped) clearTimeout(stopped)
+      stopped = null
+      update(tab.id, { loading: true, error: '' })
+    }
     const onStop = () => {
-      update(tab.id, { loading: false })
       sync()
+      stopped = setTimeout(() => update(tab.id, { loading: false }), 200)
     }
     const onFail = (event: Event) => {
       const failed = event as Event & { errorCode: number; errorDescription: string; isMainFrame?: boolean }
@@ -49,6 +54,7 @@ export default function BrowserTabView({ tab, active }: { tab: BrowserTab; activ
     view.addEventListener('did-stop-loading', onStop)
     view.addEventListener('did-fail-load', onFail)
     return () => {
+      if (stopped) clearTimeout(stopped)
       views.delete(tab.id)
       view.removeEventListener('did-navigate', sync)
       view.removeEventListener('did-navigate-in-page', sync)
