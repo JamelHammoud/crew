@@ -1,14 +1,15 @@
 import type { AgentSettingField } from '../../shared/llm'
+import { chunkText, makeLanes, str } from './acp'
 import { choices, flag, makeCliProvider, type SettingReader } from './cli'
 import { activityDetail, fileChanges, stepTodos } from './detail'
 import { resultText } from './output'
 import { taskCall } from './tasks'
 import { usageFrom } from './tokens'
-import type { OutputParser, ParsedOutput, Provider } from './types'
+import type { ParsedOutput, Provider, RunParser } from './types'
 
-const SUBAGENT_TOOLS = new Set(['Task', 'Agent', 'Subagent'])
-
-const str = (value: unknown): string => (typeof value === 'string' ? value : '')
+const SUBAGENT_TOOLS = new Set(['task', 'agent', 'subagent', 'spawn_subagent'])
+const STARTED = new Set(['pending', 'in_progress'])
+const FINISHED = new Set(['completed', 'failed'])
 
 const parseInput = (value: unknown): unknown => {
   if (typeof value !== 'string') return value
@@ -19,63 +20,83 @@ const parseInput = (value: unknown): unknown => {
   }
 }
 
-// Grok Build streams newline-delimited events: session.start, model.thinking,
-// tool.call, tool.result, model.message, session.end, error. Field names are
-// matched loosely because a signed-in CLI is needed to observe real payloads;
-// unknown lines fall through to cli.ts's raw-output fallback.
-export const parseGrokLine: OutputParser = line => {
-  let msg: any
-  try {
-    msg = JSON.parse(line)
-  } catch {
-    return []
+const outputText = (msg: any): string | undefined => {
+  const raw = msg?.rawOutput
+  const direct = typeof raw === 'string' ? raw : str(raw?.output_for_prompt)
+  if (direct) return resultText(direct)
+  const content = Array.isArray(msg?.content) ? msg.content : []
+  return resultText(content.map((part: any) => chunkText(part?.content)).filter(Boolean))
+}
+
+export function grokParser(): RunParser {
+  const { close, stream } = makeLanes()
+  const names = new Map<string, string>()
+
+  const activity = (out: ParsedOutput[], msg: any): void => {
+    const id = str(msg?.toolCallId) || str(msg?.id) || str(msg?.call_id) || str(msg?.tool_call_id)
+    if (!id) return
+    const opening = msg?.type === 'tool_call' || msg?.type === 'tool.call'
+    const current = str(msg?.toolName) || str(msg?.name) || str(msg?.tool)
+    if (opening && current) names.set(id, current)
+    const name = names.get(id) || current
+    const status = str(msg?.status)
+    const running = opening || STARTED.has(status)
+    const finished = msg?.type === 'tool.result' || FINISHED.has(status)
+    if (!running && !finished) return
+    const input = parseInput(msg?.rawInput ?? msg?.arguments ?? msg?.input)
+    if (!opening && running && input === undefined) return
+    close(out)
+    out.push({
+      activity: {
+        id,
+        kind: SUBAGENT_TOOLS.has(name.toLowerCase()) ? 'subagent' : 'tool',
+        name,
+        status: finished ? 'finished' : 'started',
+        detail: input === undefined ? undefined : activityDetail(input),
+        files: input === undefined ? undefined : fileChanges(name, input),
+        todos: input === undefined ? undefined : stepTodos(input),
+        task: input === undefined ? undefined : taskCall(name, input),
+        output: finished ? outputText(msg) ?? resultText(msg?.output ?? msg?.result ?? msg?.content) : undefined
+      }
+    })
   }
-  const out: ParsedOutput[] = []
-  const body = str(msg?.text) || str(msg?.content) || str(msg?.delta)
-  const callId = str(msg?.id) || str(msg?.call_id) || str(msg?.tool_call_id)
-  if (msg?.type === 'model.thinking' && body.trim()) {
-    out.push({ thinking: body })
-  } else if (msg?.type === 'model.message' && body.trim()) {
-    out.push({ text: body })
-  } else if (msg?.type === 'tool.call') {
-    const name = str(msg.name) || str(msg.tool)
-    if (callId && name) {
-      const input = parseInput(msg.arguments ?? msg.input)
-      out.push({
-        activity: {
-          id: callId,
-          kind: SUBAGENT_TOOLS.has(name) ? ('subagent' as const) : ('tool' as const),
-          name,
-          status: 'started' as const,
-          detail: activityDetail(input),
-          files: fileChanges(name, input),
-          todos: stepTodos(input),
-          task: taskCall(name, input)
-        }
-      })
+
+  const parse = (line: string): ParsedOutput[] => {
+    let msg: any
+    try {
+      msg = JSON.parse(line)
+    } catch {
+      return []
     }
-  } else if (msg?.type === 'tool.result') {
-    if (callId) {
-      out.push({
-        activity: {
-          id: callId,
-          kind: 'tool' as const,
-          name: '',
-          status: 'finished' as const,
-          output: resultText(msg.output ?? msg.result ?? msg.content)
-        }
-      })
+    const out: ParsedOutput[] = []
+    const body = str(msg?.data) || str(msg?.text) || str(msg?.content) || str(msg?.delta)
+    if (msg?.type === 'thought' || msg?.type === 'model.thinking') stream(out, 'thinking', body)
+    if (msg?.type === 'text' || msg?.type === 'model.message') stream(out, 'text', body)
+    if (msg?.type === 'tool_call' || msg?.type === 'tool_call_update' || msg?.type === 'tool.call' || msg?.type === 'tool.result') {
+      activity(out, msg)
     }
-  } else if (msg?.type === 'error') {
-    if (str(msg.message).trim()) out.push({ error: msg.message })
+    if (msg?.type === 'error') {
+      close(out)
+      if (str(msg?.message).trim()) out.push({ error: msg.message })
+    }
+    const model = str(msg?.model) || Object.keys(msg?.modelUsage ?? {})[0]
+    const usage = usageFrom(msg?.usage, model)
+    if (usage) {
+      const cost = typeof msg?.total_cost_usd === 'number' ? msg.total_cost_usd : undefined
+      out.push({ usage: { ...usage, ...(cost === undefined ? {} : { cost }), total: msg?.type === 'end' } })
+    }
+    if (msg?.type === 'end') {
+      close(out)
+      out.push({ turnEnd: true })
+    }
+    return out
   }
-  const usage = usageFrom(msg?.usage, msg?.model)
-  if (usage) out.push({ usage })
-  return out
+
+  return { parse }
 }
 
 export const grokFields = (): AgentSettingField[] => [
-  { key: 'model', label: 'Model', options: choices(['', 'grok-4.5']), default: '' }
+  { key: 'model', label: 'Model', options: choices(['', 'grok-4.6', 'grok-4.5']), default: '' }
 ]
 
 export const grokArgs = (prompt: string, get: SettingReader): string[] => [
@@ -95,6 +116,6 @@ export const grokProvider: Provider = makeCliProvider({
   command: 'grok',
   fields: grokFields,
   args: grokArgs,
-  parser: parseGrokLine,
+  makeParser: grokParser,
   install: { darwin: INSTALL_SH, linux: INSTALL_SH, win32: 'irm https://x.ai/cli/install.ps1 | iex' }
 })
