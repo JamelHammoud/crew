@@ -1,4 +1,4 @@
-import { CheckGlyph, PlusGlyph, TrashGlyph } from '../../icons'
+import { CheckGlyph, PanelRightGlyph, PlusGlyph, TrashGlyph } from '../../icons'
 import Tooltip from '../Tooltip'
 import PluginMark from './PluginMark'
 
@@ -8,6 +8,7 @@ export default function PluginRow({
   blurb,
   held,
   onAdd,
+  onOpen,
   onRemove
 }: {
   seed: string
@@ -15,6 +16,7 @@ export default function PluginRow({
   blurb: string
   held?: boolean
   onAdd?: () => void
+  onOpen?: () => void
   onRemove?: () => void
 }) {
   return (
@@ -36,6 +38,17 @@ export default function PluginRow({
         </Tooltip>
       )}
       {held && !onRemove && <CheckGlyph className="w-4 h-4 shrink-0 text-fg-muted" />}
+      {onOpen && (
+        <Tooltip label={`Open ${label}`}>
+          <button
+            onClick={onOpen}
+            aria-label={`Open ${label}`}
+            className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:bg-fg/10 hover:text-fg active:scale-90"
+          >
+            <PanelRightGlyph className="w-4 h-4" />
+          </button>
+        </Tooltip>
+      )}
       {onRemove && (
         <Tooltip label={`Take ${label} out`}>
           <button

@@ -4,6 +4,7 @@ import AddPlugin from '../components/plugins/AddPlugin'
 import PluginRow from '../components/plugins/PluginRow'
 import { SearchGlyph } from '../icons'
 import { useCrew } from '../state/store'
+import { useBrowser } from '../state/browser'
 
 const matches = (find: string, ...words: string[]): boolean =>
   !find || words.some(word => word.toLowerCase().includes(find.toLowerCase().trim()))
@@ -53,6 +54,7 @@ export default function Plugins() {
                   seed={one.name}
                   label={one.label}
                   blurb={one.blurb}
+                  onOpen={one.appUrl ? () => useBrowser.getState().openPlugin(one) : undefined}
                   onRemove={() => removePlugin(one.id)}
                 />
               ))}
