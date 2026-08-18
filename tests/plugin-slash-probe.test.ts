@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { createElement, useRef, useState } from 'react'
+import { createElement, useRef, useState, type ChangeEvent, type KeyboardEvent } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { commandsIn } from '../src/shared/commands'
 import { pluginTyped, type CrewPlugin } from '../src/shared/plugins'
@@ -57,8 +57,8 @@ function Harness({
       ref,
       value,
       placeholder: 'Message',
-      onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => write(event.target.value),
-      onKeyDown: (event: React.KeyboardEvent<HTMLTextAreaElement>) => slash.onKeyDown(event)
+      onChange: (event: ChangeEvent<HTMLTextAreaElement>) => write(event.target.value),
+      onKeyDown: (event: KeyboardEvent<HTMLTextAreaElement>) => slash.onKeyDown(event)
     }),
     createElement(SlashMenu, {
       matches: slash.matches,
@@ -119,6 +119,6 @@ describe('the plugin slash launcher', () => {
   it('keeps an MCP-only plugin in the list without making it a launcher', () => {
     render(createElement(Harness, { plugins: [figma] }))
     type('/plugin ')
-    expect(screen.getByRole('button', { name: /Figma/ })).toBeDisabled()
+    expect(screen.getByRole('button', { name: /Figma/ }).hasAttribute('disabled')).toBe(true)
   })
 })
