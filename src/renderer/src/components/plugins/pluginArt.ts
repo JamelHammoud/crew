@@ -20,6 +20,7 @@ import supabaseMark from '../../media/plugins/supabase.png'
 import vercelMark from '../../media/plugins/vercel.png'
 
 export const PLUGIN_ART: Record<string, string> = {
+  raylight: 'https://www.raylight.app/logo-512.png',
   figma: figmaMark,
   'figma-desktop': figmaMark,
   canva: canvaMark,

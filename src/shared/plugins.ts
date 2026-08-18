@@ -350,7 +350,8 @@ export const offerForAppUrl = (raw: string): PluginOffer | undefined => {
   return PLUGIN_OFFERS.find(offer => {
     if (!offer.appUrl) return false
     const app = new URL(offer.appUrl)
-    return url.protocol === app.protocol && url.hostname === app.hostname
+    const host = (name: string) => name.replace(/^www\./, '')
+    return url.protocol === app.protocol && host(url.hostname) === host(app.hostname)
   })
 }
 
