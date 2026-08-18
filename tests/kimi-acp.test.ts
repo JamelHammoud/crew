@@ -261,6 +261,27 @@ describe('what kimi asks the client', () => {
     expect(ended.signal).toBe('SIGKILL')
     dialog.close?.()
   })
+
+  it('hands the requested working folder and environment to the terminal command', async () => {
+    const cwd = tmpDir('kimi-terminal-env')
+    const dialog = kimiDialog('go', cwd, reader())
+    const sent: string[] = []
+    dialog.connect?.(line => sent.push(line))
+    const opened = dialog.answer(
+      request(40, 'terminal/create', {
+        command: process.execPath,
+        args: ['-e', 'process.stdout.write(process.env.CREW_TERMINAL_TEST + "|" + process.cwd())'],
+        env: [{ name: 'CREW_TERMINAL_TEST', value: 'yes' }],
+        cwd
+      })
+    )
+    const terminalId = JSON.parse(opened[0]).result.terminalId
+    dialog.answer(request(41, 'terminal/wait_for_exit', { terminalId }))
+    while (!sent.length) await new Promise(resolve => setTimeout(resolve, 10))
+    const output = JSON.parse(dialog.answer(request(42, 'terminal/output', { terminalId }))[0]).result.output
+    expect(output).toBe(`yes|${cwd}`)
+    dialog.close?.()
+  })
 })
 
 describe('what kimi says while it works', () => {
