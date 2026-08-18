@@ -1,4 +1,5 @@
-import { acpDialog, CANCELLED, chunkText, makeLanes, str } from './acp'
+import type { McpServer } from '../../shared/plugins'
+import { acpDialog, acpServers, CANCELLED, chunkText, makeLanes, str } from './acp'
 import type { SettingReader } from './cli'
 import { activityDetail, fileChanges, stepTodos } from './detail'
 import { kimiUsage, kimiWire } from './kimi-usage'
@@ -17,6 +18,9 @@ const SUBAGENT_TOOLS = new Set(['Agent', 'Task'])
 
 const STARTED = new Set(['pending', 'in_progress'])
 
+const kimiServers = (servers: Record<string, McpServer>): unknown[] =>
+  acpServers(Object.fromEntries(Object.entries(servers).filter(([, server]) => 'url' in server)))
+
 // A stop that is not the end of a turn has a reason, and these are the ones the
 // protocol names rather than describes.
 const STOPS: Record<string, string> = {
@@ -34,7 +38,7 @@ export function kimiDialog(prompt: string, cwd: string, get: SettingReader, opti
   const config: Array<[string, string]> = [['mode', get('mode') || MODE]]
   if (model) config.push(['model', model])
   if (thinking === 'on' || thinking === 'off') config.push(['thinking', thinking])
-  return acpDialog({ prompt, cwd, run: options, config })
+  return acpDialog({ prompt, cwd, run: options, config, servers: kimiServers })
 }
 
 const outputText = (update: any): string => {

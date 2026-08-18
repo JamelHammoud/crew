@@ -50,13 +50,14 @@ export interface AcpDialogOptions {
   prompt: string
   cwd: string
   run?: RunOptions
+  servers?: (servers: Record<string, McpServer>) => unknown[]
   // Said over the wire once the session exists, one at a time, for a CLI whose
   // run is set up that way. A CLI that takes the same answers as flags passes
   // none, and the walk goes straight from the session to the turn.
   config?: Array<[string, string]>
 }
 
-export function acpDialog({ prompt, cwd, run = {}, config = [] }: AcpDialogOptions): Dialog {
+export function acpDialog({ prompt, cwd, run = {}, config = [], servers = acpServers }: AcpDialogOptions): Dialog {
   const pending = new Map<number, Stage>()
   const settings = [...config]
   const steers: string[] = []
@@ -89,7 +90,7 @@ export function acpDialog({ prompt, cwd, run = {}, config = [] }: AcpDialogOptio
   }
 
   const answered = (stage: Stage, result: any): string[] => {
-    if (stage === 'init') return [ask('session', 'session/new', { cwd, mcpServers: acpServers(run.mcp?.servers) })]
+    if (stage === 'init') return [ask('session', 'session/new', { cwd, mcpServers: servers(run.mcp?.servers ?? {}) })]
     if (stage === 'session') {
       sessionId = str(result?.sessionId)
       return sessionId ? [step()] : []
