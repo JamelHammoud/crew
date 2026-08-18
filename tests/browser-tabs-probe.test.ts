@@ -489,9 +489,13 @@ describe('a page an agent shows', () => {
 
   it('shows a useful failure instead of an empty plugin page', () => {
     useBrowser.getState().openPlugin({ name: 'raylight' })
-    const tab = useBrowser.getState().tabs[0]!
-    useBrowser.getState().updateTab(tab.id, { loading: false, error: 'The network connection was lost' })
-    const { getByText, getByRole } = render(createElement(BrowserPanel))
+    const { container, getByText, getByRole } = render(createElement(BrowserPanel))
+    const failed = Object.assign(new Event('did-fail-load'), {
+      errorCode: -105,
+      errorDescription: 'The network connection was lost',
+      isMainFrame: true
+    })
+    act(() => container.querySelector('webview')!.dispatchEvent(failed))
     expect(getByText('Raylight could not open')).toBeTruthy()
     expect(getByText('The network connection was lost')).toBeTruthy()
     expect(getByRole('button', { name: 'Retry' })).toBeTruthy()
