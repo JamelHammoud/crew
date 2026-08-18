@@ -145,7 +145,7 @@ function makeTab(url = ''): BrowserTab {
     url,
     title: '',
     favicon: null,
-    loading: Boolean(url),
+    loading: false,
     error: '',
     canGoBack: false,
     canGoForward: false,
@@ -303,7 +303,7 @@ export const useBrowser = create<BrowserState>((write, get) => {
         }))
         return
       }
-      const tab = { ...makeTab(target), plugin: resolved.name, pluginLabel: resolved.label }
+      const tab = { ...makeTab(target), loading: true, plugin: resolved.name, pluginLabel: resolved.label }
       set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id, width }))
     },
     // A page an agent asked somebody to look at. It stands the panel up rather
