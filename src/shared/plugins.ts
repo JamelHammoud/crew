@@ -253,7 +253,8 @@ export function mcpServersOf(
   secrets: Readonly<Record<string, string>> = {}
 ): Record<string, McpServer> {
   const out: Record<string, McpServer> = {}
-  for (const plugin of plugins.slice(0, PLUGIN_LIMIT)) {
+  for (const saved of plugins.slice(0, PLUGIN_LIMIT)) {
+    const plugin = resolvePlugin(saved)
     const wanted = plugin.keys ?? []
     const env: Record<string, string> = {}
     for (const key of wanted) {
@@ -275,14 +276,17 @@ export function mcpServersOf(
   return out
 }
 
-export const offerOf = (name: string): PluginOffer | undefined =>
-  catalogPlugin(name) ? offerFromCatalog(catalogPlugin(name)!) : undefined
+export const offerOf = (name: string): PluginOffer | undefined => {
+  const plugin = catalogPlugin(name)
+  return plugin ? offerFromCatalog(plugin) : undefined
+}
 
 export const pluginNamed = (value: string, plugins: readonly CrewPlugin[]): CrewPlugin | null => {
   const match = /^\/(\S+)\s*$/.exec(value)
   if (!match) return null
   const name = pluginKey(match[1])
-  return plugins.find(plugin => pluginKey(plugin.name) === name && Boolean(plugin.appUrl)) ?? null
+  const saved = plugins.find(plugin => pluginKey(plugin.name) === name && pluginCanLaunch(plugin))
+  return saved ? resolvePlugin(saved) : null
 }
 
 export const pluginTyped = (value: string, plugins: readonly CrewPlugin[]): CrewPlugin | null =>
@@ -291,18 +295,8 @@ export const pluginTyped = (value: string, plugins: readonly CrewPlugin[]): Crew
 export const pluginMenuInput = (value: string): boolean => /^\/plugin(?:\s.*)?$/i.test(value)
 
 export const offerForAppUrl = (raw: string): PluginOffer | undefined => {
-  let url: URL
-  try {
-    url = new URL(raw)
-  } catch {
-    return undefined
-  }
-  return PLUGIN_OFFERS.find(offer => {
-    if (!offer.appUrl) return false
-    const app = new URL(offer.appUrl)
-    const host = (name: string) => name.replace(/^www\./, '')
-    return url.protocol === app.protocol && host(url.hostname) === host(app.hostname)
-  })
+  const plugin = catalogPluginForUrl(raw)
+  return plugin ? offerFromCatalog(plugin) : undefined
 }
 
 export { PLUGIN_CATALOG, PLUGIN_GROUPS }
