@@ -47,6 +47,7 @@ import { MenuDivider, MenuItem, Popover } from './Popover'
 import Spinner from './Spinner'
 import TerminalView from './TerminalView'
 import Tooltip from './Tooltip'
+import PluginMark from './plugins/PluginMark'
 
 export const showsImage = (tab: BrowserTab): boolean =>
   tab.kind === 'image' || (tab.kind === 'web' && isImageUrl(tab.initialUrl))
@@ -54,6 +55,7 @@ export const showsImage = (tab: BrowserTab): boolean =>
 const imageName = (url: string): string => (url.split(/[?#]/)[0] ?? '').split('/').pop() || 'Image'
 
 function tabLabel(tab: BrowserTab): string {
+  if (tab.plugin) return tab.pluginLabel
   if (tab.kind === 'plan') return 'Plan'
   if (tab.kind === 'work') return 'Board'
   // What was asked, so a row of questions is read at a glance.
@@ -442,6 +444,8 @@ function TabPill({
       >
         {tab.loading ? (
           <Spinner size={14} className="text-fg-muted" />
+        ) : tab.plugin ? (
+          <PluginMark seed={tab.plugin} box={16} />
         ) : tab.kind === 'agent' ? (
           tab.threadId ? (
             <SubagentMark seed={tab.threadId} size={18} />

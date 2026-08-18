@@ -1,4 +1,5 @@
 import { canPreview } from '../../../shared/files'
+import { offerForAppUrl, type CrewPlugin } from '../../../shared/plugins'
 import { create } from 'zustand'
 
 export type BrowserTab = {
@@ -55,9 +56,12 @@ export type BrowserTab = {
   // the way you asked for.
   preview: boolean
   generation: number
+  plugin: string | null
+  pluginLabel: string
 }
 
 export const DEFAULT_WIDTH = 480
+export const PLUGIN_WIDTH = 760
 export const MIN_WIDTH = 360
 export const MINIMIZE_AT = 240
 
@@ -90,6 +94,7 @@ type BrowserState = {
   openPanel(): void
   closePanel(): void
   openUrl(url: string): void
+  openPlugin(plugin: Pick<CrewPlugin, 'name' | 'label' | 'appUrl'>, url?: string): void
   showPage(url: string): void
   showFile(path: string): void
   openImage(src: string, name: string): void
@@ -157,7 +162,9 @@ function makeTab(url = ''): BrowserTab {
     tree: false,
     open: [],
     preview: false,
-    generation: 0
+    generation: 0,
+    plugin: null,
+    pluginLabel: ''
   }
 }
 
@@ -265,12 +272,48 @@ export const useBrowser = create<BrowserState>((write, get) => {
       const tab = makeTab(url)
       set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
     },
+    openPlugin: (plugin, url) => {
+      if (!plugin.appUrl) return
+      const target = url ?? plugin.appUrl
+      const width = clampWidth(Math.max(get().width, PLUGIN_WIDTH))
+      const existing = get().tabs.find(t => t.kind === 'web' && t.plugin === plugin.name)
+      if (existing) {
+        write(s => ({
+          activeTabId: existing.id,
+          open: true,
+          width,
+          tabs: s.tabs.map(tab =>
+            tab.id !== existing.id
+              ? tab
+              : {
+                  ...tab,
+                  pluginLabel: plugin.label,
+                  ...(url
+                    ? {
+                        initialUrl: target,
+                        url: target,
+                        generation: sameAddress(tab.url, target) ? tab.generation + 1 : tab.generation
+                      }
+                    : {})
+                }
+          )
+        }))
+        return
+      }
+      const tab = { ...makeTab(target), plugin: plugin.name, pluginLabel: plugin.label }
+      set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id, width }))
+    },
     // A page an agent asked somebody to look at. It stands the panel up rather
     // than waiting to be found, which is the whole of what showing one is, and a
     // page already in a tab is loaded again rather than left standing at what it
     // looked like before the change being shown. An address the webview has
     // tidied is the same address, so a trailing slash is not a second tab.
     showPage: url => {
+      const plugin = offerForAppUrl(url)
+      if (plugin) {
+        get().openPlugin(plugin, url)
+        return
+      }
       const existing = get().tabs.find(
         t => t.kind === 'web' && (sameAddress(t.url, url) || sameAddress(t.initialUrl, url))
       )
