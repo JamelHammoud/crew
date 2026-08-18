@@ -10,7 +10,6 @@ import AddPlugin from '../components/plugins/AddPlugin'
 import PluginRow from '../components/plugins/PluginRow'
 import { SearchGlyph } from '../icons'
 import { useCrew } from '../state/store'
-import { useBrowser } from '../state/browser'
 import { runPluginAction } from '../state/pluginState'
 
 const matches = (find: string, ...words: string[]): boolean =>

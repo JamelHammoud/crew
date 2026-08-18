@@ -239,7 +239,7 @@ export default function ThreadView({
   const send = () => {
     const plugin = pluginNamed(text, plugins)
     if (plugin) {
-      useBrowser.getState().openPlugin(plugin)
+      runPluginAction(plugin)
       setThreadDraft(threadId, '')
       slash.close()
       return
