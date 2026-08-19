@@ -103,6 +103,8 @@ const EFFORTS = [
   { value: 'xhigh', label: 'Extra high' }
 ]
 
+const EFFORTS_45 = EFFORTS.filter(option => option.value !== 'xhigh')
+
 const MODES = [
   { value: 'anything', label: 'Anything' },
   { value: 'safe', label: 'Safe changes' },
@@ -125,7 +127,13 @@ const SANDBOXES = [
 
 export const grokFields = (): AgentSettingField[] => [
   { key: 'model', label: 'Model', options: choices(['', 'grok-4.6', 'grok-4.5']), default: '' },
-  { key: 'effort', label: 'Thinking', options: EFFORTS, default: '' },
+  {
+    key: 'effort',
+    label: 'Thinking',
+    options: EFFORTS,
+    optionsWhen: [{ key: 'model', value: 'grok-4.5', options: EFFORTS_45 }],
+    default: ''
+  },
   {
     key: 'instructions',
     label: 'Instructions',

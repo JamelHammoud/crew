@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import type { AgentSettingField, AgentSettings } from '../../../../shared/llm'
-import { ON, fieldKind, fieldSections, isOn, visibleSettingFields } from '../../../../shared/llm'
+import { ON, fieldKind, fieldSections, isOn, settingOptions, visibleSettingFields } from '../../../../shared/llm'
 import Select from '../Select'
 import TextField, { TextArea } from '../TextField'
 import Toggle from '../Toggle'
@@ -51,7 +51,7 @@ export function SettingControl({
     <Select
       name={field.label}
       value={value}
-      options={field.options ?? []}
+      options={settingOptions(field, settings)}
       onChange={next => onChange(field.key, next)}
     />
   )
