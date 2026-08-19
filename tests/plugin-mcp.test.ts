@@ -200,7 +200,7 @@ describe('what each CLI is really handed', () => {
     expect(claudeProvider.mcp).toBe('file')
     expect(codexProvider.mcp).toBe('inline')
     expect(kimiProvider.mcp).toBe('inline')
-    expect(grokProvider.mcp).toBeUndefined()
+    expect(grokProvider.mcp).toBe('inline')
     expect(localProvider.mcp).toBeUndefined()
   })
 })
