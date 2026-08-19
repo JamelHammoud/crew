@@ -613,7 +613,7 @@ describe('real CLI smoke (CREW_REAL_CLI=1)', () => {
         'Reply with exactly: crew-ok',
         tmpDir('real-grok'),
         { onStep: () => {} },
-        { model: 'grok-4.6' }
+        { model: 'grok-4.6', effort: 'low', web: '', planning: '', subagents: '', maxTurns: '2' }
       )
       const { text } = await run.done
       expect(text).toContain('crew-ok')
