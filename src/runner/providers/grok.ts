@@ -70,25 +70,41 @@ export function grokParser(): RunParser {
       return []
     }
     const out: ParsedOutput[] = []
-    const body = str(msg?.data) || str(msg?.text) || str(msg?.content) || str(msg?.delta)
-    if (msg?.type === 'thought' || msg?.type === 'model.thinking') stream(out, 'thinking', body)
-    if (msg?.type === 'text' || msg?.type === 'model.message') stream(out, 'text', body)
-    if (msg?.type === 'tool_call' || msg?.type === 'tool_call_update' || msg?.type === 'tool.call' || msg?.type === 'tool.result') {
-      activity(out, msg)
+    const update = str(msg?.method) === 'session/update' ? msg?.params?.update ?? msg?.params : msg
+    const kind = str(update?.sessionUpdate) || str(update?.type)
+    const body =
+      chunkText(update?.content) || str(update?.data) || str(update?.text) || str(update?.content) || str(update?.delta)
+    if (kind === 'thought' || kind === 'model.thinking' || kind === 'agent_thought_chunk') {
+      stream(out, 'thinking', body)
     }
-    if (msg?.type === 'error') {
+    if (kind === 'text' || kind === 'model.message' || kind === 'agent_message_chunk') stream(out, 'text', body)
+    if (kind === 'tool_call' || kind === 'tool_call_update' || kind === 'tool.call' || kind === 'tool.result') {
+      activity(out, update)
+    }
+    if (kind === 'error' || (msg?.error && msg?.id !== undefined)) {
       close(out)
-      if (str(msg?.message).trim()) out.push({ error: msg.message })
+      const message = str(update?.message) || str(msg?.error?.message)
+      if (message.trim()) out.push({ error: message })
     }
-    const model = str(msg?.model) || Object.keys(msg?.modelUsage ?? {})[0]
-    const usage = usageFrom(msg?.usage, model)
+    const meta = msg?.result?._meta
+    const model = str(meta?.modelId) || str(update?.model) || Object.keys(update?.modelUsage ?? {})[0]
+    const rawUsage = meta?.usage ?? update?.usage
+    const usage = usageFrom(rawUsage, model)
+    const stopped = str(msg?.result?.stopReason)
     if (usage) {
-      const cost = typeof msg?.total_cost_usd === 'number' ? msg.total_cost_usd : undefined
-      out.push({ usage: { ...usage, ...(cost === undefined ? {} : { cost }), total: msg?.type === 'end' } })
+      const dollars =
+        typeof update?.total_cost_usd === 'number'
+          ? update.total_cost_usd
+          : typeof rawUsage?.costUsdTicks === 'number'
+            ? rawUsage.costUsdTicks / 1_000_000_000
+            : undefined
+      out.push({
+        usage: { ...usage, ...(dollars === undefined ? {} : { cost: dollars }), total: kind === 'end' || !!stopped }
+      })
     }
-    if (msg?.type === 'end') {
+    if (kind === 'end' || stopped) {
       close(out)
-      out.push({ turnEnd: true })
+      if (kind === 'end' || stopped !== CANCELLED) out.push({ turnEnd: true })
     }
     return out
   }
