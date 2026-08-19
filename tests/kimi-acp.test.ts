@@ -283,6 +283,21 @@ describe('what kimi asks the client', () => {
     expect(output).toBe(`yes|${realpathSync(cwd)}`)
     dialog.close?.()
   })
+
+  it('runs a shell command handed over as one string', async () => {
+    const cwd = tmpDir('acp-terminal-shell')
+    const dialog = kimiDialog('go', cwd, reader())
+    const sent: string[] = []
+    dialog.connect?.(line => sent.push(line))
+    const command = process.platform === 'win32' ? 'cmd /d /s /c cd' : '/bin/sh -lc pwd'
+    const opened = dialog.answer(request(50, 'terminal/create', { command, cwd }))
+    const terminalId = JSON.parse(opened[0]).result.terminalId
+    dialog.answer(request(51, 'terminal/wait_for_exit', { terminalId }))
+    while (!sent.length) await new Promise(resolve => setTimeout(resolve, 10))
+    const output = JSON.parse(dialog.answer(request(52, 'terminal/output', { terminalId }))[0]).result.output.trim()
+    expect(realpathSync(output)).toBe(realpathSync(cwd))
+    dialog.close?.()
+  })
 })
 
 describe('what kimi says while it works', () => {
