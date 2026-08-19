@@ -89,7 +89,20 @@ export function grokParser(): RunParser {
     const meta = msg?.result?._meta
     const model = str(meta?.modelId) || str(update?.model) || Object.keys(update?.modelUsage ?? {})[0]
     const rawUsage = meta?.usage ?? update?.usage
-    const usage = usageFrom(rawUsage, model)
+    const acpUsage =
+      typeof rawUsage?.inputTokens === 'number' && typeof rawUsage?.cachedReadTokens === 'number'
+        ? {
+            input_tokens: Math.max(
+              0,
+              rawUsage.inputTokens - rawUsage.cachedReadTokens -
+                (typeof rawUsage.cacheCreationTokens === 'number' ? rawUsage.cacheCreationTokens : 0)
+            ),
+            output_tokens: rawUsage.outputTokens,
+            cache_read_input_tokens: rawUsage.cachedReadTokens,
+            cache_creation_input_tokens: rawUsage.cacheCreationTokens
+          }
+        : rawUsage
+    const usage = usageFrom(acpUsage, model)
     const stopped = str(msg?.result?.stopReason)
     if (usage) {
       const dollars =
