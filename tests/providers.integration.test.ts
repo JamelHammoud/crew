@@ -505,6 +505,7 @@ describe('grok parser matches the real streaming-json format', () => {
       'disallowedTools',
       'maxTurns'
     ])
+    expect(fields.find(field => field.key === 'maxTurns')?.min).toBe(2)
   })
 })
 
