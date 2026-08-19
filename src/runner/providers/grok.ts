@@ -246,11 +246,7 @@ const permissionArgs = (mode: string): string[] => {
   return ['--always-approve']
 }
 
-export const grokArgs = (prompt: string, get: SettingReader): string[] => [
-  '-p',
-  prompt,
-  '--output-format',
-  'streaming-json',
+export const grokArgs = (_prompt: string, get: SettingReader): string[] => [
   ...permissionArgs(get('mode')),
   ...flag('--model', get('model')),
   ...flag('--reasoning-effort', get('effort')),
@@ -261,13 +257,22 @@ export const grokArgs = (prompt: string, get: SettingReader): string[] => [
   ...(!isOn(get('subagents')) ? ['--no-subagents'] : []),
   ...flag('--tools', get('tools').trim()),
   ...flag('--disallowed-tools', get('disallowedTools').trim()),
-  ...flag('--max-turns', get('maxTurns'))
+  ...flag('--max-turns', get('maxTurns')),
+  'agent',
+  'stdio'
 ]
 
 export const grokEnv = (get: SettingReader): NodeJS.ProcessEnv => {
   const memory = get('memory')
   return memory ? { GROK_MEMORY: memory === ON ? '1' : '0' } : {}
 }
+
+export const grokDialog = (
+  prompt: string,
+  cwd: string,
+  _get: SettingReader,
+  options: RunOptions = {}
+): Dialog => acpDialog({ prompt, cwd, run: options, terminal: true })
 
 const INSTALL_SH = 'curl -fsSL https://x.ai/cli/install.sh | bash'
 
@@ -279,5 +284,8 @@ export const grokProvider: Provider = makeCliProvider({
   args: grokArgs,
   env: grokEnv,
   makeParser: grokParser,
+  dialog: (prompt, cwd, get, run) => grokDialog(prompt, cwd, get, run),
+  steerable: true,
+  mcp: 'inline',
   install: { darwin: INSTALL_SH, linux: INSTALL_SH, win32: 'irm https://x.ai/cli/install.ps1 | iex' }
 })
