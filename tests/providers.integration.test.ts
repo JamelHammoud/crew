@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { parseClaudeLine } from '../src/runner/providers/claude'
-import { grokArgs, grokFields, grokParser } from '../src/runner/providers/grok'
+import { grokArgs, grokDialog, grokFields, grokParser, grokProvider } from '../src/runner/providers/grok'
 import { kimiParser } from '../src/runner/providers/kimi-acp'
 import { tmpDir } from './helpers/session'
 import { makeFakeProvider, fakeCliPath } from './helpers/fake-provider'
@@ -397,9 +397,7 @@ describe('grok parser matches the real streaming-json format', () => {
       { thinkingStart: { index: 1 } },
       { thinkingDelta: { index: 1, text: 'let ' } }
     ])
-    expect(parse({ type: 'thought', data: 'me check' })).toEqual([
-      { thinkingDelta: { index: 1, text: 'me check' } }
-    ])
+    expect(parse({ type: 'thought', data: 'me check' })).toEqual([{ thinkingDelta: { index: 1, text: 'me check' } }])
     expect(parse({ type: 'text', data: 'ok' })).toEqual([
       { blockStop: { index: 1 } },
       { textStart: { index: 2 } },
@@ -438,12 +436,14 @@ describe('grok parser matches the real streaming-json format', () => {
     expect(sub[0].activity?.kind).toBe('subagent')
     expect(sub[0].activity?.detail).toBe('explore')
 
-    expect(parse({
-      type: 'tool_call_update',
-      toolCallId: 'c1',
-      status: 'completed',
-      rawOutput: { output_for_prompt: 'exit: 0\ndone' }
-    })).toEqual([
+    expect(
+      parse({
+        type: 'tool_call_update',
+        toolCallId: 'c1',
+        status: 'completed',
+        rawOutput: { output_for_prompt: 'exit: 0\ndone' }
+      })
+    ).toEqual([
       {
         activity: {
           id: 'c1',
@@ -514,6 +514,96 @@ describe('grok parser matches the real streaming-json format', () => {
       'maxTurns'
     ])
     expect(fields.find(field => field.key === 'maxTurns')?.min).toBe(1)
+  })
+
+  it('opens one live session and turns a steer into its next prompt', () => {
+    const dialog = grokDialog('start here', '/repo', () => '')
+    const begin = JSON.parse(dialog.begin()[0])
+    expect(begin.method).toBe('initialize')
+    expect(begin.params.clientCapabilities.terminal).toBe(true)
+
+    const opened = dialog.answer(JSON.stringify({ jsonrpc: '2.0', id: 1, result: { protocolVersion: 1 } }))
+    expect(JSON.parse(opened[0])).toMatchObject({ id: 2, method: 'session/new', params: { cwd: '/repo' } })
+
+    const started = dialog.answer(JSON.stringify({ jsonrpc: '2.0', id: 2, result: { sessionId: 'grok-session' } }))
+    expect(JSON.parse(started[0])).toMatchObject({
+      id: 3,
+      method: 'session/prompt',
+      params: { sessionId: 'grok-session', prompt: [{ type: 'text', text: 'start here' }] }
+    })
+
+    expect(JSON.parse(dialog.steer('change direction')!)).toEqual({
+      jsonrpc: '2.0',
+      method: 'session/cancel',
+      params: { sessionId: 'grok-session' }
+    })
+    const steered = dialog.answer(JSON.stringify({ jsonrpc: '2.0', id: 3, result: { stopReason: 'cancelled' } }))
+    expect(JSON.parse(steered[0])).toMatchObject({
+      id: 4,
+      method: 'session/prompt',
+      params: { sessionId: 'grok-session', prompt: [{ type: 'text', text: 'change direction' }] }
+    })
+    expect(grokProvider.steerable).toBe(true)
+  })
+
+  it('reads Grok agent events and completes only the final turn', () => {
+    const live = grokParser()
+    const note = (update: Record<string, unknown>) =>
+      live.parse(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'session/update',
+          params: { sessionId: 'grok-session', update }
+        })
+      )
+
+    expect(note({ sessionUpdate: 'agent_thought_chunk', content: { type: 'text', text: 'checking' } })).toEqual([
+      { thinkingStart: { index: 1 } },
+      { thinkingDelta: { index: 1, text: 'checking' } }
+    ])
+    expect(note({ sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: 'working' } })).toEqual([
+      { blockStop: { index: 1 } },
+      { textStart: { index: 2 } },
+      { textDelta: { index: 2, text: 'working' } }
+    ])
+    expect(
+      note({
+        sessionUpdate: 'tool_call',
+        toolCallId: 'call-1',
+        title: 'run_terminal_command',
+        status: 'pending',
+        rawInput: { command: 'pwd' }
+      })[1].activity
+    ).toMatchObject({ name: 'run_terminal_command', status: 'started', detail: 'pwd' })
+
+    expect(live.parse(JSON.stringify({ jsonrpc: '2.0', id: 3, result: { stopReason: 'cancelled' } }))).toEqual([])
+    expect(
+      live.parse(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          id: 4,
+          result: {
+            stopReason: 'end_turn',
+            _meta: {
+              modelId: 'grok-4.6',
+              usage: { inputTokens: 100, outputTokens: 8, cachedReadTokens: 40, costUsdTicks: 25000000 }
+            }
+          }
+        })
+      )
+    ).toEqual([
+      {
+        usage: {
+          model: 'grok-4.6',
+          input: 60,
+          output: 8,
+          cacheRead: 40,
+          cost: 0.025,
+          total: true
+        }
+      },
+      { turnEnd: true }
+    ])
   })
 })
 
@@ -653,6 +743,35 @@ describe('real CLI smoke (CREW_REAL_CLI=1)', () => {
         status: 'done',
         output: `exit: 0\n${fs.realpathSync(cwd)}`
       })
+    },
+    90000
+  )
+
+  realCli('grok')(
+    'grok takes a steer',
+    async () => {
+      const { grokProvider } = await import('../src/runner/providers/grok')
+      let started = () => {}
+      const working = new Promise<void>(resolve => {
+        started = resolve
+      })
+      const run = grokProvider.start(
+        'Write a detailed history of programming languages in at least 10000 words.',
+        tmpDir('real-grok-steer'),
+        {
+          onStep: step => {
+            if (step.status === 'running') started()
+          }
+        },
+        { model: 'grok-4.6', effort: 'low', web: '', planning: '', subagents: '' }
+      )
+      await Promise.race([
+        working,
+        new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Grok did not start working.')), 30000))
+      ])
+      expect(run.steer?.('Stop that and reply with exactly: steered-ok')).toBe(true)
+      const { text } = await run.done
+      expect(text).toContain('steered-ok')
     },
     90000
   )

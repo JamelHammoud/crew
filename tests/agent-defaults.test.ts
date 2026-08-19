@@ -63,14 +63,8 @@ describe('an agent made and left alone runs the way it always did', () => {
     })
   })
 
-  it('grok keeps the run it used before its settings were exposed', () => {
-    expect(grokArgs('hi', asked(grokFields()))).toEqual([
-      '-p',
-      'hi',
-      '--output-format',
-      'streaming-json',
-      '--always-approve'
-    ])
+  it('grok opens its agent connection with the same default permissions', () => {
+    expect(grokArgs('hi', asked(grokFields()))).toEqual(['agent', '--always-approve', 'stdio'])
     expect(grokEnv(asked(grokFields()))).toEqual({})
   })
 
@@ -169,16 +163,8 @@ describe('what a person picks is what goes out', () => {
       })
     )
     expect(args).toEqual([
-      '-p',
-      'hi',
-      '--output-format',
-      'streaming-json',
       '--permission-mode',
       'plan',
-      '--model',
-      'grok-4.6',
-      '--reasoning-effort',
-      'xhigh',
       '--rules',
       'Keep the answer short.',
       '--sandbox',
@@ -191,7 +177,13 @@ describe('what a person picks is what goes out', () => {
       '--disallowed-tools',
       'write, image_gen',
       '--max-turns',
-      '12'
+      '12',
+      'agent',
+      '--model',
+      'grok-4.6',
+      '--reasoning-effort',
+      'xhigh',
+      'stdio'
     ])
   })
 

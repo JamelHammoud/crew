@@ -125,13 +125,16 @@ export class AcpTerminalHost {
   private create(id: unknown, params: any): string {
     const command = str(params?.command)
     if (!command) return error(id, 'The terminal command is missing.')
-    const invocation = commandInvocation(command, argsOf(params?.args))
+    const args = argsOf(params?.args)
+    const shell = args.length === 0 && /\s/.test(command)
+    const invocation = commandInvocation(command, args)
     let child: ChildProcessWithoutNullStreams
     try {
-      child = spawn(invocation.command, invocation.args, {
+      child = spawn(shell ? command : invocation.command, shell ? [] : invocation.args, {
         cwd: str(params?.cwd) || this.cwd,
         env: { ...process.env, ...pairs(params?.env) },
         detached: detachCliProcess(),
+        shell,
         stdio: ['pipe', 'pipe', 'pipe']
       })
     } catch (cause) {

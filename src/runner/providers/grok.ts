@@ -1,11 +1,11 @@
 import { ON, isOn, type AgentSettingField } from '../../shared/llm'
-import { chunkText, makeLanes, str } from './acp'
+import { acpDialog, CANCELLED, chunkText, makeLanes, str } from './acp'
 import { choices, flag, makeCliProvider, type SettingReader } from './cli'
 import { activityDetail, fileChanges, stepTodos } from './detail'
 import { resultText } from './output'
 import { taskCall } from './tasks'
 import { usageFrom } from './tokens'
-import type { ParsedOutput, Provider, RunParser } from './types'
+import type { Dialog, ParsedOutput, Provider, RunOptions, RunParser } from './types'
 
 const SUBAGENT_TOOLS = new Set(['task', 'agent', 'subagent', 'spawn_subagent'])
 const STARTED = new Set(['pending', 'in_progress'])
@@ -35,8 +35,8 @@ export function grokParser(): RunParser {
   const activity = (out: ParsedOutput[], msg: any): void => {
     const id = str(msg?.toolCallId) || str(msg?.id) || str(msg?.call_id) || str(msg?.tool_call_id)
     if (!id) return
-    const opening = msg?.type === 'tool_call' || msg?.type === 'tool.call'
-    const current = str(msg?.toolName) || str(msg?.name) || str(msg?.tool)
+    const opening = msg?.type === 'tool_call' || msg?.type === 'tool.call' || str(msg?.sessionUpdate) === 'tool_call'
+    const current = str(msg?.toolName) || str(msg?.title) || str(msg?.name) || str(msg?.tool)
     if (opening && current) names.set(id, current)
     const name = names.get(id) || current
     const status = str(msg?.status)
@@ -56,7 +56,7 @@ export function grokParser(): RunParser {
         files: input === undefined ? undefined : fileChanges(name, input),
         todos: input === undefined ? undefined : stepTodos(input),
         task: input === undefined ? undefined : taskCall(name, input),
-        output: finished ? outputText(msg) ?? resultText(msg?.output ?? msg?.result ?? msg?.content) : undefined
+        output: finished ? (outputText(msg) ?? resultText(msg?.output ?? msg?.result ?? msg?.content)) : undefined
       }
     })
   }
@@ -69,25 +69,55 @@ export function grokParser(): RunParser {
       return []
     }
     const out: ParsedOutput[] = []
-    const body = str(msg?.data) || str(msg?.text) || str(msg?.content) || str(msg?.delta)
-    if (msg?.type === 'thought' || msg?.type === 'model.thinking') stream(out, 'thinking', body)
-    if (msg?.type === 'text' || msg?.type === 'model.message') stream(out, 'text', body)
-    if (msg?.type === 'tool_call' || msg?.type === 'tool_call_update' || msg?.type === 'tool.call' || msg?.type === 'tool.result') {
-      activity(out, msg)
+    const update = str(msg?.method) === 'session/update' ? (msg?.params?.update ?? msg?.params) : msg
+    const kind = str(update?.sessionUpdate) || str(update?.type)
+    const body =
+      chunkText(update?.content) || str(update?.data) || str(update?.text) || str(update?.content) || str(update?.delta)
+    if (kind === 'thought' || kind === 'model.thinking' || kind === 'agent_thought_chunk') {
+      stream(out, 'thinking', body)
     }
-    if (msg?.type === 'error') {
+    if (kind === 'text' || kind === 'model.message' || kind === 'agent_message_chunk') stream(out, 'text', body)
+    if (kind === 'tool_call' || kind === 'tool_call_update' || kind === 'tool.call' || kind === 'tool.result') {
+      activity(out, update)
+    }
+    if (kind === 'error' || (msg?.error && msg?.id !== undefined)) {
       close(out)
-      if (str(msg?.message).trim()) out.push({ error: msg.message })
+      const message = str(update?.message) || str(msg?.error?.message)
+      if (message.trim()) out.push({ error: message })
     }
-    const model = str(msg?.model) || Object.keys(msg?.modelUsage ?? {})[0]
-    const usage = usageFrom(msg?.usage, model)
+    const meta = msg?.result?._meta
+    const model = str(meta?.modelId) || str(update?.model) || Object.keys(update?.modelUsage ?? {})[0]
+    const rawUsage = meta?.usage ?? update?.usage
+    const acpUsage =
+      typeof rawUsage?.inputTokens === 'number' && typeof rawUsage?.cachedReadTokens === 'number'
+        ? {
+            input_tokens: Math.max(
+              0,
+              rawUsage.inputTokens -
+                rawUsage.cachedReadTokens -
+                (typeof rawUsage.cacheCreationTokens === 'number' ? rawUsage.cacheCreationTokens : 0)
+            ),
+            output_tokens: rawUsage.outputTokens,
+            cache_read_input_tokens: rawUsage.cachedReadTokens,
+            cache_creation_input_tokens: rawUsage.cacheCreationTokens
+          }
+        : rawUsage
+    const usage = usageFrom(acpUsage, model)
+    const stopped = str(msg?.result?.stopReason)
     if (usage) {
-      const cost = typeof msg?.total_cost_usd === 'number' ? msg.total_cost_usd : undefined
-      out.push({ usage: { ...usage, ...(cost === undefined ? {} : { cost }), total: msg?.type === 'end' } })
+      const dollars =
+        typeof update?.total_cost_usd === 'number'
+          ? update.total_cost_usd
+          : typeof rawUsage?.costUsdTicks === 'number'
+            ? rawUsage.costUsdTicks / 1_000_000_000
+            : undefined
+      out.push({
+        usage: { ...usage, ...(dollars === undefined ? {} : { cost: dollars }), total: kind === 'end' || !!stopped }
+      })
     }
-    if (msg?.type === 'end') {
+    if (kind === 'end' || stopped) {
       close(out)
-      out.push({ turnEnd: true })
+      if (kind === 'end' || stopped !== CANCELLED) out.push({ turnEnd: true })
     }
     return out
   }
@@ -226,17 +256,11 @@ export const grokFields = (): AgentSettingField[] => [
 const permissionArgs = (mode: string): string[] => {
   if (mode === 'plan') return ['--permission-mode', 'plan']
   if (mode === 'safe') return ['--permission-mode', 'dontAsk']
-  return ['--always-approve']
+  return []
 }
 
-export const grokArgs = (prompt: string, get: SettingReader): string[] => [
-  '-p',
-  prompt,
-  '--output-format',
-  'streaming-json',
+export const grokArgs = (_prompt: string, get: SettingReader): string[] => [
   ...permissionArgs(get('mode')),
-  ...flag('--model', get('model')),
-  ...flag('--reasoning-effort', get('effort')),
   ...flag('--rules', get('instructions').trim()),
   ...flag('--sandbox', get('sandbox')),
   ...(!isOn(get('web')) ? ['--disable-web-search'] : []),
@@ -244,13 +268,21 @@ export const grokArgs = (prompt: string, get: SettingReader): string[] => [
   ...(!isOn(get('subagents')) ? ['--no-subagents'] : []),
   ...flag('--tools', get('tools').trim()),
   ...flag('--disallowed-tools', get('disallowedTools').trim()),
-  ...flag('--max-turns', get('maxTurns'))
+  ...flag('--max-turns', get('maxTurns')),
+  'agent',
+  ...(get('mode') === 'anything' ? ['--always-approve'] : []),
+  ...flag('--model', get('model')),
+  ...flag('--reasoning-effort', get('effort')),
+  'stdio'
 ]
 
 export const grokEnv = (get: SettingReader): NodeJS.ProcessEnv => {
   const memory = get('memory')
   return memory ? { GROK_MEMORY: memory === ON ? '1' : '0' } : {}
 }
+
+export const grokDialog = (prompt: string, cwd: string, _get: SettingReader, options: RunOptions = {}): Dialog =>
+  acpDialog({ prompt, cwd, run: options, terminal: true })
 
 const INSTALL_SH = 'curl -fsSL https://x.ai/cli/install.sh | bash'
 
@@ -262,5 +294,8 @@ export const grokProvider: Provider = makeCliProvider({
   args: grokArgs,
   env: grokEnv,
   makeParser: grokParser,
+  dialog: (prompt, cwd, get, run) => grokDialog(prompt, cwd, get, run),
+  steerable: true,
+  mcp: 'inline',
   install: { darwin: INSTALL_SH, linux: INSTALL_SH, win32: 'irm https://x.ai/cli/install.ps1 | iex' }
 })
