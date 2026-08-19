@@ -751,6 +751,35 @@ describe('real CLI smoke (CREW_REAL_CLI=1)', () => {
     90000
   )
 
+  realCli('grok')(
+    'grok takes a steer',
+    async () => {
+      const { grokProvider } = await import('../src/runner/providers/grok')
+      let started = () => {}
+      const working = new Promise<void>(resolve => {
+        started = resolve
+      })
+      const run = grokProvider.start(
+        'Write a detailed history of programming languages in at least 10000 words.',
+        tmpDir('real-grok-steer'),
+        {
+          onStep: step => {
+            if (step.status === 'running') started()
+          }
+        },
+        { model: 'grok-4.6', effort: 'low', web: '', planning: '', subagents: '' }
+      )
+      await Promise.race([
+        working,
+        new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Grok did not start working.')), 30000))
+      ])
+      expect(run.steer?.('Stop that and reply with exactly: steered-ok')).toBe(true)
+      const { text } = await run.done
+      expect(text).toContain('steered-ok')
+    },
+    90000
+  )
+
   realCli('kimi')(
     'kimi answers',
     async () => {
