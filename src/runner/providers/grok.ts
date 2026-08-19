@@ -35,8 +35,7 @@ export function grokParser(): RunParser {
   const activity = (out: ParsedOutput[], msg: any): void => {
     const id = str(msg?.toolCallId) || str(msg?.id) || str(msg?.call_id) || str(msg?.tool_call_id)
     if (!id) return
-    const opening =
-      msg?.type === 'tool_call' || msg?.type === 'tool.call' || str(msg?.sessionUpdate) === 'tool_call'
+    const opening = msg?.type === 'tool_call' || msg?.type === 'tool.call' || str(msg?.sessionUpdate) === 'tool_call'
     const current = str(msg?.toolName) || str(msg?.title) || str(msg?.name) || str(msg?.tool)
     if (opening && current) names.set(id, current)
     const name = names.get(id) || current
@@ -57,7 +56,7 @@ export function grokParser(): RunParser {
         files: input === undefined ? undefined : fileChanges(name, input),
         todos: input === undefined ? undefined : stepTodos(input),
         task: input === undefined ? undefined : taskCall(name, input),
-        output: finished ? outputText(msg) ?? resultText(msg?.output ?? msg?.result ?? msg?.content) : undefined
+        output: finished ? (outputText(msg) ?? resultText(msg?.output ?? msg?.result ?? msg?.content)) : undefined
       }
     })
   }
@@ -70,7 +69,7 @@ export function grokParser(): RunParser {
       return []
     }
     const out: ParsedOutput[] = []
-    const update = str(msg?.method) === 'session/update' ? msg?.params?.update ?? msg?.params : msg
+    const update = str(msg?.method) === 'session/update' ? (msg?.params?.update ?? msg?.params) : msg
     const kind = str(update?.sessionUpdate) || str(update?.type)
     const body =
       chunkText(update?.content) || str(update?.data) || str(update?.text) || str(update?.content) || str(update?.delta)
@@ -94,7 +93,8 @@ export function grokParser(): RunParser {
         ? {
             input_tokens: Math.max(
               0,
-              rawUsage.inputTokens - rawUsage.cachedReadTokens -
+              rawUsage.inputTokens -
+                rawUsage.cachedReadTokens -
                 (typeof rawUsage.cacheCreationTokens === 'number' ? rawUsage.cacheCreationTokens : 0)
             ),
             output_tokens: rawUsage.outputTokens,
@@ -281,12 +281,8 @@ export const grokEnv = (get: SettingReader): NodeJS.ProcessEnv => {
   return memory ? { GROK_MEMORY: memory === ON ? '1' : '0' } : {}
 }
 
-export const grokDialog = (
-  prompt: string,
-  cwd: string,
-  _get: SettingReader,
-  options: RunOptions = {}
-): Dialog => acpDialog({ prompt, cwd, run: options, terminal: true })
+export const grokDialog = (prompt: string, cwd: string, _get: SettingReader, options: RunOptions = {}): Dialog =>
+  acpDialog({ prompt, cwd, run: options, terminal: true })
 
 const INSTALL_SH = 'curl -fsSL https://x.ai/cli/install.sh | bash'
 

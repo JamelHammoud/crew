@@ -397,9 +397,7 @@ describe('grok parser matches the real streaming-json format', () => {
       { thinkingStart: { index: 1 } },
       { thinkingDelta: { index: 1, text: 'let ' } }
     ])
-    expect(parse({ type: 'thought', data: 'me check' })).toEqual([
-      { thinkingDelta: { index: 1, text: 'me check' } }
-    ])
+    expect(parse({ type: 'thought', data: 'me check' })).toEqual([{ thinkingDelta: { index: 1, text: 'me check' } }])
     expect(parse({ type: 'text', data: 'ok' })).toEqual([
       { blockStop: { index: 1 } },
       { textStart: { index: 2 } },
@@ -438,12 +436,14 @@ describe('grok parser matches the real streaming-json format', () => {
     expect(sub[0].activity?.kind).toBe('subagent')
     expect(sub[0].activity?.detail).toBe('explore')
 
-    expect(parse({
-      type: 'tool_call_update',
-      toolCallId: 'c1',
-      status: 'completed',
-      rawOutput: { output_for_prompt: 'exit: 0\ndone' }
-    })).toEqual([
+    expect(
+      parse({
+        type: 'tool_call_update',
+        toolCallId: 'c1',
+        status: 'completed',
+        rawOutput: { output_for_prompt: 'exit: 0\ndone' }
+      })
+    ).toEqual([
       {
         activity: {
           id: 'c1',
@@ -537,9 +537,7 @@ describe('grok parser matches the real streaming-json format', () => {
       method: 'session/cancel',
       params: { sessionId: 'grok-session' }
     })
-    const steered = dialog.answer(
-      JSON.stringify({ jsonrpc: '2.0', id: 3, result: { stopReason: 'cancelled' } })
-    )
+    const steered = dialog.answer(JSON.stringify({ jsonrpc: '2.0', id: 3, result: { stopReason: 'cancelled' } }))
     expect(JSON.parse(steered[0])).toMatchObject({
       id: 4,
       method: 'session/prompt',
@@ -578,9 +576,7 @@ describe('grok parser matches the real streaming-json format', () => {
       })[1].activity
     ).toMatchObject({ name: 'run_terminal_command', status: 'started', detail: 'pwd' })
 
-    expect(
-      live.parse(JSON.stringify({ jsonrpc: '2.0', id: 3, result: { stopReason: 'cancelled' } }))
-    ).toEqual([])
+    expect(live.parse(JSON.stringify({ jsonrpc: '2.0', id: 3, result: { stopReason: 'cancelled' } }))).toEqual([])
     expect(
       live.parse(
         JSON.stringify({
