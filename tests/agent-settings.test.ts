@@ -46,11 +46,12 @@ describe('what a setting may be', () => {
   it('uses the options for the setting another field picked', () => {
     const dependent: AgentSettingField = {
       ...choice,
+      default: '',
       optionsWhen: [{ key: 'version', value: 'old', options: [{ value: '', label: 'Default' }] }]
     }
     expect(settingOptions(dependent, { version: 'new' }).map(option => option.value)).toEqual(['', 'opus'])
     expect(settingOptions(dependent, { version: 'old' }).map(option => option.value)).toEqual([''])
-    expect(cleanSetting(dependent, 'opus', { version: 'old' })).toBe('opus')
+    expect(cleanSetting(dependent, 'opus', { version: 'old' })).toBe('')
   })
 
   it('keeps a written value only where the field says it may be written', () => {

@@ -175,7 +175,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
   }
 
   const setSetting = (key: string, value: string) => {
-    const next = { ...settings, [key]: value }
+    const next = cap ? resolveSettings(cap.fields, { ...settings, [key]: value }) : { ...settings, [key]: value }
     setSettings(next)
     if (!nameEdited && cap) setName(defaultName(cap, next))
   }
