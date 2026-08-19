@@ -218,7 +218,7 @@ export const grokFields = (): AgentSettingField[] => [
     default: '',
     advanced: true,
     section: 'Limits',
-    min: 2,
+    min: 1,
     unit: 'turns'
   }
 ]

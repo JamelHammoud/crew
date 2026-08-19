@@ -513,7 +513,7 @@ describe('grok parser matches the real streaming-json format', () => {
       'disallowedTools',
       'maxTurns'
     ])
-    expect(fields.find(field => field.key === 'maxTurns')?.min).toBe(2)
+    expect(fields.find(field => field.key === 'maxTurns')?.min).toBe(1)
   })
 })
 
@@ -621,7 +621,7 @@ describe('real CLI smoke (CREW_REAL_CLI=1)', () => {
         'Reply with exactly: crew-ok',
         tmpDir('real-grok'),
         { onStep: () => {} },
-        { model: 'grok-4.6', effort: 'low', web: '', planning: '', subagents: '', maxTurns: '2' }
+        { model: 'grok-4.6', effort: 'low', web: '', planning: '', subagents: '' }
       )
       const { text } = await run.done
       expect(text).toContain('crew-ok')
