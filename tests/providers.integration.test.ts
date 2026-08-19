@@ -480,10 +480,31 @@ describe('grok parser matches the real streaming-json format', () => {
     expect(parse({ type: 'error', message: 'Not signed in.' })).toEqual([{ error: 'Not signed in.' }])
   })
 
-  it('offers Grok 4.6 and passes it to the CLI', () => {
+  it('offers Grok 4.6 and every supported thinking level', () => {
     const model = grokFields()[0]
+    const effort = grokFields()[1]
     expect(model.options?.map(option => option.value)).toEqual(['', 'grok-4.6', 'grok-4.5'])
-    expect(grokArgs('hi', key => (key === 'model' ? 'grok-4.6' : ''))).toContain('grok-4.6')
+    expect(effort.options?.map(option => option.value)).toEqual(['', 'low', 'medium', 'high', 'xhigh'])
+    expect(grokArgs('hi', key => (key === 'model' ? 'grok-4.6' : key === 'mode' ? 'anything' : ''))).toContain(
+      'grok-4.6'
+    )
+  })
+
+  it('puts the agent controls in the settings they belong to', () => {
+    const fields = grokFields()
+    expect(fields.filter(field => !field.advanced).map(field => field.key)).toEqual(['model', 'effort'])
+    expect(fields.filter(field => field.advanced).map(field => field.key)).toEqual([
+      'instructions',
+      'mode',
+      'sandbox',
+      'web',
+      'planning',
+      'subagents',
+      'memory',
+      'tools',
+      'disallowedTools',
+      'maxTurns'
+    ])
   })
 })
 

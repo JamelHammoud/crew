@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { claudeArgs, claudeEnv, claudeFields } from '../src/runner/providers/claude'
 import { codexArgs, codexFields } from '../src/runner/providers/codex'
 import { geminiArgs, geminiFields } from '../src/runner/providers/gemini'
+import { grokArgs, grokEnv, grokFields } from '../src/runner/providers/grok'
 import { kimiFields } from '../src/runner/providers/kimi'
 import { kimiDialog } from '../src/runner/providers/kimi-acp'
 import { thinkAsked } from '../src/runner/providers/local-chat'
@@ -60,6 +61,17 @@ describe('an agent made and left alone runs the way it always did', () => {
       configId: 'mode',
       value: 'yolo'
     })
+  })
+
+  it('grok keeps the run it used before its settings were exposed', () => {
+    expect(grokArgs('hi', asked(grokFields()))).toEqual([
+      '-p',
+      'hi',
+      '--output-format',
+      'streaming-json',
+      '--always-approve'
+    ])
+    expect(grokEnv(asked(grokFields()))).toEqual({})
   })
 
   it('local still asks a model to think the way it always has', () => {
@@ -136,6 +148,57 @@ describe('what a person picks is what goes out', () => {
     const sent = JSON.parse(said[said.length - 1]).params
     expect(sent).toEqual({ sessionId: 's1', configId: 'thinking', value: 'on' })
     expect(typeof sent.value).toBe('string')
+  })
+
+  it('grok carries every chosen run setting to the CLI', () => {
+    const args = grokArgs(
+      'hi',
+      reader({
+        ...settled(grokFields()),
+        model: 'grok-4.6',
+        effort: 'xhigh',
+        instructions: 'Keep the answer short.',
+        mode: 'plan',
+        sandbox: 'read-only',
+        web: '',
+        planning: '',
+        subagents: '',
+        tools: 'read_file, grep',
+        disallowedTools: 'write, image_gen',
+        maxTurns: '12'
+      })
+    )
+    expect(args).toEqual([
+      '-p',
+      'hi',
+      '--output-format',
+      'streaming-json',
+      '--permission-mode',
+      'plan',
+      '--model',
+      'grok-4.6',
+      '--reasoning-effort',
+      'xhigh',
+      '--rules',
+      'Keep the answer short.',
+      '--sandbox',
+      'read-only',
+      '--disable-web-search',
+      '--no-plan',
+      '--no-subagents',
+      '--tools',
+      'read_file, grep',
+      '--disallowed-tools',
+      'write, image_gen',
+      '--max-turns',
+      '12'
+    ])
+  })
+
+  it('grok changes memory only when somebody picks a value', () => {
+    expect(grokEnv(reader({ memory: '' }))).toEqual({})
+    expect(grokEnv(reader({ memory: 'on' }))).toEqual({ GROK_MEMORY: '1' })
+    expect(grokEnv(reader({ memory: 'off' }))).toEqual({ GROK_MEMORY: '0' })
   })
 
   it('local turns thinking off with the word the runtime takes', () => {
