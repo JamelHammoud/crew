@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { parseClaudeLine } from '../src/runner/providers/claude'
-import { grokArgs, grokFields, grokParser } from '../src/runner/providers/grok'
+import { grokArgs, grokDialog, grokFields, grokParser, grokProvider } from '../src/runner/providers/grok'
 import { kimiParser } from '../src/runner/providers/kimi-acp'
 import { tmpDir } from './helpers/session'
 import { makeFakeProvider, fakeCliPath } from './helpers/fake-provider'
@@ -514,6 +514,100 @@ describe('grok parser matches the real streaming-json format', () => {
       'maxTurns'
     ])
     expect(fields.find(field => field.key === 'maxTurns')?.min).toBe(1)
+  })
+
+  it('opens one live session and turns a steer into its next prompt', () => {
+    const dialog = grokDialog('start here', '/repo', () => '')
+    const begin = JSON.parse(dialog.begin()[0])
+    expect(begin.method).toBe('initialize')
+    expect(begin.params.clientCapabilities.terminal).toBe(true)
+
+    const opened = dialog.answer(JSON.stringify({ jsonrpc: '2.0', id: 1, result: { protocolVersion: 1 } }))
+    expect(JSON.parse(opened[0])).toMatchObject({ id: 2, method: 'session/new', params: { cwd: '/repo' } })
+
+    const started = dialog.answer(JSON.stringify({ jsonrpc: '2.0', id: 2, result: { sessionId: 'grok-session' } }))
+    expect(JSON.parse(started[0])).toMatchObject({
+      id: 3,
+      method: 'session/prompt',
+      params: { sessionId: 'grok-session', prompt: [{ type: 'text', text: 'start here' }] }
+    })
+
+    expect(JSON.parse(dialog.steer('change direction')!)).toEqual({
+      jsonrpc: '2.0',
+      method: 'session/cancel',
+      params: { sessionId: 'grok-session' }
+    })
+    const steered = dialog.answer(
+      JSON.stringify({ jsonrpc: '2.0', id: 3, result: { stopReason: 'cancelled' } })
+    )
+    expect(JSON.parse(steered[0])).toMatchObject({
+      id: 4,
+      method: 'session/prompt',
+      params: { sessionId: 'grok-session', prompt: [{ type: 'text', text: 'change direction' }] }
+    })
+    expect(grokProvider.steerable).toBe(true)
+  })
+
+  it('reads Grok agent events and completes only the final turn', () => {
+    const live = grokParser()
+    const note = (update: Record<string, unknown>) =>
+      live.parse(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'session/update',
+          params: { sessionId: 'grok-session', update }
+        })
+      )
+
+    expect(note({ sessionUpdate: 'agent_thought_chunk', content: { type: 'text', text: 'checking' } })).toEqual([
+      { thinkingStart: { index: 1 } },
+      { thinkingDelta: { index: 1, text: 'checking' } }
+    ])
+    expect(note({ sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: 'working' } })).toEqual([
+      { blockStop: { index: 1 } },
+      { textStart: { index: 2 } },
+      { textDelta: { index: 2, text: 'working' } }
+    ])
+    expect(
+      note({
+        sessionUpdate: 'tool_call',
+        toolCallId: 'call-1',
+        title: 'run_terminal_command',
+        status: 'pending',
+        rawInput: { command: 'pwd' }
+      })[1].activity
+    ).toMatchObject({ name: 'run_terminal_command', status: 'started', detail: 'pwd' })
+
+    expect(
+      live.parse(JSON.stringify({ jsonrpc: '2.0', id: 3, result: { stopReason: 'cancelled' } }))
+    ).toEqual([])
+    expect(
+      live.parse(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          id: 4,
+          result: {
+            stopReason: 'end_turn',
+            _meta: {
+              modelId: 'grok-4.6',
+              usage: { inputTokens: 100, outputTokens: 8, cachedReadTokens: 40, costUsdTicks: 25000000 }
+            }
+          }
+        })
+      )
+    ).toEqual([
+      {
+        usage: {
+          model: 'grok-4.6',
+          input: 60,
+          output: 8,
+          cacheRead: 40,
+          cost: 0.025,
+          total: true
+        }
+      },
+      { turnEnd: true }
+    ])
   })
 })
 
