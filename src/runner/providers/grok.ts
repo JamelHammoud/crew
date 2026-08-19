@@ -1,11 +1,11 @@
 import { ON, isOn, type AgentSettingField } from '../../shared/llm'
-import { chunkText, makeLanes, str } from './acp'
+import { acpDialog, CANCELLED, chunkText, makeLanes, str } from './acp'
 import { choices, flag, makeCliProvider, type SettingReader } from './cli'
 import { activityDetail, fileChanges, stepTodos } from './detail'
 import { resultText } from './output'
 import { taskCall } from './tasks'
 import { usageFrom } from './tokens'
-import type { ParsedOutput, Provider, RunParser } from './types'
+import type { Dialog, ParsedOutput, Provider, RunOptions, RunParser } from './types'
 
 const SUBAGENT_TOOLS = new Set(['task', 'agent', 'subagent', 'spawn_subagent'])
 const STARTED = new Set(['pending', 'in_progress'])
@@ -35,8 +35,9 @@ export function grokParser(): RunParser {
   const activity = (out: ParsedOutput[], msg: any): void => {
     const id = str(msg?.toolCallId) || str(msg?.id) || str(msg?.call_id) || str(msg?.tool_call_id)
     if (!id) return
-    const opening = msg?.type === 'tool_call' || msg?.type === 'tool.call'
-    const current = str(msg?.toolName) || str(msg?.name) || str(msg?.tool)
+    const opening =
+      msg?.type === 'tool_call' || msg?.type === 'tool.call' || str(msg?.sessionUpdate) === 'tool_call'
+    const current = str(msg?.toolName) || str(msg?.title) || str(msg?.name) || str(msg?.tool)
     if (opening && current) names.set(id, current)
     const name = names.get(id) || current
     const status = str(msg?.status)
