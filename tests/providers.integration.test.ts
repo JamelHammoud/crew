@@ -14,6 +14,7 @@ import { commandOutput, resultText } from '../src/runner/providers/output'
 import { crewPath, resolveCommand, searchDirs } from '../src/runner/providers/path'
 import type { Provider } from '../src/runner/providers/types'
 import { Crews } from '../src/main/crews'
+import { resolveSettings, settingOptions } from '../src/shared/llm'
 
 describe('fake provider contract', () => {
   const repo = tmpDir('providers')
@@ -485,6 +486,13 @@ describe('grok parser matches the real streaming-json format', () => {
     const effort = grokFields()[1]
     expect(model.options?.map(option => option.value)).toEqual(['', 'grok-4.6', 'grok-4.5'])
     expect(effort.options?.map(option => option.value)).toEqual(['', 'low', 'medium', 'high', 'xhigh'])
+    expect(settingOptions(effort, { model: 'grok-4.5' }).map(option => option.value)).toEqual([
+      '',
+      'low',
+      'medium',
+      'high'
+    ])
+    expect(resolveSettings(grokFields(), { model: 'grok-4.5', effort: 'xhigh' }).effort).toBe('')
     expect(grokArgs('hi', key => (key === 'model' ? 'grok-4.6' : key === 'mode' ? 'anything' : ''))).toContain(
       'grok-4.6'
     )
@@ -505,6 +513,7 @@ describe('grok parser matches the real streaming-json format', () => {
       'disallowedTools',
       'maxTurns'
     ])
+    expect(fields.find(field => field.key === 'maxTurns')?.min).toBe(1)
   })
 })
 
@@ -612,7 +621,7 @@ describe('real CLI smoke (CREW_REAL_CLI=1)', () => {
         'Reply with exactly: crew-ok',
         tmpDir('real-grok'),
         { onStep: () => {} },
-        { model: 'grok-4.6' }
+        { model: 'grok-4.6', effort: 'low', web: '', planning: '', subagents: '' }
       )
       const { text } = await run.done
       expect(text).toContain('crew-ok')

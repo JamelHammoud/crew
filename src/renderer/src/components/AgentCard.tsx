@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { PooledAgent } from '../../../shared/llm'
-import { advancedFields, changedSettings, plainFields, visibleSettingFields } from '../../../shared/llm'
+import { advancedFields, changedSettings, plainFields, settingOptions, visibleSettingFields } from '../../../shared/llm'
 import { PencilGlyph, StopGlyph, TrashGlyph } from '../icons'
 import AgentIcon from './AgentIcon'
 import AgentSettingsModal from './agent/AgentSettingsModal'
@@ -124,7 +124,7 @@ export default function AgentCard({
                 key={field.key}
                 label={field.label}
                 value={agent.settings[field.key] ?? field.default}
-                options={field.options ?? []}
+                options={settingOptions(field, agent.settings)}
                 onChange={value => onSetting(field.key, value)}
               />
             ))}
