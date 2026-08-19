@@ -256,13 +256,11 @@ export const grokFields = (): AgentSettingField[] => [
 const permissionArgs = (mode: string): string[] => {
   if (mode === 'plan') return ['--permission-mode', 'plan']
   if (mode === 'safe') return ['--permission-mode', 'dontAsk']
-  return ['--always-approve']
+  return []
 }
 
 export const grokArgs = (_prompt: string, get: SettingReader): string[] => [
   ...permissionArgs(get('mode')),
-  ...flag('--model', get('model')),
-  ...flag('--reasoning-effort', get('effort')),
   ...flag('--rules', get('instructions').trim()),
   ...flag('--sandbox', get('sandbox')),
   ...(!isOn(get('web')) ? ['--disable-web-search'] : []),
@@ -272,6 +270,9 @@ export const grokArgs = (_prompt: string, get: SettingReader): string[] => [
   ...flag('--disallowed-tools', get('disallowedTools').trim()),
   ...flag('--max-turns', get('maxTurns')),
   'agent',
+  ...(get('mode') === 'anything' ? ['--always-approve'] : []),
+  ...flag('--model', get('model')),
+  ...flag('--reasoning-effort', get('effort')),
   'stdio'
 ]
 
