@@ -344,7 +344,8 @@ const signIn = async (
   try {
     const registered = await register(authorization.registration_endpoint!, listening.redirectUri, deps.fetcher)
     if (!registered.client_id) throw new Error('The plugin sign-in returned no client ID.')
-    const scope = (authorization.scopes_supported ?? []).filter(Boolean).join(' ')
+    const supported = new Set(authorization.scopes_supported ?? [])
+    const scope = ['openid', 'profile', 'email', 'offline_access'].filter(one => supported.has(one)).join(' ')
     const authorize = new URL(authorization.authorization_endpoint!)
     authorize.searchParams.set('response_type', 'code')
     authorize.searchParams.set('client_id', registered.client_id)
