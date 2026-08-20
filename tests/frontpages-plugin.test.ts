@@ -49,8 +49,7 @@ describe('what a board tells an agent about frontpages', () => {
   })
 
   it('reads a plugin saved under another name by the catalog it came from', () => {
-    const renamed = { name: 'inspiration', catalogId: 'frontpages', by: 'Ali', id: 'p2', ts: 0 }
     expect(preamble([renamed])).toContain('search_frontpages')
-    expect(preamble([{ name: 'figma', by: 'Ali', id: 'p3', ts: 0 }])).not.toContain('search_frontpages')
+    expect(preamble([figma])).not.toContain('search_frontpages')
   })
 })

@@ -5,6 +5,7 @@ import { useMachineFiles } from '../state/machineFiles'
 import { useProjectFiles } from '../state/projectFiles'
 import { useCrew } from '../state/store'
 import AddMenu from './AddMenu'
+import PluginChip from './plugins/PluginChip'
 import { AttachmentTray } from './Attachments'
 import { clickToFocus } from './clickToFocus'
 import { covers, spanned, useSelectedRange, type SelectedRange } from './composerSelection'
@@ -255,6 +256,7 @@ export default function Composer({
               inputRef={inputRef}
               onSend={onSend}
             />
+            <PluginChip where={attachmentKey} />
             {chips}
           </div>
           {onStop && !canSend ? (
