@@ -1,0 +1,518 @@
+import { createHash, randomBytes } from 'node:crypto'
+import fs from 'node:fs'
+import http from 'node:http'
+import path from 'node:path'
+import { spawn } from 'node:child_process'
+import { pluginKey, resolvePlugin, type CrewPlugin, type ResolvedPlugin } from '../shared/plugins'
+
+interface OAuthCredential {
+  accessToken: string
+  refreshToken?: string
+  expiresAt?: number
+  clientId: string
+  tokenEndpoint: string
+  resource: string
+  scope?: string
+}
+
+interface OAuthStore {
+  version: 1
+  servers: Record<string, OAuthCredential>
+}
+
+interface ProtectedResourceMetadata {
+  resource?: string
+  authorization_servers?: string[]
+}
+
+interface AuthorizationMetadata {
+  authorization_endpoint?: string
+  token_endpoint?: string
+  registration_endpoint?: string
+  scopes_supported?: string[]
+}
+
+interface RegisteredClient {
+  client_id?: string
+}
+
+interface TokenAnswer {
+  access_token?: string
+  refresh_token?: string
+  expires_in?: number
+  scope?: string
+}
+
+interface AuthorizationCode {
+  code: Promise<string>
+  redirectUri: string
+  close: () => void
+}
+
+export interface PluginOauthDeps {
+  fetcher?: typeof fetch
+  now?: () => number
+  open?: (url: string) => Promise<void>
+  timeoutMs?: number
+}
+
+const FILE_MODE = 0o600
+const LOGIN_TIMEOUT_MS = 5 * 60 * 1000
+const TOKEN_MARGIN_MS = 60 * 1000
+const PROTOCOL_VERSION = '2025-06-18'
+const REQUIRED_RAYLIGHT_TOOLS = ['get_editor_status', 'list_projects']
+
+let file: string | null = null
+let cache: OAuthStore | null = null
+const authorizing = new Map<string, Promise<Record<string, string>>>()
+
+class Unauthorized extends Error {}
+
+export function setPluginOauthPath(at: string): void {
+  file = at
+  cache = null
+}
+
+const text = (value: unknown): string => (typeof value === 'string' ? value : '')
+
+const number = (value: unknown): number | undefined =>
+  typeof value === 'number' && Number.isFinite(value) ? value : undefined
+
+const writtenCredential = (value: unknown): OAuthCredential | null => {
+  const saved = value as Partial<OAuthCredential> | null
+  if (
+    !saved ||
+    !text(saved.accessToken) ||
+    !text(saved.clientId) ||
+    !text(saved.tokenEndpoint) ||
+    !text(saved.resource)
+  ) {
+    return null
+  }
+  return {
+    accessToken: saved.accessToken!,
+    clientId: saved.clientId!,
+    tokenEndpoint: saved.tokenEndpoint!,
+    resource: saved.resource!,
+    ...(text(saved.refreshToken) ? { refreshToken: saved.refreshToken } : {}),
+    ...(number(saved.expiresAt) !== undefined ? { expiresAt: saved.expiresAt } : {}),
+    ...(text(saved.scope) ? { scope: saved.scope } : {})
+  }
+}
+
+const quarantine = (): void => {
+  if (!file) return
+  try {
+    fs.renameSync(file, `${file}.corrupt-${Date.now()}`)
+  } catch {}
+}
+
+const read = (): OAuthStore => {
+  if (cache) return cache
+  if (!file) return (cache = { version: 1, servers: {} })
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(fs.readFileSync(file, 'utf8'))
+  } catch (cause) {
+    if ((cause as NodeJS.ErrnoException)?.code !== 'ENOENT') quarantine()
+    return (cache = { version: 1, servers: {} })
+  }
+  const body = parsed as Partial<OAuthStore> | null
+  if (body?.version !== 1 || !body.servers || typeof body.servers !== 'object') {
+    quarantine()
+    return (cache = { version: 1, servers: {} })
+  }
+  const servers: Record<string, OAuthCredential> = {}
+  for (const [url, raw] of Object.entries(body.servers)) {
+    const credential = writtenCredential(raw)
+    if (credential) servers[url] = credential
+  }
+  return (cache = { version: 1, servers })
+}
+
+const write = (store: OAuthStore): void => {
+  cache = store
+  if (!file) return
+  fs.mkdirSync(path.dirname(file), { recursive: true })
+  const temporary = `${file}.tmp`
+  fs.writeFileSync(temporary, JSON.stringify(store, null, 2), { mode: FILE_MODE })
+  fs.chmodSync(temporary, FILE_MODE)
+  fs.renameSync(temporary, file)
+}
+
+const remember = (url: string, credential: OAuthCredential): void => {
+  const store = read()
+  write({ version: 1, servers: { ...store.servers, [url]: credential } })
+}
+
+const metadataUrl = (resource: URL): string =>
+  new URL(`/.well-known/oauth-protected-resource${resource.pathname === '/' ? '' : resource.pathname}`, resource.origin)
+    .toString()
+
+const authorizationMetadataUrl = (issuer: URL): string =>
+  new URL(`/.well-known/oauth-authorization-server${issuer.pathname === '/' ? '' : issuer.pathname}`, issuer.origin)
+    .toString()
+
+const json = async <T>(response: Response, label: string): Promise<T> => {
+  if (!response.ok) throw new Error(`${label} answered with ${response.status}.`)
+  try {
+    return (await response.json()) as T
+  } catch {
+    throw new Error(`${label} did not return JSON.`)
+  }
+}
+
+const discover = async (
+  url: string,
+  fetcher: typeof fetch
+): Promise<{ resource: string; authorization: AuthorizationMetadata }> => {
+  const mcp = new URL(url)
+  const protectedResource = await json<ProtectedResourceMetadata>(
+    await fetcher(metadataUrl(mcp), { headers: { accept: 'application/json' } }),
+    'The plugin sign-in'
+  )
+  const issuer = protectedResource.authorization_servers?.[0]
+  if (!issuer) throw new Error('The plugin did not say where to sign in.')
+  const authorization = await json<AuthorizationMetadata>(
+    await fetcher(authorizationMetadataUrl(new URL(issuer)), { headers: { accept: 'application/json' } }),
+    'The plugin account'
+  )
+  if (!authorization.authorization_endpoint || !authorization.token_endpoint || !authorization.registration_endpoint) {
+    throw new Error('The plugin account did not provide a complete sign-in.')
+  }
+  return { resource: protectedResource.resource || url, authorization }
+}
+
+const base64Url = (value: Buffer): string => value.toString('base64url')
+
+const openExternal = async (url: string): Promise<void> => {
+  const invocation =
+    process.platform === 'darwin'
+      ? { command: 'open', args: [url] }
+      : process.platform === 'win32'
+        ? { command: 'rundll32.exe', args: ['url.dll,FileProtocolHandler', url] }
+        : { command: 'xdg-open', args: [url] }
+  await new Promise<void>((resolve, reject) => {
+    const child = spawn(invocation.command, invocation.args, { detached: true, stdio: 'ignore' })
+    child.once('spawn', () => {
+      child.unref()
+      resolve()
+    })
+    child.once('error', reject)
+  })
+}
+
+const callback = async (state: string, timeoutMs: number): Promise<AuthorizationCode> => {
+  let resolveCode: (code: string) => void = () => {}
+  let rejectCode: (cause: Error) => void = () => {}
+  const code = new Promise<string>((resolve, reject) => {
+    resolveCode = resolve
+    rejectCode = reject
+  })
+  let timer: NodeJS.Timeout | null = null
+  let settled = false
+  const server = http.createServer((request, response) => {
+    const url = new URL(request.url ?? '/', 'http://127.0.0.1')
+    if (url.pathname !== '/callback') {
+      response.writeHead(404).end()
+      return
+    }
+    const error = url.searchParams.get('error')
+    const returnedState = url.searchParams.get('state')
+    const returnedCode = url.searchParams.get('code')
+    if (error || returnedState !== state || !returnedCode) {
+      response.writeHead(400, { 'content-type': 'text/plain; charset=utf-8' }).end('Raylight did not connect. Return to Crew and try again.')
+      if (!settled) rejectCode(new Error(error || 'The plugin sign-in could not be verified.'))
+    } else {
+      response.writeHead(200, { 'content-type': 'text/plain; charset=utf-8' }).end('Raylight is connected. You can return to Crew.')
+      if (!settled) resolveCode(returnedCode)
+    }
+    settled = true
+    if (timer) clearTimeout(timer)
+  })
+  await new Promise<void>((resolve, reject) => {
+    server.once('error', reject)
+    server.listen(0, '127.0.0.1', resolve)
+  })
+  const address = server.address()
+  if (!address || typeof address === 'string') {
+    server.close()
+    throw new Error('Crew could not open the plugin sign-in.')
+  }
+  timer = setTimeout(() => {
+    if (settled) return
+    settled = true
+    rejectCode(new Error('The Raylight sign-in timed out. Try again when you are ready to sign in.'))
+    server.close()
+  }, timeoutMs)
+  return {
+    code,
+    redirectUri: `http://127.0.0.1:${address.port}/callback`,
+    close: () => {
+      if (timer) clearTimeout(timer)
+      server.close()
+    }
+  }
+}
+
+const register = async (
+  endpoint: string,
+  redirectUri: string,
+  fetcher: typeof fetch
+): Promise<RegisteredClient> =>
+  json<RegisteredClient>(
+    await fetcher(endpoint, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', accept: 'application/json' },
+      body: JSON.stringify({
+        client_name: 'Crew',
+        redirect_uris: [redirectUri],
+        grant_types: ['authorization_code', 'refresh_token'],
+        response_types: ['code'],
+        token_endpoint_auth_method: 'none',
+        application_type: 'native'
+      })
+    }),
+    'The plugin sign-in'
+  )
+
+const token = async (
+  endpoint: string,
+  values: Record<string, string>,
+  fetcher: typeof fetch
+): Promise<TokenAnswer> =>
+  json<TokenAnswer>(
+    await fetcher(endpoint, {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded', accept: 'application/json' },
+      body: new URLSearchParams(values)
+    }),
+    'The plugin sign-in'
+  )
+
+const credentialFrom = (
+  answer: TokenAnswer,
+  clientId: string,
+  tokenEndpoint: string,
+  resource: string,
+  now: number,
+  previous?: OAuthCredential
+): OAuthCredential => {
+  if (!answer.access_token) throw new Error('The plugin sign-in returned no access token.')
+  return {
+    accessToken: answer.access_token,
+    clientId,
+    tokenEndpoint,
+    resource,
+    ...(answer.refresh_token || previous?.refreshToken
+      ? { refreshToken: answer.refresh_token || previous?.refreshToken }
+      : {}),
+    ...(typeof answer.expires_in === 'number' ? { expiresAt: now + answer.expires_in * 1000 } : {}),
+    ...(answer.scope || previous?.scope ? { scope: answer.scope || previous?.scope } : {})
+  }
+}
+
+const refresh = async (
+  saved: OAuthCredential,
+  fetcher: typeof fetch,
+  now: number
+): Promise<OAuthCredential | null> => {
+  if (!saved.refreshToken) return null
+  try {
+    const answer = await token(
+      saved.tokenEndpoint,
+      {
+        grant_type: 'refresh_token',
+        refresh_token: saved.refreshToken,
+        client_id: saved.clientId,
+        resource: saved.resource,
+        ...(saved.scope ? { scope: saved.scope } : {})
+      },
+      fetcher
+    )
+    return credentialFrom(answer, saved.clientId, saved.tokenEndpoint, saved.resource, now, saved)
+  } catch {
+    return null
+  }
+}
+
+const signIn = async (
+  url: string,
+  deps: Required<Pick<PluginOauthDeps, 'fetcher' | 'now' | 'open' | 'timeoutMs'>>
+): Promise<OAuthCredential> => {
+  const { resource, authorization } = await discover(url, deps.fetcher)
+  const state = base64Url(randomBytes(24))
+  const verifier = base64Url(randomBytes(48))
+  const challenge = base64Url(createHash('sha256').update(verifier).digest())
+  const listening = await callback(state, deps.timeoutMs)
+  try {
+    const registered = await register(authorization.registration_endpoint!, listening.redirectUri, deps.fetcher)
+    if (!registered.client_id) throw new Error('The plugin sign-in returned no client ID.')
+    const scope = (authorization.scopes_supported ?? []).filter(Boolean).join(' ')
+    const authorize = new URL(authorization.authorization_endpoint!)
+    authorize.searchParams.set('response_type', 'code')
+    authorize.searchParams.set('client_id', registered.client_id)
+    authorize.searchParams.set('redirect_uri', listening.redirectUri)
+    authorize.searchParams.set('code_challenge', challenge)
+    authorize.searchParams.set('code_challenge_method', 'S256')
+    authorize.searchParams.set('state', state)
+    authorize.searchParams.set('resource', resource)
+    if (scope) authorize.searchParams.set('scope', scope)
+    await deps.open(authorize.toString())
+    const code = await listening.code
+    const answer = await token(
+      authorization.token_endpoint!,
+      {
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri: listening.redirectUri,
+        client_id: registered.client_id,
+        code_verifier: verifier,
+        resource
+      },
+      deps.fetcher
+    )
+    return credentialFrom(answer, registered.client_id, authorization.token_endpoint!, resource, deps.now())
+  } finally {
+    listening.close()
+  }
+}
+
+const rpc = async (
+  url: string,
+  authorization: string,
+  body: Record<string, unknown>,
+  fetcher: typeof fetch,
+  sessionId?: string
+): Promise<Response> =>
+  fetcher(url, {
+    method: 'POST',
+    headers: {
+      authorization,
+      accept: 'application/json, text/event-stream',
+      'content-type': 'application/json',
+      ...(sessionId ? { 'mcp-session-id': sessionId } : {})
+    },
+    body: JSON.stringify(body)
+  })
+
+const rpcBody = async (response: Response): Promise<any> => {
+  const body = await response.text()
+  try {
+    return JSON.parse(body)
+  } catch {}
+  for (const line of body.split(/\r?\n/)) {
+    if (!line.startsWith('data:')) continue
+    try {
+      return JSON.parse(line.slice(5).trim())
+    } catch {}
+  }
+  throw new Error('The plugin returned an unreadable MCP response.')
+}
+
+const tools = async (url: string, accessToken: string, fetcher: typeof fetch): Promise<string[]> => {
+  const authorization = `Bearer ${accessToken}`
+  const initialized = await rpc(
+    url,
+    authorization,
+    {
+      jsonrpc: '2.0',
+      id: 1,
+      method: 'initialize',
+      params: { protocolVersion: PROTOCOL_VERSION, capabilities: {}, clientInfo: { name: 'Crew', version: '1' } }
+    },
+    fetcher
+  )
+  if (initialized.status === 401) throw new Unauthorized('The plugin sign-in has expired.')
+  if (!initialized.ok) throw new Error(`The plugin MCP answered with ${initialized.status}.`)
+  await rpcBody(initialized)
+  const sessionId = initialized.headers.get('mcp-session-id') ?? undefined
+  const ready = await rpc(
+    url,
+    authorization,
+    { jsonrpc: '2.0', method: 'notifications/initialized', params: {} },
+    fetcher,
+    sessionId
+  )
+  if (ready.status === 401) throw new Unauthorized('The plugin sign-in has expired.')
+  if (!ready.ok) throw new Error(`The plugin MCP answered with ${ready.status}.`)
+  const listed = await rpc(url, authorization, { jsonrpc: '2.0', id: 2, method: 'tools/list', params: {} }, fetcher, sessionId)
+  if (listed.status === 401) throw new Unauthorized('The plugin sign-in has expired.')
+  if (!listed.ok) throw new Error(`The plugin MCP answered with ${listed.status}.`)
+  const answer = await rpcBody(listed)
+  const found = Array.isArray(answer?.result?.tools) ? answer.result.tools : []
+  return found.map((one: any) => text(one?.name)).filter(Boolean)
+}
+
+const usableCredential = async (
+  plugin: ResolvedPlugin,
+  deps: Required<Pick<PluginOauthDeps, 'fetcher' | 'now' | 'open' | 'timeoutMs'>>
+): Promise<OAuthCredential> => {
+  if (!plugin.url) throw new Error(`${plugin.label} has no MCP address.`)
+  let saved = read().servers[plugin.url]
+  const now = deps.now()
+  if (saved?.expiresAt && saved.expiresAt <= now + TOKEN_MARGIN_MS) {
+    saved = (await refresh(saved, deps.fetcher, now)) ?? undefined
+    if (saved) remember(plugin.url, saved)
+  }
+  if (saved) {
+    try {
+      const names = await tools(plugin.url, saved.accessToken, deps.fetcher)
+      const required = plugin.name === 'raylight' ? REQUIRED_RAYLIGHT_TOOLS : []
+      const missing = required.filter(name => !names.includes(name))
+      if (missing.length) throw new Error(`Raylight is missing ${missing.join(' and ')}.`)
+      return saved
+    } catch (cause) {
+      if (!(cause instanceof Unauthorized)) throw cause
+      const renewed = await refresh(saved, deps.fetcher, now)
+      if (renewed) {
+        remember(plugin.url, renewed)
+        const names = await tools(plugin.url, renewed.accessToken, deps.fetcher)
+        const missing = plugin.name === 'raylight' ? REQUIRED_RAYLIGHT_TOOLS.filter(name => !names.includes(name)) : []
+        if (missing.length) throw new Error(`Raylight is missing ${missing.join(' and ')}.`)
+        return renewed
+      }
+    }
+  }
+  const connected = await signIn(plugin.url, deps)
+  const names = await tools(plugin.url, connected.accessToken, deps.fetcher)
+  const missing = plugin.name === 'raylight' ? REQUIRED_RAYLIGHT_TOOLS.filter(name => !names.includes(name)) : []
+  if (missing.length) throw new Error(`Raylight is missing ${missing.join(' and ')}.`)
+  remember(plugin.url, connected)
+  return connected
+}
+
+export async function authorizePlugin(
+  plugin: ResolvedPlugin,
+  deps: PluginOauthDeps = {}
+): Promise<Record<string, string>> {
+  if (plugin.authentication !== 'oauth' || plugin.transport !== 'http' || !plugin.url) return {}
+  const existing = authorizing.get(plugin.url)
+  if (existing) return existing
+  const ready = usableCredential(plugin, {
+    fetcher: deps.fetcher ?? fetch,
+    now: deps.now ?? Date.now,
+    open: deps.open ?? openExternal,
+    timeoutMs: deps.timeoutMs ?? LOGIN_TIMEOUT_MS
+  }).then(credential => ({ Authorization: `Bearer ${credential.accessToken}` }))
+  authorizing.set(plugin.url, ready)
+  try {
+    return await ready
+  } finally {
+    authorizing.delete(plugin.url)
+  }
+}
+
+export async function authorizeAttachedPlugin(
+  plugins: readonly CrewPlugin[],
+  usePlugin?: string,
+  deps: PluginOauthDeps = {}
+): Promise<Record<string, Record<string, string>>> {
+  const wanted = usePlugin ? pluginKey(usePlugin) : ''
+  if (!wanted) return {}
+  const saved = plugins.find(plugin => pluginKey(plugin.name) === wanted)
+  if (!saved) return {}
+  const plugin = resolvePlugin(saved)
+  const headers = await authorizePlugin(plugin, deps)
+  return Object.keys(headers).length ? { [plugin.name]: headers } : {}
+}
