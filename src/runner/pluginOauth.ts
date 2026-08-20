@@ -452,7 +452,7 @@ const usableCredential = async (
   deps: Required<Pick<PluginOauthDeps, 'fetcher' | 'now' | 'open' | 'timeoutMs'>>
 ): Promise<OAuthCredential> => {
   if (!plugin.url) throw new Error(`${plugin.label} has no MCP address.`)
-  let saved = read().servers[plugin.url]
+  let saved: OAuthCredential | undefined = read().servers[plugin.url]
   const now = deps.now()
   if (saved?.expiresAt && saved.expiresAt <= now + TOKEN_MARGIN_MS) {
     saved = (await refresh(saved, deps.fetcher, now)) ?? undefined
