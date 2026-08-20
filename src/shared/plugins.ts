@@ -286,7 +286,8 @@ export function pluginFrom(label: string, where: string): Partial<CrewPlugin> {
 
 export function mcpServersOf(
   plugins: readonly CrewPlugin[],
-  secrets: Readonly<Record<string, string>> = {}
+  secrets: Readonly<Record<string, string>> = {},
+  headers: Readonly<Record<string, Record<string, string>>> = {}
 ): Record<string, McpServer> {
   const out: Record<string, McpServer> = {}
   for (const saved of plugins.slice(0, PLUGIN_LIMIT)) {
@@ -299,7 +300,14 @@ export function mcpServersOf(
     }
     if (wanted.some(key => !env[key.name])) continue
     if (plugin.transport === 'http') {
-      if (plugin.url) out[plugin.name] = { type: 'http', url: plugin.url }
+      const pluginHeaders = headers[plugin.name]
+      if (plugin.url) {
+        out[plugin.name] = {
+          type: 'http',
+          url: plugin.url,
+          ...(pluginHeaders && Object.keys(pluginHeaders).length ? { headers: pluginHeaders } : {})
+        }
+      }
       continue
     }
     if (!plugin.command) continue

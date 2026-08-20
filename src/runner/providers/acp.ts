@@ -36,7 +36,12 @@ export const allowed = (options: unknown): string => {
 export const acpServers = (servers: Record<string, McpServer> = {}): unknown[] =>
   Object.entries(servers).map(([name, server]) =>
     'url' in server
-      ? { name, type: 'http', url: server.url, headers: [] }
+      ? {
+          name,
+          type: 'http',
+          url: server.url,
+          headers: Object.entries(server.headers ?? {}).map(([key, value]) => ({ name: key, value }))
+        }
       : {
           name,
           command: server.command,

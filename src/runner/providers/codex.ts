@@ -186,7 +186,12 @@ const tomlTable = (entries: Array<[string, string]>): string =>
   `{${entries.map(([key, value]) => `${key}=${value}`).join(',')}}`
 
 const serverToml = (server: McpServer): string => {
-  if ('url' in server) return tomlTable([['url', tomlText(server.url)]])
+  if ('url' in server) {
+    const entries: Array<[string, string]> = [['url', tomlText(server.url)]]
+    const headers = Object.entries(server.headers ?? {})
+    if (headers.length) entries.push(['http_headers', tomlTable(headers.map(([key, value]) => [key, tomlText(value)]))])
+    return tomlTable(entries)
+  }
   const entries: Array<[string, string]> = [['command', tomlText(server.command)]]
   if (server.args?.length) entries.push(['args', tomlList(server.args)])
   const env = Object.entries(server.env ?? {})
