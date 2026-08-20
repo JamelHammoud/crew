@@ -606,6 +606,11 @@ export function pluginConnected(plugin: CrewPlugin | ResolvedPlugin): boolean {
   return Boolean(savedConnection(resolved))
 }
 
+export function pluginAvailable(plugin: CrewPlugin): boolean {
+  const resolved = resolvePlugin(plugin)
+  return resolved.trusted ? pluginConnected(resolved) : true
+}
+
 export async function connectPlugin(plugin: ResolvedPlugin, deps: PluginOauthDeps = {}): Promise<void> {
   if (!plugin.trusted || !plugin.catalogId || !currentPluginInstallation(plugin)) {
     throw new Error('That plugin cannot be connected.')

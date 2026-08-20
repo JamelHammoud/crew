@@ -14,7 +14,7 @@ import { serverProviderNamed } from './providers/local'
 import type { Provider, RunningPrompt } from './providers/types'
 import { AttachmentCache, promptWithAttachments } from './attachments'
 import { closeMcp, openMcp } from './plugins'
-import { authorizeAttachedPlugin } from './pluginOauth'
+import { authorizeAttachedPlugin, pluginAvailable } from './pluginOauth'
 
 type PluginAuthorization = (
   plugins: readonly CrewPlugin[],
@@ -486,9 +486,13 @@ export class Runner {
     }
     let mcp = null
     try {
-      const runPlugins = usePlugin
+      const candidates = usePlugin
         ? plugins.filter(plugin => pluginKey(plugin.name) === pluginKey(usePlugin))
         : plugins
+      const runPlugins = candidates.filter(pluginAvailable)
+      if (usePlugin && candidates.length > 0 && runPlugins.length === 0) {
+        throw new Error(`${candidates[0].label ?? candidates[0].name} is not connected on this computer. Connect it in Plugins.`)
+      }
       const authorization = provider.mcp
         ? await (this.opts.authorizePlugins ?? authorizeAttachedPlugin)(runPlugins, usePlugin)
         : {}
