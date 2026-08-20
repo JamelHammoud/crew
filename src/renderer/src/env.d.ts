@@ -10,6 +10,7 @@ import type { MachineDir } from '../../shared/machinePath'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../../shared/llm'
 import type { MediaAccess, MediaKind, ScreenSource } from '../../shared/media'
 import type { ModelServer } from '../../shared/modelServers'
+import type { PluginConnectionInput, PluginConnectionResult } from '../../shared/plugins'
 import type { LivePlace } from '../../shared/places'
 import type { Present, PresenceSnapshot } from '../../shared/presence'
 import type { RepoActionResult, RepoChange, RepoCommand, RepoStatus, RepoWork } from '../../shared/repository'
@@ -60,6 +61,9 @@ declare global {
     screenSources(): Promise<ScreenSource[]>
     pickScreenSource(id: string | null): Promise<void>
     openExternal(url: string): Promise<boolean>
+    connectPlugin(plugin: PluginConnectionInput): Promise<PluginConnectionResult>
+    pluginStatus(plugin: PluginConnectionInput): Promise<boolean>
+    disconnectPlugin(plugin: PluginConnectionInput): Promise<void>
     copyImage(src: string): Promise<boolean>
     readFile(path: string): Promise<RepoFile | null>
     listFiles(): Promise<string[]>

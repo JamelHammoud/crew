@@ -8,6 +8,7 @@ import type { PathLocation, RepoFile } from '../shared/files'
 import type { MachineDir } from '../shared/machinePath'
 import type { MediaAccess, MediaKind, ScreenSource } from '../shared/media'
 import type { ModelServer } from '../shared/modelServers'
+import type { PluginConnectionInput, PluginConnectionResult } from '../shared/plugins'
 import type { LivePlace } from '../shared/places'
 import type { Present, PresenceSnapshot } from '../shared/presence'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../shared/llm'
@@ -70,6 +71,10 @@ const bridge = {
   screenSources: (): Promise<ScreenSource[]> => ipcRenderer.invoke('media:sources'),
   pickScreenSource: (id: string | null): Promise<void> => ipcRenderer.invoke('media:pickSource', id),
   openExternal: (url: string): Promise<boolean> => ipcRenderer.invoke('shell:openExternal', url),
+  connectPlugin: (plugin: PluginConnectionInput): Promise<PluginConnectionResult> =>
+    ipcRenderer.invoke('plugins:connect', plugin),
+  pluginStatus: (plugin: PluginConnectionInput): Promise<boolean> => ipcRenderer.invoke('plugins:status', plugin),
+  disconnectPlugin: (plugin: PluginConnectionInput): Promise<void> => ipcRenderer.invoke('plugins:disconnect', plugin),
   copyImage: (src: string): Promise<boolean> => ipcRenderer.invoke('clipboard:image', src),
   readFile: (path: string): Promise<RepoFile | null> => ipcRenderer.invoke('file:read', path),
   listFiles: (): Promise<string[]> => ipcRenderer.invoke('file:list'),
