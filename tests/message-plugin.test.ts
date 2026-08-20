@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import WebSocket from 'ws'
 import { agentId } from '../src/shared/llm'
-import { pluginPreamble, type CrewPlugin } from '../src/shared/plugins'
-import { pluginPreamble as preamble } from '../src/shared/pluginPreamble'
+import type { CrewPlugin } from '../src/shared/plugins'
+import { pluginPreamble } from '../src/shared/pluginPreamble'
 import type { RegisteredLlm, ServerMessage } from '../src/shared/protocol'
 import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
 
@@ -84,14 +84,10 @@ describe('a plugin put on one message', () => {
 
   it('names it in the words the machine writes, and says nothing without one', () => {
     const plugins = [held('frontpages')]
-    const said = preamble('http://127.0.0.1:1/x', 'p1', plugins, true, 'frontpages')
+    const said = pluginPreamble('http://127.0.0.1:1/x', 'p1', plugins, true, 'frontpages')
 
     expect(said).toContain('Frontpages')
-    expect(preamble('http://127.0.0.1:1/x', 'p1', plugins, true)).toBe('')
-    expect(preamble('http://127.0.0.1:1/x', 'p1', plugins, false, 'frontpages')).toBe('')
-  })
-
-  it('is the shared reading either way it is imported', () => {
-    expect(pluginPreamble).toBeUndefined()
+    expect(pluginPreamble('http://127.0.0.1:1/x', 'p1', plugins, true)).toBe('')
+    expect(pluginPreamble('http://127.0.0.1:1/x', 'p1', plugins, false, 'frontpages')).toBe('')
   })
 })
