@@ -84,7 +84,11 @@ describe('plugin OAuth on the machine running the agent', () => {
             JSON.stringify({
               jsonrpc: '2.0',
               id: rpc.id,
-              result: { protocolVersion: '2025-06-18', capabilities: {}, serverInfo: { name: 'Raylight', version: '1' } }
+              result: {
+                protocolVersion: '2025-06-18',
+                capabilities: {},
+                serverInfo: { name: 'Raylight', version: '1' }
+              }
             })
           )
           return
@@ -96,9 +100,7 @@ describe('plugin OAuth on the machine running the agent', () => {
         if (rpc.method === 'tools/list') {
           const names = requiredTools ? ['get_editor_status', 'list_projects', 'render_video'] : ['render_video']
           response.setHeader('content-type', 'application/json')
-          response.end(
-            JSON.stringify({ jsonrpc: '2.0', id: rpc.id, result: { tools: names.map(name => ({ name })) } })
-          )
+          response.end(JSON.stringify({ jsonrpc: '2.0', id: rpc.id, result: { tools: names.map(name => ({ name })) } }))
           return
         }
       }
@@ -152,6 +154,8 @@ describe('plugin OAuth on the machine running the agent', () => {
 
   it('does not start an agent when Raylight lacks the tools Crew promises', async () => {
     requiredTools = false
-    await expect(authorizePlugin(raylight(), { open })).rejects.toThrow('Raylight is missing get_editor_status and list_projects.')
+    await expect(authorizePlugin(raylight(), { open })).rejects.toThrow(
+      'Raylight is missing get_editor_status and list_projects.'
+    )
   })
 })
