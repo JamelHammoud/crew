@@ -513,63 +513,122 @@ const tools = async (url: string, accessToken: string | undefined, fetcher: type
   return found.map((one: any) => text(one?.name)).filter(Boolean)
 }
 
+const verifyTools = (plugin: ResolvedPlugin, names: string[]): void => {
+  const required = plugin.name === 'raylight' ? REQUIRED_RAYLIGHT_TOOLS : []
+  const missing = required.filter(name => !names.includes(name))
+  if (missing.length) throw new Error(`${plugin.label} is missing ${missing.join(' and ')}.`)
+}
+
 const usableCredential = async (
   plugin: ResolvedPlugin,
-  deps: Required<Pick<PluginOauthDeps, 'fetcher' | 'now' | 'open' | 'timeoutMs'>>
+  deps: Required<Pick<PluginOauthDeps, 'fetcher' | 'now' | 'open' | 'timeoutMs'>>,
+  allowSignIn: boolean
 ): Promise<OAuthCredential> => {
   if (!plugin.url) throw new Error(`${plugin.label} has no MCP address.`)
-  let saved: OAuthCredential | undefined = read().servers[plugin.url]
+  let saved = savedConnection(plugin)?.credential
   const now = deps.now()
   if (saved?.expiresAt && saved.expiresAt <= now + TOKEN_MARGIN_MS) {
     saved = (await refresh(saved, deps.fetcher, now)) ?? undefined
-    if (saved) remember(plugin.url, saved)
+    if (saved) remember(plugin, saved)
   }
   if (saved) {
     try {
       const names = await tools(plugin.url, saved.accessToken, deps.fetcher)
-      const required = plugin.name === 'raylight' ? REQUIRED_RAYLIGHT_TOOLS : []
-      const missing = required.filter(name => !names.includes(name))
-      if (missing.length) throw new Error(`Raylight is missing ${missing.join(' and ')}.`)
+      verifyTools(plugin, names)
       return saved
     } catch (cause) {
       if (!(cause instanceof Unauthorized)) throw cause
       const renewed = await refresh(saved, deps.fetcher, now)
       if (renewed) {
-        remember(plugin.url, renewed)
+        remember(plugin, renewed)
         const names = await tools(plugin.url, renewed.accessToken, deps.fetcher)
-        const missing = plugin.name === 'raylight' ? REQUIRED_RAYLIGHT_TOOLS.filter(name => !names.includes(name)) : []
-        if (missing.length) throw new Error(`Raylight is missing ${missing.join(' and ')}.`)
+        verifyTools(plugin, names)
         return renewed
       }
     }
   }
-  const connected = await signIn(plugin.url, deps)
-  const names = await tools(plugin.url, connected.accessToken, deps.fetcher)
-  const missing = plugin.name === 'raylight' ? REQUIRED_RAYLIGHT_TOOLS.filter(name => !names.includes(name)) : []
-  if (missing.length) throw new Error(`Raylight is missing ${missing.join(' and ')}.`)
-  remember(plugin.url, connected)
-  return connected
+  if (!allowSignIn) throw new Error(`${plugin.label} is not connected on this computer. Connect it in Plugins.`)
+  const connected = await signIn(plugin, deps)
+  try {
+    const names = await tools(plugin.url, connected.credential.accessToken, deps.fetcher)
+    verifyTools(plugin, names)
+    remember(plugin, connected.credential)
+    connected.listening.succeed()
+    return connected.credential
+  } catch (cause) {
+    connected.listening.fail()
+    throw cause
+  } finally {
+    connected.listening.close()
+  }
+}
+
+const oauthDeps = (
+  deps: PluginOauthDeps
+): Required<Pick<PluginOauthDeps, 'fetcher' | 'now' | 'open' | 'timeoutMs'>> => ({
+  fetcher: deps.fetcher ?? fetch,
+  now: deps.now ?? Date.now,
+  open: deps.open ?? openExternal,
+  timeoutMs: deps.timeoutMs ?? LOGIN_TIMEOUT_MS
+})
+
+const authorize = async (
+  plugin: ResolvedPlugin,
+  deps: PluginOauthDeps,
+  allowSignIn: boolean
+): Promise<Record<string, string>> => {
+  if (plugin.authentication !== 'oauth' || plugin.transport !== 'http' || !plugin.url) return {}
+  if (!currentPluginInstallation(plugin)) throw new Error(`${plugin.label} needs to be added again.`)
+  const key = plugin.installationId
+  const existing = authorizing.get(key)
+  if (existing) return existing
+  const ready = usableCredential(plugin, oauthDeps(deps), allowSignIn).then(credential => ({
+    Authorization: `Bearer ${credential.accessToken}`
+  }))
+  authorizing.set(key, ready)
+  try {
+    return await ready
+  } finally {
+    authorizing.delete(key)
+  }
 }
 
 export async function authorizePlugin(
   plugin: ResolvedPlugin,
   deps: PluginOauthDeps = {}
 ): Promise<Record<string, string>> {
-  if (plugin.authentication !== 'oauth' || plugin.transport !== 'http' || !plugin.url) return {}
-  const existing = authorizing.get(plugin.url)
-  if (existing) return existing
-  const ready = usableCredential(plugin, {
-    fetcher: deps.fetcher ?? fetch,
-    now: deps.now ?? Date.now,
-    open: deps.open ?? openExternal,
-    timeoutMs: deps.timeoutMs ?? LOGIN_TIMEOUT_MS
-  }).then(credential => ({ Authorization: `Bearer ${credential.accessToken}` }))
-  authorizing.set(plugin.url, ready)
-  try {
-    return await ready
-  } finally {
-    authorizing.delete(plugin.url)
+  return authorize(plugin, deps, true)
+}
+
+export function pluginConnected(plugin: CrewPlugin | ResolvedPlugin): boolean {
+  const resolved = 'trusted' in plugin ? plugin : resolvePlugin(plugin)
+  if (!resolved.trusted || !currentPluginInstallation(resolved)) return false
+  return Boolean(savedConnection(resolved))
+}
+
+export async function connectPlugin(plugin: ResolvedPlugin, deps: PluginOauthDeps = {}): Promise<void> {
+  if (!plugin.trusted || !plugin.catalogId || !currentPluginInstallation(plugin)) {
+    throw new Error('That plugin cannot be connected.')
   }
+  if (plugin.authentication === 'oauth') {
+    await authorize(plugin, deps, true)
+    return
+  }
+  if (plugin.transport === 'http') {
+    if (!plugin.url) throw new Error(`${plugin.label} has no MCP address.`)
+    const names = await tools(plugin.url, undefined, deps.fetcher ?? fetch)
+    verifyTools(plugin, names)
+  }
+  remember(plugin)
+}
+
+export function disconnectPlugin(plugin: ResolvedPlugin): void {
+  if (!currentPluginInstallation(plugin)) return
+  const store = read()
+  if (!store.connections[plugin.installationId]) return
+  const connections = { ...store.connections }
+  delete connections[plugin.installationId]
+  write({ version: 2, connections })
 }
 
 export async function authorizeAttachedPlugin(
@@ -578,10 +637,12 @@ export async function authorizeAttachedPlugin(
   deps: PluginOauthDeps = {}
 ): Promise<Record<string, Record<string, string>>> {
   const wanted = usePlugin ? pluginKey(usePlugin) : ''
-  if (!wanted) return {}
-  const saved = plugins.find(plugin => pluginKey(plugin.name) === wanted)
-  if (!saved) return {}
-  const plugin = resolvePlugin(saved)
-  const headers = await authorizePlugin(plugin, deps)
-  return Object.keys(headers).length ? { [plugin.name]: headers } : {}
+  const chosen = wanted ? plugins.filter(plugin => pluginKey(plugin.name) === wanted) : plugins
+  const headers: Record<string, Record<string, string>> = {}
+  for (const saved of chosen) {
+    const plugin = resolvePlugin(saved)
+    const found = await authorize(plugin, deps, false)
+    if (Object.keys(found).length) headers[plugin.name] = found
+  }
+  return headers
 }
