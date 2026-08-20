@@ -116,6 +116,10 @@ export type ClientMessage =
       // The id a fork is asked for under, so the window that made it opens it the
       // moment it lands rather than guessing which new thread was its own.
       forkId?: string
+      // A plugin picked for this one message, by name. It is about the message
+      // being written rather than a standing choice, so it goes out beside the
+      // words and is never read back out of them.
+      usePlugin?: string
     }
   | { type: 'chat.post'; text: string; agentId?: string }
   | { type: 'history'; before: string }
