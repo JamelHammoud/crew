@@ -3,7 +3,13 @@ import fs from 'node:fs'
 import http from 'node:http'
 import path from 'node:path'
 import { spawn } from 'node:child_process'
-import { pluginKey, resolvePlugin, type CrewPlugin, type ResolvedPlugin } from '../shared/plugins'
+import {
+  currentPluginInstallation,
+  pluginKey,
+  resolvePlugin,
+  type CrewPlugin,
+  type ResolvedPlugin
+} from '../shared/plugins'
 
 interface OAuthCredential {
   accessToken: string
@@ -16,8 +22,15 @@ interface OAuthCredential {
 }
 
 interface OAuthStore {
-  version: 1
-  servers: Record<string, OAuthCredential>
+  version: 2
+  connections: Record<
+    string,
+    {
+      catalogId: string
+      url?: string
+      credential?: OAuthCredential
+    }
+  >
 }
 
 interface ProtectedResourceMetadata {
@@ -46,6 +59,8 @@ interface TokenAnswer {
 interface AuthorizationCode {
   code: Promise<string>
   redirectUri: string
+  succeed: () => void
+  fail: () => void
   close: () => void
 }
 
@@ -71,6 +86,7 @@ class Unauthorized extends Error {}
 export function setPluginOauthPath(at: string): void {
   file = at
   cache = null
+  read()
 }
 
 const text = (value: unknown): string => (typeof value === 'string' ? value : '')
@@ -109,25 +125,38 @@ const quarantine = (): void => {
 
 const read = (): OAuthStore => {
   if (cache) return cache
-  if (!file) return (cache = { version: 1, servers: {} })
+  if (!file) return (cache = { version: 2, connections: {} })
   let parsed: unknown
   try {
     parsed = JSON.parse(fs.readFileSync(file, 'utf8'))
   } catch (cause) {
     if ((cause as NodeJS.ErrnoException)?.code !== 'ENOENT') quarantine()
-    return (cache = { version: 1, servers: {} })
+    return (cache = { version: 2, connections: {} })
   }
   const body = parsed as Partial<OAuthStore> | null
-  if (body?.version !== 1 || !body.servers || typeof body.servers !== 'object') {
+  if ((parsed as { version?: number } | null)?.version === 1) {
+    const fresh: OAuthStore = { version: 2, connections: {} }
+    write(fresh)
+    return fresh
+  }
+  if (body?.version !== 2 || !body.connections || typeof body.connections !== 'object') {
     quarantine()
-    return (cache = { version: 1, servers: {} })
+    return (cache = { version: 2, connections: {} })
   }
-  const servers: Record<string, OAuthCredential> = {}
-  for (const [url, raw] of Object.entries(body.servers)) {
-    const credential = writtenCredential(raw)
-    if (credential) servers[url] = credential
+  const connections: OAuthStore['connections'] = {}
+  for (const [installationId, raw] of Object.entries(body.connections)) {
+    if (!currentPluginInstallation({ installationId, installationVersion: 2, name: '' })) continue
+    const said = raw as { catalogId?: unknown; url?: unknown; credential?: unknown } | null
+    const catalogId = text(said?.catalogId)
+    if (!catalogId) continue
+    const credential = writtenCredential(said?.credential)
+    connections[installationId] = {
+      catalogId,
+      ...(text(said?.url) ? { url: text(said?.url) } : {}),
+      ...(credential ? { credential } : {})
+    }
   }
-  return (cache = { version: 1, servers })
+  return (cache = { version: 2, connections })
 }
 
 const write = (store: OAuthStore): void => {
@@ -140,9 +169,27 @@ const write = (store: OAuthStore): void => {
   fs.renameSync(temporary, file)
 }
 
-const remember = (url: string, credential: OAuthCredential): void => {
+const remember = (plugin: ResolvedPlugin, credential?: OAuthCredential): void => {
+  if (!currentPluginInstallation(plugin) || !plugin.catalogId) return
   const store = read()
-  write({ version: 1, servers: { ...store.servers, [url]: credential } })
+  write({
+    version: 2,
+    connections: {
+      ...store.connections,
+      [plugin.installationId]: {
+        catalogId: plugin.catalogId,
+        ...(plugin.url ? { url: plugin.url } : {}),
+        ...(credential ? { credential } : {})
+      }
+    }
+  })
+}
+
+const savedConnection = (plugin: ResolvedPlugin): OAuthStore['connections'][string] | undefined => {
+  if (!currentPluginInstallation(plugin) || !plugin.catalogId) return undefined
+  const connection = read().connections[plugin.installationId]
+  if (!connection || connection.catalogId !== plugin.catalogId || connection.url !== plugin.url) return undefined
+  return connection
 }
 
 const metadataUrl = (resource: URL): string =>
