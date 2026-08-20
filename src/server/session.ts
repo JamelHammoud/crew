@@ -1290,11 +1290,11 @@ export class CrewSession {
         return
       }
       if (beside) {
-        this.startAside(ws, member, thread, mentions, trimmed, attachments)
+        this.startAside(ws, member, thread, mentions, trimmed, attachments, plugin)
         return
       }
       if (forking) {
-        this.startFork(ws, member, thread, mentions, trimmed, attachments, forkId)
+        this.startFork(ws, member, thread, mentions, trimmed, attachments, forkId, plugin)
         return
       }
       if (thread.status !== 'open') this.handleThreadStatus(member, threadId, 'open')
@@ -1622,7 +1622,8 @@ export class CrewSession {
     parent: Thread,
     mentions: string[],
     text: string,
-    attachments: Attachment[]
+    attachments: Attachment[],
+    plugin?: string
   ): void {
     if (!text) {
       this.refuse('Ask a question to go with it.', ws, parent.id)
@@ -1640,7 +1641,7 @@ export class CrewSession {
       this.refuse('No agent of yours is here to take it.', ws, parent.id)
       return
     }
-    this.startThread(member, agent, text, attachments, { ghost: ws, aside: parent.id })
+    this.startThread(member, agent, text, attachments, { ghost: ws, aside: parent.id, plugin })
   }
 
   // The thread so far, carried on in one of its own. What was said up to this
@@ -1656,7 +1657,8 @@ export class CrewSession {
     mentions: string[],
     text: string,
     attachments: Attachment[],
-    forkId?: string
+    forkId?: string,
+    plugin?: string
   ): void {
     if (!text) {
       this.refuse('Say what to carry on with.', ws, parent.id)
@@ -1680,6 +1682,7 @@ export class CrewSession {
       plan: parent.plan,
       boardId: parent.boardId,
       tickets: parent.tickets,
+      plugin,
       mentions: named.length > 0 ? named : [agent.id],
       fork: { from: parent.id, at: Date.now() }
     })
@@ -4133,7 +4136,14 @@ export class CrewSession {
     // thing that overrides that, since the only way to hold a message back was
     // to sit on it until the turn ended.
     const runningAgentId = thread.running ? this.prompts.get(thread.running)?.agentId : undefined
-    if (!route?.holding && agent.runner && thread.running && runningAgentId === agent.id && agent.steerable) {
+    if (
+      !route?.holding &&
+      !route?.plugin &&
+      agent.runner &&
+      thread.running &&
+      runningAgentId === agent.id &&
+      agent.steerable
+    ) {
       this.emitThreadMessage(entry)
       this.sendSteer(agent, thread.running, {
         messageId: entry.messageId,
