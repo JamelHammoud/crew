@@ -3,6 +3,7 @@ import { attachmentBytes, MAX_ATTACHMENTS } from '../../../shared/attachments'
 import { GifGlyph, PlugGlyph, PlusGlyph, SignalGlyph, SparkGlyph, UploadGlyph } from '../icons'
 import { useHuddle } from '../state/huddle'
 import { useCrew } from '../state/store'
+import { locallyConnected, usePluginConnections } from '../state/pluginConnections'
 import { ATTACH_SIZES, PLUS_BUTTON, useFilePicker } from './Attachments'
 import DefaultAgentPicker from './DefaultAgentPicker'
 import GifPicker from './GifPicker'
@@ -48,7 +49,9 @@ export default function AddMenu({
   const aiming = defaultAgent === true && anyone
   // With nothing plugged in there is nothing to put on a message, so the row is
   // left out rather than opening on an empty card, the way the agents are.
-  const plugged = useCrew(s => s.plugins.length > 0)
+  const plugins = useCrew(s => s.plugins)
+  const connectionIds = usePluginConnections(s => s.ids)
+  const plugged = plugins.some(plugin => locallyConnected(plugin, connectionIds))
 
   const show = () => {
     setScreen('menu')

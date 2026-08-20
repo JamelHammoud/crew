@@ -5,6 +5,7 @@ import { PlugGlyph } from '../icons'
 import { COMMAND_MARKS } from './CommandChip'
 import PluginMark from './plugins/PluginMark'
 import { bringInto } from './scrollInto'
+import { locallyConnected, usePluginConnections } from '../state/pluginConnections'
 
 export type SlashMatch =
   | { kind: 'command'; command: SlashCommand }
@@ -33,25 +34,30 @@ export function useSlashCommands(
   plugins: readonly CrewPlugin[],
   onPlugin: (plugin: CrewPlugin) => void
 ) {
+  const connectionIds = usePluginConnections(s => s.ids)
+  const availablePlugins = useMemo(
+    () => plugins.filter(plugin => locallyConnected(plugin, connectionIds)),
+    [connectionIds, plugins]
+  )
   const [dismissed, setDismissed] = useState<string | null>(null)
   const [active, setActive] = useState(0)
   const nested = pluginQuery(value)
   const matches = useMemo<SlashMatch[]>(() => {
     if (value === dismissed) return []
-    if (nested !== null) return pluginMatches(plugins, nested).map(plugin => ({ kind: 'plugin', plugin }))
+    if (nested !== null) return pluginMatches(availablePlugins, nested).map(plugin => ({ kind: 'plugin', plugin }))
     const found: SlashMatch[] = slashCandidates(value, offered).map(command => ({ kind: 'command', command }))
     const direct = directQuery(value)
     if (direct === null) return found
     if ('plugin'.startsWith(direct)) found.push({ kind: 'plugins' })
     if (direct) {
-      for (const plugin of plugins) {
+      for (const plugin of availablePlugins) {
         if (plugin.name.startsWith(direct) && plugin.name !== 'plugin') {
           found.push({ kind: 'plugin', plugin })
         }
       }
     }
     return found
-  }, [dismissed, nested, offered, plugins, value])
+  }, [availablePlugins, dismissed, nested, offered, value])
   const open = value !== dismissed && (matches.length > 0 || nested !== null)
   const activeIndex = Math.min(active, Math.max(matches.length - 1, 0))
 

@@ -1,6 +1,7 @@
 import { resolvePlugins } from '../../../../shared/plugins'
 import { CheckGlyph } from '../../icons'
 import { useMessagePlugin } from '../../state/messagePlugin'
+import { locallyConnected, usePluginConnections } from '../../state/pluginConnections'
 import { useCrew } from '../../state/store'
 import PluginMark from './PluginMark'
 
@@ -12,7 +13,8 @@ export default function PluginPicker({ where, onPick }: { where: string; onPick:
   const plugins = useCrew(s => s.plugins)
   const picked = useMessagePlugin(s => s.picked[where])
   const pick = useMessagePlugin(s => s.pick)
-  const held = resolvePlugins(plugins)
+  const connectionIds = usePluginConnections(s => s.ids)
+  const held = resolvePlugins(plugins).filter(plugin => locallyConnected(plugin, connectionIds))
 
   return (
     <div className="p-1.5 w-64 max-h-[352px] overflow-y-auto overscroll-contain no-scrollbar">
