@@ -253,7 +253,7 @@ const openExternal = async (url: string): Promise<void> => {
   })
 }
 
-const callback = async (state: string, timeoutMs: number): Promise<AuthorizationCode> => {
+const callback = async (state: string, label: string, timeoutMs: number): Promise<AuthorizationCode> => {
   let resolveCode: (code: string) => void = () => {}
   let rejectCode: (cause: Error) => void = () => {}
   const code = new Promise<string>((resolve, reject) => {
@@ -262,6 +262,18 @@ const callback = async (state: string, timeoutMs: number): Promise<Authorization
   })
   let timer: NodeJS.Timeout | null = null
   let settled = false
+  let waiting: http.ServerResponse | null = null
+  const finish = (ok: boolean): void => {
+    if (!waiting) return
+    waiting
+      .writeHead(ok ? 200 : 400, { 'content-type': 'text/plain; charset=utf-8' })
+      .end(
+        ok
+          ? `${label} is connected to Crew. You can return to Crew.`
+          : `${label} did not connect to Crew. Return to Crew and try again.`
+      )
+    waiting = null
+  }
   const server = http.createServer((request, response) => {
     const url = new URL(request.url ?? '/', 'http://127.0.0.1')
     if (url.pathname !== '/callback') {
@@ -274,12 +286,10 @@ const callback = async (state: string, timeoutMs: number): Promise<Authorization
     if (error || returnedState !== state || !returnedCode) {
       response
         .writeHead(400, { 'content-type': 'text/plain; charset=utf-8' })
-        .end('Raylight did not connect. Return to Crew and try again.')
+        .end(`${label} did not connect to Crew. Return to Crew and try again.`)
       if (!settled) rejectCode(new Error(error || 'The plugin sign-in could not be verified.'))
     } else {
-      response
-        .writeHead(200, { 'content-type': 'text/plain; charset=utf-8' })
-        .end('Raylight is connected. You can return to Crew.')
+      waiting = response
       if (!settled) resolveCode(returnedCode)
     }
     settled = true
@@ -297,14 +307,17 @@ const callback = async (state: string, timeoutMs: number): Promise<Authorization
   timer = setTimeout(() => {
     if (settled) return
     settled = true
-    rejectCode(new Error('The Raylight sign-in timed out. Try again when you are ready to sign in.'))
+    rejectCode(new Error(`The ${label} sign-in timed out. Try again when you are ready to sign in.`))
     server.close()
   }, timeoutMs)
   return {
     code,
     redirectUri: `http://127.0.0.1:${address.port}/callback`,
+    succeed: () => finish(true),
+    fail: () => finish(false),
     close: () => {
       if (timer) clearTimeout(timer)
+      finish(false)
       server.close()
     }
   }
@@ -380,14 +393,15 @@ const refresh = async (saved: OAuthCredential, fetcher: typeof fetch, now: numbe
 }
 
 const signIn = async (
-  url: string,
+  plugin: ResolvedPlugin,
   deps: Required<Pick<PluginOauthDeps, 'fetcher' | 'now' | 'open' | 'timeoutMs'>>
-): Promise<OAuthCredential> => {
-  const { resource, authorization } = await discover(url, deps.fetcher)
+): Promise<{ credential: OAuthCredential; listening: AuthorizationCode }> => {
+  if (!plugin.url) throw new Error(`${plugin.label} has no MCP address.`)
+  const { resource, authorization } = await discover(plugin.url, deps.fetcher)
   const state = base64Url(randomBytes(24))
   const verifier = base64Url(randomBytes(48))
   const challenge = base64Url(createHash('sha256').update(verifier).digest())
-  const listening = await callback(state, deps.timeoutMs)
+  const listening = await callback(state, plugin.label, deps.timeoutMs)
   try {
     const registered = await register(authorization.registration_endpoint!, listening.redirectUri, deps.fetcher)
     if (!registered.client_id) throw new Error('The plugin sign-in returned no client ID.')
@@ -416,9 +430,14 @@ const signIn = async (
       },
       deps.fetcher
     )
-    return credentialFrom(answer, registered.client_id, authorization.token_endpoint!, resource, deps.now())
-  } finally {
+    return {
+      credential: credentialFrom(answer, registered.client_id, authorization.token_endpoint!, resource, deps.now()),
+      listening
+    }
+  } catch (cause) {
+    listening.fail()
     listening.close()
+    throw cause
   }
 }
 
