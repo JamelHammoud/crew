@@ -8,7 +8,14 @@ import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
 
 type Prompt = Extract<ServerMessage, { type: 'prompt' }>
 
-const FAKE: RegisteredLlm = { instanceId: 'fake', provider: 'fake', label: 'Fake', fields: [], settings: {} }
+const FAKE: RegisteredLlm = {
+  instanceId: 'fake',
+  provider: 'fake',
+  label: 'Fake',
+  fields: [],
+  settings: {},
+  steerable: true
+}
 
 const held = (name: string): CrewPlugin => ({ id: name, catalogId: name, name, by: 'sam', ts: 1 })
 
@@ -80,6 +87,42 @@ describe('a plugin put on one message', () => {
     sam.chat('draw the landing page', [agentId('mac', 'fake')], undefined, undefined, 'raylight')
 
     expect((await promptOf(runner)).usePlugin).toBeUndefined()
+  })
+
+  it('waits for a full plugin turn instead of steering into a run without it', async () => {
+    const { sam, runner } = await opened()
+
+    sam.chat('start the work', [agentId('mac', 'fake')])
+    const first = await promptOf(runner)
+    sam.chat('use the references now', [], first.threadId, undefined, 'frontpages')
+    await waitUntil(() =>
+      sam.messages.some(
+        message =>
+          message.type === 'queue.state' &&
+          message.threadId === first.threadId &&
+          message.items.some(item => item.text === 'use the references now')
+      )
+    )
+    expect(runner.messages.some(message => message.type === 'steer')).toBe(false)
+
+    runner.ws.send(JSON.stringify({ type: 'agent.done', promptId: first.promptId, text: 'done' }))
+    await waitUntil(() => runner.messages.filter(message => message.type === 'prompt').length === 2)
+    const second = runner.messages.filter(message => message.type === 'prompt')[1] as Prompt
+    expect(second.usePlugin).toBe('frontpages')
+  })
+
+  it('keeps the plugin on a side question and a fork', async () => {
+    const { sam, runner } = await opened()
+
+    sam.chat('start the work', [agentId('mac', 'fake')])
+    const first = await promptOf(runner)
+    sam.chat('check this beside it', [], first.threadId, ['btw'], 'frontpages')
+    await waitUntil(() => runner.messages.filter(message => message.type === 'prompt').length === 2)
+    sam.chat('carry this onward', [], first.threadId, ['fork'], 'frontpages')
+    await waitUntil(() => runner.messages.filter(message => message.type === 'prompt').length === 3)
+
+    const carried = runner.messages.filter(message => message.type === 'prompt').slice(1) as Prompt[]
+    expect(carried.map(prompt => prompt.usePlugin)).toEqual(['frontpages', 'frontpages'])
   })
 
   it('names it in the words the machine writes, and says nothing without one', () => {
