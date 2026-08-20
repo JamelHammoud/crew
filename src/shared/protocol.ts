@@ -284,6 +284,9 @@ export type ServerMessage =
       goal?: string
       memories?: CrewMemory[]
       plugins?: CrewPlugin[]
+      // Which of them this message was assigned to. The machine turns it into
+      // the words about it, since the plugins are already handed over here.
+      usePlugin?: string
       // Somebody is sitting in silence waiting for this one to say its first
       // word, so the machine does not hold it behind a sync pass.
       voice?: boolean
