@@ -52,8 +52,13 @@ const reader =
 
 const opened: McpRun[] = []
 
-const open = (plugins: CrewPlugin[], how: 'file' | 'inline' | undefined, id: string): McpRun | null => {
-  const run = openMcp(plugins, how, id)
+const open = (
+  plugins: CrewPlugin[],
+  how: 'file' | 'inline' | undefined,
+  id: string,
+  headers: Readonly<Record<string, Record<string, string>>> = {}
+): McpRun | null => {
+  const run = openMcp(plugins, how, id, headers)
   if (run) opened.push(run)
   return run
 }
@@ -74,6 +79,17 @@ describe('the config the crew plugins become', () => {
   it('hands Raylight to agents without putting its editor into MCP config', () => {
     const run = open([RAYLIGHT], 'inline', 'raylight')!
     expect(run.servers).toEqual({ raylight: { type: 'http', url: 'https://api.raylight.app/mcp' } })
+  })
+
+  it('hands the Raylight sign-in to the MCP client', () => {
+    const run = open([RAYLIGHT], 'file', 'raylight-auth', {
+      raylight: { Authorization: 'Bearer raylight-token' }
+    })!
+    expect(JSON.parse(readFileSync(run.file, 'utf8')).mcpServers.raylight).toEqual({
+      type: 'http',
+      url: 'https://api.raylight.app/mcp',
+      headers: { Authorization: 'Bearer raylight-token' }
+    })
   })
 
   it('leaves out a plugin whose keys this machine does not have', () => {
@@ -142,7 +158,11 @@ describe('what each CLI is really handed', () => {
       mcp: {
         file: '',
         servers: {
-          figma: { type: 'http', url: 'https://mcp.figma.com/mcp' },
+          figma: {
+            type: 'http',
+            url: 'https://mcp.figma.com/mcp',
+            headers: { Authorization: 'Bearer figma-token' }
+          },
           slack: {
             command: 'npx',
             args: ['-y', '@modelcontextprotocol/server-slack'],
@@ -154,7 +174,7 @@ describe('what each CLI is really handed', () => {
     expect(codexArgs('go', reader(), run)).toEqual([
       'app-server',
       '-c',
-      'mcp_servers.figma={url="https://mcp.figma.com/mcp"}',
+      'mcp_servers.figma={url="https://mcp.figma.com/mcp",http_headers={Authorization="Bearer figma-token"}}',
       '-c',
       'mcp_servers.slack={command="npx",args=["-y","@modelcontextprotocol/server-slack"],env={SLACK_BOT_TOKEN="xoxb-real"}}'
     ])
@@ -168,11 +188,20 @@ describe('what each CLI is really handed', () => {
   it('opens kimi on the servers, in the shape acp asks for', () => {
     expect(
       acpServers({
-        figma: { type: 'http', url: 'https://mcp.figma.com/mcp' },
+        figma: {
+          type: 'http',
+          url: 'https://mcp.figma.com/mcp',
+          headers: { Authorization: 'Bearer figma-token' }
+        },
         slack: { command: 'npx', args: ['-y', '@mcp/slack'], env: { SLACK_BOT_TOKEN: 'xoxb-real' } }
       })
     ).toEqual([
-      { name: 'figma', type: 'http', url: 'https://mcp.figma.com/mcp', headers: [] },
+      {
+        name: 'figma',
+        type: 'http',
+        url: 'https://mcp.figma.com/mcp',
+        headers: [{ name: 'Authorization', value: 'Bearer figma-token' }]
+      },
       {
         name: 'slack',
         command: 'npx',
@@ -213,7 +242,7 @@ describe('what each CLI is really handed', () => {
     expect(codexProvider.mcp).toBe('inline')
     expect(kimiProvider.mcp).toBe('inline')
     expect(geminiProvider.mcp).toBe('inline')
-    expect(grokProvider.mcp).toBeUndefined()
+    expect(grokProvider.mcp).toBe('inline')
     expect(localProvider.mcp).toBeUndefined()
   })
 })
