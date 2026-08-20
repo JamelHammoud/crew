@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { createElement } from 'react'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { CrewPlugin } from '../src/shared/plugins'
 
 Element.prototype.getAnimations ??= () => []
@@ -45,7 +45,7 @@ window.matchMedia = ((query: string) => ({
   dispatchEvent: () => false
 })) as typeof window.matchMedia
 
-const { PLUGIN_GROUPS, PLUGIN_OFFERS, offerOf } = await import('../src/shared/plugins')
+const { installPlugin, PLUGIN_GROUPS, PLUGIN_OFFERS, offerOf } = await import('../src/shared/plugins')
 const { PLUGIN_ART } = await import('../src/renderer/src/components/plugins/pluginArt')
 const { useCrew } = await import('../src/renderer/src/state/store')
 const { useBrowser } = await import('../src/renderer/src/state/browser')
@@ -53,7 +53,7 @@ const PluginsView = (await import('../src/renderer/src/views/Plugins')).default
 
 const held = (name: string): CrewPlugin => {
   const offer = offerOf(name)!
-  return { ...offer, id: `id-${name}`, by: 'Jamel', ts: 1 }
+  return { ...installPlugin(offer), id: `id-${name}`, by: 'Jamel', ts: 1 }
 }
 
 const rowFor = (label: string): HTMLElement => screen.getByText(label).closest('div.group') as HTMLElement
@@ -64,6 +64,9 @@ describe('the plugins store', () => {
   beforeEach(() => {
     useCrew.setState({ plugins: [], addPlugin: () => null, removePlugin: () => {} })
     useBrowser.setState({ tabs: [], activeTabId: null, open: false, width: 480 })
+    window.crew = {
+      connectPlugin: vi.fn().mockResolvedValue({ ok: true, message: 'Connected.' })
+    } as unknown as CrewBridge
   })
 
   afterEach(cleanup)
@@ -79,12 +82,14 @@ describe('the plugins store', () => {
     for (const offer of PLUGIN_OFFERS) expect(PLUGIN_ART[offer.name], offer.name).toBeTruthy()
   })
 
-  it('adds the one a row names', () => {
+  it('connects and then adds the one a row names', async () => {
     const added: unknown[] = []
     useCrew.setState({ addPlugin: one => (added.push(one), null) })
     plugins()
     fireEvent.click(screen.getByRole('button', { name: 'Add Figma' }))
-    expect((added[0] as { name: string }).name).toBe('figma')
+    await waitFor(() => expect(added).toHaveLength(1))
+    expect(window.crew.connectPlugin).toHaveBeenCalledOnce()
+    expect(added[0]).toMatchObject({ name: 'figma', installationVersion: 2 })
   })
 
   it('stands what is installed at the top and leaves it out of the offers below', () => {
