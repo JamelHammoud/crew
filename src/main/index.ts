@@ -2,12 +2,22 @@ import { app, BrowserWindow, clipboard, dialog, ipcMain, Menu, nativeTheme, shel
 import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { setPluginOauthPath } from '../runner/pluginOauth'
+import {
+  connectPlugin as connectCatalogPlugin,
+  disconnectPlugin as disconnectCatalogPlugin,
+  pluginConnected,
+  setPluginOauthPath
+} from '../runner/pluginOauth'
 import { setBadge, showAlert } from './alerts'
 import { KeepAwake } from './awake'
 import { windowForAlert, type AgentAlert } from '../shared/alerts'
 import { cleanAppIcon, DEFAULT_APP_ICON, type AppIconId } from '../shared/appIcon'
 import type { SystemDetails } from '../shared/feedback'
+import {
+  pluginForConnection,
+  type PluginConnectionInput,
+  type PluginConnectionResult
+} from '../shared/plugins'
 import { copyImage } from './clipboard'
 import { installContextMenu } from './context-menu'
 import type { Present } from '../shared/presence'
@@ -571,6 +581,27 @@ app.whenReady().then(() => {
   })
   ipcMain.handle('session:live', () => crews.places())
   ipcMain.handle('session:recent', () => crews.recentJoins())
+  ipcMain.handle('plugins:connect', async (_event, input: PluginConnectionInput): Promise<PluginConnectionResult> => {
+    const plugin = pluginForConnection(input)
+    if (!plugin) return { ok: false, message: 'That plugin is not available.' }
+    try {
+      await connectCatalogPlugin(plugin)
+      return { ok: true, message: `${plugin.label} is connected.` }
+    } catch (cause) {
+      return {
+        ok: false,
+        message: cause instanceof Error ? cause.message : `${plugin.label} did not connect.`
+      }
+    }
+  })
+  ipcMain.handle('plugins:status', (_event, input: PluginConnectionInput) => {
+    const plugin = pluginForConnection(input)
+    return plugin ? pluginConnected(plugin) : false
+  })
+  ipcMain.handle('plugins:disconnect', (_event, input: PluginConnectionInput) => {
+    const plugin = pluginForConnection(input)
+    if (plugin) disconnectCatalogPlugin(plugin)
+  })
   ipcMain.handle('agents:capabilities', () => crews.capabilities())
   ipcMain.handle('agents:install', (_event, provider: string) => crews.installProvider(provider))
   ipcMain.handle('agents:servers', () => crews.modelServers())
