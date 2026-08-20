@@ -1,10 +1,25 @@
 import { useMemo, useState } from 'react'
-import { PLUGIN_GROUPS, PLUGIN_OFFERS, pluginKey, resolvePlugins, type PluginOffer } from '../../../shared/plugins'
+import {
+  installPlugin,
+  PLUGIN_GROUPS,
+  PLUGIN_OFFERS,
+  pluginKey,
+  resolvePlugins,
+  type PluginOffer,
+  type PluginReference
+} from '../../../shared/plugins'
 import AddPlugin from '../components/plugins/AddPlugin'
 import PluginRow from '../components/plugins/PluginRow'
 import { SearchGlyph } from '../icons'
 import { useCrew } from '../state/store'
 import { runPluginAction } from '../state/pluginState'
+import {
+  connectPlugin,
+  forgetPluginConnection,
+  locallyConnected,
+  usePluginConnections
+} from '../state/pluginConnections'
+import { toast } from '../state/toast'
 
 const matches = (find: string, ...words: string[]): boolean =>
   !find || words.some(word => word.toLowerCase().includes(find.toLowerCase().trim()))
@@ -13,15 +28,56 @@ export default function Plugins() {
   const plugins = useCrew(s => s.plugins)
   const addPlugin = useCrew(s => s.addPlugin)
   const removePlugin = useCrew(s => s.removePlugin)
+  const connectionIds = usePluginConnections(s => s.ids)
   const [find, setFind] = useState('')
+  const [connecting, setConnecting] = useState('')
+  const [trouble, setTrouble] = useState<Record<string, string>>({})
 
-  const held = useMemo(() => new Set(plugins.map(one => pluginKey(one.name))), [plugins])
-  const installed = resolvePlugins(plugins).filter(one => matches(find, one.label, one.blurb, one.name))
-  const offers = PLUGIN_OFFERS.filter(one => !held.has(one.name) && matches(find, one.label, one.blurb, one.name))
+  const resolved = useMemo(() => resolvePlugins(plugins), [plugins])
+  const connected = useMemo(
+    () => new Set(resolved.filter(one => locallyConnected(one, connectionIds)).map(one => pluginKey(one.name))),
+    [connectionIds, resolved]
+  )
+  const installed = resolved.filter(
+    one => connected.has(pluginKey(one.name)) && matches(find, one.label, one.blurb, one.name)
+  )
+  const offers = PLUGIN_OFFERS.filter(
+    one => !connected.has(one.name) && matches(find, one.label, one.blurb, one.name)
+  )
   const grouped: Array<[string, PluginOffer[]]> = PLUGIN_GROUPS.map(group => [
     group,
     offers.filter(one => one.group === group)
   ])
+
+  const connect = async (offer: PluginOffer): Promise<void> => {
+    const key = pluginKey(offer.name)
+    const shared = plugins.find(one => pluginKey(one.name) === key)
+    const plugin: PluginReference = shared ?? installPlugin(offer)
+    setConnecting(key)
+    setTrouble(current => ({ ...current, [key]: '' }))
+    const result = await connectPlugin(plugin)
+    if (!result.ok) {
+      setTrouble(current => ({ ...current, [key]: result.message }))
+      setConnecting('')
+      return
+    }
+    if (!shared) {
+      const problem = addPlugin(plugin)
+      if (problem) {
+        forgetPluginConnection(plugin)
+        setTrouble(current => ({ ...current, [key]: problem }))
+        setConnecting('')
+        return
+      }
+    }
+    setConnecting('')
+    toast.done(result.message, { key: `plugin:${key}` })
+  }
+
+  const remove = (plugin: PluginReference & { id: string }): void => {
+    forgetPluginConnection(plugin)
+    removePlugin(plugin.id)
+  }
 
   return (
     <div className="h-full overflow-y-auto px-6">
@@ -54,7 +110,7 @@ export default function Plugins() {
                   label={one.label}
                   blurb={one.blurb}
                   onOpen={() => runPluginAction(one)}
-                  onRemove={() => removePlugin(one.id)}
+                  onRemove={() => remove(one)}
                 />
               ))}
             </div>
@@ -72,7 +128,9 @@ export default function Plugins() {
                     seed={one.name}
                     label={one.label}
                     blurb={one.blurb}
-                    onAdd={() => addPlugin(one)}
+                    busy={connecting === one.name}
+                    trouble={trouble[one.name]}
+                    onAdd={() => void connect(one)}
                   />
                 ))}
               </div>

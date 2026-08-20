@@ -1,5 +1,6 @@
 import { CheckGlyph, PanelRightGlyph, PlusGlyph, TrashGlyph } from '../../icons'
 import Tooltip from '../Tooltip'
+import Spinner from '../Spinner'
 import PluginMark from './PluginMark'
 
 export default function PluginRow({
@@ -7,6 +8,8 @@ export default function PluginRow({
   label,
   blurb,
   held,
+  busy,
+  trouble,
   onAdd,
   onOpen,
   onRemove
@@ -15,6 +18,8 @@ export default function PluginRow({
   label: string
   blurb: string
   held?: boolean
+  busy?: boolean
+  trouble?: string
   onAdd?: () => void
   onOpen?: () => void
   onRemove?: () => void
@@ -24,16 +29,19 @@ export default function PluginRow({
       <PluginMark seed={seed} box={40} />
       <span className="flex-1 min-w-0">
         <span className="block text-base text-fg truncate">{label}</span>
-        {blurb && <span className="block text-sm text-fg-muted truncate">{blurb}</span>}
+        {(trouble || blurb) && (
+          <span className={`block text-sm truncate ${trouble ? 'text-danger' : 'text-fg-muted'}`}>{trouble || blurb}</span>
+        )}
       </span>
       {onAdd && (
-        <Tooltip label={`Add ${label}`}>
+        <Tooltip label={`Add ${label}`} disabled={busy}>
           <button
             onClick={onAdd}
+            disabled={busy}
             aria-label={`Add ${label}`}
-            className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:bg-fg/10 hover:text-fg active:scale-90"
+            className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:bg-fg/10 hover:text-fg active:scale-90 disabled:pointer-events-none"
           >
-            <PlusGlyph className="w-[18px] h-[18px]" />
+            {busy ? <Spinner size={16} /> : <PlusGlyph className="w-[18px] h-[18px]" />}
           </button>
         </Tooltip>
       )}
