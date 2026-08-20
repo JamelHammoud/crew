@@ -3,7 +3,13 @@ import http from 'node:http'
 import os from 'node:os'
 import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { authorizePlugin, setPluginOauthPath } from '../src/runner/pluginOauth'
+import {
+  authorizePlugin,
+  connectPlugin,
+  disconnectPlugin,
+  pluginConnected,
+  setPluginOauthPath
+} from '../src/runner/pluginOauth'
 import { installPlugin, offerOf, resolvePlugin, type CrewPlugin } from '../src/shared/plugins'
 
 const bodyOf = (request: http.IncomingMessage): Promise<string> =>
@@ -23,6 +29,7 @@ describe('plugin OAuth on the machine running the agent', () => {
   let bearerCalls = 0
   let requiredTools = true
   let browserAnswers: Promise<Response>[] = []
+  let allowAnonymous = false
 
   beforeEach(async () => {
     registrations = 0
@@ -30,6 +37,7 @@ describe('plugin OAuth on the machine running the agent', () => {
     bearerCalls = 0
     requiredTools = true
     browserAnswers = []
+    allowAnonymous = false
     server = http.createServer(async (request, response) => {
       const url = new URL(request.url ?? '/', origin)
       if (request.method === 'GET' && url.pathname === '/.well-known/oauth-protected-resource/mcp') {
@@ -74,7 +82,7 @@ describe('plugin OAuth on the machine running the agent', () => {
         return
       }
       if (request.method === 'POST' && url.pathname === '/mcp') {
-        if (request.headers.authorization !== 'Bearer raylight-token') {
+        if (!allowAnonymous && request.headers.authorization !== 'Bearer raylight-token') {
           response.writeHead(401).end()
           return
         }
@@ -136,6 +144,11 @@ describe('plugin OAuth on the machine running the agent', () => {
     browserAnswers.push(fetch(url))
   }
 
+  const installed = (name: string, id: string) => {
+    const saved: CrewPlugin = { ...installPlugin(offerOf(name)!, id), id: name, by: 'Ali', ts: 1 }
+    return { ...resolvePlugin(saved), url: `${origin}/mcp` }
+  }
+
   it('signs in once, verifies Raylight tools, and reuses the private token', async () => {
     const folder = fs.mkdtempSync(path.join(os.tmpdir(), 'crew-plugin-oauth-file-'))
     const credentials = path.join(folder, 'plugin-oauth.json')
@@ -157,6 +170,7 @@ describe('plugin OAuth on the machine running the agent', () => {
     expect(registrations).toBe(1)
     expect(authorizations).toBe(1)
     expect(bearerCalls).toBe(6)
+    expect(pluginConnected(raylight())).toBe(true)
   })
 
   it('does not start an agent when Raylight lacks the tools Crew promises', async () => {
@@ -165,5 +179,43 @@ describe('plugin OAuth on the machine running the agent', () => {
       'Raylight is missing get_editor_status and list_projects.'
     )
     await expect(browserAnswers[0].then(response => response.status)).resolves.toBe(400)
+  })
+
+  it('uses the service name and only finishes the browser after Canva is usable', async () => {
+    const canva = installed('canva', '00000000-0000-4000-8000-000000000002')
+    await expect(connectPlugin(canva, { open })).resolves.toBeUndefined()
+    await expect(browserAnswers[0].then(response => response.text())).resolves.toContain('Canva is connected to Crew')
+    expect(pluginConnected(canva)).toBe(true)
+    disconnectPlugin(canva)
+    expect(pluginConnected(canva)).toBe(false)
+  })
+
+  it('verifies a plugin without a sign-in before keeping it connected', async () => {
+    allowAnonymous = true
+    const frontpages = installed('frontpages', '00000000-0000-4000-8000-000000000003')
+    await expect(connectPlugin(frontpages)).resolves.toBeUndefined()
+    expect(browserAnswers).toHaveLength(0)
+    expect(pluginConnected(frontpages)).toBe(true)
+  })
+
+  it('clears the old credential schema once', () => {
+    const folder = fs.mkdtempSync(path.join(os.tmpdir(), 'crew-plugin-oauth-v1-'))
+    const credentials = path.join(folder, 'plugin-oauth.json')
+    fs.writeFileSync(
+      credentials,
+      JSON.stringify({
+        version: 1,
+        servers: {
+          'https://api.raylight.app/mcp': {
+            accessToken: 'old-token',
+            clientId: 'old-client',
+            tokenEndpoint: 'https://example.com/token',
+            resource: 'https://api.raylight.app/mcp'
+          }
+        }
+      })
+    )
+    setPluginOauthPath(credentials)
+    expect(JSON.parse(fs.readFileSync(credentials, 'utf8'))).toEqual({ version: 2, connections: {} })
   })
 })
