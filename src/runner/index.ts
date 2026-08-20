@@ -14,6 +14,7 @@ import { serverProviderNamed } from './providers/local'
 import type { Provider, RunningPrompt } from './providers/types'
 import { AttachmentCache, promptWithAttachments } from './attachments'
 import { closeMcp, openMcp } from './plugins'
+import { authorizeAttachedPlugin } from './pluginOauth'
 
 export interface RunnerOptions {
   name: string
@@ -430,7 +431,7 @@ export class Runner {
     const body = [text, ...preambles].join('\n\n')
     const tail = this.tails.get(threadId) ?? Promise.resolve()
     const next = tail
-      .then(() => this.execute(agent.provider, promptId, body, settings, attachments, ghost, goal, plugins))
+      .then(() => this.execute(agent.provider, promptId, body, settings, attachments, ghost, goal, plugins, usePlugin))
       .catch(() => {})
     this.tails.set(threadId, next)
     void next.then(() => {
@@ -448,7 +449,8 @@ export class Runner {
     attachments: Attachment[],
     ghost = false,
     goal?: string,
-    plugins: CrewPlugin[] = []
+    plugins: CrewPlugin[] = [],
+    usePlugin?: string
   ): Promise<void> {
     const pass = this.opts.onBeforeRun?.().catch(() => {})
     if (!this.spoken.delete(promptId)) await pass
@@ -460,19 +462,22 @@ export class Runner {
       this.send({ type: 'agent.error', promptId, message: 'Stopped' })
       return
     }
-    const mcp = openMcp(plugins, provider.mcp, promptId)
-    const run = provider.start(
-      promptWithAttachments(text, local),
-      this.opts.repoPath,
-      {
-        onStep: step => this.send({ type: 'agent.step', promptId, step }),
-        onTokens: (tokens, cost) => this.send({ type: 'agent.tokens', promptId, tokens, cost: cost ?? undefined })
-      },
-      settings,
-      { goal, mcp: mcp ?? undefined }
-    )
-    this.running.set(promptId, run)
+    let mcp = null
     try {
+      const authorization = provider.mcp ? await authorizeAttachedPlugin(plugins, usePlugin) : {}
+      if (this.cancelled.delete(promptId)) throw new Error('Stopped')
+      mcp = openMcp(plugins, provider.mcp, promptId, authorization)
+      const run = provider.start(
+        promptWithAttachments(text, local),
+        this.opts.repoPath,
+        {
+          onStep: step => this.send({ type: 'agent.step', promptId, step }),
+          onTokens: (tokens, cost) => this.send({ type: 'agent.tokens', promptId, tokens, cost: cost ?? undefined })
+        },
+        settings,
+        { goal, mcp: mcp ?? undefined }
+      )
+      this.running.set(promptId, run)
       const { text: reply } = await run.done
       this.send({ type: 'agent.done', promptId, text: reply })
     } catch (err) {
