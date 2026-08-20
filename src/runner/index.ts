@@ -421,7 +421,7 @@ export class Runner {
     // side knows the http address it reaches the server at.
     const preambles = [
       memories ? memoryPreamble(this.httpBase, promptId, memories) : '',
-      boardsPreamble(this.httpBase, forAgentId, designBoard, designBoards),
+      boardsPreamble(this.httpBase, forAgentId, designBoard, designBoards, plugins ?? []),
       subagentPreamble(this.httpBase, promptId, spawnRoom, spawnProviders),
       pagePreamble(this.httpBase, promptId),
       pluginPreamble(this.httpBase, promptId, plugins ?? [], Boolean(agent.provider.mcp), usePlugin),
