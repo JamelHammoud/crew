@@ -86,6 +86,27 @@ export const PLUGIN_CATALOG: readonly PluginCatalogEntry[] = [
     launch: none
   },
   {
+    id: 'frontpages',
+    name: 'frontpages',
+    label: 'Frontpages',
+    blurb: 'Landing pages worth looking at before you design one',
+    group: 'Design',
+    authentication: 'none',
+    allowedOrigins: ['https://ecagaenecamdrvwcsuaz.supabase.co', 'https://frontpages.dev'],
+    documentationUrl: 'https://frontpages.dev',
+    transport: {
+      kind: 'http',
+      protocol: 'streamable-http',
+      url: 'https://ecagaenecamdrvwcsuaz.supabase.co/functions/v1/mcp-server'
+    },
+    launch: {
+      kind: 'browser',
+      url: 'https://frontpages.dev',
+      reuse: 'plugin',
+      routes: [{ origin: 'https://frontpages.dev', paths: ['/'] }]
+    }
+  },
+  {
     id: 'github',
     name: 'github',
     label: 'GitHub',
