@@ -117,7 +117,10 @@ export const currentPluginInstallation = (
 ): plugin is PluginReference & { installationId: string; installationVersion: typeof PLUGIN_INSTALLATION_VERSION } =>
   plugin.installationVersion === PLUGIN_INSTALLATION_VERSION && Boolean(pluginInstallationId(plugin.installationId))
 
-export const installPlugin = <T extends PluginReference>(plugin: T, installationId = globalThis.crypto.randomUUID()): T & {
+export const installPlugin = <T extends PluginReference>(
+  plugin: T,
+  installationId = globalThis.crypto.randomUUID()
+): T & {
   installationId: string
   installationVersion: typeof PLUGIN_INSTALLATION_VERSION
 } => ({

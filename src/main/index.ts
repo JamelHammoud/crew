@@ -13,11 +13,7 @@ import { KeepAwake } from './awake'
 import { windowForAlert, type AgentAlert } from '../shared/alerts'
 import { cleanAppIcon, DEFAULT_APP_ICON, type AppIconId } from '../shared/appIcon'
 import type { SystemDetails } from '../shared/feedback'
-import {
-  pluginForConnection,
-  type PluginConnectionInput,
-  type PluginConnectionResult
-} from '../shared/plugins'
+import { pluginForConnection, type PluginConnectionInput, type PluginConnectionResult } from '../shared/plugins'
 import { copyImage } from './clipboard'
 import { installContextMenu } from './context-menu'
 import type { Present } from '../shared/presence'

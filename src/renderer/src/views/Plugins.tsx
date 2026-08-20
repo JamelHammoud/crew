@@ -41,9 +41,7 @@ export default function Plugins() {
   const installed = resolved.filter(
     one => connected.has(pluginKey(one.name)) && matches(find, one.label, one.blurb, one.name)
   )
-  const offers = PLUGIN_OFFERS.filter(
-    one => !connected.has(one.name) && matches(find, one.label, one.blurb, one.name)
-  )
+  const offers = PLUGIN_OFFERS.filter(one => !connected.has(one.name) && matches(find, one.label, one.blurb, one.name))
   const grouped: Array<[string, PluginOffer[]]> = PLUGIN_GROUPS.map(group => [
     group,
     offers.filter(one => one.group === group)

@@ -1543,7 +1543,9 @@ export const useCrew = create<CrewState>((set, get) => {
       socket.send({ type: 'memory.set', enabled })
     },
     addPlugin: plugin => {
-      const clean = cleanPlugin(currentPluginInstallation((plugin ?? {}) as CrewPlugin) ? plugin : installPlugin(plugin as CrewPlugin))
+      const clean = cleanPlugin(
+        currentPluginInstallation((plugin ?? {}) as CrewPlugin) ? plugin : installPlugin(plugin as CrewPlugin)
+      )
       if (!clean) return 'Say where it runs'
       const held = get().plugins
       if (held.some(one => pluginKey(one.name) === pluginKey(clean.name))) return 'The crew already has that one'

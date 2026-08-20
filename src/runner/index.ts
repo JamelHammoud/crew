@@ -423,9 +423,7 @@ export class Runner {
       return
     }
     const wantedPlugin = usePlugin ? pluginKey(usePlugin) : ''
-    const selectedPlugin = wantedPlugin
-      ? plugins?.find(plugin => pluginKey(plugin.name) === wantedPlugin)
-      : undefined
+    const selectedPlugin = wantedPlugin ? plugins?.find(plugin => pluginKey(plugin.name) === wantedPlugin) : undefined
     if (wantedPlugin && !selectedPlugin) {
       this.send({ type: 'agent.error', promptId, message: 'That plugin is not plugged in.' })
       return
@@ -486,12 +484,12 @@ export class Runner {
     }
     let mcp = null
     try {
-      const candidates = usePlugin
-        ? plugins.filter(plugin => pluginKey(plugin.name) === pluginKey(usePlugin))
-        : plugins
+      const candidates = usePlugin ? plugins.filter(plugin => pluginKey(plugin.name) === pluginKey(usePlugin)) : plugins
       const runPlugins = this.opts.authorizePlugins ? candidates : candidates.filter(pluginAvailable)
       if (usePlugin && candidates.length > 0 && runPlugins.length === 0) {
-        throw new Error(`${candidates[0].label ?? candidates[0].name} is not connected on this computer. Connect it in Plugins.`)
+        throw new Error(
+          `${candidates[0].label ?? candidates[0].name} is not connected on this computer. Connect it in Plugins.`
+        )
       }
       const authorization = provider.mcp
         ? await (this.opts.authorizePlugins ?? authorizeAttachedPlugin)(runPlugins, usePlugin)

@@ -30,7 +30,9 @@ export default function PluginRow({
       <span className="flex-1 min-w-0">
         <span className="block text-base text-fg truncate">{label}</span>
         {(trouble || blurb) && (
-          <span className={`block text-sm truncate ${trouble ? 'text-danger' : 'text-fg-muted'}`}>{trouble || blurb}</span>
+          <span className={`block text-sm truncate ${trouble ? 'text-danger' : 'text-fg-muted'}`}>
+            {trouble || blurb}
+          </span>
         )}
       </span>
       {onAdd && (

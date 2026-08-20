@@ -161,7 +161,9 @@ describe('plugin OAuth on the machine running the agent', () => {
     expect(authorizations).toBe(1)
     expect(bearerCalls).toBe(3)
     expect(fs.statSync(credentials).mode & 0o777).toBe(0o600)
-    await expect(browserAnswers[0].then(response => response.text())).resolves.toContain('Raylight is connected to Crew')
+    await expect(browserAnswers[0].then(response => response.text())).resolves.toContain(
+      'Raylight is connected to Crew'
+    )
 
     setPluginOauthPath(credentials)
     await expect(authorizePlugin(raylight(), { open })).resolves.toEqual({
