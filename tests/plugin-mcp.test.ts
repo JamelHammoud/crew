@@ -351,7 +351,8 @@ describe('a run that carries the crew plugins', () => {
       name: 'Jamel',
       code: 'abc123',
       repoPath: mkdtempSync(join(tmpdir(), 'crew-mcp-run-')),
-      providers: [provider]
+      providers: [provider],
+      authorizePlugins: async () => ({})
     })
     runner.connect(`ws://127.0.0.1:${port}/abc123/ws`)
     const ws = await socket
