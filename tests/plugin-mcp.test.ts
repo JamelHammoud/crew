@@ -402,4 +402,132 @@ describe('a run that carries the crew plugins', () => {
     expect(held[0].options.mcp).toBeUndefined()
     await done()
   }, 20000)
+
+  it('authenticates attached Raylight and gives every turn fresh editor instructions', async () => {
+    const held: Array<Held & { prompt: string }> = []
+    const authorizations: string[] = []
+    const provider: Provider = {
+      name: 'holder',
+      label: 'Holder',
+      mcp: 'inline',
+      fields: () => [],
+      detect: async () => true,
+      start: (prompt, _cwd, _hooks, _settings, options = {}) => {
+        let finish = () => {}
+        const done = new Promise<{ text: string }>(resolve => {
+          finish = () => resolve({ text: 'done' })
+        })
+        held.push({ prompt, options, finish })
+        return { done, kill: () => finish() }
+      }
+    }
+    const standing = new WebSocketServer({ host: '127.0.0.1', port: 0 })
+    host = standing
+    await new Promise<void>(resolve => standing.once('listening', resolve))
+    const port = (standing.address() as { port: number }).port
+    const messages: any[] = []
+    const socket = new Promise<WebSocket>(resolve => standing.on('connection', resolve))
+    const runner = testRunner({
+      name: 'Ali',
+      code: 'abc123',
+      repoPath: mkdtempSync(join(tmpdir(), 'crew-raylight-turns-')),
+      providers: [provider],
+      authorizePlugins: async (_plugins, usePlugin) => {
+        authorizations.push(usePlugin ?? '')
+        return { raylight: { Authorization: 'Bearer raylight-token' } }
+      }
+    })
+    runner.connect(`ws://127.0.0.1:${port}/abc123/ws`)
+    const ws = await socket
+    const hello = await new Promise<any>(resolve => ws.once('message', raw => resolve(JSON.parse(raw.toString()))))
+    ws.on('message', raw => messages.push(JSON.parse(raw.toString())))
+    ws.send(JSON.stringify({ type: 'welcome' }))
+    const send = (promptId: string) =>
+      ws.send(
+        JSON.stringify({
+          type: 'prompt',
+          promptId,
+          agentId: hello.llms[0].id,
+          threadId: 'thread-1',
+          text: 'change the video',
+          settings: {},
+          plugins: [RAYLIGHT],
+          usePlugin: 'raylight'
+        })
+      )
+
+    send('raylight-1')
+    while (held.length < 1) await new Promise(resolve => setTimeout(resolve, 10))
+    held[0].finish()
+    while (!messages.some(message => message.type === 'agent.done' && message.promptId === 'raylight-1')) {
+      await new Promise(resolve => setTimeout(resolve, 10))
+    }
+    send('raylight-2')
+    while (held.length < 2) await new Promise(resolve => setTimeout(resolve, 10))
+
+    expect(authorizations).toEqual(['raylight', 'raylight'])
+    for (const turn of held) {
+      expect(turn.prompt).toContain('This message was sent with Raylight on it')
+      expect(turn.prompt).toContain('Call get_editor_status before reading or changing a project.')
+      expect(turn.options.mcp?.servers.raylight).toEqual({
+        type: 'http',
+        url: 'https://api.raylight.app/mcp',
+        headers: { Authorization: 'Bearer raylight-token' }
+      })
+    }
+    held[1].finish()
+    while (!messages.some(message => message.type === 'agent.done' && message.promptId === 'raylight-2')) {
+      await new Promise(resolve => setTimeout(resolve, 10))
+    }
+    runner.close()
+  }, 20000)
+
+  it('takes the MCP config away when a provider fails before it starts', async () => {
+    const provider: Provider = {
+      name: 'broken',
+      label: 'Broken',
+      mcp: 'file',
+      fields: () => [],
+      detect: async () => true,
+      start: () => {
+        throw new Error('Broken did not start.')
+      }
+    }
+    const standing = new WebSocketServer({ host: '127.0.0.1', port: 0 })
+    host = standing
+    await new Promise<void>(resolve => standing.once('listening', resolve))
+    const port = (standing.address() as { port: number }).port
+    const socket = new Promise<WebSocket>(resolve => standing.on('connection', resolve))
+    const runner = testRunner({
+      name: 'Ali',
+      code: 'abc123',
+      repoPath: mkdtempSync(join(tmpdir(), 'crew-mcp-start-failure-')),
+      providers: [provider]
+    })
+    runner.connect(`ws://127.0.0.1:${port}/abc123/ws`)
+    const ws = await socket
+    const hello = await new Promise<any>(resolve => ws.once('message', raw => resolve(JSON.parse(raw.toString()))))
+    const promptId = `start-failure-${Date.now()}`
+    const ended = new Promise<any>(resolve =>
+      ws.on('message', raw => {
+        const message = JSON.parse(raw.toString())
+        if (message.type === 'agent.error' && message.promptId === promptId) resolve(message)
+      })
+    )
+    ws.send(JSON.stringify({ type: 'welcome' }))
+    ws.send(
+      JSON.stringify({
+        type: 'prompt',
+        promptId,
+        agentId: hello.llms[0].id,
+        threadId: 'thread-1',
+        text: 'go',
+        settings: {},
+        plugins: [FIGMA]
+      })
+    )
+    await expect(ended).resolves.toMatchObject({ message: 'Broken did not start.' })
+    expect(existsSync(join(tmpdir(), `crew-mcp-${promptId}.json`))).toBe(false)
+    runner.close()
+  }, 20000)
 })
