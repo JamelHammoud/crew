@@ -192,6 +192,24 @@ describe('what the crew has plugged in', () => {
     expect(sam.events.some(e => e.kind === 'plugin.added')).toBe(false)
   })
 
+  it('leaves old installs out after the connection reset', async () => {
+    const sam = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(sam)
+    sam.send({ type: 'plugin.add', plugin: { name: 'frontpages' } } as never)
+    await new Promise(resolve => setTimeout(resolve, 100))
+    expect(pluginsIn(host)).toEqual([])
+
+    host.store.appendEvent({
+      id: 'old-plugin-event',
+      ts: 1,
+      kind: 'plugin.added',
+      pluginId: 'old-plugin',
+      plugin: { catalogId: 'raylight', name: 'raylight' },
+      byName: 'Ali'
+    })
+    expect(new CrewSession(host.store).snapshot().plugins).toEqual([])
+  })
+
   it('takes one out for everyone', async () => {
     const sam = await TestUi.connect(host.url, 'sam', host.code)
     const pat = await TestUi.connect(host.url, 'pat', host.code)
