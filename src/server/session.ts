@@ -83,7 +83,14 @@ import {
   shortId,
   type CrewMemory
 } from '../shared/memory'
-import { cleanPlugin, pluginKey, PLUGIN_FULL, PLUGIN_LIMIT, type CrewPlugin } from '../shared/plugins'
+import {
+  cleanPlugin,
+  currentPluginInstallation,
+  pluginKey,
+  PLUGIN_FULL,
+  PLUGIN_LIMIT,
+  type CrewPlugin
+} from '../shared/plugins'
 import { cleanCommands, type CommandName } from '../shared/commands'
 import { goalCondition } from '../shared/goal'
 import { IMPLEMENT_PROMPT, PLAN_INSTRUCTIONS } from '../shared/plan'
@@ -667,6 +674,7 @@ export class CrewSession {
         this.memoryEnabled = event.enabled
       }
       if (event.kind === 'plugin.added') {
+        if (!currentPluginInstallation(event.plugin)) continue
         this.plugins.set(event.pluginId, {
           id: event.pluginId,
           ...event.plugin,
@@ -1876,7 +1884,7 @@ export class CrewSession {
 
   private handlePluginAdd(ws: WebSocket, member: Member, raw: unknown): void {
     const said = cleanPlugin(raw)
-    if (!said) return
+    if (!said || !currentPluginInstallation(said)) return
     if (this.pluginLike(said.name)) return
     if (this.plugins.size >= PLUGIN_LIMIT) {
       this.notice(PLUGIN_FULL, ws)
