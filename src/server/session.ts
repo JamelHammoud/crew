@@ -222,6 +222,8 @@ interface QueuedPrompt {
   replyTo?: MessageReply
   voice?: boolean
   goal?: boolean
+  // The plugin this one message was sent with, if the crew still holds it.
+  plugin?: string
   // A helper coming back is not something anybody said, so it opens a turn
   // without writing a message into the thread for people to scroll past. The
   // chip is the record, and the chip opens onto the whole thing.
@@ -1352,7 +1354,8 @@ export class CrewSession {
           replyTo,
           voice: talking,
           tickets: reporting,
-          goal
+          goal,
+          plugin
         })
         return
       }
@@ -1397,7 +1400,8 @@ export class CrewSession {
         replyTo,
         voice: talking,
         tickets: reporting,
-        goal
+        goal,
+        plugin
       })
     }
   }
@@ -1523,6 +1527,7 @@ export class CrewSession {
       aside?: string
       plan?: string
       threadId?: string
+      plugin?: string
       fork?: { from: string; at: number }
       subagent?: {
         parentThreadId: string
@@ -1601,7 +1606,8 @@ export class CrewSession {
       mentions: [agent.id],
       replyTo: opts.replyTo,
       voice: opts.voice,
-      goal: opts.goal
+      goal: opts.goal,
+      plugin: opts.plugin
     })
     return threadId
   }
@@ -4095,6 +4101,7 @@ export class CrewSession {
       voice?: boolean
       holding?: boolean
       goal?: boolean
+      plugin?: string
     }
   ): void {
     const thread = this.threads.get(threadId)
@@ -4112,7 +4119,8 @@ export class CrewSession {
       messageId: route?.messageId ?? randomUUID(),
       replyTo: route?.replyTo,
       voice: route?.voice,
-      goal: route?.goal
+      goal: route?.goal,
+      plugin: route?.plugin
     }
     if (!agent.runner && !agent.dropTimer) {
       this.emitThreadMessage(entry)
@@ -4286,7 +4294,8 @@ export class CrewSession {
       voice: thread.voice ? true : undefined,
       goal: entry.goal ? goalCondition(entry.text) || undefined : undefined,
       memories: this.memoryEnabled ? [...this.memories.values()] : undefined,
-      plugins: this.plugins.size > 0 ? [...this.plugins.values()] : undefined
+      plugins: this.plugins.size > 0 ? [...this.plugins.values()] : undefined,
+      usePlugin: entry.plugin
     }
   }
 
