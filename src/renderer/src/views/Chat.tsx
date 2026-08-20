@@ -52,8 +52,6 @@ export default function Chat() {
   const agents = useCrew(s => s.agents)
   const connection = useCrew(s => s.connection)
   const [replyTo, setReplyTo] = useState<ThreadItem | null>(null)
-  const onMessage = useMessagePlugin(s => s.picked[CHAT_KEY])
-  const takePlugin = useMessagePlugin(s => s.taken)
 
   // Voice is a mode rather than a mark on a message: a chip that made the agent
   // answer as though it were being spoken to, with nothing speaking and nothing
@@ -165,9 +163,9 @@ export default function Chat() {
       replyTo?.reactionTargetId,
       aimOf(text, agents, aimed),
       commands,
-      onMessage
+      useMessagePlugin.getState().picked[CHAT_KEY]
     )
-    takePlugin(CHAT_KEY)
+    useMessagePlugin.getState().taken(CHAT_KEY)
     setReplyTo(null)
     mention.close()
     slash.close()
