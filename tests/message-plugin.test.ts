@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import WebSocket from 'ws'
 import { agentId } from '../src/shared/llm'
-import type { CrewPlugin } from '../src/shared/plugins'
+import { installPlugin, type CrewPlugin } from '../src/shared/plugins'
 import { pluginPreamble } from '../src/shared/pluginPreamble'
 import type { RegisteredLlm, ServerMessage } from '../src/shared/protocol'
 import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
@@ -49,7 +49,7 @@ describe('a plugin put on one message', () => {
     const sam = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(sam)
     await waitUntil(() => host.session.snapshot().agents.length > 0)
-    sam.send({ type: 'plugin.add', plugin: { name: 'frontpages' } } as never)
+    sam.send({ type: 'plugin.add', plugin: installPlugin({ name: 'frontpages' }) } as never)
     await sam.waitForEvent(e => e.kind === 'plugin.added')
     return { sam, runner }
   }
