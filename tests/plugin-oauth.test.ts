@@ -22,12 +22,14 @@ describe('plugin OAuth on the machine running the agent', () => {
   let authorizations = 0
   let bearerCalls = 0
   let requiredTools = true
+  let browserAnswers: Promise<Response>[] = []
 
   beforeEach(async () => {
     registrations = 0
     authorizations = 0
     bearerCalls = 0
     requiredTools = true
+    browserAnswers = []
     server = http.createServer(async (request, response) => {
       const url = new URL(request.url ?? '/', origin)
       if (request.method === 'GET' && url.pathname === '/.well-known/oauth-protected-resource/mcp') {
@@ -121,12 +123,17 @@ describe('plugin OAuth on the machine running the agent', () => {
   })
 
   const raylight = () => {
-    const saved: CrewPlugin = { ...installPlugin(offerOf('raylight')!), id: 'raylight', by: 'Ali', ts: 1 }
+    const saved: CrewPlugin = {
+      ...installPlugin(offerOf('raylight')!, '00000000-0000-4000-8000-000000000001'),
+      id: 'raylight',
+      by: 'Ali',
+      ts: 1
+    }
     return { ...resolvePlugin(saved), url: `${origin}/mcp` }
   }
 
   const open = async (url: string): Promise<void> => {
-    void fetch(url).then(response => expect(response.ok).toBe(true))
+    browserAnswers.push(fetch(url))
   }
 
   it('signs in once, verifies Raylight tools, and reuses the private token', async () => {
@@ -141,6 +148,7 @@ describe('plugin OAuth on the machine running the agent', () => {
     expect(authorizations).toBe(1)
     expect(bearerCalls).toBe(3)
     expect(fs.statSync(credentials).mode & 0o777).toBe(0o600)
+    await expect(browserAnswers[0].then(response => response.text())).resolves.toContain('Raylight is connected to Crew')
 
     setPluginOauthPath(credentials)
     await expect(authorizePlugin(raylight(), { open })).resolves.toEqual({
@@ -156,5 +164,6 @@ describe('plugin OAuth on the machine running the agent', () => {
     await expect(authorizePlugin(raylight(), { open })).rejects.toThrow(
       'Raylight is missing get_editor_status and list_projects.'
     )
+    await expect(browserAnswers[0].then(response => response.status)).resolves.toBe(400)
   })
 })

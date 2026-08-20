@@ -93,7 +93,11 @@ describe('what the crew has plugged in', () => {
     sam.send(add(PLAYWRIGHT))
     const landed = await pat.waitForEvent(e => e.kind === 'plugin.added')
     if (landed.kind !== 'plugin.added') throw new Error('expected plugin.added')
-    expect(landed.plugin).toEqual({ catalogId: 'playwright', name: 'playwright' })
+    expect(landed.plugin).toMatchObject({
+      catalogId: 'playwright',
+      name: 'playwright',
+      installationVersion: 2
+    })
     expect(landed.byName).toBe('sam')
 
     const [plugin] = pluginsIn(host)
