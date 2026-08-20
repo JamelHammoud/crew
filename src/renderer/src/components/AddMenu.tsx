@@ -93,9 +93,7 @@ export default function AddMenu({
                   <MenuItem icon={<GifGlyph />} label="Pick a GIF" onClick={() => setScreen('gif')} />
                 </>
               )}
-              {plugged && (
-                <MenuItem icon={<PlugGlyph />} label="Plugins" into onClick={() => setScreen('plugin')} />
-              )}
+              {plugged && <MenuItem icon={<PlugGlyph />} label="Plugins" into onClick={() => setScreen('plugin')} />}
               {aiming && (
                 <>
                   {!full && <MenuDivider />}
