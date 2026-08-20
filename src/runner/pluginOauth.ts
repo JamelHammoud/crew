@@ -146,12 +146,16 @@ const remember = (url: string, credential: OAuthCredential): void => {
 }
 
 const metadataUrl = (resource: URL): string =>
-  new URL(`/.well-known/oauth-protected-resource${resource.pathname === '/' ? '' : resource.pathname}`, resource.origin)
-    .toString()
+  new URL(
+    `/.well-known/oauth-protected-resource${resource.pathname === '/' ? '' : resource.pathname}`,
+    resource.origin
+  ).toString()
 
 const authorizationMetadataUrl = (issuer: URL): string =>
-  new URL(`/.well-known/oauth-authorization-server${issuer.pathname === '/' ? '' : issuer.pathname}`, issuer.origin)
-    .toString()
+  new URL(
+    `/.well-known/oauth-authorization-server${issuer.pathname === '/' ? '' : issuer.pathname}`,
+    issuer.origin
+  ).toString()
 
 const json = async <T>(response: Response, label: string): Promise<T> => {
   if (!response.ok) throw new Error(`${label} answered with ${response.status}.`)
@@ -221,10 +225,14 @@ const callback = async (state: string, timeoutMs: number): Promise<Authorization
     const returnedState = url.searchParams.get('state')
     const returnedCode = url.searchParams.get('code')
     if (error || returnedState !== state || !returnedCode) {
-      response.writeHead(400, { 'content-type': 'text/plain; charset=utf-8' }).end('Raylight did not connect. Return to Crew and try again.')
+      response
+        .writeHead(400, { 'content-type': 'text/plain; charset=utf-8' })
+        .end('Raylight did not connect. Return to Crew and try again.')
       if (!settled) rejectCode(new Error(error || 'The plugin sign-in could not be verified.'))
     } else {
-      response.writeHead(200, { 'content-type': 'text/plain; charset=utf-8' }).end('Raylight is connected. You can return to Crew.')
+      response
+        .writeHead(200, { 'content-type': 'text/plain; charset=utf-8' })
+        .end('Raylight is connected. You can return to Crew.')
       if (!settled) resolveCode(returnedCode)
     }
     settled = true
@@ -255,11 +263,7 @@ const callback = async (state: string, timeoutMs: number): Promise<Authorization
   }
 }
 
-const register = async (
-  endpoint: string,
-  redirectUri: string,
-  fetcher: typeof fetch
-): Promise<RegisteredClient> =>
+const register = async (endpoint: string, redirectUri: string, fetcher: typeof fetch): Promise<RegisteredClient> =>
   json<RegisteredClient>(
     await fetcher(endpoint, {
       method: 'POST',
@@ -276,11 +280,7 @@ const register = async (
     'The plugin sign-in'
   )
 
-const token = async (
-  endpoint: string,
-  values: Record<string, string>,
-  fetcher: typeof fetch
-): Promise<TokenAnswer> =>
+const token = async (endpoint: string, values: Record<string, string>, fetcher: typeof fetch): Promise<TokenAnswer> =>
   json<TokenAnswer>(
     await fetcher(endpoint, {
       method: 'POST',
@@ -312,11 +312,7 @@ const credentialFrom = (
   }
 }
 
-const refresh = async (
-  saved: OAuthCredential,
-  fetcher: typeof fetch,
-  now: number
-): Promise<OAuthCredential | null> => {
+const refresh = async (saved: OAuthCredential, fetcher: typeof fetch, now: number): Promise<OAuthCredential | null> => {
   if (!saved.refreshToken) return null
   try {
     const answer = await token(
@@ -436,7 +432,13 @@ const tools = async (url: string, accessToken: string, fetcher: typeof fetch): P
   )
   if (ready.status === 401) throw new Unauthorized('The plugin sign-in has expired.')
   if (!ready.ok) throw new Error(`The plugin MCP answered with ${ready.status}.`)
-  const listed = await rpc(url, authorization, { jsonrpc: '2.0', id: 2, method: 'tools/list', params: {} }, fetcher, sessionId)
+  const listed = await rpc(
+    url,
+    authorization,
+    { jsonrpc: '2.0', id: 2, method: 'tools/list', params: {} },
+    fetcher,
+    sessionId
+  )
   if (listed.status === 401) throw new Unauthorized('The plugin sign-in has expired.')
   if (!listed.ok) throw new Error(`The plugin MCP answered with ${listed.status}.`)
   const answer = await rpcBody(listed)
