@@ -24,14 +24,14 @@ interface FakeRunner {
   messages: ServerMessage[]
 }
 
-async function runnerOn(host: TestHost): Promise<FakeRunner> {
+async function runnerOn(host: TestHost, name = 'mac'): Promise<FakeRunner> {
   const ws = new WebSocket(host.url)
   const runner: FakeRunner = { ws, messages: [] }
   ws.on('message', raw => runner.messages.push(JSON.parse(raw.toString()) as ServerMessage))
   await new Promise<void>((resolve, reject) => {
     ws.on('error', reject)
     ws.on('open', () => {
-      ws.send(JSON.stringify({ type: 'hello', role: 'runner', name: 'mac', code: host.code, llms: [FAKE] }))
+      ws.send(JSON.stringify({ type: 'hello', role: 'runner', name, code: host.code, llms: [FAKE] }))
       resolve()
     })
   })
@@ -43,8 +43,8 @@ describe('a plugin put on one message', () => {
   let uis: TestUi[] = []
   let runners: FakeRunner[] = []
 
-  const opened = async (): Promise<{ sam: TestUi; runner: FakeRunner }> => {
-    const runner = await runnerOn(host)
+  const opened = async (owner = 'mac'): Promise<{ sam: TestUi; runner: FakeRunner }> => {
+    const runner = await runnerOn(host, owner)
     runners.push(runner)
     const sam = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(sam)
@@ -112,9 +112,9 @@ describe('a plugin put on one message', () => {
   })
 
   it('keeps the plugin on a side question and a fork', async () => {
-    const { sam, runner } = await opened()
+    const { sam, runner } = await opened('sam')
 
-    sam.chat('start the work', [agentId('mac', 'fake')])
+    sam.chat('start the work', [agentId('sam', 'fake')])
     const first = await promptOf(runner)
     sam.chat('check this beside it', [], first.threadId, ['btw'], 'frontpages')
     await waitUntil(() => runner.messages.filter(message => message.type === 'prompt').length === 2)
