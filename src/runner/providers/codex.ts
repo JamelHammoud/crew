@@ -1,5 +1,5 @@
 import type { AgentSettingField } from '../../shared/llm'
-import type { McpServer } from '../../shared/plugins'
+import { mcpHeaderEnv, type McpServer } from '../../shared/plugins'
 import { choices, makeCliProvider, type SettingReader } from './cli'
 import { codexDialog } from './codex-app'
 import { codexModels } from './codex-models'
@@ -185,11 +185,13 @@ const tomlList = (values: string[]): string => `[${values.map(tomlText).join(','
 const tomlTable = (entries: Array<[string, string]>): string =>
   `{${entries.map(([key, value]) => `${key}=${value}`).join(',')}}`
 
-const serverToml = (server: McpServer): string => {
+const serverToml = (name: string, server: McpServer): string => {
   if ('url' in server) {
     const entries: Array<[string, string]> = [['url', tomlText(server.url)]]
     const headers = Object.entries(server.headers ?? {})
-    if (headers.length) entries.push(['http_headers', tomlTable(headers.map(([key, value]) => [key, tomlText(value)]))])
+    if (headers.length) {
+      entries.push(['env_http_headers', tomlTable(headers.map(([key]) => [key, tomlText(mcpHeaderEnv(name, key))]))])
+    }
     return tomlTable(entries)
   }
   const entries: Array<[string, string]> = [['command', tomlText(server.command)]]
@@ -200,7 +202,7 @@ const serverToml = (server: McpServer): string => {
 }
 
 export const codexMcpArgs = (servers: Record<string, McpServer> = {}): string[] =>
-  Object.entries(servers).flatMap(([name, server]) => ['-c', `mcp_servers.${name}=${serverToml(server)}`])
+  Object.entries(servers).flatMap(([name, server]) => ['-c', `mcp_servers.${name}=${serverToml(name, server)}`])
 
 export const codexArgs = (_prompt?: string, get?: SettingReader, run: RunOptions = {}): string[] => [
   'app-server',

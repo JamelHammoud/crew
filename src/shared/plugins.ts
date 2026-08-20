@@ -70,6 +70,9 @@ export type McpServer =
   | { type: 'http'; url: string; headers?: Record<string, string> }
   | { command: string; args?: string[]; env?: Record<string, string> }
 
+export const mcpHeaderEnv = (server: string, header: string): string =>
+  `CREW_MCP_${`${server}_${header}`.toUpperCase().replace(/[^A-Z0-9]+/g, '_')}`
+
 export const PLUGIN_LIMIT = 24
 export const PLUGIN_NAME_LIMIT = 40
 export const PLUGIN_BLURB_LIMIT = 80

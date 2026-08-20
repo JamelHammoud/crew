@@ -82,6 +82,7 @@ export type McpHandover = 'file' | 'inline'
 export interface McpRun {
   servers: Record<string, McpServer>
   file: string
+  env?: Record<string, string>
 }
 
 export interface RunOptions {

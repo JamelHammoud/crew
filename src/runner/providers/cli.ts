@@ -127,7 +127,8 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         env: {
           ...process.env,
           PATH: crewPath(),
-          ...(typeof opts.env === 'function' ? opts.env(read) : opts.env)
+          ...(typeof opts.env === 'function' ? opts.env(read) : opts.env),
+          ...run.mcp?.env
         },
         detached: detachCliProcess(),
         stdio: [opts.stdinPrompt || dialog ? 'pipe' : 'ignore', 'pipe', 'pipe']
