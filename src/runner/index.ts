@@ -320,7 +320,8 @@ export class Runner {
           msg.tickets === true,
           msg.goal,
           msg.memories,
-          msg.plugins
+          msg.plugins,
+          msg.usePlugin
         )
         break
       case 'steer':
@@ -405,7 +406,8 @@ export class Runner {
     tickets = false,
     goal?: string,
     memories?: CrewMemory[],
-    plugins?: CrewPlugin[]
+    plugins?: CrewPlugin[],
+    usePlugin?: string
   ): void {
     const agent = this.agents.get(forAgentId)
     if (!agent) {
@@ -422,7 +424,7 @@ export class Runner {
       boardsPreamble(this.httpBase, forAgentId, designBoard, designBoards),
       subagentPreamble(this.httpBase, promptId, spawnRoom, spawnProviders),
       pagePreamble(this.httpBase, promptId),
-      pluginPreamble(this.httpBase, promptId, plugins ?? [], Boolean(agent.provider.mcp)),
+      pluginPreamble(this.httpBase, promptId, plugins ?? [], Boolean(agent.provider.mcp), usePlugin),
       tickets ? ticketPreamble(this.httpBase, promptId) : ''
     ].filter(Boolean)
     const body = [text, ...preambles].join('\n\n')
