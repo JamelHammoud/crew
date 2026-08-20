@@ -4,13 +4,15 @@ import { resolvePlugin } from '../src/shared/plugins'
 
 const BOARD: DesignBoardMeta = { id: 'a1b2', name: 'Signup' }
 
-const held = { name: 'frontpages', by: 'Ali', id: 'p1', ts: 0 }
+const held = { name: 'frontpages' }
+const renamed = { name: 'inspiration', catalogId: 'frontpages' }
+const figma = { name: 'figma' }
 
-const preamble = (plugins: { name: string; catalogId?: string }[] = []) =>
+const preamble = (plugins: DesignPluginRef[] = []) =>
   boardsPreamble('http://127.0.0.1:2739/abc', 'agent:1', BOARD, [], plugins) ?? ''
 
 describe('the frontpages plugin', () => {
-  it('resolves off the catalog rather than being taken as somebody own server', () => {
+  it("resolves off the catalog rather than being taken as somebody's own server", () => {
     const plugin = resolvePlugin(held)
     expect(plugin.trusted).toBe(true)
     expect(plugin.transport).toBe('http')

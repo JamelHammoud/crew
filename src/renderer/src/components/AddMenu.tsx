@@ -1,19 +1,20 @@
 import { useState, type RefObject } from 'react'
 import { attachmentBytes, MAX_ATTACHMENTS } from '../../../shared/attachments'
-import { GifGlyph, PlusGlyph, SignalGlyph, SparkGlyph, UploadGlyph } from '../icons'
+import { GifGlyph, PlugGlyph, PlusGlyph, SignalGlyph, SparkGlyph, UploadGlyph } from '../icons'
 import { useHuddle } from '../state/huddle'
 import { useCrew } from '../state/store'
 import { ATTACH_SIZES, PLUS_BUTTON, useFilePicker } from './Attachments'
 import DefaultAgentPicker from './DefaultAgentPicker'
 import GifPicker from './GifPicker'
+import PluginPicker from './plugins/PluginPicker'
 import { gifFile, type Gif } from './gifs'
 import { MenuDivider, MenuItem, Popover } from './Popover'
 import ScreenSwap from './ScreenSwap'
 import Tooltip from './Tooltip'
 
-type Screen = 'menu' | 'gif' | 'agent'
+type Screen = 'menu' | 'gif' | 'agent' | 'plugin'
 
-const DEPTH: Record<Screen, number> = { menu: 0, gif: 1, agent: 1 }
+const DEPTH: Record<Screen, number> = { menu: 0, gif: 1, agent: 1, plugin: 1 }
 
 export default function AddMenu({
   attachmentKey,
@@ -45,6 +46,9 @@ export default function AddMenu({
   // than opening on an empty card.
   const anyone = useCrew(s => s.agents.some(agent => agent.status !== 'offline'))
   const aiming = defaultAgent === true && anyone
+  // With nothing plugged in there is nothing to put on a message, so the row is
+  // left out rather than opening on an empty card, the way the agents are.
+  const plugged = useCrew(s => s.plugins.length > 0)
 
   const show = () => {
     setScreen('menu')
@@ -89,6 +93,9 @@ export default function AddMenu({
                   <MenuItem icon={<GifGlyph />} label="Pick a GIF" onClick={() => setScreen('gif')} />
                 </>
               )}
+              {plugged && (
+                <MenuItem icon={<PlugGlyph />} label="Plugins" into onClick={() => setScreen('plugin')} />
+              )}
               {aiming && (
                 <>
                   {!full && <MenuDivider />}
@@ -109,6 +116,14 @@ export default function AddMenu({
                 </>
               )}
             </div>
+          ) : screen === 'plugin' ? (
+            <PluginPicker
+              where={attachmentKey}
+              onPick={() => {
+                setOpen(false)
+                inputRef.current?.focus()
+              }}
+            />
           ) : screen === 'agent' ? (
             <DefaultAgentPicker
               onPick={() => {
