@@ -489,7 +489,7 @@ export class Runner {
       const candidates = usePlugin
         ? plugins.filter(plugin => pluginKey(plugin.name) === pluginKey(usePlugin))
         : plugins
-      const runPlugins = candidates.filter(pluginAvailable)
+      const runPlugins = this.opts.authorizePlugins ? candidates : candidates.filter(pluginAvailable)
       if (usePlugin && candidates.length > 0 && runPlugins.length === 0) {
         throw new Error(`${candidates[0].label ?? candidates[0].name} is not connected on this computer. Connect it in Plugins.`)
       }
