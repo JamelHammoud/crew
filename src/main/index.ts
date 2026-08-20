@@ -2,6 +2,7 @@ import { app, BrowserWindow, clipboard, dialog, ipcMain, Menu, nativeTheme, shel
 import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { setPluginOauthPath } from '../runner/pluginOauth'
 import { setBadge, showAlert } from './alerts'
 import { KeepAwake } from './awake'
 import { windowForAlert, type AgentAlert } from '../shared/alerts'
@@ -471,6 +472,7 @@ app.whenReady().then(() => {
   crews.setSessionPath(path.join(stateDir, 'session.json'))
   crews.setProjectsPath(path.join(stateDir, 'projects'))
   crews.setServersPath(path.join(stateDir, 'model-servers.json'))
+  setPluginOauthPath(path.join(stateDir, 'plugin-oauth.json'))
   crews.onTrouble = message => {
     for (const win of appWindows()) win.webContents.send('crew:trouble', message)
   }
