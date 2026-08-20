@@ -32,7 +32,15 @@ import {
 } from '../../../shared/events'
 import type { GameScore } from '../../../shared/games'
 import { cleanMemoryLine, memoryKey, MEMORY_FULL, MEMORY_LIMIT, type CrewMemory } from '../../../shared/memory'
-import { cleanPlugin, pluginKey, PLUGIN_FULL, PLUGIN_LIMIT, type CrewPlugin } from '../../../shared/plugins'
+import {
+  cleanPlugin,
+  currentPluginInstallation,
+  installPlugin,
+  pluginKey,
+  PLUGIN_FULL,
+  PLUGIN_LIMIT,
+  type CrewPlugin
+} from '../../../shared/plugins'
 import {
   cleanCadence,
   cleanSchedule,
@@ -67,6 +75,7 @@ import { boardOnScreen, useBrowser } from './browser'
 import { usePlaces } from './places'
 import { forgetProject, recallProject, stashProject } from './projectMemory'
 import { toast } from './toast'
+import { forgetPluginConnection, refreshPluginConnection, syncPluginConnections } from './pluginConnections'
 
 export type Connection = 'booting' | 'home' | 'connecting' | 'online' | 'reconnecting'
 
@@ -821,6 +830,7 @@ export const useCrew = create<CrewState>((set, get) => {
         case 'memory.setting':
           return { events, memoryEnabled: event.enabled }
         case 'plugin.added': {
+          if (!currentPluginInstallation(event.plugin)) return { events }
           if (state.plugins.some(one => one.id === event.pluginId)) return { events }
           const plugin: CrewPlugin = {
             ...event.plugin,
@@ -829,10 +839,14 @@ export const useCrew = create<CrewState>((set, get) => {
             byAgentId: event.agentId,
             ts: event.ts
           }
+          void refreshPluginConnection(plugin)
           return { events, plugins: [...state.plugins, plugin] }
         }
-        case 'plugin.removed':
+        case 'plugin.removed': {
+          const plugin = state.plugins.find(one => one.id === event.pluginId)
+          if (plugin) forgetPluginConnection(plugin)
           return { events, plugins: state.plugins.filter(one => one.id !== event.pluginId) }
+        }
         case 'schedule.added': {
           if (state.schedules.some(one => one.id === event.scheduleId)) return { events }
           const schedule: Schedule = {
@@ -963,6 +977,8 @@ export const useCrew = create<CrewState>((set, get) => {
           }
         }
         const steps = settleSteps(gathered)
+        const plugins = (msg.snapshot.plugins ?? []).filter(currentPluginInstallation)
+        void syncPluginConnections(plugins)
         set({
           connection: 'online',
           selfId: msg.selfId,
@@ -981,7 +997,7 @@ export const useCrew = create<CrewState>((set, get) => {
           tools: msg.snapshot.tools ?? [],
           memories: msg.snapshot.memories ?? [],
           memoryEnabled: msg.snapshot.memoryEnabled ?? false,
-          plugins: msg.snapshot.plugins ?? [],
+          plugins,
           schedules: msg.snapshot.schedules ?? [],
           emoji: msg.snapshot.emoji ?? [],
           attachmentMb: msg.snapshot.attachmentMb ?? DEFAULT_ATTACHMENT_MB,
@@ -1527,7 +1543,7 @@ export const useCrew = create<CrewState>((set, get) => {
       socket.send({ type: 'memory.set', enabled })
     },
     addPlugin: plugin => {
-      const clean = cleanPlugin(plugin)
+      const clean = cleanPlugin(currentPluginInstallation((plugin ?? {}) as CrewPlugin) ? plugin : installPlugin(plugin as CrewPlugin))
       if (!clean) return 'Say where it runs'
       const held = get().plugins
       if (held.some(one => pluginKey(one.name) === pluginKey(clean.name))) return 'The crew already has that one'
