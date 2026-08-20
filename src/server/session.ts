@@ -1264,6 +1264,13 @@ export class CrewSession {
     const forking = threadId ? asking.includes('fork') : false
     const naming = threadId ? asking.includes('fallback') : false
     const trimmed = text.trim()
+    // A plugin picked on the composer only means anything while the crew still
+    // holds it, so it is looked up here rather than taken at its word: a name
+    // nothing answers to is nothing, the way naming an agent who is not here is.
+    const wanted = usePlugin ? pluginKey(usePlugin) : ''
+    const plugin = wanted
+      ? ([...this.plugins.values()].find(held => pluginKey(held.name) === wanted)?.name ?? undefined)
+      : undefined
     // A question on the side opens a ghost of its own, so a picture sent with
     // one is held for the window the way any ghost's is, whatever the thread it
     // was asked from does with its own.
@@ -1306,7 +1313,8 @@ export class CrewSession {
           replyTo,
           voice: talking,
           holding: holding || goal,
-          goal
+          goal,
+          plugin
         })
       }
       return

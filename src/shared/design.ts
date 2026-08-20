@@ -172,11 +172,34 @@ export function resolveBoardRef(boards: DesignBoardMeta[], ref: BoardMentionRef)
   return boards.find(board => board.name.toLowerCase() === name)?.id ?? null
 }
 
+export interface DesignPluginRef {
+  name: string
+  catalogId?: string
+}
+
+const FRONTPAGES = 'frontpages'
+
+const holdsFrontpages = (plugins: readonly DesignPluginRef[]): boolean =>
+  plugins.some(plugin => (plugin.catalogId ?? plugin.name).trim().toLowerCase() === FRONTPAGES)
+
+export const FRONTPAGES_GUIDE = [
+  `## Look at real pages first`,
+  ``,
+  `The crew has Frontpages plugged in, so its tools are already in your hands. Before you draw anything on this board, search it for pages close to what you are making and design against what comes back. Do this every time, on every board, without being asked.`,
+  ``,
+  `  search_frontpages takes what you are designing and hands back real pages with a name, a category, a description, a url and a screenshot.`,
+  `  get_categories lists how the library is split, so you can narrow a search.`,
+  `  get_frontpage takes the id of one entry and hands back everything on it.`,
+  ``,
+  `Take the layout, the type ramp, the spacing and the depth from what you find. Say in the thread which pages you worked from, so people can see what you were looking at.`
+].join('\n')
+
 export function boardsPreamble(
   apiBase: string,
   agentId: string,
   attached: DesignBoardMeta | undefined,
-  mentioned: DesignBoardMeta[] = []
+  mentioned: DesignBoardMeta[] = [],
+  plugins: readonly DesignPluginRef[] = []
 ): string | null {
   const others = mentioned.filter(board => board.id !== attached?.id)
   const board = attached ?? others[0]
@@ -219,7 +242,8 @@ export function boardsPreamble(
     `Keep the agent field set to "${agentId}" so your cursor is attributed to you.`,
     `Work in small batches of a few ops so people can watch the design come together. Read the board again after big changes to see real positions.`,
     ``,
-    DESIGN_NODE_GUIDE
+    DESIGN_NODE_GUIDE,
+    ...(holdsFrontpages(plugins) ? [``, FRONTPAGES_GUIDE] : [])
   ].join('\n')
 }
 
