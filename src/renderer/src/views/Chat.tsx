@@ -32,6 +32,7 @@ import { cleanCommands, commandsIn, commandTyped, type CommandName } from '../..
 import { aimOf } from '../../../shared/llm'
 import { pluginMenuInput, pluginNamed, pluginTyped } from '../../../shared/plugins'
 import { runPluginAction } from '../state/pluginState'
+import { useMessagePlugin } from '../state/messagePlugin'
 
 export default function Chat() {
   const events = useCrew(s => s.events)
@@ -51,6 +52,8 @@ export default function Chat() {
   const agents = useCrew(s => s.agents)
   const connection = useCrew(s => s.connection)
   const [replyTo, setReplyTo] = useState<ThreadItem | null>(null)
+  const onMessage = useMessagePlugin(s => s.picked[CHAT_KEY])
+  const takePlugin = useMessagePlugin(s => s.taken)
 
   // Voice is a mode rather than a mark on a message: a chip that made the agent
   // answer as though it were being spoken to, with nothing speaking and nothing
@@ -155,7 +158,16 @@ export default function Chat() {
     }
     if (pluginMenuInput(text)) return
     if (!text.trim() && pendingCount(CHAT_KEY) === 0) return
-    sendChat(text, undefined, undefined, replyTo?.reactionTargetId, aimOf(text, agents, aimed), commands)
+    sendChat(
+      text,
+      undefined,
+      undefined,
+      replyTo?.reactionTargetId,
+      aimOf(text, agents, aimed),
+      commands,
+      onMessage
+    )
+    takePlugin(CHAT_KEY)
     setReplyTo(null)
     mention.close()
     slash.close()

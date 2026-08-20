@@ -45,6 +45,7 @@ import { pluginMenuInput, pluginNamed, pluginTyped } from '../../../shared/plugi
 import { ArchiveGlyph, CheckGlyph, ChevronLeftGlyph, CloseGlyph, EyeGlyph, StopGlyph, WarningGlyph } from '../icons'
 import { pendingCount, useCrew } from '../state/store'
 import { runPluginAction } from '../state/pluginState'
+import { useMessagePlugin } from '../state/messagePlugin'
 
 const BACK_WIDTH = 40
 const AVATAR_WIDTH = 52
@@ -253,8 +254,10 @@ export default function ThreadView({
       undefined,
       elsewhere ? undefined : replyTo?.reactionTargetId,
       undefined,
-      command ? [command] : undefined
+      command ? [command] : undefined,
+      useMessagePlugin.getState().picked[threadId]
     )
+    useMessagePlugin.getState().taken(threadId)
     setReplyTo(null)
     mention.close()
     slash.close()
