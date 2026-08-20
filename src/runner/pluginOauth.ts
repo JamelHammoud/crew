@@ -443,7 +443,7 @@ const signIn = async (
 
 const rpc = async (
   url: string,
-  authorization: string,
+  authorization: string | undefined,
   body: Record<string, unknown>,
   fetcher: typeof fetch,
   sessionId?: string
@@ -451,7 +451,7 @@ const rpc = async (
   fetcher(url, {
     method: 'POST',
     headers: {
-      authorization,
+      ...(authorization ? { authorization } : {}),
       accept: 'application/json, text/event-stream',
       'content-type': 'application/json',
       ...(sessionId ? { 'mcp-session-id': sessionId } : {})
@@ -473,8 +473,8 @@ const rpcBody = async (response: Response): Promise<any> => {
   throw new Error('The plugin returned an unreadable MCP response.')
 }
 
-const tools = async (url: string, accessToken: string, fetcher: typeof fetch): Promise<string[]> => {
-  const authorization = `Bearer ${accessToken}`
+const tools = async (url: string, accessToken: string | undefined, fetcher: typeof fetch): Promise<string[]> => {
+  const authorization = accessToken ? `Bearer ${accessToken}` : undefined
   const initialized = await rpc(
     url,
     authorization,
