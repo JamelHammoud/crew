@@ -90,6 +90,7 @@ describe('the config the crew plugins become', () => {
       url: 'https://api.raylight.app/mcp',
       headers: { Authorization: 'Bearer raylight-token' }
     })
+    expect(run.env).toEqual({ CREW_MCP_RAYLIGHT_AUTHORIZATION: 'Bearer raylight-token' })
   })
 
   it('leaves out a plugin whose keys this machine does not have', () => {
@@ -174,7 +175,7 @@ describe('what each CLI is really handed', () => {
     expect(codexArgs('go', reader(), run)).toEqual([
       'app-server',
       '-c',
-      'mcp_servers.figma={url="https://mcp.figma.com/mcp",http_headers={Authorization="Bearer figma-token"}}',
+      'mcp_servers.figma={url="https://mcp.figma.com/mcp",env_http_headers={Authorization="CREW_MCP_FIGMA_AUTHORIZATION"}}',
       '-c',
       'mcp_servers.slack={command="npx",args=["-y","@modelcontextprotocol/server-slack"],env={SLACK_BOT_TOKEN="xoxb-real"}}'
     ])
