@@ -6,7 +6,7 @@ const raylight = (): CrewPlugin => ({ ...offerOf('raylight')!, id: 'r', by: 'Jam
 
 describe('the instructions that travel with Raylight', () => {
   it('checks the live editor and shows the exact project beside the conversation', () => {
-    const text = pluginPreamble('http://127.0.0.1:1234/prompt', 'prompt-1', [raylight()], true)
+    const text = pluginPreamble('http://127.0.0.1:1234/prompt', 'prompt-1', [raylight()], true, 'raylight')
     expect(text).toContain('get_editor_status')
     expect(text).toContain('list_projects')
     expect(text).toContain('editUrl')
