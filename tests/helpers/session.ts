@@ -140,8 +140,8 @@ export class TestUi {
     this.ws.send(JSON.stringify(msg))
   }
 
-  chat(text: string, mentions: string[] = [], threadId?: string, commands?: CommandName[]): void {
-    this.send({ type: 'chat.send', text, mentions, threadId, commands })
+  chat(text: string, mentions: string[] = [], threadId?: string, commands?: CommandName[], usePlugin?: string): void {
+    this.send({ type: 'chat.send', text, mentions, threadId, commands, usePlugin })
   }
 
   cancel(promptId: string): void {
