@@ -16,6 +16,11 @@ import { AttachmentCache, promptWithAttachments } from './attachments'
 import { closeMcp, openMcp } from './plugins'
 import { authorizeAttachedPlugin } from './pluginOauth'
 
+type PluginAuthorization = (
+  plugins: readonly CrewPlugin[],
+  usePlugin?: string
+) => Promise<Record<string, Record<string, string>>>
+
 export interface RunnerOptions {
   name: string
   code: string
@@ -37,6 +42,7 @@ export interface RunnerOptions {
   // Called when one of this runner's agents is renamed in the session.
   onRename?: (instanceId: string, name: string) => void
   onMessage?: (message: ServerMessage) => void
+  authorizePlugins?: PluginAuthorization
 }
 
 interface RunnerAgent {
@@ -416,6 +422,15 @@ export class Runner {
       this.send({ type: 'agent.error', promptId, message: 'That agent is not on this machine.' })
       return
     }
+    if (usePlugin && !agent.provider.mcp) {
+      const plugin = plugins?.find(one => one.name === usePlugin)
+      this.send({
+        type: 'agent.error',
+        promptId,
+        message: `${plugin?.label || plugin?.name || 'That plugin'} is not available to ${agent.name}. Choose another agent.`
+      })
+      return
+    }
     if (this.accepted.has(promptId)) return
     this.accepted.add(promptId)
     // Every preamble is written here rather than on the host because only this
@@ -464,7 +479,9 @@ export class Runner {
     }
     let mcp = null
     try {
-      const authorization = provider.mcp ? await authorizeAttachedPlugin(plugins, usePlugin) : {}
+      const authorization = provider.mcp
+        ? await (this.opts.authorizePlugins ?? authorizeAttachedPlugin)(plugins, usePlugin)
+        : {}
       if (this.cancelled.delete(promptId)) throw new Error('Stopped')
       mcp = openMcp(plugins, provider.mcp, promptId, authorization)
       const run = provider.start(
