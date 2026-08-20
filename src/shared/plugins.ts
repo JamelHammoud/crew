@@ -18,6 +18,8 @@ export interface PluginKey {
 
 export interface CrewPlugin {
   id: string
+  installationId?: string
+  installationVersion?: number
   catalogId?: string
   name: string
   label?: string
@@ -49,8 +51,32 @@ export interface PluginOffer {
 
 export type PluginReference = Pick<CrewPlugin, 'name'> &
   Partial<
-    Pick<CrewPlugin, 'catalogId' | 'label' | 'blurb' | 'transport' | 'url' | 'appUrl' | 'command' | 'args' | 'keys'>
+    Pick<
+      CrewPlugin,
+      | 'installationId'
+      | 'installationVersion'
+      | 'catalogId'
+      | 'label'
+      | 'blurb'
+      | 'transport'
+      | 'url'
+      | 'appUrl'
+      | 'command'
+      | 'args'
+      | 'keys'
+    >
   >
+
+export interface PluginConnectionInput {
+  catalogId: string
+  installationId: string
+  installationVersion: number
+}
+
+export interface PluginConnectionResult {
+  ok: boolean
+  message: string
+}
 
 export type ResolvedPlugin<T extends PluginReference = CrewPlugin> = T & {
   catalogId?: string
@@ -74,11 +100,45 @@ export const mcpHeaderEnv = (server: string, header: string): string =>
   `CREW_MCP_${`${server}_${header}`.toUpperCase().replace(/[^A-Z0-9]+/g, '_')}`
 
 export const PLUGIN_LIMIT = 24
+export const PLUGIN_INSTALLATION_VERSION = 2
 export const PLUGIN_NAME_LIMIT = 40
 export const PLUGIN_BLURB_LIMIT = 80
 export const PLUGIN_ARG_LIMIT = 12
 
 export const PLUGIN_FULL = `The crew has as many plugins as it can hold. Take one out before adding another.`
+
+const INSTALLATION_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+export const pluginInstallationId = (raw: unknown): string =>
+  typeof raw === 'string' && INSTALLATION_ID.test(raw) ? raw.toLowerCase() : ''
+
+export const currentPluginInstallation = (
+  plugin: Pick<PluginReference, 'installationId' | 'installationVersion'>
+): plugin is PluginReference & { installationId: string; installationVersion: typeof PLUGIN_INSTALLATION_VERSION } =>
+  plugin.installationVersion === PLUGIN_INSTALLATION_VERSION && Boolean(pluginInstallationId(plugin.installationId))
+
+export const installPlugin = <T extends PluginReference>(plugin: T, installationId = globalThis.crypto.randomUUID()): T & {
+  installationId: string
+  installationVersion: typeof PLUGIN_INSTALLATION_VERSION
+} => ({
+  ...plugin,
+  installationId: pluginInstallationId(installationId),
+  installationVersion: PLUGIN_INSTALLATION_VERSION
+})
+
+export const pluginConnectionInput = (raw: unknown): PluginConnectionInput | null => {
+  const said = raw as Partial<PluginConnectionInput> | null
+  const catalog = catalogPlugin(typeof said?.catalogId === 'string' ? said.catalogId : '')
+  const installationId = pluginInstallationId(said?.installationId)
+  if (!catalog || !installationId || said?.installationVersion !== PLUGIN_INSTALLATION_VERSION) return null
+  return { catalogId: catalog.id, installationId, installationVersion: PLUGIN_INSTALLATION_VERSION }
+}
+
+export const pluginForConnection = (raw: unknown): ResolvedPlugin<PluginReference> | null => {
+  const input = pluginConnectionInput(raw)
+  if (!input) return null
+  return resolvePlugin({ ...input, name: input.catalogId })
+}
 
 export const cleanPluginName = (raw: unknown): string =>
   typeof raw === 'string'
@@ -242,9 +302,14 @@ export function cleanPlugin(raw: unknown): Omit<CrewPlugin, 'id' | 'by' | 'ts'> 
   if (!said) return null
   const name = cleanPluginName(said.name)
   if (!name) return null
+  const installationId = pluginInstallationId(said.installationId)
+  const installation =
+    said.installationVersion === PLUGIN_INSTALLATION_VERSION && installationId
+      ? { installationId, installationVersion: PLUGIN_INSTALLATION_VERSION }
+      : {}
   const catalog = catalogPlugin(said.catalogId ?? name)
   if (catalog) {
-    return { catalogId: catalog.id, name: catalog.name }
+    return { ...installation, catalogId: catalog.id, name: catalog.name }
   }
   const label = line(said.label, PLUGIN_NAME_LIMIT) || name
   const blurb = line(said.blurb, PLUGIN_BLURB_LIMIT)
@@ -253,6 +318,7 @@ export function cleanPlugin(raw: unknown): Omit<CrewPlugin, 'id' | 'by' | 'ts'> 
   const appUrl = address(said.appUrl)
   if (url) {
     return {
+      ...installation,
       name,
       label,
       blurb,
@@ -266,6 +332,7 @@ export function cleanPlugin(raw: unknown): Omit<CrewPlugin, 'id' | 'by' | 'ts'> 
   if (!command) return null
   const rest = args(said.args)
   return {
+    ...installation,
     name,
     label,
     blurb,
