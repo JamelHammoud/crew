@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { boardsPreamble, type DesignBoardMeta } from '../src/shared/design'
+import { boardsPreamble, type DesignBoardMeta, type DesignPluginRef } from '../src/shared/design'
 import { resolvePlugin } from '../src/shared/plugins'
 
 const BOARD: DesignBoardMeta = { id: 'a1b2', name: 'Signup' }
