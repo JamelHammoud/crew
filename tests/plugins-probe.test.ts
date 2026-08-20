@@ -49,6 +49,7 @@ const { installPlugin, PLUGIN_GROUPS, PLUGIN_OFFERS, offerOf } = await import('.
 const { PLUGIN_ART } = await import('../src/renderer/src/components/plugins/pluginArt')
 const { useCrew } = await import('../src/renderer/src/state/store')
 const { useBrowser } = await import('../src/renderer/src/state/browser')
+const { usePluginConnections } = await import('../src/renderer/src/state/pluginConnections')
 const PluginsView = (await import('../src/renderer/src/views/Plugins')).default
 
 const held = (name: string): CrewPlugin => {
@@ -64,6 +65,7 @@ describe('the plugins store', () => {
   beforeEach(() => {
     useCrew.setState({ plugins: [], addPlugin: () => null, removePlugin: () => {} })
     useBrowser.setState({ tabs: [], activeTabId: null, open: false, width: 480 })
+    usePluginConnections.setState({ ids: [] })
     window.crew = {
       connectPlugin: vi.fn().mockResolvedValue({ ok: true, message: 'Connected.' })
     } as unknown as CrewBridge
@@ -90,6 +92,51 @@ describe('the plugins store', () => {
     await waitFor(() => expect(added).toHaveLength(1))
     expect(window.crew.connectPlugin).toHaveBeenCalledOnce()
     expect(added[0]).toMatchObject({ name: 'figma', installationVersion: 2 })
+  })
+
+  it('keeps the row working until the connection is verified', async () => {
+    let finish = (_result: { ok: boolean; message: string }) => {}
+    window.crew.connectPlugin = vi.fn().mockReturnValue(
+      new Promise(resolve => {
+        finish = resolve
+      })
+    )
+    const added: unknown[] = []
+    useCrew.setState({ addPlugin: one => (added.push(one), null) })
+    plugins()
+    fireEvent.click(screen.getByRole('button', { name: 'Add Canva' }))
+    expect(screen.getByRole('status', { name: 'Working' })).toBeTruthy()
+    expect(added).toEqual([])
+    finish({ ok: true, message: 'Canva is connected.' })
+    await waitFor(() => expect(added).toHaveLength(1))
+  })
+
+  it('keeps a failed connection available and says what happened', async () => {
+    window.crew.connectPlugin = vi.fn().mockResolvedValue({ ok: false, message: 'Canva did not connect.' })
+    const addPlugin = vi.fn(() => null)
+    useCrew.setState({ addPlugin })
+    plugins()
+    fireEvent.click(screen.getByRole('button', { name: 'Add Canva' }))
+    await screen.findByText('Canva did not connect.')
+    expect(addPlugin).not.toHaveBeenCalled()
+    expect(screen.getByRole('button', { name: 'Add Canva' })).toBeTruthy()
+  })
+
+  it('connects an existing crew plugin on this computer without adding it twice', async () => {
+    const figma = held('figma')
+    window.crew = {
+      connectPlugin: vi.fn().mockResolvedValue({ ok: true, message: 'Figma is connected.' }),
+      pluginStatus: vi.fn().mockResolvedValue(false)
+    } as unknown as CrewBridge
+    const addPlugin = vi.fn(() => null)
+    useCrew.setState({ plugins: [figma], addPlugin })
+    plugins()
+    fireEvent.click(screen.getByRole('button', { name: 'Add Figma' }))
+    await screen.findByText('Installed')
+    expect(window.crew.connectPlugin).toHaveBeenCalledWith(
+      expect.objectContaining({ installationId: figma.installationId })
+    )
+    expect(addPlugin).not.toHaveBeenCalled()
   })
 
   it('stands what is installed at the top and leaves it out of the offers below', () => {
