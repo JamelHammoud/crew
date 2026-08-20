@@ -5,7 +5,7 @@ import { agentId, type AgentDef, type AgentSettings, type AgentUsage } from '../
 import { pagePreamble } from '../shared/showPage'
 import { subagentPreamble } from '../shared/subagents'
 import { memoryPreamble, type CrewMemory } from '../shared/memory'
-import type { CrewPlugin } from '../shared/plugins'
+import { pluginKey, type CrewPlugin } from '../shared/plugins'
 import { pluginPreamble } from '../shared/pluginPreamble'
 import { ticketPreamble } from '../shared/tickets'
 import { MAX_FRAME_BYTES } from '../shared/protocol'
@@ -422,12 +422,19 @@ export class Runner {
       this.send({ type: 'agent.error', promptId, message: 'That agent is not on this machine.' })
       return
     }
+    const wantedPlugin = usePlugin ? pluginKey(usePlugin) : ''
+    const selectedPlugin = wantedPlugin
+      ? plugins?.find(plugin => pluginKey(plugin.name) === wantedPlugin)
+      : undefined
+    if (wantedPlugin && !selectedPlugin) {
+      this.send({ type: 'agent.error', promptId, message: 'That plugin is not plugged in.' })
+      return
+    }
     if (usePlugin && !agent.provider.mcp) {
-      const plugin = plugins?.find(one => one.name === usePlugin)
       this.send({
         type: 'agent.error',
         promptId,
-        message: `${plugin?.label || plugin?.name || 'That plugin'} is not available to ${agent.name}. Choose another agent.`
+        message: `${selectedPlugin?.label || selectedPlugin?.name || 'That plugin'} is not available to ${agent.name}. Choose another agent.`
       })
       return
     }
@@ -479,11 +486,14 @@ export class Runner {
     }
     let mcp = null
     try {
+      const runPlugins = usePlugin
+        ? plugins.filter(plugin => pluginKey(plugin.name) === pluginKey(usePlugin))
+        : plugins
       const authorization = provider.mcp
-        ? await (this.opts.authorizePlugins ?? authorizeAttachedPlugin)(plugins, usePlugin)
+        ? await (this.opts.authorizePlugins ?? authorizeAttachedPlugin)(runPlugins, usePlugin)
         : {}
       if (this.cancelled.delete(promptId)) throw new Error('Stopped')
-      mcp = openMcp(plugins, provider.mcp, promptId, authorization)
+      mcp = openMcp(runPlugins, provider.mcp, promptId, authorization)
       const run = provider.start(
         promptWithAttachments(text, local),
         this.opts.repoPath,

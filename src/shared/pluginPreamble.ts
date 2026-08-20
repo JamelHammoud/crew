@@ -37,9 +37,10 @@ export function pluginPreamble(
   if (!supportsMcp) return ''
   const wanted = usePlugin ? pluginKey(usePlugin) : ''
   const asked = wanted ? plugins.find(plugin => pluginKey(plugin.name) === wanted) : undefined
+  if (!asked) return ''
   return [
-    asked ? askedFor(asked) : '',
-    plugins.some(plugin => plugin.name === 'raylight') ? raylight(apiBase, promptId) : ''
+    askedFor(asked),
+    pluginKey(asked.name) === 'raylight' ? raylight(apiBase, promptId) : ''
   ]
     .filter(Boolean)
     .join('\n\n')

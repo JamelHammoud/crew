@@ -89,5 +89,6 @@ describe('a plugin put on one message', () => {
     expect(said).toContain('Frontpages')
     expect(pluginPreamble('http://127.0.0.1:1/x', 'p1', plugins, true)).toBe('')
     expect(pluginPreamble('http://127.0.0.1:1/x', 'p1', plugins, false, 'frontpages')).toBe('')
+    expect(pluginPreamble('http://127.0.0.1:1/x', 'p1', [held('raylight')], true)).toBe('')
   })
 })

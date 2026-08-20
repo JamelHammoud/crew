@@ -452,7 +452,7 @@ describe('a run that carries the crew plugins', () => {
           threadId: 'thread-1',
           text: 'change the video',
           settings: {},
-          plugins: [RAYLIGHT],
+          plugins: [FIGMA, RAYLIGHT],
           usePlugin: 'raylight'
         })
       )
@@ -475,6 +475,7 @@ describe('a run that carries the crew plugins', () => {
         url: 'https://api.raylight.app/mcp',
         headers: { Authorization: 'Bearer raylight-token' }
       })
+      expect(Object.keys(turn.options.mcp?.servers ?? {})).toEqual(['raylight'])
     }
     held[1].finish()
     while (!messages.some(message => message.type === 'agent.done' && message.promptId === 'raylight-2')) {
