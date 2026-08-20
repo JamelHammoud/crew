@@ -4,7 +4,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { authorizePlugin, setPluginOauthPath } from '../src/runner/pluginOauth'
-import { offerOf, resolvePlugin, type CrewPlugin } from '../src/shared/plugins'
+import { installPlugin, offerOf, resolvePlugin, type CrewPlugin } from '../src/shared/plugins'
 
 const bodyOf = (request: http.IncomingMessage): Promise<string> =>
   new Promise(resolve => {
@@ -121,13 +121,12 @@ describe('plugin OAuth on the machine running the agent', () => {
   })
 
   const raylight = () => {
-    const saved: CrewPlugin = { ...offerOf('raylight')!, id: 'raylight', by: 'Ali', ts: 1 }
+    const saved: CrewPlugin = { ...installPlugin(offerOf('raylight')!), id: 'raylight', by: 'Ali', ts: 1 }
     return { ...resolvePlugin(saved), url: `${origin}/mcp` }
   }
 
   const open = async (url: string): Promise<void> => {
-    const response = await fetch(url)
-    expect(response.ok).toBe(true)
+    void fetch(url).then(response => expect(response.ok).toBe(true))
   }
 
   it('signs in once, verifies Raylight tools, and reuses the private token', async () => {

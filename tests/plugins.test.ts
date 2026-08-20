@@ -4,6 +4,7 @@ import { agentId } from '../src/shared/llm'
 import {
   cleanPlugin,
   cleanPluginName,
+  installPlugin,
   mcpServersOf,
   offerForAppUrl,
   pluginApprovalFingerprint,
@@ -44,7 +45,7 @@ const LINEAR = {
   url: 'https://mcp.linear.app/sse'
 }
 
-const add = (plugin: unknown) => ({ type: 'plugin.add' as const, plugin })
+const add = (plugin: unknown) => ({ type: 'plugin.add' as const, plugin: installPlugin(plugin as CrewPlugin) })
 
 const pluginsIn = (host: TestHost): CrewPlugin[] => host.session.snapshot().plugins ?? []
 
