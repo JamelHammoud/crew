@@ -116,7 +116,7 @@ describe('putting a plugin on a message', () => {
     }))
     open([plugin('frontpages')], vi.fn(), pending)
     const add = screen.getByLabelText('Add to your message')
-    expect(add).not.toBeDisabled()
+    expect(add.hasAttribute('disabled')).toBe(false)
     fireEvent.click(add)
     expect(screen.getByText('Frontpages')).toBeTruthy()
     expect(screen.queryByText('Upload a file')).toBeNull()
