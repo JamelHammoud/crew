@@ -122,6 +122,20 @@ describe('the plugins store', () => {
     expect(screen.getByRole('button', { name: 'Add Canva' })).toBeTruthy()
   })
 
+  it('disconnects when the crew rejects the install after approval', async () => {
+    const disconnectPlugin = vi.fn().mockResolvedValue(undefined)
+    window.crew = {
+      connectPlugin: vi.fn().mockResolvedValue({ ok: true, message: 'Canva is connected.' }),
+      disconnectPlugin
+    } as unknown as CrewBridge
+    useCrew.setState({ installPlugin: async () => 'The crew already has that one.' })
+    plugins()
+    fireEvent.click(screen.getByRole('button', { name: 'Add Canva' }))
+    await screen.findByText('The crew already has that one.')
+    expect(disconnectPlugin).toHaveBeenCalledOnce()
+    expect(screen.getByRole('button', { name: 'Add Canva' })).toBeTruthy()
+  })
+
   it('connects an existing crew plugin on this computer without adding it twice', async () => {
     const figma = held('figma')
     window.crew = {
