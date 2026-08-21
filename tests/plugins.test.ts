@@ -296,6 +296,16 @@ describe('what the crew has plugged in', () => {
 })
 
 describe('what the store offers', () => {
+  it('offers the local Figma server and leaves fixed-client OAuth services out', () => {
+    expect(PLUGIN_OFFERS.find(offer => offer.name === 'figma')).toMatchObject({
+      transport: 'http',
+      url: 'http://127.0.0.1:3845/mcp'
+    })
+    expect(PLUGIN_OFFERS.some(offer => offer.name === 'figma-desktop')).toBe(false)
+    expect(PLUGIN_OFFERS.some(offer => offer.name === 'github')).toBe(false)
+    expect(PLUGIN_OFFERS.some(offer => offer.name === 'slack')).toBe(false)
+  })
+
   it('keeps Raylight editing separate from the MCP it gives agents', () => {
     const raylight = PLUGIN_OFFERS.find(offer => offer.name === 'raylight')!
     expect(raylight).toMatchObject({
