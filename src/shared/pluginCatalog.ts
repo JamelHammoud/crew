@@ -299,9 +299,11 @@ export const PLUGIN_CATALOG: readonly PluginCatalogEntry[] = [
 ]
 
 const key = (value: string): string => value.trim().toLowerCase()
+const aliases: Readonly<Record<string, string>> = { 'figma-desktop': 'figma' }
 
 export const catalogPlugin = (value: string): PluginCatalogEntry | undefined => {
-  const wanted = key(value)
+  const asked = key(value)
+  const wanted = aliases[asked] ?? asked
   return PLUGIN_CATALOG.find(plugin => plugin.id === wanted || plugin.name === wanted)
 }
 
