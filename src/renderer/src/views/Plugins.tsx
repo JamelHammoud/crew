@@ -5,7 +5,6 @@ import {
   PLUGIN_OFFERS,
   pluginKey,
   resolvePlugins,
-  type PluginOffer,
   type PluginReference
 } from '../../../shared/plugins'
 import AddPlugin from '../components/plugins/AddPlugin'
@@ -43,12 +42,12 @@ export default function Plugins() {
   const offers = PLUGIN_OFFERS.filter(
     one => !installedNames.has(pluginKey(one.name)) && matches(find, one.label, one.blurb, one.name)
   )
-  const grouped: Array<[string, PluginOffer[]]> = PLUGIN_GROUPS.map(group => [
+  const grouped = PLUGIN_GROUPS.map(group => [
     group,
     offers.filter(one => one.group === group)
-  ])
+  ] as const)
 
-  const connect = async (offer: PluginOffer): Promise<void> => {
+  const connect = async (offer: PluginReference): Promise<void> => {
     const key = pluginKey(offer.name)
     const shared = plugins.find(one => pluginKey(one.name) === key)
     const plugin: PluginReference = shared ?? installPlugin(offer)
