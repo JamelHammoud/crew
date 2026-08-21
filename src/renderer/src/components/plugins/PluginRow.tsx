@@ -10,6 +10,7 @@ export default function PluginRow({
   held,
   busy,
   trouble,
+  actionLabel,
   onAdd,
   onOpen,
   onRemove
@@ -20,6 +21,7 @@ export default function PluginRow({
   held?: boolean
   busy?: boolean
   trouble?: string
+  actionLabel?: string
   onAdd?: () => void
   onOpen?: () => void
   onRemove?: () => void
@@ -36,11 +38,11 @@ export default function PluginRow({
         )}
       </span>
       {onAdd && (
-        <Tooltip label={`Add ${label}`} disabled={busy}>
+        <Tooltip label={actionLabel ?? `Add ${label}`} disabled={busy}>
           <button
             onClick={onAdd}
             disabled={busy}
-            aria-label={`Add ${label}`}
+            aria-label={actionLabel ?? `Add ${label}`}
             className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:bg-fg/10 hover:text-fg active:scale-90 disabled:pointer-events-none"
           >
             {busy ? <Spinner size={16} /> : <PlusGlyph className="w-[18px] h-[18px]" />}

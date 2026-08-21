@@ -38,10 +38,11 @@ export default function Plugins() {
     () => new Set(resolved.filter(one => locallyConnected(one, connectionIds)).map(one => pluginKey(one.name))),
     [connectionIds, resolved]
   )
-  const installed = resolved.filter(
-    one => connected.has(pluginKey(one.name)) && matches(find, one.label, one.blurb, one.name)
+  const installed = resolved.filter(one => matches(find, one.label, one.blurb, one.name))
+  const installedNames = useMemo(() => new Set(resolved.map(one => pluginKey(one.name))), [resolved])
+  const offers = PLUGIN_OFFERS.filter(
+    one => !installedNames.has(pluginKey(one.name)) && matches(find, one.label, one.blurb, one.name)
   )
-  const offers = PLUGIN_OFFERS.filter(one => !connected.has(one.name) && matches(find, one.label, one.blurb, one.name))
   const grouped: Array<[string, PluginOffer[]]> = PLUGIN_GROUPS.map(group => [
     group,
     offers.filter(one => one.group === group)
@@ -69,7 +70,9 @@ export default function Plugins() {
       }
     }
     setConnecting('')
-    toast.done(result.message, { key: `plugin:${key}` })
+    toast.done(shared ? `${plugin.label} is connected on this computer.` : `${plugin.label} is installed.`, {
+      key: `plugin:${key}`
+    })
   }
 
   const remove = (plugin: PluginReference & { id: string }): void => {
@@ -107,7 +110,11 @@ export default function Plugins() {
                   seed={one.name}
                   label={one.label}
                   blurb={one.blurb}
-                  onOpen={() => runPluginAction(one)}
+                  busy={connecting === pluginKey(one.name)}
+                  trouble={trouble[pluginKey(one.name)]}
+                  actionLabel={connected.has(pluginKey(one.name)) ? undefined : `Connect ${one.label}`}
+                  onAdd={connected.has(pluginKey(one.name)) ? undefined : () => void connect(one)}
+                  onOpen={connected.has(pluginKey(one.name)) ? () => runPluginAction(one) : undefined}
                   onRemove={() => remove(one)}
                 />
               ))}
