@@ -51,6 +51,7 @@ export default function Plugins() {
     const key = pluginKey(offer.name)
     const shared = plugins.find(one => pluginKey(one.name) === key)
     const plugin: PluginReference = shared ?? installPlugin(offer)
+    const label = resolvePlugins([plugin])[0].label
     setConnecting(key)
     setTrouble(current => ({ ...current, [key]: '' }))
     const result = await connectPlugin(plugin)
@@ -69,7 +70,7 @@ export default function Plugins() {
       }
     }
     setConnecting('')
-    toast.done(shared ? `${plugin.label} is connected on this computer.` : `${plugin.label} is installed.`, {
+    toast.done(shared ? `${label} is connected on this computer.` : `${label} is installed.`, {
       key: `plugin:${key}`
     })
   }
