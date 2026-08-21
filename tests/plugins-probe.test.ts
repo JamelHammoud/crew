@@ -63,7 +63,7 @@ const plugins = () => render(createElement(PluginsView))
 
 describe('the plugins store', () => {
   beforeEach(() => {
-    useCrew.setState({ plugins: [], addPlugin: () => null, removePlugin: () => {} })
+    useCrew.setState({ plugins: [], installPlugin: async () => null, addPlugin: () => null, removePlugin: () => {} })
     useBrowser.setState({ tabs: [], activeTabId: null, open: false, width: 480 })
     usePluginConnections.setState({ ids: [] })
     window.crew = {
@@ -86,7 +86,7 @@ describe('the plugins store', () => {
 
   it('connects and then adds the one a row names', async () => {
     const added: unknown[] = []
-    useCrew.setState({ addPlugin: one => (added.push(one), null) })
+    useCrew.setState({ installPlugin: async one => (added.push(one), null) })
     plugins()
     fireEvent.click(screen.getByRole('button', { name: 'Add Figma' }))
     await waitFor(() => expect(added).toHaveLength(1))
@@ -102,7 +102,7 @@ describe('the plugins store', () => {
       })
     )
     const added: unknown[] = []
-    useCrew.setState({ addPlugin: one => (added.push(one), null) })
+    useCrew.setState({ installPlugin: async one => (added.push(one), null) })
     plugins()
     fireEvent.click(screen.getByRole('button', { name: 'Add Canva' }))
     expect(screen.getByRole('status', { name: 'Working' })).toBeTruthy()
@@ -113,12 +113,12 @@ describe('the plugins store', () => {
 
   it('keeps a failed connection available and says what happened', async () => {
     window.crew.connectPlugin = vi.fn().mockResolvedValue({ ok: false, message: 'Canva did not connect.' })
-    const addPlugin = vi.fn(() => null)
-    useCrew.setState({ addPlugin })
+    const installPlugin = vi.fn(async () => null)
+    useCrew.setState({ installPlugin })
     plugins()
     fireEvent.click(screen.getByRole('button', { name: 'Add Canva' }))
     await screen.findByText('Canva did not connect.')
-    expect(addPlugin).not.toHaveBeenCalled()
+    expect(installPlugin).not.toHaveBeenCalled()
     expect(screen.getByRole('button', { name: 'Add Canva' })).toBeTruthy()
   })
 
@@ -128,15 +128,15 @@ describe('the plugins store', () => {
       connectPlugin: vi.fn().mockResolvedValue({ ok: true, message: 'Figma is connected.' }),
       pluginStatus: vi.fn().mockResolvedValue(false)
     } as unknown as CrewBridge
-    const addPlugin = vi.fn(() => null)
-    useCrew.setState({ plugins: [figma], addPlugin })
+    const installPlugin = vi.fn(async () => null)
+    useCrew.setState({ plugins: [figma], installPlugin })
     plugins()
-    fireEvent.click(screen.getByRole('button', { name: 'Add Figma' }))
-    await screen.findByText('Installed')
+    fireEvent.click(screen.getByRole('button', { name: 'Connect Figma' }))
+    await waitFor(() => expect(window.crew.connectPlugin).toHaveBeenCalledOnce())
     expect(window.crew.connectPlugin).toHaveBeenCalledWith(
       expect.objectContaining({ installationId: figma.installationId })
     )
-    expect(addPlugin).not.toHaveBeenCalled()
+    expect(installPlugin).not.toHaveBeenCalled()
   })
 
   it('stands what is installed at the top and leaves it out of the offers below', () => {
@@ -180,7 +180,7 @@ describe('the plugins store', () => {
   })
 
   it('searches what is installed and what is offered together', () => {
-    useCrew.setState({ plugins: [held('github')] })
+    useCrew.setState({ plugins: [held('raylight')] })
     plugins()
     fireEvent.change(screen.getByLabelText('Search plugins'), { target: { value: 'figma' } })
     expect(screen.getByText('Figma')).toBeTruthy()
