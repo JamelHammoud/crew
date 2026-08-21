@@ -161,6 +161,26 @@ describe('what the crew has plugged in', () => {
     expect(sam.events.filter(e => e.kind === 'plugin.added')).toHaveLength(1)
   })
 
+  it('answers an install only after the crew has kept it', async () => {
+    const sam = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(sam)
+    sam.send({ ...add(PLAYWRIGHT), requestId: 'install-one' })
+    const installed = await sam.waitFor(message => message.type === 'plugin.result')
+    expect(installed).toEqual({ type: 'plugin.result', requestId: 'install-one', ok: true })
+    expect(pluginsIn(host)).toHaveLength(1)
+
+    sam.send({ ...add(PLAYWRIGHT), requestId: 'install-two' })
+    const rejected = await sam.waitFor(
+      message => message.type === 'plugin.result' && message.requestId === 'install-two'
+    )
+    expect(rejected).toEqual({
+      type: 'plugin.result',
+      requestId: 'install-two',
+      ok: false,
+      message: 'The crew already has that one.'
+    })
+  })
+
   it('refuses a full store with the move to make, rather than dropping the oldest', async () => {
     const sam = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(sam)
