@@ -315,6 +315,7 @@ interface CrewState {
   removeMemory: (memoryId: string) => void
   setMemoryEnabled: (enabled: boolean) => void
   addPlugin: (plugin: unknown) => string | null
+  installPlugin: (plugin: unknown) => Promise<string | null>
   removePlugin: (pluginId: string) => void
   addSchedule: (name: string, mark: string, when: Cadence, action: ToolAction) => string | null
   editSchedule: (scheduleId: string, name: string, mark: string, when: Cadence, action: ToolAction) => string | null
@@ -357,6 +358,10 @@ interface CrewState {
 const socket = new CrewSocket()
 let destination: string | null = null
 let transition = 0
+const pendingPluginInstalls = new Map<
+  string,
+  { finish: (problem: string | null) => void; timer: ReturnType<typeof setTimeout> }
+>()
 
 // A window says it is writing at most every couple of seconds, and says it has
 // stopped the moment the box empties, the message goes, or the composer is left.
@@ -1187,6 +1192,14 @@ export const useCrew = create<CrewState>((set, get) => {
       case 'game.scores':
         set({ scores: msg.scores })
         break
+      case 'plugin.result': {
+        const pending = pendingPluginInstalls.get(msg.requestId)
+        if (!pending) break
+        pendingPluginInstalls.delete(msg.requestId)
+        clearTimeout(pending.timer)
+        pending.finish(msg.ok ? null : msg.message || 'The plugin was not installed.')
+        break
+      }
       case 'typing.room':
         set({ typists: msg.typists })
         break
@@ -1552,6 +1565,26 @@ export const useCrew = create<CrewState>((set, get) => {
       if (held.length >= PLUGIN_LIMIT) return PLUGIN_FULL
       socket.send({ type: 'plugin.add', plugin: clean })
       return null
+    },
+    installPlugin: plugin => {
+      const clean = cleanPlugin(
+        currentPluginInstallation((plugin ?? {}) as CrewPlugin) ? plugin : installPlugin(plugin as CrewPlugin)
+      )
+      if (!clean) return Promise.resolve('That plugin is not available.')
+      const held = get().plugins
+      if (held.some(one => pluginKey(one.name) === pluginKey(clean.name))) {
+        return Promise.resolve('The crew already has that one.')
+      }
+      if (held.length >= PLUGIN_LIMIT) return Promise.resolve(PLUGIN_FULL)
+      const requestId = crypto.randomUUID()
+      return new Promise(resolve => {
+        const timer = setTimeout(() => {
+          pendingPluginInstalls.delete(requestId)
+          resolve('Crew did not finish installing the plugin. Try again.')
+        }, 10_000)
+        pendingPluginInstalls.set(requestId, { finish: resolve, timer })
+        socket.send({ type: 'plugin.add', plugin: clean, requestId })
+      })
     },
     removePlugin: pluginId => {
       socket.send({ type: 'plugin.remove', pluginId })

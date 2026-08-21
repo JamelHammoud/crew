@@ -148,7 +148,7 @@ export type ClientMessage =
   | { type: 'memory.edit'; memoryId: string; text: string }
   | { type: 'memory.remove'; memoryId: string }
   | { type: 'memory.set'; enabled: boolean }
-  | { type: 'plugin.add'; plugin: unknown }
+  | { type: 'plugin.add'; plugin: unknown; requestId?: string }
   | { type: 'plugin.remove'; pluginId: string }
   | { type: 'schedule.add'; name: string; mark: string; when: unknown; action: ToolAction; zone: string }
   | {
@@ -248,6 +248,7 @@ export type ServerMessage =
   | { type: 'music.playlists'; playlists: MusicPlaylist[] }
   | { type: 'emoji.set'; emoji: CustomEmoji[] }
   | { type: 'game.scores'; scores: GameScore[] }
+  | { type: 'plugin.result'; requestId: string; ok: boolean; message?: string }
   | { type: 'design.boards'; boards: DesignBoardMeta[] }
   | {
       type: 'design.snapshot'

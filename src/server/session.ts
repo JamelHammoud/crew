@@ -1060,7 +1060,7 @@ export class CrewSession {
         if (meta.role === 'ui') this.handleMemorySetting(member, msg.enabled)
         break
       case 'plugin.add':
-        if (meta.role === 'ui') this.handlePluginAdd(ws, member, msg.plugin)
+        if (meta.role === 'ui') this.handlePluginAdd(ws, member, msg.plugin, msg.requestId)
         break
       case 'plugin.remove':
         if (meta.role === 'ui') this.handlePluginRemove(member, msg.pluginId)
@@ -1882,15 +1882,26 @@ export class CrewSession {
     return plugin.id
   }
 
-  private handlePluginAdd(ws: WebSocket, member: Member, raw: unknown): void {
+  private handlePluginAdd(ws: WebSocket, member: Member, raw: unknown, requestId?: string): void {
+    const result = (ok: boolean, message?: string): void => {
+      if (requestId) this.send(ws, { type: 'plugin.result', requestId, ok, message })
+    }
     const said = cleanPlugin(raw)
-    if (!said || !currentPluginInstallation(said)) return
-    if (this.pluginLike(said.name)) return
+    if (!said || !currentPluginInstallation(said)) {
+      result(false, 'That plugin is not available.')
+      return
+    }
+    if (this.pluginLike(said.name)) {
+      result(false, 'The crew already has that one.')
+      return
+    }
     if (this.plugins.size >= PLUGIN_LIMIT) {
       this.notice(PLUGIN_FULL, ws)
+      result(false, PLUGIN_FULL)
       return
     }
     this.writePlugin(said, member.name)
+    result(true)
   }
 
   private handlePluginRemove(member: Member, pluginId: string): void {

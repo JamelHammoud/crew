@@ -25,7 +25,7 @@ const matches = (find: string, ...words: string[]): boolean =>
 
 export default function Plugins() {
   const plugins = useCrew(s => s.plugins)
-  const addPlugin = useCrew(s => s.addPlugin)
+  const installInCrew = useCrew(s => s.installPlugin)
   const removePlugin = useCrew(s => s.removePlugin)
   const connectionIds = usePluginConnections(s => s.ids)
   const [find, setFind] = useState('')
@@ -60,7 +60,7 @@ export default function Plugins() {
       return
     }
     if (!shared) {
-      const problem = addPlugin(plugin)
+      const problem = await installInCrew(plugin)
       if (problem) {
         forgetPluginConnection(plugin)
         setTrouble(current => ({ ...current, [key]: problem }))
