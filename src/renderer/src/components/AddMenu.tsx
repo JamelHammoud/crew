@@ -1,21 +1,23 @@
 import { useState, type RefObject } from 'react'
 import { attachmentBytes, MAX_ATTACHMENTS } from '../../../shared/attachments'
-import { GifGlyph, PlugGlyph, PlusGlyph, SignalGlyph, SparkGlyph, UploadGlyph } from '../icons'
+import { resolvePlugins } from '../../../shared/plugins'
+import { GifGlyph, PlusGlyph, SignalGlyph, SparkGlyph, UploadGlyph } from '../icons'
 import { useHuddle } from '../state/huddle'
+import { useMessagePlugin } from '../state/messagePlugin'
 import { useCrew } from '../state/store'
 import { locallyConnected, usePluginConnections } from '../state/pluginConnections'
 import { ATTACH_SIZES, PLUS_BUTTON, useFilePicker } from './Attachments'
 import DefaultAgentPicker from './DefaultAgentPicker'
 import GifPicker from './GifPicker'
-import PluginPicker from './plugins/PluginPicker'
+import PluginMark from './plugins/PluginMark'
 import { gifFile, type Gif } from './gifs'
 import { MenuDivider, MenuItem, Popover } from './Popover'
 import ScreenSwap from './ScreenSwap'
 import Tooltip from './Tooltip'
 
-type Screen = 'menu' | 'gif' | 'agent' | 'plugin'
+type Screen = 'menu' | 'gif' | 'agent'
 
-const DEPTH: Record<Screen, number> = { menu: 0, gif: 1, agent: 1, plugin: 1 }
+const DEPTH: Record<Screen, number> = { menu: 0, gif: 1, agent: 1 }
 
 export default function AddMenu({
   attachmentKey,
@@ -51,7 +53,10 @@ export default function AddMenu({
   // left out rather than opening on an empty card, the way the agents are.
   const plugins = useCrew(s => s.plugins)
   const connectionIds = usePluginConnections(s => s.ids)
-  const plugged = plugins.some(plugin => locallyConnected(plugin, connectionIds))
+  const plugged = resolvePlugins(plugins).filter(plugin => locallyConnected(plugin, connectionIds))
+  const picked = useMessagePlugin(s => s.picked[attachmentKey])
+  const pickPlugin = useMessagePlugin(s => s.pick)
+  const choices = !full || plugged.length > 0 || aiming || calling
 
   const show = () => {
     setScreen('menu')
@@ -67,10 +72,10 @@ export default function AddMenu({
   return (
     <>
       {input}
-      <Tooltip label={full ? `Up to ${MAX_ATTACHMENTS} files` : 'Add to your message'} disabled={open}>
+      <Tooltip label={choices ? 'Add to your message' : `Up to ${MAX_ATTACHMENTS} files`} disabled={open}>
         <button
           onClick={() => (open ? setOpen(false) : show())}
-          disabled={full && !calling}
+          disabled={!choices}
           aria-label="Add to your message"
           aria-expanded={open}
           data-active={open ? '' : undefined}
@@ -96,7 +101,19 @@ export default function AddMenu({
                   <MenuItem icon={<GifGlyph />} label="Pick a GIF" onClick={() => setScreen('gif')} />
                 </>
               )}
-              {plugged && <MenuItem icon={<PlugGlyph />} label="Plugins" into onClick={() => setScreen('plugin')} />}
+              {plugged.map(plugin => (
+                <MenuItem
+                  key={plugin.id}
+                  icon={<PluginMark seed={plugin.name} box={16} />}
+                  label={plugin.label}
+                  checked={picked === plugin.name}
+                  onClick={() => {
+                    pickPlugin(attachmentKey, picked === plugin.name ? null : plugin.name)
+                    setOpen(false)
+                    inputRef.current?.focus()
+                  }}
+                />
+              ))}
               {aiming && (
                 <>
                   {!full && <MenuDivider />}
@@ -117,14 +134,6 @@ export default function AddMenu({
                 </>
               )}
             </div>
-          ) : screen === 'plugin' ? (
-            <PluginPicker
-              where={attachmentKey}
-              onPick={() => {
-                setOpen(false)
-                inputRef.current?.focus()
-              }}
-            />
           ) : screen === 'agent' ? (
             <DefaultAgentPicker
               onPick={() => {
