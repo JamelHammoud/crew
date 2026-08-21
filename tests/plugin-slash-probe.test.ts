@@ -38,7 +38,7 @@ describe('plugins outside the slash menu', () => {
   it('does not offer a plugin launcher', () => {
     render(createElement(Harness))
     type('/plugin')
-    expect(screen.queryByText('/plugin')).toBeNull()
+    expect(screen.queryByRole('button', { name: /plugin/i })).toBeNull()
   })
 
   it('leaves a plugin-shaped line in the message', () => {
