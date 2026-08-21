@@ -7,6 +7,8 @@ import { installPlugin, type CrewPlugin } from '../src/shared/plugins'
 import { useMessagePlugin } from '../src/renderer/src/state/messagePlugin'
 import { useCrew } from '../src/renderer/src/state/store'
 import Chat from '../src/renderer/src/views/Chat'
+import { MAX_ATTACHMENTS } from '../src/shared/attachments'
+import type { PendingAttachment } from '../src/renderer/src/components/images'
 
 class TestResizeObserver {
   observe(): void {}
@@ -49,7 +51,7 @@ const plugin = (name: string): CrewPlugin => ({
   ts: 1
 })
 
-const open = (plugins: CrewPlugin[], sendChat = vi.fn()) => {
+const open = (plugins: CrewPlugin[], sendChat = vi.fn(), pending: PendingAttachment[] = []) => {
   useCrew.setState({
     connection: 'online',
     selfId: 'ali',
@@ -68,7 +70,7 @@ const open = (plugins: CrewPlugin[], sendChat = vi.fn()) => {
     queues: {},
     steps: {},
     tokens: {},
-    pending: {},
+    pending: pending.length ? { chat: pending } : {},
     openThreadId: null,
     docsTarget: null,
     sendChat
@@ -102,6 +104,22 @@ describe('putting a plugin on a message', () => {
     const gif = screen.getByText('Pick a GIF').closest('button')!
     const frontpages = screen.getByText('Frontpages').closest('button')!
     expect(gif.compareDocumentPosition(frontpages) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  })
+
+  it('keeps plugins available when the file tray is full', () => {
+    const pending = Array.from({ length: MAX_ATTACHMENTS }, (_, index) => ({
+      id: `file-${index}`,
+      name: `file-${index}.txt`,
+      mime: 'text/plain',
+      size: 1,
+      data: 'eA=='
+    }))
+    open([plugin('frontpages')], vi.fn(), pending)
+    const add = screen.getByLabelText('Add to your message')
+    expect(add).not.toBeDisabled()
+    fireEvent.click(add)
+    expect(screen.getByText('Frontpages')).toBeTruthy()
+    expect(screen.queryByText('Upload a file')).toBeNull()
   })
 
   it('lands a chip that names it, and takes it off again', () => {
