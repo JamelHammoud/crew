@@ -8,6 +8,7 @@ import {
   pluginKey,
   resolvePlugin,
   type CrewPlugin,
+  type PluginReference,
   type ResolvedPlugin
 } from '../shared/plugins'
 
@@ -71,6 +72,7 @@ interface AuthorizationCode {
 }
 
 type OAuthTokenMethod = 'none' | 'client_secret_post' | 'client_secret_basic'
+type ConnectedPlugin = ResolvedPlugin<PluginReference>
 
 export interface PluginOauthDeps {
   fetcher?: typeof fetch
@@ -159,7 +161,7 @@ const read = (): OAuthStore => {
   }
   const connections: OAuthStore['connections'] = {}
   for (const [installationId, raw] of Object.entries(body.connections)) {
-    if (!currentPluginInstallation({ installationId, installationVersion: 2, name: '' })) continue
+    if (!currentPluginInstallation({ installationId, installationVersion: 2 })) continue
     const said = raw as { catalogId?: unknown; url?: unknown; credential?: unknown } | null
     const catalogId = text(said?.catalogId)
     if (!catalogId) continue
@@ -183,7 +185,7 @@ const write = (store: OAuthStore): void => {
   fs.renameSync(temporary, file)
 }
 
-const remember = (plugin: ResolvedPlugin, credential?: OAuthCredential): void => {
+const remember = (plugin: ConnectedPlugin, credential?: OAuthCredential): void => {
   if (!currentPluginInstallation(plugin) || !plugin.catalogId) return
   const store = read()
   write({
@@ -199,7 +201,7 @@ const remember = (plugin: ResolvedPlugin, credential?: OAuthCredential): void =>
   })
 }
 
-const savedConnection = (plugin: ResolvedPlugin): OAuthStore['connections'][string] | undefined => {
+const savedConnection = (plugin: ConnectedPlugin): OAuthStore['connections'][string] | undefined => {
   if (!currentPluginInstallation(plugin) || !plugin.catalogId) return undefined
   const connection = read().connections[plugin.installationId]
   if (!connection || connection.catalogId !== plugin.catalogId || connection.url !== plugin.url) return undefined
@@ -473,7 +475,7 @@ const refresh = async (saved: OAuthCredential, fetcher: typeof fetch, now: numbe
 }
 
 const signIn = async (
-  plugin: ResolvedPlugin,
+  plugin: ConnectedPlugin,
   deps: Required<Pick<PluginOauthDeps, 'fetcher' | 'now' | 'open' | 'timeoutMs'>>
 ): Promise<{ credential: OAuthCredential; listening: AuthorizationCode }> => {
   if (!plugin.url) throw new Error(`${plugin.label} has no MCP address.`)
@@ -619,14 +621,14 @@ const tools = async (url: string, accessToken: string | undefined, fetcher: type
   return found.map((one: any) => text(one?.name)).filter(Boolean)
 }
 
-const verifyTools = (plugin: ResolvedPlugin, names: string[]): void => {
+const verifyTools = (plugin: ConnectedPlugin, names: string[]): void => {
   const required = plugin.name === 'raylight' ? REQUIRED_RAYLIGHT_TOOLS : []
   const missing = required.filter(name => !names.includes(name))
   if (missing.length) throw new Error(`${plugin.label} is missing ${missing.join(' and ')}.`)
 }
 
 const usableCredential = async (
-  plugin: ResolvedPlugin,
+  plugin: ConnectedPlugin,
   deps: Required<Pick<PluginOauthDeps, 'fetcher' | 'now' | 'open' | 'timeoutMs'>>,
   allowSignIn: boolean
 ): Promise<OAuthCredential> => {
@@ -683,7 +685,7 @@ const oauthDeps = (
 })
 
 const authorize = async (
-  plugin: ResolvedPlugin,
+  plugin: ConnectedPlugin,
   deps: PluginOauthDeps,
   allowSignIn: boolean
 ): Promise<Record<string, string>> => {
@@ -704,13 +706,13 @@ const authorize = async (
 }
 
 export async function authorizePlugin(
-  plugin: ResolvedPlugin,
+  plugin: ConnectedPlugin,
   deps: PluginOauthDeps = {}
 ): Promise<Record<string, string>> {
   return authorize(plugin, deps, true)
 }
 
-export function pluginConnected(plugin: CrewPlugin | ResolvedPlugin): boolean {
+export function pluginConnected(plugin: CrewPlugin | ConnectedPlugin): boolean {
   const resolved = 'trusted' in plugin ? plugin : resolvePlugin(plugin)
   if (!resolved.trusted || !currentPluginInstallation(resolved)) return false
   return Boolean(savedConnection(resolved))
@@ -721,7 +723,7 @@ export function pluginAvailable(plugin: CrewPlugin): boolean {
   return resolved.trusted ? pluginConnected(resolved) : true
 }
 
-export async function connectPlugin(plugin: ResolvedPlugin, deps: PluginOauthDeps = {}): Promise<void> {
+export async function connectPlugin(plugin: ConnectedPlugin, deps: PluginOauthDeps = {}): Promise<void> {
   if (!plugin.trusted || !plugin.catalogId || !currentPluginInstallation(plugin)) {
     throw new Error('That plugin cannot be connected.')
   }
@@ -744,7 +746,7 @@ export async function connectPlugin(plugin: ResolvedPlugin, deps: PluginOauthDep
   remember(plugin)
 }
 
-export function disconnectPlugin(plugin: ResolvedPlugin): void {
+export function disconnectPlugin(plugin: ConnectedPlugin): void {
   if (!currentPluginInstallation(plugin)) return
   const store = read()
   if (!store.connections[plugin.installationId]) return

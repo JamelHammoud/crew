@@ -119,7 +119,7 @@ export const currentPluginInstallation = (
 
 export const installPlugin = <T extends PluginReference>(
   plugin: T,
-  installationId = globalThis.crypto.randomUUID()
+  installationId: string = globalThis.crypto.randomUUID()
 ): T & {
   installationId: string
   installationVersion: typeof PLUGIN_INSTALLATION_VERSION
