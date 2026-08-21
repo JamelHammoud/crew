@@ -4,6 +4,7 @@ import {
   PLUGIN_GROUPS,
   PLUGIN_OFFERS,
   pluginKey,
+  resolvePlugin,
   resolvePlugins,
   type PluginReference
 } from '../../../shared/plugins'
@@ -51,7 +52,7 @@ export default function Plugins() {
     const key = pluginKey(offer.name)
     const shared = plugins.find(one => pluginKey(one.name) === key)
     const plugin: PluginReference = shared ?? installPlugin(offer)
-    const label = resolvePlugins([plugin])[0].label
+    const label = resolvePlugin(plugin).label
     setConnecting(key)
     setTrouble(current => ({ ...current, [key]: '' }))
     const result = await connectPlugin(plugin)
