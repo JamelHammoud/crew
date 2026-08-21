@@ -16,6 +16,8 @@ interface OAuthCredential {
   refreshToken?: string
   expiresAt?: number
   clientId: string
+  clientSecret?: string
+  tokenMethod?: OAuthTokenMethod
   tokenEndpoint: string
   resource: string
   scope?: string
@@ -36,6 +38,7 @@ interface OAuthStore {
 interface ProtectedResourceMetadata {
   resource?: string
   authorization_servers?: string[]
+  scopes_supported?: string[]
 }
 
 interface AuthorizationMetadata {
@@ -43,10 +46,13 @@ interface AuthorizationMetadata {
   token_endpoint?: string
   registration_endpoint?: string
   scopes_supported?: string[]
+  token_endpoint_auth_methods_supported?: string[]
 }
 
 interface RegisteredClient {
   client_id?: string
+  client_secret?: string
+  token_endpoint_auth_method?: string
 }
 
 interface TokenAnswer {
@@ -63,6 +69,8 @@ interface AuthorizationCode {
   fail: () => void
   close: () => void
 }
+
+type OAuthTokenMethod = 'none' | 'client_secret_post' | 'client_secret_basic'
 
 export interface PluginOauthDeps {
   fetcher?: typeof fetch
@@ -108,6 +116,12 @@ const writtenCredential = (value: unknown): OAuthCredential | null => {
   return {
     accessToken: saved.accessToken!,
     clientId: saved.clientId!,
+    ...(text(saved.clientSecret) ? { clientSecret: saved.clientSecret } : {}),
+    ...(saved.tokenMethod === 'none' ||
+    saved.tokenMethod === 'client_secret_post' ||
+    saved.tokenMethod === 'client_secret_basic'
+      ? { tokenMethod: saved.tokenMethod }
+      : {}),
     tokenEndpoint: saved.tokenEndpoint!,
     resource: saved.resource!,
     ...(text(saved.refreshToken) ? { refreshToken: saved.refreshToken } : {}),
@@ -204,6 +218,16 @@ const authorizationMetadataUrl = (issuer: URL): string =>
     issuer.origin
   ).toString()
 
+const metadata = async <T>(url: string, fetcher: typeof fetch): Promise<T | null> => {
+  try {
+    const response = await fetcher(url, { headers: { accept: 'application/json' } })
+    if (!response.ok) return null
+    return (await response.json()) as T
+  } catch {
+    return null
+  }
+}
+
 const json = async <T>(response: Response, label: string): Promise<T> => {
   if (!response.ok) throw new Error(`${label} answered with ${response.status}.`)
   try {
@@ -216,22 +240,36 @@ const json = async <T>(response: Response, label: string): Promise<T> => {
 const discover = async (
   url: string,
   fetcher: typeof fetch
-): Promise<{ resource: string; authorization: AuthorizationMetadata }> => {
+): Promise<{ resource: string; scopes: string[]; authorization: AuthorizationMetadata }> => {
   const mcp = new URL(url)
-  const protectedResource = await json<ProtectedResourceMetadata>(
-    await fetcher(metadataUrl(mcp), { headers: { accept: 'application/json' } }),
-    'The plugin sign-in'
-  )
-  const issuer = protectedResource.authorization_servers?.[0]
-  if (!issuer) throw new Error('The plugin did not say where to sign in.')
-  const authorization = await json<AuthorizationMetadata>(
-    await fetcher(authorizationMetadataUrl(new URL(issuer)), { headers: { accept: 'application/json' } }),
-    'The plugin account'
-  )
+  const protectedUrls = [...new Set([metadataUrl(mcp), new URL('/.well-known/oauth-protected-resource', mcp).toString()])]
+  let protectedResource: ProtectedResourceMetadata | null = null
+  for (const candidate of protectedUrls) {
+    protectedResource = await metadata<ProtectedResourceMetadata>(candidate, fetcher)
+    if (protectedResource?.authorization_servers?.length) break
+  }
+  const issuer = protectedResource?.authorization_servers?.[0] ?? mcp.origin
+  const issuerUrl = new URL(issuer)
+  const authorizationUrls = [
+    ...new Set([
+      authorizationMetadataUrl(issuerUrl),
+      new URL('/.well-known/oauth-authorization-server', issuerUrl).toString()
+    ])
+  ]
+  let authorization: AuthorizationMetadata | null = null
+  for (const candidate of authorizationUrls) {
+    authorization = await metadata<AuthorizationMetadata>(candidate, fetcher)
+    if (authorization?.authorization_endpoint && authorization.token_endpoint) break
+  }
+  if (!authorization) throw new Error('The plugin did not say where to sign in.')
   if (!authorization.authorization_endpoint || !authorization.token_endpoint || !authorization.registration_endpoint) {
     throw new Error('The plugin account did not provide a complete sign-in.')
   }
-  return { resource: protectedResource.resource || url, authorization }
+  return {
+    resource: protectedResource?.resource || url,
+    scopes: protectedResource?.scopes_supported ?? authorization.scopes_supported ?? [],
+    authorization
+  }
 }
 
 const base64Url = (value: Buffer): string => value.toString('base64url')
@@ -323,7 +361,20 @@ const callback = async (state: string, label: string, timeoutMs: number): Promis
   }
 }
 
-const register = async (endpoint: string, redirectUri: string, fetcher: typeof fetch): Promise<RegisteredClient> =>
+const tokenMethod = (authorization: AuthorizationMetadata): OAuthTokenMethod => {
+  const methods = authorization.token_endpoint_auth_methods_supported ?? ['none']
+  if (methods.includes('none')) return 'none'
+  if (methods.includes('client_secret_post')) return 'client_secret_post'
+  if (methods.includes('client_secret_basic')) return 'client_secret_basic'
+  throw new Error('The plugin account does not support a sign-in Crew can use.')
+}
+
+const register = async (
+  endpoint: string,
+  redirectUri: string,
+  method: OAuthTokenMethod,
+  fetcher: typeof fetch
+): Promise<RegisteredClient> =>
   json<RegisteredClient>(
     await fetcher(endpoint, {
       method: 'POST',
@@ -333,26 +384,42 @@ const register = async (endpoint: string, redirectUri: string, fetcher: typeof f
         redirect_uris: [redirectUri],
         grant_types: ['authorization_code', 'refresh_token'],
         response_types: ['code'],
-        token_endpoint_auth_method: 'none',
+        token_endpoint_auth_method: method,
         application_type: 'native'
       })
     }),
     'The plugin sign-in'
   )
 
-const token = async (endpoint: string, values: Record<string, string>, fetcher: typeof fetch): Promise<TokenAnswer> =>
-  json<TokenAnswer>(
-    await fetcher(endpoint, {
-      method: 'POST',
-      headers: { 'content-type': 'application/x-www-form-urlencoded', accept: 'application/json' },
-      body: new URLSearchParams(values)
-    }),
+const token = async (
+  endpoint: string,
+  values: Record<string, string>,
+  fetcher: typeof fetch,
+  method: OAuthTokenMethod = 'none',
+  clientSecret?: string
+): Promise<TokenAnswer> => {
+  const body = { ...values }
+  const headers: Record<string, string> = {
+    'content-type': 'application/x-www-form-urlencoded',
+    accept: 'application/json'
+  }
+  if (method === 'client_secret_post' && clientSecret) body.client_secret = clientSecret
+  if (method === 'client_secret_basic' && clientSecret) {
+    const clientId = body.client_id ?? ''
+    delete body.client_id
+    headers.authorization = `Basic ${Buffer.from(`${encodeURIComponent(clientId)}:${encodeURIComponent(clientSecret)}`).toString('base64')}`
+  }
+  return json<TokenAnswer>(
+    await fetcher(endpoint, { method: 'POST', headers, body: new URLSearchParams(body) }),
     'The plugin sign-in'
   )
+}
 
 const credentialFrom = (
   answer: TokenAnswer,
   clientId: string,
+  clientSecret: string | undefined,
+  tokenMethod: OAuthTokenMethod,
   tokenEndpoint: string,
   resource: string,
   now: number,
@@ -362,6 +429,8 @@ const credentialFrom = (
   return {
     accessToken: answer.access_token,
     clientId,
+    ...(clientSecret ? { clientSecret } : {}),
+    ...(tokenMethod !== 'none' ? { tokenMethod } : {}),
     tokenEndpoint,
     resource,
     ...(answer.refresh_token || previous?.refreshToken
@@ -384,9 +453,20 @@ const refresh = async (saved: OAuthCredential, fetcher: typeof fetch, now: numbe
         resource: saved.resource,
         ...(saved.scope ? { scope: saved.scope } : {})
       },
-      fetcher
+      fetcher,
+      saved.tokenMethod,
+      saved.clientSecret
     )
-    return credentialFrom(answer, saved.clientId, saved.tokenEndpoint, saved.resource, now, saved)
+    return credentialFrom(
+      answer,
+      saved.clientId,
+      saved.clientSecret,
+      saved.tokenMethod ?? 'none',
+      saved.tokenEndpoint,
+      saved.resource,
+      now,
+      saved
+    )
   } catch {
     return null
   }
@@ -397,16 +477,22 @@ const signIn = async (
   deps: Required<Pick<PluginOauthDeps, 'fetcher' | 'now' | 'open' | 'timeoutMs'>>
 ): Promise<{ credential: OAuthCredential; listening: AuthorizationCode }> => {
   if (!plugin.url) throw new Error(`${plugin.label} has no MCP address.`)
-  const { resource, authorization } = await discover(plugin.url, deps.fetcher)
+  const { resource, scopes, authorization } = await discover(plugin.url, deps.fetcher)
   const state = base64Url(randomBytes(24))
   const verifier = base64Url(randomBytes(48))
   const challenge = base64Url(createHash('sha256').update(verifier).digest())
   const listening = await callback(state, plugin.label, deps.timeoutMs)
   try {
-    const registered = await register(authorization.registration_endpoint!, listening.redirectUri, deps.fetcher)
+    const method = tokenMethod(authorization)
+    const registered = await register(authorization.registration_endpoint!, listening.redirectUri, method, deps.fetcher)
     if (!registered.client_id) throw new Error('The plugin sign-in returned no client ID.')
-    const supported = new Set(authorization.scopes_supported ?? [])
-    const scope = ['openid', 'profile', 'email', 'offline_access'].filter(one => supported.has(one)).join(' ')
+    const clientSecret = text(registered.client_secret) || undefined
+    if (method !== 'none' && !clientSecret) throw new Error('The plugin sign-in returned no client secret.')
+    const supported = new Set(scopes)
+    const identity = ['openid', 'profile', 'email', 'offline_access'].filter(one => supported.has(one))
+    const scope = (protectedScope => (protectedScope.length ? protectedScope : identity))(
+      scopes.filter(one => !['openid', 'profile', 'email', 'offline_access'].includes(one))
+    ).join(' ')
     const authorize = new URL(authorization.authorization_endpoint!)
     authorize.searchParams.set('response_type', 'code')
     authorize.searchParams.set('client_id', registered.client_id)
@@ -428,10 +514,20 @@ const signIn = async (
         code_verifier: verifier,
         resource
       },
-      deps.fetcher
+      deps.fetcher,
+      method,
+      clientSecret
     )
     return {
-      credential: credentialFrom(answer, registered.client_id, authorization.token_endpoint!, resource, deps.now()),
+      credential: credentialFrom(
+        answer,
+        registered.client_id,
+        clientSecret,
+        method,
+        authorization.token_endpoint!,
+        resource,
+        deps.now()
+      ),
       listening
     }
   } catch (cause) {
@@ -446,7 +542,8 @@ const rpc = async (
   authorization: string | undefined,
   body: Record<string, unknown>,
   fetcher: typeof fetch,
-  sessionId?: string
+  sessionId?: string,
+  protocolVersion = PROTOCOL_VERSION
 ): Promise<Response> =>
   fetcher(url, {
     method: 'POST',
@@ -454,6 +551,7 @@ const rpc = async (
       ...(authorization ? { authorization } : {}),
       accept: 'application/json, text/event-stream',
       'content-type': 'application/json',
+      'mcp-protocol-version': protocolVersion,
       ...(sessionId ? { 'mcp-session-id': sessionId } : {})
     },
     body: JSON.stringify(body)
@@ -487,28 +585,36 @@ const tools = async (url: string, accessToken: string | undefined, fetcher: type
     fetcher
   )
   if (initialized.status === 401) throw new Unauthorized('The plugin sign-in has expired.')
+  if (initialized.status === 403) throw new Unauthorized('The plugin sign-in needs approval.')
   if (!initialized.ok) throw new Error(`The plugin MCP answered with ${initialized.status}.`)
-  await rpcBody(initialized)
+  const initializedBody = await rpcBody(initialized)
+  if (initializedBody?.error) throw new Error(text(initializedBody.error.message) || 'The plugin could not start.')
+  const protocolVersion = text(initializedBody?.result?.protocolVersion) || PROTOCOL_VERSION
   const sessionId = initialized.headers.get('mcp-session-id') ?? undefined
   const ready = await rpc(
     url,
     authorization,
     { jsonrpc: '2.0', method: 'notifications/initialized', params: {} },
     fetcher,
-    sessionId
+    sessionId,
+    protocolVersion
   )
   if (ready.status === 401) throw new Unauthorized('The plugin sign-in has expired.')
+  if (ready.status === 403) throw new Unauthorized('The plugin sign-in needs approval.')
   if (!ready.ok) throw new Error(`The plugin MCP answered with ${ready.status}.`)
   const listed = await rpc(
     url,
     authorization,
     { jsonrpc: '2.0', id: 2, method: 'tools/list', params: {} },
     fetcher,
-    sessionId
+    sessionId,
+    protocolVersion
   )
   if (listed.status === 401) throw new Unauthorized('The plugin sign-in has expired.')
+  if (listed.status === 403) throw new Unauthorized('The plugin sign-in needs approval.')
   if (!listed.ok) throw new Error(`The plugin MCP answered with ${listed.status}.`)
   const answer = await rpcBody(listed)
+  if (answer?.error) throw new Error(text(answer.error.message) || 'The plugin could not list its tools.')
   const found = Array.isArray(answer?.result?.tools) ? answer.result.tools : []
   return found.map((one: any) => text(one?.name)).filter(Boolean)
 }
@@ -541,9 +647,13 @@ const usableCredential = async (
       const renewed = await refresh(saved, deps.fetcher, now)
       if (renewed) {
         remember(plugin, renewed)
-        const names = await tools(plugin.url, renewed.accessToken, deps.fetcher)
-        verifyTools(plugin, names)
-        return renewed
+        try {
+          const names = await tools(plugin.url, renewed.accessToken, deps.fetcher)
+          verifyTools(plugin, names)
+          return renewed
+        } catch (renewedCause) {
+          if (!(renewedCause instanceof Unauthorized)) throw renewedCause
+        }
       }
     }
   }
@@ -621,8 +731,15 @@ export async function connectPlugin(plugin: ResolvedPlugin, deps: PluginOauthDep
   }
   if (plugin.transport === 'http') {
     if (!plugin.url) throw new Error(`${plugin.label} has no MCP address.`)
-    const names = await tools(plugin.url, undefined, deps.fetcher ?? fetch)
-    verifyTools(plugin, names)
+    try {
+      const names = await tools(plugin.url, undefined, deps.fetcher ?? fetch)
+      verifyTools(plugin, names)
+    } catch (cause) {
+      if (plugin.name === 'figma-desktop' && cause instanceof TypeError) {
+        throw new Error('Open a Figma file in Dev Mode and turn on its MCP server, then try again.')
+      }
+      throw cause
+    }
   }
   remember(plugin)
 }
