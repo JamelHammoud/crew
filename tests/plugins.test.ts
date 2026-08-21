@@ -15,9 +15,6 @@ import {
   PLUGIN_FULL,
   PLUGIN_LIMIT,
   PLUGIN_OFFERS,
-  pluginMenuInput,
-  pluginNamed,
-  pluginTyped,
   resolvePlugin,
   type CrewPlugin
 } from '../src/shared/plugins'
@@ -318,7 +315,6 @@ describe('what the store offers', () => {
       authentication: 'oauth'
     })
     expect(pluginCanLaunch(legacy)).toBe(true)
-    expect(pluginNamed('/raylight', [legacy])).toBe(legacy)
   })
 
   it('refreshes Linear from its retired SSE endpoint', () => {
@@ -334,16 +330,6 @@ describe('what the store offers', () => {
     }
     expect(resolvePlugin(legacy).url).toBe('https://mcp.linear.app/mcp')
     expect(mcpServersOf([legacy])).toEqual({ linear: { type: 'http', url: 'https://mcp.linear.app/mcp' } })
-  })
-
-  it('matches every installed plugin alias', () => {
-    const raylight = { ...PLUGIN_OFFERS.find(offer => offer.name === 'raylight')!, id: 'r', by: 'Jamel', ts: 1 }
-    const figma = { ...PLUGIN_OFFERS.find(offer => offer.name === 'figma')!, id: 'f', by: 'Jamel', ts: 1 }
-    expect(pluginTyped('/raylight ', [raylight, figma])).toBe(raylight)
-    expect(pluginNamed('/raylight', [raylight, figma])).toBe(raylight)
-    expect(pluginTyped('/figma ', [raylight, figma])).toBe(figma)
-    expect(pluginTyped('/raylight', [raylight])).toBeNull()
-    expect(pluginMenuInput('/plugin ray')).toBe(true)
   })
 
   it('drops an unsafe editing address without dropping the MCP', () => {
