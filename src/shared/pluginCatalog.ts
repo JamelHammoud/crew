@@ -53,18 +53,6 @@ export const PLUGIN_CATALOG: readonly PluginCatalogEntry[] = [
     id: 'figma',
     name: 'figma',
     label: 'Figma',
-    blurb: 'Read a file, a frame or a component',
-    group: 'Design',
-    authentication: 'oauth',
-    allowedOrigins: ['https://mcp.figma.com'],
-    documentationUrl: 'https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Dev-Mode-MCP-Server',
-    transport: { kind: 'http', protocol: 'streamable-http', url: 'https://mcp.figma.com/mcp' },
-    launch: none
-  },
-  {
-    id: 'figma-desktop',
-    name: 'figma-desktop',
-    label: 'Figma on this computer',
     blurb: 'Read whatever is open in the desktop app',
     group: 'Design',
     authentication: 'none',
@@ -105,18 +93,6 @@ export const PLUGIN_CATALOG: readonly PluginCatalogEntry[] = [
       reuse: 'plugin',
       routes: [{ origin: 'https://frontpages.dev', paths: ['/'] }]
     }
-  },
-  {
-    id: 'github',
-    name: 'github',
-    label: 'GitHub',
-    blurb: 'Issues, pull requests and what the checks said',
-    group: 'Code',
-    authentication: 'oauth',
-    allowedOrigins: ['https://api.githubcopilot.com'],
-    documentationUrl: 'https://github.com/github/github-mcp-server',
-    transport: { kind: 'http', protocol: 'streamable-http', url: 'https://api.githubcopilot.com/mcp/' },
-    launch: none
   },
   {
     id: 'sentry',
@@ -261,18 +237,6 @@ export const PLUGIN_CATALOG: readonly PluginCatalogEntry[] = [
     launch: none
   },
   {
-    id: 'slack',
-    name: 'slack',
-    label: 'Slack',
-    blurb: 'Read a channel and say something in it',
-    group: 'Work',
-    authentication: 'oauth',
-    allowedOrigins: ['https://mcp.slack.com'],
-    documentationUrl: 'https://docs.slack.dev/ai/slack-mcp-server/',
-    transport: { kind: 'http', protocol: 'streamable-http', url: 'https://mcp.slack.com/mcp' },
-    launch: none
-  },
-  {
     id: 'atlassian',
     name: 'atlassian',
     label: 'Atlassian',
@@ -281,7 +245,7 @@ export const PLUGIN_CATALOG: readonly PluginCatalogEntry[] = [
     authentication: 'oauth',
     allowedOrigins: ['https://mcp.atlassian.com'],
     documentationUrl: 'https://support.atlassian.com/atlassian-rovo-mcp-server/',
-    transport: { kind: 'http', protocol: 'streamable-http', url: 'https://mcp.atlassian.com/v1/mcp' },
+    transport: { kind: 'http', protocol: 'streamable-http', url: 'https://mcp.atlassian.com/v1/mcp/authv2' },
     launch: none
   },
   {

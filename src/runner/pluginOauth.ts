@@ -735,7 +735,7 @@ export async function connectPlugin(plugin: ResolvedPlugin, deps: PluginOauthDep
       const names = await tools(plugin.url, undefined, deps.fetcher ?? fetch)
       verifyTools(plugin, names)
     } catch (cause) {
-      if (plugin.name === 'figma-desktop' && cause instanceof TypeError) {
+      if (plugin.name === 'figma' && cause instanceof TypeError) {
         throw new Error('Open a Figma file in Dev Mode and turn on its MCP server, then try again.')
       }
       throw cause
