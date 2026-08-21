@@ -304,6 +304,11 @@ describe('what the store offers', () => {
     expect(PLUGIN_OFFERS.some(offer => offer.name === 'figma-desktop')).toBe(false)
     expect(PLUGIN_OFFERS.some(offer => offer.name === 'github')).toBe(false)
     expect(PLUGIN_OFFERS.some(offer => offer.name === 'slack')).toBe(false)
+    expect(resolvePlugin({ name: 'figma-desktop' })).toMatchObject({
+      catalogId: 'figma',
+      name: 'figma',
+      url: 'http://127.0.0.1:3845/mcp'
+    })
   })
 
   it('keeps Raylight editing separate from the MCP it gives agents', () => {
