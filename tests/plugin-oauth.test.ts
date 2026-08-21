@@ -30,6 +30,12 @@ describe('plugin OAuth on the machine running the agent', () => {
   let requiredTools = true
   let browserAnswers: Promise<Response>[] = []
   let allowAnonymous = false
+  let resourceScopes: string[] = []
+  let authMethod = 'none'
+  let registrationStatus = 201
+  let rootMetadata = false
+  let serverProtocol = '2025-06-18'
+  let authorizedScope = ''
 
   beforeEach(async () => {
     registrations = 0
@@ -38,11 +44,22 @@ describe('plugin OAuth on the machine running the agent', () => {
     requiredTools = true
     browserAnswers = []
     allowAnonymous = false
+    resourceScopes = []
+    authMethod = 'none'
+    registrationStatus = 201
+    rootMetadata = false
+    serverProtocol = '2025-06-18'
+    authorizedScope = ''
     server = http.createServer(async (request, response) => {
       const url = new URL(request.url ?? '/', origin)
-      if (request.method === 'GET' && url.pathname === '/.well-known/oauth-protected-resource/mcp') {
+      if (
+        request.method === 'GET' &&
+        url.pathname === (rootMetadata ? '/.well-known/oauth-protected-resource' : '/.well-known/oauth-protected-resource/mcp')
+      ) {
         response.setHeader('content-type', 'application/json')
-        response.end(JSON.stringify({ resource: `${origin}/mcp`, authorization_servers: [origin] }))
+        response.end(
+          JSON.stringify({ resource: `${origin}/mcp`, authorization_servers: [origin], scopes_supported: resourceScopes })
+        )
         return
       }
       if (request.method === 'GET' && url.pathname === '/.well-known/oauth-authorization-server') {
@@ -52,19 +69,27 @@ describe('plugin OAuth on the machine running the agent', () => {
             authorization_endpoint: `${origin}/authorize`,
             token_endpoint: `${origin}/token`,
             registration_endpoint: `${origin}/register`,
-            scopes_supported: ['openid', 'offline_access']
+            scopes_supported: ['openid', 'offline_access'],
+            token_endpoint_auth_methods_supported: [authMethod]
           })
         )
         return
       }
       if (request.method === 'POST' && url.pathname === '/register') {
         registrations += 1
-        response.writeHead(201, { 'content-type': 'application/json' })
-        response.end(JSON.stringify({ client_id: 'crew-client' }))
+        const registration = JSON.parse(await bodyOf(request))
+        expect(registration.token_endpoint_auth_method).toBe(authMethod)
+        response.writeHead(registrationStatus, { 'content-type': 'application/json' })
+        response.end(
+          registrationStatus === 201
+            ? JSON.stringify({ client_id: 'crew-client', ...(authMethod === 'none' ? {} : { client_secret: 'secret' }) })
+            : JSON.stringify({ error: 'forbidden' })
+        )
         return
       }
       if (request.method === 'GET' && url.pathname === '/authorize') {
         authorizations += 1
+        authorizedScope = url.searchParams.get('scope') ?? ''
         const callback = new URL(url.searchParams.get('redirect_uri')!)
         callback.searchParams.set('code', 'crew-code')
         callback.searchParams.set('state', url.searchParams.get('state')!)
@@ -74,6 +99,7 @@ describe('plugin OAuth on the machine running the agent', () => {
       if (request.method === 'POST' && url.pathname === '/token') {
         const form = new URLSearchParams(await bodyOf(request))
         expect(form.get('client_id')).toBe('crew-client')
+        expect(form.get('client_secret')).toBe(authMethod === 'client_secret_post' ? 'secret' : null)
         expect(form.get('resource')).toBe(`${origin}/mcp`)
         response.setHeader('content-type', 'application/json')
         response.end(
@@ -88,6 +114,9 @@ describe('plugin OAuth on the machine running the agent', () => {
         }
         bearerCalls += 1
         const rpc = JSON.parse(await bodyOf(request))
+        expect(request.headers['mcp-protocol-version']).toBe(
+          rpc.method === 'initialize' ? '2025-06-18' : serverProtocol
+        )
         if (rpc.method === 'initialize') {
           response.writeHead(200, { 'content-type': 'application/json', 'mcp-session-id': 'crew-session' })
           response.end(
@@ -95,7 +124,7 @@ describe('plugin OAuth on the machine running the agent', () => {
               jsonrpc: '2.0',
               id: rpc.id,
               result: {
-                protocolVersion: '2025-06-18',
+                protocolVersion: serverProtocol,
                 capabilities: {},
                 serverInfo: { name: 'Raylight', version: '1' }
               }
@@ -198,6 +227,24 @@ describe('plugin OAuth on the machine running the agent', () => {
     await expect(connectPlugin(frontpages)).resolves.toBeUndefined()
     expect(browserAnswers).toHaveLength(0)
     expect(pluginConnected(frontpages)).toBe(true)
+  })
+
+  it('uses root metadata, resource scopes, client secrets, and the negotiated MCP version', async () => {
+    rootMetadata = true
+    resourceScopes = ['mcp:connect']
+    authMethod = 'client_secret_post'
+    serverProtocol = '2024-11-05'
+    const canva = installed('canva', '00000000-0000-4000-8000-000000000004')
+    await expect(connectPlugin(canva, { open })).resolves.toBeUndefined()
+    expect(authorizedScope).toBe('mcp:connect')
+    expect(pluginConnected(canva)).toBe(true)
+  })
+
+  it('reports a rejected client registration without opening an approval page', async () => {
+    registrationStatus = 403
+    const canva = installed('canva', '00000000-0000-4000-8000-000000000005')
+    await expect(connectPlugin(canva, { open })).rejects.toThrow('The plugin sign-in answered with 403.')
+    expect(authorizations).toBe(0)
   })
 
   it('clears the old credential schema once', () => {
