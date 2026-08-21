@@ -190,7 +190,7 @@ describe('the plugins store', () => {
 
   it('says what a row does under its name', () => {
     plugins()
-    expect(rowFor('Figma').textContent).toContain('Read a file, a frame or a component')
+    expect(rowFor('Figma').textContent).toContain('Read whatever is open in the desktop app')
   })
 
   it('ends the list on the way to one of your own', () => {
