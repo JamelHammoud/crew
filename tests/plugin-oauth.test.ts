@@ -247,6 +247,19 @@ describe('plugin OAuth on the machine running the agent', () => {
     expect(authorizations).toBe(0)
   })
 
+  it('says how to start the local Figma server', async () => {
+    const saved: CrewPlugin = {
+      ...installPlugin(offerOf('figma')!, '00000000-0000-4000-8000-000000000006'),
+      id: 'figma',
+      by: 'Ali',
+      ts: 1
+    }
+    const fetcher = (() => Promise.reject(new TypeError('fetch failed'))) as typeof fetch
+    await expect(connectPlugin(resolvePlugin(saved), { fetcher })).rejects.toThrow(
+      'Open a Figma file in Dev Mode and turn on its MCP server, then try again.'
+    )
+  })
+
   it('clears the old credential schema once', () => {
     const folder = fs.mkdtempSync(path.join(os.tmpdir(), 'crew-plugin-oauth-v1-'))
     const credentials = path.join(folder, 'plugin-oauth.json')
