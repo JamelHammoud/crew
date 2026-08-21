@@ -30,8 +30,6 @@ import { CHAT_KEY, pendingCount, useCrew, type ThreadMeta } from '../state/store
 import { useVoice } from '../state/voice'
 import { cleanCommands, commandsIn, commandTyped, type CommandName } from '../../../shared/commands'
 import { aimOf } from '../../../shared/llm'
-import { pluginMenuInput, pluginNamed, pluginTyped } from '../../../shared/plugins'
-import { runPluginAction } from '../state/pluginState'
 import { useMessagePlugin } from '../state/messagePlugin'
 
 export default function Chat() {
@@ -66,12 +64,6 @@ export default function Chat() {
   // A command typed out and one picked from the menu land on the same chip,
   // because both paths into the draft come through here.
   const write = (value: string) => {
-    const plugin = pluginTyped(value, plugins)
-    if (plugin) {
-      runPluginAction(plugin)
-      setChatDraft('')
-      return
-    }
     const typed = commandTyped(value, offered)
     if (!typed) {
       setChatDraft(value)
@@ -83,9 +75,8 @@ export default function Chat() {
 
   const ghost = commands.includes('ghost')
   const inputRef = useAutoResize(text, COMPOSER_MAX)
-  const pluginSlashes = useMemo(() => ['plugin', ...plugins.map(plugin => plugin.name)], [plugins])
-  const mention = useMentionAutocomplete(text, write, inputRef, { commands: offered, slashes: pluginSlashes })
-  const slash = useSlashCommands(text, write, takeCommand, inputRef, offered, plugins, runPluginAction)
+  const mention = useMentionAutocomplete(text, write, inputRef, { commands: offered })
+  const slash = useSlashCommands(text, write, takeCommand, inputRef, offered)
   const scrollRef = useRef<HTMLDivElement>(null)
   const place = useCrew(s => s.place)
   const aimed = useDefaultAgent(s => s.agentId)
@@ -147,14 +138,6 @@ export default function Chat() {
   )
 
   const send = () => {
-    const plugin = pluginNamed(text, plugins)
-    if (plugin) {
-      runPluginAction(plugin)
-      setChatDraft('')
-      slash.close()
-      return
-    }
-    if (pluginMenuInput(text)) return
     if (!text.trim() && pendingCount(CHAT_KEY) === 0) return
     sendChat(
       text,
@@ -285,10 +268,9 @@ export default function Chat() {
               <SlashMenu
                 matches={slash.matches}
                 activeIndex={slash.activeIndex}
-                onPick={slash.pick}
-                onHover={slash.setActive}
-                empty={slash.empty}
-              />
+                  onPick={slash.pick}
+                  onHover={slash.setActive}
+                />
             </Composer>
             <TypingLine />
           </div>

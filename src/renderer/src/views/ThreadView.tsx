@@ -41,10 +41,8 @@ import { useFindQuery } from '../components/find'
 import { useStickToBottom } from '../components/useStickToBottom'
 import { commandTyped, threadCommands, type CommandName } from '../../../shared/commands'
 import { mentionsIn } from '../../../shared/llm'
-import { pluginMenuInput, pluginNamed, pluginTyped } from '../../../shared/plugins'
 import { ArchiveGlyph, CheckGlyph, ChevronLeftGlyph, CloseGlyph, EyeGlyph, StopGlyph, WarningGlyph } from '../icons'
 import { pendingCount, useCrew } from '../state/store'
-import { runPluginAction } from '../state/pluginState'
 import { useMessagePlugin } from '../state/messagePlugin'
 
 const BACK_WIDTH = 40
@@ -128,12 +126,6 @@ export default function ThreadView({
   const takeCommand = (name: CommandName) => setThreadCommands(threadId, [name])
 
   const write = (value: string) => {
-    const plugin = pluginTyped(value, plugins)
-    if (plugin) {
-      runPluginAction(plugin)
-      setThreadDraft(threadId, '')
-      return
-    }
     const typed = commandTyped(value, offered)
     if (!typed) {
       setThreadDraft(threadId, value)
@@ -143,9 +135,8 @@ export default function ThreadView({
     setThreadDraft(threadId, '')
   }
 
-  const pluginSlashes = useMemo(() => ['plugin', ...plugins.map(plugin => plugin.name)], [plugins])
-  const mention = useMentionAutocomplete(text, write, inputRef, { commands: offered, slashes: pluginSlashes })
-  const slash = useSlashCommands(text, write, takeCommand, inputRef, offered, plugins, runPluginAction)
+  const mention = useMentionAutocomplete(text, write, inputRef, { commands: offered })
+  const slash = useSlashCommands(text, write, takeCommand, inputRef, offered)
   const items = useMemo(() => buildThread(threadEvents, steps, selfId, agents), [threadEvents, steps, selfId, agents])
   const tail = useDrawnTail(items.length, THREAD_PAGE, scrollRef)
   const drawn = useMemo(() => (tail.from === 0 ? items : items.slice(tail.from)), [items, tail.from])
@@ -235,14 +226,6 @@ export default function ThreadView({
   }, [items, room, follow])
 
   const send = () => {
-    const plugin = pluginNamed(text, plugins)
-    if (plugin) {
-      runPluginAction(plugin)
-      setThreadDraft(threadId, '')
-      slash.close()
-      return
-    }
-    if (pluginMenuInput(text)) return
     if (!text.trim() && pendingCount(threadId) === 0) return
     // A question on the side is answered in the panel and a fork carries on in a
     // thread of its own. Neither lands here, so neither is a reply to anything in
@@ -465,7 +448,6 @@ export default function ThreadView({
                     activeIndex={slash.activeIndex}
                     onPick={slash.pick}
                     onHover={slash.setActive}
-                    empty={slash.empty}
                   />
                 </Composer>
                 <TypingLine where={threadId} />
