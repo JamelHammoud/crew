@@ -45,7 +45,6 @@ export default function Chat() {
   const text = useCrew(s => s.chatDraft)
   const setChatDraft = useCrew(s => s.setChatDraft)
   const commands = useCrew(s => s.chatCommands)
-  const plugins = useCrew(s => s.plugins)
   const setChatCommands = useCrew(s => s.setChatCommands)
   const agents = useCrew(s => s.agents)
   const connection = useCrew(s => s.connection)

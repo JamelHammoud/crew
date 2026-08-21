@@ -85,7 +85,6 @@ export default function ThreadView({
   const text = useCrew(s => s.threadDrafts[threadId] ?? '')
   const setThreadDraft = useCrew(s => s.setThreadDraft)
   const agents = useCrew(s => s.agents)
-  const plugins = useCrew(s => s.plugins)
   const [replyTo, setReplyTo] = useState<ThreadItem | null>(null)
 
   const scrollRef = useRef<HTMLDivElement>(null)
