@@ -17,8 +17,9 @@ function probeSource() {
   const from = file => JSON.stringify(path.join(root, 'src/renderer/src', file))
   return `import React from ${JSON.stringify(resolve('react'))}
 import { createRoot } from ${JSON.stringify(resolve('react-dom/client'))}
-import AddMenu from ${from('components/AddMenu.tsx')}
-import { useCrew } from ${from('state/store.ts')}
+	import AddMenu from ${from('components/AddMenu.tsx')}
+	import { useCrew } from ${from('state/store.ts')}
+	import { installPlugin } from ${JSON.stringify(path.join(root, 'src/shared/plugins.ts'))}
 import './probe.css'
 
 const agent = (id, label) => ({
@@ -37,7 +38,8 @@ useCrew.setState({
   connection: 'online',
   selfId: 'ali',
   selfName: 'ALI',
-  agents: [agent('ali/bubbles', 'Bubbles'), agent('ali/kimi', 'Kimi'), agent('ali/codex', 'Codex Gpt-5.6-sol')],
+	  agents: [agent('ali/bubbles', 'Bubbles'), agent('ali/kimi', 'Kimi'), agent('ali/codex', 'Codex Gpt-5.6-sol')],
+	  plugins: [{ ...installPlugin({ catalogId: 'frontpages', name: 'frontpages' }, '00000000-0000-4000-8000-000000000001'), id: 'frontpages', by: 'ALI', ts: 1 }],
   members: [{ id: 'ali', name: 'ALI', connected: true }],
   pending: {},
   attachmentMb: 10
@@ -54,7 +56,7 @@ function Page() {
       React.createElement(
         'div',
         { className: 'flex items-center gap-2' },
-        React.createElement(AddMenu, { attachmentKey: 'chat', defaultAgent: true, onSend: () => {} })
+	        React.createElement(AddMenu, { attachmentKey: 'chat', defaultAgent: true, inputRef: React.createRef(), onSend: () => {} })
       )
     )
   )
@@ -118,8 +120,9 @@ app.whenReady().then(async () => {
     await wait(900)
     await win.webContents.executeJavaScript(PRESS('Add to your message'))
     await wait(400)
-    said.menu = await win.webContents.executeJavaScript(BOX)
-    said.frames = await win.webContents.executeJavaScript(WATCH('Default agent'))
+	    said.menu = await win.webContents.executeJavaScript(BOX)
+	    said.menuRows = await win.webContents.executeJavaScript(\`[...document.querySelectorAll('.glass.fixed button')].map(b => b.textContent)\`)
+	    said.frames = await win.webContents.executeJavaScript(WATCH('Agent'))
     await wait(300)
     said.agents = await win.webContents.executeJavaScript(BOX)
     said.rows = await win.webContents.executeJavaScript(\`[...document.querySelectorAll('.glass.fixed button')].map(b => b.textContent)\`)
@@ -183,6 +186,10 @@ const dir = await stage()
 await compile(dir)
 const seen = await run(dir)
 if (seen.failed) throw new Error(seen.failed)
+if (!seen.menuRows.includes('Frontpages')) throw new Error('Frontpages was not in the composer menu')
+if (seen.menuRows.indexOf('Frontpages') <= seen.menuRows.indexOf('Pick a GIF')) {
+  throw new Error('Frontpages did not stand under Pick a GIF')
+}
 
 console.log(
   `\nthe rows        ${seen.menu.width} x ${seen.menu.height}, bottom at ${seen.menu.bottom}, left at ${seen.menu.left}`
@@ -193,6 +200,7 @@ console.log(
 console.log(`what moves      ${seen.agents.box}`)
 console.log(`corner          ${seen.agents.radius}`)
 console.log(`rows in it      ${JSON.stringify(seen.rows)}`)
+console.log(`composer rows  ${JSON.stringify(seen.menuRows)}`)
 
 console.log(
   `the GIFs        ${seen.gif.width} x ${seen.gif.height}, bottom at ${seen.gif.bottom}, left at ${seen.gif.left}`
