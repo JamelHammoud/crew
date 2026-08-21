@@ -3,7 +3,7 @@ import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { PooledAgent } from '../src/shared/llm'
-import type { CrewPlugin } from '../src/shared/plugins'
+import { installPlugin, type CrewPlugin } from '../src/shared/plugins'
 import { useMessagePlugin } from '../src/renderer/src/state/messagePlugin'
 import { useCrew } from '../src/renderer/src/state/store'
 import Chat from '../src/renderer/src/views/Chat'
@@ -39,7 +39,15 @@ const AGENT: PooledAgent = {
   fields: []
 }
 
-const plugin = (name: string): CrewPlugin => ({ id: name, catalogId: name, name, by: 'ALI', ts: 1 })
+const plugin = (name: string): CrewPlugin => ({
+  ...installPlugin(
+    { catalogId: name, name },
+    name === 'raylight' ? '00000000-0000-4000-8000-000000000001' : '00000000-0000-4000-8000-000000000002'
+  ),
+  id: name,
+  by: 'ALI',
+  ts: 1
+})
 
 const open = (plugins: CrewPlugin[], sendChat = vi.fn()) => {
   useCrew.setState({
@@ -71,7 +79,6 @@ const open = (plugins: CrewPlugin[], sendChat = vi.fn()) => {
 
 const pick = (label: string) => {
   fireEvent.click(screen.getByLabelText('Add to your message'))
-  fireEvent.click(screen.getByText('Plugins'))
   fireEvent.click(screen.getByText(label))
 }
 
@@ -86,7 +93,15 @@ describe('putting a plugin on a message', () => {
     open([])
     fireEvent.click(screen.getByLabelText('Add to your message'))
 
-    expect(screen.queryByText('Plugins')).toBeNull()
+    expect(screen.queryByText('Frontpages')).toBeNull()
+  })
+
+  it('puts installed plugins directly under the GIF picker', () => {
+    open([plugin('frontpages')])
+    fireEvent.click(screen.getByLabelText('Add to your message'))
+    const gif = screen.getByText('Pick a GIF').closest('button')!
+    const frontpages = screen.getByText('Frontpages').closest('button')!
+    expect(gif.compareDocumentPosition(frontpages) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   })
 
   it('lands a chip that names it, and takes it off again', () => {
