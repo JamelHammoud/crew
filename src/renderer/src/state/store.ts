@@ -358,10 +358,7 @@ interface CrewState {
 const socket = new CrewSocket()
 let destination: string | null = null
 let transition = 0
-const pendingPluginInstalls = new Map<
-  string,
-  { finish: (problem: string | null) => void; timer: ReturnType<typeof setTimeout> }
->()
+const pendingPluginInstalls = new Map<string, { finish: (problem: string | null) => void }>()
 
 // A window says it is writing at most every couple of seconds, and says it has
 // stopped the moment the box empties, the message goes, or the composer is left.
