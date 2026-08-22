@@ -214,10 +214,6 @@ describe('the plugins store', () => {
     expect(screen.getByRole('button', { name: /Add one of your own/ })).toBeTruthy()
   })
 
-  // The plugin standing in the crew's own list is what says the install
-  // happened. A host that never answers the request still writes it down, and
-  // read the other way round every one of those installs really landed and then
-  // reported that it had not.
   it('finishes the install on the plugin landing, with nothing said back', async () => {
     useCrew.setState({ plugins: [], installPlugin: realInstall })
     const done = useCrew.getState().installPlugin(installPlugin(offerOf('frontpages')!))
