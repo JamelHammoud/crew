@@ -1192,8 +1192,6 @@ export const useCrew = create<CrewState>((set, get) => {
       case 'plugin.result': {
         const pending = pendingPluginInstalls.get(msg.requestId)
         if (!pending) break
-        pendingPluginInstalls.delete(msg.requestId)
-        clearTimeout(pending.timer)
         pending.finish(msg.ok ? null : msg.message || 'The plugin was not installed.')
         break
       }
