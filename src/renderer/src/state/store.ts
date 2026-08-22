@@ -38,7 +38,9 @@ import {
   installPlugin,
   pluginKey,
   PLUGIN_FULL,
+  PLUGIN_INSTALL_MS,
   PLUGIN_LIMIT,
+  PLUGIN_SLOW,
   type CrewPlugin
 } from '../../../shared/plugins'
 import {
