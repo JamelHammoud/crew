@@ -213,4 +213,28 @@ describe('the plugins store', () => {
     plugins()
     expect(screen.getByRole('button', { name: /Add one of your own/ })).toBeTruthy()
   })
+
+  // The plugin standing in the crew's own list is what says the install
+  // happened. A host that never answers the request still writes it down, and
+  // read the other way round every one of those installs really landed and then
+  // reported that it had not.
+  it('finishes the install on the plugin landing, with nothing said back', async () => {
+    useCrew.setState({ plugins: [], installPlugin: realInstall })
+    const done = useCrew.getState().installPlugin(installPlugin(offerOf('frontpages')!))
+    useCrew.setState({ plugins: [held('frontpages')] })
+    expect(await done).toBeNull()
+  })
+
+  it('keeps the sign-in when the crew has not answered yet', async () => {
+    const disconnectPlugin = vi.fn().mockResolvedValue(undefined)
+    window.crew = {
+      connectPlugin: vi.fn().mockResolvedValue({ ok: true, message: 'Canva is connected.' }),
+      disconnectPlugin
+    } as unknown as CrewBridge
+    useCrew.setState({ installPlugin: async () => PLUGIN_SLOW })
+    plugins()
+    fireEvent.click(screen.getByRole('button', { name: 'Add Canva' }))
+    await screen.findByText(PLUGIN_SLOW)
+    expect(disconnectPlugin).not.toHaveBeenCalled()
+  })
 })
