@@ -64,7 +64,11 @@ export default function Plugins() {
     if (!shared) {
       const problem = await installInCrew(plugin)
       if (problem) {
-        forgetPluginConnection(plugin)
+        // A crew that refused leaves the sign-in pointing at nothing, so it goes
+        // with it. A crew that simply has not answered yet may still write the
+        // plugin down, and the sign-in it would be written down under is the one
+        // just made, so that one is kept rather than asked for a second time.
+        if (problem !== PLUGIN_SLOW) forgetPluginConnection(plugin)
         setTrouble(current => ({ ...current, [key]: problem }))
         setConnecting('')
         return
