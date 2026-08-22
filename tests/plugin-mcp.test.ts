@@ -37,6 +37,12 @@ const RAYLIGHT = plugin({
   appUrl: 'https://www.raylight.app/projects'
 })
 
+const FRONTPAGES = plugin({
+  name: 'frontpages',
+  transport: 'http',
+  url: 'https://ecagaenecamdrvwcsuaz.supabase.co/functions/v1/mcp-server'
+})
+
 const SLACK = plugin({
   name: 'private-slack',
   transport: 'stdio',
