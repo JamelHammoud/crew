@@ -107,6 +107,13 @@ export const PLUGIN_ARG_LIMIT = 12
 
 export const PLUGIN_FULL = `The crew has as many plugins as it can hold. Take one out before adding another.`
 
+// How long an install may take before it is given up on. A plugin is written
+// down and pushed by whoever is hosting, so the wait is a sync rather than a
+// round trip, and ten seconds was under what a busy crew really takes.
+export const PLUGIN_INSTALL_MS = 45_000
+
+export const PLUGIN_SLOW = `Crew could not reach the crew to install the plugin. Try again.`
+
 const INSTALLATION_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
 export const pluginInstallationId = (raw: unknown): string =>
