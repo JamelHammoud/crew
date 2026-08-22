@@ -371,7 +371,8 @@ describe('a run that carries the crew plugins', () => {
         threadId: 'thread-1',
         text: 'do the thing',
         settings: {},
-        plugins
+        plugins,
+        ...(designBoard ? { designBoard } : {})
       })
     )
     while (held.length === 0) await new Promise(resolve => setTimeout(resolve, 10))
