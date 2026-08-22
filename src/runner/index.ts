@@ -443,7 +443,8 @@ export class Runner {
     // an MCP server at all. Read off the crew's own list instead, the guide
     // promises tools that are not in the run on every machine that has not
     // connected it, and on Grok and Local, which are handed no plugins at all.
-    const reachable = agent.provider.mcp ? (plugins ?? []).filter(pluginAvailable) : []
+    const held = plugins ?? []
+    const reachable = !agent.provider.mcp ? [] : this.opts.authorizePlugins ? held : held.filter(pluginAvailable)
     const preambles = [
       memories ? memoryPreamble(this.httpBase, promptId, memories) : '',
       boardsPreamble(this.httpBase, forAgentId, designBoard, designBoards, reachable),
