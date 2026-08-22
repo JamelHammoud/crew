@@ -438,11 +438,15 @@ export class Runner {
     }
     if (this.accepted.has(promptId)) return
     this.accepted.add(promptId)
-    // Every preamble is written here rather than on the host because only this
-    // side knows the http address it reaches the server at.
+    // What the board is told about a plugin has to be what the run really gets,
+    // which is a plugin this machine has connected and a provider that can hold
+    // an MCP server at all. Read off the crew's own list instead, the guide
+    // promises tools that are not in the run on every machine that has not
+    // connected it, and on Grok and Local, which are handed no plugins at all.
+    const reachable = agent.provider.mcp ? (plugins ?? []).filter(pluginAvailable) : []
     const preambles = [
       memories ? memoryPreamble(this.httpBase, promptId, memories) : '',
-      boardsPreamble(this.httpBase, forAgentId, designBoard, designBoards, plugins ?? []),
+      boardsPreamble(this.httpBase, forAgentId, designBoard, designBoards, reachable),
       subagentPreamble(this.httpBase, promptId, spawnRoom, spawnProviders),
       pagePreamble(this.httpBase, promptId),
       pluginPreamble(this.httpBase, promptId, plugins ?? [], Boolean(agent.provider.mcp), usePlugin),
