@@ -340,12 +340,16 @@ describe('a run that carries the crew plugins', () => {
       const done = new Promise<{ text: string }>(resolve => {
         finish = () => resolve({ text: 'done' })
       })
-      held.push({ options, finish })
+      held.push({ prompt, options, finish })
       return { done, kill: () => finish() }
     }
   })
 
-  const drive = async (how: 'file' | 'inline' | undefined, plugins: CrewPlugin[]) => {
+  const drive = async (
+    how: 'file' | 'inline' | undefined,
+    plugins: CrewPlugin[],
+    designBoard?: { id: string; name: string }
+  ) => {
     const held: Held[] = []
     const provider = holder(how, held)
     const standing = new WebSocketServer({ host: '127.0.0.1', port: 0 })
