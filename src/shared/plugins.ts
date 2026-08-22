@@ -109,7 +109,7 @@ export const PLUGIN_FULL = `The crew has as many plugins as it can hold. Take on
 
 export const PLUGIN_INSTALL_MS = 45_000
 
-export const PLUGIN_SLOW = `Crew could not reach the crew to install the plugin. Try again.`
+export const PLUGIN_SLOW = `The crew has not taken it yet. Try again.`
 
 const INSTALLATION_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
