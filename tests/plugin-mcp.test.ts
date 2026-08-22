@@ -407,6 +407,22 @@ describe('a run that carries the crew plugins', () => {
     await done()
   }, 20000)
 
+  // What the board is told about a plugin has to be what the run really gets.
+  // A CLI that takes no MCP server is handed no plugins at all, so a guide
+  // saying its tools are already in your hands is the machinery read aloud and
+  // untrue in the same line.
+  it('tells a board about Frontpages only where the run really carries it', async () => {
+    const board = { id: 'a1b2', name: 'Signup' }
+    const carried = await drive('inline', [FRONTPAGES], board)
+    expect(carried.held[0].prompt).toContain('search_frontpages')
+    await carried.done()
+
+    const bare = await drive(undefined, [FRONTPAGES], board)
+    expect(bare.held[0].prompt).toContain('design board "Signup"')
+    expect(bare.held[0].prompt).not.toContain('search_frontpages')
+    await bare.done()
+  }, 20000)
+
   it('authenticates attached Raylight and gives every turn fresh editor instructions', async () => {
     const held: Array<Held & { prompt: string }> = []
     const authorizations: string[] = []
