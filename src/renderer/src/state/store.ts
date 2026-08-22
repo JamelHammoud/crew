@@ -1599,7 +1599,6 @@ export const useCrew = create<CrewState>((set, get) => {
         })
         timer = setTimeout(() => finish(PLUGIN_SLOW), PLUGIN_INSTALL_MS)
         socket.send({ type: 'plugin.add', plugin: clean, requestId })
-        if (get().plugins.some(one => pluginKey(one.name) === key)) finish(null)
       })
     },
     removePlugin: pluginId => {
