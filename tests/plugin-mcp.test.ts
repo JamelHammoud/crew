@@ -417,10 +417,6 @@ describe('a run that carries the crew plugins', () => {
     await done()
   }, 20000)
 
-  // What the board is told about a plugin has to be what the run really gets.
-  // A CLI that takes no MCP server is handed no plugins at all, so a guide
-  // saying its tools are already in your hands is the machinery read aloud and
-  // untrue in the same line.
   it('tells a board to look at real pages when the run really carries Frontpages', async () => {
     const { held, done } = await drive('inline', [FRONTPAGES], { id: 'a1b2', name: 'Signup' })
     expect(held[0].prompt).toContain('search_frontpages')

@@ -438,11 +438,6 @@ export class Runner {
     }
     if (this.accepted.has(promptId)) return
     this.accepted.add(promptId)
-    // What the board is told about a plugin has to be what the run really gets,
-    // which is a plugin this machine has connected and a provider that can hold
-    // an MCP server at all. Read off the crew's own list instead, the guide
-    // promises tools that are not in the run on every machine that has not
-    // connected it, and on Grok and Local, which are handed no plugins at all.
     const held = plugins ?? []
     const reachable = !agent.provider.mcp ? [] : this.opts.authorizePlugins ? held : held.filter(pluginAvailable)
     const preambles = [
