@@ -1571,14 +1571,33 @@ export const useCrew = create<CrewState>((set, get) => {
         return Promise.resolve('The crew already has that one.')
       }
       if (held.length >= PLUGIN_LIMIT) return Promise.resolve(PLUGIN_FULL)
+      const key = pluginKey(clean.name)
       const requestId = crypto.randomUUID()
       return new Promise(resolve => {
-        const timer = setTimeout(() => {
+        let settled = false
+        let landed: (() => void) | null = null
+        let timer: ReturnType<typeof setTimeout> | null = null
+        const finish = (problem: string | null): void => {
+          if (settled) return
+          settled = true
           pendingPluginInstalls.delete(requestId)
-          resolve('Crew did not finish installing the plugin. Try again.')
-        }, 10_000)
-        pendingPluginInstalls.set(requestId, { finish: resolve, timer })
+          if (timer) clearTimeout(timer)
+          landed?.()
+          resolve(problem)
+        }
+        pendingPluginInstalls.set(requestId, { finish })
+        // The plugin standing in the crew's own list is what says the install
+        // happened, and the answer to the request is only the quick way to hear
+        // it. A host that does not know to answer still writes the plugin down
+        // and says so as an event, so read the other way round every one of
+        // those installs really landed and then reported that it had not, which
+        // took the sign-in that had just worked down with it.
+        landed = useCrew.subscribe(state => {
+          if (state.plugins.some(one => pluginKey(one.name) === key)) finish(null)
+        })
+        timer = setTimeout(() => finish(PLUGIN_SLOW), PLUGIN_INSTALL_MS)
         socket.send({ type: 'plugin.add', plugin: clean, requestId })
+        if (get().plugins.some(one => pluginKey(one.name) === key)) finish(null)
       })
     },
     removePlugin: pluginId => {
