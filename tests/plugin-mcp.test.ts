@@ -417,16 +417,17 @@ describe('a run that carries the crew plugins', () => {
   // A CLI that takes no MCP server is handed no plugins at all, so a guide
   // saying its tools are already in your hands is the machinery read aloud and
   // untrue in the same line.
-  it('tells a board about Frontpages only where the run really carries it', async () => {
-    const board = { id: 'a1b2', name: 'Signup' }
-    const carried = await drive('inline', [FRONTPAGES], board)
-    expect(carried.held[0].prompt).toContain('search_frontpages')
-    await carried.done()
+  it('tells a board to look at real pages when the run really carries Frontpages', async () => {
+    const { held, done } = await drive('inline', [FRONTPAGES], { id: 'a1b2', name: 'Signup' })
+    expect(held[0].prompt).toContain('search_frontpages')
+    await done()
+  }, 20000)
 
-    const bare = await drive(undefined, [FRONTPAGES], board)
-    expect(bare.held[0].prompt).toContain('design board "Signup"')
-    expect(bare.held[0].prompt).not.toContain('search_frontpages')
-    await bare.done()
+  it('says nothing about Frontpages to a CLI that is handed no plugins', async () => {
+    const { held, done } = await drive(undefined, [FRONTPAGES], { id: 'a1b2', name: 'Signup' })
+    expect(held[0].prompt).toContain('design board "Signup"')
+    expect(held[0].prompt).not.toContain('search_frontpages')
+    await done()
   }, 20000)
 
   it('authenticates attached Raylight and gives every turn fresh editor instructions', async () => {
