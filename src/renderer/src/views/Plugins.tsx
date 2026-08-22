@@ -3,6 +3,7 @@ import {
   installPlugin,
   PLUGIN_GROUPS,
   PLUGIN_OFFERS,
+  PLUGIN_SLOW,
   pluginKey,
   resolvePlugin,
   resolvePlugins,
