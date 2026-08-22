@@ -61,6 +61,8 @@ const rowFor = (label: string): HTMLElement => screen.getByText(label).closest('
 
 const plugins = () => render(createElement(PluginsView))
 
+const realInstall = useCrew.getState().installPlugin
+
 describe('the plugins store', () => {
   beforeEach(() => {
     useCrew.setState({ plugins: [], installPlugin: async () => null, addPlugin: () => null, removePlugin: () => {} })
