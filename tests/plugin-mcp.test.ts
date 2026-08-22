@@ -248,7 +248,10 @@ describe('what each CLI is really handed', () => {
     expect(claudeProvider.mcp).toBe('file')
     expect(codexProvider.mcp).toBe('inline')
     expect(kimiProvider.mcp).toBe('inline')
+<<<<<<< HEAD
     expect(geminiProvider.mcp).toBe('inline')
+=======
+>>>>>>> 153517906bb213660a54087f96353f7b0358bc15
     expect(grokProvider.mcp).toBe('inline')
     expect(localProvider.mcp).toBeUndefined()
   })
