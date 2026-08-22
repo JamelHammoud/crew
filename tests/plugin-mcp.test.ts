@@ -318,6 +318,7 @@ describe('a run that carries the crew plugins', () => {
   })
 
   interface Held {
+    prompt: string
     options: RunOptions
     finish: () => void
   }
@@ -328,7 +329,7 @@ describe('a run that carries the crew plugins', () => {
     mcp: how,
     fields: () => [],
     detect: async () => true,
-    start: (_prompt, _cwd, _hooks, _settings, options = {}): RunningPrompt => {
+    start: (prompt, _cwd, _hooks, _settings, options = {}): RunningPrompt => {
       let finish = () => {}
       const done = new Promise<{ text: string }>(resolve => {
         finish = () => resolve({ text: 'done' })
