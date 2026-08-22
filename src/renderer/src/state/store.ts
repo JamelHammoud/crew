@@ -1588,12 +1588,6 @@ export const useCrew = create<CrewState>((set, get) => {
           resolve(problem)
         }
         pendingPluginInstalls.set(requestId, { finish })
-        // The plugin standing in the crew's own list is what says the install
-        // happened, and the answer to the request is only the quick way to hear
-        // it. A host that does not know to answer still writes the plugin down
-        // and says so as an event, so read the other way round every one of
-        // those installs really landed and then reported that it had not, which
-        // took the sign-in that had just worked down with it.
         landed = useCrew.subscribe(state => {
           if (state.plugins.some(one => pluginKey(one.name) === key)) finish(null)
         })
