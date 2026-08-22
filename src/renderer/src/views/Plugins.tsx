@@ -44,10 +44,7 @@ export default function Plugins() {
   const offers = PLUGIN_OFFERS.filter(
     one => !installedNames.has(pluginKey(one.name)) && matches(find, one.label, one.blurb, one.name)
   )
-  const grouped = PLUGIN_GROUPS.map(group => [
-    group,
-    offers.filter(one => one.group === group)
-  ] as const)
+  const grouped = PLUGIN_GROUPS.map(group => [group, offers.filter(one => one.group === group)] as const)
 
   const connect = async (offer: PluginReference): Promise<void> => {
     const key = pluginKey(offer.name)
