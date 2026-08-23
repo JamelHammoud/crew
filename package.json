@@ -99,6 +99,7 @@
     "voice-check": "node scripts/voice-check.mjs",
     "mouth-check": "node scripts/mouth-check.mjs",
     "selection-check": "node scripts/selection-check.mjs",
+    "file-editor-check": "node scripts/file-editor-check.mjs",
     "typing-check": "node scripts/typing-check.mjs",
     "board-check": "node scripts/board-check.mjs",
     "design-header-look": "node scripts/design-header-look.mjs",
