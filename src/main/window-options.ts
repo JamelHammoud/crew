@@ -1,5 +1,4 @@
 import type { BrowserWindowConstructorOptions, MenuItemConstructorOptions } from 'electron'
-import type { Theme } from '../shared/theme'
 
 // The tray panel. Never `skipTaskbar`: on macOS that turns the app into an
 // accessory, and the icon leaves the dock and does not come back.
@@ -89,12 +88,7 @@ export function closePutsAway(platform: NodeJS.Platform, quitting: boolean): boo
 // stood out on its own is the same window in a narrower column, so the shape,
 // the transparency and what the page is allowed are decided once here rather
 // than written down twice and left to drift apart.
-function windowShell(
-  platform: NodeJS.Platform,
-  preload: string,
-  devTools: boolean,
-  theme: Theme | null
-): BrowserWindowConstructorOptions {
+function windowShell(platform: NodeJS.Platform, preload: string, devTools: boolean): BrowserWindowConstructorOptions {
   const isWindows = platform === 'win32'
 
   return {
@@ -105,7 +99,6 @@ function windowShell(
     title: 'Crew',
     titleBarStyle: 'hiddenInset',
     trafficLightPosition: { x: 20, y: 27 },
-    ...(platform === 'darwin' ? { hasShadow: theme !== null && theme !== 'oled' } : {}),
     webPreferences: {
       preload,
       contextIsolation: true,
@@ -120,15 +113,14 @@ function windowShell(
 export function createWindowOptions(
   platform: NodeJS.Platform,
   preload: string,
-  devTools: boolean,
-  theme: Theme | null = 'dark'
+  devTools: boolean
 ): BrowserWindowConstructorOptions {
   return {
     width: 1200,
     height: 800,
     minWidth: 800,
     minHeight: 600,
-    ...windowShell(platform, preload, devTools, theme),
+    ...windowShell(platform, preload, devTools),
     ...(platform === 'darwin' ? { vibrancy: 'under-window' as const } : {})
   }
 }
@@ -139,15 +131,14 @@ export function createWindowOptions(
 export function createThreadWindowOptions(
   platform: NodeJS.Platform,
   preload: string,
-  devTools: boolean,
-  theme: Theme | null = 'dark'
+  devTools: boolean
 ): BrowserWindowConstructorOptions {
   return {
     width: 720,
     height: 900,
     minWidth: 460,
     minHeight: 520,
-    ...windowShell(platform, preload, devTools, theme)
+    ...windowShell(platform, preload, devTools)
   }
 }
 

@@ -19,7 +19,6 @@ import type { ScribeKeyState, ScribeSettings } from '../../shared/scribe'
 import type { Said } from '../../shared/scribeSaid'
 import type { CurrentSession, OpenOptions, ProjectPlan } from '../../shared/session'
 import type { UpdateState } from '../../shared/update'
-import type { Theme } from '../../shared/theme'
 
 declare global {
   interface CrewBridge {
@@ -89,7 +88,7 @@ declare global {
     closeTray(): void
     appVersion(): Promise<string>
     systemInfo(): Promise<SystemDetails>
-    setTheme(theme: Theme): Promise<void>
+    setTheme(theme: 'dark' | 'light'): Promise<void>
     setAppIcon(icon: AppIconId): Promise<void>
     keepAwake(on: boolean): void
     notify(alert: AgentAlert): Promise<void>

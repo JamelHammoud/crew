@@ -35,6 +35,8 @@ const Aside = popped ? ThreadWindow : (WINDOWS[hash] ?? null)
 const joins = Aside === null || popped || hash === PERSONAL_CHAT_HASH
 const root = document.getElementById('root')!
 
+if (joins) root.classList.add('native-shell')
+
 applyPlatform()
 // The windows beside the app wear the theme the app picked rather than picking
 // one of their own.
