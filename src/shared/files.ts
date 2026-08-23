@@ -3,6 +3,11 @@ export interface FileEntry {
   dir: boolean
 }
 
+export interface FileCopyPaths {
+  absolute: string
+  relative: string
+}
+
 export type RepoPathKind = 'file' | 'dir' | 'missing'
 
 // Where a path an agent mentioned lives, from this machine's point of view.

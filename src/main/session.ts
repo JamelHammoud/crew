@@ -24,6 +24,7 @@ import { Doors, type Seat } from './doors'
 import type { SavedSession } from './saved-session'
 import {
   absolutePathOf,
+  copyPaths,
   listRepoFiles,
   readLocalFile,
   readMachineDirs,
@@ -231,6 +232,10 @@ export class AppSession {
 
   resolveFile(target: string): string | null {
     return absolutePathOf(this.folder, target)
+  }
+
+  copyPaths(target: string) {
+    return copyPaths(this.folder, target)
   }
 
   createAgent(input: NewAgent): AgentDef {

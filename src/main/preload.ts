@@ -4,7 +4,7 @@ import type { AppIconId } from '../shared/appIcon'
 import type { SystemDetails } from '../shared/feedback'
 import type { OpenRequest } from '../shared/cli'
 import type { CommandDone, CommandState } from '../shared/crewCommand'
-import type { FileContentSearch, PathLocation, RepoFile } from '../shared/files'
+import type { FileContentSearch, FileCopyPaths, PathLocation, RepoFile } from '../shared/files'
 import type { MachineDir } from '../shared/machinePath'
 import type { MediaAccess, MediaKind, ScreenSource } from '../shared/media'
 import type { ModelServer } from '../shared/modelServers'
@@ -82,6 +82,7 @@ const bridge = {
   readDirs: (query: string): Promise<MachineDir[]> => ipcRenderer.invoke('file:dirs', query),
   writeFile: (path: string, text: string): Promise<RepoFile | null> => ipcRenderer.invoke('file:write', path, text),
   locatePath: (path: string): Promise<PathLocation> => ipcRenderer.invoke('file:locate', path),
+  copyPaths: (path: string): Promise<FileCopyPaths> => ipcRenderer.invoke('file:copyPaths', path),
   previewHtml: (id: string, path: string, text: string | null): Promise<string | null> =>
     ipcRenderer.invoke('preview:html', id, path, text),
   dropPreview: (id: string): Promise<void> => ipcRenderer.invoke('preview:drop', id),

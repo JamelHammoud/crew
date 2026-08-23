@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ChangeEvent, type KeyboardEvent } from 'react'
 import { fileSize } from '../../../shared/attachments'
 import { canPreview, isHtml, type FileEntry, type RepoFile } from '../../../shared/files'
-import { DocGlyph, FileGlyph, FolderGlyph } from '../icons'
+import { CopyGlyph, DocGlyph, FileGlyph, FolderGlyph } from '../icons'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import { baselineOf } from './baseline'
 import CodeRows from './CodeRows'
@@ -14,6 +14,7 @@ import HtmlView from './HtmlView'
 import ImageView from './ImageView'
 import MarkdownView from './MarkdownView'
 import MediaView from './MediaView'
+import { MenuItem, Popover } from './Popover'
 import { bringInto, centerIn } from './scrollInto'
 import Spinner from './Spinner'
 
@@ -23,35 +24,52 @@ const fromRoot = (path: string): boolean => path.startsWith('/')
 
 export function FileCrumbs({ tab }: { tab: BrowserTab }) {
   const parts = tab.path.split('/').filter(Boolean)
+  const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
+  const copy = (kind: 'absolute' | 'relative'): void => {
+    setMenuAt(null)
+    void window.crew.copyPaths(tab.path).then(paths => navigator.clipboard.writeText(paths[kind]))
+  }
   return (
-    <div className="flex-1 min-w-0 h-9 mx-1 px-3.5 rounded-full bg-fg/[0.06] flex items-center gap-1.5 overflow-x-auto overflow-y-hidden no-scrollbar font-mono text-[13px] whitespace-nowrap">
-      <button
-        onClick={() => useBrowser.getState().navigateFile(tab.id, '')}
-        aria-label="Project files"
-        className={`shrink-0 transition-colors ${parts.length === 0 ? 'text-fg' : 'text-fg-muted hover:text-fg'}`}
+    <>
+      <div
+        onContextMenu={event => {
+          event.preventDefault()
+          setMenuAt({ x: event.clientX, y: event.clientY })
+        }}
+        className="flex-1 min-w-0 h-9 mx-1 px-3.5 rounded-full bg-fg/[0.06] flex items-center gap-1.5 overflow-x-auto overflow-y-hidden no-scrollbar font-mono text-[13px] whitespace-nowrap"
       >
-        <FolderGlyph className="w-4 h-4" />
-      </button>
-      {parts.map((part, index) => {
-        const prefix = (fromRoot(tab.path) ? '/' : '') + parts.slice(0, index + 1).join('/')
-        const last = index === parts.length - 1
-        return (
-          <span key={prefix} className="flex items-center gap-1.5 shrink-0">
-            <span className="text-fg-faint">/</span>
-            {last ? (
-              <span className="text-fg">{part}</span>
-            ) : (
-              <button
-                onClick={() => useBrowser.getState().navigateFile(tab.id, prefix)}
-                className="text-fg-muted hover:text-fg transition-colors"
-              >
-                {part}
-              </button>
-            )}
-          </span>
-        )
-      })}
-    </div>
+        <button
+          onClick={() => useBrowser.getState().navigateFile(tab.id, '')}
+          aria-label="Project files"
+          className={`shrink-0 transition-colors ${parts.length === 0 ? 'text-fg' : 'text-fg-muted hover:text-fg'}`}
+        >
+          <FolderGlyph className="w-4 h-4" />
+        </button>
+        {parts.map((part, index) => {
+          const prefix = (fromRoot(tab.path) ? '/' : '') + parts.slice(0, index + 1).join('/')
+          const last = index === parts.length - 1
+          return (
+            <span key={prefix} className="flex items-center gap-1.5 shrink-0">
+              <span className="text-fg-faint">/</span>
+              {last ? (
+                <span className="text-fg">{part}</span>
+              ) : (
+                <button
+                  onClick={() => useBrowser.getState().navigateFile(tab.id, prefix)}
+                  className="text-fg-muted hover:text-fg transition-colors"
+                >
+                  {part}
+                </button>
+              )}
+            </span>
+          )
+        })}
+      </div>
+      <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined}>
+        <MenuItem icon={<CopyGlyph />} label="Copy path" onClick={() => copy('absolute')} />
+        <MenuItem icon={<CopyGlyph />} label="Copy relative path" onClick={() => copy('relative')} />
+      </Popover>
+    </>
   )
 }
 

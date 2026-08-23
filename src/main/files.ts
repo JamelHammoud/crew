@@ -4,6 +4,7 @@ import path from 'node:path'
 import {
   imageType,
   mediaType,
+  type FileCopyPaths,
   type FileEntry,
   type RepoFile,
   type RepoPathKind
@@ -58,6 +59,13 @@ export function absolutePathOf(root: string | null, target: string): string | nu
   const expanded = expandHome(target)
   if (path.isAbsolute(expanded)) return path.resolve(expanded)
   return root ? resolveRepoPath(root, expanded) : null
+}
+
+export function copyPaths(root: string | null, target: string): FileCopyPaths {
+  const absolute = absolutePathOf(root, target)
+  if (!absolute) return { absolute: target, relative: target }
+  const relative = root ? path.relative(path.resolve(root), absolute).split(path.sep).join('/') || '.' : target
+  return { absolute, relative }
 }
 
 function repoRelative(root: string, absolute: string): string {
