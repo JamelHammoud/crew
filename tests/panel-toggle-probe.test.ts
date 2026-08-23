@@ -17,6 +17,7 @@ const { useBrowser } = await import('../src/renderer/src/state/browser')
 const { useCrew } = await import('../src/renderer/src/state/store')
 const BrowserPanel = (await import('../src/renderer/src/components/BrowserPanel')).default
 const PanelToggle = (await import('../src/renderer/src/components/PanelToggle')).default
+const ThreadWindow = (await import('../src/renderer/src/views/ThreadWindow')).default
 
 const THREAD = 'a-thread'
 const HELPER = 'a-helper'
@@ -87,11 +88,16 @@ describe('the way back into the panel', () => {
   })
 
   it('always stands in a thread window, even when the thread has nothing for the panel', () => {
-    view(true)
-    inThread()
+    window.history.replaceState(null, '', `#thread=${THREAD}`)
+    act(() => useCrew.setState({ connection: 'online', threads: {}, events: [] }))
+    render(createElement(ThreadWindow))
 
     expect(standing()).toBe(true)
     expect(button()!.getAttribute('tabindex')).toBeNull()
+    expect(button()!.closest('.justify-end')).not.toBeNull()
+
+    fireEvent.click(button()!)
+    expect(useBrowser.getState().open).toBe(true)
   })
 
   // It is never taken out of the tree, so it has somewhere to travel from and

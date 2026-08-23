@@ -276,6 +276,28 @@ describe('several crews in one app', () => {
     expect(app.keyInView(1)).toBe(projectPlace(one))
   })
 
+  it('opens a running project in another window without moving the first window', async () => {
+    const app = crews('crews-window-running')
+    const one = await repo('crews-window-running-one')
+    const current = await app.start(1, one, 'Jamel')
+
+    expect((await app.openIn(2, projectPlace(one)))?.wsUrl).toBe(current.wsUrl)
+    expect(app.keyInView(1)).toBe(projectPlace(one))
+    expect(app.keyInView(2)).toBe(projectPlace(one))
+  })
+
+  it('starts a recent project in the new window before it is shown', async () => {
+    const app = crews('crews-window-recent')
+    const one = await repo('crews-window-recent-one')
+    await app.start(1, one, 'Jamel')
+    await app.close(projectPlace(one))
+
+    const current = await app.openIn(2, projectPlace(one))
+
+    expect(current?.folder).toBe(one)
+    expect(app.keyInView(2)).toBe(projectPlace(one))
+  })
+
   it('pops nothing out on a crew that is not running', async () => {
     const app = crews('crews-pop-dead')
     const one = await repo('crews-pop-dead-one')
