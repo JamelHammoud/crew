@@ -78,7 +78,7 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
       <g data-part="search-mark">
         <path
           data-part="search-handle"
-          d="M58 58 L85 85"
+          d="M58 58 L81 81"
           fill="none"
           stroke="#fff"
           strokeWidth="14"
@@ -87,14 +87,6 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
         <g data-part="search-lens">
           <circle data-part="search-ring" cx="39" cy="38" r="29" />
           <circle data-part="search-hole" cx="39" cy="38" r="17" fill="#000" />
-          <path
-            data-part="search-glint"
-            d="M24 25 C28 21 33 19 38 19"
-            fill="none"
-            stroke="#000"
-            strokeWidth="5.5"
-            strokeLinecap="round"
-          />
         </g>
       </g>
     )

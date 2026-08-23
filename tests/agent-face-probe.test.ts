@@ -218,21 +218,21 @@ describe('an agent face', () => {
     expect(styles).not.toContain('@keyframes agent-page-turn')
   })
 
-  it('keeps Searching as one connected rounded magnifier with a carved moving glint', () => {
+  it('keeps Searching as one connected rounded magnifier with a compact handle', () => {
     const object = face({ activity: 'searching' }).querySelector('[data-object="searching"]') as HTMLElement
     const rule = styles.split(".agent-icon .agent-activity-object[data-object='searching'] {")[1]?.split('}')[0] ?? ''
 
     expect(object.querySelector('[data-part="search-mark"]')).not.toBeNull()
     expect(object.querySelector('[data-part="search-lens"]')).not.toBeNull()
     expect(object.querySelector('[data-part="search-handle"]')).not.toBeNull()
+    expect(object.querySelector('[data-part="search-handle"]')?.getAttribute('d')).toBe('M58 58 L81 81')
     expect(object.querySelector('[data-part="search-handle"]')?.getAttribute('stroke-linecap')).toBe('round')
     expect(object.querySelector('[data-part="search-handle"]')?.getAttribute('stroke-width')).toBe('14')
     expect(object.querySelector('[data-part="search-hole"]')?.getAttribute('r')).toBe('17')
-    expect(object.querySelector('[data-part="search-glint"]')).not.toBeNull()
-    expect(object.querySelector('[data-part="search-glint"]')?.getAttribute('stroke')).toBe('#000')
+    expect(object.querySelector('[data-part="search-glint"]')).toBeNull()
     expect(rule).toContain('1.65s ease-in-out')
     expect(rule).toContain('infinite alternate')
-    expect(styles).toContain('@keyframes agent-search-glint')
+    expect(styles).not.toContain('@keyframes agent-search-glint')
   })
 
   it('draws all three rows in Planning instead of leaving the last row still', () => {
