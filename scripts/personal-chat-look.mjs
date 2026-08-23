@@ -191,6 +191,10 @@ app.whenReady().then(async () => {
   try {
     await win.loadFile(path.join(__dirname, 'dist/index.html'))
     await wait(800)
+    await win.webContents.executeJavaScript(
+      \`[...document.querySelectorAll('button')].find(button => button.getAttribute('aria-label') === 'New chat').click()\`
+    )
+    await wait(100)
     seen.resting = await win.webContents.executeJavaScript(READ)
     const chatRow = seen.resting.chatRow
     move({ x: chatRow.left + 20, y: chatRow.top + chatRow.height / 2 })

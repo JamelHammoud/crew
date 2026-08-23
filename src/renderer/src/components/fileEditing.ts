@@ -48,12 +48,14 @@ export function breakFileLine(value: string, start: number, end: number): FileEd
   const from = lineStart(value, start)
   const indent = value.slice(from, start).match(/^\s*/)?.[0] ?? ''
   const before = value.slice(from, start).trimEnd()
-  const after = value.slice(end).match(/^[^\n]*/)?.[0].trimStart() ?? ''
+  const spaces = value.slice(end).match(/^[\t ]*/)?.[0].length ?? 0
+  const tail = end + spaces
+  const after = value.slice(tail).match(/^[^\n]*/)?.[0].trimStart() ?? ''
   const opens = /[{[(]$/.test(before)
   const closes = /^[}\])]/.test(after)
   const inner = opens ? indent + INDENT : indent
   const put = opens && closes ? `\n${inner}\n${indent}` : `\n${inner}`
-  const next = value.slice(0, start) + put + value.slice(end)
+  const next = value.slice(0, start) + put + value.slice(tail)
   const at = start + inner.length + 1
   return { value: next, start: at, end: at }
 }
