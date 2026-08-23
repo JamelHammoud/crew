@@ -160,6 +160,15 @@ export const codexFields = (): AgentSettingField[] => {
   return [
     { key: 'model', label: 'Model', options: choices(['', ...models]), default: '' },
     { key: 'effort', label: 'Thinking', options: choices(['', ...efforts]), default: '' },
+    {
+      key: 'instructions',
+      label: 'Instructions',
+      kind: 'paragraph',
+      default: '',
+      advanced: true,
+      placeholder: 'None',
+      line: 'Read before every message.'
+    },
     { key: 'search', label: 'Web search', options: SEARCH, default: '', advanced: true, section: 'What it can reach' },
     {
       key: 'verbosity',

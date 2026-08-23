@@ -175,15 +175,15 @@ export const ToolboxGlyph = glyph(
 // which is the least two 2 strokes can stand apart and still be two. The lamp is
 // the one moment of character and it is filled, the same reason the sun in the
 // photo is: a ring that small closes into a smudge where a dot is a dot.
-const BAY = { x: 3, width: 18, height: 5.75, rx: 1.75 }
-const LAMP = { cx: 6.75, r: 1.2, fill: 'currentColor', stroke: 'none' }
+const BAY = { x: 3.5, width: 17, height: 6.25, rx: 2 }
+const LAMP = { cx: 7.25, r: 1.2, fill: 'currentColor', stroke: 'none' }
 
 export const ServerGlyph = glyph(
   <>
-    <rect {...BAY} y={4} />
+    <rect {...BAY} y={3.5} />
     <rect {...BAY} y={14.25} />
-    <circle {...LAMP} cy={6.875} />
-    <circle {...LAMP} cy={17.125} />
+    <circle {...LAMP} cy={6.625} />
+    <circle {...LAMP} cy={17.375} />
   </>
 )
 

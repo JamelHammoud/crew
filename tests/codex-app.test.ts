@@ -34,6 +34,16 @@ describe('the codex handshake', () => {
     expect(sent[3].params.sandboxPolicy).toEqual({ type: 'dangerFullAccess' })
   })
 
+  it('reads its saved instructions before every turn in the thread', () => {
+    const sent = walk(codexDialog('do the thing', '/repo', reader({ instructions: '  Keep changes small.  ' })))
+    expect(sent[2].params.developerInstructions).toBe('Keep changes small.')
+  })
+
+  it('leaves empty instructions out of the thread', () => {
+    const sent = walk(codexDialog('do the thing', '/repo', reader({ instructions: '   ' })))
+    expect(sent[2].params).not.toHaveProperty('developerInstructions')
+  })
+
   it('sets a goal before starting its turn', () => {
     const dialog = codexDialog(
       'You are an agent here.\n\nfinish the migration\n\ncurl -s -X POST http://127.0.0.1:1/agents/spawn',

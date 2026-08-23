@@ -49,6 +49,15 @@ describe('an agent made and left alone runs the way it always did', () => {
     expect(codexArgs('hi', asked(codexFields()))).toEqual(['app-server'])
   })
 
+  it('codex offers standing instructions with no default text', () => {
+    expect(codexFields().find(field => field.key === 'instructions')).toMatchObject({
+      label: 'Instructions',
+      kind: 'paragraph',
+      default: '',
+      advanced: true
+    })
+  })
+
   it('gemini keeps the flag pair it has always run under', () => {
     expect(geminiArgs('hi', asked(geminiFields()))).toEqual(['--acp', '--yolo'])
   })
