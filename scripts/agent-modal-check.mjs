@@ -11,6 +11,28 @@ const shot = path.join(tmpdir(), 'crew-agent-modal-check.png')
 
 const fields = [
   {
+    key: 'model',
+    label: 'Model',
+    options: [
+      { value: '', label: 'Default' },
+      { value: 'grok-4.6', label: 'Grok 4.6' },
+      { value: 'grok-4.5', label: 'Grok 4.5' }
+    ],
+    default: ''
+  },
+  {
+    key: 'effort',
+    label: 'Thinking',
+    options: [
+      { value: '', label: 'Default' },
+      { value: 'low', label: 'Low' },
+      { value: 'medium', label: 'Medium' },
+      { value: 'high', label: 'High' },
+      { value: 'xhigh', label: 'Extra high' }
+    ],
+    default: ''
+  },
+  {
     key: 'instructions',
     label: 'Instructions',
     kind: 'paragraph',
@@ -92,19 +114,22 @@ const fields = [
 
 const probe = `
 import { createRoot } from 'react-dom/client'
-import AgentSettingsModal from ${JSON.stringify(path.join(root, 'src/renderer/src/components/agent/AgentSettingsModal'))}
+import CreateAgent from ${JSON.stringify(path.join(root, 'src/renderer/src/components/CreateAgent'))}
 
 const fields = ${JSON.stringify(fields)}
+window.crew = {
+  agentCapabilities: async () => [{
+    provider: 'grok',
+    label: 'Grok',
+    fields,
+    installed: true,
+    installable: true
+  }],
+  modelServers: async () => []
+}
 
 createRoot(document.getElementById('root')).render(
-  <AgentSettingsModal
-    open
-    label="Grok"
-    fields={fields}
-    settings={{}}
-    onChange={() => {}}
-    onClose={() => {}}
-  />
+  <CreateAgent />
 )
 `
 
@@ -118,10 +143,27 @@ app.whenReady().then(async () => {
   const win = new BrowserWindow({ width: 955, height: 657, frame: false, show: false, backgroundColor: '#0b0b0d' })
   await win.loadFile(path.join(__dirname, 'dist', 'index.html'))
   win.webContents.setZoomFactor(0.8)
-  await new Promise(resolve => setTimeout(resolve, 500))
+  await new Promise(resolve => setTimeout(resolve, 300))
   const result = await win.webContents.executeJavaScript(\`(async () => {
+    const buttons = () => [...document.querySelectorAll('button')]
+    const named = text => buttons().find(button => button.textContent.trim() === text)
+    const until = async read => {
+      for (let attempt = 0; attempt < 100; attempt++) {
+        const value = read()
+        if (value) return value
+        await new Promise(resolve => setTimeout(resolve, 20))
+      }
+      throw new Error('The expected control did not appear')
+    }
+    const add = await until(() => named('Add an agent')?.disabled === false && named('Add an agent'))
+    add.click()
+    ;(await until(() => named('Provider'))).click()
+    ;(await until(() => named('Grok'))).click()
+    ;(await until(() => named('Advanced'))).click()
+    await until(() => document.querySelector('[role="dialog"][aria-label="Advanced"]'))
+    await new Promise(resolve => setTimeout(resolve, 300))
     const dialog = document.querySelector('[role="dialog"]')
-    const page = dialog.querySelector('.overflow-y-auto')
+    const page = dialog.querySelector(':scope > .overflow-y-auto')
     const before = page.getBoundingClientRect()
     const dialogBox = dialog.getBoundingClientRect()
     const scrolls = page.scrollHeight > page.clientHeight
