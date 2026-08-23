@@ -19,9 +19,11 @@ import NewChat from ${from('components/sidebar/NewChat.tsx')}
 import PersonalChatWindow from ${from('views/PersonalChatWindow.tsx')}
 import { ChatGlyph } from ${from('icons/index.ts')}
 import { useCrew } from ${from('state/store.ts')}
+import { setFullScreen } from ${from('state/windowShape.ts')}
 import './probe.css'
 
 window.crew = { listFiles: async () => [] }
+window.setProbeFullScreen = setFullScreen
 
 const now = Date.now()
 const alpha = {
@@ -54,6 +56,19 @@ const gamma = {
   status: 'open',
   mode: 'build'
 }
+const extra = Object.fromEntries(Array.from({ length: 10 }, (_, index) => {
+  const id = 'extra-' + index
+  return [id, {
+    id,
+    agentId: 'jamel/fake',
+    agentLabel: 'Fake',
+    title: 'Saved conversation ' + (index + 1),
+    createdBy: 'Jamel',
+    startedAt: now - (index + 3) * 120_000,
+    status: 'open',
+    mode: 'build'
+  }]
+}))
 
 useCrew.setState({
   connection: 'online',
@@ -76,9 +91,10 @@ useCrew.setState({
     { id: 'alpha-started', ts: alpha.startedAt, kind: 'thread.started', threadId: alpha.id, agentId: alpha.agentId, agentLabel: alpha.agentLabel, title: alpha.title, byName: 'Jamel' },
     { id: 'beta-started', ts: beta.startedAt, kind: 'thread.started', threadId: beta.id, agentId: beta.agentId, agentLabel: beta.agentLabel, title: beta.title, byName: 'Jamel' },
     { id: 'gamma-started', ts: gamma.startedAt, kind: 'thread.started', threadId: gamma.id, agentId: gamma.agentId, agentLabel: gamma.agentLabel, title: gamma.title, byName: 'Jamel' },
-    { id: 'gamma-message', ts: gamma.startedAt + 1000, kind: 'message', threadId: gamma.id, authorId: 'jamel', authorName: 'Jamel', text: 'Something simple for four people.', mentions: [] }
+    { id: 'gamma-message', ts: gamma.startedAt + 1000, kind: 'message', threadId: gamma.id, authorId: 'jamel', authorName: 'Jamel', text: 'Something simple for four people.', mentions: [] },
+    ...Object.values(extra).map(one => ({ id: one.id + '-started', ts: one.startedAt, kind: 'thread.started', threadId: one.id, agentId: one.agentId, agentLabel: one.agentLabel, title: one.title, byName: 'Jamel' }))
   ],
-  threads: { alpha, beta, gamma },
+  threads: { alpha, beta, gamma, ...extra },
   threadPrompts: {},
   threadDrafts: {},
   threadCommands: {},
@@ -137,7 +153,10 @@ const READ = \`(() => {
   const plus = named('New personal chat')
   const composer = document.querySelector('textarea[placeholder="Message"]')
   const history = document.querySelector('[data-personal-history]')
+  const historyScroll = document.querySelector('[data-personal-history-scroll]')
   const content = document.querySelector('[data-personal-chat-content]')
+  const title = document.querySelector('[data-personal-chat-header] h1')
+  const topFade = document.querySelector('[data-scroll-fade="top"]')
   const current = document.querySelector('button[aria-current="page"]')
   const group = current?.closest('section')?.querySelector('[data-personal-history-group]')
   const collapse = named('Hide chat list')
@@ -147,8 +166,12 @@ const READ = \`(() => {
     composer: box(composer),
     composerFocused: composer === document.activeElement,
     history: box(history),
+    historyScroll: box(historyScroll),
+    historyScrollTop: historyScroll?.scrollTop ?? null,
     historyClass: history?.className ?? '',
     content: box(content),
+    title: box(title),
+    topFadeOpacity: topFade ? getComputedStyle(topFade).opacity : null,
     collapse: box(collapse),
     collapseOpacity: collapse ? getComputedStyle(collapse).opacity : null,
     threadHeader: Boolean(named('Mark done') || named('Back to chat')),
@@ -190,6 +213,12 @@ app.whenReady().then(async () => {
     seen.reopening = await win.webContents.executeJavaScript(READ)
     await wait(300)
     seen.reopened = await win.webContents.executeJavaScript(READ)
+    seen.windowed = await win.webContents.executeJavaScript(READ)
+    await win.webContents.executeJavaScript('window.setProbeFullScreen(true)')
+    await wait(100)
+    seen.fullScreen = await win.webContents.executeJavaScript(READ)
+    await win.webContents.executeJavaScript('window.setProbeFullScreen(false)')
+    await wait(100)
     await win.webContents.executeJavaScript(
       \`[...document.querySelectorAll('button')].find(button => button.textContent?.includes('Draft a dinner menu')).click()\`
     )
@@ -200,6 +229,11 @@ app.whenReady().then(async () => {
     win.webContents.sendInputEvent({ type: 'mouseMove', x: hover.x, y: hover.y })
     await wait(200)
     seen.active = await win.webContents.executeJavaScript(READ)
+    await win.webContents.executeJavaScript(
+      \`(() => { const scroll = document.querySelector('[data-personal-history-scroll]'); scroll.scrollTop = 140; scroll.dispatchEvent(new Event('scroll')) })()\`
+    )
+    await wait(250)
+    seen.scrolled = await win.webContents.executeJavaScript(READ)
     const [, height] = win.getContentSize()
     fs.writeFileSync(
       ${JSON.stringify(shot)},
@@ -305,10 +339,21 @@ try {
   ) {
     throw new Error('personal chat active state did not stay separate: ' + JSON.stringify(seen.active))
   }
+  if (!seen.windowed.title || !seen.fullScreen.title || seen.fullScreen.title.left >= seen.windowed.title.left) {
+    throw new Error(
+      'the Chat title did not move into the stoplight space in fullscreen: ' +
+        JSON.stringify({ windowed: seen.windowed.title, fullScreen: seen.fullScreen.title })
+    )
+  }
+  if (seen.scrolled.historyScrollTop < 2 || seen.scrolled.topFadeOpacity !== '1') {
+    throw new Error('the chat list top fade did not appear after scrolling: ' + JSON.stringify(seen.scrolled))
+  }
   console.log(`Chat plus       ${seen.resting.plusOpacity} resting, ${seen.hovered.plusOpacity} hovered`)
   console.log(`Composer        ${seen.resting.composer.width} x ${seen.resting.composer.height}`)
   console.log(`Chat list       ${seen.resting.history.width} x ${seen.resting.history.height}`)
   console.log(`Conversation    ${seen.resting.content.width} x ${seen.resting.content.height}`)
+  console.log(`Fullscreen Chat ${seen.windowed.title.left} to ${seen.fullScreen.title.left}`)
+  console.log(`Top fade        ${seen.scrolled.topFadeOpacity} at ${seen.scrolled.historyScrollTop}px`)
   console.log(`Screenshot      ${shot}`)
 } finally {
   await rm(dir, { recursive: true, force: true })
