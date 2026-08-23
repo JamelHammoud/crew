@@ -189,12 +189,12 @@ try {
     !seen.history.drawer ||
     seen.resting.drawerHidden !== 'true' ||
     seen.history.drawerHidden !== 'false' ||
-    seen.resting.drawerTransform === seen.history.drawerTransform ||
+    seen.resting.drawer.left <= seen.history.drawer.left ||
     seen.history.drawer.width !== 380 ||
     !seen.history.drawerText.includes('Chats') ||
     !seen.history.drawerText.includes('No chats yet.')
   ) {
-    throw new Error('personal chat history did not open: ' + JSON.stringify(seen.history))
+    throw new Error('personal chat history did not open: ' + JSON.stringify({ resting: seen.resting, open: seen.history }))
   }
   console.log(`Chat plus       ${seen.resting.plusOpacity} resting, ${seen.hovered.plusOpacity} hovered`)
   console.log(`Composer        ${seen.resting.composer.width} x ${seen.resting.composer.height}`)
