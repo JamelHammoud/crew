@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { stripMention } from '../../../shared/llm'
-import { ChatGlyph, CloseGlyph, PencilGlyph, PlusGlyph, SearchGlyph, TrashGlyph } from '../icons'
+import { ChatGlyph, CloseGlyph, PanelLeftGlyph, PencilGlyph, PlusGlyph, SearchGlyph, TrashGlyph } from '../icons'
 import { useCrew, type ThreadMeta } from '../state/store'
 import AgentIcon from './AgentIcon'
 import Tooltip from './Tooltip'
@@ -10,12 +10,16 @@ export default function PersonalChatSidebar({
   active,
   onOpen,
   onNew,
-  onDelete
+  onDelete,
+  onCollapse,
+  collapsed
 }: {
   active: string | null
   onOpen: (threadId: string) => void
   onNew: () => void
   onDelete: (threadId: string) => void
+  onCollapse: () => void
+  collapsed: boolean
 }) {
   const [query, setQuery] = useState('')
   const [editing, setEditing] = useState<string | null>(null)
@@ -67,24 +71,41 @@ export default function PersonalChatSidebar({
   }
 
   return (
-    <aside data-personal-history className="w-[300px] shrink-0 bg-ink-850 border-r border-ink-700 flex flex-col">
-      <header className="app-drag h-[70px] shrink-0 pl-4 pr-3 mac:pl-[92px] flex items-center gap-2">
-        <h1 className="flex-1 text-lg font-bold text-fg">Chat</h1>
-        <Tooltip label="New chat">
-          <button
-            onClick={() => {
-              setQuery('')
-              onNew()
-            }}
-            aria-label="New chat"
-            className="app-no-drag w-9 h-9 rounded-full flex items-center justify-center text-fg-muted transition-[color,background-color,transform] duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
-          >
-            <PlusGlyph className="w-4 h-4" />
-          </button>
-        </Tooltip>
-      </header>
+    <aside
+      data-personal-history
+      aria-hidden={collapsed}
+      inert={collapsed}
+      className={`shrink-0 overflow-hidden bg-ink-850 transition-[width,border-color] duration-200 ${
+        collapsed ? 'w-0 border-r border-transparent' : 'w-[300px] border-r border-ink-700'
+      }`}
+    >
+      <div className="w-[300px] h-full flex flex-col">
+        <header className="group/header app-drag h-[70px] shrink-0 pl-4 pr-3 mac:pl-[100px] flex items-center gap-1">
+          <h1 className="flex-1 text-lg font-bold text-fg">Chat</h1>
+          <Tooltip label="Hide chat list">
+            <button
+              onClick={onCollapse}
+              aria-label="Hide chat list"
+              className="app-no-drag w-9 h-9 rounded-full flex items-center justify-center opacity-0 text-fg-muted transition-[color,background-color,opacity,transform] duration-150 group-hover/header:opacity-100 focus-visible:opacity-100 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
+            >
+              <PanelLeftGlyph className="w-4 h-4" />
+            </button>
+          </Tooltip>
+          <Tooltip label="New chat">
+            <button
+              onClick={() => {
+                setQuery('')
+                onNew()
+              }}
+              aria-label="New chat"
+              className="app-no-drag w-9 h-9 rounded-full flex items-center justify-center text-fg-muted transition-[color,background-color,transform] duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
+            >
+              <PlusGlyph className="w-4 h-4" />
+            </button>
+          </Tooltip>
+        </header>
 
-      <div className="px-3 pb-4">
+        <div className="px-3 pb-4">
         <div className="h-10 rounded-full bg-ink-700 flex items-center gap-2 px-3 transition-shadow duration-150 focus-within:shadow-[inset_0_0_0_1px_rgb(255_255_255/0.10)] light:focus-within:shadow-[inset_0_0_0_1px_rgb(0_0_0/0.12)]">
           <SearchGlyph className="w-4 h-4 shrink-0 text-fg/35" />
           <input
@@ -105,9 +126,9 @@ export default function PersonalChatSidebar({
             </button>
           )}
         </div>
-      </div>
+        </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto px-3 pb-6">
+        <div className="flex-1 min-h-0 overflow-y-auto px-3 pb-6">
         <div className="space-y-6">
           {groups.map(group => (
             <section key={group.label}>
@@ -200,6 +221,7 @@ export default function PersonalChatSidebar({
             <p className="text-sm text-fg-muted">{query ? 'No chats found.' : 'No chats yet.'}</p>
           </div>
         )}
+        </div>
       </div>
     </aside>
   )
