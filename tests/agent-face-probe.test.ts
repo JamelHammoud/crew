@@ -199,6 +199,8 @@ describe('an agent face', () => {
         line => line.getAttribute('stroke-width') === '6.5'
       )
     ).toBe(true)
+    expect(object.querySelector('[data-part="book-line-one"]')?.getAttribute('d')).toBe('M17 50 C24 47 32 48 38 51')
+    expect(object.querySelector('[data-part="book-line-three"]')?.getAttribute('d')).toBe('M62 51 C68 48 76 47 83 50')
     expect(object.querySelector('[data-part^="page-turn"]')).toBeNull()
     expect(object.querySelector('[data-part="book-spine"]')).toBeNull()
     expect(lines).toContain('stroke-dashoffset: 30')

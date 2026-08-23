@@ -33,7 +33,7 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
           />
           <path
             data-part="book-line-one"
-            d="M19 47 C26 44 34 45 40 48"
+            d="M17 50 C24 47 32 48 38 51"
             fill="none"
             stroke="#000"
             strokeWidth="6.5"
@@ -41,7 +41,7 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
           />
           <path
             data-part="book-line-two"
-            d="M19 60 C26 57 34 58 40 61"
+            d="M17 63 C24 60 32 61 38 64"
             fill="none"
             stroke="#000"
             strokeWidth="6.5"
@@ -55,7 +55,7 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
           />
           <path
             data-part="book-line-three"
-            d="M60 48 C66 45 74 44 81 47"
+            d="M62 51 C68 48 76 47 83 50"
             fill="none"
             stroke="#000"
             strokeWidth="6.5"
@@ -63,7 +63,7 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
           />
           <path
             data-part="book-line-four"
-            d="M60 61 C66 58 74 57 81 60"
+            d="M62 64 C68 61 76 60 83 63"
             fill="none"
             stroke="#000"
             strokeWidth="6.5"
