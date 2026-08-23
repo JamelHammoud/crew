@@ -164,6 +164,18 @@ describe('the plugins store', () => {
     expect(screen.getByRole('button', { name: 'Take Figma out' })).toBeTruthy()
   })
 
+  it('keeps a hidden remove action out of the stable action layout', () => {
+    useCrew.setState({ plugins: [held('figma')] })
+    plugins()
+    const actions = rowFor('Figma').querySelector('[data-plugin-actions]')!
+    const open = screen.getByRole('button', { name: 'Open Figma' })
+    const remove = screen.getByRole('button', { name: 'Take Figma out' })
+    expect(actions.contains(open)).toBe(true)
+    expect(remove.parentElement!.className).toContain('absolute')
+    expect(remove.parentElement!.className).toContain('right-full')
+    expect(open.parentElement!.className).not.toContain('absolute')
+  })
+
   it('takes one out', () => {
     const gone: string[] = []
     useCrew.setState({ plugins: [held('figma')], removePlugin: id => gone.push(id) })
