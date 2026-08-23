@@ -151,7 +151,9 @@ describe('a personal chat window', () => {
     expect(header?.classList.contains('mac:pl-[100px]')).toBe(false)
 
     fireEvent.click(screen.getByRole('button', { name: 'Hide chat list' }))
-    expect(screen.getByRole('button', { name: 'Show chat list' }).parentElement?.className).not.toContain('mac:pl-[92px]')
+    expect(document.querySelector('[data-personal-chat-collapsed-header]')?.classList.contains('mac:pl-[92px]')).toBe(
+      false
+    )
   })
 
   it('collapses and restores the chat list without remounting the conversation', () => {
