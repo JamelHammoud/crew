@@ -235,4 +235,23 @@ describe('what a long thread draws again', () => {
     expect(screen.getByText('the step said something else')).toBeTruthy()
     expect(screen.queryByText('step number 0')).toBeNull()
   })
+
+  it('shows the current activity in the composer header', () => {
+    const running: AgentStep = {
+      id: 'design',
+      ts: 300,
+      kind: 'tool',
+      status: 'running',
+      name: 'generateImage'
+    }
+    useCrew.setState({
+      ...seed([running]),
+      activePrompts: { [AGENT.id]: [PROMPT] },
+      threadPrompts: { [THREAD]: PROMPT }
+    })
+    const { container } = render(createElement(ThreadView, { threadId: THREAD }))
+
+    expect(container.querySelector('.agent-icon')?.getAttribute('data-activity')).toBe('designing')
+    expect(container.querySelector('[data-object="designing"]')).not.toBeNull()
+  })
 })
