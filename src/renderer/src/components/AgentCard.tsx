@@ -1,12 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import type { PooledAgent } from '../../../shared/llm'
-import { advancedFields, changedSettings, plainFields, settingOptions, visibleSettingFields } from '../../../shared/llm'
 import { PencilGlyph, StopGlyph, TrashGlyph } from '../icons'
 import AgentIcon from './AgentIcon'
 import AgentSettingsModal from './agent/AgentSettingsModal'
 import PhotoPicker from './PhotoPicker'
 import Pill from './Pill'
-import Select from './Select'
 import Spinner from './Spinner'
 import Tooltip from './Tooltip'
 import UsageFooter from './UsageFooter'
@@ -29,29 +27,13 @@ export default function AgentCard({
   onRemove?: () => void
 }) {
   const status = threadCount > 0 ? 'busy' : agent.status
-  const fields = visibleSettingFields(plainFields(agent.fields), agent.settings)
-  const deeper = visibleSettingFields(advancedFields(agent.fields), agent.settings)
-  const changed = changedSettings(agent.fields, agent.settings).filter(field => field.advanced).length
-  const [draft, setDraft] = useState<string | null>(null)
-  const [deep, setDeep] = useState(false)
-  const editing = draft !== null
-  const input = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    if (editing) input.current?.select()
-  }, [editing])
-
-  const commit = () => {
-    const label = (draft ?? '').trim()
-    if (label && label !== agent.label) onRename?.(label)
-    setDraft(null)
-  }
+  const [editing, setEditing] = useState(false)
 
   const face = <AgentIcon seed={agent.id} presence={agent.status === 'offline' ? 'offline' : 'online'} />
 
   return (
     <div className="group border border-fg/[0.09] rounded-card flex flex-col transition-colors duration-200 hover:border-fg/20 animate-rise">
-      <div className="px-5 py-4 flex-1 space-y-4">
+      <div className="px-5 py-4 flex-1">
         <div className="flex items-center gap-3">
           {onAvatar ? (
             <PhotoPicker has={Boolean(agent.avatar)} onChange={onAvatar}>
@@ -62,31 +44,17 @@ export default function AgentCard({
           )}
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              {editing ? (
-                <input
-                  ref={input}
-                  value={draft ?? ''}
-                  onChange={e => setDraft(e.target.value)}
-                  onBlur={commit}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter') commit()
-                    if (e.key === 'Escape') setDraft(null)
-                  }}
-                  className="w-44 h-8 bg-fg/[0.06] border border-fg/10 rounded-full px-3.5 text-base font-semibold text-fg outline-none transition-colors focus:border-fg/30"
-                />
-              ) : (
-                <span className="text-base font-semibold text-fg truncate">{agent.label}</span>
-              )}
+              <span className="text-base font-semibold text-fg truncate">{agent.label}</span>
               <Pill glass>{agent.provider}</Pill>
             </div>
             <span className="text-sm text-fg/45">{agent.ownerName}</span>
           </div>
           <div className="ml-auto flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-            {onRename && !editing && (
-              <Tooltip label="Rename">
+            {onSetting && (
+              <Tooltip label="Settings" disabled={editing}>
                 <button
-                  onClick={() => setDraft(agent.label)}
-                  aria-label="Rename agent"
+                  onClick={() => setEditing(true)}
+                  aria-label="Agent settings"
                   className="w-8 h-8 rounded-full flex items-center justify-center text-fg/45 hover:text-fg hover:bg-fg/[0.08] transition-colors"
                 >
                   <PencilGlyph className="w-4 h-4" />
@@ -117,37 +85,15 @@ export default function AgentCard({
             )}
           </div>
         </div>
-        {onSetting && (fields.length > 0 || deeper.length > 0) && (
-          <div className="flex flex-wrap items-center gap-2">
-            {fields.map(field => (
-              <Select
-                key={field.key}
-                label={field.label}
-                value={agent.settings[field.key] ?? field.default}
-                options={settingOptions(field, agent.settings)}
-                onChange={value => onSetting(field.key, value)}
-              />
-            ))}
-            {deeper.length > 0 && (
-              <button
-                onClick={() => setDeep(true)}
-                className="flex items-center gap-1.5 h-8 px-3 rounded-full text-sm font-medium bg-fg/[0.07] text-fg/70 transition-all duration-150 hover:bg-fg/[0.12] hover:text-fg active:scale-95"
-              >
-                Advanced
-                {changed > 0 && <span className="text-fg/45">{changed}</span>}
-              </button>
-            )}
-          </div>
-        )}
       </div>
       {onSetting && (
         <AgentSettingsModal
-          open={deep}
-          label={agent.label}
-          fields={agent.fields}
-          settings={agent.settings}
+          open={editing}
+          agent={agent}
           onChange={onSetting}
-          onClose={() => setDeep(false)}
+          onRename={onRename}
+          onAvatar={onAvatar}
+          onClose={() => setEditing(false)}
         />
       )}
       {agent.usage && <UsageFooter usage={agent.usage} />}
