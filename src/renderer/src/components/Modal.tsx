@@ -11,6 +11,8 @@ export default function Modal({
   title,
   width,
   flush,
+  header,
+  footer,
   className = '',
   children
 }: {
@@ -25,6 +27,8 @@ export default function Modal({
   // A card that holds its own padding and draws its own heading, like a page
   // with a rail down the side of it.
   flush?: boolean
+  header?: ReactNode
+  footer?: ReactNode
   className?: string
   children: ReactNode
 }) {
@@ -42,19 +46,34 @@ export default function Modal({
   if (!open) return null
 
   return createPortal(
-    <div className="app-no-drag fixed inset-0 z-[60] flex items-center justify-center px-6">
+    <div className="app-no-drag fixed inset-0 z-[60] flex items-center justify-center p-6">
       <div className="absolute inset-0 bg-black/50 light:bg-black/25" onClick={onClose} />
       <div
         role="dialog"
         aria-modal
         aria-label={title}
         style={width === undefined ? undefined : { maxWidth: width }}
-        className={`glass glass-strong relative w-full rounded-card animate-pop ${
-          flush ? 'overflow-hidden' : 'p-6'
-        } ${width === undefined ? 'max-w-md' : ''} ${className}`}
+        className={`glass glass-strong relative w-full max-h-full rounded-card overflow-hidden flex flex-col animate-pop ${
+          width === undefined ? 'max-w-md' : ''
+        } ${className}`}
       >
-        {!flush && <h3 className="text-base font-semibold text-fg">{title}</h3>}
-        {children}
+        {header !== undefined
+          ? header
+          : !flush && (
+              <div className="shrink-0 px-6 pt-6">
+                <h3 className="text-base font-semibold text-fg">{title}</h3>
+              </div>
+            )}
+        <div
+          className={`min-h-0 flex-1 overflow-y-auto overscroll-contain ${flush ? '' : 'px-6'} ${
+            footer === undefined && !flush ? 'pb-6' : ''
+          }`}
+        >
+          {children}
+        </div>
+        {footer !== undefined && (
+          <div className={`shrink-0 ${flush ? '' : 'px-6 pb-6 pt-5'}`}>{footer}</div>
+        )}
       </div>
     </div>,
     document.body
