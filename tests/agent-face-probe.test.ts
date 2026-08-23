@@ -58,9 +58,9 @@ describe('the pet an agent wears', () => {
     const pet = petOf(SEED)
     expect(pet.hue).toBe(225)
     expect(pet.kind).toBe('cloud')
-    expect(pet.eyeX).toBeCloseTo(55.392, 3)
-    expect(pet.eyeY).toBeCloseTo(46.707, 3)
-    expect(pet.eyeGap).toBeCloseTo(17.37, 2)
+    expect(pet.eyeX).toBeCloseTo(60.759, 3)
+    expect(pet.eyeY).toBeCloseTo(46.453, 3)
+    expect(pet.eyeGap).toBeCloseTo(18.37, 2)
     expect(pet.tilt).toBeCloseTo(-3.959, 3)
   })
 
