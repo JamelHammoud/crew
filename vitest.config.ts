@@ -3,6 +3,7 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
   test: {
     include: ['tests/**/*.test.ts'],
+    environmentMatchGlobs: [['**/personal-chat-probe.test.ts', 'jsdom']],
     env: { NODE_ENV: 'test' },
     testTimeout: 60000,
     hookTimeout: 60000,
