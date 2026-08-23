@@ -590,6 +590,7 @@ describe('handing the panel over on a switch', () => {
       activeTabId: null,
       width: DEFAULT_WIDTH,
       open: false,
+      fullScreen: false,
       closedPlans: [],
       closedBoards: []
     })
@@ -782,5 +783,17 @@ describe('handing the panel over on a switch', () => {
 
     expect(order()).toEqual(row)
     expect(panel().activeTabId).toBe(shell)
+  })
+
+  it('hands the full screen choice over with its project', () => {
+    useBrowser.getState().openUrl('https://example.com/one')
+    useBrowser.getState().toggleFullScreen()
+
+    const memory = useBrowser.getState().stash()
+    expect(memory.fullScreen).toBe(true)
+    expect(panel().fullScreen).toBe(false)
+
+    useBrowser.getState().restore(memory)
+    expect(panel().fullScreen).toBe(true)
   })
 })
