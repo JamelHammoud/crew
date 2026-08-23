@@ -236,6 +236,16 @@ describe('markdown file links', () => {
     expect(tabs.some(t => t.kind === 'web' && t.url === 'https://example.com')).toBe(true)
   })
 
+  it('draws a named file link as a chip and shows its full path in Crew’s tooltip', async () => {
+    render(createElement(Markdown, { text: `[release-summary.json](${SHOT})` }))
+    const chip = await screen.findByText('release-summary.json')
+    const link = chip.closest('a') as HTMLAnchorElement
+    expect(link.classList.contains('resource-chip')).toBe(true)
+    expect(link.querySelector('svg')).not.toBeNull()
+    fireEvent.mouseOver(link)
+    expect(await screen.findByText(SHOT)).not.toBeNull()
+  })
+
   it('shows full paths from this project relative to the project', async () => {
     render(createElement(Markdown, { text: `Edited \`${ROOT}/src/app.ts:2\` today` }))
     await waitFor(() => expect(document.querySelectorAll('a.file-link').length).toBe(1))
@@ -697,19 +707,21 @@ describe('steps and thinking', () => {
 
   it('opens a file that is on this computer but outside the project', async () => {
     render(createElement(StepRow, { item: item({ name: 'Read', detail: `Read ${SHOT}` }) }))
-    const link = await screen.findByText(SHOT)
+    const link = await screen.findByText('cursor-preview.svg.png')
     fireEvent.click(link)
     expect(useBrowser.getState().tabs[0].path).toBe(SHOT)
   })
 
   it('opens a picture an agent read from a folder named in two words', async () => {
     const { container } = render(createElement(StepRow, { item: item({ name: 'Read', detail: SENT }) }))
-    await screen.findByText(SENT)
+    const chip = await screen.findByText('c3f7789a.png')
+    fireEvent.mouseEnter(chip.closest('.inline-flex') as HTMLElement)
+    expect(await screen.findByText(SENT)).not.toBeNull()
     await waitFor(() => {
       fireEvent.click(screen.getByRole('button'))
       expect(useBrowser.getState().tabs[0]?.path).toBe(SENT)
     })
-    expect(container.querySelectorAll('svg').length).toBe(1)
+    expect(container.querySelectorAll('svg').length).toBe(2)
   })
 
   it('hides a thought about a file on someone else’s computer', async () => {
