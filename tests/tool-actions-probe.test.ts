@@ -186,7 +186,7 @@ describe('step rows', () => {
     const { container } = render(
       createElement(StepRow, { item: item({ name: 'raylight.js', detail }) })
     )
-    expect(screen.getByText('Used Raylight')).not.toBeNull()
+    expect(screen.getByText('Raylight')).not.toBeNull()
     expect(screen.getByText('JS')).not.toBeNull()
     expect(screen.queryByText('Reconnect to Raylight')).toBeNull()
     expect(container.textContent).not.toContain('"code"')
@@ -202,7 +202,7 @@ describe('step rows', () => {
       createElement(StepRow, { item: item({ name: 'raylight.get_editor_status', detail: '{}' }) })
     )
     expect(screen.getByText('Get editor status')).not.toBeNull()
-    expect(screen.getByText('Used Raylight')).not.toBeNull()
+    expect(screen.getByText('Raylight')).not.toBeNull()
     expect(container.textContent).not.toContain('{}')
     expect(container.querySelectorAll('button').length).toBe(1)
   })

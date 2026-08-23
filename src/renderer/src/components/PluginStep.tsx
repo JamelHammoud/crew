@@ -30,45 +30,40 @@ function PluginStep({
   const expanded = expandable && (open ?? found)
   const source = action.source ?? ''
   const seed = cleanPluginName(source)
-  const verb = item.streaming ? 'Using' : 'Used'
   const work = item.streaming ? action.run : action.done
 
   return (
     <div
-      className={`animate-rise ${inGroup ? '' : 'pl-14'} ${linked ? '-mt-3' : ''}`}
+      className={`animate-rise ${inGroup ? '' : 'pl-13 pr-4'} py-1 select-none ${linked ? '-mt-3' : ''}`}
       style={resourceColor(item.helperSeed ?? item.agentId)}
     >
-      <div className="overflow-hidden rounded-card border border-ink-700 bg-ink-850">
-        <button
-          onClick={() => expandable && setOpen(!expanded)}
-          className={`group flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm select-none transition-colors ${
-            expandable ? '' : 'cursor-default'
-          }`}
-        >
-          <PluginMark seed={seed} box={24} />
-          <span
-            className={`shrink-0 transition-colors ${
-              item.streaming ? 'text-fg' : 'text-fg-secondary group-hover:text-fg'
+      <button
+        type="button"
+        disabled={!expandable}
+        aria-expanded={expandable ? expanded : undefined}
+        aria-label={`${source} ${work}`}
+        onClick={() => expandable && setOpen(!expanded)}
+        className="group flex min-w-0 max-w-full items-center gap-2 pl-2 pr-3 py-1 rounded-full border border-ink-700 bg-ink-800/60 transition-colors enabled:hover:border-ink-600 enabled:hover:bg-ink-700 disabled:cursor-default"
+      >
+        <span className={item.streaming ? 'flex pulse-soft' : 'flex'}>
+          <PluginMark seed={seed} box={20} />
+        </span>
+        <span className="max-w-[16rem] truncate text-sm text-fg-secondary group-hover:text-fg">{source}</span>
+        <span className={`shrink-0 text-xs ${item.streaming ? 'text-fg-muted' : 'text-fg-faint'}`}>{work}</span>
+        {expandable && (
+          <ChevronRightGlyph
+            className={`h-3 w-3 shrink-0 text-fg-faint transition-transform duration-200 ${
+              expanded ? 'rotate-90' : ''
             }`}
-          >
-            {`${verb} ${source}`}
-          </span>
-          <span className="min-w-0 truncate text-xs text-fg-muted">{work}</span>
-          {expandable && (
-            <ChevronRightGlyph
-              className={`ml-auto h-3.5 w-3.5 shrink-0 text-fg-muted transition-transform duration-200 ${
-                expanded ? 'rotate-90' : ''
-              }`}
-            />
-          )}
-        </button>
-        {expanded && (
-          <div className="space-y-2 border-t border-ink-700 p-2">
-            {info ? <ToolCallDetail info={info} again={!item.streaming} embedded /> : <StepCode text={detail} />}
-            {item.output && <StepCode text={item.output} />}
-          </div>
+          />
         )}
-      </div>
+      </button>
+      {expanded && (
+        <div className="mt-2 space-y-2">
+          {info ? <ToolCallDetail info={info} again={!item.streaming} /> : <StepCode text={detail} />}
+          {item.output && <StepCode text={item.output} />}
+        </div>
+      )}
     </div>
   )
 }
