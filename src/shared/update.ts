@@ -43,7 +43,7 @@ export function nextUpdate(state: UpdateState, said: UpdateWord): UpdateState {
   switch (said.word) {
     case 'found': {
       if (state.stage === 'getting') return state
-      const standing = state.stage === 'found' && state.version === said.version
+      const standing = (state.stage === 'found' || state.stage === 'ready') && state.version === said.version
       return standing ? state : { ...state, stage: 'found', version: said.version, percent: 0, why: '' }
     }
     // A check that finds nothing never takes back one already found, or a pass

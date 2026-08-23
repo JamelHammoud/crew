@@ -48,7 +48,7 @@ describe('what the app can say about a new Crew', () => {
   it('lands ready and keeps the same release standing', () => {
     const state = walk([found, { word: 'getting' }, { word: 'ready', version: '0.2.0' }])
     expect(state).toMatchObject({ stage: 'ready', version: '0.2.0', percent: 100, why: '' })
-    expect(walk([{ word: 'error' }, { word: 'nothing' }], state)).toEqual(state)
+    expect(walk([{ word: 'error' }, { word: 'nothing' }, found], state)).toEqual(state)
   })
 
   it('takes the restart down while a newer release replaces it', () => {
