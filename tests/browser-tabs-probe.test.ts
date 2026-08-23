@@ -236,7 +236,7 @@ describe('the tab strip', () => {
     scrolled.length = 0
 
     fireEvent.click(getByRole('button', { name: 'Search tabs' }))
-    fireEvent.click(document.querySelector(`[data-tab-result="${first.id}"] button`)!)
+    fireEvent.click(document.querySelector(`[data-tab-result="${first.id}"]`)!)
 
     expect(useBrowser.getState().activeTabId).toBe(first.id)
     expect(scrolled.at(-1)?.left).toBe(0)

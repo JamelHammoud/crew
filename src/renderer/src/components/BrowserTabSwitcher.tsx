@@ -89,10 +89,15 @@ export default function BrowserTabSwitcher({ tabs, activeTabId }: { tabs: Browse
                 key={tab.id}
                 data-tab-result={tab.id}
                 data-highlighted={index === cursor ? '' : undefined}
-                className="group flex min-w-0 items-center gap-2.5 rounded-xl px-3 py-2 text-fg/70 transition-colors hover:bg-fg/5 data-highlighted:bg-fg/5"
+                className="group relative flex min-w-0 items-center gap-2.5 rounded-xl px-3 py-2 text-fg/70 transition-colors hover:bg-fg/5 data-highlighted:bg-fg/5"
                 onPointerEnter={() => setCursor(index)}
               >
-                <button onClick={() => choose(tab)} className="flex min-w-0 flex-1 items-center gap-2.5 text-left">
+                <button
+                  onClick={() => choose(tab)}
+                  aria-label={`Open ${label}`}
+                  className="absolute inset-0 rounded-xl active:scale-[0.99]"
+                />
+                <span className="pointer-events-none relative flex min-w-0 flex-1 items-center gap-2.5 text-left">
                   <span className="flex h-4 w-4 shrink-0 items-center justify-center">
                     <BrowserTabMark tab={tab} />
                   </span>
@@ -101,14 +106,14 @@ export default function BrowserTabSwitcher({ tabs, activeTabId }: { tabs: Browse
                     {detail && detail !== label && <span className="mt-0.5 block truncate text-xs text-fg/40">{detail}</span>}
                   </span>
                   {tab.id === activeTabId && <CheckGlyph className="h-4 w-4 shrink-0 text-fg" />}
-                </button>
+                </span>
                 <button
                   onClick={() => {
                     useBrowser.getState().closeTab(tab.id)
                     if (tabs.length === 2) setOpen(false)
                   }}
                   aria-label={`Close ${label}`}
-                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-fg/40 opacity-0 transition-[background-color,color,opacity,transform] hover:bg-fg/10 hover:text-fg group-hover:opacity-100 focus:opacity-100 active:scale-90"
+                  className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-fg/40 opacity-0 transition-[background-color,color,opacity,transform] hover:bg-fg/10 hover:text-fg group-hover:opacity-100 focus:opacity-100 active:scale-90"
                 >
                   <CloseGlyph className="h-3.5 w-3.5" />
                 </button>
