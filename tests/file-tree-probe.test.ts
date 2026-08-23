@@ -48,6 +48,13 @@ beforeEach(() => {
   window.crew = {
     readFile: async (path: string) => repo[path] ?? { kind: 'missing', path },
     listFiles: async () => listed,
+    searchFiles: async (query: string) => ({
+      matches:
+        query.toLowerCase() === 'panel'
+          ? [{ path: 'src/renderer/panel.tsx', line: 1, text: 'export const panel = 2', start: 13, end: 18 }]
+          : [],
+      limited: false
+    }),
     writeFile: async () => null,
     revealFile: async () => undefined,
     openExternal: async () => undefined,
@@ -123,7 +130,7 @@ describe('the file explorer', () => {
     render(createElement(BrowserPanel))
     await screen.findByText('src')
 
-    fireEvent.change(screen.getByLabelText('Filter files'), { target: { value: 'panel' } })
+    fireEvent.change(screen.getByLabelText('Search files'), { target: { value: 'panel' } })
 
     await waitFor(() => expect(rowFor('src/renderer/panel.tsx')).toBeTruthy())
     expect(rowFor('readme.md')).toBeNull()
@@ -135,7 +142,7 @@ describe('the file explorer', () => {
     render(createElement(BrowserPanel))
     await screen.findByText('src')
 
-    fireEvent.change(screen.getByLabelText('Filter files'), { target: { value: 'pan' } })
+    fireEvent.change(screen.getByLabelText('Search files'), { target: { value: 'pan' } })
 
     await waitFor(() => expect(rowFor('src/renderer/panel.tsx')).toBeTruthy())
     expect(rowFor('src/renderer/panel.tsx')!.querySelector('.text-fg')?.textContent).toBe('pan')
@@ -145,7 +152,7 @@ describe('the file explorer', () => {
     useBrowser.getState().openFiles()
     render(createElement(BrowserPanel))
     await screen.findByText('src')
-    fireEvent.change(screen.getByLabelText('Filter files'), { target: { value: 'panel' } })
+    fireEvent.change(screen.getByLabelText('Search files'), { target: { value: 'panel' } })
     await waitFor(() => expect(rowFor('src/renderer/panel.tsx')).toBeTruthy())
 
     fireEvent.click(rowFor('src/renderer/panel.tsx')!)
@@ -158,9 +165,9 @@ describe('the file explorer', () => {
     render(createElement(BrowserPanel))
     await screen.findByText('src')
 
-    fireEvent.change(screen.getByLabelText('Filter files'), { target: { value: 'zzzz' } })
+    fireEvent.change(screen.getByLabelText('Search files'), { target: { value: 'zzzz' } })
 
-    expect(await screen.findByText('Nothing here by that name')).toBeTruthy()
+    expect(await screen.findByText('Nothing found')).toBeTruthy()
   })
 
   it('puts the tree away and brings it back from the toolbar', async () => {
@@ -169,12 +176,12 @@ describe('the file explorer', () => {
     await screen.findByText('src')
 
     fireEvent.click(screen.getByLabelText('Hide files'))
-    await waitFor(() => expect(screen.queryByLabelText('Filter files')).toBeNull())
+    await waitFor(() => expect(screen.queryByLabelText('Search files')).toBeNull())
     expect(activeTab().tree).toBe(false)
     expect(await screen.findByText('readme.md')).toBeTruthy()
 
     fireEvent.click(screen.getByLabelText('Show files'))
-    expect(await screen.findByLabelText('Filter files')).toBeTruthy()
+    expect(await screen.findByLabelText('Search files')).toBeTruthy()
   })
 
   it('lands on the file already showing rather than back at the top', async () => {
@@ -194,7 +201,7 @@ describe('the file explorer', () => {
     render(createElement(BrowserPanel))
 
     expect(activeTab().tree).toBe(false)
-    expect(screen.queryByLabelText('Filter files')).toBeNull()
+    expect(screen.queryByLabelText('Search files')).toBeNull()
   })
 
   it('goes back to the explorer already open rather than piling up tabs', async () => {
@@ -273,7 +280,7 @@ describe('the file explorer', () => {
     useBrowser.getState().openFiles()
     render(createElement(BrowserPanel))
     await screen.findByText('src')
-    fireEvent.change(screen.getByLabelText('Filter files'), { target: { value: 'panel' } })
+    fireEvent.change(screen.getByLabelText('Search files'), { target: { value: 'panel' } })
     await waitFor(() => expect(rowFor('src/renderer/panel.tsx')).toBeTruthy())
 
     fireEvent.contextMenu(rowFor('src/renderer/panel.tsx')!)
