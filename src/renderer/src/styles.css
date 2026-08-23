@@ -1064,7 +1064,7 @@ textarea:placeholder-shown {
 }
 
 .agent-icon .agent-activity-object[data-object='thinking'] {
-  animation: agent-thinking 2.7s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+  animation: agent-thinking 4.4s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon .agent-activity-object[data-object='reading'] {
@@ -1076,7 +1076,7 @@ textarea:placeholder-shown {
 }
 
 .agent-icon .agent-activity-object[data-object='editing'] {
-  animation: agent-editing 1.25s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+  animation: agent-editing 2.8s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon .agent-activity-object[data-object='designing'] {
