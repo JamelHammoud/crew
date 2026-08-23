@@ -14,12 +14,13 @@ import { initRepo } from './helpers/git'
 import { testRunner } from './helpers/runner'
 import { linkOf, TestUi, tmpDir, waitUntil } from './helpers/session'
 
-function statePaths(prefix: string): { agents: string; session: string; projects: string } {
+function statePaths(prefix: string): { agents: string; session: string; projects: string; personal: string } {
   const dir = tmpDir(prefix)
   return {
     agents: path.join(dir, 'agents.json'),
     session: path.join(dir, 'session.json'),
-    projects: path.join(dir, 'projects')
+    projects: path.join(dir, 'projects'),
+    personal: path.join(dir, 'personal')
   }
 }
 
@@ -77,6 +78,21 @@ describe('several crews in one app', () => {
     expect(app.folderInView(2)).toBe(two)
     expect(app.keyInView(1)).toBe(projectPlace(one))
     expect(app.keyInView(2)).toBe(projectPlace(two))
+  })
+
+  it('gives personal chat windows one private history outside every project', async () => {
+    const app = crews('crews-personal')
+    const first = await app.openPersonal(1, 'Jamel')
+    const second = await app.openPersonal(2, 'Jamel')
+
+    expect(second.wsUrl).toBe(first.wsUrl)
+    expect(first.place).toBe('personal')
+    expect(first.folder).toBe('')
+    expect(app.current(1)?.place).toBe('personal')
+    expect(app.current(2)?.place).toBe('personal')
+    expect(app.places()).toEqual([])
+    expect(app.recentProjects()).toEqual([])
+    expect(app.keyInView(1)).toBeNull()
   })
 
   it('gives a shared Crew and a private Crew different renderer ports', async () => {
