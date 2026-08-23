@@ -11,17 +11,18 @@ class FakeUpdater extends EventEmitter {
   autoDownload = true
   autoInstallOnAppQuit = true
   quitAndInstall = vi.fn()
-  checkForUpdates = vi.fn(() => Promise.resolve(null))
+  checkForUpdates = vi.fn<() => Promise<unknown>>(() => Promise.resolve(null))
   downloadUpdate = vi.fn(() => Promise.resolve([]))
 }
 
-function setup(): {
+function setup(checkForUpdates?: () => Promise<unknown>): {
   updates: Updates
   updater: FakeUpdater
   host: UpdatesHost
   quitting: () => boolean
 } {
   const updater = new FakeUpdater()
+  if (checkForUpdates) updater.checkForUpdates.mockImplementation(checkForUpdates)
   let isQuitting = false
   const host: UpdatesHost = {
     windows: () => [],
@@ -41,6 +42,16 @@ function setup(): {
 }
 
 describe('the updater quit handoff', () => {
+  it('handles a rejected background download promise', async () => {
+    const caught = vi.fn(() => Promise.resolve())
+    const { updates } = setup(() =>
+      Promise.resolve({ downloadPromise: { catch: caught } })
+    )
+
+    await vi.waitFor(() => expect(caught).toHaveBeenCalledOnce())
+    updates.close()
+  })
+
   it('downloads in the background and waits for a press after it lands', async () => {
     const { updates, updater } = setup()
 

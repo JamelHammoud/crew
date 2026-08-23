@@ -100,6 +100,7 @@ export class Updates {
     if (!worthChecking(this.state.stage)) return
     void this.updater()
       .checkForUpdates()
+      .then(result => void result?.downloadPromise?.catch(() => {}))
       .catch(() => this.say({ word: 'error' }))
   }
 
