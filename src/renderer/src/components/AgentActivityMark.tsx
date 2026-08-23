@@ -9,8 +9,8 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
       <>
         <g data-part="thought-cloud">
           <path d="M18 22 C25 10 39 7 52 11 C65 6 82 12 87 25 C98 31 99 47 91 56 C91 69 79 78 66 76 C56 84 39 82 32 74 C18 77 7 67 9 54 C1 45 6 29 18 22 Z" />
-          <circle cx="24" cy="84" r="7" />
-          <circle cx="12" cy="94" r="3.5" />
+          <circle data-part="thought-tail-one" cx="24" cy="84" r="7" />
+          <circle data-part="thought-tail-two" cx="12" cy="94" r="3.5" />
         </g>
         <circle data-part="thought-dot-one" cx="35" cy="45" r="6.5" fill="#000" />
         <circle data-part="thought-dot-two" cx="53" cy="45" r="6.5" fill="#000" />
