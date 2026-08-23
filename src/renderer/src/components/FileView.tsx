@@ -1,4 +1,13 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ChangeEvent, type KeyboardEvent } from 'react'
+import {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type FormEvent,
+  type KeyboardEvent
+} from 'react'
 import { fileSize } from '../../../shared/attachments'
 import { canPreview, isHtml, type FileEntry, type RepoFile } from '../../../shared/files'
 import { CopyGlyph, DocGlyph, FileGlyph, FolderGlyph } from '../icons'
@@ -7,6 +16,16 @@ import { baselineOf } from './baseline'
 import CodeRows from './CodeRows'
 import Empty from './Empty'
 import { breakFileLine, eraseFilePair, indentFile, pairFile } from './fileEditing'
+import {
+  clearFileHistory,
+  createFileHistory,
+  recordFileEdit,
+  redoFileEdit,
+  undoFileEdit,
+  type FileEditKind,
+  type FileSelection,
+  type FileSnapshot
+} from './fileHistory'
 import FileTree from './FileTree'
 import FindBar from './FindBar'
 import { diffRows, editDoc, firstChange, joinRows, plainRows, rowAt, snap, toDoc, toShown } from './diffRows'
@@ -124,7 +143,11 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
   const bodyRef = useRef<HTMLDivElement>(null)
   const areaRef = useRef<HTMLTextAreaElement>(null)
   const codeRef = useRef<HTMLDivElement>(null)
-  const caret = useRef<{ start: number; end: number } | null>(null)
+  const caret = useRef<FileSelection | null>(null)
+  const docRef = useRef('')
+  const selection = useRef<FileSelection>({ start: 0, end: 0, direction: 'none' })
+  const history = useRef(createFileHistory())
+  const pendingInput = useRef<{ selection: FileSelection; inputType: string } | null>(null)
   const last = useRef(0)
   const composing = useRef(false)
   const scrolled = useRef<{ load: number; target: number | null }>({ load: -1, target: null })
@@ -141,7 +164,14 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
         setBase(start)
         setHidden(false)
         setJump(next.kind === 'file' && start ? firstChange(diffRows(start, next.text)) : null)
-        if (next.kind === 'file') setDoc(next.text)
+        if (next.kind === 'file') {
+          docRef.current = next.text
+          setDoc(next.text)
+        }
+        selection.current = { start: 0, end: 0, direction: 'none' }
+        caret.current = null
+        pendingInput.current = null
+        clearFileHistory(history.current)
         setSaveFailed(false)
         setLoadKey(key => key + 1)
       })
@@ -176,6 +206,12 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
   const count = useMemo(() => rows.filter(row => row.line !== null).length, [rows])
   const gutter = `${Math.max(String(count).length, 2)}ch`
 
+  const readSelection = (area: HTMLTextAreaElement): FileSelection => ({
+    start: toDoc(rows, area.selectionStart),
+    end: toDoc(rows, area.selectionEnd),
+    direction: area.selectionDirection
+  })
+
   useEffect(() => {
     if (!data) return
     const target = tab.line ?? jump
@@ -202,7 +238,8 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
     const end = toShown(rows, want.end)
     const index = rowAt(rows, end).index
     last.current = end
-    area.setSelectionRange(start, end)
+    area.setSelectionRange(start, end, want.direction)
+    selection.current = want
     if (document.activeElement === area) setActiveRow(index)
     const row = bodyRef.current?.querySelector(`[data-row="${index}"]`)
     if (row instanceof HTMLElement) bringIntoY(row, bodyRef.current)
@@ -216,6 +253,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
       const at = snap(rows, area.selectionStart, area.selectionStart < last.current)
       last.current = at
       if (at !== area.selectionStart) area.setSelectionRange(at, at)
+      selection.current = readSelection(area)
     }
     document.addEventListener('selectionchange', onSelection)
     return () => document.removeEventListener('selectionchange', onSelection)
@@ -223,30 +261,61 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
 
   const dirty = writable && !!file && doc !== file.text
 
-  const apply = (next: string, selection?: { start: number; end: number }) => {
+  const apply = (
+    next: string,
+    nextSelection?: { start: number; end: number; direction?: FileSelection['direction'] },
+    kind: FileEditKind = 'command',
+    beforeSelection?: FileSelection
+  ) => {
+    const before = beforeSelection ?? (areaRef.current ? readSelection(areaRef.current) : selection.current)
     const edit = editDoc(rows, doc, shown, next)
-    if (selection) {
+    let after: FileSelection
+    if (nextSelection) {
       const nextRows = baseline === null ? plainRows(edit.text) : diffRows(baseline, edit.text)
-      caret.current = {
-        start: toDoc(nextRows, selection.start),
-        end: toDoc(nextRows, selection.end)
+      after = {
+        start: toDoc(nextRows, nextSelection.start),
+        end: toDoc(nextRows, nextSelection.end),
+        direction: nextSelection.direction ?? 'none'
       }
     } else {
-      caret.current = { start: edit.at, end: edit.at }
+      after = { start: edit.at, end: edit.at, direction: 'none' }
     }
+    recordFileEdit(history.current, { text: doc, selection: before }, { text: edit.text, selection: after }, kind)
+    caret.current = after
+    selection.current = after
     setSaveFailed(false)
+    docRef.current = edit.text
     setDoc(edit.text)
     setTick(value => value + 1)
   }
 
+  const restore = (snapshot: FileSnapshot | null) => {
+    if (!snapshot) return
+    caret.current = snapshot.selection
+    selection.current = snapshot.selection
+    pendingInput.current = null
+    setSaveFailed(false)
+    docRef.current = snapshot.text
+    setDoc(snapshot.text)
+    setTick(value => value + 1)
+  }
+
+  const undo = () => restore(undoFileEdit(history.current, docRef.current))
+
+  const redo = () => restore(redoFileEdit(history.current, docRef.current))
+
   const save = async () => {
     if (saving || !dirty) return
     setSaving(true)
-    const fresh = await window.crew.writeFile(tab.path, doc).catch(() => null)
+    const writing = docRef.current
+    const fresh = await window.crew.writeFile(tab.path, writing).catch(() => null)
     setSaving(false)
     if (fresh?.kind === 'file') {
       setData(fresh)
-      setDoc(fresh.text)
+      if (docRef.current === writing) {
+        docRef.current = fresh.text
+        setDoc(fresh.text)
+      }
       setSaveFailed(false)
     } else {
       setSaveFailed(true)
@@ -257,17 +326,54 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
     if (!file) return
     const area = areaRef.current
     const at = area ? toDoc(rows, area.selectionStart) : 0
-    caret.current = { start: at, end: at }
-    setDoc(file.text)
-    setTick(value => value + 1)
-    setSaveFailed(false)
+    apply(file.text, undefined, 'command', { start: at, end: at, direction: 'none' })
   }
 
-  const onEdit = (event: ChangeEvent<HTMLTextAreaElement>) => apply(event.target.value)
+  const kindOf = (inputType: string): FileEditKind => {
+    if (inputType === 'insertText') return 'type'
+    if (inputType.includes('Composition')) return 'composition'
+    if (inputType.includes('Backward')) return 'delete-backward'
+    if (inputType.includes('Forward')) return 'delete-forward'
+    return 'command'
+  }
 
-  const placeActiveRow = (area: HTMLTextAreaElement) => setActiveRow(rowAt(rows, area.selectionEnd).index)
+  const onBeforeEdit = (event: FormEvent<HTMLTextAreaElement>) => {
+    const inputType = (event.nativeEvent as InputEvent).inputType ?? ''
+    if (inputType === 'historyUndo' || inputType === 'historyRedo') {
+      event.preventDefault()
+      if (inputType === 'historyUndo') undo()
+      else redo()
+      return
+    }
+    pendingInput.current = { selection: readSelection(event.currentTarget), inputType }
+  }
+
+  const onEdit = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    const pending = pendingInput.current
+    pendingInput.current = null
+    const inputType = pending?.inputType || (event.nativeEvent as InputEvent).inputType || ''
+    apply(event.target.value, undefined, kindOf(inputType), pending?.selection ?? selection.current)
+  }
+
+  const placeActiveRow = (area: HTMLTextAreaElement) => {
+    selection.current = readSelection(area)
+    setActiveRow(rowAt(rows, area.selectionEnd).index)
+  }
 
   const onKeys = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    const command = event.metaKey || event.ctrlKey
+    const key = event.key.toLowerCase()
+    if (command && !event.altKey && ((key === 'z' && !event.shiftKey) || key === 'y')) {
+      event.preventDefault()
+      if (key === 'z') undo()
+      else redo()
+      return
+    }
+    if (command && !event.altKey && key === 'z' && event.shiftKey) {
+      event.preventDefault()
+      redo()
+      return
+    }
     if ((event.metaKey || event.ctrlKey) && event.key === 's') {
       event.preventDefault()
       void save()
@@ -285,7 +391,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
       const edit = eraseFilePair(value, selectionStart, selectionEnd)
       if (edit) {
         event.preventDefault()
-        apply(edit.value, edit)
+        apply(edit.value, edit, 'command')
       }
       return
     }
@@ -294,7 +400,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
       const edit = pairFile(value, selectionStart, selectionEnd, event.key)
       if (edit) {
         event.preventDefault()
-        apply(edit.value, edit)
+        apply(edit.value, edit, 'command')
         return
       }
     }
@@ -302,14 +408,14 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
       event.preventDefault()
       const { selectionStart, selectionEnd, value } = event.currentTarget
       const edit = indentFile(value, selectionStart, selectionEnd, event.shiftKey)
-      apply(edit.value, edit)
+      apply(edit.value, edit, 'command')
       return
     }
     if (event.key === 'Enter' && !composing.current && !event.metaKey && !event.ctrlKey && !event.altKey) {
       event.preventDefault()
       const { selectionStart, selectionEnd, value } = event.currentTarget
       const edit = breakFileLine(value, selectionStart, selectionEnd)
-      apply(edit.value, edit)
+      apply(edit.value, edit, 'command')
     }
   }
 
@@ -347,6 +453,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
                 <textarea
                   ref={areaRef}
                   value={shown}
+                  onBeforeInput={onBeforeEdit}
                   onChange={onEdit}
                   onKeyDown={onKeys}
                   onFocus={event => placeActiveRow(event.currentTarget)}
