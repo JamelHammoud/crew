@@ -284,6 +284,7 @@ describe('an agent face', () => {
     view.rerender(createElement(AgentIcon, { seed: SEED, activity: 'reading' }))
     expect(box.querySelector('.agent-face-stage')?.getAttribute('data-motion')).toBe('outgoing')
     expect(box.querySelector('[data-object="reading"]')?.parentElement?.getAttribute('data-motion')).toBe('incoming')
+    expect(box.querySelector('.agent-morph-bridge')).not.toBeNull()
 
     view.rerender(createElement(AgentIcon, { seed: SEED, activity: 'designing' }))
     expect(box.querySelector('[data-object="reading"]')?.parentElement?.getAttribute('data-motion')).toBe('outgoing')
@@ -291,6 +292,7 @@ describe('an agent face', () => {
 
     act(() => vi.advanceTimersByTime(720))
     expect(box.querySelector('[data-object="reading"]')).toBeNull()
+    expect(box.querySelector('.agent-morph-bridge')).toBeNull()
     expect(box.querySelector('[data-object="designing"]')?.parentElement?.getAttribute('data-motion')).toBe('working')
     expect(box.querySelector('.agent-face-stage')?.getAttribute('data-motion')).toBe('hidden')
   })

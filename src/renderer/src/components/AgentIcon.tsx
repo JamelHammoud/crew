@@ -5,6 +5,7 @@ import GeneratedField from './art/GeneratedField'
 import { FIELD_LIGHT, PET_GRID, eyeGapAt, eyeSize, petOf, petPath } from './art/pet'
 import { activityForAgent, type AgentActivity } from './agentActivity'
 import AgentActivityMark from './AgentActivityMark'
+import AgentMorphBridge from './AgentMorphBridge'
 
 const SIZES = {
   xs: 'w-5 h-5',
@@ -170,6 +171,7 @@ export default function AgentIcon({
           motion="outgoing"
         />
       )}
+      {performance.changing && <AgentMorphBridge key={`bridge-${performance.turn}`} seed={seed} box={box} src={src} />}
       {performance.current !== 'idle' && (
         <AgentActivityMark
           key={`in-${performance.turn}-${performance.current}`}
