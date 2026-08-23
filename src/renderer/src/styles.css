@@ -1130,11 +1130,11 @@ textarea:placeholder-shown {
 }
 
 .agent-icon .agent-activity-object[data-object='editing'] {
-  animation: agent-editing 3.2s ease-in-out var(--agent-delay, 0ms) infinite;
+  animation: agent-editing 1.65s ease-in-out var(--agent-delay, 0ms) infinite alternate;
 }
 
 .agent-icon .agent-activity-object[data-object='designing'] {
-  animation: agent-designing 2.8s ease-in-out var(--agent-delay, 0ms) infinite;
+  animation: agent-designing 1.7s ease-in-out var(--agent-delay, 0ms) infinite alternate;
 }
 
 .agent-icon .agent-activity-object[data-object='running'] {
@@ -1142,15 +1142,15 @@ textarea:placeholder-shown {
 }
 
 .agent-icon .agent-activity-object[data-object='planning'] {
-  animation: agent-planning 3.6s ease-in-out var(--agent-delay, 0ms) infinite;
+  animation: agent-planning 1.7s ease-in-out var(--agent-delay, 0ms) infinite alternate;
 }
 
 .agent-icon .agent-activity-object[data-object='communicating'] {
-  animation: agent-communicating 2.4s ease-in-out var(--agent-delay, 0ms) infinite;
+  animation: agent-communicating 1.6s ease-in-out var(--agent-delay, 0ms) infinite alternate;
 }
 
 .agent-icon .agent-activity-object[data-object='acting'] {
-  animation: agent-acting 3.8s ease-in-out var(--agent-delay, 0ms) infinite;
+  animation: agent-acting 1.45s ease-in-out var(--agent-delay, 0ms) infinite alternate;
 }
 
 @keyframes agent-face-alive {
@@ -1485,210 +1485,118 @@ textarea:placeholder-shown {
 }
 
 @keyframes agent-editing {
+  from {
+    transform: translate(-1%, 3%) rotate(-1deg) scale(1.015, 0.985);
+  }
+  to {
+    transform: translate(1.5%, -3%) rotate(1deg) scale(0.99, 1.015);
+  }
+}
+
+.agent-icon [data-part='writing-pencil'] {
+  transform-origin: center bottom;
+  animation: agent-writing-pencil 3s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+}
+
+.agent-icon [data-part='writing-trail'] {
+  stroke-dasharray: 80;
+  animation: agent-writing-trail 3s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite both;
+}
+
+@keyframes agent-writing-pencil {
   0%,
   100% {
-    transform: translateY(2%) rotate(-0.5deg) scale(1.01, 0.99);
+    transform: translateX(-8%) rotate(-2deg) scale(1.01, 0.99);
   }
-  48% {
-    transform: translateY(-3%) rotate(0.5deg) scale(0.99, 1.01);
+  18% {
+    transform: translateX(-10%) rotate(-3deg) scale(1.035, 0.965);
+  }
+  62% {
+    transform: translateX(8%) rotate(2deg) scale(0.985, 1.02);
+  }
+  78% {
+    transform: translate(10%, -4%) rotate(4deg) scale(1.025, 0.975);
+  }
+  88% {
+    transform: translate(-6%, -7%) rotate(-3deg) scale(0.97, 1.03);
   }
 }
 
-.agent-icon [data-part='writing-card'] {
-  animation: agent-writing-card 3.2s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
-}
-
-.agent-icon [data-part^='writing-line'] {
-  stroke-dasharray: 70;
-}
-
-.agent-icon [data-part='writing-line-one'],
-.agent-icon [data-part='writing-caret-one'] {
-  animation: agent-writing-one 3.2s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
-}
-
-.agent-icon [data-part='writing-line-two'],
-.agent-icon [data-part='writing-caret-two'] {
-  animation: agent-writing-two 3.2s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
-}
-
-.agent-icon [data-part='writing-line-three'],
-.agent-icon [data-part='writing-caret-three'] {
-  animation: agent-writing-three 3.2s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
-}
-
-@keyframes agent-writing-card {
+@keyframes agent-writing-trail {
   0%,
-  100% {
-    transform: scale(1);
-  }
-  20% {
-    transform: scale(1.015, 0.99);
-  }
-  44% {
-    transform: scale(0.99, 1.015);
-  }
-  68% {
-    transform: scale(1.01, 0.995);
-  }
-  89% {
-    transform: scale(0.97, 1.025);
-  }
-  95% {
-    transform: scale(1.025, 0.975);
-  }
-}
-
-@keyframes agent-writing-one {
-  0%,
-  5%,
-  88%,
-  100% {
-    stroke-dashoffset: 70;
+  8% {
+    stroke-dashoffset: 80;
     opacity: 0;
-    transform: scale(0.3);
   }
-  9% {
+  14% {
     opacity: 1;
-    transform: scale(1.2);
-  }
-  22%,
-  82% {
-    stroke-dashoffset: 0;
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes agent-writing-two {
-  0%,
-  27%,
-  88%,
-  100% {
-    stroke-dashoffset: 70;
-    opacity: 0;
-    transform: scale(0.3);
-  }
-  31% {
-    opacity: 1;
-    transform: scale(1.2);
-  }
-  45%,
-  82% {
-    stroke-dashoffset: 0;
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes agent-writing-three {
-  0%,
-  50%,
-  88%,
-  100% {
-    stroke-dashoffset: 70;
-    opacity: 0;
-    transform: scale(0.3);
-  }
-  54% {
-    opacity: 1;
-    transform: scale(1.2);
   }
   68%,
-  82% {
-    stroke-dashoffset: 0;
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes agent-designing {
-  0%,
-  100% {
-    transform: translateY(2%) rotate(-1deg) scale(1.01, 0.99);
-  }
-  48% {
-    transform: translateY(-3%) rotate(1deg) scale(0.99, 1.01);
-  }
-}
-
-.agent-icon [data-part='brush-handle'] {
-  transform-origin: 50% 78%;
-  animation: agent-brush-handle 2.8s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
-}
-
-.agent-icon [data-part='brush-tip'] {
-  transform-origin: 58% 22%;
-  animation: agent-brush-tip 2.8s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
-}
-
-.agent-icon [data-part='paint-stroke'] {
-  stroke-dasharray: 140;
-  animation: agent-paint-stroke 2.8s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
-}
-
-@keyframes agent-brush-handle {
-  0%,
-  100% {
-    transform: translate(-18%, 8%) rotate(-10deg) scale(1.02, 0.98);
-  }
-  12% {
-    transform: translate(-20%, 10%) rotate(-13deg) scale(1.04, 0.96);
-  }
-  58% {
-    transform: translate(16%, 0) rotate(8deg) scale(0.98, 1.03);
-  }
-  72% {
-    transform: translate(20%, -2%) rotate(11deg) scale(0.97, 1.04);
-  }
-  82% {
-    transform: translate(4%, -10%) rotate(-2deg) scale(1.04, 0.96);
-  }
-  92% {
-    transform: translate(-15%, 5%) rotate(-9deg) scale(1);
-  }
-}
-
-@keyframes agent-brush-tip {
-  0%,
-  100% {
-    transform: translate(-18%, 8%) rotate(-8deg) scale(1.06, 0.9);
-  }
-  12% {
-    transform: translate(-20%, 10%) rotate(-11deg) scale(1.12, 0.82);
-  }
-  58% {
-    transform: translate(16%, 0) rotate(6deg) scale(0.96, 1.08);
-  }
-  72% {
-    transform: translate(20%, -2%) rotate(9deg) scale(1.1, 0.84);
-  }
-  82% {
-    transform: translate(4%, -10%) rotate(-4deg) scale(0.92, 1.12);
-  }
-  92% {
-    transform: translate(-15%, 5%) rotate(-7deg) scale(1.04, 0.94);
-  }
-}
-
-@keyframes agent-paint-stroke {
-  0%,
-  10% {
-    stroke-dashoffset: 140;
-    opacity: 0;
-  }
-  16% {
-    opacity: 1;
-  }
-  70%,
-  82% {
+  78% {
     stroke-dashoffset: 0;
     opacity: 1;
   }
   92%,
   100% {
-    stroke-dashoffset: -16;
+    stroke-dashoffset: -80;
     opacity: 0;
+  }
+}
+
+@keyframes agent-designing {
+  from {
+    transform: translateY(3%) rotate(-1.2deg) scale(1.015, 0.985);
+  }
+  to {
+    transform: translateY(-3%) rotate(1.2deg) scale(0.99, 1.015);
+  }
+}
+
+.agent-icon [data-part='design-nib'] {
+  transform-origin: center bottom;
+  animation: agent-design-nib 3.1s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+}
+
+.agent-icon [data-part='design-aperture'] {
+  animation: agent-design-aperture 1.55s ease-in-out var(--agent-delay, 0ms) infinite alternate;
+}
+
+.agent-icon [data-part='design-slit'] {
+  animation: agent-design-slit 3.1s ease-in-out var(--agent-delay, 0ms) infinite;
+}
+
+@keyframes agent-design-nib {
+  0%,
+  100% {
+    transform: rotate(-1deg) scale(1.01, 0.99);
+  }
+  35% {
+    transform: rotate(1.5deg) scale(0.985, 1.02);
+  }
+  68% {
+    transform: rotate(-1deg) scale(1.025, 0.975);
+  }
+  82% {
+    transform: translateY(-3%) rotate(0.5deg) scale(0.98, 1.025);
+  }
+}
+
+@keyframes agent-design-aperture {
+  from {
+    transform: scale(0.78);
+  }
+  to {
+    transform: scale(1.12);
+  }
+}
+
+@keyframes agent-design-slit {
+  0%,
+  100% {
+    transform: scaleY(0.86);
+  }
+  50% {
+    transform: scaleY(1.08);
   }
 }
 
