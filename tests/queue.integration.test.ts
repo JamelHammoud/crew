@@ -1,3 +1,4 @@
+import fs from 'node:fs'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { agentId } from '../src/shared/llm'
 import type { SessionEvent } from '../src/shared/events'
@@ -147,6 +148,36 @@ describe('queued messages', () => {
     await ui.waitForEvent(e => e.kind === 'agent.end' && e.threadId === started.threadId)
     await new Promise(resolve => setTimeout(resolve, 200))
     expect(ui.events.some(e => e.kind === 'agent.start' && e.promptId === item.promptId)).toBe(false)
+  })
+
+  it('keeps a queued message when one of its files cannot be restored', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    await connectRunner('jamel', { FAKE_CLI_DELAY_MS: '900' })
+    await ui.waitForEvent(e => e.kind === 'agent.online')
+
+    const fake = agentId('jamel', 'fake')
+    ui.chat('start @Fake', [fake])
+    const started = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Started
+    await ui.waitForEvent(e => e.kind === 'agent.start' && e.threadId === started.threadId)
+    ui.send({
+      type: 'chat.send',
+      text: 'keep this safe',
+      mentions: [],
+      threadId: started.threadId,
+      attachments: [{ name: 'note.txt', mime: 'text/plain', data: Buffer.from('the note').toString('base64') }]
+    })
+    await waitUntil(() => queueOf(started.threadId).length === 1)
+    const item = queueOf(started.threadId)[0]
+    const file = host.store.attachmentPath(item.attachments![0].file)!
+    fs.rmSync(file)
+
+    ui.send({ type: 'queue.take', promptId: item.promptId })
+    const failed = await ui.waitFor(
+      message => message.type === 'queue.take.failed' && message.promptId === item.promptId
+    )
+    expect(failed).toMatchObject({ type: 'queue.take.failed', message: 'One of the files could not be opened.' })
+    expect(queueOf(started.threadId).map(queued => queued.promptId)).toContain(item.promptId)
   })
 
   it('runs queued messages in the order their author chose', async () => {
