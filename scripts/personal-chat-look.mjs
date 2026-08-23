@@ -255,7 +255,11 @@ try {
   ) {
     throw new Error('personal chat history did not stand beside the conversation: ' + JSON.stringify(seen.resting))
   }
-  if (!seen.active.current || seen.active.groupGap === 'normal' || seen.active.currentBackground === 'rgba(0, 0, 0, 0)') {
+  if (
+    !seen.active.current ||
+    seen.active.groupGap === 'normal' ||
+    seen.active.currentBackground === 'rgba(0, 0, 0, 0)'
+  ) {
     throw new Error('personal chat active state did not stay separate: ' + JSON.stringify(seen.active))
   }
   console.log(`Chat plus       ${seen.resting.plusOpacity} resting, ${seen.hovered.plusOpacity} hovered`)

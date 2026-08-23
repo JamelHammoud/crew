@@ -383,8 +383,8 @@ function createWindow(threadId?: string, load = true, personal = false): Browser
     personal
       ? createPersonalChatWindowOptions(process.platform, preload, inspectable)
       : threadId
-      ? createThreadWindowOptions(process.platform, preload, inspectable)
-      : createWindowOptions(process.platform, preload, inspectable)
+        ? createThreadWindowOptions(process.platform, preload, inspectable)
+        : createWindowOptions(process.platform, preload, inspectable)
   )
   if (process.platform !== 'darwin') win.setIcon(appIcon(iconTheme, chosenIcon))
   const isAppUrl = (url: string) => url.startsWith('file://') || (devUrl ? url.startsWith(devUrl) : false)
