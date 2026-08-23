@@ -123,6 +123,7 @@ declare global {
     onWindowShape(listener: (shape: { square: boolean; full: boolean; pinned: boolean }) => void): void
     onOpenUrl(listener: (url: string) => void): void
     onFindInPage(listener: () => void): () => void
+    registerBrowserView(id: number): void
     onCrewTrouble(listener: (message: string) => void): () => void
   }
 
@@ -136,6 +137,7 @@ declare global {
     goForward(): void
     canGoBack(): boolean
     canGoForward(): boolean
+    getWebContentsId(): number
     findInPage(text: string, options?: { forward?: boolean; findNext?: boolean; matchCase?: boolean }): number
     stopFindInPage(action: 'clearSelection' | 'keepSelection' | 'activateSelection'): void
   }

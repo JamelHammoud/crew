@@ -223,6 +223,7 @@ const bridge = {
       ipcRenderer.off('browser:find', handler)
     }
   },
+  registerBrowserView: (id: number): void => ipcRenderer.send('browser:view', id),
   onCrewTrouble: (listener: (message: string) => void): (() => void) => {
     const handler = (_event: unknown, message: string): void => listener(message)
     ipcRenderer.on('crew:trouble', handler)

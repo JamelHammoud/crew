@@ -1,6 +1,6 @@
 import type { Input, WebContents } from 'electron'
 import { describe, expect, it, vi } from 'vitest'
-import { browserFindShortcut, installBrowserFind } from '../src/main/browser-find'
+import { browserFindShortcut, installBrowserFind, installBrowserFindForHost } from '../src/main/browser-find'
 
 const key = (overrides: Partial<Input> = {}): Input =>
   ({
@@ -46,5 +46,27 @@ describe('webpage find shortcuts', () => {
 
     expect(preventDefault).toHaveBeenCalledOnce()
     expect(send).toHaveBeenCalledWith('browser:find')
+  })
+
+  it('registers only a webview owned by the asking window and only once', () => {
+    const listeners: unknown[] = []
+    const host = { id: 8 } as WebContents
+    const guest = {
+      getType: () => 'webview',
+      hostWebContents: host,
+      on: (_name: string, listener: unknown) => listeners.push(listener)
+    } as unknown as WebContents
+
+    expect(installBrowserFindForHost(null, host)).toBe(false)
+    expect(installBrowserFindForHost({ getType: () => 'window' } as unknown as WebContents, host)).toBe(false)
+    expect(
+      installBrowserFindForHost(
+        { getType: () => 'webview', hostWebContents: { id: 9 } } as unknown as WebContents,
+        host
+      )
+    ).toBe(false)
+    expect(installBrowserFindForHost(guest, host)).toBe(true)
+    expect(installBrowserFindForHost(guest, host)).toBe(true)
+    expect(listeners).toHaveLength(1)
   })
 })

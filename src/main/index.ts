@@ -1,4 +1,15 @@
-import { app, BrowserWindow, clipboard, dialog, ipcMain, Menu, nativeTheme, shell, type WebContents } from 'electron'
+import {
+  app,
+  BrowserWindow,
+  clipboard,
+  dialog,
+  ipcMain,
+  Menu,
+  nativeTheme,
+  shell,
+  webContents,
+  type WebContents
+} from 'electron'
 import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -54,7 +65,7 @@ import { threadWindowHash } from '../shared/threadViews'
 import { Updates } from './updates'
 import { runtimeStateDir } from './runtime-state'
 import { appMenuTemplate, closePutsAway, createThreadWindowOptions, createWindowOptions } from './window-options'
-import { installBrowserFind } from './browser-find'
+import { installBrowserFindForHost } from './browser-find'
 import { pinWindow, windowShapeOf } from './window-pin'
 
 app.setName('Crew')
@@ -286,12 +297,16 @@ app.on('web-contents-created', (_event, contents) => {
     preferences.devTools = inspectable
   })
   if (contents.getType() !== 'webview') return
-  installBrowserFind(contents)
   installContextMenu(contents, true, inspectable)
   contents.setWindowOpenHandler(({ url }) => {
     if (/^https?:/i.test(url)) void contents.loadURL(url)
     return { action: 'deny' }
   })
+})
+
+ipcMain.on('browser:view', (event, id: number) => {
+  if (!Number.isInteger(id)) return
+  installBrowserFindForHost(webContents.fromId(id), event.sender)
 })
 
 // Shells belong to the window that opened them, so closing a window takes its

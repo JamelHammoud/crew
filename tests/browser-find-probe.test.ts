@@ -21,11 +21,13 @@ let openFind: (() => void) | null = null
 let request = 0
 const findInPage = vi.fn(() => ++request)
 const stopFindInPage = vi.fn()
+const registerBrowserView = vi.fn()
 
 beforeEach(() => {
   request = 0
   findInPage.mockClear()
   stopFindInPage.mockClear()
+  registerBrowserView.mockClear()
   openFind = null
   window.crew = {
     warmTerminal: () => undefined,
@@ -44,9 +46,11 @@ beforeEach(() => {
         return this.getAttribute('src') ?? ''
       }
     },
+    registerBrowserView,
     loadURL: { configurable: true, value: vi.fn(async () => undefined) },
     canGoBack: { configurable: true, value: () => false },
     canGoForward: { configurable: true, value: () => false },
+    getWebContentsId: { configurable: true, value: () => 42 },
     findInPage: { configurable: true, value: findInPage },
     stopFindInPage: { configurable: true, value: stopFindInPage }
   })
@@ -55,7 +59,15 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup()
-  for (const name of ['getURL', 'loadURL', 'canGoBack', 'canGoForward', 'findInPage', 'stopFindInPage']) {
+  for (const name of [
+    'getURL',
+    'loadURL',
+    'canGoBack',
+    'canGoForward',
+    'getWebContentsId',
+    'findInPage',
+    'stopFindInPage'
+  ]) {
     Reflect.deleteProperty(HTMLElement.prototype, name)
   }
 })
@@ -74,6 +86,7 @@ describe('find in an open webpage', () => {
     openPage()
     const screen = render(createElement(BrowserPanel))
     const view = screen.container.querySelector('webview')!
+    expect(registerBrowserView).toHaveBeenCalledWith(42)
 
     fireEvent.click(screen.getByRole('button', { name: 'Find in page' }))
     const input = screen.getByRole('textbox', { name: 'Find in page' })

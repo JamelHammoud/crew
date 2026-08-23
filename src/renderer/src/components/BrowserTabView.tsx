@@ -21,6 +21,11 @@ export default function BrowserTabView({ tab, active }: { tab: BrowserTab; activ
     const view = ref.current
     if (!view) return
     views.set(tab.id, view)
+    const register = () => {
+      try {
+        window.crew.registerBrowserView?.(view.getWebContentsId())
+      } catch {}
+    }
     const update = useBrowser.getState().updateTab
     let stopped: ReturnType<typeof setTimeout> | null = null
     const sync = () =>
@@ -53,6 +58,8 @@ export default function BrowserTabView({ tab, active }: { tab: BrowserTab; activ
     view.addEventListener('did-start-loading', onStart)
     view.addEventListener('did-stop-loading', onStop)
     view.addEventListener('did-fail-load', onFail)
+    view.addEventListener('did-attach', register)
+    register()
     return () => {
       if (stopped) clearTimeout(stopped)
       views.delete(tab.id)
@@ -63,6 +70,7 @@ export default function BrowserTabView({ tab, active }: { tab: BrowserTab; activ
       view.removeEventListener('did-start-loading', onStart)
       view.removeEventListener('did-stop-loading', onStop)
       view.removeEventListener('did-fail-load', onFail)
+      view.removeEventListener('did-attach', register)
     }
   }, [tab.id])
 
