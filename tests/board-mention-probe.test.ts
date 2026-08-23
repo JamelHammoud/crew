@@ -156,7 +156,7 @@ describe('a design API chip', () => {
   it('keeps the tool-call gap around design chips in one run', () => {
     boot(false)
     cleanup()
-    const { container } = render(
+    render(
       createElement(ThreadItems, {
         items: [
           {
@@ -205,9 +205,9 @@ describe('a design API chip', () => {
       })
     )
 
-    expect(container.children[0].className).not.toContain('-mt-3')
-    expect(container.children[1].className).toContain('-mt-3')
-    expect(container.children[2].className).toContain('-mt-3')
-    expect(container.children[3].className).not.toContain('-mt-3')
+    expect(screen.getByText('Planning the board').closest('button')?.parentElement?.className).not.toContain('-mt-3')
+    expect(screen.getByRole('button', { name: 'Read Landing' }).closest('div')?.className).toContain('-mt-3')
+    expect(screen.getByText('Checking the board').closest('button')?.parentElement?.className).toContain('-mt-3')
+    expect(screen.getByRole('button', { name: 'Edited Landing' }).closest('div')?.className).not.toContain('-mt-3')
   })
 })
