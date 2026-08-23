@@ -1,7 +1,9 @@
 import { Children, Fragment, isValidElement, type ComponentType, type ReactNode } from 'react'
 import { STROKE, wearWeight } from '../icons/keylines'
 
-export type Glyph = ComponentType<{ className?: string; strokeWidth?: number }> & {
+export type Glyph = ComponentType<{ className?: string; strokeWidth?: number }>
+
+type DomGlyph = Glyph & {
   element: (doc: Document, className?: string, strokeWidth?: number) => SVGSVGElement
 }
 
@@ -38,7 +40,7 @@ function appendArt(doc: Document, parent: Element, node: ReactNode): void {
 // comes out spindly on a 12 and chunky on a 32. The size is read off the class
 // the caller already writes, so no call site has to know any of this, and a
 // strokeWidth of its own still wins.
-export function glyph(art: ReactNode, weight = STROKE): Glyph {
+export function glyph(art: ReactNode, weight = STROKE): DomGlyph {
   function CrewGlyph({ className = 'w-4 h-4', strokeWidth }: { className?: string; strokeWidth?: number }) {
     return (
       <svg
