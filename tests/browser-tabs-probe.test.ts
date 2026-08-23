@@ -464,6 +464,7 @@ describe('the tab strip', () => {
       getData: (type: string) => values.get(type) ?? ''
     }
 
+    fireEvent.dragStart(container.querySelector('[data-tab]')!, { dataTransfer })
     fireEvent.dragOver(row, { clientX: VIEW - 1, dataTransfer })
     expect(row.scrollLeft).toBe(62)
 
