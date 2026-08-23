@@ -430,12 +430,6 @@ function PanelOpens({ opens }: { opens: PanelOpen[] }) {
   )
 }
 
-function Favicon({ src }: { src: string }) {
-  const [broken, setBroken] = useState(false)
-  if (broken) return <GlobeGlyph className="w-4 h-4 shrink-0" />
-  return <img src={src} alt="" className="w-4 h-4 shrink-0 rounded-sm" onError={() => setBroken(true)} />
-}
-
 function TabPill({
   tab,
   active,
@@ -450,7 +444,7 @@ function TabPill({
   const pillRef = useRef<HTMLButtonElement>(null)
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
   const others = useBrowser(s => s.tabs.length > 1)
-  const FileMark = markFor(tab.mime)
+  const after = useBrowser(s => s.tabs.findIndex(one => one.id === tab.id) < s.tabs.length - 1)
 
   useEffect(() => {
     if (active && pillRef.current) bringInto(pillRef.current, strip.current, 'smooth')
@@ -467,6 +461,11 @@ function TabPill({
         onClick={() => {
           if (!row.dragged()) useBrowser.getState().selectTab(tab.id)
         }}
+        onAuxClick={event => {
+          if (event.button !== 1) return
+          event.preventDefault()
+          useBrowser.getState().closeTab(tab.id)
+        }}
         onContextMenu={event => {
           event.preventDefault()
           setMenuAt({ x: event.clientX, y: event.clientY })
@@ -481,46 +480,8 @@ function TabPill({
               : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
         }`}
       >
-        {tab.loading ? (
-          <Spinner size={14} className="text-fg-muted" />
-        ) : tab.plugin ? (
-          <PluginMark seed={tab.plugin} box={16} />
-        ) : tab.kind === 'agent' ? (
-          tab.threadId ? (
-            <SubagentMark seed={tab.threadId} size={18} />
-          ) : (
-            <GroupGlyph className="w-4 h-4 shrink-0" />
-          )
-        ) : tab.kind === 'plan' ? (
-          <ChecklistGlyph className="w-4 h-4 shrink-0" />
-        ) : tab.kind === 'work' ? (
-          <TicketGlyph className="w-4 h-4 shrink-0" />
-        ) : tab.kind === 'aside' ? (
-          <QuestionGlyph className="w-4 h-4 shrink-0" />
-        ) : tab.kind === 'review' ? (
-          <BranchGlyph className="w-4 h-4 shrink-0" />
-        ) : tab.kind === 'music' ? (
-          <MusicGlyph className="w-4 h-4 shrink-0" />
-        ) : tab.kind === 'game' ? (
-          <GameGlyph className="w-4 h-4 shrink-0" />
-        ) : tab.kind === 'terminal' ? (
-          <TerminalGlyph className="w-4 h-4 shrink-0" />
-        ) : tab.kind === 'attachment' ? (
-          <FileMark className="w-4 h-4 shrink-0" />
-        ) : tab.kind === 'file' ? (
-          tab.path ? (
-            <DocGlyph className="w-4 h-4 shrink-0" />
-          ) : (
-            <FolderGlyph className="w-4 h-4 shrink-0" />
-          )
-        ) : showsImage(tab) ? (
-          <PhotoGlyph className="w-4 h-4 shrink-0" />
-        ) : tab.favicon ? (
-          <Favicon key={tab.favicon} src={tab.favicon} />
-        ) : (
-          <GlobeGlyph className="w-4 h-4 shrink-0" />
-        )}
-        <span className="truncate">{tabLabel(tab)}</span>
+        <BrowserTabMark tab={tab} />
+        <span className="truncate">{browserTabLabel(tab)}</span>
         <span className="browser-tab-close pointer-events-none absolute inset-y-0 right-0 flex w-11 items-center justify-end rounded-r-full pr-1.5 opacity-0 transition-opacity group-hover:opacity-100">
           <span
             onPointerDown={event => event.stopPropagation()}
@@ -551,6 +512,16 @@ function TabPill({
             onClick={() => {
               setMenuAt(null)
               useBrowser.getState().closeOthers(tab.id)
+            }}
+          />
+        )}
+        {after && (
+          <MenuItem
+            icon={<CloseOthersGlyph />}
+            label="Close tabs to the right"
+            onClick={() => {
+              setMenuAt(null)
+              useBrowser.getState().closeAfter(tab.id)
             }}
           />
         )}
