@@ -96,7 +96,7 @@ describe('the updater quit handoff', () => {
     expect(updates.now()).toMatchObject({ stage: 'ready', version: '0.10.0', percent: 100 })
 
     updates.press()
-    await Promise.resolve()
+    await vi.advanceTimersByTimeAsync(0)
     expect(updater.quitAndInstall).toHaveBeenCalledOnce()
     updates.close()
   })
