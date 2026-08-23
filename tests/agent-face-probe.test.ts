@@ -2,7 +2,7 @@
 
 import { act, cleanup, render } from '@testing-library/react'
 import { createElement } from 'react'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import AgentIcon from '../src/renderer/src/components/AgentIcon'
 import {
   FIELD_LIGHT,
@@ -31,6 +31,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
+  vi.useRealTimers()
   cleanup()
 })
 
@@ -412,7 +413,6 @@ describe('an agent face', () => {
     expect(styles).toContain('@keyframes agent-activity-in')
     expect(styles).toContain('filter: blur(6px)')
     expect(styles).toContain('@keyframes agent-activity-out')
-    vi.useRealTimers()
   })
 })
 
