@@ -143,7 +143,7 @@ describe('putting a plugin on a message', () => {
     fireEvent.change(composer, { target: { value: 'draw the landing page' } })
     fireEvent.click(screen.getByLabelText('Send'))
 
-    expect(sendChat.mock.calls[0]?.at(-1)).toBe('frontpages')
+    expect(sendChat.mock.calls[0]?.[6]).toBe('frontpages')
     expect(useMessagePlugin.getState().picked['chat']).toBeUndefined()
   })
 

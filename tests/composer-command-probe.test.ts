@@ -78,7 +78,16 @@ describe('commands in the composer', () => {
     fireEvent.change(composer, { target: { value: 'finish the migration' } })
     fireEvent.click(screen.getByLabelText('Send'))
 
-    expect(sendChat).toHaveBeenCalledWith('finish the migration', undefined, undefined, undefined, undefined, ['goal'])
+    expect(sendChat).toHaveBeenCalledWith(
+      'finish the migration',
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      ['goal'],
+      undefined,
+      undefined
+    )
   })
 
   it('sends the command beside the message rather than in it', () => {
@@ -89,7 +98,16 @@ describe('commands in the composer', () => {
     fireEvent.change(composer, { target: { value: 'tidy the readme' } })
     fireEvent.click(screen.getByLabelText('Send'))
 
-    expect(sendChat).toHaveBeenCalledWith('tidy the readme', undefined, undefined, undefined, undefined, ['plan'])
+    expect(sendChat).toHaveBeenCalledWith(
+      'tidy the readme',
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      ['plan'],
+      undefined,
+      undefined
+    )
   })
 
   it('leaves a command written inside a sentence alone', () => {
@@ -101,7 +119,16 @@ describe('commands in the composer', () => {
     expect(screen.queryByLabelText('Remove Plan')).toBeNull()
 
     fireEvent.click(screen.getByLabelText('Send'))
-    expect(sendChat).toHaveBeenCalledWith('fix this /plan later', undefined, undefined, undefined, undefined, [])
+    expect(sendChat).toHaveBeenCalledWith(
+      'fix this /plan later',
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      [],
+      undefined,
+      undefined
+    )
   })
 
   it('turns the box itself over to ghost while the chip is on', () => {
