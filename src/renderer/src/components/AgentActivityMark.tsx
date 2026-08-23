@@ -62,11 +62,22 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
   }
   if (activity === 'editing') {
     return (
-      <path
-        data-part="pencil"
-        d="M69 8 C74 3 81 3 86 8 L92 14 C97 19 97 26 92 31 L39 84 L14 94 C9 96 5 92 7 87 L17 62 Z M22 69 L31 78 L73 36 L64 27 Z"
-        fillRule="evenodd"
-      />
+      <>
+        <path
+          data-part="writing-stroke"
+          d="M10 88 C25 76 37 95 53 87 C66 80 77 84 92 89"
+          fill="none"
+          stroke="#fff"
+          strokeWidth="9"
+          strokeLinecap="round"
+        />
+        <g data-part="writing-pen">
+          <path d="M70 7 C76 2 84 3 89 8 L93 12 C98 17 98 25 93 30 L43 76 L22 81 L27 60 Z" />
+          <path d="M27 60 L43 76 L22 81 Z" fill="#000" />
+          <path d="M30 70 L34 74" fill="none" stroke="#fff" strokeWidth="8" strokeLinecap="round" />
+          <path d="M68 18 L84 34" fill="none" stroke="#000" strokeWidth="6" strokeLinecap="round" />
+        </g>
+      </>
     )
   }
   if (activity === 'designing') {
@@ -79,6 +90,14 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
         <path
           data-part="brush-tip"
           d="M38 66 C47 64 56 72 56 81 C56 89 49 93 36 97 C32 98 30 96 29 92 L25 81 C22 73 29 67 38 66 Z"
+        />
+        <path
+          data-part="paint-stroke"
+          d="M10 90 C17 80 27 81 34 89 C42 98 55 97 65 89 C74 82 83 83 92 88"
+          fill="none"
+          stroke="#fff"
+          strokeWidth="8"
+          strokeLinecap="round"
         />
       </>
     )
@@ -98,12 +117,15 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
         />
         <path
           data-part="terminal-cursor"
-          d="M48 66 H73"
+          d="M49 65 H60"
           fill="none"
           stroke="#000"
           strokeWidth="8"
           strokeLinecap="round"
         />
+        <circle data-part="terminal-command-one" cx="50" cy="42" r="4" fill="#000" />
+        <circle data-part="terminal-command-two" cx="63" cy="42" r="4" fill="#000" />
+        <circle data-part="terminal-command-three" cx="76" cy="42" r="4" fill="#000" />
       </>
     )
   }
