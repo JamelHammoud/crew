@@ -1214,10 +1214,17 @@ textarea:placeholder-shown {
 @keyframes agent-thinking {
   0%,
   100% {
-    transform: rotate(-0.5deg) scale(1);
+    transform: translateY(3%) rotate(-0.6deg) scale(1.02, 0.98);
   }
-  48% {
-    transform: rotate(0.5deg) scale(1.01);
+  12% {
+    transform: translateY(2%) rotate(-0.3deg) scale(1.025, 0.975);
+  }
+  42%,
+  56% {
+    transform: translateY(-4%) rotate(0.6deg) scale(0.99, 1.02);
+  }
+  84% {
+    transform: translateY(2%) rotate(-0.2deg) scale(1.01, 0.99);
   }
 }
 
@@ -1226,15 +1233,15 @@ textarea:placeholder-shown {
 }
 
 .agent-icon [data-part^='thought-lobe'] {
-  animation: agent-thought-lobe 4.4s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+  animation: agent-thought-lobe 4.4s linear var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon [data-part='thought-lobe-two'] {
-  animation-delay: calc(var(--agent-delay, 0ms) - 180ms);
+  animation-delay: calc(var(--agent-delay, 0ms) - 1467ms);
 }
 
 .agent-icon [data-part='thought-lobe-three'] {
-  animation-delay: calc(var(--agent-delay, 0ms) - 360ms);
+  animation-delay: calc(var(--agent-delay, 0ms) - 2933ms);
 }
 
 .agent-icon [data-part='thought-dot-one'] {
@@ -1268,16 +1275,28 @@ textarea:placeholder-shown {
 @keyframes agent-thought-lobe {
   0%,
   100% {
-    transform: translate(0, 0) scale(1);
+    transform: translate(0, -72%) scale(1.06, 0.94);
   }
-  8% {
-    transform: translate(-2%, -3%) scale(1.13, 0.91);
-  }
-  16% {
-    transform: translate(1%, 2%) scale(0.96, 1.08);
+  12.5% {
+    transform: translate(58%, -52%) scale(0.96, 1.06);
   }
   25% {
-    transform: translate(0, 0) scale(1);
+    transform: translate(78%, 0) scale(1.05, 0.95);
+  }
+  37.5% {
+    transform: translate(58%, 52%) scale(0.97, 1.05);
+  }
+  50% {
+    transform: translate(0, 72%) scale(1.06, 0.94);
+  }
+  62.5% {
+    transform: translate(-58%, 52%) scale(0.97, 1.05);
+  }
+  75% {
+    transform: translate(-78%, 0) scale(1.05, 0.95);
+  }
+  87.5% {
+    transform: translate(-58%, -52%) scale(0.96, 1.06);
   }
 }
 
