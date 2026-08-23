@@ -376,71 +376,22 @@ describe('an agent face', () => {
     expect(box.querySelector('.agent-morph-bridge')).toBeNull()
   })
 
-  it('carries the old form through a state change before settling into the new one', () => {
-    vi.useFakeTimers()
+  it('switches activity states directly without a morph bridge', () => {
     const view = render(createElement(AgentIcon, { seed: SEED, activity: 'idle' }))
     const box = view.container.firstElementChild as HTMLElement
 
     view.rerender(createElement(AgentIcon, { seed: SEED, activity: 'reading' }))
-    expect(box.querySelector('.agent-face-stage')?.getAttribute('data-motion')).toBe('outgoing')
-    expect(box.querySelector('[data-object="reading"]')?.parentElement?.getAttribute('data-motion')).toBe('incoming')
-    expect(box.querySelector('.agent-morph-bridge')).not.toBeNull()
-    expect(box.querySelector('.agent-morph-bridge')?.getAttribute('data-from')).toBe('idle')
-    expect(box.querySelector('.agent-morph-bridge')?.getAttribute('data-to')).toBe('reading')
-    expect(box.querySelector('[data-part="morph-body"]')).not.toBeNull()
-    expect(box.querySelectorAll('[data-part^="morph-feature-"]')).toHaveLength(3)
+    expect(box.querySelector('.agent-face-stage')?.getAttribute('data-motion')).toBe('hidden')
+    expect(box.querySelector('[data-object="reading"]')?.parentElement?.getAttribute('data-motion')).toBe('working')
+    expect(box.querySelector('.agent-morph-bridge')).toBeNull()
 
     view.rerender(createElement(AgentIcon, { seed: SEED, activity: 'designing' }))
-    expect(box.querySelector('[data-object="reading"]')?.parentElement?.getAttribute('data-motion')).toBe('outgoing')
-    expect(box.querySelector('[data-object="designing"]')?.parentElement?.getAttribute('data-motion')).toBe('incoming')
-
-    act(() => vi.advanceTimersByTime(820))
     expect(box.querySelector('[data-object="reading"]')).toBeNull()
     expect(box.querySelector('.agent-morph-bridge')).toBeNull()
     expect(box.querySelector('[data-object="designing"]')?.parentElement?.getAttribute('data-motion')).toBe('working')
     expect(box.querySelector('.agent-face-stage')?.getAttribute('data-motion')).toBe('hidden')
-  })
-
-  it('interpolates the visible contour and its features through the whole state change', () => {
-    vi.useFakeTimers()
-    const frames: FrameRequestCallback[] = []
-    vi.stubGlobal(
-      'requestAnimationFrame',
-      vi.fn((callback: FrameRequestCallback) => {
-        frames.push(callback)
-        return frames.length
-      })
-    )
-    vi.stubGlobal('cancelAnimationFrame', vi.fn())
-    const view = render(createElement(AgentIcon, { seed: SEED, activity: 'idle' }))
-    const box = view.container.firstElementChild as HTMLElement
-
-    view.rerender(createElement(AgentIcon, { seed: SEED, activity: 'reading' }))
-    const body = box.querySelector('[data-part="morph-body"]') as SVGPathElement
-    const eye = box.querySelector('[data-part="morph-feature-1"]') as SVGPathElement
-    const sourceBody = body.getAttribute('d')
-    const sourceEye = eye.getAttribute('d')
-
-    act(() => frames.shift()?.(1000))
-    act(() => frames.shift()?.(1410))
-
-    expect(body.getAttribute('d')).not.toBe(sourceBody)
-    expect(body.getAttribute('d')).toContain('L')
-    expect(eye.getAttribute('d')).not.toBe(sourceEye)
-    expect(styles).not.toContain('@keyframes agent-morph-shape')
-    expect(styles).not.toContain('scale(0.58, 0.72)')
-  })
-
-  it('brings the face back through the same passing pose', () => {
-    vi.useFakeTimers()
-    const view = render(createElement(AgentIcon, { seed: SEED, activity: 'searching' }))
-    const box = view.container.firstElementChild as HTMLElement
 
     view.rerender(createElement(AgentIcon, { seed: SEED, activity: 'idle' }))
-    expect(box.querySelector('[data-object="searching"]')?.parentElement?.getAttribute('data-motion')).toBe('outgoing')
-    expect(box.querySelector('.agent-face-stage')?.getAttribute('data-motion')).toBe('incoming')
-
-    act(() => vi.advanceTimersByTime(820))
     expect(box.querySelector('.agent-activity-object')).toBeNull()
     expect(box.querySelector('.agent-face-stage')?.getAttribute('data-motion')).toBe('present')
   })
