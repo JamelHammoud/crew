@@ -3,6 +3,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import {
+  copyPaths,
   readLocalFile,
   readRepoFile,
   repoPathOf,
@@ -161,6 +162,25 @@ describe('repoPathOf', () => {
     expect(repoPathOf(root, path.join(root, 'src/app/main.ts'))).toBe('src/app/main.ts')
     expect(repoPathOf(root, '/tmp/preview.mjs')).toBeNull()
     expect(repoPathOf(root, '~/preview.mjs')).toBeNull()
+  })
+})
+
+describe('copyPaths', () => {
+  it('returns absolute and project-relative paths for a project file', () => {
+    const root = makeRepo()
+    expect(copyPaths(root, 'src/app/main.ts')).toEqual({
+      absolute: path.join(root, 'src', 'app', 'main.ts'),
+      relative: 'src/app/main.ts'
+    })
+  })
+
+  it('returns a relative path from the project for an outside file', () => {
+    const root = makeRepo()
+    const outside = path.join(path.dirname(root), 'elsewhere', 'notes.md')
+    expect(copyPaths(root, outside)).toEqual({
+      absolute: outside,
+      relative: '../elsewhere/notes.md'
+    })
   })
 })
 

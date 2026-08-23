@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { createElement } from 'react'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import BrowserPanel from '../src/renderer/src/components/BrowserPanel'
 import { fileTokens, parseFileRef, TextWithFileLinks } from '../src/renderer/src/components/fileLinks'
 import FilesChanged from '../src/renderer/src/components/FilesChanged'
@@ -70,6 +70,7 @@ const machine: Record<string, RepoFile> = {
 }
 
 const ROOT = '/Users/me/code/crew'
+const writeText = vi.fn<(text: string) => Promise<void>>(() => Promise.resolve())
 
 function locate(raw: string): PathLocation {
   const target = raw.split('\\').join('/')
@@ -96,10 +97,16 @@ function locate(raw: string): PathLocation {
 
 beforeEach(() => {
   useBrowser.setState({ tabs: [], activeTabId: null })
+  writeText.mockClear()
+  Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } })
   window.crew = {
     readFile: async (path: string) => repo[path] ?? machine[path] ?? { kind: 'missing', path },
     writeFile: async () => null,
     locatePath: async (path: string) => locate(path),
+    copyPaths: async (path: string) => ({
+      absolute: path.startsWith('/') ? path : `${ROOT}/${path}`,
+      relative: path.startsWith(`${ROOT}/`) ? path.slice(ROOT.length + 1) : path
+    }),
     revealFile: async () => undefined,
     openExternal: async () => undefined
   } as unknown as CrewBridge
@@ -735,6 +742,20 @@ describe('file view', () => {
     await screen.findByText('const three = 3')
     const tab = useBrowser.getState().tabs[0]
     expect(tab.back).toEqual(['src/app.ts', '', 'src'])
+  })
+
+  it('copies absolute and relative paths from the breadcrumbs', async () => {
+    useBrowser.getState().openFile('src/app.ts')
+    render(createElement(BrowserPanel))
+    await screen.findByText('const one = 1')
+
+    fireEvent.contextMenu(screen.getByText('app.ts'))
+    fireEvent.click(await screen.findByText('Copy path'))
+    await waitFor(() => expect(writeText).toHaveBeenLastCalledWith(`${ROOT}/src/app.ts`))
+
+    fireEvent.contextMenu(screen.getByText('app.ts'))
+    fireEvent.click(await screen.findByText('Copy relative path'))
+    await waitFor(() => expect(writeText).toHaveBeenLastCalledWith('src/app.ts'))
   })
 
   it('shows a message for files that are not in the project', async () => {
