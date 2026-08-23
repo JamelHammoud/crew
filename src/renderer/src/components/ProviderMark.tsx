@@ -35,7 +35,9 @@ const MARKS: Record<string, string> = {
 export default function ProviderMark({ provider, className = 'w-4 h-4' }: { provider: string; className?: string }) {
   const src = MARKS[provider]
   if (!src)
-    return <ServerGlyph className={`block shrink-0 text-fg/70 ${className}`} strokeWidth={wearWeight(STROKE, className)} />
+    return (
+      <ServerGlyph className={`block shrink-0 text-fg/70 ${className}`} strokeWidth={wearWeight(STROKE, className)} />
+    )
   return (
     <span className={`relative shrink-0 overflow-hidden rounded-[22%] ${className}`}>
       <img src={src} alt="" draggable={false} className="w-full h-full object-cover" />

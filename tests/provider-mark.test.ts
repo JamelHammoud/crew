@@ -54,4 +54,3 @@ describe('provider marks', () => {
     expect(source).not.toContain('scale(')
   })
 })
-
