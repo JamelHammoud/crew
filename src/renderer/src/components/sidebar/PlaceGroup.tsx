@@ -1,5 +1,5 @@
 import { memo, useCallback, useRef, useState, type CSSProperties } from 'react'
-import { LinkGlyph, PencilGlyph, TrashGlyph, WindowGlyph, XCircleGlyph } from '../../icons'
+import { LinkGlyph, PencilGlyph, PopOutGlyph, TrashGlyph, XCircleGlyph } from '../../icons'
 import { toast } from '../../state/toast'
 import Spinner from '../Spinner'
 import { MenuItem, Popover } from '../Popover'
@@ -86,7 +86,7 @@ function PlaceGroup({
       </div>
       <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined} className="min-w-44">
         <MenuItem
-          icon={<WindowGlyph className="w-4 h-4" />}
+          icon={<PopOutGlyph className="w-4 h-4" />}
           label="Open in new window"
           onClick={() => {
             setMenuAt(null)
