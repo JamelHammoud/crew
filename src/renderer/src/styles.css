@@ -1068,7 +1068,7 @@ textarea:placeholder-shown {
 }
 
 .agent-icon .agent-activity-object[data-object='thinking'] {
-  animation: agent-thinking 2.2s ease-in-out var(--agent-delay, 0ms) infinite alternate;
+  animation: agent-thinking 1.6s ease-in-out var(--agent-delay, 0ms) infinite alternate;
 }
 
 .agent-icon .agent-activity-object[data-object='reading'] {
@@ -1088,7 +1088,7 @@ textarea:placeholder-shown {
 }
 
 .agent-icon .agent-activity-object[data-object='running'] {
-  animation: agent-running 1.8s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+  animation: agent-running 1.45s ease-in-out var(--agent-delay, 0ms) infinite alternate;
 }
 
 .agent-icon .agent-activity-object[data-object='planning'] {
@@ -1809,98 +1809,31 @@ textarea:placeholder-shown {
 }
 
 @keyframes agent-running {
-  0%,
-  100% {
-    transform: rotate(-0.4deg) scale(1);
+  from {
+    transform: translateY(3%) rotate(-0.6deg) scale(1.015, 0.985);
   }
-  50% {
-    transform: rotate(0.4deg) scale(1.008);
+  to {
+    transform: translateY(-3%) rotate(0.6deg) scale(0.99, 1.015);
   }
-}
-
-.agent-icon [data-part='terminal'] {
-  animation: agent-terminal-shell 1.8s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon [data-part='terminal-prompt'] {
   transform-origin: left center;
-  animation: agent-terminal-prompt 1.8s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon [data-part='terminal-cursor'] {
   transform-origin: left center;
-  animation: agent-terminal-cursor 1.8s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
-}
-
-@keyframes agent-terminal-shell {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  48% {
-    transform: scale(0.985, 1.02);
-  }
-  72% {
-    transform: scale(1.015, 0.985);
-  }
-}
-
-@keyframes agent-terminal-prompt {
-  0%,
-  10% {
-    opacity: 0;
-    stroke-dasharray: 50;
-    stroke-dashoffset: 50;
-    transform: translateX(-6%) scaleX(0.82);
-  }
-  26%,
-  84% {
-    opacity: 1;
-    stroke-dasharray: 50;
-    stroke-dashoffset: 0;
-    transform: scaleX(1);
-  }
-  96%,
-  100% {
-    opacity: 0;
-    stroke-dasharray: 50;
-    stroke-dashoffset: -50;
-    transform: translateX(6%) scaleX(0.82);
-  }
+  animation: agent-terminal-cursor 1s steps(1, end) var(--agent-delay, 0ms) infinite;
 }
 
 @keyframes agent-terminal-cursor {
   0%,
-  20% {
-    opacity: 0;
-    transform: translateX(-8%) scaleX(0.2);
-  }
-  27%,
-  42% {
+  49% {
     opacity: 1;
-    transform: translateX(0) scaleX(1);
   }
-  48% {
-    opacity: 0;
-    transform: translateX(22%) scaleX(0.2);
-  }
-  56%,
-  72% {
-    opacity: 1;
-    transform: translateX(44%) scaleX(0.82);
-  }
-  79% {
-    opacity: 0;
-    transform: translateX(62%) scaleX(0.2);
-  }
-  86% {
-    opacity: 1;
-    transform: translateX(72%) scaleX(0.6);
-  }
-  96%,
+  50%,
   100% {
     opacity: 0;
-    transform: translateX(80%) scaleX(0.2);
   }
 }
 

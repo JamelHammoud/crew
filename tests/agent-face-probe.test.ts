@@ -147,7 +147,7 @@ describe('an agent face', () => {
     const rule = styles.split(".agent-icon .agent-activity-object[data-object='thinking'] {")[1]?.split('}')[0] ?? ''
     const keyframes = styles.split('@keyframes agent-thinking {')[1]?.split('\n}')[0] ?? ''
 
-    expect(rule).toContain('2.2s ease-in-out')
+    expect(rule).toContain('1.6s ease-in-out')
     expect(rule).toContain('infinite alternate')
     expect(keyframes.match(/transform:/g)).toHaveLength(2)
     expect(keyframes).toContain('translateY(3%)')
@@ -169,6 +169,20 @@ describe('an agent face', () => {
     expect(object.querySelector('[data-part="terminal-prompt"]')).not.toBeNull()
     expect(object.querySelector('[data-part="terminal-cursor"]')).not.toBeNull()
     expect(object.querySelector('[data-part^="terminal-command-"]')).toBeNull()
+  })
+
+  it('keeps the Running caret still while one underscore blinks and the terminal bobs', () => {
+    const rule = styles.split(".agent-icon .agent-activity-object[data-object='running'] {")[1]?.split('}')[0] ?? ''
+    const prompt = styles.split(".agent-icon [data-part='terminal-prompt'] {")[1]?.split('}')[0] ?? ''
+    const cursor = styles.split(".agent-icon [data-part='terminal-cursor'] {")[1]?.split('}')[0] ?? ''
+    const keyframes = styles.split('@keyframes agent-running {')[1]?.split('\n}')[0] ?? ''
+
+    expect(rule).toContain('1.45s ease-in-out')
+    expect(rule).toContain('infinite alternate')
+    expect(prompt).not.toContain('animation:')
+    expect(cursor).toContain('1s steps(1, end)')
+    expect(keyframes).toContain('translateY(3%)')
+    expect(keyframes).toContain('translateY(-3%)')
   })
 
   it('gives every activity a moving part inside its silhouette', () => {
