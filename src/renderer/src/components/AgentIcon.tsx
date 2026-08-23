@@ -6,6 +6,7 @@ import { FIELD_LIGHT, PET_GRID, eyeGapAt, eyeSize, petOf, petPath } from './art/
 import type { AgentActivity } from './agentActivity'
 import AgentActivityMark from './AgentActivityMark'
 import AgentMorphBridge from './AgentMorphBridge'
+import { AGENT_MORPH_MS } from './agentMorph'
 
 const SIZES = {
   xs: 'w-5 h-5',
@@ -30,8 +31,6 @@ const DOTS = {
   lg: 'w-3 h-3 ring-[2.5px]'
 } as const
 
-const CHANGE_MS = 820
-
 interface Performance {
   current: AgentActivity
   outgoing?: AgentActivity
@@ -55,7 +54,7 @@ function usePerformance(activity: AgentActivity): Performance {
     clearTimeout(timer.current)
     timer.current = setTimeout(() => {
       setPerformance(previous => ({ ...previous, outgoing: undefined, changing: false }))
-    }, CHANGE_MS)
+    }, AGENT_MORPH_MS)
     return () => clearTimeout(timer.current)
   }, [performance.changing, performance.turn])
 
@@ -167,7 +166,15 @@ export default function AgentIcon({
           motion="outgoing"
         />
       )}
-      {!src && performance.changing && <AgentMorphBridge key={`bridge-${performance.turn}`} seed={seed} box={box} />}
+      {!src && performance.changing && performance.outgoing && (
+        <AgentMorphBridge
+          key={`bridge-${performance.turn}`}
+          seed={seed}
+          box={box}
+          from={performance.outgoing}
+          to={performance.current}
+        />
+      )}
       {!src && performance.current !== 'idle' && (
         <AgentActivityMark
           key={`in-${performance.turn}-${performance.current}`}
