@@ -58,7 +58,7 @@ describe('the pet an agent wears', () => {
     for (let index = 0; index < 700; index++) {
       const pet = petOf(`gaze-${index}`)
       expect(Math.abs(pet.eyeX - PET_GRID / 2)).toBeLessThan(4)
-      expect(Math.abs(pet.tilt)).toBeLessThanOrEqual(4)
+      expect(Math.abs(pet.tilt)).toBeLessThanOrEqual(3)
     }
     expect(eyeSize({ kind: 'circle' })).toEqual({ width: 12, height: 26, radius: 6 })
     expect(eyeSize({ kind: 'triangle' }).width).toBeGreaterThan(9)
@@ -69,10 +69,10 @@ describe('the pet an agent wears', () => {
     const pet = petOf(SEED)
     expect(pet.hue).toBe(225)
     expect(pet.kind).toBe('capsule')
-    expect(pet.eyeX).toBeCloseTo(61.533, 3)
-    expect(pet.eyeY).toBeCloseTo(49.406, 3)
-    expect(pet.eyeGap).toBeCloseTo(17.949, 3)
-    expect(pet.tilt).toBeCloseTo(-3.959, 3)
+    expect(pet.eyeX).toBe(50)
+    expect(pet.eyeY).toBeCloseTo(50.315, 3)
+    expect(pet.eyeGap).toBeCloseTo(18.286, 3)
+    expect(pet.tilt).toBeCloseTo(2.425, 3)
   })
 
   it('scales one silhouette to the box without changing its family', () => {
@@ -84,6 +84,37 @@ describe('the pet an agent wears', () => {
 })
 
 describe('an agent face', () => {
+  it('has a separate whole-object silhouette for every live activity', () => {
+    const activities = [
+      'thinking',
+      'reading',
+      'searching',
+      'editing',
+      'designing',
+      'running',
+      'planning',
+      'communicating',
+      'acting'
+    ] as const
+    for (const activity of activities) {
+      const box = face({ activity })
+      const object = box.querySelector(`[data-object="${activity}"]`)
+      expect(object?.querySelector('mask')).not.toBeNull()
+      expect(object?.querySelector('foreignObject')?.getAttribute('mask')).toMatch(/^url\(#.+\)$/)
+      cleanup()
+    }
+  })
+
+  it('forms Designing as a rounded handle and brush tip', () => {
+    const object = face({ activity: 'designing' }).querySelector('[data-object="designing"]') as HTMLElement
+    const pieces = object.querySelectorAll('mask path')
+
+    expect(pieces).toHaveLength(2)
+    expect(pieces[0].getAttribute('d')).toMatch(/^M61 5 C69 3/)
+    expect(pieces[1].getAttribute('d')).toMatch(/^M38 66 C47 64/)
+    expect(object.querySelector('.agent-pet-eyes')).toBeNull()
+  })
+
   it('uses its generated field as the silhouette instead of a circular background', () => {
     const box = face({ size: 'xs' })
     const shape = box.querySelector('mask > path') as SVGPathElement
