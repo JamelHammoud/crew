@@ -185,15 +185,23 @@ describe('an agent face', () => {
     expect(keyframes).toContain('translateY(-3%)')
   })
 
-  it('turns a page while Reading and carries the whole book in a continuous bob', () => {
+  it('opens, turns a page and closes Reading around one shared spine', () => {
     const object = face({ activity: 'reading' }).querySelector('[data-object="reading"]') as HTMLElement
     const rule = styles.split(".agent-icon .agent-activity-object[data-object='reading'] {")[1]?.split('}')[0] ?? ''
+    const turn = styles.split('@keyframes agent-page-turn {')[1]?.split('\n}')[0] ?? ''
 
-    expect(object.querySelectorAll('[data-part^="page-"]')).toHaveLength(5)
+    expect(object.querySelector('[data-part="book-left"] [data-part="book-cover-left"]')).not.toBeNull()
+    expect(object.querySelector('[data-part="book-left"] [data-part="book-page-left"]')).not.toBeNull()
+    expect(object.querySelector('[data-part="book-right"] [data-part="book-cover-right"]')).not.toBeNull()
+    expect(object.querySelector('[data-part="book-right"] [data-part="book-page-right"]')).not.toBeNull()
+    expect(object.querySelector('[data-part="book-spine"]')?.getAttribute('d')).toBe('M50 36 V84')
     expect(object.querySelector('[data-part="page-turn"]')).not.toBeNull()
-    expect(rule).toContain('2.9s ease-in-out')
-    expect(styles).toContain("[data-part='page-turn']")
-    expect(styles).toContain('@keyframes agent-page-turn')
+    expect(object.querySelector('[data-part="page-turn"] [data-part="page-turn-edge"]')).not.toBeNull()
+    expect(rule).toContain('4.8s cubic-bezier(0.45, 0, 0.2, 1)')
+    expect(styles).toContain('@keyframes agent-book-left')
+    expect(styles).toContain('@keyframes agent-book-right')
+    expect(turn).toContain('scaleX(0.04)')
+    expect(turn).toContain('scaleX(-1)')
   })
 
   it('sweeps a lens and its glint while Searching', () => {
