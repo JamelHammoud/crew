@@ -15,7 +15,6 @@ const capsule = (x: number, y: number, width: number, height: number): string =>
   const radius = height / 2
   const right = x + width
   const bottom = y + height
-  const middle = y + radius
   return `M${x + radius} ${y} H${right - radius} C${right} ${y} ${right} ${bottom} ${right - radius} ${bottom} H${x + radius} C${x} ${bottom} ${x} ${y} ${x + radius} ${y} Z`
 }
 
