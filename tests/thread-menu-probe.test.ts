@@ -184,7 +184,7 @@ describe('a right click on the thread itself', () => {
   })
 
   function Background({ alone = false }: { alone?: boolean }) {
-    const openMenu = useThreadMenu({ threadId: 'thread-2', opening: !alone, onOpen })
+    const openMenu = useThreadMenu({ threadId: 'thread-2', opening: !alone, windowPin: true, onOpen })
     return createElement(
       'div',
       null,

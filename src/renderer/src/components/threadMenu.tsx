@@ -115,6 +115,7 @@ export function WindowPinItem({ onDone }: { onDone: () => void }) {
 export function useThreadMenu({
   status,
   opening = true,
+  windowPin = false,
   ...props
 }: {
   threadId: string
@@ -125,6 +126,7 @@ export function useThreadMenu({
   // here and finished there.
   status?: boolean
   opening?: boolean
+  windowPin?: boolean
   onOpen: () => void
 }): { onContextMenu: (event: MouseEvent) => void; menu: ReactNode } {
   const [at, setAt] = useState<{ x: number; y: number } | null>(null)
@@ -138,7 +140,7 @@ export function useThreadMenu({
     menu: (
       <Popover open={at !== null} onClose={() => setAt(null)} at={at ?? undefined} className="min-w-52">
         {opening && <ThreadOpenItems {...props} onDone={() => setAt(null)} />}
-        <WindowPinItem onDone={() => setAt(null)} />
+        {windowPin && <WindowPinItem onDone={() => setAt(null)} />}
         {status && <MenuDivider />}
         {status && <ThreadStatusItems threadId={props.threadId} onDone={() => setAt(null)} />}
         <MenuDivider />
