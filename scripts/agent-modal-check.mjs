@@ -9,14 +9,86 @@ const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
 const shot = path.join(tmpdir(), 'crew-agent-modal-check.png')
 
-const fields = Array.from({ length: 18 }, (_, index) => ({
-  key: `setting${index}`,
-  label: `Setting ${index + 1}`,
-  kind: index % 3 === 0 ? 'switch' : index % 3 === 1 ? 'number' : 'text',
-  default: '',
-  advanced: true,
-  section: index < 6 ? 'Tools' : index < 12 ? 'Limits' : 'On this computer'
-}))
+const fields = [
+  {
+    key: 'instructions',
+    label: 'Instructions',
+    kind: 'paragraph',
+    default: '',
+    advanced: true,
+    placeholder: 'None',
+    line: 'Read before every message.'
+  },
+  {
+    key: 'mode',
+    label: 'What it may do',
+    options: [
+      { value: 'anything', label: 'Anything' },
+      { value: 'safe', label: 'Safe changes' },
+      { value: 'plan', label: 'Read only' }
+    ],
+    default: 'anything',
+    advanced: true,
+    section: 'On this computer'
+  },
+  {
+    key: 'sandbox',
+    label: 'Sandbox',
+    options: [
+      { value: '', label: 'Default' },
+      { value: 'off', label: 'Off' },
+      { value: 'workspace', label: 'Project only' },
+      { value: 'read-only', label: 'Read only' },
+      { value: 'strict', label: 'Strict' }
+    ],
+    default: '',
+    advanced: true,
+    section: 'On this computer'
+  },
+  ...['Web access', 'Planning', 'Subagents'].map((label, index) => ({
+    key: ['web', 'planning', 'subagents'][index],
+    label,
+    kind: 'switch',
+    default: 'on',
+    advanced: true,
+    section: 'Tools'
+  })),
+  {
+    key: 'memory',
+    label: 'Grok memory',
+    options: [
+      { value: '', label: 'Default' },
+      { value: 'on', label: 'On' },
+      { value: 'off', label: 'Off' }
+    ],
+    default: '',
+    advanced: true,
+    section: 'Tools'
+  },
+  ...[
+    ['tools', 'Only these tools', 'All'],
+    ['disallowedTools', 'Tools it cannot use', 'None']
+  ].map(([key, label, placeholder]) => ({
+    key,
+    label,
+    kind: 'text',
+    default: '',
+    advanced: true,
+    section: 'Tools',
+    placeholder,
+    line: 'Separated by commas.'
+  })),
+  {
+    key: 'maxTurns',
+    label: 'Most turns per message',
+    kind: 'number',
+    default: '',
+    advanced: true,
+    section: 'Limits',
+    min: 1,
+    unit: 'turns'
+  }
+]
 
 const probe = `
 import { createRoot } from 'react-dom/client'
@@ -43,8 +115,9 @@ const path = require('node:path')
 
 app.disableHardwareAcceleration()
 app.whenReady().then(async () => {
-  const win = new BrowserWindow({ width: 900, height: 640, frame: false, show: false, backgroundColor: '#0b0b0d' })
+  const win = new BrowserWindow({ width: 955, height: 657, frame: false, show: false, backgroundColor: '#0b0b0d' })
   await win.loadFile(path.join(__dirname, 'dist', 'index.html'))
+  win.webContents.setZoomFactor(0.8)
   await new Promise(resolve => setTimeout(resolve, 500))
   const result = await win.webContents.executeJavaScript(\`(async () => {
     const dialog = document.querySelector('[role="dialog"]')
