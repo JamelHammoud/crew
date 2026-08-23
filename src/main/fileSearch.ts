@@ -4,6 +4,7 @@ import { listRepoFiles } from '../shared/repoFiles'
 import { resolveRepoPath } from './files'
 
 const MAX_BYTES = 5 * 1024 * 1024
+const MAX_CACHE_BYTES = 64 * 1024 * 1024
 const MAX_TEXT = 240
 const BATCH = 20
 
@@ -12,6 +13,7 @@ type CachedFile = {
   size: number
   text: string | null
   partial: boolean
+  cost: number
 }
 
 function matchText(line: string, at: number, length: number): Pick<FileContentMatch, 'text' | 'start' | 'end'> {
@@ -43,6 +45,30 @@ function searchText(path: string, text: string, needle: string, limit: number): 
 export class FileSearch {
   private root = ''
   private cache = new Map<string, CachedFile>()
+  private cacheBytes = 0
+
+  private clear(): void {
+    this.cache.clear()
+    this.cacheBytes = 0
+  }
+
+  private forget(path: string): void {
+    const cached = this.cache.get(path)
+    if (!cached) return
+    this.cache.delete(path)
+    this.cacheBytes -= cached.cost
+  }
+
+  private remember(path: string, entry: CachedFile): void {
+    this.forget(path)
+    this.cache.set(path, entry)
+    this.cacheBytes += entry.cost
+    while (this.cacheBytes > MAX_CACHE_BYTES) {
+      const oldest = this.cache.keys().next().value
+      if (oldest === undefined) break
+      this.forget(oldest)
+    }
+  }
 
   private async read(root: string, relative: string): Promise<CachedFile | null> {
     const absolute = resolveRepoPath(root, relative)
@@ -50,20 +76,26 @@ export class FileSearch {
     const stat = await fs.stat(absolute).catch(() => null)
     if (!stat?.isFile()) return null
     const cached = this.cache.get(relative)
-    if (cached && cached.mtimeMs === stat.mtimeMs && cached.size === stat.size) return cached
+    if (cached && cached.mtimeMs === stat.mtimeMs && cached.size === stat.size) {
+      this.cache.delete(relative)
+      this.cache.set(relative, cached)
+      return cached
+    }
     const handle = await fs.open(absolute, 'r').catch(() => null)
     if (!handle) return null
     try {
       const buffer = Buffer.alloc(Math.min(stat.size, MAX_BYTES))
       const { bytesRead } = await handle.read(buffer, 0, buffer.length, 0)
       const bytes = buffer.subarray(0, bytesRead)
+      const text = bytes.subarray(0, 8000).includes(0) ? null : bytes.toString('utf8')
       const entry: CachedFile = {
         mtimeMs: stat.mtimeMs,
         size: stat.size,
-        text: bytes.subarray(0, 8000).includes(0) ? null : bytes.toString('utf8'),
-        partial: stat.size > MAX_BYTES
+        text,
+        partial: text !== null && stat.size > MAX_BYTES,
+        cost: text?.length ?? 0
       }
-      this.cache.set(relative, entry)
+      this.remember(relative, entry)
       return entry
     } finally {
       await handle.close()
@@ -75,11 +107,11 @@ export class FileSearch {
     if (!needle || limit <= 0) return { matches: [], limited: false }
     if (root !== this.root) {
       this.root = root
-      this.cache.clear()
+      this.clear()
     }
     const paths = await listRepoFiles(root)
     const current = new Set(paths)
-    for (const path of this.cache.keys()) if (!current.has(path)) this.cache.delete(path)
+    for (const path of this.cache.keys()) if (!current.has(path)) this.forget(path)
     const found: FileContentMatch[] = []
     let partial = false
     for (let at = 0; at < paths.length && found.length <= limit; at += BATCH) {
