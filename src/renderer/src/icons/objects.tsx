@@ -108,6 +108,13 @@ export const WindowGlyph = glyph(
   </>
 )
 
+export const PinGlyph = glyph(
+  <>
+    <path d="M7.25 2.5h9.5L15.5 9l3.75 3.75v2H4.75v-2L8.5 9Z" />
+    <path d="M12 14.75v7" />
+  </>
+)
+
 // The same screen with a panel down one side of it, so a window and a window
 // with something beside it are one object wearing two insides. The divider
 // stands a third of the way in, which is the least that reads as a panel rather

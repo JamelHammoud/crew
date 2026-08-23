@@ -107,6 +107,7 @@ const bridge = {
   closeTray: (): void => ipcRenderer.send('tray:hide'),
   popOutThread: (threadId: string, key?: string): Promise<void> =>
     ipcRenderer.invoke('window:pop-thread', threadId, key),
+  setWindowPinned: (pinned: boolean): Promise<boolean> => ipcRenderer.invoke('window:pin', pinned),
   appVersion: (): Promise<string> => ipcRenderer.invoke('app:version'),
   systemInfo: (): Promise<SystemDetails> => ipcRenderer.invoke('app:system'),
   setTheme: (theme: 'dark' | 'light'): Promise<void> => ipcRenderer.invoke('app:theme', theme),
@@ -207,8 +208,8 @@ const bridge = {
       ipcRenderer.off('update:state', handler)
     }
   },
-  onWindowShape: (listener: (shape: { square: boolean; full: boolean }) => void): void => {
-    ipcRenderer.on('window:shape', (_event, shape: { square: boolean; full: boolean }) => listener(shape))
+  onWindowShape: (listener: (shape: { square: boolean; full: boolean; pinned: boolean }) => void): void => {
+    ipcRenderer.on('window:shape', (_event, shape: { square: boolean; full: boolean; pinned: boolean }) => listener(shape))
   },
   onOpenUrl: (listener: (url: string) => void): void => {
     ipcRenderer.on('browser:open', (_event, url: string) => listener(url))

@@ -364,7 +364,8 @@ function createWindow(threadId?: string): BrowserWindow {
   const syncWindowShape = () =>
     win.webContents.send('window:shape', {
       square: win.isFullScreen() || win.isMaximized(),
-      full: win.isFullScreen()
+      full: win.isFullScreen(),
+      pinned: win.isAlwaysOnTop()
     })
   win.on('maximize', syncWindowShape)
   win.on('unmaximize', syncWindowShape)
@@ -572,6 +573,18 @@ app.whenReady().then(() => {
     win.on('closed', () => {
       if (popped.get(at) === win) popped.delete(at)
     })
+  })
+  ipcMain.handle('window:pin', (event, pinned: boolean) => {
+    const win = BrowserWindow.fromWebContents(event.sender)
+    if (!win || !appWindows().includes(win)) return false
+    win.setAlwaysOnTop(pinned === true)
+    const next = win.isAlwaysOnTop()
+    win.webContents.send('window:shape', {
+      square: win.isFullScreen() || win.isMaximized(),
+      full: win.isFullScreen(),
+      pinned: next
+    })
+    return next
   })
   ipcMain.handle('session:close', async (_event, key: string) => {
     await crews.close(key)

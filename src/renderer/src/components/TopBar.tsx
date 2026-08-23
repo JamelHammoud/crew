@@ -8,6 +8,7 @@ import PanelToggle from './PanelToggle'
 import PresenceStack from './PresenceStack'
 import Tooltip from './Tooltip'
 import UpdatePill from './UpdatePill'
+import WindowPin from './WindowPin'
 
 export const TOP_BAR_H = 70
 
@@ -64,6 +65,7 @@ export default function TopBar() {
           {connection === 'reconnecting' && (
             <span className="text-xs text-fg-muted animate-pulse mr-1">Connection lost. Trying again…</span>
           )}
+          <WindowPin />
           <UpdatePill />
           <PresenceStack compact={compact} />
           {/* Your face is the way into the settings. Everything a menu here used

@@ -10,7 +10,7 @@ import { watchShift } from './state/shift'
 import { useCrew } from './state/store'
 import { applyTheme, showTheme, storedTheme } from './state/theme'
 import { publishPresence } from './state/trayPresence'
-import { setFullScreen } from './state/windowShape'
+import { setFullScreen, setWindowPinned } from './state/windowShape'
 import ScribeWindow from './views/ScribeWindow'
 import ThreadWindow from './views/ThreadWindow'
 import TrayPanel from './views/TrayPanel'
@@ -46,6 +46,7 @@ if (joins) {
   window.crew.onWindowShape(shape => {
     root.classList.toggle('square', shape.square)
     setFullScreen(shape.full)
+    setWindowPinned(shape.pinned)
   })
   window.crew.onOpenUrl(url => useBrowser.getState().openUrl(url))
 }
