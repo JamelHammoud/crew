@@ -27,30 +27,57 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
     return (
       <>
         <path
-          data-part="page-left"
-          d="M9 22 C21 17 36 20 47 29 C49 31 50 34 50 37 V85 C38 77 24 75 11 80 C6 82 3 78 3 73 V31 C3 27 5 24 9 22 Z"
+          data-part="book-cover-left"
+          d="M50 34 C39 24 25 21 11 26 C7 27 5 31 5 35 V77 C5 82 9 85 14 83 C28 78 40 80 50 88 Z"
         />
         <path
-          data-part="page-right"
-          d="M91 22 C79 17 64 20 53 29 C51 31 50 34 50 37 V85 C62 77 76 75 89 80 C94 82 97 78 97 73 V31 C97 27 95 24 91 22 Z"
+          data-part="book-cover-right"
+          d="M50 34 C61 24 75 21 89 26 C93 27 95 31 95 35 V77 C95 82 91 85 86 83 C72 78 60 80 50 88 Z"
         />
         <path
-          data-part="page-line-left"
-          d="M17 39 C25 37 33 39 40 43"
+          data-part="book-page-left"
+          d="M50 36 C40 28 28 26 16 29 C13 30 11 33 11 37 V72 C11 76 14 78 18 77 C30 74 41 77 50 84 Z"
+        />
+        <path
+          data-part="book-page-right"
+          d="M50 36 C60 28 72 26 84 29 C87 30 89 33 89 37 V72 C89 76 86 78 82 77 C70 74 59 77 50 84 Z"
+        />
+        <path
+          data-part="book-line-left"
+          d="M21 44 C29 42 37 44 43 48 M21 56 C29 54 37 56 43 60"
           fill="none"
           stroke="#000"
-          strokeWidth="6"
+          strokeWidth="4.5"
           strokeLinecap="round"
         />
         <path
-          data-part="page-line-right"
-          d="M60 43 C68 39 76 37 84 39"
+          data-part="book-line-right"
+          d="M57 48 C63 44 71 42 79 44 M57 60 C63 56 71 54 79 56"
           fill="none"
           stroke="#000"
-          strokeWidth="6"
+          strokeWidth="4.5"
           strokeLinecap="round"
         />
-        <path data-part="page-turn" d="M53 30 C66 21 80 19 91 22 C77 24 66 32 59 45 C58 38 56 33 53 30 Z" />
+        <path
+          data-part="page-turn"
+          d="M50 36 C60 28 72 26 84 29 C87 30 89 33 89 37 V70 C89 73 86 75 82 74 C70 71 59 75 50 82 Z"
+        />
+        <path
+          data-part="page-turn-edge"
+          d="M55 39 C64 33 73 31 82 33"
+          fill="none"
+          stroke="#000"
+          strokeWidth="3.5"
+          strokeLinecap="round"
+        />
+        <path
+          data-part="book-spine"
+          d="M50 36 V84"
+          fill="none"
+          stroke="#000"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
       </>
     )
   }
