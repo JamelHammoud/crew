@@ -38,7 +38,7 @@ beforeEach(() => {
   }) as unknown as Element['scrollTo']
   popOutBrowserTab.mockClear()
   window.crew = { warmTerminal: () => undefined, popOutBrowserTab } as unknown as CrewBridge
-  useBrowser.setState({ tabs: [], activeTabId: null })
+  useBrowser.setState({ tabs: [], activeTabId: null, open: false, fullScreen: false })
 })
 
 afterEach(() => {
@@ -583,6 +583,7 @@ describe('a tab opened by another Crew window', () => {
     expect(state.tabs[0]!.id).not.toBe(source.id)
     expect(state.activeTabId).toBe(state.tabs[0]!.id)
     expect(state.open).toBe(true)
+    expect(state.fullScreen).toBe(true)
   })
 
   it('gives later tabs a different id', () => {
@@ -596,6 +597,15 @@ describe('a tab opened by another Crew window', () => {
       opened.id,
       expect.not.stringMatching(`^${opened.id}$`)
     ])
+  })
+
+  it('does not show panel controls in a standalone Browser', () => {
+    useBrowser.getState().openUrl('https://example.com')
+    const { queryByRole } = render(createElement(BrowserPanel, { standalone: true }))
+
+    expect(queryByRole('button', { name: 'Full screen' })).toBeNull()
+    expect(queryByRole('button', { name: 'Exit full screen' })).toBeNull()
+    expect(queryByRole('button', { name: 'Close' })).toBeNull()
   })
 })
 
