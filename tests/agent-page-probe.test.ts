@@ -130,8 +130,16 @@ describe('the row a showing leaves behind', () => {
           detail: 'curl -s -X POST https://example.com/6329c2/page'
         },
         {
-          id: 'other',
+          id: 'direct-pipe',
           ts: 5,
+          kind: 'tool' as const,
+          status: 'done' as const,
+          name: 'Bash',
+          detail: 'curl -s -X POST http://localhost:59508/page | jq .'
+        },
+        {
+          id: 'other',
+          ts: 6,
           kind: 'tool' as const,
           status: 'done' as const,
           name: 'Bash',
