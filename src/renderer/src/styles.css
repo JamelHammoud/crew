@@ -1090,11 +1090,23 @@ textarea:placeholder-shown {
 .agent-icon .agent-activity-object [data-part] {
   transform-box: fill-box;
   transform-origin: center;
-  will-change: transform, opacity;
+  will-change: transform, opacity, filter;
 }
 
 .agent-icon .agent-face-stage[data-motion='present'] {
   animation: agent-face-alive 4.8s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+}
+
+.agent-icon .agent-face-stage[data-motion='incoming'],
+.agent-icon .agent-activity-stage[data-motion='incoming'] {
+  z-index: 2;
+  animation: agent-activity-in 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.agent-icon .agent-face-stage[data-motion='outgoing'],
+.agent-icon .agent-activity-stage[data-motion='outgoing'] {
+  z-index: 1;
+  animation: agent-activity-out 460ms cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
 .agent-icon .agent-face-stage[data-motion='hidden'] {
@@ -1107,6 +1119,10 @@ textarea:placeholder-shown {
 
 .agent-icon .agent-activity-object[data-object='thinking'] {
   animation: agent-thinking 1.6s ease-in-out var(--agent-delay, 0ms) infinite alternate;
+}
+
+.agent-icon .agent-activity-object[data-object='reading'] {
+  animation: agent-reading 1.7s ease-in-out var(--agent-delay, 0ms) infinite alternate;
 }
 
 .agent-icon .agent-activity-object[data-object='searching'] {
@@ -1162,12 +1178,57 @@ textarea:placeholder-shown {
   }
 }
 
+@keyframes agent-activity-in {
+  0% {
+    opacity: 0;
+    filter: blur(6px);
+    transform: scale(0.88);
+  }
+  58% {
+    opacity: 0.82;
+    filter: blur(1.5px);
+    transform: scale(1.025);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+  }
+}
+
+@keyframes agent-activity-out {
+  0% {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+  }
+  42% {
+    opacity: 0.45;
+    filter: blur(2px);
+    transform: scale(0.98);
+  }
+  100% {
+    opacity: 0;
+    filter: blur(7px);
+    transform: scale(1.1);
+  }
+}
+
 @keyframes agent-thinking {
   from {
     transform: translateY(3%) rotate(-0.6deg) scale(1.02, 0.98);
   }
   to {
     transform: translateY(-4%) rotate(0.6deg) scale(0.99, 1.02);
+  }
+}
+
+@keyframes agent-reading {
+  from {
+    transform: translateY(3%) rotate(-0.5deg) scale(1.015, 0.985);
+  }
+  to {
+    transform: translateY(-4%) rotate(0.5deg) scale(0.99, 1.02);
   }
 }
 
@@ -1330,7 +1391,19 @@ textarea:placeholder-shown {
 
 .agent-icon [data-part^='book-line'] {
   stroke-dasharray: 30;
-  animation: agent-book-line 3.2s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-line-delay, 0ms) infinite;
+  stroke-dashoffset: 30;
+  opacity: 0;
+  animation: agent-book-line 2.8s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-line-delay, 0ms) infinite both;
+}
+
+.agent-icon [data-part='book-page-left'] {
+  transform-origin: 100% 55%;
+  animation: agent-book-page-left 2.8s ease-in-out var(--agent-delay, 0ms) infinite;
+}
+
+.agent-icon [data-part='book-page-right'] {
+  transform-origin: 0 55%;
+  animation: agent-book-page-right 2.8s ease-in-out var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon [data-part='book-line-one'] {
@@ -1338,33 +1411,59 @@ textarea:placeholder-shown {
 }
 
 .agent-icon [data-part='book-line-two'] {
-  --agent-line-delay: 180ms;
+  --agent-line-delay: 150ms;
 }
 
 .agent-icon [data-part='book-line-three'] {
-  --agent-line-delay: 360ms;
+  --agent-line-delay: 300ms;
 }
 
 .agent-icon [data-part='book-line-four'] {
-  --agent-line-delay: 540ms;
+  --agent-line-delay: 450ms;
+}
+
+@keyframes agent-book-page-left {
+  0%,
+  100% {
+    transform: rotate(0) translateY(0) scale(1);
+  }
+  45% {
+    transform: rotate(-1.8deg) translateY(-1.5%) scale(1.015, 0.99);
+  }
+  72% {
+    transform: rotate(0.7deg) translateY(0.5%) scale(0.995, 1.01);
+  }
+}
+
+@keyframes agent-book-page-right {
+  0%,
+  100% {
+    transform: rotate(0) translateY(0) scale(1);
+  }
+  45% {
+    transform: rotate(1.8deg) translateY(-1.5%) scale(1.015, 0.99);
+  }
+  72% {
+    transform: rotate(-0.7deg) translateY(0.5%) scale(0.995, 1.01);
+  }
 }
 
 @keyframes agent-book-line {
   0%,
-  8%,
+  6%,
   100% {
     stroke-dashoffset: 30;
     opacity: 0;
   }
-  12% {
+  10% {
     opacity: 1;
   }
-  28%,
-  76% {
+  24%,
+  72% {
     stroke-dashoffset: 0;
     opacity: 1;
   }
-  92% {
+  88% {
     stroke-dashoffset: -30;
     opacity: 0;
   }
