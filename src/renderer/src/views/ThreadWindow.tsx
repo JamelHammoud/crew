@@ -32,7 +32,7 @@ export default function ThreadWindow() {
             style={{ height: TOP_BAR_H }}
             className="app-drag relative pointer-events-auto flex items-center justify-end px-4"
           >
-            <PanelToggle />
+            <PanelToggle alwaysVisible />
           </div>
         </div>
         {threadId && thread ? (

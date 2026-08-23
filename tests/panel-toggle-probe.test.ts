@@ -46,7 +46,8 @@ const spawned = (): SessionEvent => ({
   byName: 'Bubbles'
 })
 
-const view = () => render(createElement('div', null, createElement(PanelToggle), createElement(BrowserPanel)))
+const view = (alwaysVisible = false) =>
+  render(createElement('div', null, createElement(PanelToggle, { alwaysVisible }), createElement(BrowserPanel)))
 
 const inThread = (extra: Partial<ThreadMeta> = {}, events: SessionEvent[] = []) =>
   act(() =>
@@ -83,6 +84,14 @@ describe('the way back into the panel', () => {
     inThread()
 
     expect(standing()).toBe(false)
+  })
+
+  it('always stands in a thread window, even when the thread has nothing for the panel', () => {
+    view(true)
+    inThread()
+
+    expect(standing()).toBe(true)
+    expect(button()!.getAttribute('tabindex')).toBeNull()
   })
 
   // It is never taken out of the tree, so it has somewhere to travel from and

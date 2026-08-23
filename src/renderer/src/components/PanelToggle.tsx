@@ -4,11 +4,17 @@ import Badge from './Badge'
 import { usePanelOpens } from './panelOpens'
 import Tooltip from './Tooltip'
 
-export default function PanelToggle({ className = '' }: { className?: string }) {
+export default function PanelToggle({
+  className = '',
+  alwaysVisible = false
+}: {
+  className?: string
+  alwaysVisible?: boolean
+}) {
   const away = useBrowser(s => !s.open)
   const held = useBrowser(s => s.tabs.length > 0)
   const waiting = usePanelOpens().filter(row => row.scope === 'thread')
-  const stands = away && (held || waiting.length > 0)
+  const stands = away && (alwaysVisible || held || waiting.length > 0)
 
   const show = () => {
     for (const row of [...waiting].reverse()) row.open()
