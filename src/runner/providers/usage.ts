@@ -1,4 +1,5 @@
 import { execFile } from 'node:child_process'
+import crypto from 'node:crypto'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
@@ -50,12 +51,12 @@ async function claudeCredentials(config: string | null): Promise<ClaudeCreds | n
     const parsed = JSON.parse(await fs.promises.readFile(file, 'utf8'))
     if (parsed?.claudeAiOauth) return parsed.claudeAiOauth as ClaudeCreds
   } catch {}
-  if (config || process.platform !== 'darwin') return null
+  if (process.platform !== 'darwin') return null
   // On macOS Claude Code keeps its OAuth credentials in the Keychain.
   return new Promise(resolve => {
     execFile(
       'security',
-      ['find-generic-password', '-s', 'Claude Code-credentials', '-w'],
+      ['find-generic-password', '-s', claudeKeychainService(config), '-w'],
       { timeout: 5000 },
       (err, stdout) => {
         if (err) return resolve(null)
@@ -67,6 +68,12 @@ async function claudeCredentials(config: string | null): Promise<ClaudeCreds | n
       }
     )
   })
+}
+
+export function claudeKeychainService(config: string | null): string {
+  if (!config) return 'Claude Code-credentials'
+  const hash = crypto.createHash('sha256').update(config).digest('hex').slice(0, 8)
+  return `Claude Code-credentials-${hash}`
 }
 
 function claudeAccount(config: string | null): { accountId?: string; accountLabel?: string } {

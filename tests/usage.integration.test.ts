@@ -3,7 +3,7 @@ import { agentId, type AgentUsage } from '../src/shared/llm'
 import type { ServerMessage } from '../src/shared/protocol'
 import { Runner } from '../src/runner'
 import type { Provider } from '../src/runner/providers/types'
-import { claudeSignIn, claudeWindowsFrom, codexWindowsFrom } from '../src/runner/providers/usage'
+import { claudeKeychainService, claudeSignIn, claudeWindowsFrom, codexWindowsFrom } from '../src/runner/providers/usage'
 import { makeFakeProvider } from './helpers/fake-provider'
 import { startHost, TestUi, type TestHost } from './helpers/session'
 import { testRunner } from './helpers/runner'
@@ -241,6 +241,13 @@ describe('claude sign-in', () => {
 
   it('takes credentials that say nothing about either expiry', () => {
     expect(claudeSignIn({ accessToken: 'a' }, now)).toBe('ok')
+  })
+
+  it('reads each custom config from the same macOS Keychain service Claude uses', () => {
+    expect(claudeKeychainService(null)).toBe('Claude Code-credentials')
+    expect(claudeKeychainService('/users/sam/.crew/claude/work-account')).toBe(
+      'Claude Code-credentials-6a675521'
+    )
   })
 })
 
