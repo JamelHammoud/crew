@@ -1237,11 +1237,27 @@ textarea:placeholder-shown {
 }
 
 .agent-icon [data-part='thought-lobe-two'] {
-  animation-delay: calc(var(--agent-delay, 0ms) - 1467ms);
+  animation-delay: calc(var(--agent-delay, 0ms) - 629ms);
 }
 
 .agent-icon [data-part='thought-lobe-three'] {
-  animation-delay: calc(var(--agent-delay, 0ms) - 2933ms);
+  animation-delay: calc(var(--agent-delay, 0ms) - 1257ms);
+}
+
+.agent-icon [data-part='thought-lobe-four'] {
+  animation-delay: calc(var(--agent-delay, 0ms) - 1886ms);
+}
+
+.agent-icon [data-part='thought-lobe-five'] {
+  animation-delay: calc(var(--agent-delay, 0ms) - 2514ms);
+}
+
+.agent-icon [data-part='thought-lobe-six'] {
+  animation-delay: calc(var(--agent-delay, 0ms) - 3143ms);
+}
+
+.agent-icon [data-part='thought-lobe-seven'] {
+  animation-delay: calc(var(--agent-delay, 0ms) - 3771ms);
 }
 
 .agent-icon [data-part='thought-dot-one'] {
@@ -1275,28 +1291,28 @@ textarea:placeholder-shown {
 @keyframes agent-thought-lobe {
   0%,
   100% {
-    transform: translate(0, -72%) scale(1.06, 0.94);
+    transform: translate(0, -68%) scale(1.08, 0.92);
   }
   12.5% {
-    transform: translate(58%, -52%) scale(0.96, 1.06);
+    transform: translate(60%, -48%) scale(0.95, 1.07);
   }
   25% {
-    transform: translate(78%, 0) scale(1.05, 0.95);
+    transform: translate(85%, 0) scale(1.07, 0.93);
   }
   37.5% {
-    transform: translate(58%, 52%) scale(0.97, 1.05);
+    transform: translate(60%, 48%) scale(0.96, 1.06);
   }
   50% {
-    transform: translate(0, 72%) scale(1.06, 0.94);
+    transform: translate(0, 68%) scale(1.08, 0.92);
   }
   62.5% {
-    transform: translate(-58%, 52%) scale(0.97, 1.05);
+    transform: translate(-60%, 48%) scale(0.96, 1.06);
   }
   75% {
-    transform: translate(-78%, 0) scale(1.05, 0.95);
+    transform: translate(-85%, 0) scale(1.07, 0.93);
   }
   87.5% {
-    transform: translate(-58%, -52%) scale(0.96, 1.06);
+    transform: translate(-60%, -48%) scale(0.95, 1.07);
   }
 }
 
