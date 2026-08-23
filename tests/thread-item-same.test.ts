@@ -39,6 +39,7 @@ const base: Required<ThreadItem> = {
   runs: [
     { threadId: 't2', name: 'Scout', subject: 'reading', agentId: 'ali/claude', ok: true, ms: 90, stopped: false }
   ],
+  helperThreadId: 't2',
   shown: { pages: ['/tmp/one.html'], title: 'The page' }
 }
 
