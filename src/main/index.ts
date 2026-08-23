@@ -64,7 +64,13 @@ import { Terminals, type TerminalSize } from './terminal'
 import { PERSONAL_CHAT_HASH, threadWindowHash } from '../shared/threadViews'
 import { Updates } from './updates'
 import { runtimeStateDir } from './runtime-state'
-import { appMenuTemplate, closePutsAway, createThreadWindowOptions, createWindowOptions } from './window-options'
+import {
+  appMenuTemplate,
+  closePutsAway,
+  createPersonalChatWindowOptions,
+  createThreadWindowOptions,
+  createWindowOptions
+} from './window-options'
 import { installBrowserFindForHost } from './browser-find'
 import { pinWindow, windowShapeOf } from './window-pin'
 
@@ -374,7 +380,9 @@ function loadWindow(win: BrowserWindow, threadId?: string, personal = false): vo
 function createWindow(threadId?: string, load = true, personal = false): BrowserWindow {
   const preload = path.join(dirname, '../preload/preload.mjs')
   const win = new BrowserWindow(
-    threadId || personal
+    personal
+      ? createPersonalChatWindowOptions(process.platform, preload, inspectable)
+      : threadId
       ? createThreadWindowOptions(process.platform, preload, inspectable)
       : createWindowOptions(process.platform, preload, inspectable)
   )

@@ -4,6 +4,7 @@ import {
   appMenuTemplate,
   closePutsAway,
   createPanelOptions,
+  createPersonalChatWindowOptions,
   createScribeOptions,
   createThreadWindowOptions,
   createWindowOptions
@@ -147,6 +148,28 @@ describe('thread window options', () => {
       expect(thread.backgroundColor).toBe(whole.backgroundColor)
       expect(thread.webPreferences?.webviewTag).toBe(true)
       expect(thread.webPreferences?.spellcheck).toBe(true)
+    }
+  })
+})
+
+describe('personal chat window options', () => {
+  it('holds a conversation beside its chat list', () => {
+    const personal = createPersonalChatWindowOptions('darwin', 'preload.mjs', true)
+    const thread = createThreadWindowOptions('darwin', 'preload.mjs', true)
+
+    expect(personal.width ?? 0).toBeGreaterThan(thread.width ?? 0)
+    expect(personal.minWidth).toBe(760)
+    expect(personal.minHeight).toBe(thread.minHeight)
+  })
+
+  it('wears the same native shell as the other chat window', () => {
+    for (const platform of ['darwin', 'win32'] as const) {
+      const personal = createPersonalChatWindowOptions(platform, 'preload.mjs', false)
+      const thread = createThreadWindowOptions(platform, 'preload.mjs', false)
+
+      expect(personal.titleBarStyle).toBe(thread.titleBarStyle)
+      expect(personal.transparent).toBe(thread.transparent)
+      expect(personal.webPreferences).toEqual(thread.webPreferences)
     }
   })
 })

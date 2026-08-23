@@ -142,6 +142,20 @@ export function createThreadWindowOptions(
   }
 }
 
+export function createPersonalChatWindowOptions(
+  platform: NodeJS.Platform,
+  preload: string,
+  devTools: boolean
+): BrowserWindowConstructorOptions {
+  return {
+    width: 1040,
+    height: 760,
+    minWidth: 760,
+    minHeight: 520,
+    ...windowShell(platform, preload, devTools)
+  }
+}
+
 // Without an application menu the standard clipboard accelerators (copy, cut,
 // paste, select-all, undo, redo) are never registered, so they do nothing
 // inside the app. Registering the roles wires them up on every platform.
