@@ -30,7 +30,7 @@ const DOTS = {
   lg: 'w-3 h-3 ring-[2.5px]'
 } as const
 
-const CHANGE_MS = 720
+const CHANGE_MS = 820
 
 interface Performance {
   current: AgentActivity

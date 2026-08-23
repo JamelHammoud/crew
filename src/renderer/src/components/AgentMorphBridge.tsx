@@ -10,7 +10,8 @@ export default function AgentMorphBridge({ seed, box }: { seed: string; box: num
         <defs>
           <mask id={mask} maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
             <path
-              d="M18 44 C21 27 36 18 52 21 C70 17 84 29 82 47 C88 63 75 79 58 78 C42 84 23 75 21 59 C14 55 13 48 18 44 Z"
+              data-part="morph-shape"
+              d="M30 50 C30 30 38 20 50 20 C62 20 70 30 70 50 C70 70 62 80 50 80 C38 80 30 70 30 50 Z"
               fill="#fff"
             />
           </mask>

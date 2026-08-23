@@ -147,15 +147,12 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
         />
         <path
           data-part="terminal-cursor"
-          d="M50 61 H65"
+          d="M51 62 H72"
           fill="none"
           stroke="#000"
           strokeWidth="8"
           strokeLinecap="round"
         />
-        <circle data-part="terminal-command-one" cx="51" cy="42" r="4.5" fill="#000" />
-        <circle data-part="terminal-command-two" cx="65" cy="42" r="4.5" fill="#000" />
-        <circle data-part="terminal-command-three" cx="79" cy="42" r="4.5" fill="#000" />
       </>
     )
   }

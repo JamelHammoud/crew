@@ -147,6 +147,15 @@ describe('an agent face', () => {
     expect(object.querySelector('[data-part="pencil"]')).toBeNull()
   })
 
+  it('builds Running from a rounded terminal, prompt and cursor without command dots', () => {
+    const object = face({ activity: 'running' }).querySelector('[data-object="running"]') as HTMLElement
+
+    expect(object.querySelector('[data-part="terminal"]')?.getAttribute('rx')).toBe('28')
+    expect(object.querySelector('[data-part="terminal-prompt"]')).not.toBeNull()
+    expect(object.querySelector('[data-part="terminal-cursor"]')).not.toBeNull()
+    expect(object.querySelector('[data-part^="terminal-command-"]')).toBeNull()
+  })
+
   it('gives every activity a moving part inside its silhouette', () => {
     const activities = [
       'thinking',
@@ -292,12 +301,13 @@ describe('an agent face', () => {
     expect(box.querySelector('.agent-face-stage')?.getAttribute('data-motion')).toBe('outgoing')
     expect(box.querySelector('[data-object="reading"]')?.parentElement?.getAttribute('data-motion')).toBe('incoming')
     expect(box.querySelector('.agent-morph-bridge')).not.toBeNull()
+    expect(box.querySelector('[data-part="morph-shape"]')).not.toBeNull()
 
     view.rerender(createElement(AgentIcon, { seed: SEED, activity: 'designing' }))
     expect(box.querySelector('[data-object="reading"]')?.parentElement?.getAttribute('data-motion')).toBe('outgoing')
     expect(box.querySelector('[data-object="designing"]')?.parentElement?.getAttribute('data-motion')).toBe('incoming')
 
-    act(() => vi.advanceTimersByTime(720))
+    act(() => vi.advanceTimersByTime(820))
     expect(box.querySelector('[data-object="reading"]')).toBeNull()
     expect(box.querySelector('.agent-morph-bridge')).toBeNull()
     expect(box.querySelector('[data-object="designing"]')?.parentElement?.getAttribute('data-motion')).toBe('working')
@@ -313,7 +323,7 @@ describe('an agent face', () => {
     expect(box.querySelector('[data-object="searching"]')?.parentElement?.getAttribute('data-motion')).toBe('outgoing')
     expect(box.querySelector('.agent-face-stage')?.getAttribute('data-motion')).toBe('incoming')
 
-    act(() => vi.advanceTimersByTime(720))
+    act(() => vi.advanceTimersByTime(820))
     expect(box.querySelector('.agent-activity-object')).toBeNull()
     expect(box.querySelector('.agent-face-stage')?.getAttribute('data-motion')).toBe('present')
   })
