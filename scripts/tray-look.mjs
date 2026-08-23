@@ -58,7 +58,8 @@ async function look(win, name, theme) {
   win.setContentSize(272, 520)
   await win.loadFile(path.join(__dirname, 'dist/index.html'), { search: '?state=' + name + '&theme=' + theme })
   await wait(700)
-  const height = await win.webContents.executeJavaScript('window.trayProbe.height || document.getElementById("root").firstElementChild.offsetHeight')
+  const wanted = await win.webContents.executeJavaScript('window.trayProbe.height || document.getElementById("root").firstElementChild.offsetHeight')
+  const height = Math.max(64, Math.min(wanted, 520))
   win.setContentSize(272, height)
   await wait(200)
   const details = await win.webContents.executeJavaScript(\`(() => {
@@ -139,7 +140,7 @@ const seen = await run(dir)
 if (seen.failed) throw new Error(seen.failed)
 
 for (const [name, state] of Object.entries(seen)) {
-  if (state.width !== 272 || state.height !== state.content || state.scrolls) {
+  if (state.width !== 272 || state.content > state.height || state.scrolls) {
     throw new Error(`${name} tray measured ${state.width} x ${state.height}, held ${state.content}, scrolls ${state.scrolls}`)
   }
 }

@@ -115,7 +115,7 @@ describe('tray panel', () => {
   it('clips the roster sideways and replaces the system focus outline with a Crew row', () => {
     show({ sharing: true, known: true, here: [person('m1', 'Ali')] })
 
-    const panel = screen.getByText('Open Crew').closest('div[class*="overflow-x-hidden"]') as HTMLElement
+    const panel = screen.getByText('Online').closest('div[class*="max-w-full"]') as HTMLElement
     const roster = screen.getByText('Online').parentElement?.parentElement as HTMLElement
     expect(panel.className).toContain('[&_button]:focus-visible:outline-none')
     expect(roster.className).toContain('overflow-x-hidden')
