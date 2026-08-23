@@ -89,6 +89,7 @@ export interface ThreadMeta {
   title: string
   titleRefs?: AgentMentionRef[]
   createdBy: string
+  startedAt?: number
   status: ThreadStatus
   mode: ThreadMode
   plan?: string
@@ -517,6 +518,7 @@ const foldThread = (threads: Record<string, ThreadMeta>, event: SessionEvent): b
         title: event.title,
         titleRefs: event.titleRefs,
         createdBy: event.byName,
+        startedAt: event.ts,
         status: 'open',
         mode: event.mode ?? 'build',
         boardId: event.boardId,

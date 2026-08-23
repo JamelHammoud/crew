@@ -32,7 +32,7 @@ import { cleanCommands, commandsIn, commandTyped, type CommandName } from '../..
 import { aimOf } from '../../../shared/llm'
 import { useMessagePlugin } from '../state/messagePlugin'
 
-export default function Chat() {
+export default function Chat({ personal = false, onStart }: { personal?: boolean; onStart?: (threadId: string) => void }) {
   const events = useCrew(s => s.events)
   const selfId = useCrew(s => s.selfId)
   const threads = useCrew(s => s.threads)
@@ -86,7 +86,10 @@ export default function Chat() {
   const reachBack = useLoadOlder(scrollRef, { more: moreHistory, loading: loadingHistory, load: loadHistory })
   const { ref: overlayRef, room } = useComposerRoom()
 
-  const feed = useMemo<FeedEntry[]>(() => buildFeed(events, threads, agents, selfId), [agents, events, threads, selfId])
+  const feed = useMemo<FeedEntry[]>(
+    () => (personal ? [] : buildFeed(events, threads, agents, selfId)),
+    [agents, events, personal, threads, selfId]
+  )
 
   useLayoutEffect(() => {
     follow(feed.length > 0)
@@ -138,15 +141,19 @@ export default function Chat() {
 
   const send = () => {
     if (!text.trim() && pendingCount(CHAT_KEY) === 0) return
+    const startId = personal ? globalThis.crypto.randomUUID() : undefined
+    const target = aimOf(text, agents, aimed) ?? (personal ? agents.find(agent => agent.status !== 'offline')?.id : undefined)
     sendChat(
       text,
       undefined,
       undefined,
       replyTo?.reactionTargetId,
-      aimOf(text, agents, aimed),
+      target ? [target] : undefined,
       commands,
-      useMessagePlugin.getState().picked[CHAT_KEY]
+      useMessagePlugin.getState().picked[CHAT_KEY],
+      startId
     )
+    if (startId && target) onStart?.(startId)
     useMessagePlugin.getState().taken(CHAT_KEY)
     setReplyTo(null)
     mention.close()
@@ -199,7 +206,9 @@ export default function Chat() {
                 {agents.length === 0 ? (
                   <CreateAgent compact />
                 ) : (
-                  <p className="text-base text-fg-muted text-center">Say hi, or mention someone with @.</p>
+                  <p className="text-base text-fg-muted text-center">
+                    {personal ? 'What would you like to talk about?' : 'Say hi, or mention someone with @.'}
+                  </p>
                 )}
               </div>
             ))}
@@ -235,12 +244,12 @@ export default function Chat() {
             <Composer
               attachmentKey={CHAT_KEY}
               value={text}
-              placeholder={ghost ? 'Send a message nobody else will see' : 'Ask Crew'}
+              placeholder={personal ? 'Message' : ghost ? 'Send a message nobody else will see' : 'Ask Crew'}
               inputRef={inputRef}
               onChange={mention.onChange}
               onKeyDown={onKeyDown}
               onSend={send}
-              huddle
+              huddle={!personal}
               defaultAgent
               ghost={ghost}
               replyTo={replyTo ?? undefined}
