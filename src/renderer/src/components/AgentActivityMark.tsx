@@ -97,26 +97,18 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
         <g data-part="writing-pencil">
           <path
             data-part="writing-pencil-body"
-            d="M15 81 L23 59 L67 15 C73 9 81 9 87 15 C93 21 93 29 87 35 L43 79 L21 91 C15 94 10 87 15 81 Z"
+            d="M16 78 L27 54 L67 14 C73 8 81 8 87 14 C93 20 93 28 87 34 L47 74 L23 89 C16 93 11 85 16 78 Z"
           />
           <path
             data-part="writing-pencil-seam"
-            d="M23 59 L43 79 M64 18 L84 38"
+            d="M27 54 L47 74"
             fill="none"
             stroke="#000"
             strokeWidth="7"
             strokeLinecap="round"
           />
-          <circle data-part="writing-pencil-point" cx="18" cy="86" r="4" fill="#000" />
+          <circle data-part="writing-pencil-point" cx="19" cy="84" r="4" fill="#000" />
         </g>
-        <path
-          data-part="writing-trail"
-          d="M38 89 C54 84 72 93 89 86"
-          fill="none"
-          stroke="#fff"
-          strokeWidth="9"
-          strokeLinecap="round"
-        />
       </>
     )
   }
@@ -164,7 +156,7 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
         <rect data-part="plan-board" x="13" y="7" width="74" height="87" rx="22" />
         <path
           data-part="plan-check-one"
-          d="M27 42 L34 49 L44 35"
+          d="M27 38 L34 45 L44 31"
           fill="none"
           stroke="#000"
           strokeWidth="7"
@@ -173,7 +165,7 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
         />
         <path
           data-part="plan-line-one"
-          d="M55 42 H72"
+          d="M55 38 H72"
           fill="none"
           stroke="#000"
           strokeWidth="8"
@@ -181,7 +173,7 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
         />
         <path
           data-part="plan-check-two"
-          d="M27 68 L34 75 L44 61"
+          d="M27 64 L34 71 L44 57"
           fill="none"
           stroke="#000"
           strokeWidth="7"
@@ -190,7 +182,7 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
         />
         <path
           data-part="plan-line-two"
-          d="M55 68 H72"
+          d="M55 64 H72"
           fill="none"
           stroke="#000"
           strokeWidth="8"
@@ -204,11 +196,11 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
       <>
         <path
           data-part="message"
-          d="M18 12 H82 C91 12 96 19 96 28 V55 C96 64 89 71 80 71 H54 L31 88 C26 92 20 87 23 80 L28 71 H18 C9 71 4 64 4 55 V28 C4 19 9 12 18 12 Z"
+          d="M21 13 H77 C90 13 97 21 97 34 V51 C97 64 90 73 77 73 H57 L36 91 C28 98 18 92 23 83 L29 73 H21 C9 73 3 64 3 51 V34 C3 22 9 13 21 13 Z"
         />
-        <circle data-part="message-dot-one" cx="30" cy="42" r="6" fill="#000" />
-        <circle data-part="message-dot-two" cx="50" cy="42" r="6" fill="#000" />
-        <circle data-part="message-dot-three" cx="70" cy="42" r="6" fill="#000" />
+        <circle data-part="message-dot-one" cx="30" cy="43" r="6.5" fill="#000" />
+        <circle data-part="message-dot-two" cx="50" cy="43" r="6.5" fill="#000" />
+        <circle data-part="message-dot-three" cx="70" cy="43" r="6.5" fill="#000" />
       </>
     )
   }

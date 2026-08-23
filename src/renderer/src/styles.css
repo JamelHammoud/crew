@@ -1498,11 +1498,6 @@ textarea:placeholder-shown {
   animation: agent-writing-pencil 3s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
 }
 
-.agent-icon [data-part='writing-trail'] {
-  stroke-dasharray: 80;
-  animation: agent-writing-trail 3s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite both;
-}
-
 @keyframes agent-writing-pencil {
   0%,
   100% {
@@ -1519,27 +1514,6 @@ textarea:placeholder-shown {
   }
   88% {
     transform: translate(-6%, -7%) rotate(-3deg) scale(0.97, 1.03);
-  }
-}
-
-@keyframes agent-writing-trail {
-  0%,
-  8% {
-    stroke-dashoffset: 80;
-    opacity: 0;
-  }
-  14% {
-    opacity: 1;
-  }
-  68%,
-  78% {
-    stroke-dashoffset: 0;
-    opacity: 1;
-  }
-  92%,
-  100% {
-    stroke-dashoffset: -80;
-    opacity: 0;
   }
 }
 

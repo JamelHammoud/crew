@@ -153,16 +153,16 @@ describe('an agent face', () => {
     expect(keyframes).toContain('translateY(-4%)')
   })
 
-  it('builds Writing from a diagonal rounded pencil and drawn trail', () => {
+  it('builds Writing from one diagonal rounded pencil', () => {
     const object = face({ activity: 'editing' }).querySelector('[data-object="editing"]') as HTMLElement
 
     expect(object.querySelector('[data-part="writing-pencil"]')).not.toBeNull()
-    expect(object.querySelector('[data-part="writing-pencil-body"]')?.getAttribute('d')).toMatch(/^M15 81 L23 59/)
+    expect(object.querySelector('[data-part="writing-pencil-body"]')?.getAttribute('d')).toMatch(/^M16 78 L27 54/)
     expect(object.querySelector('[data-part="writing-pencil-seam"]')).not.toBeNull()
     expect(object.querySelector('[data-part="writing-pencil-point"]')).not.toBeNull()
-    expect(object.querySelector('[data-part="writing-trail"]')).not.toBeNull()
+    expect(object.querySelector('[data-part="writing-trail"]')).toBeNull()
     expect(styles).toContain('animation: agent-writing-pencil 3s')
-    expect(styles).toContain('animation: agent-writing-trail 3s')
+    expect(styles).not.toContain('agent-writing-trail')
   })
 
   it('builds Running from a rounded terminal, prompt and cursor without command dots', () => {
