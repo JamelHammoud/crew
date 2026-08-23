@@ -364,7 +364,7 @@ export default function ThreadView({
             ) : (
               ended && <RunEnded end={ended} />
             )}
-            {!personal && <FilesChanged steps={threadSteps} />}
+            {!personal && <FilesChanged steps={threadSteps} agentId={thread.agentId} />}
           </div>
         </div>
 

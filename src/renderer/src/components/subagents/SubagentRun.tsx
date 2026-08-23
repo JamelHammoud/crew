@@ -119,7 +119,7 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
                 )}
               </div>
             ) : null}
-            <FilesChanged steps={threadSteps} />
+            <FilesChanged steps={threadSteps} agentId={thread.agentId} />
           </div>
         </div>
         <ScrollFade edges={edges} />

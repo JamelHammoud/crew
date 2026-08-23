@@ -1,4 +1,5 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
+import { paletteFor } from '../../../shared/art'
 import type { PathLocation } from '../../../shared/files'
 import { FileGlyph, GlobeGlyph } from '../icons'
 import { useBrowser } from '../state/browser'
@@ -37,6 +38,10 @@ const UNSETTLED_TTL = 15_000
 
 const located = new Map<string, { location: PathLocation; at: number }>()
 const pending = new Map<string, Promise<PathLocation>>()
+
+export function resourceColor(seed?: string): CSSProperties | undefined {
+  return seed ? ({ '--resource-color': paletteFor(seed)[0] } as CSSProperties) : undefined
+}
 
 const suffixOf = (text: string): string => text.match(SUFFIX_RE)?.[1] ?? ''
 
@@ -402,7 +407,7 @@ export function FileTextLink({
             openFile(path, line, diff)
           }}
           onContextMenu={onContextMenu}
-          className={`cursor-pointer transition-colors hover:text-fg hover:underline underline-offset-2 ${className ?? ''}`}
+          className={`file-text-link cursor-pointer transition-colors hover:underline underline-offset-2 ${className ?? ''}`}
         >
           {children}
         </span>

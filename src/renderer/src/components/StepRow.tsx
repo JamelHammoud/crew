@@ -11,6 +11,7 @@ import {
   openable,
   parseFileRef,
   PrivateChip,
+  resourceColor,
   shortFileLabel,
   targetFor,
   TextWithFileLinks,
@@ -146,7 +147,10 @@ function StepRow({ item, linked, inGroup }: { item: ThreadItem; linked?: boolean
   const subjectRef = action.resource && subject ? parseFileRef(subject) : null
 
   return (
-    <div className={`animate-rise ${inGroup ? '' : 'pl-14'} ${linked ? '-mt-3' : ''}`}>
+    <div
+      className={`animate-rise ${inGroup ? '' : 'pl-14'} ${linked ? '-mt-3' : ''}`}
+      style={resourceColor(item.helperSeed ?? item.agentId)}
+    >
       <button
         onClick={() => (opens ? opens() : expandable && setOpen(!expanded))}
         className={rowClass(Boolean(opens) || expandable)}

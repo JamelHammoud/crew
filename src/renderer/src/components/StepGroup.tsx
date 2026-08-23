@@ -1,5 +1,6 @@
 import { memo, useState } from 'react'
 import Counts from './Counts'
+import { resourceColor } from './fileLinks'
 import { carries, stepText, useFindQuery } from './find'
 import StepRow, { Chevron, Label, Mark, rowClass, stepFiles, stepTotals } from './StepRow'
 import { sameItems, type ThreadItem } from './thread'
@@ -16,7 +17,10 @@ function StepGroup({ items, linked }: { items: ThreadItem[]; linked?: boolean })
   const totals = stepTotals(items.flatMap(stepFiles))
 
   return (
-    <div className={`pl-14 animate-rise ${linked ? '-mt-3' : ''}`}>
+    <div
+      className={`pl-14 animate-rise ${linked ? '-mt-3' : ''}`}
+      style={resourceColor(items[0].helperSeed ?? items[0].agentId)}
+    >
       <button onClick={() => setOpen(!expanded)} className={rowClass(true)}>
         {thinking ? <ThinkingMark running={live} /> : <Mark icon={action.icon} running={live} />}
         {live ? (

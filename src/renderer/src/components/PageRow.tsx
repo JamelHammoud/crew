@@ -1,6 +1,6 @@
 import { memo, useState } from 'react'
 import { filePathOf, pageName } from '../../../shared/urls'
-import { FileChip, isPrivate, PrivateChip, UrlChip, useLocated } from './fileLinks'
+import { FileChip, isPrivate, PrivateChip, resourceColor, UrlChip, useLocated } from './fileLinks'
 import { openShown, shownPaths } from './openShown'
 import { Chevron, Label, rowClass, SUBJECT, SUBJECT_MONO } from './StepRow'
 import { sameShown, type Shown } from './thread'
@@ -20,7 +20,7 @@ function ShownLink({ page }: { page: string }) {
 // A run showing its work, as the row it leaves behind. It reads the way every
 // other step in the thread reads, because it is one: what the agent did, what
 // it did it to, and the rest of it a press away.
-function PageRow({ shown, linked }: { shown: Shown; linked?: boolean }) {
+function PageRow({ shown, linked, agentId }: { shown: Shown; linked?: boolean; agentId?: string }) {
   const [open, setOpen] = useState(false)
   const { pages, title } = shown
   useLocated(shownPaths(pages))
@@ -33,7 +33,7 @@ function PageRow({ shown, linked }: { shown: Shown; linked?: boolean }) {
   const press = many ? () => setOpen(!open) : away ? null : () => void openShown(pages)
 
   return (
-    <div className={`animate-rise pl-14 ${linked ? '-mt-3' : ''}`}>
+    <div className={`animate-rise pl-14 ${linked ? '-mt-3' : ''}`} style={resourceColor(agentId)}>
       <button onClick={press ?? undefined} className={rowClass(press !== null)}>
         <ShowGlyph className="w-[18px] h-[18px] shrink-0 text-fg" />
         <Label action={action} running={false} />
@@ -58,4 +58,8 @@ function PageRow({ shown, linked }: { shown: Shown; linked?: boolean }) {
   )
 }
 
-export default memo(PageRow, (before, after) => before.linked === after.linked && sameShown(before.shown, after.shown))
+export default memo(
+  PageRow,
+  (before, after) =>
+    before.linked === after.linked && before.agentId === after.agentId && sameShown(before.shown, after.shown)
+)

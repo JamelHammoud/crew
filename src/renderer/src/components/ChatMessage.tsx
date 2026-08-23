@@ -4,6 +4,7 @@ import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
 import Avatar from './Avatar'
 import { useCustomEmoji } from './customEmojiSheet'
+import { resourceColor } from './fileLinks'
 import { onlyEmoji } from './emojiTokens'
 import Markdown from './Markdown'
 import { HelperName, MemberName, MentionText } from './Mention'
@@ -99,6 +100,7 @@ function ChatMessage({
       className={`group/message msg-row relative flex items-start gap-4 rounded-card animate-rise ${
         linked ? 'msg-run' : ''
       }`}
+      style={resourceColor(item.helperSeed ?? agentSeed)}
       onContextMenu={
         deletable && !editing
           ? event => {

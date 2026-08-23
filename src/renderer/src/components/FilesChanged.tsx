@@ -2,9 +2,10 @@ import { memo, useMemo, useState } from 'react'
 import type { AgentStep } from '../../../shared/llm'
 import { ChevronRightGlyph, DocGlyph } from '../icons'
 import Counts from './Counts'
+import { resourceColor } from './fileLinks'
 import { FilePathLink } from './StepRow'
 
-function FilesChanged({ steps }: { steps: AgentStep[] }) {
+function FilesChanged({ steps, agentId }: { steps: AgentStep[]; agentId?: string }) {
   const [open, setOpen] = useState(false)
   const files = useMemo(() => {
     const map = new Map<string, { added: number; removed: number; diff: string }>()
@@ -28,7 +29,10 @@ function FilesChanged({ steps }: { steps: AgentStep[] }) {
   )
 
   return (
-    <div className="ml-14 border border-ink-700 rounded-card overflow-hidden animate-rise select-none">
+    <div
+      className="ml-14 border border-ink-700 rounded-card overflow-hidden animate-rise select-none"
+      style={resourceColor(agentId)}
+    >
       <button
         onClick={() => setOpen(!open)}
         className="group flex items-center gap-2.5 px-4 h-11 w-full text-left bg-ink-700/50"

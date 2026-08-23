@@ -2934,10 +2934,15 @@ textarea:placeholder-shown {
 
 .resource-chip,
 .md a.resource-chip {
-  @apply relative -top-px inline-flex max-w-full items-center gap-1 align-middle text-fg cursor-pointer no-underline underline-offset-2 decoration-current;
+  @apply relative -top-px inline-flex max-w-full items-center gap-1 align-middle cursor-pointer no-underline underline-offset-2 decoration-current;
+  color: var(--resource-color, var(--color-fg));
   font-family: inherit;
   font-size: inherit;
   line-height: inherit;
+}
+
+.file-text-link {
+  color: var(--resource-color, inherit);
 }
 
 .resource-chip:hover,
