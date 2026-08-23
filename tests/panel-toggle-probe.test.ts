@@ -47,8 +47,7 @@ const spawned = (): SessionEvent => ({
   byName: 'Bubbles'
 })
 
-const view = (alwaysVisible = false) =>
-  render(createElement('div', null, createElement(PanelToggle, { alwaysVisible }), createElement(BrowserPanel)))
+const view = () => render(createElement('div', null, createElement(PanelToggle), createElement(BrowserPanel)))
 
 const inThread = (extra: Partial<ThreadMeta> = {}, events: SessionEvent[] = []) =>
   act(() =>
@@ -77,7 +76,10 @@ beforeEach(() => {
   useCrew.setState({ threads: {}, openThreadId: null, openThreadIds: [], events: [] })
 })
 
-afterEach(cleanup)
+afterEach(() => {
+  cleanup()
+  window.history.replaceState(null, '', '/')
+})
 
 describe('the way back into the panel', () => {
   it('does not stand with nothing in the panel and nothing in the thread', () => {
