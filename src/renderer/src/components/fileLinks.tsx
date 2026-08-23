@@ -314,7 +314,17 @@ export function useLocated(paths: string[], again?: unknown): void {
 const openFile = (path: string, line: number | null, diff: string | null = null) =>
   useBrowser.getState().openFile(targetFor(path), line, diff)
 
-export function FileChip({ path, line, text }: { path: string; line: number | null; text: string }) {
+export function FileChip({
+  path,
+  line,
+  text,
+  diff = null
+}: {
+  path: string
+  line: number | null
+  text: string
+  diff?: string | null
+}) {
   const { onContextMenu, menu, menuOpen } = useFileMenu(targetFor(path), line)
   return (
     <>
@@ -322,7 +332,7 @@ export function FileChip({ path, line, text }: { path: string; line: number | nu
         <span
           onClick={event => {
             event.stopPropagation()
-            openFile(path, line)
+            openFile(path, line, diff)
           }}
           onContextMenu={onContextMenu}
           className="resource-chip"

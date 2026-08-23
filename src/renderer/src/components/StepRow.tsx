@@ -28,20 +28,21 @@ import { THINKING, toolAction, type ToolAction, type ToolIcon } from './toolActi
 export function FilePathLink({
   path,
   diff,
-  className,
   again
 }: {
   path: string
   diff?: string | null
-  className?: string
   again?: unknown
 }) {
   useLocated([path], again)
   if (isPrivate(path)) return <PrivateChip path={path} />
   return (
-    <FileTextLink path={path} diff={diff} className={className}>
-      {shortFileLabel(path, labelFor(path, '', path))}
-    </FileTextLink>
+    <FileChip
+      path={path}
+      line={null}
+      text={shortFileLabel(path, labelFor(path, '', path))}
+      diff={diff}
+    />
   )
 }
 
@@ -159,7 +160,6 @@ function StepRow({ item, linked, inGroup }: { item: ThreadItem; linked?: boolean
               <FilePathLink
                 path={files[0].path}
                 diff={files[0].diff}
-                className={SUBJECT_MONO}
                 again={!item.streaming}
               />
             ) : (

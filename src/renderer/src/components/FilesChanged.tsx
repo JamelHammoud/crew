@@ -49,8 +49,10 @@ function FilesChanged({ steps }: { steps: AgentStep[] }) {
       {open && (
         <div className="px-4 py-2.5 space-y-1.5">
           {files.map(([path, file]) => (
-            <div key={path} className="flex items-center gap-3 text-xs font-mono">
-              <FilePathLink path={path} diff={file.diff} className="text-fg-secondary truncate flex-1" />
+            <div key={path} className="flex items-center gap-3 text-sm">
+              <span className="min-w-0 flex-1">
+                <FilePathLink path={path} diff={file.diff} />
+              </span>
               <Counts added={file.added} removed={file.removed} />
             </div>
           ))}
