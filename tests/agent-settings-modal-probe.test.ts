@@ -42,7 +42,7 @@ describe('the advanced agent settings modal', () => {
     const done = screen.getByRole('button', { name: 'Done' })
     const heading = screen.getByRole('heading', { name: 'Grok' })
 
-    expect(dialog.className).toContain('max-h-[calc(100dvh-3rem)]')
+    expect(dialog.className).toContain('max-h-full')
     expect(dialog.className).toContain('flex-col')
     expect(dialog.className).toContain('overflow-hidden')
     expect(page.parentElement).toBe(dialog)
