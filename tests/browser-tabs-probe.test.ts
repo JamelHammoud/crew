@@ -467,13 +467,21 @@ describe('the tab strip', () => {
       setData: (type: string, value: string) => values.set(type, value),
       getData: (type: string) => values.get(type) ?? ''
     }
+    const dragOver = (x: number) => {
+      const event = new Event('dragover', { bubbles: true, cancelable: true })
+      Object.defineProperties(event, {
+        clientX: { value: x },
+        dataTransfer: { value: dataTransfer }
+      })
+      fireEvent(row, event)
+    }
 
     fireEvent.dragStart(container.querySelector('[data-tab]')!, { dataTransfer })
-    fireEvent.dragOver(row, { clientX: VIEW - 1, dataTransfer })
+    dragOver(VIEW - 1)
     expect(container.querySelector('[data-browser-tab-drop]')).toBeTruthy()
     expect(row.scrollLeft).toBe(62)
 
-    fireEvent.dragOver(row, { clientX: 1, dataTransfer })
+    dragOver(1)
     expect(row.scrollLeft).toBe(50)
   })
 
