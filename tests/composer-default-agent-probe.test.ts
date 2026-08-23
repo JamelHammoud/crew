@@ -121,7 +121,16 @@ describe('the agent standing on the chat composer', () => {
     fireEvent.change(composer, { target: { value: 'tidy the readme' } })
     fireEvent.click(screen.getByLabelText('Send'))
 
-    expect(sendChat).toHaveBeenCalledWith('tidy the readme', undefined, undefined, undefined, ['ali/bubbles'], [], undefined)
+    expect(sendChat).toHaveBeenCalledWith(
+      'tidy the readme',
+      undefined,
+      undefined,
+      undefined,
+      ['ali/bubbles'],
+      [],
+      undefined,
+      undefined
+    )
   })
 
   it('stands through a send, and takes the next message too', () => {
@@ -136,7 +145,17 @@ describe('the agent standing on the chat composer', () => {
     fireEvent.change(composer, { target: { value: 'and the rows' } })
     fireEvent.click(screen.getByLabelText('Send'))
 
-    expect(sendChat).toHaveBeenNthCalledWith(2, 'and the rows', undefined, undefined, undefined, ['ali/bubbles'], [], undefined)
+    expect(sendChat).toHaveBeenNthCalledWith(
+      2,
+      'and the rows',
+      undefined,
+      undefined,
+      undefined,
+      ['ali/bubbles'],
+      [],
+      undefined,
+      undefined
+    )
   })
 
   it('is swapped rather than stacked when another is picked', () => {
