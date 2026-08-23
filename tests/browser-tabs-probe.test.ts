@@ -312,6 +312,24 @@ describe('the tab strip', () => {
     expect(useBrowser.getState().tabs.map(t => t.id)).toEqual([second!.id])
   })
 
+  it('pins and unpins a tab from its own menu', () => {
+    openTwo()
+    const { container, getByText } = render(createElement(BrowserPanel))
+    const first = useBrowser.getState().tabs[0]!
+
+    fireEvent.contextMenu(pillFor(container, first.id)!)
+    fireEvent.click(getByText('Pin tab'))
+
+    expect(useBrowser.getState().tabs[0]).toMatchObject({ id: first.id, pinned: true })
+    expect(pillFor(container, first.id)).toHaveAttribute('data-pinned')
+
+    fireEvent.contextMenu(pillFor(container, first.id)!)
+    fireEvent.click(getByText('Unpin tab'))
+
+    expect(useBrowser.getState().tabs[0]).toMatchObject({ id: first.id, pinned: false })
+    expect(pillFor(container, first.id)).not.toHaveAttribute('data-pinned')
+  })
+
   it('opens a copy of a tab in a new Crew window from its menu', () => {
     openTwo()
     const { container, getByText } = render(createElement(BrowserPanel))
@@ -340,6 +358,19 @@ describe('the tab strip', () => {
     expect(useBrowser.getState().activeTabId).toBe(second!.id)
   })
 
+  it('leaves pinned tabs to the right standing', () => {
+    openFour()
+    const [first, , third] = useBrowser.getState().tabs
+    act(() => useBrowser.getState().togglePinned(third!.id))
+    const { container, getByText } = render(createElement(BrowserPanel))
+
+    fireEvent.contextMenu(pillFor(container, first!.id)!)
+    fireEvent.click(getByText('Close tabs to the right'))
+
+    expect(order()).toEqual([first!.id, third!.id])
+    expect(useBrowser.getState().activeTabId).toBe(first!.id)
+  })
+
   it('keeps the tab the menu was opened on and closes the rest', () => {
     openThree()
     const { container, getByText } = render(createElement(BrowserPanel))
@@ -350,6 +381,22 @@ describe('the tab strip', () => {
 
     expect(order()).toEqual([kept.id])
     expect(useBrowser.getState().activeTabId).toBe(kept.id)
+  })
+
+  it('keeps pinned tabs when closing the others', () => {
+    openFour()
+    const [first, second, , fourth] = useBrowser.getState().tabs
+    act(() => {
+      useBrowser.getState().togglePinned(first!.id)
+      useBrowser.getState().togglePinned(fourth!.id)
+    })
+    const { container, getByText } = render(createElement(BrowserPanel))
+
+    fireEvent.contextMenu(pillFor(container, second!.id)!)
+    fireEvent.click(getByText('Close other tabs'))
+
+    expect(order()).toEqual([first!.id, second!.id, fourth!.id])
+    expect(useBrowser.getState().activeTabId).toBe(second!.id)
   })
 
   // An action a tab cannot do is left out rather than greyed, and one tab on its
@@ -375,6 +422,20 @@ describe('the tab strip', () => {
 
     expect(useBrowser.getState().tabs).toEqual([])
     expect(useBrowser.getState().activeTabId).toBeNull()
+  })
+
+  it('leaves pinned tabs standing when all tabs are closed', () => {
+    openThree()
+    const [first, second] = useBrowser.getState().tabs
+    act(() => useBrowser.getState().togglePinned(second!.id))
+    const { container, getByText } = render(createElement(BrowserPanel))
+
+    fireEvent.contextMenu(pillFor(container, first!.id)!)
+    fireEvent.click(getByText('Close all tabs'))
+
+    expect(order()).toEqual([second!.id])
+    expect(useBrowser.getState().activeTabId).toBe(second!.id)
+    expect(useBrowser.getState().open).toBe(true)
   })
 
   // A games tab is named after the game it is standing in, and wears the same
