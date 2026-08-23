@@ -314,6 +314,7 @@ describe('the tab strip', () => {
     const { container } = render(createElement(BrowserPanel))
     const items = laidOut(container)
     const row = rowOf(container) as HTMLElement
+    Object.defineProperty(row, 'clientWidth', { value: 1000, configurable: true })
     row.scrollLeft = 90
     let next: FrameRequestCallback | null = null
     const request = vi.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => {
