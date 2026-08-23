@@ -122,13 +122,6 @@ describe('a personal chat window', () => {
   })
 
   it('shows a top fade after the chat list scrolls', () => {
-    const chats = Object.fromEntries(
-      Array.from({ length: 12 }, (_, index) => {
-        const one = thread(`chat-${index}`, `Chat ${index}`, index + 1)
-        return [one.id, one]
-      })
-    )
-    useCrew.setState({ threads: chats, events: Object.values(chats).map(started) })
     render(createElement(PersonalChatWindow))
 
     const scroller = document.querySelector('[data-personal-history-scroll]') as HTMLDivElement
