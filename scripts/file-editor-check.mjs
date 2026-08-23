@@ -10,6 +10,9 @@ const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
 const resolve = createRequire(path.join(root, 'package.json')).resolve
 const line = `const long = '${'x'.repeat(500)}'`
+const insertionAt = 180
+const typedText = 'abcdefghijklmnopqrstuvwxyz'
+const edited = line.slice(0, insertionAt) + typedText + line.slice(insertionAt)
 
 const source = () => {
   const from = file => JSON.stringify(path.join(root, 'src/renderer/src', file))
@@ -51,18 +54,20 @@ const read = `(() => {
     gutter: box(gutter),
     code: box(code),
     paddingLeft: getComputedStyle(area).paddingLeft,
+    editorTextLeft: Math.round((area.getBoundingClientRect().left + parseFloat(getComputedStyle(area).paddingLeft) - area.scrollLeft) * 10) / 10,
     editorScrollLeft: area.scrollLeft,
     editorScrollWidth: area.scrollWidth,
     editorClientWidth: area.clientWidth,
+    codeText: code.textContent,
     value: area.value,
     selection: [area.selectionStart, area.selectionEnd]
   }
 })()`
 
-const focusEnd = `(() => {
+const focusAt = `(() => {
   const area = document.querySelector('textarea[aria-label="File contents"]')
   area.focus()
-  area.setSelectionRange(area.value.length, area.value.length)
+  area.setSelectionRange(${insertionAt}, ${insertionAt})
 })()`
 
 const ready = `Boolean(document.querySelector('textarea[aria-label="File contents"]'))`
@@ -97,13 +102,15 @@ app.whenReady().then(async () => {
     await js('document.querySelector(".overflow-auto").scrollLeft = 900')
     await wait(80)
     const scrolled = await js(read)
-    await js(${JSON.stringify(focusEnd)})
+    await js(${JSON.stringify(focusAt)})
     await wait(80)
     const focused = await js(read)
-    await win.webContents.insertText('a')
-    await win.webContents.insertText('b')
-    await win.webContents.insertText('c')
-    await wait(100)
+    const frames = []
+    for (const character of ${JSON.stringify(typedText)}) {
+      await win.webContents.insertText(character)
+      await wait(16)
+      frames.push(await js(read))
+    }
     const typed = await js(read)
     win.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'Z', modifiers: ['meta'] })
     win.webContents.sendInputEvent({ type: 'keyUp', keyCode: 'Z', modifiers: ['meta'] })
@@ -119,7 +126,7 @@ app.whenReady().then(async () => {
     redoItem.click(redoItem, win, {})
     await wait(100)
     const menuRedone = await js(read)
-    console.log('CHECK ' + JSON.stringify({ before, scrolled, focused, typed, undone, redone, menuUndone, menuRedone }))
+    console.log('CHECK ' + JSON.stringify({ before, scrolled, focused, frames, typed, undone, redone, menuUndone, menuRedone }))
   } catch (error) {
     console.log('CHECK ' + JSON.stringify({ failed: String(error && error.stack), logs }))
   }
@@ -186,17 +193,23 @@ try {
   if (seen.scrolled.scrollLeft < 800) problems.push('the file did not scroll horizontally')
   if (seen.scrolled.gutter.left !== seen.before.gutter.left) problems.push('the line numbers moved with the file')
   if (seen.scrolled.code.left >= seen.before.code.left - 800) problems.push('the code did not move under the line numbers')
-  if (!seen.typed.value.endsWith('abc')) problems.push('typing did not reach the file')
-  if (seen.focused.editorScrollLeft !== 0 || seen.typed.editorScrollLeft !== 0)
-    problems.push(
-      `the hidden editor moved away from the code layer from ${seen.focused.editorScrollLeft} to ${seen.typed.editorScrollLeft}`
-    )
-  if (seen.typed.scrollLeft !== seen.focused.scrollLeft)
-    problems.push(`typing moved the horizontal scroll from ${seen.focused.scrollLeft} to ${seen.typed.scrollLeft}`)
+  if (seen.typed.value !== edited) problems.push('typing did not reach the right place in the file')
+  for (const [index, frame] of seen.frames.entries()) {
+    const expected = line.slice(0, insertionAt) + typedText.slice(0, index + 1) + line.slice(insertionAt)
+    if (frame.value !== expected) problems.push(`the editor value diverged after character ${index + 1}`)
+    if (frame.codeText !== expected) problems.push(`the painted line diverged after character ${index + 1}`)
+    if (frame.selection[0] !== insertionAt + index + 1 || frame.selection[1] !== insertionAt + index + 1)
+      problems.push(`the caret moved to the wrong character after character ${index + 1}`)
+    if (frame.editorScrollLeft !== 0) problems.push(`the hidden editor scrolled after character ${index + 1}`)
+    if (frame.scrollLeft !== seen.focused.scrollLeft)
+      problems.push(`typing moved the horizontal scroll after character ${index + 1}`)
+    if (Math.abs(frame.editorTextLeft - frame.code.left) > 0.1)
+      problems.push(`the editor and painted line separated after character ${index + 1}`)
+  }
   if (seen.undone.value !== line) problems.push('one undo did not remove the typing run')
-  if (!seen.redone.value.endsWith('abc')) problems.push('redo did not restore the typing run')
+  if (seen.redone.value !== edited) problems.push('redo did not restore the typing run')
   if (seen.menuUndone.value !== line) problems.push('the Edit menu did not undo the typing run')
-  if (!seen.menuRedone.value.endsWith('abc')) problems.push('the Edit menu did not redo the typing run')
+  if (seen.menuRedone.value !== edited) problems.push('the Edit menu did not redo the typing run')
   if (problems.length) throw new Error(problems.join('\n'))
   console.log(`File editor works in Electron. Gutter stayed at ${seen.before.gutter.left}px while code moved ${Math.round(seen.before.code.left - seen.scrolled.code.left)}px.`)
   console.log('Typing stayed in place. Keyboard and Edit menu undo and redo both restored the full run.')
