@@ -31,7 +31,7 @@ describe('webpage find shortcuts', () => {
   })
 
   it('opens Crew find and keeps the shortcut out of the webpage', () => {
-    let pressed: ((event: Electron.Event, input: Input) => void) | null = null
+    let pressed = (_event: Electron.Event, _input: Input): void => undefined
     const send = vi.fn()
     const contents = {
       on: (name: string, listener: (event: Electron.Event, input: Input) => void) => {
@@ -42,7 +42,7 @@ describe('webpage find shortcuts', () => {
     const preventDefault = vi.fn()
 
     installBrowserFind(contents)
-    pressed?.({ preventDefault } as unknown as Electron.Event, key())
+    pressed({ preventDefault } as unknown as Electron.Event, key())
 
     expect(preventDefault).toHaveBeenCalledOnce()
     expect(send).toHaveBeenCalledWith('browser:find')

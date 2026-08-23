@@ -30,7 +30,7 @@ beforeEach(() => {
   window.crew = {
     warmTerminal: () => undefined,
     openExternal: async () => true,
-    onFindInPage: listener => {
+    onFindInPage: (listener: () => void) => {
       openFind = listener
       return () => {
         openFind = null
