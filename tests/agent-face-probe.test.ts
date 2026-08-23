@@ -44,6 +44,8 @@ describe('the pet an agent wears', () => {
   it('uses every silhouette family and closes each one through curves', () => {
     const pets = Array.from({ length: 700 }, (_, index) => petOf(`every-${index}`))
     expect(new Set(pets.map(pet => pet.kind))).toEqual(new Set(PET_SHAPE_KINDS))
+    expect(PET_SHAPE_KINDS).not.toContain('cloud')
+    expect(pets.some(pet => String(pet.kind) === 'cloud')).toBe(false)
     for (const pet of pets) {
       expect(pet.body).toMatch(/[CQa]/)
       expect(pet.body.endsWith('Z')).toBe(true)
@@ -122,8 +124,8 @@ describe('an agent face', () => {
     const pieces = object.querySelectorAll('mask path')
 
     expect(pieces).toHaveLength(3)
-    expect(pieces[0].getAttribute('d')).toMatch(/^M61 5 C69 3/)
-    expect(pieces[1].getAttribute('d')).toMatch(/^M38 66 C47 64/)
+    expect(pieces[0].getAttribute('d')).toMatch(/^M66 5 C73 1/)
+    expect(pieces[1].getAttribute('d')).toMatch(/^M31 51 C43 47/)
     expect(object.querySelector('[data-part="paint-stroke"]')).not.toBeNull()
     expect(object.querySelector('.agent-pet-eyes')).toBeNull()
   })
@@ -132,14 +134,16 @@ describe('an agent face', () => {
     const object = face({ activity: 'thinking' }).querySelector('[data-object="thinking"]') as HTMLElement
 
     expect(object.querySelector('[data-part="thought-cloud"]')).not.toBeNull()
+    expect(object.querySelectorAll('[data-part^="thought-lobe-"]')).toHaveLength(3)
     expect(object.querySelectorAll('[data-part^="thought-dot-"]')).toHaveLength(3)
+    expect(object.querySelector('[data-part^="thought-tail-"]')).toBeNull()
   })
 
-  it('builds Writing from a moving pen and a drawn stroke', () => {
+  it('builds Writing from a rounded card and drawn lines', () => {
     const object = face({ activity: 'editing' }).querySelector('[data-object="editing"]') as HTMLElement
 
-    expect(object.querySelector('[data-part="writing-pen"]')).not.toBeNull()
-    expect(object.querySelector('[data-part="writing-stroke"]')).not.toBeNull()
+    expect(object.querySelector('[data-part="writing-card"]')).not.toBeNull()
+    expect(object.querySelectorAll('[data-part^="writing-line-"]')).toHaveLength(3)
     expect(object.querySelector('[data-part="pencil"]')).toBeNull()
   })
 
