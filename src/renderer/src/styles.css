@@ -1214,25 +1214,27 @@ textarea:placeholder-shown {
 @keyframes agent-thinking {
   0%,
   100% {
-    transform: translateY(2%) rotate(-1deg) scale(1.015, 0.985);
+    transform: rotate(-0.5deg) scale(1);
   }
-  9% {
-    transform: translateY(-1%) rotate(0.4deg) scale(0.985, 1.02);
-  }
-  18% {
-    transform: translateY(0) rotate(-0.2deg) scale(1.005, 0.995);
-  }
-  82% {
-    transform: translateY(-2%) rotate(0.7deg) scale(0.99, 1.015);
-  }
-  91% {
-    transform: translateY(3%) rotate(-1.2deg) scale(1.025, 0.975);
+  48% {
+    transform: rotate(0.5deg) scale(1.01);
   }
 }
 
-.agent-icon [data-part='thought-cloud'] {
-  transform-origin: center 58%;
-  animation: agent-thought-cloud 4.4s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+.agent-icon [data-part='thought-body'] {
+  animation: agent-thought-body 4.4s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+}
+
+.agent-icon [data-part='thought-lobe-one'] {
+  animation: agent-thought-lobe-one 4.4s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+}
+
+.agent-icon [data-part='thought-lobe-two'] {
+  animation: agent-thought-lobe-two 4.4s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+}
+
+.agent-icon [data-part='thought-lobe-three'] {
+  animation: agent-thought-lobe-three 4.4s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon [data-part='thought-tail-one'] {
@@ -1255,56 +1257,112 @@ textarea:placeholder-shown {
   animation: agent-thought-dot-three 4.4s cubic-bezier(0.34, 1.56, 0.64, 1) var(--agent-delay, 0ms) infinite;
 }
 
-@keyframes agent-thought-cloud {
+@keyframes agent-thought-body {
   0%,
   100% {
-    transform: translateY(1%) scale(1.01, 0.99);
+    transform: scale(1, 0.98);
   }
-  7% {
-    transform: translateY(-2%) scale(0.98, 1.035);
+  18% {
+    transform: scale(1.02, 1.01);
   }
-  14% {
-    transform: translateY(0) scale(1.015, 0.985);
+  38% {
+    transform: scale(0.99, 1.02);
   }
-  31% {
-    transform: translateY(-1%) scale(0.995, 1.01);
+  58% {
+    transform: scale(1.015, 0.99);
   }
   78% {
-    transform: translateY(-1.5%) scale(0.99, 1.02);
+    transform: scale(0.985, 1.015);
   }
-  88% {
-    transform: translateY(2%) scale(1.025, 0.97);
+}
+
+@keyframes agent-thought-lobe-one {
+  0%,
+  100% {
+    transform: translate(2%, 3%) scale(0.92, 1.05);
   }
-  94% {
-    transform: translateY(-0.5%) scale(0.99, 1.015);
+  24% {
+    transform: translate(-3%, -4%) scale(1.12, 0.94);
+  }
+  52% {
+    transform: translate(2%, -1%) scale(0.97, 1.09);
+  }
+  78% {
+    transform: translate(-1%, 3%) scale(1.06, 0.96);
+  }
+}
+
+@keyframes agent-thought-lobe-two {
+  0%,
+  100% {
+    transform: translateY(-1%) scale(1.04, 0.96);
+  }
+  18% {
+    transform: translate(2%, 3%) scale(0.94, 1.1);
+  }
+  44% {
+    transform: translate(-2%, -3%) scale(1.08, 0.95);
+  }
+  70% {
+    transform: translate(1%, 2%) scale(0.96, 1.07);
+  }
+}
+
+@keyframes agent-thought-lobe-three {
+  0%,
+  100% {
+    transform: translate(-2%, 2%) scale(0.96, 1.06);
+  }
+  28% {
+    transform: translate(3%, -3%) scale(1.1, 0.94);
+  }
+  56% {
+    transform: translate(-1%, 3%) scale(0.93, 1.11);
+  }
+  82% {
+    transform: translate(2%, -1%) scale(1.07, 0.97);
   }
 }
 
 @keyframes agent-thought-tail-one {
   0%,
   100% {
-    transform: translate(5%, -5%) scale(0.75);
+    opacity: 0;
+    transform: translate(-14%, 12%) scale(0.2);
   }
-  9%,
+  10% {
+    opacity: 1;
+    transform: translate(2%, -2%) scale(1.24);
+  }
+  15%,
   82% {
+    opacity: 1;
     transform: translate(0, 0) scale(1);
   }
   91% {
-    transform: translate(4%, -4%) scale(0.82);
+    opacity: 0;
+    transform: translate(-10%, 8%) scale(0.3);
   }
 }
 
 @keyframes agent-thought-tail-two {
   0%,
   100% {
-    transform: translate(10%, -10%) scale(0.45);
+    opacity: 0;
+    transform: translate(-20%, 18%) scale(0.15);
   }
-  12%,
-  79% {
+  14% {
+    opacity: 1;
+    transform: translate(2%, -2%) scale(1.28);
+  }
+  19%,
+  78% {
+    opacity: 1;
     transform: translate(0, 0) scale(1);
   }
   90% {
-    transform: translate(8%, -8%) scale(0.58);
+    opacity: 0;
+    transform: translate(-18%, 14%) scale(0.2);
   }
 }
 
