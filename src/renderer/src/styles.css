@@ -1080,7 +1080,7 @@ textarea:placeholder-shown {
 }
 
 .agent-icon .agent-activity-object[data-object='designing'] {
-  animation: agent-designing 1.55s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+  animation: agent-designing 2.6s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon .agent-activity-object[data-object='running'] {
@@ -1759,80 +1759,89 @@ textarea:placeholder-shown {
 @keyframes agent-designing {
   0%,
   100% {
-    transform: translate(-3%, 3%) rotate(-8deg) scale(1.01, 0.99);
+    transform: rotate(-1deg) scale(1);
   }
-  22% {
-    transform: translate(-4%, 4%) rotate(-10deg) scale(1.025, 0.975);
-  }
-  52% {
-    transform: translate(4%, -4%) rotate(7deg) scale(0.98, 1.025);
-  }
-  70% {
-    transform: translate(5%, -5%) rotate(9deg) scale(0.975, 1.03);
-  }
-  88% {
-    transform: translate(-1%, 0) rotate(-3deg) scale(1.01, 0.99);
+  48% {
+    transform: rotate(1deg) scale(1.01);
   }
 }
 
 .agent-icon [data-part='brush-handle'] {
   transform-origin: 50% 78%;
-  animation: agent-brush-handle 1.55s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+  animation: agent-brush-handle 2.6s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon [data-part='brush-tip'] {
   transform-origin: 58% 22%;
-  animation: agent-brush-tip 1.55s cubic-bezier(0.45, 0, 0.2, 1) calc(var(--agent-delay, 0ms) - 90ms) infinite;
+  animation: agent-brush-tip 2.6s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon [data-part='paint-stroke'] {
   stroke-dasharray: 140;
-  animation: agent-paint-stroke 1.55s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+  animation: agent-paint-stroke 2.6s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
 }
 
 @keyframes agent-brush-handle {
   0%,
   100% {
-    transform: rotate(-1deg) scaleY(1);
+    transform: translate(-18%, 8%) rotate(-10deg) scale(1.02, 0.98);
   }
-  48% {
-    transform: rotate(2deg) scaleY(1.015);
+  12% {
+    transform: translate(-20%, 10%) rotate(-13deg) scale(1.04, 0.96);
   }
-  70% {
-    transform: rotate(1deg) scaleY(0.99);
+  58% {
+    transform: translate(16%, 0) rotate(8deg) scale(0.98, 1.03);
+  }
+  72% {
+    transform: translate(20%, -2%) rotate(11deg) scale(0.97, 1.04);
+  }
+  82% {
+    transform: translate(4%, -10%) rotate(-2deg) scale(1.04, 0.96);
+  }
+  92% {
+    transform: translate(-15%, 5%) rotate(-9deg) scale(1);
   }
 }
 
 @keyframes agent-brush-tip {
   0%,
   100% {
-    transform: rotate(1deg) scale(1);
+    transform: translate(-18%, 8%) rotate(-8deg) scale(1.06, 0.9);
   }
-  48% {
-    transform: rotate(-3deg) scale(1.03, 0.96);
+  12% {
+    transform: translate(-20%, 10%) rotate(-11deg) scale(1.12, 0.82);
   }
-  70% {
-    transform: rotate(-1deg) scale(0.985, 1.025);
+  58% {
+    transform: translate(16%, 0) rotate(6deg) scale(0.96, 1.08);
+  }
+  72% {
+    transform: translate(20%, -2%) rotate(9deg) scale(1.1, 0.84);
+  }
+  82% {
+    transform: translate(4%, -10%) rotate(-4deg) scale(0.92, 1.12);
+  }
+  92% {
+    transform: translate(-15%, 5%) rotate(-7deg) scale(1.04, 0.94);
   }
 }
 
 @keyframes agent-paint-stroke {
   0%,
-  8% {
+  10% {
     stroke-dashoffset: 140;
     opacity: 0;
   }
-  15% {
+  16% {
     opacity: 1;
   }
-  68%,
-  78% {
+  70%,
+  82% {
     stroke-dashoffset: 0;
     opacity: 1;
   }
-  94%,
+  92%,
   100% {
-    stroke-dashoffset: 0;
+    stroke-dashoffset: -16;
     opacity: 0;
   }
 }
