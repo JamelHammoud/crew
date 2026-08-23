@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { act, cleanup, render, screen } from '@testing-library/react'
+import { act, cleanup, render } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import UpdatePill from '../src/renderer/src/components/UpdatePill'
@@ -52,67 +52,38 @@ function pill(): HTMLButtonElement | null {
   return document.querySelector('button')
 }
 
-function fill(): HTMLElement | null {
-  return document.querySelector('[aria-hidden]')
-}
-
 describe('the update pill', () => {
-  it('stands only when there is an update', () => {
+  it('stands only when an update is ready', () => {
     render(createElement(UpdatePill))
     expect(pill()).toBeNull()
     put({ stage: 'found', version: '0.1.1' })
-    expect(pill()?.textContent).toBe('Update available')
+    expect(pill()).toBeNull()
+    put({ stage: 'getting', version: '0.1.1', percent: 40 })
+    expect(pill()).toBeNull()
+    put({ stage: 'ready', version: '0.1.1', percent: 100 })
+    expect(pill()?.textContent).toBe('Restart to update')
   })
 
-  it('is the one white thing in the row while it is asking to be pressed', () => {
+  it('is the white action in the row once the update is ready', () => {
     render(createElement(UpdatePill))
-    put({ stage: 'found', version: '0.1.1' })
+    put({ stage: 'ready', version: '0.1.1', percent: 100 })
     expect(pill()?.className).toContain('bg-fg ')
     expect(pill()?.className).toContain('text-ink-900')
     expect(pill()?.disabled).toBe(false)
   })
 
-  it('writes the word on each side of the fill while the new Crew comes down', () => {
-    render(createElement(UpdatePill))
-    put({ stage: 'getting', percent: 40 })
-    expect(screen.getAllByText('Updating')).toHaveLength(2)
-    expect(fill()?.style.width).toBe('40%')
-  })
-
-  it('fills as far as the download has come', () => {
-    render(createElement(UpdatePill))
-    put({ stage: 'getting', percent: 12 })
-    expect(fill()?.style.width).toBe('12%')
-    put({ stage: 'getting', percent: 91 })
-    expect(fill()?.style.width).toBe('91%')
-  })
-
-  it('has nothing to fill and nothing to press once it is working', () => {
-    render(createElement(UpdatePill))
-    put({ stage: 'found', version: '0.1.1' })
-    expect(fill()).toBeNull()
-    put({ stage: 'getting', percent: 40 })
-    expect(pill()?.disabled).toBe(true)
-    pill()?.click()
-    expect(pressed).not.toHaveBeenCalled()
-  })
-
-  it('offers the restart the moment it lands', () => {
+  it('applies the update when pressed', () => {
     render(createElement(UpdatePill))
     put({ stage: 'ready', version: '0.1.1', percent: 100 })
     expect(pill()?.textContent).toBe('Restart to update')
-    expect(fill()).toBeNull()
     pill()?.click()
     expect(pressed).toHaveBeenCalled()
   })
 
-  it('offers the same thing again after a download that did not arrive', () => {
+  it('keeps a failed background download out of the row', () => {
     render(createElement(UpdatePill))
     put({ stage: 'failed', version: '0.1.1' })
-    expect(pill()?.textContent).toBe('Update available')
-    expect(pill()?.className).toContain('bg-fg ')
-    pill()?.click()
-    expect(pressed).toHaveBeenCalled()
+    expect(pill()).toBeNull()
   })
 })
 
@@ -127,9 +98,10 @@ describe('the word about an update that did not happen', () => {
     expect(failed).not.toHaveBeenCalled()
   })
 
-  it('says a download that did not arrive', () => {
-    put({ stage: 'failed', version: '0.1.1', why: 'download', told: 1 })
-    expect(failed).toHaveBeenCalledWith('The update did not arrive', { key: 'update' })
+  it('keeps a background download failure quiet', () => {
+    put({ stage: 'failed', version: '0.1.1' })
+    expect(said).not.toHaveBeenCalled()
+    expect(failed).not.toHaveBeenCalled()
   })
 
   it('says an update that came down and would not go on', () => {

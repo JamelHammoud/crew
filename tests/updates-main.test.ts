@@ -41,6 +41,28 @@ function setup(): {
 }
 
 describe('the updater quit handoff', () => {
+  it('downloads in the background and waits for a press after it lands', async () => {
+    const { updates, updater } = setup()
+
+    expect(updater.autoDownload).toBe(true)
+    updater.emit('update-available', { version: '0.2.0' })
+    expect(updates.now()).toMatchObject({ stage: 'getting', version: '0.2.0' })
+
+    updates.press()
+    expect(updater.downloadUpdate).not.toHaveBeenCalled()
+    expect(updater.quitAndInstall).not.toHaveBeenCalled()
+
+    updater.emit('download-progress', { percent: 42.4 })
+    expect(updates.now().percent).toBe(42)
+    updater.emit('update-downloaded', { version: '0.2.0' })
+    expect(updates.now()).toMatchObject({ stage: 'ready', version: '0.2.0', percent: 100 })
+    expect(updater.quitAndInstall).not.toHaveBeenCalled()
+
+    updates.press()
+    await vi.waitFor(() => expect(updater.quitAndInstall).toHaveBeenCalledOnce())
+    updates.close()
+  })
+
   it('lets Electron close the window before quitAndInstall emits before-quit', async () => {
     const { updates, updater, quitting } = setup()
     let closeWasAllowed = false
@@ -49,6 +71,7 @@ describe('the updater quit handoff', () => {
     })
 
     updater.emit('update-downloaded', { version: '0.2.0' })
+    updates.press()
     await vi.waitFor(() => expect(updater.quitAndInstall).toHaveBeenCalledOnce())
 
     expect(closeWasAllowed).toBe(true)
@@ -62,6 +85,7 @@ describe('the updater quit handoff', () => {
     })
 
     updater.emit('update-downloaded', { version: '0.2.0' })
+    updates.press()
     await vi.waitFor(() => expect(updater.quitAndInstall).toHaveBeenCalledOnce())
 
     expect(quitting()).toBe(false)
@@ -74,6 +98,7 @@ describe('the updater quit handoff', () => {
     host.others = () => 1
 
     updater.emit('update-downloaded', { version: '0.2.0' })
+    updates.press()
     await Promise.resolve()
 
     expect(updater.quitAndInstall).not.toHaveBeenCalled()

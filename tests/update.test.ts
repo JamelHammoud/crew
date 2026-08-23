@@ -22,11 +22,11 @@ describe('what the app can say about a new Crew', () => {
     expect(walk([{ word: 'nothing' }])).toEqual(NO_UPDATE)
   })
 
-  it('stands the moment one is found, and names the version', () => {
+  it('keeps a found update out of the way while naming the version', () => {
     const state = walk([found])
     expect(state.stage).toBe('found')
     expect(state.version).toBe('0.2.0')
-    expect(updateStanding(state)).toBe(true)
+    expect(updateStanding(state)).toBe(false)
   })
 
   it('fills as the new Crew comes down, and never backwards', () => {
@@ -57,19 +57,19 @@ describe('what the app can say about a new Crew', () => {
     expect(nextUpdate(state, { word: 'found', version: '0.3.0' }).version).toBe('0.3.0')
   })
 
-  // A pass that could not reach the internet is nothing to say. Only a download
-  // somebody asked for and did not get is worth a word.
   it('keeps quiet about a check that failed', () => {
     expect(walk([{ word: 'error' }])).toEqual(NO_UPDATE)
     expect(walk([found, { word: 'error' }]).stage).toBe('found')
   })
 
-  it('says so when a download somebody asked for did not arrive', () => {
+  it('keeps a background download failure quiet and ready to retry', () => {
     const state = walk([found, { word: 'getting' }, { word: 'progress', percent: 30 }, { word: 'error' }])
     expect(state.stage).toBe('failed')
     expect(state.percent).toBe(0)
     expect(state.version).toBe('0.2.0')
-    expect(state.why).toBe('download')
+    expect(state.why).toBe('')
+    expect(updateStanding(state)).toBe(false)
+    expect(worthChecking(state.stage)).toBe(true)
   })
 
   it('never clears an update out from under a download', () => {
@@ -79,18 +79,17 @@ describe('what the app can say about a new Crew', () => {
 })
 
 describe('the one press', () => {
-  it('is the whole of the update, read off where it has got to', () => {
+  it('only restarts after the update is ready', () => {
     expect(pressDoes('none')).toBe('none')
-    expect(pressDoes('found')).toBe('get')
+    expect(pressDoes('found')).toBe('none')
     expect(pressDoes('getting')).toBe('none')
     expect(pressDoes('ready')).toBe('restart')
+    expect(pressDoes('failed')).toBe('none')
   })
 
-  it('asks again after a failure rather than offering something new', () => {
-    expect(pressDoes('failed')).toBe('get')
-    const again = walk([found, { word: 'getting' }, { word: 'error' }, { word: 'getting' }])
-    expect(again.stage).toBe('getting')
-    expect(again.version).toBe('0.2.0')
+  it('stands only after the download has landed', () => {
+    const ready = walk([found, { word: 'getting' }, { word: 'ready', version: '0.2.0' }])
+    expect(updateStanding(ready)).toBe(true)
   })
 })
 
