@@ -321,13 +321,13 @@ describe('the tab strip', () => {
     fireEvent.click(getByText('Pin tab'))
 
     expect(useBrowser.getState().tabs[0]).toMatchObject({ id: first.id, pinned: true })
-    expect(pillFor(container, first.id)).toHaveAttribute('data-pinned')
+    expect(pillFor(container, first.id)?.hasAttribute('data-pinned')).toBe(true)
 
     fireEvent.contextMenu(pillFor(container, first.id)!)
     fireEvent.click(getByText('Unpin tab'))
 
     expect(useBrowser.getState().tabs[0]).toMatchObject({ id: first.id, pinned: false })
-    expect(pillFor(container, first.id)).not.toHaveAttribute('data-pinned')
+    expect(pillFor(container, first.id)?.hasAttribute('data-pinned')).toBe(false)
   })
 
   it('opens a copy of a tab in a new Crew window from its menu', () => {
