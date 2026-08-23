@@ -4917,7 +4917,15 @@ export class CrewSession {
     const agent = this.agents.get(id)
     if (!agent) return
     agent.settings = resolveSettings(agent.fields, { ...agent.settings, ...settings })
-    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'agent.updated', agentId: id, settings: agent.settings })
+    const event: SessionEvent = {
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'agent.updated',
+      agentId: id,
+      settings: agent.settings
+    }
+    this.emit(event)
+    if (agent.runner) this.send(agent.runner, { type: 'event', event })
     this.persistMeta()
   }
 

@@ -41,6 +41,7 @@ export interface RunnerOptions {
   onForget?: (instanceId: string) => void
   // Called when one of this runner's agents is renamed in the session.
   onRename?: (instanceId: string, name: string) => void
+  onSettings?: (instanceId: string, settings: AgentSettings) => void
   onMessage?: (message: ServerMessage) => void
   authorizePlugins?: PluginAuthorization
 }
@@ -353,6 +354,14 @@ export class Runner {
         if (!instanceId || !agent) break
         agent.name = msg.label
         this.opts.onRename?.(instanceId, msg.label)
+        break
+      }
+      case 'event': {
+        if (msg.event.kind !== 'agent.updated') break
+        const agent = this.agents.get(msg.event.agentId)
+        if (!agent) break
+        agent.settings = msg.event.settings
+        this.opts.onSettings?.(agent.instanceId, agent.settings)
         break
       }
     }

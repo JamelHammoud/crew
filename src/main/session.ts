@@ -272,6 +272,11 @@ export class AppSession {
     if (store) store.save(store.load().map(d => (d.instanceId === instanceId ? { ...d, name } : d)))
   }
 
+  private setAgentSettings(instanceId: string, settings: AgentSettings): void {
+    const store = this.agentStore()
+    if (store) store.save(store.load().map(d => (d.instanceId === instanceId ? { ...d, settings } : d)))
+  }
+
   private agentStore(): AgentStore | null {
     return this.agentsPath ? new AgentStore(this.agentsPath) : null
   }
@@ -342,7 +347,8 @@ export class AppSession {
       agents: this.agentDefs(detected, name),
       onBeforeRun: () => this.syncAll(),
       onForget: instanceId => this.forgetAgent(instanceId),
-      onRename: (instanceId, agentName) => this.renameAgent(instanceId, agentName)
+      onRename: (instanceId, agentName) => this.renameAgent(instanceId, agentName),
+      onSettings: (instanceId, settings) => this.setAgentSettings(instanceId, settings)
     })
     const url = wsUrl({ host: '127.0.0.1', port: seat.port, code: session.code })
     this.runner.connect(url)
@@ -500,6 +506,7 @@ export class AppSession {
       onBeforeRun: () => git.syncNow(),
       onForget: instanceId => this.forgetAgent(instanceId),
       onRename: (instanceId, agentName) => this.renameAgent(instanceId, agentName),
+      onSettings: (instanceId, settings) => this.setAgentSettings(instanceId, settings),
       onMessage: message => this.trackJoinedThreads(message)
     })
     const url = wsUrl(target)

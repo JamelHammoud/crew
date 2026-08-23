@@ -138,6 +138,26 @@ describe('usage limits', () => {
     expect(seen).toContain('')
     expect(seen).toContain('work')
   })
+
+  it('moves usage polling when an agent changes accounts', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    const provider: Provider = {
+      ...makeFakeProvider(),
+      fields: () => [{ key: 'account', label: 'Account', kind: 'text', default: '' }],
+      usage: async settings => ({ ...sampleUsage(), accountId: settings?.account ?? '' })
+    }
+    await connectRunner('jamel', provider)
+    const id = agentId('jamel', 'fake')
+    await ui.waitFor(message => message.type === 'agent.usage' && message.agentId === id)
+
+    ui.send({ type: 'agent.settings', agentId: id, settings: { account: 'backup' } })
+
+    const moved = (await ui.waitFor(
+      message => message.type === 'agent.usage' && message.agentId === id && message.usage.accountId === 'backup'
+    )) as Extract<ServerMessage, { type: 'agent.usage' }>
+    expect(moved.usage.accountId).toBe('backup')
+  })
 })
 
 describe('claude usage parsing', () => {
