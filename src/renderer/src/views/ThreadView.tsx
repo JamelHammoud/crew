@@ -418,9 +418,7 @@ export default function ThreadView({
                       centered on the mark beside them by the leading alone. The
                       mark stands out here rather than inside the name, or line
                       one is 40 on its own and the row grows by the second. */}
-                  {showPet && (
-                    <AgentIcon seed={thread.agentId} presence={agentPresence} activity={agentActivity} />
-                  )}
+                  {showPet && <AgentIcon seed={thread.agentId} presence={agentPresence} activity={agentActivity} />}
                   {/* A column of two rather than two lines in one box: an inline
                       box carries the strut of a line it has no text for, and the
                       few pixels a descender leaves under the name are what would

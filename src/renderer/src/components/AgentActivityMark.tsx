@@ -29,11 +29,7 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
           data-part="page-right"
           d="M92 22 C80 17 66 19 53 28 L53 85 C66 76 79 74 92 79 C95 80 97 77 97 73 L97 29 C97 25 95 23 92 22 Z"
         />
-        <path
-          data-part="page-turn"
-          d="M53 29 C65 20 78 19 89 22 C75 25 67 34 64 49 C61 40 57 33 53 29 Z"
-          fill="#000"
-        />
+        <path data-part="page-turn" d="M53 29 C65 20 78 19 89 22 C75 25 67 34 64 49 C61 40 57 33 53 29 Z" fill="#000" />
         <path data-part="page-spine" d="M50 31 V84" fill="none" stroke="#000" strokeWidth="5" strokeLinecap="round" />
       </>
     )
