@@ -6,6 +6,7 @@ import { useBrowser, type BrowserTab } from '../state/browser'
 import { baselineOf } from './baseline'
 import CodeRows from './CodeRows'
 import Empty from './Empty'
+import { breakFileLine, indentFile } from './fileEditing'
 import FileTree from './FileTree'
 import FindBar from './FindBar'
 import { diffRows, editDoc, firstChange, joinRows, plainRows, rowAt, snap, toDoc, toShown } from './diffRows'
@@ -15,7 +16,7 @@ import ImageView from './ImageView'
 import MarkdownView from './MarkdownView'
 import MediaView from './MediaView'
 import { MenuItem, Popover } from './Popover'
-import { bringInto, centerIn } from './scrollInto'
+import { bringIntoY, centerIn } from './scrollInto'
 import Spinner from './Spinner'
 
 const MAX_LINES = 5000
@@ -200,7 +201,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
     last.current = at
     area.setSelectionRange(at, at)
     const row = bodyRef.current?.querySelector(`[data-row="${rowAt(rows, at).index}"]`)
-    if (row instanceof HTMLElement) bringInto(row, bodyRef.current)
+    if (row instanceof HTMLElement) bringIntoY(row, bodyRef.current)
   }, [tick, shown, rows])
 
   useEffect(() => {
@@ -267,7 +268,17 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
     if (event.key === 'Tab') {
       event.preventDefault()
       const { selectionStart, selectionEnd, value } = event.currentTarget
-      apply(`${value.slice(0, selectionStart)}  ${value.slice(selectionEnd)}`)
+      const edit = indentFile(value, selectionStart, selectionEnd, event.shiftKey)
+      apply(edit.value)
+      caret.current = toDoc(rows, edit.start)
+      return
+    }
+    if (event.key === 'Enter' && !composing.current && !event.metaKey && !event.ctrlKey && !event.altKey) {
+      event.preventDefault()
+      const { selectionStart, selectionEnd, value } = event.currentTarget
+      const edit = breakFileLine(value, selectionStart, selectionEnd)
+      apply(edit.value)
+      caret.current = toDoc(rows, edit.start)
     }
   }
 
@@ -372,7 +383,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
               <button
                 onClick={() => void save()}
                 disabled={saving}
-                className="h-8 px-3.5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-1.5 transition-all duration-150 hover:scale-105 active:scale-95 disabled:opacity-60 disabled:scale-100"
+                className="h-8 px-3.5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-1.5 transition-all duration-150 hover:bg-fg/90 active:scale-95 disabled:opacity-60 disabled:scale-100"
               >
                 {saving && <Spinner size={12} className="text-ink-900" />}
                 Save

@@ -43,6 +43,15 @@ export function bringInto(target: HTMLElement, scroller?: HTMLElement | null, be
   move(page, left, top, behavior)
 }
 
+export function bringIntoY(target: HTMLElement, scroller?: HTMLElement | null, behavior: Behavior = 'auto'): void {
+  const page = scroller ?? scrollerOf(target)
+  if (!page) return
+  const at = placeIn(page, target)
+  const top = nearest(at.top, at.height, page.scrollTop, page.clientHeight)
+  if (top === page.scrollTop) return
+  move(page, page.scrollLeft, top, behavior)
+}
+
 export function centerIn(target: HTMLElement, scroller?: HTMLElement | null, behavior: Behavior = 'auto'): void {
   const page = scroller ?? scrollerOf(target)
   if (!page) return
