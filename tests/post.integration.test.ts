@@ -241,7 +241,7 @@ describe('a line an agent posts in the chat', () => {
     expect(host.session.snapshot().schedules?.[0].lastThreadId).toBeUndefined()
   })
 
-  it("says so in the app's own voice rather than posting an empty message", async () => {
+  it('says when an answer is empty and leaves a failed post out of the chat', async () => {
     const host = await open()
     const runner = await runnerOn(host, 'mac')
     const sam = await connectUi(host, 'sam')
@@ -256,13 +256,10 @@ describe('a line an agent posts in the chat', () => {
     await settle()
 
     const said = messagesIn(host.store.loadEvents())
-    expect(said).toHaveLength(2)
-    for (const one of said) {
-      expect(one.authorId).toBe(SYSTEM_AUTHOR_ID)
-      expect(one.threadId).toBeUndefined()
-    }
+    expect(said).toHaveLength(1)
+    expect(said[0].authorId).toBe(SYSTEM_AUTHOR_ID)
+    expect(said[0].threadId).toBeUndefined()
     expect(said[0].text).toBe('Fake had nothing to say.')
-    expect(said[1].text).toBe('Fake could not write that.')
     expect(said.some(one => one.authorId === agentId('mac', 'fake'))).toBe(false)
     expect(host.store.loadEvents().some(event => event.kind === 'thread.started')).toBe(false)
   })

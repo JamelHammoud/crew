@@ -4710,7 +4710,7 @@ export class CrewSession {
     if (run.stopped) return
     const said = run.ok ? text.trim() : ''
     if (!said) {
-      this.systemMessage(run.ok ? `${agent.label} had nothing to say.` : `${agent.label} could not write that.`)
+      if (run.ok) this.systemMessage(`${agent.label} had nothing to say.`)
       return
     }
     this.emit({
