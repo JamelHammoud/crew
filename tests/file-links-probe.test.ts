@@ -749,11 +749,11 @@ describe('file view', () => {
     render(createElement(BrowserPanel))
     await screen.findByText('const one = 1')
 
-    fireEvent.contextMenu(screen.getByText('app.ts'))
+    fireEvent.contextMenu(screen.getByRole('button', { name: 'Project files' }))
     fireEvent.click(await screen.findByText('Copy path'))
     await waitFor(() => expect(writeText).toHaveBeenLastCalledWith(`${ROOT}/src/app.ts`))
 
-    fireEvent.contextMenu(screen.getByText('app.ts'))
+    fireEvent.contextMenu(screen.getByRole('button', { name: 'Project files' }))
     fireEvent.click(await screen.findByText('Copy relative path'))
     await waitFor(() => expect(writeText).toHaveBeenLastCalledWith('src/app.ts'))
   })
