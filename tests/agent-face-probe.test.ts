@@ -232,14 +232,14 @@ describe('an agent face', () => {
     expect(box.querySelector('canvas')).toBeNull()
   })
 
-  it('turns a live agent into the object its latest step names', () => {
+  it('keeps an ordinary live agent in its idle pose', () => {
     const box = face()
 
     expect(box.dataset.activity).toBe('idle')
     expect(box.querySelector('.agent-activity-object')).toBeNull()
     act(() => useCrew.setState({ activePrompts: { [SEED]: ['p1'] } }))
-    expect(box.dataset.activity).toBe('thinking')
-    expect(box.querySelector('[data-object="thinking"]')).not.toBeNull()
+    expect(box.dataset.activity).toBe('idle')
+    expect(box.querySelector('.agent-pet-eyes')).not.toBeNull()
 
     act(() =>
       useCrew.setState({
@@ -248,41 +248,8 @@ describe('an agent face', () => {
         }
       })
     )
-    expect(box.dataset.activity).toBe('reading')
-    expect(box.querySelector('[data-object="reading"]')).not.toBeNull()
-
-    act(() =>
-      useCrew.setState({
-        steps: {
-          p1: [{ id: 'edit', ts: 2, kind: 'tool', status: 'running', name: 'Edit' }]
-        }
-      })
-    )
-    expect(box.dataset.activity).toBe('editing')
-    expect(box.querySelector('[data-object="editing"]')).not.toBeNull()
-
-    act(() =>
-      useCrew.setState({
-        steps: {
-          p1: [{ id: 'design', ts: 3, kind: 'tool', status: 'running', name: 'generateImage' }]
-        }
-      })
-    )
-    expect(box.dataset.activity).toBe('designing')
-    expect(box.querySelector('[data-object="designing"] mask path')).not.toBeNull()
-
-    act(() =>
-      useCrew.setState({
-        steps: {
-          p1: [{ id: 'bash', ts: 4, kind: 'tool', status: 'running', name: 'Bash' }]
-        }
-      })
-    )
-    expect(box.dataset.activity).toBe('running')
-    expect(box.querySelector('[data-object="running"]')).not.toBeNull()
-
-    act(() => useCrew.setState({ activePrompts: {} }))
     expect(box.dataset.activity).toBe('idle')
+    expect(box.querySelector('.agent-activity-object')).toBeNull()
   })
 
   it('turns an uploaded face into the same activity object without generated art', () => {

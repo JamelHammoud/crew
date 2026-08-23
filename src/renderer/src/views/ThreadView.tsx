@@ -45,6 +45,7 @@ import { ArchiveGlyph, CheckGlyph, ChevronLeftGlyph, CloseGlyph, EyeGlyph, StopG
 import { pendingCount, useCrew } from '../state/store'
 import { useMessagePlugin } from '../state/messagePlugin'
 import { toast } from '../state/toast'
+import { activityForAgent } from '../components/agentActivity'
 
 const BACK_WIDTH = 40
 const AVATAR_WIDTH = 52
@@ -73,6 +74,7 @@ export default function ThreadView({
   const { events, steps } = useThreadRead(threadId)
   const selfId = useCrew(s => s.selfId)
   const thread = useCrew(s => s.threads[threadId])
+  const agentActivity = useCrew(s => activityForAgent(s.activePrompts[thread?.agentId ?? ''], s.steps))
   const activePromptId = useCrew(s => s.threadPrompts[threadId])
   const tokens = useCrew(s => (activePromptId ? (s.tokens[activePromptId] ?? 0) : 0))
   const cost = useCrew(s => (activePromptId ? s.costs[activePromptId] : undefined))
@@ -416,7 +418,9 @@ export default function ThreadView({
                       centered on the mark beside them by the leading alone. The
                       mark stands out here rather than inside the name, or line
                       one is 40 on its own and the row grows by the second. */}
-                  {showPet && <AgentIcon seed={thread.agentId} presence={agentPresence} />}
+                  {showPet && (
+                    <AgentIcon seed={thread.agentId} presence={agentPresence} activity={agentActivity} />
+                  )}
                   {/* A column of two rather than two lines in one box: an inline
                       box carries the strut of a line it has no text for, and the
                       few pixels a descender leaves under the name are what would

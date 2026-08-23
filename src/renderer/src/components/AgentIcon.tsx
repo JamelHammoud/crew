@@ -3,7 +3,7 @@ import { attachmentFileUrl } from '../../../shared/attachments'
 import { useCrew } from '../state/store'
 import GeneratedField from './art/GeneratedField'
 import { FIELD_LIGHT, PET_GRID, eyeGapAt, eyeSize, petOf, petPath } from './art/pet'
-import { activityForAgent, type AgentActivity } from './agentActivity'
+import type { AgentActivity } from './agentActivity'
 import AgentActivityMark from './AgentActivityMark'
 import AgentMorphBridge from './AgentMorphBridge'
 
@@ -93,8 +93,7 @@ export default function AgentIcon({
   const unit = box / PET_GRID
   const file = useCrew(state => state.agents.find(agent => agent.id === seed)?.avatar)
   const httpBase = useCrew(state => state.httpBase)
-  const automaticActivity = useCrew(state => activityForAgent(state.activePrompts[seed], state.steps))
-  const shownActivity = activity ?? automaticActivity
+  const shownActivity = activity ?? 'idle'
   const performance = usePerformance(shownActivity)
   const src = photo ?? (file && httpBase ? attachmentFileUrl(httpBase, file) : undefined)
   const style = {
