@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ClockGlyph, PlusGlyph, SearchGlyph } from '../icons'
+import { ClockGlyph, PencilGlyph, PlusGlyph, SearchGlyph, TrashGlyph } from '../icons'
 import { stripMention } from '../../../shared/llm'
 import { Popover } from '../components/Popover'
 import Tooltip from '../components/Tooltip'
@@ -13,9 +13,14 @@ export default function PersonalChatWindow() {
   const [active, setActive] = useState<string | null>(null)
   const [historyOpen, setHistoryOpen] = useState(false)
   const [query, setQuery] = useState('')
+  const [editing, setEditing] = useState<string | null>(null)
+  const [editText, setEditText] = useState('')
+  const [deleting, setDeleting] = useState<string | null>(null)
   const connection = useCrew(s => s.connection)
   const threads = useCrew(s => s.threads)
   const readThread = useCrew(s => s.readThread)
+  const renameThread = useCrew(s => s.renameThread)
+  const deleteThread = useCrew(s => s.deleteThread)
   const thread = active ? threads[active] : undefined
   const history = useMemo(
     () =>
@@ -30,6 +35,10 @@ export default function PersonalChatWindow() {
     if (active) readThread(active)
   }, [active, readThread])
 
+  useEffect(() => {
+    if (active && !threads[active]) setActive(null)
+  }, [active, threads])
+
   const open = (threadId: string) => {
     setActive(threadId)
     setHistoryOpen(false)
@@ -38,6 +47,27 @@ export default function PersonalChatWindow() {
   const fresh = () => {
     setActive(null)
     setHistoryOpen(false)
+  }
+
+  const beginRename = (threadId: string, title: string) => {
+    setEditing(threadId)
+    setEditText(title)
+    setDeleting(null)
+  }
+
+  const saveRename = () => {
+    if (editing && editText.trim()) renameThread(editing, editText)
+    setEditing(null)
+  }
+
+  const remove = (threadId: string) => {
+    if (deleting !== threadId) {
+      setDeleting(threadId)
+      setEditing(null)
+      return
+    }
+    deleteThread(threadId)
+    setDeleting(null)
   }
 
   return (
@@ -78,16 +108,55 @@ export default function PersonalChatWindow() {
               />
             </div>
             <div className="max-h-[420px] overflow-y-auto">
-              {history.map(one => (
-                <button
-                  key={one.id}
-                  onClick={() => open(one.id)}
-                  data-active={one.id === active ? '' : undefined}
-                  className="w-full px-3 py-2.5 rounded-xl text-left text-sm text-fg/70 truncate transition-colors hover:bg-fg/[0.06] hover:text-fg data-active:bg-fg/[0.08] data-active:text-fg"
-                >
-                  {stripMention(one.title, one.agentLabel) || 'Untitled'}
-                </button>
-              ))}
+              {history.map(one => {
+                const title = stripMention(one.title, one.agentLabel) || 'Untitled'
+                return (
+                  <div key={one.id} className="group/history relative">
+                    {editing === one.id ? (
+                      <input
+                        autoFocus
+                        value={editText}
+                        onChange={event => setEditText(event.target.value)}
+                        onBlur={saveRename}
+                        onKeyDown={event => {
+                          if (event.key === 'Enter') saveRename()
+                          if (event.key === 'Escape') setEditing(null)
+                        }}
+                        aria-label="Chat name"
+                        className="w-full h-10 rounded-xl bg-fg/[0.08] px-3 pr-20 text-sm text-fg outline-none"
+                      />
+                    ) : (
+                      <button
+                        onClick={() => open(one.id)}
+                        data-active={one.id === active ? '' : undefined}
+                        className="w-full px-3 pr-20 py-2.5 rounded-xl text-left text-sm text-fg/70 truncate transition-colors hover:bg-fg/[0.06] hover:text-fg data-active:bg-fg/[0.08] data-active:text-fg"
+                      >
+                        {title}
+                      </button>
+                    )}
+                    {editing !== one.id && (
+                      <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center opacity-0 group-hover/history:opacity-100 focus-within:opacity-100">
+                        <button
+                          onClick={() => beginRename(one.id, title)}
+                          aria-label={`Rename ${title}`}
+                          className="w-8 h-8 rounded-lg text-fg/45 flex items-center justify-center hover:bg-fg/[0.08] hover:text-fg"
+                        >
+                          <PencilGlyph className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => remove(one.id)}
+                          aria-label={deleting === one.id ? `Confirm delete ${title}` : `Delete ${title}`}
+                          className={`h-8 rounded-lg flex items-center justify-center hover:bg-danger/10 hover:text-danger ${
+                            deleting === one.id ? 'px-2 text-xs text-danger' : 'w-8 text-fg/45'
+                          }`}
+                        >
+                          {deleting === one.id ? 'Delete' : <TrashGlyph className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
               {connection === 'online' && history.length === 0 && (
                 <p className="px-3 py-8 text-sm text-fg/45 text-center">{query ? 'No chats found.' : 'No chats yet.'}</p>
               )}
