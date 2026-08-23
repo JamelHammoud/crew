@@ -8,7 +8,7 @@ export interface LiveThread {
 }
 
 // Which events a thread is built from. Almost every one of them names the
-// thread it happened on, and the two a helper raises are the exception: they
+// thread it happened on, and helper events are the exception: they
 // name the helper's own thread and belong to the one that sent it out. Read
 // the plain way, a chip lands inside the helper pointing at itself and never
 // lands in the thread that has something to say about it, which is a spawn
