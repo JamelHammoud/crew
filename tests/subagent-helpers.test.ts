@@ -64,6 +64,14 @@ describe('the words an agent is given about helpers', () => {
     expect(subagentPreamble('http://x', 'p1', 2)).not.toContain('"provider"')
     expect(subagentPreamble('http://x', 'p1', 2, ['claude', 'codex'])).toContain('claude, codex')
   })
+
+  it('keeps inspection and control when every helper slot is occupied', () => {
+    const said = subagentPreamble('http://host:1', 'prompt-9', 0, [], true)!
+    expect(said).toContain('/agents?promptId=prompt-9')
+    expect(said).toContain('/agents/<id>/restart')
+    expect(said).toContain('/agents/<id>/stop')
+    expect(said).not.toContain('/agents/spawn')
+  })
 })
 
 describe('what the parent reads when one comes home', () => {

@@ -88,6 +88,88 @@ describe('runs that would stick on Working', () => {
     expect(reloaded.snapshot().events.filter(e => e.kind === 'agent.end' && e.promptId === promptId)).toHaveLength(1)
   })
 
+  it('closes an orphaned helper for its parent exactly once', () => {
+    const dir = tmpDir('orphan-helper')
+    const store = new Store(dir)
+    const parentThreadId = randomUUID()
+    const parentPromptId = randomUUID()
+    const childThreadId = randomUUID()
+    const childPromptId = randomUUID()
+    store.appendEvent({
+      id: randomUUID(),
+      ts: Date.now() - 200,
+      kind: 'thread.started',
+      threadId: parentThreadId,
+      agentId: 'parent',
+      agentLabel: 'Parent',
+      title: 'parent',
+      byName: 'jamel'
+    })
+    store.appendEvent({
+      id: randomUUID(),
+      ts: Date.now() - 190,
+      kind: 'agent.start',
+      promptId: parentPromptId,
+      agentId: 'parent',
+      agentLabel: 'Parent',
+      promptText: 'send help',
+      byName: 'jamel',
+      threadId: parentThreadId
+    })
+    store.appendEvent({
+      id: randomUUID(),
+      ts: Date.now() - 180,
+      kind: 'thread.started',
+      threadId: childThreadId,
+      agentId: 'child',
+      agentLabel: 'Child',
+      title: 'checking',
+      byName: 'Parent',
+      parentThreadId,
+      parentPromptId,
+      helper: 'Scout',
+      subject: 'checking',
+      depth: 1,
+      notify: true
+    })
+    store.appendEvent({
+      id: randomUUID(),
+      ts: Date.now() - 170,
+      kind: 'subagent.started',
+      threadId: childThreadId,
+      parentThreadId,
+      parentPromptId,
+      name: 'Scout',
+      subject: 'checking',
+      agentId: 'child',
+      agentLabel: 'Child',
+      byName: 'Parent'
+    })
+    store.appendEvent({
+      id: randomUUID(),
+      ts: Date.now() - 160,
+      kind: 'agent.start',
+      promptId: childPromptId,
+      agentId: 'child',
+      agentLabel: 'Child',
+      promptText: 'check it',
+      byName: 'Parent',
+      threadId: childThreadId
+    })
+
+    const session = new CrewSession(store)
+    const helperEnds = session
+      .snapshot()
+      .events.filter(e => e.kind === 'subagent.ended' && e.promptId === childPromptId)
+    expect(helperEnds).toHaveLength(1)
+    expect(helperEnds[0].kind === 'subagent.ended' && helperEnds[0].ok).toBe(false)
+
+    const reloaded = new CrewSession(new Store(dir))
+    expect(
+      reloaded.snapshot().events.filter(e => e.kind === 'subagent.ended' && e.promptId === childPromptId)
+    ).toHaveLength(1)
+  })
+
   it('stop closes the run even when the runner never reports the kill', async () => {
     const session = new CrewSession(new Store(tmpDir('deaf')), { cancelTimeoutMs: 300 })
     const server = await createCrewServer(session, { port: 0, host: '127.0.0.1' })
