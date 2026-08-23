@@ -64,8 +64,9 @@ const focusEnd = `(() => {
 
 const ready = `Boolean(document.querySelector('textarea[aria-label="File contents"]'))`
 
-const main = `const { app, BrowserWindow } = require('electron')
+const main = `const { app, BrowserWindow, Menu } = require('electron')
 const path = require('node:path')
+const { appMenuTemplate } = require('./window-options.cjs')
 app.disableHardwareAcceleration()
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
 const read = ${JSON.stringify(read)}
@@ -73,6 +74,11 @@ const ready = ${JSON.stringify(ready)}
 
 app.whenReady().then(async () => {
   const win = new BrowserWindow({ width: 720, height: 460, show: true, backgroundColor: '#141414' })
+  const menu = Menu.buildFromTemplate(appMenuTemplate(process.platform, false))
+  Menu.setApplicationMenu(menu)
+  const edit = menu.items.find(item => item.label === 'Edit').submenu
+  const undoItem = edit.items.find(item => item.label === 'Undo')
+  const redoItem = edit.items.find(item => item.label === 'Redo')
   const js = value => win.webContents.executeJavaScript(value)
   const logs = []
   win.webContents.on('console-message', (_event, _level, message) => logs.push(message))
@@ -104,10 +110,10 @@ app.whenReady().then(async () => {
     win.webContents.sendInputEvent({ type: 'keyUp', keyCode: 'Z', modifiers: ['meta', 'shift'] })
     await wait(100)
     const redone = await js(read)
-    win.webContents.undo()
+    undoItem.click(undoItem, win, {})
     await wait(100)
     const menuUndone = await js(read)
-    win.webContents.redo()
+    redoItem.click(redoItem, win, {})
     await wait(100)
     const menuRedone = await js(read)
     console.log('CHECK ' + JSON.stringify({ before, scrolled, focused, typed, undone, redone, menuUndone, menuRedone }))
@@ -134,6 +140,7 @@ const stage = async () => {
 
 const compile = async dir => {
   const { build } = await import('vite')
+  const { build: bundle } = await import('esbuild')
   const tailwind = (await import('@tailwindcss/vite')).default
   await build({
     root: dir,
@@ -141,6 +148,15 @@ const compile = async dir => {
     logLevel: 'silent',
     plugins: [tailwind()],
     build: { outDir: path.join(dir, 'dist'), emptyOutDir: true }
+  })
+  await bundle({
+    entryPoints: [path.join(root, 'src/main/window-options.ts')],
+    bundle: true,
+    platform: 'node',
+    format: 'cjs',
+    packages: 'external',
+    outfile: path.join(dir, 'window-options.cjs'),
+    logLevel: 'silent'
   })
 }
 
