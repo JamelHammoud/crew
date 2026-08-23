@@ -19,7 +19,7 @@ export default function StepDiff({ file, again }: { file: FileChange; again?: un
     <div className="rounded-xl border border-ink-700 overflow-hidden">
       <div className="flex items-center gap-2 px-3 py-1.5 bg-ink-800 select-none">
         {isPrivate(file.path) ? (
-          <PrivateChip />
+          <PrivateChip path={file.path} />
         ) : (
           <FileTextLink path={file.path} diff={file.diff} className="font-mono text-xs text-fg-secondary truncate">
             {labelFor(file.path, '', file.path)}

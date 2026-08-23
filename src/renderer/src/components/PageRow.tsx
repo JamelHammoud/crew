@@ -39,7 +39,7 @@ function PageRow({ shown, linked }: { shown: Shown; linked?: boolean }) {
         <Label action={action} running={false} />
         {title && (many || title !== where) && <span className={SUBJECT}>{title}</span>}
         {away ? (
-          <PrivateChip />
+          <PrivateChip path={path} />
         ) : many ? (
           where !== title && <span className={SUBJECT_MONO}>{where}</span>
         ) : (
