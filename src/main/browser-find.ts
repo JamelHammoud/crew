@@ -22,7 +22,7 @@ export function installBrowserFind(contents: WebContents): void {
   })
 }
 
-export function installBrowserFindForHost(contents: WebContents | null, host: WebContents): boolean {
+export function installBrowserFindForHost(contents: WebContents | null | undefined, host: WebContents): boolean {
   if (!contents || contents.getType() !== 'webview' || contents.hostWebContents.id !== host.id) return false
   installBrowserFind(contents)
   return true

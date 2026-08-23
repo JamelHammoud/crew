@@ -37,7 +37,8 @@ beforeEach(() => {
       return () => {
         openFind = null
       }
-    }
+    },
+    registerBrowserView
   } as unknown as CrewBridge
   Object.defineProperties(HTMLElement.prototype, {
     getURL: {
@@ -46,7 +47,6 @@ beforeEach(() => {
         return this.getAttribute('src') ?? ''
       }
     },
-    registerBrowserView,
     loadURL: { configurable: true, value: vi.fn(async () => undefined) },
     canGoBack: { configurable: true, value: () => false },
     canGoForward: { configurable: true, value: () => false },
