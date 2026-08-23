@@ -112,6 +112,15 @@ describe('tool names', () => {
     expect(toolAction(undefined).done).toBe('Working')
   })
 
+  it('names the JavaScript runner by what it does', () => {
+    expect(toolAction('node_repl.js')).toMatchObject({
+      run: 'Running code',
+      done: 'Ran code',
+      runtime: 'javascript'
+    })
+    expect(toolAction('node_repl.js').source).toBeUndefined()
+  })
+
   it('says the same thing in the status bar as in the thread', () => {
     expect(describeStep(step({ name: 'WebSearch' }))).toBe('Searching the web')
     expect(describeStep(step({ kind: 'subagent', name: 'Task' }))).toBe('Asking an agent')
@@ -205,6 +214,22 @@ describe('step rows', () => {
     expect(screen.getByText('Raylight')).not.toBeNull()
     expect(container.textContent).not.toContain('{}')
     expect(container.querySelectorAll('button').length).toBe(1)
+  })
+
+  it('uses a code chip and the call title for the JavaScript runner', () => {
+    const detail = JSON.stringify({ title: 'Reconnect to Raylight', code: 'await browser.open("https://raylight.app")' })
+    const { container } = render(
+      createElement(StepRow, { item: item({ name: 'node_repl.js', detail }) })
+    )
+    expect(screen.getByText('Reconnect to Raylight')).not.toBeNull()
+    expect(screen.getByText('Ran code')).not.toBeNull()
+    expect(container.textContent).not.toContain('Node repl')
+    expect(container.querySelector('img')).toBeNull()
+    expect(container.textContent).not.toContain('await browser.open')
+    fireEvent.click(container.querySelector('button') as HTMLButtonElement)
+    expect(screen.getByText('Code')).not.toBeNull()
+    expect(screen.getAllByText('Reconnect to Raylight')).toHaveLength(1)
+    expect(container.textContent).toContain('await browser.open')
   })
 
   it('opens a command into something you can read and copy', () => {

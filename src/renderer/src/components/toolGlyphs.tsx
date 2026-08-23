@@ -162,6 +162,13 @@ export const CodeGlyph = glyph(
   </>
 )
 
+export const JavaScriptGlyph = glyph(
+  <>
+    <rect x="3.5" y="4.5" width="17" height="15" rx="2.5" />
+    <path d="m9.5 8.5 5.5 3.5-5.5 3.5Z" />
+  </>
+)
+
 export const FlagGlyph = glyph(<path d="M5.8 20.5V4.6c3.6-1.7 6.8 1.7 10.4 0v8.9c-3.6 1.7-6.8-1.7-10.4 0" />)
 
 export const BoxGlyph = glyph(

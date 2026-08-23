@@ -17,6 +17,7 @@ import {
   FolderGlyph,
   GlobeGlyph,
   ImageGlyph,
+  JavaScriptGlyph,
   NotebookGlyph,
   OutputGlyph,
   PageGlyph,
@@ -45,6 +46,7 @@ export interface ToolAction {
   terminal?: boolean
   resource?: boolean
   source?: string
+  runtime?: 'javascript'
 }
 
 const AGENT: ToolAction = {
@@ -57,6 +59,14 @@ const AGENT: ToolAction = {
 const WORKING: ToolAction = { icon: BoxGlyph, run: 'Working', done: 'Working', prose: true }
 
 export const THINKING: ToolAction = { icon: ThinkingGlyph, run: 'Thinking', done: 'Thought', prose: true }
+
+const JAVASCRIPT: ToolAction = {
+  icon: JavaScriptGlyph,
+  run: 'Running code',
+  done: 'Ran code',
+  prose: true,
+  runtime: 'javascript'
+}
 
 const TABLE: Array<[string, ToolAction]> = [
   [
@@ -174,6 +184,7 @@ export function toolAction(name: string | undefined, subagent = false): ToolActi
   if (subagent) return AGENT
   const raw = (name ?? '').trim()
   if (!raw) return WORKING
+  if (normalizeTool(raw) === 'noderepljs') return JAVASCRIPT
   const known = TOOLS.get(normalizeTool(raw))
   if (known) return known
   const mcp = mcpTool(raw)

@@ -9,6 +9,7 @@ interface ToolCallField {
 }
 
 export interface ToolCallInfo {
+  title: string
   summary: string
   fields: ToolCallField[]
   formatted: string
@@ -77,29 +78,22 @@ export function toolCallInfo(detail: string): ToolCallInfo | null {
     return { key, label: fieldLabel(key), text, long: text.includes('\n') || text.length > 90 }
   })
   return {
+    title: record && typeof record['title'] === 'string' ? record['title'].trim() : '',
     summary: record ? summaryOf(record) : fields.length ? valuePreview(parsed) : '',
     fields,
     formatted: JSON.stringify(parsed, null, 2)
   }
 }
 
-export default function ToolCallDetail({
-  info,
-  again,
-  embedded
-}: {
+export default function ToolCallDetail({ info, again, omit = [] }: {
   info: ToolCallInfo
   again?: unknown
-  embedded?: boolean
+  omit?: string[]
 }) {
   return (
-    <div
-      className={`relative overflow-hidden bg-ink-900/35 ${
-        embedded ? 'rounded-xl' : 'rounded-xl border border-ink-700'
-      }`}
-    >
+    <div className="relative overflow-hidden rounded-xl border border-ink-700 bg-ink-900/35">
       <div className="divide-y divide-ink-700">
-        {info.fields.map(field => (
+        {info.fields.filter(field => !omit.includes(field.key)).map(field => (
           <div key={field.key} className="grid grid-cols-[6.5rem_minmax(0,1fr)]">
             <span className="px-3 py-2 text-xs leading-5 text-fg-faint bg-ink-800/40">{field.label}</span>
             <p

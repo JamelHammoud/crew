@@ -18,13 +18,13 @@ import {
   useLocated
 } from './fileLinks'
 import Markdown from './Markdown'
-import PluginStep from './PluginStep'
 import { selecting } from './selecting'
 import StepCode from './StepCode'
 import StepDiff from './StepDiff'
 import ToolCallDetail, { toolCallInfo } from './ToolCallDetail'
 import { sameItem, thoughtPreview, type ThreadItem } from './thread'
 import ThinkingMark from './ThinkingMark'
+import ToolChipStep from './ToolChipStep'
 import { THINKING, toolAction, type ToolAction, type ToolIcon } from './toolActions'
 
 export function FilePathLink({
@@ -150,7 +150,8 @@ function StepRow({ item, linked, inGroup }: { item: ThreadItem; linked?: boolean
   const subject = expanded ? '' : thinking ? preview : files.length === 0 ? (call?.summary ?? item.detail ?? '') : ''
   const subjectRef = action.resource && subject ? parseFileRef(subject) : null
 
-  if (action.source) return <PluginStep item={item} action={action} linked={linked} inGroup={inGroup} />
+  if (action.source || action.runtime)
+    return <ToolChipStep item={item} action={action} linked={linked} inGroup={inGroup} />
 
   return (
     <div
