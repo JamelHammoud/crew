@@ -254,7 +254,6 @@ export type SessionEvent =
       agentId: string
       agentLabel: string
       byName: string
-      model?: string
     }
   | {
       id: string

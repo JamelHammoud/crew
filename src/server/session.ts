@@ -1606,6 +1606,9 @@ export class CrewSession {
     const threadId = asked && UUID.test(asked) && !this.threads.has(asked) ? asked : randomUUID()
     const boardId = opts.boardId
     const sent = opts.subagent
+    const helperModel = sent
+      ? sent.settings?.model ?? agent.settings.model ?? agent.fields.find(field => field.key === 'model')?.default
+      : undefined
     const thread: Thread = {
       id: threadId,
       agentId: agent.id,
@@ -1660,6 +1663,7 @@ export class CrewSession {
       helper: sent?.name,
       subject: sent?.subject,
       depth: sent?.depth,
+      helperModel,
       notify: sent?.notify
     })
     this.enqueuePrompt(agent, member, text, threadId, attachments, {
