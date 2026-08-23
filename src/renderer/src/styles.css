@@ -1391,6 +1391,15 @@ textarea:placeholder-shown {
   animation: agent-page-right 3.4s cubic-bezier(0.45, 0, 0.25, 1) calc(var(--agent-delay, 0ms) - 120ms) infinite;
 }
 
+.agent-icon [data-part='page-turn'] {
+  transform-origin: left bottom;
+  animation: agent-page-turn 3.4s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+}
+
+.agent-icon [data-part='page-spine'] {
+  animation: agent-page-spine 3.4s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+}
+
 @keyframes agent-page-left {
   0%,
   100% {
@@ -1417,6 +1426,39 @@ textarea:placeholder-shown {
   }
 }
 
+@keyframes agent-page-turn {
+  0%,
+  14%,
+  100% {
+    transform: translateX(0) rotateY(0) scaleX(1);
+  }
+  38% {
+    transform: translateX(-8%) rotate(-4deg) scaleX(0.2);
+  }
+  52% {
+    transform: translateX(-17%) rotate(-7deg) scaleX(0.04);
+  }
+  67% {
+    transform: translateX(-5%) rotate(2deg) scaleX(0.82);
+  }
+  76% {
+    transform: translateX(1%) rotate(-0.5deg) scaleX(1.03);
+  }
+}
+
+@keyframes agent-page-spine {
+  0%,
+  100% {
+    transform: scaleY(0.92);
+  }
+  48% {
+    transform: scaleY(1.05);
+  }
+  72% {
+    transform: scaleY(0.98);
+  }
+}
+
 @keyframes agent-searching {
   0%,
   100% {
@@ -1440,6 +1482,10 @@ textarea:placeholder-shown {
 .agent-icon [data-part='search-handle'] {
   transform-origin: 10% 10%;
   animation: agent-search-handle 2.2s cubic-bezier(0.45, 0, 0.2, 1) calc(var(--agent-delay, 0ms) - 70ms) infinite;
+}
+
+.agent-icon [data-part='search-glint'] {
+  animation: agent-search-glint 2.2s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
 }
 
 @keyframes agent-search-lens {
@@ -1471,6 +1517,27 @@ textarea:placeholder-shown {
   }
   66% {
     transform: rotate(-1deg) scaleY(0.995);
+  }
+}
+
+@keyframes agent-search-glint {
+  0%,
+  15%,
+  100% {
+    opacity: 0.35;
+    transform: translate(-12%, 12%) scale(0.72);
+  }
+  36% {
+    opacity: 1;
+    transform: translate(2%, -2%) scale(1.08);
+  }
+  55% {
+    opacity: 0.7;
+    transform: translate(10%, -10%) scale(0.88);
+  }
+  72% {
+    opacity: 0.25;
+    transform: translate(16%, -16%) scale(0.68);
   }
 }
 
