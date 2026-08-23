@@ -244,8 +244,9 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
         </button>
       )}
       <Modal open={open} onClose={() => setOpen(false)} title={TITLES[screen]} width={460} flush>
-        <ScreenSwap screen={screen} depth={DEPTH[screen]}>
-          {screen === 'agent' ? (
+        <div className="max-h-[calc(100dvh-3rem)] overflow-y-auto overscroll-contain rounded-[inherit]">
+          <ScreenSwap screen={screen} depth={DEPTH[screen]}>
+            {screen === 'agent' ? (
             <div className="p-6 space-y-5">
               <div className="flex items-center gap-3.5">
                 <ProviderMark provider={provider} className="w-12 h-12 rounded-2xl" />
@@ -309,7 +310,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
                 </button>
               </div>
             </div>
-          ) : screen === 'advanced' ? (
+            ) : screen === 'advanced' ? (
             <div className="p-6 space-y-5">
               <div className="flex items-center gap-2">
                 <button
@@ -341,7 +342,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
                 </button>
               </div>
             </div>
-          ) : (
+            ) : (
             <div className="p-6 space-y-5">
               <h3 className="text-base font-semibold text-fg">Add a provider</h3>
               <div className="space-y-2">
@@ -415,8 +416,9 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
                 </button>
               </div>
             </div>
-          )}
-        </ScreenSwap>
+            )}
+          </ScreenSwap>
+        </div>
       </Modal>
     </>
   )
