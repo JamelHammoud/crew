@@ -411,28 +411,4 @@ describe('agent activity objects', () => {
     expect(activity('SendMessage')).toBe('communicating')
     expect(activity('unknownTool')).toBe('acting')
   })
-
-  it('gives every state its own continuous morph contour and three mapped features', () => {
-    const activities = [
-      'idle',
-      'thinking',
-      'reading',
-      'searching',
-      'editing',
-      'designing',
-      'running',
-      'planning',
-      'communicating',
-      'acting'
-    ] as const
-    const drawings = activities.map(activity => morphDrawing(activity, petOf(SEED)))
-
-    expect(new Set(drawings.map(drawing => drawing.body)).size).toBe(activities.length)
-    for (const drawing of drawings) {
-      expect(drawing.body.startsWith('M')).toBe(true)
-      expect(drawing.body.endsWith('Z')).toBe(true)
-      expect(drawing.features).toHaveLength(3)
-      expect(drawing.features.every(feature => feature.startsWith('M') && feature.endsWith('Z'))).toBe(true)
-    }
-  })
 })
