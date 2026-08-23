@@ -151,6 +151,8 @@ describe('an agent face', () => {
     expect(keyframes.match(/transform:/g)).toHaveLength(2)
     expect(keyframes).toContain('translateY(3%)')
     expect(keyframes).toContain('translateY(-4%)')
+    expect(keyframes).toContain('scale(1.12, 1.08)')
+    expect(keyframes).toContain('scale(1.09, 1.12)')
   })
 
   it('builds Writing from one diagonal rounded pencil', () => {
@@ -214,7 +216,9 @@ describe('an agent face', () => {
     expect(lines).toContain('infinite both')
     expect(motion).toContain('1.7s ease-in-out')
     expect(motion).toContain('infinite alternate')
-    expect(styles).toContain('@keyframes agent-reading')
+    const reading = styles.split('@keyframes agent-reading {')[1]?.split('\n}')[0] ?? ''
+    expect(reading).toContain('scale(1.095, 1.065)')
+    expect(reading).toContain('scale(1.07, 1.1)')
     expect(styles).toContain('@keyframes agent-book-page-left')
     expect(styles).toContain('@keyframes agent-book-page-right')
     expect(styles.split('@keyframes agent-book-page-left')[1]?.split('@keyframes')[0]).not.toContain('rotate')

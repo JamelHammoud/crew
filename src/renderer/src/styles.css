@@ -1202,19 +1202,19 @@ textarea:placeholder-shown {
 
 @keyframes agent-thinking {
   from {
-    transform: translateY(3%) rotate(-0.6deg) scale(1.02, 0.98);
+    transform: translateY(3%) rotate(-0.6deg) scale(1.12, 1.08);
   }
   to {
-    transform: translateY(-4%) rotate(0.6deg) scale(0.99, 1.02);
+    transform: translateY(-4%) rotate(0.6deg) scale(1.09, 1.12);
   }
 }
 
 @keyframes agent-reading {
   from {
-    transform: translateY(3%) rotate(-0.5deg) scale(1.015, 0.985);
+    transform: translateY(3%) rotate(-0.5deg) scale(1.095, 1.065);
   }
   to {
-    transform: translateY(-4%) rotate(0.5deg) scale(0.99, 1.02);
+    transform: translateY(-4%) rotate(0.5deg) scale(1.07, 1.1);
   }
 }
 
