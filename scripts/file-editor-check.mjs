@@ -62,11 +62,14 @@ const focusEnd = `(() => {
   area.setSelectionRange(area.value.length, area.value.length)
 })()`
 
+const ready = `Boolean(document.querySelector('textarea[aria-label="File contents"]'))`
+
 const main = `const { app, BrowserWindow } = require('electron')
 const path = require('node:path')
 app.disableHardwareAcceleration()
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
 const read = ${JSON.stringify(read)}
+const ready = ${JSON.stringify(ready)}
 
 app.whenReady().then(async () => {
   const win = new BrowserWindow({ width: 720, height: 460, show: true, backgroundColor: '#141414' })
@@ -76,11 +79,10 @@ app.whenReady().then(async () => {
   try {
     await win.loadFile(path.join(__dirname, 'dist/index.html'))
     for (let at = 0; at < 40; at += 1) {
-      if (await js('Boolean(document.querySelector("textarea[aria-label=\\"File contents\\"]"))')) break
+      if (await js(ready)) break
       await wait(50)
     }
-    if (!(await js('Boolean(document.querySelector("textarea[aria-label=\\"File contents\\"]"))')))
-      throw new Error('no editor: ' + logs.join(' | '))
+    if (!(await js(ready))) throw new Error('no editor: ' + logs.join(' | '))
     await wait(300)
     const before = await js(read)
     await js('document.querySelector(".overflow-auto").scrollLeft = 900')
