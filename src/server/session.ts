@@ -381,6 +381,8 @@ const CONTEXT_EVENT_LIMIT = 20
 // against a session that has been forked all afternoon.
 const FORK_DEPTH_LIMIT = 20
 const MAX_DOC_PROMPT_CHARS = 8000
+const UNFINISHED_PROGRESS_LIMIT = 6000
+const UNFINISHED_OUTPUT_LIMIT = 2000
 const TITLE_LIMIT = 80
 const LABEL_LIMIT = 40
 const CANCEL_REPORT_TIMEOUT_MS = 15000
@@ -4497,10 +4499,46 @@ export class CrewSession {
           return `${e.authorName}${reply}: ${[e.text, shared].filter(Boolean).join(' ')}`
         }
         if (e.ok && e.text) return `${e.agentLabel}: ${e.text}`
+        const progress = this.unfinishedProgress(e)
+        if (progress) {
+          const ending = e.stopped ? 'was stopped before finishing' : `could not finish${e.error ? `: ${e.error}` : ''}`
+          return `${e.agentLabel} ${ending}. Work already shown in that run:\n${progress}`
+        }
+        if (e.stopped) return `${e.agentLabel} was stopped before finishing.`
         return null
       })
       .filter(Boolean)
       .join('\n')
+  }
+
+  private unfinishedProgress(event: Extract<SessionEvent, { kind: 'agent.end' }>): string {
+    if (event.ok || !event.threadId) return ''
+    const parts: string[] = []
+    const steps = this.eventsOf(event.threadId).filter(
+      (candidate): candidate is Extract<SessionEvent, { kind: 'agent.step' }> =>
+        candidate.kind === 'agent.step' && candidate.promptId === event.promptId
+    )
+    for (const { step } of steps) {
+      if (step.kind === 'thinking') continue
+      if (step.kind === 'text') {
+        const text = step.text?.trim()
+        if (text) parts.push(text)
+        continue
+      }
+      const activity = [step.name, step.detail].filter(Boolean).join(': ')
+      if (activity) parts.push(`[${step.kind === 'subagent' ? 'Helper' : 'Tool'}: ${activity}]`)
+      const output = step.output?.trim()
+      if (output) parts.push(`[Output: ${output.slice(-UNFINISHED_OUTPUT_LIMIT)}]`)
+      if (step.files?.length) {
+        parts.push(`[Files touched: ${step.files.map(file => `${file.path} (+${file.added} -${file.removed})`).join(', ')}]`)
+      }
+      if (step.todos?.length) {
+        parts.push(`[Tasks: ${step.todos.map(todo => `${todo.status}: ${todo.text}`).join(' | ')}]`)
+      }
+    }
+    const progress = parts.join('\n')
+    if (progress.length <= UNFINISHED_PROGRESS_LIMIT) return progress
+    return `[Earlier unfinished work omitted]\n${progress.slice(-UNFINISHED_PROGRESS_LIMIT)}`
   }
 
   private buildPrompt(agent: AgentState, prompt: QueuedPrompt, reactions: ReactionEvent[]): string {

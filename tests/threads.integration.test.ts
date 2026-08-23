@@ -268,6 +268,40 @@ describe('threads', () => {
     expect(kept.every(e => e.threadId === started.threadId)).toBe(true)
   })
 
+  it('hands unfinished work back to the agent on the next turn', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    await connectRunner('jamel', { FAKE_CLI_ACTIVITY: '1', FAKE_CLI_DELAY_MS: '250' })
+    await ui.waitForEvent(e => e.kind === 'agent.online')
+
+    ui.chat('inspect the project @Fake', [fake])
+    const started = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Started
+    const first = (await ui.waitForEvent(e => e.kind === 'agent.start')) as Extract<
+      SessionEvent,
+      { kind: 'agent.start' }
+    >
+    await ui.waitFor(
+      message =>
+        message.type === 'agent.step' &&
+        message.promptId === first.promptId &&
+        message.step.kind === 'text' &&
+        message.step.text === 'fake['
+    )
+    ui.cancel(first.promptId)
+    await ui.waitForEvent(e => e.kind === 'agent.end' && e.promptId === first.promptId)
+
+    ui.chat('continue', [], started.threadId)
+    const second = (await ui.waitForEvent(
+      e => e.kind === 'agent.end' && e.threadId === started.threadId && e.promptId !== first.promptId
+    )) as Ended
+
+    expect(second.ok).toBe(true)
+    expect(second.text).toContain('Fake was stopped before finishing. Work already shown in that run:')
+    expect(second.text).toContain('[Helper: Helper: researching the question]')
+    expect(second.text).toContain('[Tool: Glob: *.md]')
+    expect(second.text).toContain('fake[')
+  })
+
   it('reports tokens while a prompt runs', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
