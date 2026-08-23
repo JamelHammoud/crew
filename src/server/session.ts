@@ -3875,10 +3875,14 @@ export class CrewSession {
     const found = this.queuedEntry(promptId)
     if (!found || found.entry.authorId !== member.id) return
     const attachments = found.entry.attachments.map(attachment => {
-      const ghost = this.ghostFiles.get(attachment.file)?.data
-      const stored = this.store.attachmentPath(attachment.file)
-      const data = ghost ?? (stored ? fs.readFileSync(stored) : null)
-      return data ? { name: attachment.name, mime: attachment.mime, data: data.toString('base64') } : null
+      try {
+        const ghost = this.ghostFiles.get(attachment.file)?.data
+        const stored = this.store.attachmentPath(attachment.file)
+        const data = ghost ?? (stored ? fs.readFileSync(stored) : null)
+        return data ? { name: attachment.name, mime: attachment.mime, data: data.toString('base64') } : null
+      } catch {
+        return null
+      }
     })
     if (attachments.some(item => item === null)) {
       this.send(ws, { type: 'queue.take.failed', promptId, message: 'One of the files could not be opened.' })
@@ -3891,13 +3895,13 @@ export class CrewSession {
     if (this.emittedMessages.has(found.entry.messageId) && !shared) {
       this.handleDeleteMessage(member, found.entry.messageId)
     }
+    this.broadcastQueue(found.thread)
     this.send(ws, {
       type: 'queue.taken',
       threadId: found.thread.id,
       item: this.queueItem(found.entry),
       attachments: attachments.filter((item): item is OutgoingAttachment => item !== null)
     })
-    this.broadcastQueue(found.thread)
   }
 
   private handleQueueMove(member: Member, promptId: string, to: number): void {
