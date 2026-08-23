@@ -81,6 +81,7 @@ declare global {
     resizeTray(height: number): void
     openWindow(): void
     popOutThread(threadId: string, key?: string): Promise<void>
+    setWindowPinned(pinned: boolean): Promise<boolean>
     closeTray(): void
     appVersion(): Promise<string>
     systemInfo(): Promise<SystemDetails>
@@ -119,7 +120,7 @@ declare global {
     installCommand(): Promise<CommandDone>
     removeCommand(): Promise<CommandDone>
     onUpdate(listener: (state: UpdateState) => void): () => void
-    onWindowShape(listener: (shape: { square: boolean; full: boolean }) => void): void
+    onWindowShape(listener: (shape: { square: boolean; full: boolean; pinned: boolean }) => void): void
     onOpenUrl(listener: (url: string) => void): void
     onFindInPage(listener: () => void): () => void
     onCrewTrouble(listener: (message: string) => void): () => void
