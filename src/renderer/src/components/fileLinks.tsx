@@ -186,7 +186,7 @@ export function fileTokens(text: string): FileToken[] {
 
 function privateNode(doc: Document, path: string, line: number | null): HTMLAnchorElement {
   const chip = doc.createElement('a')
-  chip.className = PRIVATE_CLASS
+  chip.className = `${PRIVATE_CLASS} file-link`
   chip.dataset.path = targetFor(path)
   chip.dataset.fullPath = path
   if (line !== null) chip.dataset.line = String(line)
