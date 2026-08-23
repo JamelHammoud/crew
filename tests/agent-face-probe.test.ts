@@ -170,12 +170,14 @@ describe('an agent face', () => {
     expect(box.querySelector('canvas')).toBeNull()
   })
 
-  it('keeps a live agent moving in the state its latest step names', () => {
+  it('turns a live agent into the object its latest step names', () => {
     const box = face()
 
     expect(box.dataset.activity).toBe('idle')
+    expect(box.querySelector('.agent-activity-object')).toBeNull()
     act(() => useCrew.setState({ activePrompts: { [SEED]: ['p1'] } }))
     expect(box.dataset.activity).toBe('thinking')
+    expect(box.querySelector('[data-object="thinking"]')).not.toBeNull()
 
     act(() =>
       useCrew.setState({
@@ -185,6 +187,7 @@ describe('an agent face', () => {
       })
     )
     expect(box.dataset.activity).toBe('reading')
+    expect(box.querySelector('[data-object="reading"]')).not.toBeNull()
 
     act(() =>
       useCrew.setState({
@@ -193,26 +196,40 @@ describe('an agent face', () => {
         }
       })
     )
-    expect(box.dataset.activity).toBe('writing')
+    expect(box.dataset.activity).toBe('editing')
+    expect(box.querySelector('[data-object="editing"]')).not.toBeNull()
 
     act(() =>
       useCrew.setState({
         steps: {
-          p1: [{ id: 'bash', ts: 3, kind: 'tool', status: 'running', name: 'Bash' }]
+          p1: [{ id: 'design', ts: 3, kind: 'tool', status: 'running', name: 'generateImage' }]
         }
       })
     )
-    expect(box.dataset.activity).toBe('acting')
+    expect(box.dataset.activity).toBe('designing')
+    expect(box.querySelector('[data-object="designing"] mask path')).not.toBeNull()
+
+    act(() =>
+      useCrew.setState({
+        steps: {
+          p1: [{ id: 'bash', ts: 4, kind: 'tool', status: 'running', name: 'Bash' }]
+        }
+      })
+    )
+    expect(box.dataset.activity).toBe('running')
+    expect(box.querySelector('[data-object="running"]')).not.toBeNull()
 
     act(() => useCrew.setState({ activePrompts: {} }))
     expect(box.dataset.activity).toBe('idle')
   })
 
-  it('moves an uploaded face without drawing the generated pet underneath it', () => {
+  it('turns an uploaded face into the same activity object without generated art', () => {
     const box = face({ photo: PHOTO, activity: 'reading' })
 
     expect(box.dataset.activity).toBe('reading')
     expect(box.querySelector('.agent-photo')).not.toBeNull()
     expect(box.querySelector('.agent-pet-drawing')).toBeNull()
+    expect(box.querySelector('.agent-activity-object img')).not.toBeNull()
+    expect(box.querySelector('.agent-activity-object canvas')).toBeNull()
   })
 })
