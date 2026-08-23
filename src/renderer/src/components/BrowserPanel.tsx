@@ -93,7 +93,7 @@ export default function BrowserPanel() {
   useEffect(() => setFinding(false), [activeTabId])
 
   useEffect(() => {
-    const listen = window.crew.onFindInPage
+    const listen = window.crew?.onFindInPage
     if (!listen) return
     return listen(() => {
       const browser = useBrowser.getState()
