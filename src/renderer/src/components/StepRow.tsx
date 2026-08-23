@@ -12,6 +12,7 @@ import {
   openable,
   parseFileRef,
   PrivateChip,
+  shortFileLabel,
   targetFor,
   TextWithFileLinks,
   useLocated
@@ -39,7 +40,7 @@ export function FilePathLink({
   if (isPrivate(path)) return <PrivateChip />
   return (
     <FileTextLink path={path} diff={diff} className={className}>
-      {labelFor(path, '', path)}
+      {shortFileLabel(path, labelFor(path, '', path))}
     </FileTextLink>
   )
 }

@@ -3,6 +3,7 @@ import type { PathLocation } from '../../../shared/files'
 import { FileGlyph, GlobeGlyph } from '../icons'
 import { useBrowser } from '../state/browser'
 import { EmojiText } from './Emoji'
+import { useFileMenu } from './fileMenu'
 import Tooltip from './Tooltip'
 
 export interface FileRef {
@@ -198,7 +199,7 @@ function linkNode(doc: Document, path: string, line: number | null, label: strin
   if (line !== null) anchor.dataset.line = String(line)
   anchor.appendChild(FileGlyph.element(doc, 'resource-chip-icon'))
   const code = doc.createElement('code')
-  code.textContent = compactLabel(path, label)
+  code.textContent = shortFileLabel(path, label)
   anchor.appendChild(code)
   return anchor
 }
@@ -209,7 +210,7 @@ function linkedAnchor(anchor: HTMLAnchorElement, ref: FileRef): void {
   anchor.dataset.fullPath = ref.path
   if (ref.line !== null) anchor.dataset.line = String(ref.line)
   const content = anchor.ownerDocument.createElement('code')
-  content.append(...anchor.childNodes)
+  content.textContent = shortFileLabel(ref.path, ref.line === null ? ref.path : `${ref.path}:${ref.line}`)
   anchor.append(FileGlyph.element(anchor.ownerDocument, 'resource-chip-icon'), content)
 }
 
@@ -311,28 +312,32 @@ const openFile = (path: string, line: number | null, diff: string | null = null)
   useBrowser.getState().openFile(targetFor(path), line, diff)
 
 export function FileChip({ path, line, text }: { path: string; line: number | null; text: string }) {
+  const { onContextMenu, menu, menuOpen } = useFileMenu(targetFor(path), line)
   return (
-    <Tooltip
-      label={<FullPath path={path} />}
-      className="max-w-full align-middle"
-    >
-      <span
-        onClick={event => {
-          event.stopPropagation()
-          openFile(path, line)
-        }}
-        className="resource-chip"
-      >
-        <FileGlyph className="resource-chip-icon" />
-        <code>{compactLabel(path, text)}</code>
-      </span>
-    </Tooltip>
+    <>
+      <Tooltip label={<FullPath path={path} />} disabled={menuOpen} className="max-w-full align-middle">
+        <span
+          onClick={event => {
+            event.stopPropagation()
+            openFile(path, line)
+          }}
+          onContextMenu={onContextMenu}
+          className="resource-chip"
+        >
+          <FileGlyph className="resource-chip-icon" />
+          <code>{shortFileLabel(path, text)}</code>
+        </span>
+      </Tooltip>
+      {menu}
+    </>
   )
 }
 
 export function FullPath({ path }: { path: string }) {
   return <span className="block max-w-[260px] break-all font-mono text-xs leading-5 text-fg-secondary">{path}</span>
 }
+
+const webName = (url: string): string => new URL(url).host.replace(/^www\./i, '') || url
 
 export function UrlChip({ url }: { url: string }) {
   return (
@@ -345,16 +350,17 @@ export function UrlChip({ url }: { url: string }) {
         className="resource-chip"
       >
         <GlobeGlyph className="resource-chip-icon" />
-        <span className="truncate">{new URL(url).host || url}</span>
+        <span className="truncate">{webName(url)}</span>
       </span>
     </Tooltip>
   )
 }
 
-function compactLabel(path: string, text: string): string {
-  if (locationOf(path)?.kind !== 'local' || !/^[/\\]|^[A-Za-z]:[\\/]/.test(path)) return text
+export function shortFileLabel(path: string, text: string): string {
   const suffix = text.match(/:\d+(?::\d+)?$/)?.[0] ?? (text.endsWith('/') ? '/' : '')
-  const file = path.split(/[\\/]/).filter(Boolean).at(-1) ?? text
+  const locatedPath = locationOf(path)
+  const shown = locatedPath?.kind === 'repo' ? locatedPath.path : path
+  const file = shown.replace(/[\\/]+$/, '').split(/[\\/]/).filter(Boolean).at(-1) ?? text
   return file + suffix
 }
 
@@ -373,16 +379,23 @@ export function FileTextLink({
   className?: string
   children: ReactNode
 }) {
+  const { onContextMenu, menu, menuOpen } = useFileMenu(targetFor(path), line)
   return (
-    <span
-      onClick={event => {
-        event.stopPropagation()
-        openFile(path, line, diff)
-      }}
-      className={`cursor-pointer transition-colors hover:text-fg hover:underline underline-offset-2 ${className ?? ''}`}
-    >
-      {children}
-    </span>
+    <>
+      <Tooltip label={<FullPath path={path} />} disabled={menuOpen} className="max-w-full align-middle">
+        <span
+          onClick={event => {
+            event.stopPropagation()
+            openFile(path, line, diff)
+          }}
+          onContextMenu={onContextMenu}
+          className={`cursor-pointer transition-colors hover:text-fg hover:underline underline-offset-2 ${className ?? ''}`}
+        >
+          {children}
+        </span>
+      </Tooltip>
+      {menu}
+    </>
   )
 }
 
@@ -434,7 +447,7 @@ export function TextWithFileLinks({
         if (inline) {
           return (
             <FileTextLink key={index} path={token.path} line={token.line}>
-              {label}
+              {shortFileLabel(token.path, label)}
             </FileTextLink>
           )
         }

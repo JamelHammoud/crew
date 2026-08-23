@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent 
 import { useBrowser } from '../state/browser'
 import { useCustomEmoji } from './customEmojiSheet'
 import { emojifyHtml } from './emojiHtml'
+import { FileMenu } from './fileMenu'
 import { FullPath, linkifyFiles, locatePaths, openHref } from './fileLinks'
 import { morph } from './mdMorph'
 import { movedBy } from './movedBy'
@@ -65,6 +66,7 @@ export default function Markdown({
   const sheet = useCustomEmoji()
   const [resolved, setResolved] = useState(0)
   const [tip, setTip] = useState<{ path: string; rect: DOMRect } | null>(null)
+  const [fileMenu, setFileMenu] = useState<{ path: string; line: number | null; x: number; y: number } | null>(null)
   const { page, unknown } = useMemo(() => {
     const container = document.createElement('div')
     container.innerHTML = DOMPurify.sanitize(marked.parse(text, { async: false, breaks }) as string)
@@ -143,16 +145,41 @@ export default function Markdown({
     openHref(link.getAttribute('href') ?? '')
   }
 
+  const onContextMenu = (event: MouseEvent<HTMLDivElement>) => {
+    const link = (event.target as HTMLElement).closest<HTMLElement>('a.file-link[data-path]')
+    if (!link) return
+    event.preventDefault()
+    event.stopPropagation()
+    if (tipTimer.current !== null) window.clearTimeout(tipTimer.current)
+    tipAnchor.current = null
+    setTip(null)
+    setFileMenu({
+      path: link.dataset.path ?? '',
+      line: link.dataset.line ? parseInt(link.dataset.line, 10) : null,
+      x: event.clientX,
+      y: event.clientY
+    })
+  }
+
   return (
     <>
       <div
         ref={host}
         className={`md select-text ${className}`}
         onClick={onClick}
+        onContextMenu={onContextMenu}
         onMouseOver={onMouseOver}
         onMouseOut={onMouseOut}
       />
       {tip && <TooltipBubble label={<FullPath path={tip.path} />} rect={tip.rect} />}
+      {fileMenu && (
+        <FileMenu
+          path={fileMenu.path}
+          line={fileMenu.line}
+          at={fileMenu}
+          onClose={() => setFileMenu(null)}
+        />
+      )}
     </>
   )
 }
