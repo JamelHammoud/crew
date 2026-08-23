@@ -236,12 +236,13 @@ describe('markdown file links', () => {
     expect(tabs.some(t => t.kind === 'web' && t.url === 'https://example.com')).toBe(true)
   })
 
-  it('draws a named file link as a chip and shows its full path in Crew’s tooltip', async () => {
+  it('draws a named file link with its mark and shows its full path in Crew’s tooltip', async () => {
     render(createElement(Markdown, { text: `[release-summary.json](${SHOT})` }))
     const chip = await screen.findByText('release-summary.json')
     const link = chip.closest('a') as HTMLAnchorElement
     expect(link.classList.contains('resource-chip')).toBe(true)
     expect(link.querySelector('svg')).not.toBeNull()
+    expect(link.className).toContain('resource-chip')
     fireEvent.mouseOver(link)
     expect(await screen.findByText(SHOT)).not.toBeNull()
   })

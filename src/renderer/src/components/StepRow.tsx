@@ -5,6 +5,7 @@ import { useBrowser } from '../state/browser'
 import Counts from './Counts'
 import { carries, stepHidden, useFindQuery } from './find'
 import {
+  FileChip,
   FileTextLink,
   isPrivate,
   labelFor,
@@ -141,6 +142,7 @@ function StepRow({ item, linked, inGroup }: { item: ThreadItem; linked?: boolean
   const found = expandable && carries(query, stepHidden(item))
   const expanded = expandable && (open ?? (found || (thinking && item.streaming)))
   const subject = expanded ? '' : thinking ? preview : files.length === 0 ? (item.detail ?? '') : ''
+  const subjectRef = action.resource && subject ? parseFileRef(subject) : null
 
   return (
     <div className={`animate-rise ${inGroup ? '' : 'pl-14'} ${linked ? '-mt-3' : ''}`}>
@@ -166,8 +168,21 @@ function StepRow({ item, linked, inGroup }: { item: ThreadItem; linked?: boolean
           </>
         )}
         {subject && (
-          <span className={action.prose ? SUBJECT : SUBJECT_MONO}>
-            <TextWithFileLinks text={subject} inline={!action.resource} chips={action.resource} again={!item.streaming} />
+          <span className={action.resource ? 'min-w-0 truncate text-inherit' : action.prose ? SUBJECT : SUBJECT_MONO}>
+            {subjectRef && openable(subjectRef.path) ? (
+              <FileChip
+                path={subjectRef.path}
+                line={subjectRef.line}
+                text={labelFor(subjectRef.path, '', subject)}
+              />
+            ) : (
+              <TextWithFileLinks
+                text={subject}
+                inline={!action.resource}
+                chips={action.resource}
+                again={!item.streaming}
+              />
+            )}
           </span>
         )}
         {expandable && <Chevron open={expanded} />}
