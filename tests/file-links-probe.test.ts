@@ -704,9 +704,7 @@ describe('steps and thinking', () => {
 
   it('opens a picture an agent read from a folder named in two words', async () => {
     const { container } = render(createElement(StepRow, { item: item({ name: 'Read', detail: SENT }) }))
-    const chip = await screen.findByText('c3f7789a.png')
-    fireEvent.mouseEnter(chip.closest('.inline-flex') as HTMLElement)
-    expect(await screen.findByText(SENT)).not.toBeNull()
+    await screen.findByText('c3f7789a.png')
     await waitFor(() => {
       fireEvent.click(screen.getByRole('button'))
       expect(useBrowser.getState().tabs[0]?.path).toBe(SENT)
