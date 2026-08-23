@@ -169,7 +169,7 @@ describe('the settings', () => {
     expect(heard).toHaveBeenCalledWith('sound.on')
   })
 
-  it('picks a theme from the pair, and says which one is worn', () => {
+  it('picks an appearance, and says which one is worn', () => {
     show('appearance')
     const light = screen.getByRole('button', { name: /Light/ })
     expect(screen.getByRole('button', { name: /Dark/ }).getAttribute('aria-pressed')).toBe('true')
@@ -177,6 +177,10 @@ describe('the settings', () => {
     fireEvent.click(light)
     expect(storedTheme()).toBe('light')
     expect(screen.getByRole('button', { name: /Light/ }).getAttribute('aria-pressed')).toBe('true')
+
+    fireEvent.click(screen.getByRole('button', { name: /OLED/ }))
+    expect(storedTheme()).toBe('oled')
+    expect(screen.getByRole('button', { name: /OLED/ }).getAttribute('aria-pressed')).toBe('true')
   })
 
   // The numbers are gathered whichever way these are set. All they decide is

@@ -8,7 +8,14 @@ const styles = readFileSync(path.join(root, 'src/renderer/src/styles.css'), 'utf
 
 const LEGIBLE = 0.9
 
-const OVER_SOMETHING_ELSE = ['.mac .sidebar-pinned', '.mac.light .sidebar-pinned', '.glass-lit', '.light .glass-lit']
+const OVER_SOMETHING_ELSE = [
+  '.mac .sidebar-pinned',
+  '.mac.light .sidebar-pinned',
+  '.mac.oled .sidebar-pinned',
+  '.glass-lit',
+  '.light .glass-lit',
+  '.oled .glass-lit'
+]
 
 const blocks = (): { selector: string; body: string }[] =>
   [...styles.matchAll(/^([^@\s][^{}\n]*?)\s*\{\n([^{}]*?)\n\}/gm)].map(([, selector, body]) => ({
@@ -54,5 +61,11 @@ describe('what a floating panel lets through', () => {
     expect(alphaOf('.glass-strong')).toBeGreaterThan(alphaOf(':root'))
     expect(alphaOf('.sidebar-glass.glass-strong')).toBeGreaterThan(alphaOf('.sidebar-glass'))
     expect(alphaOf('.light .sidebar-glass.glass-strong')).toBeGreaterThan(alphaOf('.light .sidebar-glass'))
+    expect(alphaOf('.oled .sidebar-glass.glass-strong')).toBeGreaterThan(alphaOf('.oled .sidebar-glass'))
+  })
+
+  it('makes the OLED sidebar darker and less transparent than the regular dark sidebar', () => {
+    expect(alphaOf('.oled .sidebar-glass')).toBeGreaterThan(alphaOf('.sidebar-glass'))
+    expect(alphaOf('.mac.oled .sidebar-pinned')).toBeGreaterThan(alphaOf('.mac .sidebar-pinned'))
   })
 })

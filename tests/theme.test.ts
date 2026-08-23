@@ -13,7 +13,7 @@ vi.stubGlobal('localStorage', {
 describe('theme', () => {
   beforeEach(() => {
     store.clear()
-    document.documentElement.classList.remove('light')
+    document.documentElement.classList.remove('light', 'oled')
   })
 
   it('defaults to dark when nothing is stored', () => {
@@ -31,6 +31,20 @@ describe('theme', () => {
     applyTheme('dark')
     expect(document.documentElement.classList.contains('light')).toBe(false)
     expect(storedTheme()).toBe('dark')
+  })
+
+  it('applies OLED without presenting it as light to the document', () => {
+    applyTheme('oled')
+    expect(document.documentElement.classList.contains('oled')).toBe(true)
+    expect(document.documentElement.classList.contains('light')).toBe(false)
+    expect(storedTheme()).toBe('oled')
+  })
+
+  it('clears OLED when another theme is picked', () => {
+    applyTheme('oled')
+    applyTheme('light')
+    expect(document.documentElement.classList.contains('oled')).toBe(false)
+    expect(document.documentElement.classList.contains('light')).toBe(true)
   })
 
   it('treats unknown stored values as dark', () => {
