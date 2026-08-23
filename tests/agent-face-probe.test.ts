@@ -188,20 +188,19 @@ describe('an agent face', () => {
   it('opens, turns a page and closes Reading around one shared spine', () => {
     const object = face({ activity: 'reading' }).querySelector('[data-object="reading"]') as HTMLElement
     const rule = styles.split(".agent-icon .agent-activity-object[data-object='reading'] {")[1]?.split('}')[0] ?? ''
-    const turn = styles.split('@keyframes agent-page-turn {')[1]?.split('\n}')[0] ?? ''
+    const body = styles.split('@keyframes agent-book-body {')[1]?.split('\n}')[0] ?? ''
+    const firstTurn = styles.split('@keyframes agent-page-turn-one {')[1]?.split('\n}')[0] ?? ''
 
-    expect(object.querySelector('[data-part="book-left"] [data-part="book-cover-left"]')).not.toBeNull()
-    expect(object.querySelector('[data-part="book-left"] [data-part="book-page-left"]')).not.toBeNull()
-    expect(object.querySelector('[data-part="book-right"] [data-part="book-cover-right"]')).not.toBeNull()
-    expect(object.querySelector('[data-part="book-right"] [data-part="book-page-right"]')).not.toBeNull()
+    expect(object.querySelector('[data-part="book-body"]')).not.toBeNull()
+    expect(object.querySelectorAll('[data-part^="book-line"]')).toHaveLength(2)
+    expect(object.querySelectorAll('[data-part^="page-turn"]')).toHaveLength(2)
     expect(object.querySelector('[data-part="book-spine"]')?.getAttribute('d')).toBe('M50 36 V84')
-    expect(object.querySelector('[data-part="page-turn"]')).not.toBeNull()
-    expect(object.querySelector('[data-part="page-turn"] [data-part="page-turn-edge"]')).not.toBeNull()
-    expect(rule).toContain('4.8s cubic-bezier(0.45, 0, 0.2, 1)')
-    expect(styles).toContain('@keyframes agent-book-left')
-    expect(styles).toContain('@keyframes agent-book-right')
-    expect(turn).toContain('scaleX(0.04)')
-    expect(turn).toContain('scaleX(-1)')
+    expect(rule).toContain('5.6s cubic-bezier(0.45, 0, 0.2, 1)')
+    expect(body).toContain("d: path('M50 18")
+    expect(body).toContain("d: path('M50 34")
+    expect(firstTurn).toContain("d: path('M50 36 C52 31")
+    expect(firstTurn).toContain("d: path('M50 36 C40 28")
+    expect(firstTurn).not.toContain('scaleX')
   })
 
   it('sweeps a lens and its glint while Searching', () => {
