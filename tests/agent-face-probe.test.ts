@@ -49,6 +49,16 @@ describe('the pet an agent wears', () => {
     }
     expect(petPath({ kind: 'teardrop', variant: 0 })).toMatch(/^M 46 10 C 48 7 52 7 54 10/)
     expect(petPath({ kind: 'triangle', variant: 0 })).toMatch(/^M 45 15 C 47 9 53 9 56 15/)
+    const polygons = {
+      pentagon: 5,
+      hexagon: 6,
+      'tall-hexagon': 6,
+      octagon: 8,
+      decagon: 10
+    } as const
+    for (const [kind, corners] of Object.entries(polygons)) {
+      expect(petPath({ kind: kind as keyof typeof polygons, variant: 0 }).match(/ Q /g)).toHaveLength(corners)
+    }
   })
 
   it('keeps the enlarged rotated eyes inside every silhouette', () => {
