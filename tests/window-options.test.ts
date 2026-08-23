@@ -97,6 +97,13 @@ describe('window options', () => {
     })
   })
 
+  it('turns off the native macOS edge for OLED', () => {
+    expect(createWindowOptions('darwin', 'preload.mjs', true, 'oled').hasShadow).toBe(false)
+    expect(createThreadWindowOptions('darwin', 'preload.mjs', true, 'oled').hasShadow).toBe(false)
+    expect(createWindowOptions('darwin', 'preload.mjs', true, 'dark').hasShadow).toBe(true)
+    expect(createWindowOptions('darwin', 'preload.mjs', true, 'light').hasShadow).toBe(true)
+  })
+
   it('carries the material the pinned rail is a hole onto', () => {
     expect(createWindowOptions('darwin', 'preload.mjs', true).vibrancy).toBe('under-window')
     expect(createWindowOptions('win32', 'preload.mjs', true).vibrancy).toBeUndefined()

@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from 'react'
+import type { Theme } from '../../../shared/theme'
 
-export type Theme = 'dark' | 'light' | 'oled'
+export type { Theme } from '../../../shared/theme'
 
 const KEY = 'crew.theme'
 const listeners = new Set<() => void>()
@@ -20,7 +21,7 @@ export function showTheme(theme: Theme): void {
 export function applyTheme(theme: Theme): void {
   showTheme(theme)
   globalThis.localStorage?.setItem(KEY, theme)
-  void window.crew?.setTheme(theme === 'light' ? 'light' : 'dark')
+  void window.crew?.setTheme(theme)
   for (const listener of listeners) listener()
 }
 

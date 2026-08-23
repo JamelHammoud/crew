@@ -41,7 +41,7 @@ describe('theme', () => {
     expect(document.documentElement.classList.contains('oled')).toBe(true)
     expect(document.documentElement.classList.contains('light')).toBe(false)
     expect(storedTheme()).toBe('oled')
-    expect(setTheme).toHaveBeenCalledWith('dark')
+    expect(setTheme).toHaveBeenCalledWith('oled')
   })
 
   it('clears OLED when another theme is picked', () => {

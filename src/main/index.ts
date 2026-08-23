@@ -58,6 +58,7 @@ import { OtherInstances } from './instances'
 import { Crews } from './crews'
 import { cloneRepository } from './repository-clone'
 import type { LivePlace } from '../shared/places'
+import type { Theme } from '../shared/theme'
 import { popOutTarget, poppedKey } from '../shared/popOut'
 import { type NewAgent, type OpenOptions } from './session'
 import { Terminals, type TerminalSize } from './terminal'
@@ -225,6 +226,7 @@ let opening = openRequestOf(process.argv)
 let command = new CrewCommand(null)
 let resumed: Promise<unknown> = Promise.resolve()
 let iconTheme: IconTheme = 'dark'
+let appTheme: Theme = 'dark'
 let chosenIcon: AppIconId = DEFAULT_APP_ICON
 
 // The tray panel is a window like any other as far as Electron is concerned,
@@ -375,8 +377,8 @@ function createWindow(threadId?: string, load = true, personal = false): Browser
   const preload = path.join(dirname, '../preload/preload.mjs')
   const win = new BrowserWindow(
     threadId || personal
-      ? createThreadWindowOptions(process.platform, preload, inspectable)
-      : createWindowOptions(process.platform, preload, inspectable)
+      ? createThreadWindowOptions(process.platform, preload, inspectable, appTheme)
+      : createWindowOptions(process.platform, preload, inspectable, appTheme)
   )
   if (process.platform !== 'darwin') win.setIcon(appIcon(iconTheme, chosenIcon))
   const isAppUrl = (url: string) => url.startsWith('file://') || (devUrl ? url.startsWith(devUrl) : false)
@@ -686,9 +688,14 @@ app.whenReady().then(() => {
       arch: process.arch
     })
   )
-  ipcMain.handle('app:theme', (_event, theme: IconTheme) => {
-    nativeTheme.themeSource = theme === 'light' ? 'light' : 'dark'
-    applyIcon(theme, chosenIcon)
+  ipcMain.handle('app:theme', (_event, theme: Theme) => {
+    appTheme = theme
+    const iconTheme = theme === 'light' ? 'light' : 'dark'
+    nativeTheme.themeSource = iconTheme
+    applyIcon(iconTheme, chosenIcon)
+    if (process.platform === 'darwin') {
+      for (const win of appWindows()) win.setHasShadow(theme !== 'oled')
+    }
   })
   ipcMain.handle('app:icon', (_event, icon: unknown) => applyIcon(iconTheme, cleanAppIcon(icon)))
   // Whether the machine sleeps is this window's own answer, said again on every

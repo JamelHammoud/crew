@@ -17,6 +17,7 @@ import type { RecentJoin, RecentProject } from '../shared/recent'
 import type { ScribeKeyState, ScribeSettings } from '../shared/scribe'
 import type { Said } from '../shared/scribeSaid'
 import type { UpdateState } from '../shared/update'
+import type { Theme } from '../shared/theme'
 import type { CurrentSession, OpenOptions, ProjectPlan } from './session'
 import type { TerminalSize } from './terminal'
 
@@ -113,7 +114,7 @@ const bridge = {
   setWindowPinned: (pinned: boolean): Promise<boolean> => ipcRenderer.invoke('window:pin', pinned),
   appVersion: (): Promise<string> => ipcRenderer.invoke('app:version'),
   systemInfo: (): Promise<SystemDetails> => ipcRenderer.invoke('app:system'),
-  setTheme: (theme: 'dark' | 'light'): Promise<void> => ipcRenderer.invoke('app:theme', theme),
+  setTheme: (theme: Theme): Promise<void> => ipcRenderer.invoke('app:theme', theme),
   setAppIcon: (icon: AppIconId): Promise<void> => ipcRenderer.invoke('app:icon', icon),
   keepAwake: (on: boolean): void => ipcRenderer.send('app:awake', on),
   notify: (alert: AgentAlert): Promise<void> => ipcRenderer.invoke('app:notify', alert),
