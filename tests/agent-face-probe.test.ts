@@ -18,7 +18,6 @@ import {
 import { paletteFor } from '../src/shared/art'
 import { useCrew } from '../src/renderer/src/state/store'
 import { activityForStep } from '../src/renderer/src/components/agentActivity'
-import { morphDrawing } from '../src/renderer/src/components/agentMorph'
 
 const SEED = 'jamel/claude'
 const PHOTO = 'http://192.0.2.10:2739/attachments/me.png'
@@ -186,22 +185,18 @@ describe('an agent face', () => {
     expect(keyframes).toContain('translateY(-3%)')
   })
 
-  it('opens, turns a page and closes Reading around one shared spine', () => {
+  it('keeps Reading as a simple open book and animates only its text lines', () => {
     const object = face({ activity: 'reading' }).querySelector('[data-object="reading"]') as HTMLElement
-    const rule = styles.split(".agent-icon .agent-activity-object[data-object='reading'] {")[1]?.split('}')[0] ?? ''
-    const body = styles.split('@keyframes agent-book-body {')[1]?.split('\n}')[0] ?? ''
-    const firstTurn = styles.split('@keyframes agent-page-turn-one {')[1]?.split('\n}')[0] ?? ''
+    const lines = styles.split(".agent-icon [data-part^='book-line'] {")[1]?.split('}')[0] ?? ''
 
     expect(object.querySelector('[data-part="book-body"]')).not.toBeNull()
-    expect(object.querySelectorAll('[data-part^="book-line"]')).toHaveLength(2)
-    expect(object.querySelectorAll('[data-part^="page-turn"]')).toHaveLength(2)
+    expect(object.querySelectorAll('[data-part^="book-line"]')).toHaveLength(4)
+    expect(object.querySelector('[data-part^="page-turn"]')).toBeNull()
     expect(object.querySelector('[data-part="book-spine"]')?.getAttribute('d')).toBe('M50 36 V84')
-    expect(rule).toContain('5.6s cubic-bezier(0.45, 0, 0.2, 1)')
-    expect(body).toContain("'M50 18")
-    expect(body).toContain("'M50 34")
-    expect(firstTurn).toContain("'M50 36 C52 31")
-    expect(firstTurn).toContain("'M50 36 C40 28")
-    expect(firstTurn).not.toContain('scaleX')
+    expect(lines).toContain('animation: agent-book-line 3.2s')
+    expect(styles).not.toContain('@keyframes agent-reading')
+    expect(styles).not.toContain('@keyframes agent-book-body')
+    expect(styles).not.toContain('@keyframes agent-page-turn')
   })
 
   it('sweeps a lens and its glint while Searching', () => {
