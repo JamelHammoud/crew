@@ -1,11 +1,14 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { stripMention } from '../../../shared/llm'
 import { ChatGlyph, CloseGlyph, PanelLeftGlyph, PencilGlyph, PlusGlyph, SearchGlyph, TrashGlyph } from '../icons'
 import { usePrefs } from '../state/prefs'
 import { useCrew, type ThreadMeta } from '../state/store'
+import { useFullScreen } from '../state/windowShape'
 import AgentIcon from './AgentIcon'
+import ScrollFade from './ScrollFade'
 import Tooltip from './Tooltip'
 import { formatShortDay, formatTime } from './time'
+import useScrollEdges from './useScrollEdges'
 
 export default function PersonalChatSidebar({
   active,
@@ -28,9 +31,12 @@ export default function PersonalChatSidebar({
   const [deleting, setDeleting] = useState<string | null>(null)
   const connection = useCrew(s => s.connection)
   const glass = usePrefs().glassSidebar
+  const full = useFullScreen()
   const events = useCrew(s => s.events)
   const threads = useCrew(s => s.threads)
   const renameThread = useCrew(s => s.renameThread)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const { edges } = useScrollEdges(scrollRef)
   const activity = useMemo(() => {
     const latest: Record<string, number> = {}
     for (const event of events) {
@@ -85,7 +91,12 @@ export default function PersonalChatSidebar({
       }`}
     >
       {!collapsed && <div className="w-[300px] h-full flex flex-col">
-        <header className="group/header app-drag h-[70px] shrink-0 pl-4 pr-3 mac:pl-[100px] flex items-center gap-1">
+        <header
+          data-personal-chat-header
+          className={`group/header app-drag h-[70px] shrink-0 pl-4 pr-3 flex items-center gap-1 ${
+            full ? '' : 'mac:pl-[100px]'
+          }`}
+        >
           <h1 className="flex-1 text-lg font-bold text-fg">Chat</h1>
           <Tooltip label="Hide chat list">
             <button
@@ -133,13 +144,14 @@ export default function PersonalChatSidebar({
           </div>
         </div>
 
-        <div className="flex-1 min-h-0 overflow-y-auto px-3 pb-6">
-          <div className="space-y-6">
-            {groups.map(group => (
-              <section key={group.label}>
-                <h2 className="px-2 mb-1.5 text-xs font-semibold text-fg/45">{group.label}</h2>
-                <div data-personal-history-group className="flex flex-col gap-1">
-                  {group.chats.map(one => {
+        <div className="relative flex-1 min-h-0">
+          <div ref={scrollRef} data-personal-history-scroll className="h-full overflow-y-auto px-3 pb-6">
+            <div className="space-y-6">
+              {groups.map(group => (
+                <section key={group.label}>
+                  <h2 className="px-2 mb-1.5 text-xs font-semibold text-fg/45">{group.label}</h2>
+                  <div data-personal-history-group className="flex flex-col gap-1">
+                    {group.chats.map(one => {
                     const title = stripMention(one.title, one.agentLabel) || 'Untitled'
                     const at = activity[one.id] ?? one.startedAt ?? 0
                     return (
@@ -213,19 +225,21 @@ export default function PersonalChatSidebar({
                         )}
                       </div>
                     )
-                  })}
-                </div>
-              </section>
-            ))}
-          </div>
-          {connection === 'online' && history.length === 0 && (
-            <div className="mt-20 flex flex-col items-center gap-4 text-center">
-              <span className="w-11 h-11 rounded-card bg-ink-800 flex items-center justify-center text-fg/45">
-                {query ? <SearchGlyph className="w-5 h-5" /> : <ChatGlyph className="w-5 h-5" />}
-              </span>
-              <p className="text-sm text-fg-muted">{query ? 'No chats found.' : 'No chats yet.'}</p>
+                    })}
+                  </div>
+                </section>
+              ))}
             </div>
-          )}
+            {connection === 'online' && history.length === 0 && (
+              <div className="mt-20 flex flex-col items-center gap-4 text-center">
+                <span className="w-11 h-11 rounded-card bg-ink-800 flex items-center justify-center text-fg/45">
+                  {query ? <SearchGlyph className="w-5 h-5" /> : <ChatGlyph className="w-5 h-5" />}
+                </span>
+                <p className="text-sm text-fg-muted">{query ? 'No chats found.' : 'No chats yet.'}</p>
+              </div>
+            )}
+          </div>
+          <ScrollFade edges={edges} />
         </div>
       </div>}
     </aside>

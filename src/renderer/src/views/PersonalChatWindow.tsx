@@ -4,6 +4,7 @@ import Tooltip from '../components/Tooltip'
 import Toaster from '../components/Toaster'
 import { PanelLeftGlyph } from '../icons'
 import { useCrew } from '../state/store'
+import { useFullScreen } from '../state/windowShape'
 import Chat from './Chat'
 import ThreadView from './ThreadView'
 
@@ -11,6 +12,7 @@ export default function PersonalChatWindow() {
   const [active, setActive] = useState<string | null>(null)
   const [freshKey, setFreshKey] = useState(0)
   const [collapsed, setCollapsed] = useState(false)
+  const full = useFullScreen()
   const threads = useCrew(s => s.threads)
   const readThread = useCrew(s => s.readThread)
   const deleteThread = useCrew(s => s.deleteThread)
@@ -44,7 +46,11 @@ export default function PersonalChatWindow() {
         className="flex-1 min-w-0 relative"
       >
         {collapsed && (
-          <div className="app-drag absolute top-0 left-0 z-40 h-[70px] pl-4 mac:pl-[92px] flex items-center">
+          <div
+            className={`app-drag absolute top-0 left-0 z-40 h-[70px] pl-4 flex items-center ${
+              full ? '' : 'mac:pl-[92px]'
+            }`}
+          >
             <Tooltip label="Show chat list">
               <button
                 onClick={() => setCollapsed(false)}
