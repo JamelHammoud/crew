@@ -134,6 +134,7 @@ describe('the tab strip', () => {
     openTwo()
     const { container } = render(createElement(BrowserPanel))
     const row = rowOf(container) as HTMLElement
+    row.getBoundingClientRect = () => box(0, VIEW)
 
     expect(row.className).toContain('-ml-4')
     expect(row.className).toContain('pl-4')
