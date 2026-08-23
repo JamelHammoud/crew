@@ -17,6 +17,7 @@ export type Reorder = {
   ref: (node: HTMLElement | null) => void
   take(id: string): (event: Press) => void
   dragged(): boolean
+  cancel(): void
   view: ReactNode
 }
 
@@ -39,6 +40,7 @@ export function useReorder(onMove: (id: string, to: number) => void, options: Op
   const hand = useRef<HTMLDivElement | null>(null)
   const line = useRef<HTMLDivElement | null>(null)
   const put = useRef<(() => void) | null>(null)
+  const cancelDrag = useRef<(() => void) | null>(null)
   const [carried, setCarried] = useState<string | null>(null)
 
   const holds = (keep: typeof hand) => (node: HTMLDivElement | null) => {
@@ -176,12 +178,14 @@ export function useReorder(onMove: (id: string, to: number) => void, options: Op
       strip.style.pointerEvents = ''
       document.body.style.cursor = ''
       put.current = null
+      cancelDrag.current = null
       setCarried(null)
       if (keep && to !== from) onMove(id, to)
     }
 
     const up = () => stop(true)
     const cancel = () => stop(false)
+    cancelDrag.current = cancel
     const key = (pressed: KeyboardEvent) => {
       if (pressed.key === 'Escape') stop(false)
     }
@@ -234,6 +238,7 @@ export function useReorder(onMove: (id: string, to: number) => void, options: Op
     },
     take,
     dragged: () => dragged.current,
+    cancel: () => cancelDrag.current?.(),
     view
   }
 }

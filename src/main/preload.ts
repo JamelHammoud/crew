@@ -112,6 +112,9 @@ const bridge = {
   popOutThread: (threadId: string, key?: string): Promise<void> =>
     ipcRenderer.invoke('window:pop-thread', threadId, key),
   popOutBrowserTab: (tab: BrowserTab): Promise<boolean> => ipcRenderer.invoke('window:pop-browser-tab', tab),
+  beginBrowserTabDrag: (token: string, tab: BrowserTab): void => ipcRenderer.send('browser:drag-tab', token, tab),
+  dropBrowserTab: (token: string, to: number): Promise<boolean> => ipcRenderer.invoke('browser:drop-tab', token, to),
+  closeBrowserWindow: (): void => ipcRenderer.send('window:close-browser'),
   setWindowPinned: (pinned: boolean): Promise<boolean> => ipcRenderer.invoke('window:pin', pinned),
   appVersion: (): Promise<string> => ipcRenderer.invoke('app:version'),
   systemInfo: (): Promise<SystemDetails> => ipcRenderer.invoke('app:system'),
@@ -223,6 +226,15 @@ const bridge = {
   },
   onOpenBrowserTab: (listener: (tab: BrowserTab) => void): void => {
     ipcRenderer.on('browser:open-tab', (_event, tab: BrowserTab) => listener(tab))
+  },
+  onInsertBrowserTab: (listener: (tab: BrowserTab, to: number) => void): void => {
+    ipcRenderer.on('browser:insert-tab', (_event, tab: BrowserTab, to: number) => listener(tab, to))
+  },
+  onRemoveBrowserTab: (listener: (id: string) => void): void => {
+    ipcRenderer.on('browser:remove-tab', (_event, id: string) => listener(id))
+  },
+  onMoveBrowserTab: (listener: (id: string, to: number) => void): void => {
+    ipcRenderer.on('browser:move-tab', (_event, id: string, to: number) => listener(id, to))
   },
   onFindInPage: (listener: () => void): (() => void) => {
     const handler = () => listener()

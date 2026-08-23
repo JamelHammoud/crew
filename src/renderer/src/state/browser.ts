@@ -67,10 +67,12 @@ type BrowserState = {
   addTab(): void
   addTerminal(command?: string, folder?: string): void
   openWindowTab(tab: BrowserTab): void
+  insertWindowTab(tab: BrowserTab, to: number): void
   stash(): PanelMemory
   restore(memory: PanelMemory | null): void
   selectTab(id: string): void
   moveTab(id: string, to: number): void
+  dropTab(id: string, to: number): void
   closeTab(id: string): void
   closeOthers(id: string): void
   closeAfter(id: string): void
@@ -535,6 +537,26 @@ export const useBrowser = create<BrowserState>((write, get) => {
       }
       write({ tabs: [opened], activeTabId: id, open: true, fullScreen: true })
     },
+    insertWindowTab: (tab, to) => {
+      const id = makeTab().id
+      const initialUrl = tab.kind === 'web' ? tab.url || tab.initialUrl : tab.initialUrl
+      const opened = {
+        ...tab,
+        id,
+        initialUrl,
+        url: initialUrl,
+        loading: false,
+        error: '',
+        canGoBack: false,
+        canGoForward: false
+      }
+      set(s => {
+        const at = Math.max(0, Math.min(Math.floor(to), s.tabs.length))
+        const tabs = [...s.tabs]
+        tabs.splice(at, 0, opened)
+        return { tabs, activeTabId: id, open: true }
+      })
+    },
     selectTab: id => set({ activeTabId: id }),
     // The row is the order somebody put it in, so a tab dragged into another
     // place in it stays there. Which tab is up is untouched: arranging the row is
@@ -547,6 +569,11 @@ export const useBrowser = create<BrowserState>((write, get) => {
         tabs.splice(to, 0, ...tabs.splice(from, 1))
         return { tabs }
       }),
+    dropTab: (id, to) => {
+      const from = get().tabs.findIndex(tab => tab.id === id)
+      if (from < 0) return
+      get().moveTab(id, Math.max(0, Math.min(to > from ? to - 1 : to, get().tabs.length - 1)))
+    },
     closeTab: id => {
       set(s => {
         const next = without(s, t => t.id === id)

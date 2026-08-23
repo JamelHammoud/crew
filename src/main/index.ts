@@ -22,6 +22,7 @@ import {
 import { setBadge, showAlert } from './alerts'
 import { KeepAwake } from './awake'
 import { openBrowserTabWindow } from './browser-tab-window'
+import { BrowserTabTransfers } from './browser-tab-transfer'
 import { windowForAlert, type AgentAlert } from '../shared/alerts'
 import { cleanAppIcon, DEFAULT_APP_ICON, type AppIconId } from '../shared/appIcon'
 import type { BrowserTab } from '../shared/browserTab'
@@ -98,6 +99,7 @@ const playing = new Map<number, Media>()
 // conversation.
 const popped = new Map<string, BrowserWindow>()
 const standaloneBrowsers = new Set<BrowserWindow>()
+const browserTabTransfers = new BrowserTabTransfers(id => crews.keyInView(id))
 // Whether this Crew was installed or is being run out of a checkout. It is the
 // one answer the icon, the dev tools and the updates all read, and nothing about
 // the path check is loosened for any of them.
@@ -622,6 +624,16 @@ app.whenReady().then(() => {
       join: (id, target) => crews.switchTo(id, target),
       load: win => loadWindow(win, undefined, false, true)
     })
+  })
+  ipcMain.on('browser:drag-tab', (event, token: string, tab: BrowserTab) => {
+    browserTabTransfers.begin(event.sender, token, tab)
+  })
+  ipcMain.handle('browser:drop-tab', (event, token: string, to: number) =>
+    browserTabTransfers.drop(event.sender, token, to)
+  )
+  ipcMain.on('window:close-browser', event => {
+    const win = BrowserWindow.fromWebContents(event.sender)
+    if (win && standaloneBrowsers.has(win)) win.close()
   })
   ipcMain.handle('window:open-project', async (_event, key: string) => {
     const win = createWindow(undefined, false)

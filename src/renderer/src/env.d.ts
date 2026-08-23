@@ -86,6 +86,9 @@ declare global {
     openPersonalChat(name: string): Promise<boolean>
     popOutThread(threadId: string, key?: string): Promise<void>
     popOutBrowserTab(tab: BrowserTab): Promise<boolean>
+    beginBrowserTabDrag(token: string, tab: BrowserTab): void
+    dropBrowserTab(token: string, to: number): Promise<boolean>
+    closeBrowserWindow(): void
     setWindowPinned(pinned: boolean): Promise<boolean>
     closeTray(): void
     appVersion(): Promise<string>
@@ -102,6 +105,9 @@ declare global {
     onTerminalExit(listener: (id: string) => void): () => void
     onNotificationOpen(listener: (threadId: string, place: string | null) => void): () => void
     onOpenBrowserTab(listener: (tab: BrowserTab) => void): void
+    onInsertBrowserTab(listener: (tab: BrowserTab, to: number) => void): void
+    onRemoveBrowserTab(listener: (id: string) => void): void
+    onMoveBrowserTab(listener: (id: string, to: number) => void): void
     applyScribe(settings: ScribeSettings): Promise<ScribeKeyState>
     scribeState(): Promise<ScribeKeyState>
     openScribePermission(): Promise<void>

@@ -56,6 +56,12 @@ if (joins) {
   })
   window.crew.onOpenUrl(url => useBrowser.getState().openUrl(url))
   window.crew.onOpenBrowserTab(tab => useBrowser.getState().openWindowTab(tab))
+  window.crew.onInsertBrowserTab((tab, to) => useBrowser.getState().insertWindowTab(tab, to))
+  window.crew.onMoveBrowserTab((id, to) => useBrowser.getState().dropTab(id, to))
+  window.crew.onRemoveBrowserTab(id => {
+    useBrowser.getState().closeTab(id)
+    if (hash === BROWSER_WINDOW_HASH && useBrowser.getState().tabs.length === 0) window.crew.closeBrowserWindow()
+  })
 }
 
 // What this machine says about itself is said by the app's own window and not by
