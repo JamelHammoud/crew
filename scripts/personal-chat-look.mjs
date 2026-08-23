@@ -155,7 +155,7 @@ const READ = \`(() => {
 })()\`
 
 app.whenReady().then(async () => {
-  const win = new BrowserWindow({ width: 980, height: 760, show: true, backgroundColor: '#141414' })
+  const win = new BrowserWindow({ width: 1240, height: 760, show: true, backgroundColor: '#141414' })
   const seen = {}
   try {
     await win.loadFile(path.join(__dirname, 'dist/index.html'))
@@ -165,15 +165,8 @@ app.whenReady().then(async () => {
     win.webContents.sendInputEvent({ type: 'mouseMove', x: plus.left + plus.width / 2, y: plus.top + plus.height / 2 })
     await wait(300)
     seen.hovered = await win.webContents.executeJavaScript(READ)
-    await win.webContents.executeJavaScript(\`[...document.querySelectorAll('button')].find(button => button.getAttribute('aria-label') === 'Chat history').click()\`)
-    await wait(350)
-    seen.history = await win.webContents.executeJavaScript(READ)
     await win.webContents.executeJavaScript(
       \`[...document.querySelectorAll('button')].find(button => button.textContent?.includes('Draft a dinner menu')).click()\`
-    )
-    await wait(250)
-    await win.webContents.executeJavaScript(
-      \`[...document.querySelectorAll('button')].find(button => button.getAttribute('aria-label') === 'Chat history').click()\`
     )
     await wait(250)
     const hover = await win.webContents.executeJavaScript(
@@ -182,7 +175,11 @@ app.whenReady().then(async () => {
     win.webContents.sendInputEvent({ type: 'mouseMove', x: hover.x, y: hover.y })
     await wait(200)
     seen.active = await win.webContents.executeJavaScript(READ)
-    fs.writeFileSync(${JSON.stringify(shot)}, (await win.webContents.capturePage()).toPNG())
+    const [, height] = win.getContentSize()
+    fs.writeFileSync(
+      ${JSON.stringify(shot)},
+      (await win.webContents.capturePage({ x: 260, y: 0, width: 980, height })).toPNG()
+    )
   } catch (error) {
     seen.failed = String(error && error.stack)
   }
