@@ -91,9 +91,13 @@ export default function BrowserTabSwitcher({ tabs, activeTabId }: { tabs: Browse
                 data-highlighted={index === cursor ? '' : undefined}
                 className="group relative flex min-w-0 items-center gap-2.5 rounded-xl px-3 py-2 text-fg/70 transition-colors hover:bg-fg/5 data-highlighted:bg-fg/5"
                 onPointerEnter={() => setCursor(index)}
+                onClick={() => choose(tab)}
               >
                 <button
-                  onClick={() => choose(tab)}
+                  onClick={event => {
+                    event.stopPropagation()
+                    choose(tab)
+                  }}
                   aria-label={`Open ${label}`}
                   className="absolute inset-0 rounded-xl active:scale-[0.99]"
                 />
@@ -108,7 +112,8 @@ export default function BrowserTabSwitcher({ tabs, activeTabId }: { tabs: Browse
                   {tab.id === activeTabId && <CheckGlyph className="h-4 w-4 shrink-0 text-fg" />}
                 </span>
                 <button
-                  onClick={() => {
+                  onClick={event => {
+                    event.stopPropagation()
                     useBrowser.getState().closeTab(tab.id)
                     if (tabs.length === 2) setOpen(false)
                   }}
