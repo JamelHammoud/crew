@@ -40,6 +40,7 @@ const base: Required<ThreadItem> = {
     { threadId: 't2', name: 'Scout', subject: 'reading', agentId: 'ali/claude', ok: true, ms: 90, stopped: false }
   ],
   helperThreadId: 't2',
+  design: { boardId: 'board-1', action: 'edit' },
   shown: { pages: ['/tmp/one.html'], title: 'The page' }
 }
 
@@ -55,6 +56,7 @@ const rebuilt = (item: Required<ThreadItem>): ThreadItem => ({
   ...item,
   reactions: item.reactions.map(group => ({ ...group, names: [...group.names] })),
   runs: item.runs.map(run => ({ ...run })),
+  design: { ...item.design },
   shown: { pages: [...item.shown.pages], title: item.shown.title }
 })
 
