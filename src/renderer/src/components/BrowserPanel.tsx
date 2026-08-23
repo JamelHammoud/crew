@@ -90,6 +90,7 @@ export default function BrowserPanel({ standalone = false }: { standalone?: bool
   const [findFocus, setFindFocus] = useState(0)
   const opens = usePanelOpens()
   const strip = useRef<HTMLDivElement | null>(null)
+  const draggedTab = useRef<{ token: string; id: string } | null>(null)
   const row = useReorder((id, to) => useBrowser.getState().moveTab(id, to))
   const [tabDrop, setTabDrop] = useState<{ at: number; left: number } | null>(null)
   useScrollFade(strip, 'horizontal')
@@ -173,6 +174,8 @@ export default function BrowserPanel({ standalone = false }: { standalone?: bool
             if (!token) return
             event.preventDefault()
             const to = tabDropIndex(event.currentTarget, event.clientX)
+            if (draggedTab.current?.token === token) useBrowser.getState().dropTab(draggedTab.current.id, to)
+            draggedTab.current = null
             setTabDrop(null)
             void window.crew.dropBrowserTab(token, to)
           }}
@@ -180,7 +183,16 @@ export default function BrowserPanel({ standalone = false }: { standalone?: bool
         >
           {tabs.length === 0 && <StartPill />}
           {tabs.map(tab => (
-            <TabPill key={tab.id} tab={tab} active={tab.id === activeTabId} row={row} strip={strip} />
+            <TabPill
+              key={tab.id}
+              tab={tab}
+              active={tab.id === activeTabId}
+              row={row}
+              strip={strip}
+              onDrag={value => {
+                draggedTab.current = value
+              }}
+            />
           ))}
           {tabDrop && (
             <span
@@ -494,12 +506,14 @@ function TabPill({
   tab,
   active,
   row,
-  strip
+  strip,
+  onDrag
 }: {
   tab: BrowserTab
   active: boolean
   row: Reorder
   strip: { current: HTMLDivElement | null }
+  onDrag: (value: { token: string; id: string } | null) => void
 }) {
   const pillRef = useRef<HTMLButtonElement>(null)
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
@@ -523,8 +537,13 @@ function TabPill({
           const token = crypto.randomUUID()
           event.dataTransfer.effectAllowed = 'move'
           event.dataTransfer.setData(BROWSER_TAB_DRAG, token)
-          if (!window.crew.beginBrowserTabDrag(token, tab)) event.preventDefault()
+          if (!window.crew.beginBrowserTabDrag(token, tab)) {
+            event.preventDefault()
+            return
+          }
+          onDrag({ token, id: tab.id })
         }}
+        onDragEnd={() => onDrag(null)}
         onPointerDown={row.take(tab.id)}
         onClick={() => {
           if (!row.dragged()) useBrowser.getState().selectTab(tab.id)

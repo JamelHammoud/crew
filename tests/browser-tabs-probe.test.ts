@@ -134,7 +134,6 @@ describe('the tab strip', () => {
     openTwo()
     const { container } = render(createElement(BrowserPanel))
     const row = rowOf(container) as HTMLElement
-    row.getBoundingClientRect = () => box(0, VIEW)
 
     expect(row.className).toContain('-ml-4')
     expect(row.className).toContain('pl-4')
@@ -424,6 +423,7 @@ describe('the tab strip', () => {
 
   it('hands a dragged tab to another Browser window at the aimed place', () => {
     openTwo()
+    const [first, second] = order()
     const { container } = render(createElement(BrowserPanel))
     const items = laidOut(container)
     const values = new Map<string, string>()
@@ -446,6 +446,7 @@ describe('the tab strip', () => {
     expect(token).toBeTruthy()
     expect(beginBrowserTabDrag).toHaveBeenCalledWith(token, useBrowser.getState().tabs[0])
     expect(dropBrowserTab).toHaveBeenCalledWith(token, 2)
+    expect(order()).toEqual([second, first])
     expect(container.querySelector('[data-browser-tab-drop]')).toBeNull()
   })
 
@@ -454,6 +455,7 @@ describe('the tab strip', () => {
     openFour()
     const { container } = render(createElement(BrowserPanel))
     const row = rowOf(container) as HTMLElement
+    row.getBoundingClientRect = () => box(0, VIEW)
     Object.defineProperty(row, 'scrollWidth', { value: 490, configurable: true })
     Object.defineProperty(row, 'scrollLeft', { value: 50, writable: true, configurable: true })
     const values = new Map<string, string>()
