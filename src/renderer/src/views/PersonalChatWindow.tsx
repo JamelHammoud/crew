@@ -200,15 +200,12 @@ export default function PersonalChatWindow() {
                 {groups.map(group => (
                   <section key={group.label}>
                     <h3 className="px-2.5 mb-1.5 text-xs font-semibold text-fg/45">{group.label}</h3>
-                    <div className="rounded-card bg-ink-800 p-1.5">
+                    <div className="rounded-card bg-ink-800 p-1.5 space-y-1">
                       {group.chats.map(one => {
                         const title = stripMention(one.title, one.agentLabel) || 'Untitled'
                         const at = activity[one.id] ?? one.startedAt ?? 0
                         return (
                           <div key={one.id} className="group/history relative">
-                            {one.id === active && (
-                              <span className="absolute z-10 left-1.5 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-full bg-fg" />
-                            )}
                             {editing === one.id ? (
                               <div className="min-h-14 rounded-[15px] bg-fg/[0.08] pl-4 pr-3 py-2 flex items-center">
                                 <input
@@ -227,10 +224,16 @@ export default function PersonalChatWindow() {
                             ) : (
                               <button
                                 onClick={() => open(one.id)}
-                                data-active={one.id === active ? '' : undefined}
-                                className="w-full min-h-14 pl-4 pr-20 py-2 rounded-[15px] flex items-center gap-3 text-left transition-colors duration-150 hover:bg-fg/[0.05] data-active:bg-fg/[0.08]"
+                                aria-current={one.id === active ? 'page' : undefined}
+                                className="w-full min-h-14 px-4 pr-20 py-2 rounded-[15px] flex items-center gap-3 text-left transition-colors duration-150 hover:bg-fg/[0.05]"
                               >
-                                <AgentIcon seed={one.agentId} size="sm" />
+                                <span
+                                  className={`rounded-full ${
+                                    one.id === active ? 'ring-1 ring-fg/50 ring-offset-2 ring-offset-ink-800' : ''
+                                  }`}
+                                >
+                                  <AgentIcon seed={one.agentId} size="sm" />
+                                </span>
                                 <span className="min-w-0 flex-1">
                                   <span
                                     className={`block text-sm font-medium truncate ${
@@ -248,18 +251,18 @@ export default function PersonalChatWindow() {
                                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-fg/35 transition-opacity duration-150 group-hover/history:opacity-0 group-focus-within/history:opacity-0">
                                   {formatTime(at)}
                                 </span>
-                                <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center rounded-xl bg-ink-700 p-0.5 opacity-0 transition-opacity duration-150 group-hover/history:opacity-100 focus-within:opacity-100">
+                                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 opacity-0 transition-opacity duration-150 group-hover/history:opacity-100 focus-within:opacity-100">
                                   <button
                                     onClick={() => beginRename(one.id, title)}
                                     aria-label={`Rename ${title}`}
-                                    className="w-8 h-8 rounded-[10px] text-fg/45 flex items-center justify-center hover:bg-fg/[0.08] hover:text-fg"
+                                    className="w-8 h-8 rounded-[10px] text-fg/45 flex items-center justify-center transition-colors hover:text-fg focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-fg/30 outline-none"
                                   >
                                     <PencilGlyph className="w-3.5 h-3.5" />
                                   </button>
                                   <button
                                     onClick={() => remove(one.id)}
                                     aria-label={deleting === one.id ? `Confirm delete ${title}` : `Delete ${title}`}
-                                    className={`h-8 rounded-[10px] flex items-center justify-center hover:bg-danger/10 hover:text-danger ${
+                                    className={`h-8 rounded-[10px] flex items-center justify-center transition-colors hover:text-danger focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-danger/40 outline-none ${
                                       deleting === one.id ? 'px-2 text-xs text-danger' : 'w-8 text-fg/45'
                                     }`}
                                   >
