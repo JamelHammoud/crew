@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ThreadMeta } from '../src/renderer/src/state/store'
 
 class TestResizeObserver {
@@ -88,5 +88,41 @@ describe('a helper thread in the panel', () => {
 
     expect(top().className).toContain('opacity-0')
     expect(bottom().className).toContain('opacity-100')
+  })
+
+  it('runs the failed helper again from its transcript', () => {
+    const restart = vi.fn()
+    useCrew.setState({
+      restartSubagent: restart,
+      events: [
+        {
+          id: 'start',
+          ts: 1,
+          kind: 'agent.start',
+          promptId: 'prompt',
+          agentId: 'agent-1',
+          agentLabel: 'Bubbles',
+          promptText: 'check it',
+          byName: 'Jamel',
+          threadId: CHILD
+        },
+        {
+          id: 'end',
+          ts: 2,
+          kind: 'agent.end',
+          promptId: 'prompt',
+          agentId: 'agent-1',
+          agentLabel: 'Bubbles',
+          ok: false,
+          error: 'No connection',
+          ms: 1000,
+          threadId: CHILD
+        }
+      ]
+    })
+
+    render(createElement(SubagentRun, { threadId: CHILD }))
+    fireEvent.click(screen.getByRole('button', { name: 'Try again' }))
+    expect(restart).toHaveBeenCalledWith(CHILD)
   })
 })
