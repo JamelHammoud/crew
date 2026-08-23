@@ -1630,25 +1630,20 @@ textarea:placeholder-shown {
 }
 
 @keyframes agent-planning {
-  0%,
-  100% {
-    transform: translateY(2%) rotate(-0.5deg) scale(1.01, 0.99);
+  from {
+    transform: translateY(3%) rotate(-0.7deg) scale(1.015, 0.985);
   }
-  50% {
-    transform: translateY(-3%) rotate(0.5deg) scale(0.99, 1.01);
+  to {
+    transform: translateY(-3%) rotate(0.7deg) scale(0.99, 1.015);
   }
 }
 
-.agent-icon [data-part^='plan-row'] {
-  animation: agent-plan-row 3.6s ease-in-out var(--agent-delay, 0ms) infinite;
+.agent-icon [data-part='plan-board'] {
+  animation: agent-plan-board 3.2s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
 }
 
-.agent-icon [data-part='plan-row-two'] {
-  animation-delay: calc(var(--agent-delay, 0ms) - 120ms);
-}
-
-.agent-icon [data-part='plan-row-three'] {
-  animation-delay: calc(var(--agent-delay, 0ms) - 240ms);
+.agent-icon [data-part='plan-clip'] {
+  animation: agent-plan-clip 3.2s cubic-bezier(0.34, 1.56, 0.64, 1) var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon [data-part^='plan-check'],
@@ -1663,24 +1658,33 @@ textarea:placeholder-shown {
 
 .agent-icon [data-part='plan-check-two'],
 .agent-icon [data-part='plan-line-two'] {
-  animation: agent-plan-mark-two 3.6s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+  animation: agent-plan-mark-two 3.2s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
 }
 
-.agent-icon [data-part='plan-check-three'],
-.agent-icon [data-part='plan-line-three'] {
-  animation: agent-plan-mark-three 3.6s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
-}
-
-@keyframes agent-plan-row {
+@keyframes agent-plan-board {
   0%,
   100% {
-    transform: translateX(0) scale(1);
+    transform: scale(1.01, 0.99);
   }
-  45% {
-    transform: translateX(1.5%) scale(1.01, 0.98);
+  38% {
+    transform: scale(0.99, 1.015);
   }
-  60% {
-    transform: translateX(0) scale(0.995, 1.01);
+  72% {
+    transform: scale(1.015, 0.985);
+  }
+}
+
+@keyframes agent-plan-clip {
+  0%,
+  12%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  18% {
+    transform: translateY(-12%) scale(1.08, 0.92);
+  }
+  28% {
+    transform: translateY(4%) scale(0.96, 1.05);
   }
 }
 
@@ -1707,35 +1711,14 @@ textarea:placeholder-shown {
 
 @keyframes agent-plan-mark-two {
   0%,
-  27% {
+  36% {
     stroke-dashoffset: 40;
     opacity: 0;
   }
-  32% {
+  42% {
     opacity: 1;
   }
-  49%,
-  88% {
-    stroke-dashoffset: 0;
-    opacity: 1;
-  }
-  96%,
-  100% {
-    stroke-dashoffset: 40;
-    opacity: 0;
-  }
-}
-
-@keyframes agent-plan-mark-three {
-  0%,
-  50% {
-    stroke-dashoffset: 40;
-    opacity: 0;
-  }
-  55% {
-    opacity: 1;
-  }
-  72%,
+  62%,
   88% {
     stroke-dashoffset: 0;
     opacity: 1;
@@ -1748,42 +1731,55 @@ textarea:placeholder-shown {
 }
 
 @keyframes agent-communicating {
-  0%,
-  100% {
-    transform: translateY(3%) rotate(-1deg) scale(1.015, 0.985);
+  from {
+    transform: translateY(3%) rotate(-0.8deg) scale(1.015, 0.985);
   }
-  50% {
-    transform: translateY(-4%) rotate(1deg) scale(0.985, 1.02);
+  to {
+    transform: translateY(-3.5%) rotate(0.8deg) scale(0.99, 1.015);
   }
 }
 
-.agent-icon [data-part='message'] {
-  transform-origin: center bottom;
-  animation: agent-message-flex 2.4s ease-in-out var(--agent-delay, 0ms) infinite;
+.agent-icon [data-part='message-back'] {
+  transform-origin: left bottom;
+  animation: agent-message-back 2.8s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+}
+
+.agent-icon [data-part='message-front'] {
+  transform-origin: right bottom;
+  animation: agent-message-front 2.8s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon [data-part^='message-dot'] {
-  animation: agent-message-dot 2.4s cubic-bezier(0.34, 1.56, 0.64, 1) var(--agent-delay, 0ms) infinite;
+  animation: agent-message-dot 2.8s cubic-bezier(0.34, 1.56, 0.64, 1) var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon [data-part='message-dot-two'] {
-  animation-delay: calc(var(--agent-delay, 0ms) - 160ms);
+  animation-delay: calc(var(--agent-delay, 0ms) - 180ms);
 }
 
-.agent-icon [data-part='message-dot-three'] {
-  animation-delay: calc(var(--agent-delay, 0ms) - 320ms);
-}
-
-@keyframes agent-message-flex {
+@keyframes agent-message-back {
   0%,
   100% {
-    transform: scale(1);
+    transform: translate(0, 2%) scale(1.01, 0.99);
   }
-  42% {
-    transform: scale(1.025, 0.975);
+  34% {
+    transform: translate(2%, -4%) scale(0.98, 1.03);
   }
-  58% {
-    transform: scale(0.985, 1.02);
+  62% {
+    transform: translate(0, 1%) scale(1.02, 0.98);
+  }
+}
+
+@keyframes agent-message-front {
+  0%,
+  100% {
+    transform: translate(0, 1%) scale(1.01, 0.99);
+  }
+  38% {
+    transform: translate(-2%, 2%) scale(1.02, 0.98);
+  }
+  70% {
+    transform: translate(-1%, -4%) scale(0.98, 1.03);
   }
 }
 
@@ -1795,7 +1791,7 @@ textarea:placeholder-shown {
     transform: translateY(0) scale(1);
   }
   30% {
-    transform: translateY(-55%) scale(0.88, 1.12);
+    transform: translateY(-48%) scale(0.88, 1.12);
   }
   40% {
     transform: translateY(8%) scale(1.08, 0.92);
@@ -1803,36 +1799,59 @@ textarea:placeholder-shown {
 }
 
 @keyframes agent-acting {
-  0%,
-  100% {
-    transform: translateY(2%) scale(1.01, 0.99);
+  from {
+    transform: translateY(3%) rotate(-1deg) scale(1.015, 0.985);
   }
-  50% {
-    transform: translateY(-3%) scale(0.99, 1.01);
-  }
-}
-
-.agent-icon [data-part='tool-gear'] {
-  animation: agent-tool-gear 3.8s linear var(--agent-delay, 0ms) infinite;
-}
-
-.agent-icon [data-part='tool-pulse'] {
-  animation: agent-tool-pulse 1.9s ease-in-out var(--agent-delay, 0ms) infinite;
-}
-
-@keyframes agent-tool-gear {
   to {
-    transform: rotate(360deg);
+    transform: translateY(-3%) rotate(1deg) scale(0.99, 1.015);
   }
 }
 
-@keyframes agent-tool-pulse {
+.agent-icon [data-part='action-bolt'] {
+  transform-origin: center;
+  animation: agent-action-bolt 2.6s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+}
+
+.agent-icon [data-part^='action-spark'] {
+  animation: agent-action-spark 2.6s cubic-bezier(0.34, 1.56, 0.64, 1) var(--agent-delay, 0ms) infinite;
+}
+
+.agent-icon [data-part='action-spark-two'] {
+  animation-delay: calc(var(--agent-delay, 0ms) - 180ms);
+}
+
+@keyframes agent-action-bolt {
   0%,
   100% {
-    transform: scale(0.7);
+    transform: translateY(2%) rotate(-1deg) scale(1.01, 0.99);
   }
-  50% {
-    transform: scale(1.35);
+  30% {
+    transform: translateY(-4%) rotate(2deg) scale(0.97, 1.04);
+  }
+  42% {
+    transform: translateY(2%) rotate(-1deg) scale(1.05, 0.95);
+  }
+  68% {
+    transform: translateY(-2%) rotate(1deg) scale(0.99, 1.02);
+  }
+}
+
+@keyframes agent-action-spark {
+  0%,
+  18%,
+  72%,
+  100% {
+    opacity: 0;
+    transform: scale(0.25);
+  }
+  28% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+  38%,
+  58% {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
