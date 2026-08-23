@@ -97,6 +97,7 @@ const READ = \`(() => {
   const named = name => [...document.querySelectorAll('button')].find(button => button.getAttribute('aria-label') === name)
   const plus = named('New personal chat')
   const composer = document.querySelector('textarea[placeholder="Message"]')
+  const card = [...document.querySelectorAll('.glass.fixed')].find(element => element.textContent?.includes('Chats'))
   return {
     plus: box(plus),
     plusOpacity: plus ? getComputedStyle(plus).opacity : null,
@@ -104,8 +105,8 @@ const READ = \`(() => {
     composerFocused: composer === document.activeElement,
     history: box(named('Chat history')),
     threadHeader: Boolean(named('Mark done') || named('Back to chat')),
-    card: box(document.querySelector('.glass.fixed')),
-    cardText: document.querySelector('.glass.fixed')?.textContent ?? ''
+    card: box(card),
+    cardText: card?.textContent ?? ''
   }
 })()\`
 
