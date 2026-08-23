@@ -371,7 +371,13 @@ function warmTerminals(): void {
 
 function loadWindow(win: BrowserWindow, threadId?: string, personal = false, browser = false): void {
   const page = path.join(dirname, '../renderer/index.html')
-  const hash = browser ? BROWSER_WINDOW_HASH : personal ? PERSONAL_CHAT_HASH : threadId ? threadWindowHash(threadId) : ''
+  const hash = browser
+    ? BROWSER_WINDOW_HASH
+    : personal
+      ? PERSONAL_CHAT_HASH
+      : threadId
+        ? threadWindowHash(threadId)
+        : ''
   if (devUrl) {
     void win.loadURL(devUrl + hash)
   } else if (hash) {
