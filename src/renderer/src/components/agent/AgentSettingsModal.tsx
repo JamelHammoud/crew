@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { claudeLoginCommand } from '../../../../shared/claude'
 import type { PooledAgent } from '../../../../shared/llm'
 import { advancedFields, changedSettings, plainFields, visibleSettingFields } from '../../../../shared/llm'
 import { ChevronLeftGlyph } from '../../icons'
@@ -9,6 +10,7 @@ import ScreenSwap from '../ScreenSwap'
 import TextField from '../TextField'
 import OpenRow from './OpenRow'
 import SettingRows, { SettingSections } from './SettingRows'
+import { useBrowser } from '../../state/browser'
 
 type Screen = 'agent' | 'advanced'
 
@@ -51,6 +53,11 @@ export default function AgentSettingsModal({
   const close = () => {
     commit()
     onClose()
+  }
+
+  const settingAction = (value: string) => {
+    close()
+    useBrowser.getState().addTerminal(claudeLoginCommand(value))
   }
 
   const putBack = () => {
@@ -127,7 +134,12 @@ export default function AgentSettingsModal({
       <ScreenSwap screen={screen} depth={DEPTH[screen]}>
         {screen === 'agent' ? (
           <div className="px-6 pt-5">
-            <SettingRows fields={plain} settings={agent.settings} onChange={onChange} />
+            <SettingRows
+              fields={plain}
+              settings={agent.settings}
+              onChange={onChange}
+              onAction={(_, value) => settingAction(value)}
+            />
             {deeperShown.length > 0 && (
               <OpenRow
                 label="Advanced"
@@ -138,7 +150,12 @@ export default function AgentSettingsModal({
           </div>
         ) : (
           <div className="px-6 pt-5">
-            <SettingSections fields={deeper} settings={agent.settings} onChange={onChange} />
+            <SettingSections
+              fields={deeper}
+              settings={agent.settings}
+              onChange={onChange}
+              onAction={(_, value) => settingAction(value)}
+            />
           </div>
         )}
       </ScreenSwap>

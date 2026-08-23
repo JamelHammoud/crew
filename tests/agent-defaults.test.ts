@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { claudeArgs, claudeEnv, claudeFields } from '../src/runner/providers/claude'
-import { claudeConfigDir, claudeProfileId } from '../src/runner/providers/claude-profile'
+import { claudeLoginCommand, claudeProfileId } from '../src/shared/claude'
+import { claudeConfigDir } from '../src/runner/providers/claude-profile'
 import { codexArgs, codexFields } from '../src/runner/providers/codex'
 import { geminiArgs, geminiFields } from '../src/runner/providers/gemini'
 import { grokArgs, grokEnv, grokFields } from '../src/runner/providers/grok'
@@ -126,6 +127,13 @@ describe('what a person picks is what goes out', () => {
   it('claude turns an account name into one safe profile directory', () => {
     expect(claudeProfileId('../../Wörk Account')).toBe('work-account')
     expect(claudeConfigDir('../../Wörk Account', '/users/sam')).toBe('/users/sam/.crew/claude/work-account')
+  })
+
+  it('claude signs in through the same profile its agent uses', () => {
+    expect(claudeLoginCommand('Work Account')).toBe(
+      'CLAUDE_CONFIG_DIR="$HOME/.crew/claude/work-account" claude auth login --claudeai'
+    )
+    expect(claudeLoginCommand('')).toBe('claude auth login --claudeai')
   })
 
   it('claude turns thinking off through the one control that has an off', () => {

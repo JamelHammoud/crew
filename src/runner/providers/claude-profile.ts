@@ -1,18 +1,9 @@
 import os from 'node:os'
 import path from 'node:path'
+import { CLAUDE_ACCOUNT_KEY, claudeProfileId } from '../../shared/claude'
 import type { AgentSettings } from '../../shared/llm'
 
-export const CLAUDE_ACCOUNT_KEY = 'account'
-
-export function claudeProfileId(name: string): string {
-  return name
-    .normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 64)
-}
+export { CLAUDE_ACCOUNT_KEY, claudeProfileId }
 
 export function claudeConfigDir(name: string, home = os.homedir()): string | null {
   const id = claudeProfileId(name)

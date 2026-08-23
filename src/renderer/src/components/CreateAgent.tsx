@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { AgentSettings, ProviderCapability } from '../../../shared/llm'
+import { claudeLoginCommand } from '../../../shared/claude'
 import {
   advancedFields,
   changedSettings,
@@ -19,6 +20,7 @@ import Tooltip from './Tooltip'
 import OpenRow from './agent/OpenRow'
 import SettingRows, { SettingSections } from './agent/SettingRows'
 import { Row } from './settings/parts'
+import { useBrowser } from '../state/browser'
 
 function titleCase(value: string): string {
   return value ? value[0].toUpperCase() + value.slice(1) : value
@@ -66,6 +68,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
   const [adding, setAdding] = useState(false)
   const [addError, setAddError] = useState('')
   const providerRef = useRef('')
+  const resumeRef = useRef(false)
 
   useEffect(() => {
     if (compact) return
@@ -115,6 +118,11 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
   }
 
   const start = async () => {
+    if (resumeRef.current && caps) {
+      resumeRef.current = false
+      setOpen(true)
+      return
+    }
     let list = caps
     const held = list !== null
     if (!list) {
@@ -199,6 +207,12 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
     } finally {
       setBusy(false)
     }
+  }
+
+  const settingAction = (value: string) => {
+    resumeRef.current = true
+    setOpen(false)
+    useBrowser.getState().addTerminal(claudeLoginCommand(value))
   }
 
   const hintFor = (c: ProviderCapability) => {
@@ -359,7 +373,7 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
                     add={{ label: 'Add a provider', onPick: () => setScreen('server') }}
                   />
                 </Row>
-                <SettingRows fields={plain} settings={settings} onChange={setSetting} />
+                <SettingRows fields={plain} settings={settings} onChange={setSetting} onAction={(_, value) => settingAction(value)} />
                 {deeperShown.length > 0 && (
                   <OpenRow
                     label="Advanced"
@@ -379,7 +393,12 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
             </div>
           ) : screen === 'advanced' ? (
             <div className="px-6 pt-5">
-              <SettingSections fields={deeper} settings={settings} onChange={setSetting} />
+              <SettingSections
+                fields={deeper}
+                settings={settings}
+                onChange={setSetting}
+                onAction={(_, value) => settingAction(value)}
+              />
             </div>
           ) : (
             <div className="px-6 pt-5 space-y-5">

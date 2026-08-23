@@ -164,7 +164,8 @@ export const claudeFields = (): AgentSettingField[] => [
     label: 'Account',
     kind: 'text',
     default: '',
-    placeholder: 'Default'
+    placeholder: 'Default',
+    action: 'claude-login'
   },
   { key: 'model', label: 'Model', options: CLAUDE_MODELS, default: 'opus' },
   {

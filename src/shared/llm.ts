@@ -69,6 +69,7 @@ export interface AgentSettingField {
   step?: number
   unit?: string
   placeholder?: string
+  action?: 'claude-login'
   visibleWhen?: {
     key: string
     value: string

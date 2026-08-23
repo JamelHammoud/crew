@@ -10,11 +10,13 @@ import NumberField from './NumberField'
 export function SettingControl({
   field,
   settings,
-  onChange
+  onChange,
+  onAction
 }: {
   field: AgentSettingField
   settings: AgentSettings
   onChange: (key: string, value: string) => void
+  onAction?: (field: AgentSettingField, value: string) => void
 }) {
   const value = settings[field.key] ?? field.default
   const kind = fieldKind(field)
@@ -38,13 +40,23 @@ export function SettingControl({
   }
   if (kind === 'text') {
     return (
-      <TextField
-        glass
-        value={value}
-        placeholder={field.placeholder ?? 'Default'}
-        onChange={event => onChange(field.key, event.target.value)}
-        className="w-56"
-      />
+      <>
+        <TextField
+          glass
+          value={value}
+          placeholder={field.placeholder ?? 'Default'}
+          onChange={event => onChange(field.key, event.target.value)}
+          className={field.action ? 'w-40' : 'w-56'}
+        />
+        {field.action && onAction && (
+          <button
+            onClick={() => onAction(field, value)}
+            className="h-9 px-3.5 rounded-full border border-fg/[0.12] text-sm font-semibold text-fg/70 transition-colors hover:border-fg/25 hover:bg-fg/[0.06] hover:text-fg active:scale-95"
+          >
+            Sign in
+          </button>
+        )}
+      </>
     )
   }
   return (
@@ -85,11 +97,13 @@ function ParagraphRow({
 export default function SettingRows({
   fields,
   settings,
-  onChange
+  onChange,
+  onAction
 }: {
   fields: AgentSettingField[]
   settings: AgentSettings
   onChange: (key: string, value: string) => void
+  onAction?: (field: AgentSettingField, value: string) => void
 }) {
   return (
     <>
@@ -98,7 +112,7 @@ export default function SettingRows({
           <ParagraphRow key={field.key} field={field} settings={settings} onChange={onChange} />
         ) : (
           <Row key={field.key} label={field.label} line={field.line} bleed>
-            <SettingControl field={field} settings={settings} onChange={onChange} />
+            <SettingControl field={field} settings={settings} onChange={onChange} onAction={onAction} />
           </Row>
         )
       )}
@@ -109,11 +123,13 @@ export default function SettingRows({
 export function SettingSections({
   fields,
   settings,
-  onChange
+  onChange,
+  onAction
 }: {
   fields: AgentSettingField[]
   settings: AgentSettings
   onChange: (key: string, value: string) => void
+  onAction?: (field: AgentSettingField, value: string) => void
 }) {
   const sections = fieldSections(visibleSettingFields(fields, settings))
   return (
@@ -121,7 +137,7 @@ export function SettingSections({
       {sections.map(section => (
         <Fragment key={section.fields[0].key}>
           {section.title && <h4 className="pt-5 pb-1.5 text-sm font-semibold text-fg/45">{section.title}</h4>}
-          <SettingRows fields={section.fields} settings={settings} onChange={onChange} />
+          <SettingRows fields={section.fields} settings={settings} onChange={onChange} onAction={onAction} />
         </Fragment>
       ))}
     </>
