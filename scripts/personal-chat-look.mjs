@@ -137,7 +137,7 @@ createRoot(document.getElementById('root')).render(React.createElement(Page))
 `
 }
 
-const MAIN = `const { app, BrowserWindow, screen } = require('electron')
+const MAIN = `const { app, BrowserWindow } = require('electron')
 const path = require('node:path')
 const fs = require('node:fs')
 app.disableHardwareAcceleration()
@@ -151,6 +151,7 @@ const READ = \`(() => {
   }
   const named = name => [...document.querySelectorAll('button')].find(button => button.getAttribute('aria-label') === name)
   const plus = named('New personal chat')
+  const chatRow = document.querySelector('[data-chat-row]')
   const composer = document.querySelector('textarea[placeholder="Message"]')
   const history = document.querySelector('[data-personal-history]')
   const historyScroll = document.querySelector('[data-personal-history-scroll]')
@@ -162,6 +163,7 @@ const READ = \`(() => {
   const collapse = named('Hide chat list')
   return {
     plus: box(plus),
+    chatRow: box(chatRow),
     plusOpacity: plus ? getComputedStyle(plus).opacity : null,
     composer: box(composer),
     composerFocused: composer === document.activeElement,
@@ -184,15 +186,14 @@ const READ = \`(() => {
 
 app.whenReady().then(async () => {
   const win = new BrowserWindow({ width: 1240, height: 760, show: true, backgroundColor: '#141414' })
-  const scale = screen.getDisplayMatching(win.getBounds()).scaleFactor
-  const move = at => win.webContents.sendInputEvent({ type: 'mouseMove', x: at.x / scale, y: at.y / scale })
+  const move = at => win.webContents.sendInputEvent({ type: 'mouseMove', x: at.x, y: at.y })
   const seen = {}
   try {
     await win.loadFile(path.join(__dirname, 'dist/index.html'))
     await wait(800)
     seen.resting = await win.webContents.executeJavaScript(READ)
-    const plus = seen.resting.plus
-    move({ x: plus.left + plus.width / 2, y: plus.top + plus.height / 2 })
+    const chatRow = seen.resting.chatRow
+    move({ x: chatRow.left + 20, y: chatRow.top + chatRow.height / 2 })
     await wait(800)
     seen.hovered = await win.webContents.executeJavaScript(READ)
     const collapse = seen.resting.collapse
