@@ -132,12 +132,28 @@ describe('where a helper chip lands', () => {
           status: 'done' as const,
           name: 'Bash',
           detail: 'yarn test tests/subagent-chip-probe.test.ts'
+        },
+        {
+          id: 'say-call',
+          ts: 4,
+          kind: 'tool' as const,
+          status: 'done' as const,
+          name: 'Bash',
+          detail: 'curl -s -X POST http://localhost:2739/code/agents/child-thread/say'
+        },
+        {
+          id: 'external-call',
+          ts: 5,
+          kind: 'tool' as const,
+          status: 'done' as const,
+          name: 'Bash',
+          detail: 'curl -s -X POST https://example.com/agents/spawn'
         }
       ]
     }
 
     const items = buildThread([run], steps, 'sam')
-    expect(items.map(item => item.key)).toEqual(['parent-prompt:ordinary-call'])
+    expect(items.map(item => item.key)).toEqual(['parent-prompt:ordinary-call', 'parent-prompt:external-call'])
   })
 })
 
