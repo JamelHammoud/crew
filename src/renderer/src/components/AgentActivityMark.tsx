@@ -261,17 +261,15 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
 export default function AgentActivityMark({
   activity,
   seed,
-  box,
-  motion = 'working'
+  box
 }: {
   activity: Exclude<AgentActivity, 'idle'>
   seed: string
   box: number
-  motion?: 'incoming' | 'outgoing' | 'working'
 }) {
   const mask = useId()
   return (
-    <span className="agent-activity-stage absolute inset-0" data-motion={motion}>
+    <span className="agent-activity-stage absolute inset-0" data-motion="working">
       <span className="agent-activity-object absolute inset-0" data-object={activity}>
         <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full" aria-hidden>
           <defs>

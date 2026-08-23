@@ -2,7 +2,7 @@
 
 import { act, cleanup, render } from '@testing-library/react'
 import { createElement } from 'react'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import AgentIcon from '../src/renderer/src/components/AgentIcon'
 import {
   FIELD_LIGHT,
@@ -32,8 +32,6 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup()
-  vi.useRealTimers()
-  vi.unstubAllGlobals()
 })
 
 const face = (props: Record<string, unknown> = {}): HTMLElement =>
