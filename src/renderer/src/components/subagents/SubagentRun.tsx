@@ -13,6 +13,7 @@ import { useAutoResize } from '../useAutoResize'
 import { useDrawnTail } from '../useDrawnTail'
 import useScrollEdges from '../useScrollEdges'
 import { useStickToBottom } from '../useStickToBottom'
+import { useRunState } from './runs'
 
 // One helper, live. It is an ordinary thread, so the whole of this is the
 // pieces a thread is already made of: its steps, its thinking, its diffs, the
@@ -46,7 +47,8 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
   const text = useCrew(state => state.threadDrafts[threadId] ?? '')
   const setThreadDraft = useCrew(state => state.setThreadDraft)
   const sendChat = useCrew(state => state.sendChat)
-  const cancelPrompt = useCrew(state => state.cancelPrompt)
+  const stopSubagent = useCrew(state => state.stopSubagent)
+  const restartSubagent = useCrew(state => state.restartSubagent)
   const steerable = useCrew(state => state.agents.find(one => one.id === thread?.agentId)?.steerable === true)
 
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -73,6 +75,7 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
   const threadSteps = useFamilySteps(threadId)
   const start = threadEvents.find(event => event.kind === 'agent.start' && event.promptId === promptId)
   const ended = lastEnd(threadId, threadEvents)
+  const state = useRunState(threadId)
 
   useLayoutEffect(() => {
     follow()
@@ -100,9 +103,22 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
                 cost={cost}
                 steps={promptId ? (steps[promptId] ?? []) : []}
               />
-            ) : (
-              ended && <RunEnded end={ended} />
-            )}
+            ) : ended ? (
+              <div className="space-y-3">
+                <RunEnded end={ended} />
+                {(state === 'failed' || state === 'stopped') && (
+                  <div className="pl-14">
+                    <button
+                      type="button"
+                      onClick={() => restartSubagent(threadId)}
+                      className="h-8 px-3 rounded-full border border-ink-700 text-sm text-fg-secondary transition-colors hover:border-ink-600 hover:bg-fg/[0.04] hover:text-fg active:scale-[0.98]"
+                    >
+                      Try again
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : null}
             <FilesChanged steps={threadSteps} />
           </div>
         </div>
@@ -123,7 +139,7 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
             }
           }}
           onSend={send}
-          onStop={promptId ? () => cancelPrompt(promptId) : undefined}
+          onStop={promptId ? () => stopSubagent(threadId) : undefined}
           sendLabel={working && steerable ? 'Steer' : 'Send'}
         />
       </div>
