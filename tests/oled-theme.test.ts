@@ -26,4 +26,8 @@ describe('the OLED palette', () => {
     expect(terminalTheme('oled').cursorAccent).toBe('#000000')
     expect(terminalTheme('dark').background).toBe('#141414')
   })
+
+  it('does not draw a light ring around the black window edge', () => {
+    expect(styles).toMatch(/\.oled #root \{\s*box-shadow: none;\s*\}/)
+  })
 })
