@@ -235,7 +235,7 @@ try {
   const seen = await run(dir)
   if (seen.failed) throw new Error(seen.failed)
   if (!seen.resting.composer || seen.resting.threadHeader || !seen.resting.composerFocused) {
-    throw new Error('the personal composer did not stand alone with focus')
+    throw new Error('the personal composer did not stand alone with focus: ' + JSON.stringify(seen.resting))
   }
   if (seen.resting.plusOpacity !== '0' || seen.hovered.plusOpacity !== '1')
     throw new Error(
