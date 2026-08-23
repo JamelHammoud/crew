@@ -177,7 +177,7 @@ describe('step rows', () => {
     expect(container.querySelectorAll('svg').length).toBe(1)
   })
 
-  it('shows plugin calls as a source, a useful subject, and readable input fields', () => {
+  it('shows plugin calls as branded cards with their input folded away', () => {
     const detail = JSON.stringify({
       title: 'Reconnect to Raylight',
       code: 'await browser.open("https://www.raylight.app/editor/one")'
@@ -185,11 +185,12 @@ describe('step rows', () => {
     const { container } = render(
       createElement(StepRow, { item: item({ name: 'raylight.js', detail }) })
     )
+    expect(screen.getByText('Used Raylight')).not.toBeNull()
     expect(screen.getByText('Js')).not.toBeNull()
-    expect(screen.getByText('Raylight')).not.toBeNull()
-    expect(screen.getByText('Reconnect to Raylight')).not.toBeNull()
+    expect(screen.queryByText('Reconnect to Raylight')).toBeNull()
     expect(container.textContent).not.toContain('"code"')
     fireEvent.click(container.querySelector('button') as HTMLButtonElement)
+    expect(screen.getByText('Reconnect to Raylight')).not.toBeNull()
     expect(screen.getByText('Title')).not.toBeNull()
     expect(screen.getByText('Code')).not.toBeNull()
     expect(container.textContent).toContain('await browser.open')
@@ -200,7 +201,7 @@ describe('step rows', () => {
       createElement(StepRow, { item: item({ name: 'raylight.get_editor_status', detail: '{}' }) })
     )
     expect(screen.getByText('Get editor status')).not.toBeNull()
-    expect(screen.getByText('Raylight')).not.toBeNull()
+    expect(screen.getByText('Used Raylight')).not.toBeNull()
     expect(container.textContent).not.toContain('{}')
     expect(container.querySelectorAll('svg').length).toBe(1)
   })
@@ -277,6 +278,11 @@ describe('runs of the same tool', () => {
     expect(stepBlocks(mixed).length).toBe(4)
     const other = [tool('Edit', 'a'), tool('Edit', 'b'), tool('Edit', 'c', { promptId: 'p2' })]
     expect(stepBlocks(other).map(block => block.items.length)).toEqual([1, 1, 1])
+  })
+
+  it('leaves plugin calls as recognizable cards', () => {
+    const run = ['a', 'b', 'c'].map(key => tool('raylight.apply_edits', key, { detail: '{}' }))
+    expect(stepBlocks(run).map(block => block.items.length)).toEqual([1, 1, 1])
   })
 
   it('says how many lines the whole run touched and opens onto every step', () => {

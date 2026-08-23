@@ -83,9 +83,21 @@ export function toolCallInfo(detail: string): ToolCallInfo | null {
   }
 }
 
-export default function ToolCallDetail({ info, again }: { info: ToolCallInfo; again?: unknown }) {
+export default function ToolCallDetail({
+  info,
+  again,
+  embedded
+}: {
+  info: ToolCallInfo
+  again?: unknown
+  embedded?: boolean
+}) {
   return (
-    <div className="relative overflow-hidden rounded-xl border border-ink-700 bg-ink-850">
+    <div
+      className={`relative overflow-hidden bg-ink-900/35 ${
+        embedded ? 'rounded-xl' : 'rounded-xl border border-ink-700'
+      }`}
+    >
       <div className="divide-y divide-ink-700">
         {info.fields.map(field => (
           <div key={field.key} className="grid grid-cols-[6.5rem_minmax(0,1fr)]">

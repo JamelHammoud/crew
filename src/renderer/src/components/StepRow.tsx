@@ -18,6 +18,7 @@ import {
   useLocated
 } from './fileLinks'
 import Markdown from './Markdown'
+import PluginStep from './PluginStep'
 import { selecting } from './selecting'
 import StepCode from './StepCode'
 import StepDiff from './StepDiff'
@@ -149,6 +150,8 @@ function StepRow({ item, linked, inGroup }: { item: ThreadItem; linked?: boolean
   const subject = expanded ? '' : thinking ? preview : files.length === 0 ? (call?.summary ?? item.detail ?? '') : ''
   const subjectRef = action.resource && subject ? parseFileRef(subject) : null
 
+  if (action.source) return <PluginStep item={item} action={action} linked={linked} inGroup={inGroup} />
+
   return (
     <div
       className={`animate-rise ${inGroup ? '' : 'pl-14'} ${linked ? '-mt-3' : ''}`}
@@ -160,11 +163,6 @@ function StepRow({ item, linked, inGroup }: { item: ThreadItem; linked?: boolean
       >
         {thinking ? <ThinkingMark running={item.streaming} /> : <Mark icon={action.icon} running={item.streaming} />}
         <Label action={action} running={item.streaming} swap={thinking} />
-        {action.source && (
-          <span className="shrink-0 rounded-full border border-ink-700 px-1.5 text-xs leading-5 text-fg-muted">
-            {action.source}
-          </span>
-        )}
         {files.length > 0 && (
           <>
             {files.length === 1 ? (
