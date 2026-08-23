@@ -147,10 +147,7 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
   }
   return (
     <>
-      <path
-        data-part="wrench-head"
-        d="M57 6 C68 8 77 15 81 25 L69 37 L59 35 L56 25 L67 14 C63 11 59 9 57 6 Z"
-      />
+      <path data-part="wrench-head" d="M57 6 C68 8 77 15 81 25 L69 37 L59 35 L56 25 L67 14 C63 11 59 9 57 6 Z" />
       <path
         data-part="wrench-handle"
         d="M58 31 C65 38 65 49 59 56 L25 92 C20 97 12 97 7 92 C2 87 3 79 8 74 L42 39 C46 34 52 31 58 31 Z"
