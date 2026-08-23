@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { stripMention } from '../../../shared/llm'
 import { ChatGlyph, CloseGlyph, PanelLeftGlyph, PencilGlyph, PlusGlyph, SearchGlyph, TrashGlyph } from '../icons'
+import { usePrefs } from '../state/prefs'
 import { useCrew, type ThreadMeta } from '../state/store'
 import AgentIcon from './AgentIcon'
 import Tooltip from './Tooltip'
@@ -26,6 +27,7 @@ export default function PersonalChatSidebar({
   const [editText, setEditText] = useState('')
   const [deleting, setDeleting] = useState<string | null>(null)
   const connection = useCrew(s => s.connection)
+  const glass = usePrefs().glassSidebar
   const events = useCrew(s => s.events)
   const threads = useCrew(s => s.threads)
   const renameThread = useCrew(s => s.renameThread)
@@ -75,8 +77,12 @@ export default function PersonalChatSidebar({
       data-personal-history
       aria-hidden={collapsed}
       inert={collapsed}
-      className={`shrink-0 overflow-hidden bg-ink-850 transition-[width,border-color] duration-200 ${
-        collapsed ? 'w-0 border-r border-transparent' : 'w-[300px] border-r border-ink-700'
+      className={`shrink-0 overflow-hidden transition-[width,border-color] duration-200 ${
+        collapsed
+          ? 'w-0 border-r border-transparent'
+          : glass
+            ? 'w-[300px] sidebar-pinned bg-ink-800 border-r border-[var(--glass-line)]'
+            : 'w-[300px] bg-ink-900 border-r border-ink-700'
       }`}
     >
       <div className="w-[300px] h-full flex flex-col">
