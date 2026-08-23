@@ -240,25 +240,24 @@ try {
   if (seen.resting.plusOpacity !== '0' || seen.hovered.plusOpacity !== '1')
     throw new Error('the Chat plus did not follow hover')
   if (
-    !seen.history.drawer ||
-    seen.resting.drawerHidden !== 'true' ||
-    seen.history.drawerHidden !== 'false' ||
-    seen.resting.drawer.left <= seen.history.drawer.left ||
-    seen.history.drawer.width !== 380 ||
-    !seen.history.drawerText.includes('Chats') ||
-    !seen.history.drawerText.includes('New chat') ||
-    !seen.history.drawerText.includes('Plan a quiet weekend') ||
-    !seen.history.drawerText.includes('Compare two cameras')
+    !seen.resting.history ||
+    !seen.resting.content ||
+    seen.resting.history.width !== 300 ||
+    seen.resting.history.left !== 260 ||
+    seen.resting.content.left !== 560 ||
+    !seen.resting.historyText.includes('Chats') ||
+    !seen.resting.historyText.includes('Plan a quiet weekend') ||
+    !seen.resting.historyText.includes('Compare two cameras')
   ) {
-    throw new Error('personal chat history did not open: ' + JSON.stringify({ resting: seen.resting, open: seen.history }))
+    throw new Error('personal chat history did not stand beside the conversation: ' + JSON.stringify(seen.resting))
   }
   if (!seen.active.current || seen.active.groupGap === 'normal' || seen.active.currentBackground !== 'rgba(0, 0, 0, 0)') {
     throw new Error('personal chat active state did not stay separate: ' + JSON.stringify(seen.active))
   }
   console.log(`Chat plus       ${seen.resting.plusOpacity} resting, ${seen.hovered.plusOpacity} hovered`)
   console.log(`Composer        ${seen.resting.composer.width} x ${seen.resting.composer.height}`)
-  console.log(`History button  ${seen.resting.history.width} x ${seen.resting.history.height}`)
-  console.log(`History drawer  ${seen.history.drawer.width} x ${seen.history.drawer.height}`)
+  console.log(`Chat list       ${seen.resting.history.width} x ${seen.resting.history.height}`)
+  console.log(`Conversation    ${seen.resting.content.width} x ${seen.resting.content.height}`)
   console.log(`Screenshot      ${shot}`)
 } finally {
   await rm(dir, { recursive: true, force: true })
