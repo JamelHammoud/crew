@@ -17,6 +17,7 @@ const bridge = {
   onTrayTheme: vi.fn(() => () => {}),
   resizeTray: vi.fn(),
   openWindow: vi.fn(),
+  quitCrew: vi.fn(),
   closeTray: vi.fn()
 }
 
@@ -59,7 +60,8 @@ describe('tray panel', () => {
   it('says nothing is running before a session is started', () => {
     show({})
 
-    expect(screen.getByText('Open Crew to start or join a session.')).toBeTruthy()
+    expect(screen.getByText('No session')).toBeTruthy()
+    expect(screen.queryByText('Open Crew to see who is here.')).toBeNull()
   })
 
   it('says to open the app when no window is there to ask', () => {
@@ -81,23 +83,23 @@ describe('tray panel', () => {
   it('says so when everyone else has gone', () => {
     show({ sharing: true, known: true, here: [] })
 
-    expect(screen.getByText('Nobody else is here.')).toBeTruthy()
+    expect(screen.getByText('Just you here.')).toBeTruthy()
   })
 
   it('badges what is waiting and offers it as a way in', () => {
     show({ sharing: true, known: true, waiting: 3 })
 
     expect(screen.getByText('3')).toBeTruthy()
-    expect(screen.getByText('3 tasks need review')).toBeTruthy()
+    expect(screen.getByText('Review 3 tasks')).toBeTruthy()
   })
 
   it('names a single task in the singular and stops the badge at ninety nine', () => {
     show({ sharing: true, known: true, waiting: 1 })
-    expect(screen.getByText('1 task needs review')).toBeTruthy()
+    expect(screen.getByText('Review 1 task')).toBeTruthy()
 
     show({ sharing: true, known: true, waiting: 12 })
     expect(screen.getByText('12')).toBeTruthy()
-    expect(screen.getByText('12 tasks need review')).toBeTruthy()
+    expect(screen.getByText('Review 12 tasks')).toBeTruthy()
 
     show({ sharing: true, known: true, waiting: 140 })
     expect(screen.getByText('99+')).toBeTruthy()
@@ -107,7 +109,7 @@ describe('tray panel', () => {
     show({ sharing: true, known: true, waiting: 0 })
 
     expect(screen.queryByText('0')).toBeNull()
-    expect(screen.queryByText(/needs? review/)).toBeNull()
+    expect(screen.queryByText(/Review \d+ tasks?/)).toBeNull()
   })
 
   it('opens the app from the panel', () => {
@@ -115,6 +117,12 @@ describe('tray panel', () => {
     fireEvent.click(screen.getByText('Open Crew'))
 
     expect(bridge.openWindow).toHaveBeenCalled()
+  })
+
+  it('quits from the panel', () => {
+    fireEvent.click(screen.getByText('Quit'))
+
+    expect(bridge.quitCrew).toHaveBeenCalled()
   })
 
   it('reports its own height, so the window is only as tall as the list', () => {
