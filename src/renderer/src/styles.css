@@ -1840,22 +1840,23 @@ textarea:placeholder-shown {
 @keyframes agent-planning {
   0%,
   100% {
-    transform: translateY(1%) rotate(-0.5deg) scale(1, 0.995);
+    transform: translateY(2%) rotate(-0.5deg) scale(1.01, 0.99);
   }
-  35% {
-    transform: translateY(-2%) rotate(0.8deg) scale(0.99, 1.01);
-  }
-  60% {
-    transform: translateY(-3%) rotate(0) scale(0.985, 1.015);
-  }
-  80% {
-    transform: translateY(-1%) rotate(-0.7deg) scale(1.005, 0.995);
+  50% {
+    transform: translateY(-3%) rotate(0.5deg) scale(0.99, 1.01);
   }
 }
 
-.agent-icon [data-part='plan-clip'] {
-  transform-origin: center bottom;
-  animation: agent-plan-clip 3s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+.agent-icon [data-part^='plan-row'] {
+  animation: agent-plan-row 3.6s ease-in-out var(--agent-delay, 0ms) infinite;
+}
+
+.agent-icon [data-part='plan-row-two'] {
+  animation-delay: calc(var(--agent-delay, 0ms) - 120ms);
+}
+
+.agent-icon [data-part='plan-row-three'] {
+  animation-delay: calc(var(--agent-delay, 0ms) - 240ms);
 }
 
 .agent-icon [data-part^='plan-check'],
@@ -1865,243 +1866,181 @@ textarea:placeholder-shown {
 
 .agent-icon [data-part='plan-check-one'],
 .agent-icon [data-part='plan-line-one'] {
-  animation: agent-plan-mark-one 3s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+  animation: agent-plan-mark-one 3.6s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon [data-part='plan-check-two'],
 .agent-icon [data-part='plan-line-two'] {
-  animation: agent-plan-mark-two 3s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+  animation: agent-plan-mark-two 3.6s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
 }
 
-@keyframes agent-plan-clip {
+.agent-icon [data-part='plan-check-three'],
+.agent-icon [data-part='plan-line-three'] {
+  animation: agent-plan-mark-three 3.6s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+}
+
+@keyframes agent-plan-row {
   0%,
   100% {
-    transform: translateY(0) scale(1);
+    transform: translateX(0) scale(1);
   }
-  42% {
-    transform: translateY(-8%) scale(0.98, 1.04);
+  45% {
+    transform: translateX(1.5%) scale(1.01, 0.98);
   }
-  58% {
-    transform: translateY(2%) scale(1.02, 0.98);
+  60% {
+    transform: translateX(0) scale(0.995, 1.01);
   }
 }
 
 @keyframes agent-plan-mark-one {
   0%,
-  10% {
+  5% {
     stroke-dashoffset: 40;
+    opacity: 0;
   }
-  32%,
-  86% {
+  10% {
+    opacity: 1;
+  }
+  26%,
+  88% {
     stroke-dashoffset: 0;
+    opacity: 1;
   }
   96%,
   100% {
     stroke-dashoffset: 40;
+    opacity: 0;
   }
 }
 
 @keyframes agent-plan-mark-two {
   0%,
-  38% {
+  27% {
     stroke-dashoffset: 40;
+    opacity: 0;
   }
-  62%,
-  86% {
+  32% {
+    opacity: 1;
+  }
+  49%,
+  88% {
     stroke-dashoffset: 0;
+    opacity: 1;
   }
   96%,
   100% {
     stroke-dashoffset: 40;
+    opacity: 0;
+  }
+}
+
+@keyframes agent-plan-mark-three {
+  0%,
+  50% {
+    stroke-dashoffset: 40;
+    opacity: 0;
+  }
+  55% {
+    opacity: 1;
+  }
+  72%,
+  88% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  96%,
+  100% {
+    stroke-dashoffset: 40;
+    opacity: 0;
   }
 }
 
 @keyframes agent-communicating {
   0%,
   100% {
-    transform: translate(-3%, 3%) rotate(-4deg) scale(1);
+    transform: translateY(3%) rotate(-1deg) scale(1.015, 0.985);
   }
-  30% {
-    transform: translate(2%, -3%) rotate(3deg) scale(0.98, 1.02);
-  }
-  55% {
-    transform: translate(5%, -6%) rotate(7deg) scale(0.97, 1.03);
-  }
-  78% {
-    transform: translate(1%, -2%) rotate(1deg) scale(1.01, 0.99);
+  50% {
+    transform: translateY(-4%) rotate(1deg) scale(0.985, 1.02);
   }
 }
 
 .agent-icon [data-part='message'] {
-  transform-origin: 35% 65%;
-  animation: agent-message-flex 1.9s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+  transform-origin: center bottom;
+  animation: agent-message-flex 2.4s ease-in-out var(--agent-delay, 0ms) infinite;
 }
 
-.agent-icon [data-part='message-wake-one'] {
-  stroke-dasharray: 40;
-  animation: agent-message-wake-one 1.9s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+.agent-icon [data-part^='message-dot'] {
+  animation: agent-message-dot 2.4s cubic-bezier(0.34, 1.56, 0.64, 1) var(--agent-delay, 0ms) infinite;
 }
 
-.agent-icon [data-part='message-wake-two'] {
-  stroke-dasharray: 40;
-  animation: agent-message-wake-two 1.9s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+.agent-icon [data-part='message-dot-two'] {
+  animation-delay: calc(var(--agent-delay, 0ms) - 160ms);
+}
+
+.agent-icon [data-part='message-dot-three'] {
+  animation-delay: calc(var(--agent-delay, 0ms) - 320ms);
 }
 
 @keyframes agent-message-flex {
   0%,
   100% {
-    transform: rotate(-1deg) scale(1);
+    transform: scale(1);
   }
-  34% {
-    transform: rotate(2deg) scale(1.035, 0.97);
+  42% {
+    transform: scale(1.025, 0.975);
   }
   58% {
-    transform: rotate(4deg) scale(0.975, 1.035);
-  }
-  80% {
-    transform: rotate(0) scale(1.01, 0.99);
+    transform: scale(0.985, 1.02);
   }
 }
 
-@keyframes agent-message-wake-one {
+@keyframes agent-message-dot {
   0%,
-  12%,
+  18%,
+  62%,
   100% {
-    opacity: 0;
-    stroke-dashoffset: 40;
-    transform: translateX(14%);
+    transform: translateY(0) scale(1);
   }
-  34% {
-    opacity: 1;
-    stroke-dashoffset: 0;
-    transform: translateX(0);
+  30% {
+    transform: translateY(-55%) scale(0.88, 1.12);
   }
-  70% {
-    opacity: 0.7;
-    stroke-dashoffset: 0;
-    transform: translateX(-8%);
-  }
-}
-
-@keyframes agent-message-wake-two {
-  0%,
-  24%,
-  100% {
-    opacity: 0;
-    stroke-dashoffset: 40;
-    transform: translateX(14%);
-  }
-  46% {
-    opacity: 1;
-    stroke-dashoffset: 0;
-    transform: translateX(0);
-  }
-  78% {
-    opacity: 0.65;
-    stroke-dashoffset: 0;
-    transform: translateX(-8%);
+  40% {
+    transform: translateY(8%) scale(1.08, 0.92);
   }
 }
 
 @keyframes agent-acting {
   0%,
   100% {
-    transform: translateY(1%) rotate(-5deg) scale(1.01, 0.99);
+    transform: translateY(2%) scale(1.01, 0.99);
   }
-  24% {
-    transform: translateY(-2%) rotate(-9deg) scale(0.99, 1.01);
-  }
-  56% {
-    transform: translateY(-3%) rotate(7deg) scale(0.98, 1.02);
-  }
-  78% {
-    transform: translateY(0) rotate(2deg) scale(1.02, 0.98);
+  50% {
+    transform: translateY(-3%) scale(0.99, 1.01);
   }
 }
 
-.agent-icon [data-part='wrench-head'] {
-  transform-origin: 58% 82%;
-  animation: agent-wrench-head 1.5s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+.agent-icon [data-part='tool-gear'] {
+  animation: agent-tool-gear 3.8s linear var(--agent-delay, 0ms) infinite;
 }
 
-.agent-icon [data-part='wrench-handle'] {
-  transform-origin: 75% 18%;
-  animation: agent-wrench-handle 1.5s cubic-bezier(0.45, 0, 0.2, 1) calc(var(--agent-delay, 0ms) - 70ms) infinite;
+.agent-icon [data-part='tool-pulse'] {
+  animation: agent-tool-pulse 1.9s ease-in-out var(--agent-delay, 0ms) infinite;
 }
 
-.agent-icon [data-part='tool-spark-one'] {
-  animation: agent-tool-spark-one 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) var(--agent-delay, 0ms) infinite;
+@keyframes agent-tool-gear {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.agent-icon [data-part='tool-spark-two'] {
-  animation: agent-tool-spark-two 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) var(--agent-delay, 0ms) infinite;
-}
-
-@keyframes agent-wrench-head {
+@keyframes agent-tool-pulse {
   0%,
   100% {
-    transform: rotate(-2deg) scale(1);
+    transform: scale(0.7);
   }
-  28% {
-    transform: rotate(-7deg) scale(1.03, 0.97);
-  }
-  58% {
-    transform: rotate(6deg) scale(0.98, 1.03);
-  }
-  78% {
-    transform: rotate(2deg) scale(1.01, 0.99);
-  }
-}
-
-@keyframes agent-wrench-handle {
-  0%,
-  100% {
-    transform: rotate(1deg) scale(1);
-  }
-  30% {
-    transform: rotate(4deg) scale(0.99, 1.015);
-  }
-  60% {
-    transform: rotate(-3deg) scale(1.015, 0.985);
-  }
-  80% {
-    transform: rotate(-1deg) scale(0.995, 1.005);
-  }
-}
-
-@keyframes agent-tool-spark-one {
-  0%,
-  22%,
-  58%,
-  100% {
-    opacity: 0;
-    transform: translate(-14%, 14%) scale(0.2);
-  }
-  34% {
-    opacity: 1;
-    transform: translate(0, 0) scale(1.25);
-  }
-  44% {
-    opacity: 1;
-    transform: translate(0, 0) scale(1);
-  }
-}
-
-@keyframes agent-tool-spark-two {
-  0%,
-  35%,
-  74%,
-  100% {
-    opacity: 0;
-    transform: translate(-12%, -8%) scale(0.25);
-  }
-  47% {
-    opacity: 1;
-    transform: translate(0, 0) scale(1.2);
-  }
-  58% {
-    opacity: 1;
-    transform: translate(0, 0) scale(1);
+  50% {
+    transform: scale(1.35);
   }
 }
 
