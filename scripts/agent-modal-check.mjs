@@ -163,13 +163,19 @@ app.whenReady().then(async () => {
     await until(() => document.querySelector('[role="dialog"][aria-label="Advanced"]'))
     await new Promise(resolve => setTimeout(resolve, 300))
     const dialog = document.querySelector('[role="dialog"]')
-    const page = dialog.querySelector(':scope > .overflow-y-auto')
+    const page = dialog.querySelector(':scope > [data-modal-body]')
     const before = page.getBoundingClientRect()
     const dialogBox = dialog.getBoundingClientRect()
     const scrolls = page.scrollHeight > page.clientHeight
+    const backButton = buttons().find(button => button.getAttribute('aria-label') === 'Back')
+    const doneButton = buttons().find(button => button.textContent.trim() === 'Done')
+    const controlsFixed = !page.contains(backButton) && !page.contains(doneButton)
+    const fadesBottom = page.hasAttribute('data-fade-bottom')
     page.scrollTop = page.scrollHeight
-    await new Promise(resolve => requestAnimationFrame(resolve))
-    const done = [...page.querySelectorAll('button')].find(button => button.textContent.trim() === 'Done').getBoundingClientRect()
+    page.dispatchEvent(new Event('scroll'))
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+    const fadesTop = page.hasAttribute('data-fade-top')
+    const done = doneButton.getBoundingClientRect()
     return {
       viewport: innerHeight,
       dialogTop: dialogBox.top,
@@ -177,6 +183,9 @@ app.whenReady().then(async () => {
       pageHeight: before.height,
       scrollHeight: page.scrollHeight,
       scrolls,
+      controlsFixed,
+      fadesBottom,
+      fadesTop,
       doneTop: done.top,
       doneBottom: done.bottom
     }
@@ -186,7 +195,7 @@ app.whenReady().then(async () => {
   const fits = result.dialogTop >= 23 && result.viewport - result.dialogBottom >= 23
   const doneFits = result.doneTop >= result.dialogTop && result.doneBottom <= result.dialogBottom
   console.log('CHECK ' + JSON.stringify({ ...result, fits, doneFits }))
-  app.exit(fits && result.scrolls && doneFits ? 0 : 1)
+  app.exit(fits && result.scrolls && result.controlsFixed && result.fadesBottom && result.fadesTop && doneFits ? 0 : 1)
 })
 `
 

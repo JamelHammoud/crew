@@ -174,7 +174,7 @@ export default function NewPlace({
         onClose={() => {
           if (!cloning) setCloneOpen(false)
         }}
-        title=""
+        title="Clone a Git repo"
         width={420}
         flush
         header={
