@@ -5,6 +5,7 @@ import FaceStack from './FaceStack'
 import { Popover } from './Popover'
 import PresenceList, { Face } from './PresenceList'
 import Tooltip from './Tooltip'
+import { activityForAgent, type AgentActivity } from './agentActivity'
 
 const FACE = 40
 const FACES = 2
@@ -14,6 +15,7 @@ export default function PresenceStack({ compact = false }: { compact?: boolean }
   const agents = useCrew(s => s.agents)
   const selfId = useCrew(s => s.selfId)
   const activePrompts = useCrew(s => s.activePrompts)
+  const steps = useCrew(s => s.steps)
   const [open, setOpen] = useState(false)
 
   const here = presentNow(members, agents, selfId, activePrompts)
@@ -21,6 +23,9 @@ export default function PresenceStack({ compact = false }: { compact?: boolean }
 
   const shown = here.slice(0, compact ? 0 : FACES)
   const rest = here.length - shown.length
+  const activities = Object.fromEntries(
+    here.filter(one => one.agent).map(one => [one.id, activityForAgent(activePrompts[one.id], steps)])
+  ) as Record<string, AgentActivity>
 
   return (
     <div className="relative">
@@ -34,7 +39,7 @@ export default function PresenceStack({ compact = false }: { compact?: boolean }
         >
           <FaceStack face={FACE}>
             {shown.map(one => (
-              <Face key={one.id} who={one} />
+              <Face key={one.id} who={one} activity={activities[one.id]} />
             ))}
             {rest > 0 && (
               <span
@@ -48,7 +53,7 @@ export default function PresenceStack({ compact = false }: { compact?: boolean }
         </button>
       </Tooltip>
       <Popover open={open} onClose={() => setOpen(false)} className="min-w-52">
-        <PresenceList here={here} />
+        <PresenceList here={here} activities={activities} />
       </Popover>
     </div>
   )

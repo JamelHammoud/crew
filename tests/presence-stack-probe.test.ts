@@ -24,7 +24,7 @@ const agent = (id: string, label: string, status: AgentStatus): PooledAgent => (
 })
 
 function here(members: MemberInfo[], agents: PooledAgent[], activePrompts: Record<string, string[]> = {}): void {
-  useCrew.setState({ selfId: 'self', members, agents, activePrompts, httpBase: '' })
+  useCrew.setState({ selfId: 'self', members, agents, activePrompts, steps: {}, httpBase: '' })
 }
 
 describe('presence stack', () => {
@@ -110,6 +110,20 @@ describe('presence stack', () => {
 
     expect(screen.getByText('Bubbles')).toBeTruthy()
     expect(screen.getByText('2 threads')).toBeTruthy()
+  })
+
+  it('shows an agent activity in the top bar and its open list', () => {
+    here([member('self', 'Jamel', true)], [agent('a1', 'Bubbles', 'busy')], { a1: ['p1'] })
+    useCrew.setState({
+      steps: { p1: [{ id: 'design', ts: 1, kind: 'tool', status: 'running', name: 'generateImage' }] }
+    })
+    render(createElement(PresenceStack))
+    const button = screen.getByRole('button', { name: "Who's here" })
+
+    expect(button.querySelector('.agent-icon')?.getAttribute('data-activity')).toBe('designing')
+    fireEvent.click(button)
+    const faces = document.querySelectorAll('.agent-icon[data-activity="designing"]')
+    expect(faces).toHaveLength(2)
   })
 
   it('names a single thread in the singular', () => {
