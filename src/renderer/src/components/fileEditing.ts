@@ -64,6 +64,9 @@ export function breakFileLine(value: string, start: number, end: number): FileEd
 export function pairFile(value: string, start: number, end: number, key: string): FileEdit | null {
   const close = PAIRS[key]
   if (close) {
+    if (start === end && close === key && value[start] === key) {
+      return { value, start: start + 1, end: start + 1 }
+    }
     const next = value.slice(0, start) + key + value.slice(start, end) + close + value.slice(end)
     return { value: next, start: start + 1, end: end + 1 }
   }

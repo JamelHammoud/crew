@@ -72,6 +72,7 @@ describe('file pairs', () => {
 
   it('steps over a closing mark that is already there', () => {
     expect(pairFile('call()', 5, 5, ')')).toEqual({ value: 'call()', start: 6, end: 6 })
+    expect(pairFile('""', 1, 1, '"')).toEqual({ value: '""', start: 2, end: 2 })
   })
 
   it('erases an empty pair together', () => {
