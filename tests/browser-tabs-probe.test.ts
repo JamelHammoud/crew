@@ -424,6 +424,7 @@ describe('the tab strip', () => {
   it('hands a dragged tab to another Browser window at the aimed place', () => {
     openTwo()
     const [first, second] = order()
+    const sourceTab = useBrowser.getState().tabs[0]
     const { container } = render(createElement(BrowserPanel))
     const items = laidOut(container)
     const values = new Map<string, string>()
@@ -444,7 +445,7 @@ describe('the tab strip', () => {
 
     const token = values.get('application/x-crew-browser-tab')
     expect(token).toBeTruthy()
-    expect(beginBrowserTabDrag).toHaveBeenCalledWith(token, useBrowser.getState().tabs[0])
+    expect(beginBrowserTabDrag).toHaveBeenCalledWith(token, sourceTab)
     expect(dropBrowserTab).toHaveBeenCalledWith(token, 2)
     expect(order()).toEqual([second, first])
     expect(container.querySelector('[data-browser-tab-drop]')).toBeNull()
