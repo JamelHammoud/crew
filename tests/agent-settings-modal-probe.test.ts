@@ -57,6 +57,16 @@ describe('the agent settings card', () => {
     expect(within(dialog).getByRole('button', { name: 'Advanced' })).toBeTruthy()
   })
 
+  it('says what it runs on with the provider mark rather than in words', () => {
+    const { container } = render(
+      createElement(AgentCard, { agent, threadCount: 0, onSetting: () => {}, onRename: () => {} })
+    )
+    const row = container.firstElementChild as HTMLElement
+
+    expect(row.querySelector('img')).toBeTruthy()
+    expect(row.textContent).not.toContain(agent.provider)
+  })
+
   it('writes the name down once it is settled, never on each keystroke', () => {
     const renamed: string[] = []
     render(
