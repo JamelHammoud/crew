@@ -1068,7 +1068,7 @@ textarea:placeholder-shown {
 }
 
 .agent-icon .agent-activity-object[data-object='thinking'] {
-  animation: agent-thinking 4.4s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+  animation: agent-thinking 2.2s ease-in-out var(--agent-delay, 0ms) infinite alternate;
 }
 
 .agent-icon .agent-activity-object[data-object='reading'] {
@@ -1220,19 +1220,11 @@ textarea:placeholder-shown {
 }
 
 @keyframes agent-thinking {
-  0%,
-  100% {
+  from {
     transform: translateY(3%) rotate(-0.6deg) scale(1.02, 0.98);
   }
-  12% {
-    transform: translateY(2%) rotate(-0.3deg) scale(1.025, 0.975);
-  }
-  42%,
-  56% {
+  to {
     transform: translateY(-4%) rotate(0.6deg) scale(0.99, 1.02);
-  }
-  84% {
-    transform: translateY(2%) rotate(-0.2deg) scale(1.01, 0.99);
   }
 }
 

@@ -1,6 +1,9 @@
 // @vitest-environment jsdom
 
 import { act, cleanup, render } from '@testing-library/react'
+import { readFileSync } from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import AgentIcon from '../src/renderer/src/components/AgentIcon'
@@ -21,6 +24,8 @@ import { activityForStep } from '../src/renderer/src/components/agentActivity'
 
 const SEED = 'jamel/claude'
 const PHOTO = 'http://192.0.2.10:2739/attachments/me.png'
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const styles = readFileSync(path.join(root, 'src/renderer/src/styles.css'), 'utf8')
 
 beforeEach(() => {
   useCrew.setState({ agents: [], httpBase: '', activePrompts: {}, steps: {} })
@@ -137,6 +142,17 @@ describe('an agent face', () => {
     expect(object.querySelectorAll('[data-part^="thought-lobe-"]')).toHaveLength(7)
     expect(object.querySelectorAll('[data-part^="thought-dot-"]')).toHaveLength(3)
     expect(object.querySelector('[data-part^="thought-tail-"]')).toBeNull()
+  })
+
+  it('bobs Thinking continuously without holding at either end', () => {
+    const rule = styles.split(".agent-icon .agent-activity-object[data-object='thinking'] {")[1]?.split('}')[0] ?? ''
+    const keyframes = styles.split('@keyframes agent-thinking {')[1]?.split('\n}')[0] ?? ''
+
+    expect(rule).toContain('2.2s ease-in-out')
+    expect(rule).toContain('infinite alternate')
+    expect(keyframes.match(/transform:/g)).toHaveLength(2)
+    expect(keyframes).toContain('translateY(3%)')
+    expect(keyframes).toContain('translateY(-4%)')
   })
 
   it('builds Writing from a rounded card and drawn lines', () => {
