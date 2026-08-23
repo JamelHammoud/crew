@@ -554,7 +554,10 @@ describe('the sidebar', () => {
   it('opens a project in a new window from its menu', async () => {
     render(Sidebar())
     fireEvent.contextMenu(screen.getByText('one'))
-    fireEvent.click(await screen.findByRole('button', { name: 'Open in new window' }))
+    const action = await screen.findByRole('button', { name: 'Open in new window' })
+    expect(action.querySelector('path[d="M11.5 8H16v4.5"]')).toBeTruthy()
+    expect(action.querySelector('path[d="m8 16 8-8"]')).toBeTruthy()
+    fireEvent.click(action)
     expect(openedWindows).toEqual([`project:${ONE}`])
   })
 
