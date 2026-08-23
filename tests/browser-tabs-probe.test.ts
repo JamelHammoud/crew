@@ -455,9 +455,13 @@ describe('the tab strip', () => {
     const row = rowOf(container) as HTMLElement
     Object.defineProperty(row, 'scrollWidth', { value: 490, configurable: true })
     Object.defineProperty(row, 'scrollLeft', { value: 50, writable: true, configurable: true })
+    const values = new Map<string, string>()
     const dataTransfer = {
       types: ['application/x-crew-browser-tab'],
-      dropEffect: 'none'
+      effectAllowed: 'none',
+      dropEffect: 'none',
+      setData: (type: string, value: string) => values.set(type, value),
+      getData: (type: string) => values.get(type) ?? ''
     }
 
     fireEvent.dragOver(row, { clientX: VIEW - 1, dataTransfer })
