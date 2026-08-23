@@ -209,7 +209,9 @@ const bridge = {
     }
   },
   onWindowShape: (listener: (shape: { square: boolean; full: boolean; pinned: boolean }) => void): void => {
-    ipcRenderer.on('window:shape', (_event, shape: { square: boolean; full: boolean; pinned: boolean }) => listener(shape))
+    ipcRenderer.on('window:shape', (_event, shape: { square: boolean; full: boolean; pinned: boolean }) =>
+      listener(shape)
+    )
   },
   onOpenUrl: (listener: (url: string) => void): void => {
     ipcRenderer.on('browser:open', (_event, url: string) => listener(url))

@@ -302,11 +302,7 @@ export default function BrowserPanel() {
           </button>
           <UrlBar key={active.id} tab={active} />
           <Tooltip label={finding ? 'Close find' : 'Find in page'} disabled={finding}>
-            <BrowserFindButton
-              open={finding}
-              disabled={!active.initialUrl}
-              onClick={() => setFinding(open => !open)}
-            />
+            <BrowserFindButton open={finding} disabled={!active.initialUrl} onClick={() => setFinding(open => !open)} />
           </Tooltip>
           <Tooltip label="Open in your browser">
             <button

@@ -30,7 +30,8 @@ const dragTo = (start: number, ...steps: number[]) => {
 }
 
 beforeEach(() => {
-  act(() => useBrowser.setState({ tabs: [], activeTabId: null, open: false, width: DEFAULT_WIDTH }))
+  window.crew = { warmTerminal: () => undefined } as unknown as CrewBridge
+  act(() => useBrowser.setState({ tabs: [], activeTabId: null, open: false, width: DEFAULT_WIDTH, fullScreen: false }))
   act(() => useBrowser.getState().addTab())
 })
 

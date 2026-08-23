@@ -38,7 +38,12 @@ beforeEach(() => {
     }
   } as unknown as CrewBridge
   Object.defineProperties(HTMLElement.prototype, {
-    getURL: { configurable: true, value: function (this: HTMLElement) { return this.getAttribute('src') ?? '' } },
+    getURL: {
+      configurable: true,
+      value: function (this: HTMLElement) {
+        return this.getAttribute('src') ?? ''
+      }
+    },
     loadURL: { configurable: true, value: vi.fn(async () => undefined) },
     canGoBack: { configurable: true, value: () => false },
     canGoForward: { configurable: true, value: () => false },
