@@ -555,6 +555,47 @@ describe('the tab strip', () => {
   })
 })
 
+describe('a tab opened by another Crew window', () => {
+  it('is the only Browser tab and loads a web tab at its current address', () => {
+    openTwo()
+    const source = {
+      ...useBrowser.getState().tabs[0]!,
+      initialUrl: 'https://example.com/start',
+      url: 'https://example.com/current',
+      loading: true,
+      error: 'old error',
+      canGoBack: true,
+      canGoForward: true
+    }
+
+    useBrowser.getState().openWindowTab(source)
+
+    const state = useBrowser.getState()
+    expect(state.tabs).toHaveLength(1)
+    expect(state.tabs[0]).toMatchObject({
+      initialUrl: 'https://example.com/current',
+      url: 'https://example.com/current',
+      loading: false,
+      error: '',
+      canGoBack: false,
+      canGoForward: false
+    })
+    expect(state.tabs[0]!.id).not.toBe(source.id)
+    expect(state.activeTabId).toBe(state.tabs[0]!.id)
+    expect(state.open).toBe(true)
+  })
+
+  it('gives later tabs a different id', () => {
+    useBrowser.getState().openUrl('https://example.com/source')
+    useBrowser.getState().openWindowTab(useBrowser.getState().tabs[0]!)
+    const opened = useBrowser.getState().tabs[0]!
+
+    useBrowser.getState().addTab()
+
+    expect(useBrowser.getState().tabs.map(one => one.id)).toEqual([opened.id, expect.not.stringMatching(`^${opened.id}$`)])
+  })
+})
+
 // A site's own mark is drawn where there is one and the globe stands in where
 // there is not, so a picture that never arrives has to read as the second of
 // those rather than as a hole in the row.
