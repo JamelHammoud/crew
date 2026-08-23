@@ -93,7 +93,7 @@ export class FileSearch {
         size: stat.size,
         text,
         partial: text !== null && stat.size > MAX_BYTES,
-        cost: text?.length ?? 0
+        cost: text ? Buffer.byteLength(text) : 0
       }
       this.remember(relative, entry)
       return entry
