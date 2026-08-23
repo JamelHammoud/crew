@@ -1,20 +1,70 @@
 import { useEffect, useRef, useState } from 'react'
-import { CompassGlyph, ToolboxGlyph } from '../../icons'
+import { PinGlyph } from '../../icons'
 import { playSound } from '../../media/sounds'
-import { useBrowser } from '../../state/browser'
 import { useSidebar } from '../../state/sidebar'
-import { MORE_TABS, MoreIcon, TAB_ICON, type Tab } from '../navTabs'
+import { setSidebarPinned, useSidebarPins } from '../../state/sidebarPins'
 import { MenuItem, Popover } from '../Popover'
 import Toolbox from '../Toolbox'
 import { useHoverMenu, type Spot } from '../useHoverMenu'
+import { MoreIcon, TAB_ICON, type Tab } from '../navTabs'
 import NavRow from './NavRow'
+import { openSidebarItem } from './sidebarItemAction'
+import { itemTab, SIDEBAR_ITEMS, type SidebarItem } from './sidebarItems'
+
+function MoreItem({
+  item,
+  tab,
+  close,
+  onTab,
+  onToolbox
+}: {
+  item: SidebarItem
+  tab: Tab
+  close: () => void
+  onTab: (tab: Tab) => void
+  onToolbox: () => void
+}) {
+  const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
+
+  return (
+    <div
+      onContextMenu={event => {
+        event.preventDefault()
+        event.stopPropagation()
+        setMenuAt({ x: event.clientX, y: event.clientY })
+      }}
+    >
+      <MenuItem
+        icon={<item.Icon />}
+        label={item.label}
+        active={itemTab(item.id) === tab}
+        onClick={() => {
+          close()
+          openSidebarItem(item.id, onTab, onToolbox)
+        }}
+      />
+      <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined} className="min-w-40">
+        <MenuItem
+          icon={<PinGlyph />}
+          label="Pin to sidebar"
+          onClick={() => {
+            setMenuAt(null)
+            setSidebarPinned(item.id, true)
+          }}
+        />
+      </Popover>
+    </div>
+  )
+}
 
 export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab) => void }) {
   const rowRef = useRef<HTMLDivElement>(null)
   const menu = useHoverMenu(rowRef)
   const holdRail = useSidebar(s => s.hold)
+  const pinned = useSidebarPins()
   const [toolbox, setToolbox] = useState<Spot | null>(null)
-  const here = MORE_TABS.some(one => one.id === tab)
+  const unpinned = SIDEBAR_ITEMS.filter(item => !pinned.includes(item.id))
+  const here = unpinned.some(item => itemTab(item.id) === tab)
   const open = menu.open
 
   useEffect(() => {
@@ -38,11 +88,6 @@ export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab
     setToolbox(at)
   }
 
-  const openBrowser = () => {
-    menu.close()
-    useBrowser.getState().openPanel()
-  }
-
   return (
     <div
       ref={rowRef}
@@ -62,20 +107,16 @@ export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab
       {open && menu.at && (
         <Popover open onClose={menu.close} at={menu.at} anchor={rowRef} flush className="min-w-44">
           <div className="p-1.5" onPointerEnter={menu.hold} onPointerLeave={menu.leave}>
-            {MORE_TABS.map(one => (
-              <MenuItem
-                key={one.id}
-                icon={<one.Icon />}
-                label={one.label}
-                active={tab === one.id}
-                onClick={() => {
-                  menu.close()
-                  onTab(one.id)
-                }}
+            {unpinned.map(item => (
+              <MoreItem
+                key={item.id}
+                item={item}
+                tab={tab}
+                close={menu.close}
+                onTab={onTab}
+                onToolbox={openToolbox}
               />
             ))}
-            <MenuItem icon={<CompassGlyph />} label="Browser" onClick={openBrowser} />
-            <MenuItem icon={<ToolboxGlyph />} label="Toolbox" onClick={openToolbox} />
           </div>
         </Popover>
       )}

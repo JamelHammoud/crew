@@ -17,10 +17,13 @@ import PlaceFace from './sidebar/PlaceFace'
 import PlaceGroup from './sidebar/PlaceGroup'
 import SidebarDocs from './sidebar/SidebarDocs'
 import SidebarMore from './sidebar/SidebarMore'
+import SidebarPinnedItem from './sidebar/SidebarPinnedItem'
 import SidebarTasks from './sidebar/SidebarTasks'
+import { SIDEBAR_ITEMS } from './sidebar/sidebarItems'
 import { NO_THREADS } from './sidebar/placeItems'
 import { useReorder } from './useReorder'
 import { useScrollFade } from './useScrollFade'
+import { useSidebarPins } from '../state/sidebarPins'
 
 const EMPTY_THREADS: string[] = []
 
@@ -46,6 +49,7 @@ export default function Sidebar({
   const switchTo = useCrew(s => s.switchTo)
   const closePlace = useCrew(s => s.closePlace)
   const peek = useSidebar(s => s.peek)
+  const sidebarPins = useSidebarPins()
   const [busyKey, setBusyKey] = useState<string | null>(null)
   const order = useReorder((key, to) => move(key, to), {
     axis: 'vertical',
@@ -210,6 +214,9 @@ export default function Sidebar({
             </div>
           ))}
           <SidebarTasks />
+          {SIDEBAR_ITEMS.filter(item => sidebarPins.includes(item.id)).map(item => (
+            <SidebarPinnedItem key={item.id} item={item} tab={tab} onTab={goToTab} />
+          ))}
           <SidebarMore tab={tab} onTab={goToTab} />
         </nav>
         <div className="group pl-2 pt-5 pb-2.5 flex items-center justify-between">
