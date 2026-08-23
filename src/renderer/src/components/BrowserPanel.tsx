@@ -134,6 +134,7 @@ export default function BrowserPanel() {
             <TabPill key={tab.id} tab={tab} active={tab.id === activeTabId} row={row} strip={strip} />
           ))}
         </div>
+        <BrowserTabSwitcher tabs={tabs} activeTabId={activeTabId} />
         <span className="app-no-drag shrink-0 flex">
           <Tooltip label="New tab" disabled={newOpen}>
             <button
@@ -300,7 +301,7 @@ export default function BrowserPanel() {
                 className="absolute inset-0 bg-ink-900"
                 style={{ visibility: tab.id === activeTabId ? 'visible' : 'hidden' }}
               >
-                <ImageView key={tab.generation} src={tab.initialUrl} alt={tabLabel(tab)} />
+                <ImageView key={tab.generation} src={tab.initialUrl} alt={browserTabLabel(tab)} />
               </div>
             ) : (
               <BrowserTabView key={tab.id} tab={tab} active={tab.id === activeTabId} />
