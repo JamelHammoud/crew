@@ -9,6 +9,7 @@ import electron from 'electron'
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
 const resolve = createRequire(path.join(root, 'package.json')).resolve
+const shot = path.join(tmpdir(), 'crew-personal-chat-look.png')
 
 function probeSource() {
   const from = file => JSON.stringify(path.join(root, 'src/renderer/src', file))
@@ -110,6 +111,7 @@ createRoot(document.getElementById('root')).render(React.createElement(Page))
 
 const MAIN = `const { app, BrowserWindow } = require('electron')
 const path = require('node:path')
+const fs = require('node:fs')
 app.disableHardwareAcceleration()
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
@@ -151,6 +153,7 @@ app.whenReady().then(async () => {
     await win.webContents.executeJavaScript(\`[...document.querySelectorAll('button')].find(button => button.getAttribute('aria-label') === 'Chat history').click()\`)
     await wait(350)
     seen.history = await win.webContents.executeJavaScript(READ)
+    fs.writeFileSync(${JSON.stringify(shot)}, (await win.webContents.capturePage()).toPNG())
   } catch (error) {
     seen.failed = String(error && error.stack)
   }
@@ -227,6 +230,7 @@ try {
   console.log(`Composer        ${seen.resting.composer.width} x ${seen.resting.composer.height}`)
   console.log(`History button  ${seen.resting.history.width} x ${seen.resting.history.height}`)
   console.log(`History drawer  ${seen.history.drawer.width} x ${seen.history.drawer.height}`)
+  console.log(`Screenshot      ${shot}`)
 } finally {
   await rm(dir, { recursive: true, force: true })
 }
