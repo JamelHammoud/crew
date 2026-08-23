@@ -39,7 +39,7 @@ function Sample({ activity, label, index }) {
 function Transition() {
   const [index, setIndex] = useState(0)
   useEffect(() => {
-    const timer = setInterval(() => setIndex(value => (value + 1) % activities.length), 2400)
+    const timer = setInterval(() => setIndex(value => (value + 1) % activities.length), 2000)
     return () => clearInterval(timer)
   }, [])
   const [activity, label] = activities[index]

@@ -29,7 +29,7 @@ const DOTS = {
   lg: 'w-3 h-3 ring-[2.5px]'
 } as const
 
-const ACTIVITY_TRANSITION_MS = 460
+const ACTIVITY_TRANSITION_MS = 300
 
 interface ActivityPerformance {
   current: AgentActivity
@@ -101,7 +101,8 @@ export default function AgentIcon({
   const performance = useActivityPerformance(src ? 'idle' : shownActivity)
   const style = {
     ...(px ? { width: px, height: px } : {}),
-    '--agent-delay': `${-pet.hue * 13}ms`
+    '--agent-delay': `${-pet.hue * 13}ms`,
+    '--agent-transition-blur': `${Math.max(1.25, box * 0.035)}px`
   } as CSSProperties
   const faceMotion = performance.changing
     ? performance.current === 'idle'
