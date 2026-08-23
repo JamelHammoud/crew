@@ -12,8 +12,8 @@ function prng(seed: string): () => number {
 }
 
 export const PET_GRID = 100
-export const EYE_WIDTH = 10
-export const EYE_HEIGHT = 22
+export const EYE_WIDTH = 12
+export const EYE_HEIGHT = 26
 export const MIN_EYE_GAP = 1.2
 export const FIELD_LIGHT = 1
 
@@ -71,18 +71,18 @@ const EYE_ROOMS: Record<PetShapeKind, EyeRoom> = {
 
 const EYE_SCALES: Record<PetShapeKind, number> = {
   circle: 1,
-  teardrop: 0.95,
-  cloud: 1,
+  teardrop: 0.92,
+  cloud: 0.96,
   square: 1,
   egg: 1,
-  capsule: 0.92,
-  triangle: 0.86,
-  pentagon: 0.9,
-  hexagon: 0.96,
-  'tall-hexagon': 0.88,
+  capsule: 0.82,
+  triangle: 0.78,
+  pentagon: 0.85,
+  hexagon: 0.92,
+  'tall-hexagon': 0.82,
   octagon: 1,
   decagon: 1,
-  bean: 0.96
+  bean: 0.92
 }
 
 export interface EyeSize {
@@ -189,7 +189,7 @@ function makePet(seed: string): Pet {
   const xRoll = rand()
   const yRoll = rand()
   const gapRoll = rand()
-  const tilt = -13 + rand() * 10
+  const tilt = -4 + rand() * 8
   const room = EYE_ROOMS[kind]
   const size = eyeSize({ kind })
   const extent = eyeExtents(size, tilt)
@@ -200,8 +200,8 @@ function makePet(seed: string): Pet {
   const right = room.right - extent.x - eyeGap / 2
   const top = room.top + extent.y
   const bottom = room.bottom - extent.y
-  const eyeX = left + (right - left) * (0.55 + xRoll * 0.45)
-  const eyeY = top + (bottom - top) * (0.15 + yRoll * 0.35)
+  const eyeX = (left + right) / 2 + (right - left) * (xRoll - 0.5) * 0.18
+  const eyeY = top + (bottom - top) * (0.32 + (yRoll - 0.5) * 0.12)
   const pet = { hue, kind, variant, eyeX, eyeY, eyeGap, tilt, body: '' }
   return { ...pet, body: petPath(pet) }
 }

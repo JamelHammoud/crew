@@ -54,6 +54,17 @@ describe('the pet an agent wears', () => {
     for (let index = 0; index < 1400; index++) expect(eyesFit(petOf(`fit-${index}`))).toBe(true)
   })
 
+  it('looks forward at rest', () => {
+    for (let index = 0; index < 700; index++) {
+      const pet = petOf(`gaze-${index}`)
+      expect(Math.abs(pet.eyeX - PET_GRID / 2)).toBeLessThan(4)
+      expect(Math.abs(pet.tilt)).toBeLessThanOrEqual(4)
+    }
+    expect(eyeSize({ kind: 'circle' })).toEqual({ width: 12, height: 26, radius: 6 })
+    expect(eyeSize({ kind: 'triangle' }).width).toBeGreaterThan(9)
+    expect(eyeSize({ kind: 'triangle' }).height).toBeGreaterThan(20)
+  })
+
   it('keeps the seeded identity stable', () => {
     const pet = petOf(SEED)
     expect(pet.hue).toBe(225)
