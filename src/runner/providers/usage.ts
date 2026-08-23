@@ -2,7 +2,8 @@ import { execFile } from 'node:child_process'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import type { AgentUsage, UsageWindow } from '../../shared/llm'
+import type { AgentSettings, AgentUsage, UsageWindow } from '../../shared/llm'
+import { claudeConfigFor } from './claude-profile'
 
 const FETCH_TIMEOUT_MS = 10000
 // Only the newest few rollout files can hold the latest snapshot; scanning
@@ -43,13 +44,13 @@ export function claudeSignIn(creds: ClaudeCreds | null, now: number): ClaudeSign
   return 'ok'
 }
 
-async function claudeCredentials(): Promise<ClaudeCreds | null> {
-  const file = path.join(os.homedir(), '.claude', '.credentials.json')
+async function claudeCredentials(config: string | null): Promise<ClaudeCreds | null> {
+  const file = config ? path.join(config, '.credentials.json') : path.join(os.homedir(), '.claude', '.credentials.json')
   try {
     const parsed = JSON.parse(await fs.promises.readFile(file, 'utf8'))
     if (parsed?.claudeAiOauth) return parsed.claudeAiOauth as ClaudeCreds
   } catch {}
-  if (process.platform !== 'darwin') return null
+  if (config || process.platform !== 'darwin') return null
   // On macOS Claude Code keeps its OAuth credentials in the Keychain.
   return new Promise(resolve => {
     execFile(
@@ -68,9 +69,10 @@ async function claudeCredentials(): Promise<ClaudeCreds | null> {
   })
 }
 
-function claudeAccount(): { accountId?: string; accountLabel?: string } {
+function claudeAccount(config: string | null): { accountId?: string; accountLabel?: string } {
   try {
-    const parsed = JSON.parse(fs.readFileSync(path.join(os.homedir(), '.claude.json'), 'utf8'))
+    const file = config ? path.join(config, '.claude.json') : path.join(os.homedir(), '.claude.json')
+    const parsed = JSON.parse(fs.readFileSync(file, 'utf8'))
     const account = parsed?.oauthAccount
     if (!account) return {}
     return {
@@ -141,21 +143,29 @@ export function claudeWindowsFrom(body: any): UsageWindow[] {
 const CLAUDE_FETCH_GAP_MS = 5 * 60 * 1000
 const CLAUDE_429_BACKOFF_MS = 15 * 60 * 1000
 
-let claudeLastGood: AgentUsage | null = null
-let claudeNextFetchAt = 0
+interface ClaudeUsageCache {
+  lastGood: AgentUsage | null
+  nextFetchAt: number
+}
 
-export async function claudeUsage(): Promise<AgentUsage | null> {
+const claudeUsageCaches = new Map<string, ClaudeUsageCache>()
+
+export async function claudeUsage(settings: AgentSettings = {}): Promise<AgentUsage | null> {
   const now = Date.now()
-  if (now < claudeNextFetchAt && claudeLastGood) return claudeLastGood
-  const base: AgentUsage = { provider: 'claude', fetchedAt: now, windows: [], ...claudeAccount() }
-  const creds = await claudeCredentials()
+  const config = claudeConfigFor(settings)
+  const cacheKey = config ?? 'default'
+  const cache = claudeUsageCaches.get(cacheKey) ?? { lastGood: null, nextFetchAt: 0 }
+  claudeUsageCaches.set(cacheKey, cache)
+  if (now < cache.nextFetchAt && cache.lastGood) return cache.lastGood
+  const base: AgentUsage = { provider: 'claude', fetchedAt: now, windows: [], ...claudeAccount(config) }
+  const creds = await claudeCredentials(config)
   const signIn = claudeSignIn(creds, now)
   if (!creds?.accessToken || signIn === 'out') {
     return { ...base, error: 'Not signed in to Claude Code on this machine.' }
   }
   base.plan = typeof creds.subscriptionType === 'string' ? creds.subscriptionType : undefined
   if (signIn === 'stale') {
-    return claudeLastGood ?? { ...base, error: 'Appears after this Claude runs again.' }
+    return cache.lastGood ?? { ...base, error: 'Appears after this Claude runs again.' }
   }
   let body: any
   try {
@@ -169,25 +179,25 @@ export async function claudeUsage(): Promise<AgentUsage | null> {
     })
     if (!res.ok) {
       const retryAfter = Number(res.headers.get('retry-after')) * 1000
-      claudeNextFetchAt =
+      cache.nextFetchAt =
         now +
         (res.status === 429
           ? Math.max(CLAUDE_429_BACKOFF_MS, Number.isFinite(retryAfter) ? retryAfter : 0)
           : CLAUDE_FETCH_GAP_MS)
-      return claudeLastGood ?? { ...base, error: `Could not read usage from Anthropic (HTTP ${res.status}).` }
+      return cache.lastGood ?? { ...base, error: `Could not read usage from Anthropic (HTTP ${res.status}).` }
     }
     body = await res.json()
   } catch {
-    claudeNextFetchAt = now + CLAUDE_FETCH_GAP_MS
-    return claudeLastGood ?? { ...base, error: 'Could not reach Anthropic to read usage.' }
+    cache.nextFetchAt = now + CLAUDE_FETCH_GAP_MS
+    return cache.lastGood ?? { ...base, error: 'Could not reach Anthropic to read usage.' }
   }
-  claudeNextFetchAt = now + CLAUDE_FETCH_GAP_MS
+  cache.nextFetchAt = now + CLAUDE_FETCH_GAP_MS
   const windows = claudeWindowsFrom(body)
   if (windows.length === 0) {
-    return claudeLastGood ?? { ...base, error: 'Anthropic returned no usage limits for this account.' }
+    return cache.lastGood ?? { ...base, error: 'Anthropic returned no usage limits for this account.' }
   }
-  claudeLastGood = { ...base, windows }
-  return claudeLastGood
+  cache.lastGood = { ...base, windows }
+  return cache.lastGood
 }
 
 // ---------------------------------------------------------------------------

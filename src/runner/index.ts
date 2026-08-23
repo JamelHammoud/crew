@@ -271,28 +271,20 @@ export class Runner {
     this.usageTimer = null
   }
 
-  // All agents backed by the same provider share one account on this machine,
-  // so usage is read once per provider and reported for each instance.
   private async pollUsage(): Promise<void> {
     if (this.pollingUsage) return
     this.pollingUsage = true
     try {
-      const byProvider = new Map<Provider, string[]>()
       for (const agent of this.agents.values()) {
         if (!agent.provider.usage) continue
-        const list = byProvider.get(agent.provider) ?? []
-        list.push(agent.id)
-        byProvider.set(agent.provider, list)
-      }
-      for (const [provider, ids] of byProvider) {
         let usage: AgentUsage | null = null
         try {
-          usage = await provider.usage!()
+          usage = await agent.provider.usage(agent.settings)
         } catch {
           usage = null
         }
         if (!usage) continue
-        for (const id of ids) this.send({ type: 'agent.usage', agentId: id, usage })
+        this.send({ type: 'agent.usage', agentId: agent.id, usage })
       }
     } finally {
       this.pollingUsage = false

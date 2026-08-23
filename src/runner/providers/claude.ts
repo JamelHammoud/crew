@@ -5,6 +5,7 @@ import { resultText } from './output'
 import { taskCall } from './tasks'
 import { usageFrom } from './tokens'
 import { claudeUsage } from './usage'
+import { CLAUDE_ACCOUNT_KEY, claudeConfigDir } from './claude-profile'
 import type { Dialog, OutputParser, ParsedOutput, Provider, RunOptions } from './types'
 
 const SUBAGENT_TOOLS = new Set(['Task'])
@@ -158,6 +159,13 @@ const EFFORTS = [...choices(['low', 'medium', 'high', 'xhigh', 'max']), { value:
 const FALLBACKS = [{ value: '', label: 'None' }, ...CLAUDE_MODELS.slice(1)]
 
 export const claudeFields = (): AgentSettingField[] => [
+  {
+    key: CLAUDE_ACCOUNT_KEY,
+    label: 'Account',
+    kind: 'text',
+    default: '',
+    placeholder: 'Default'
+  },
   { key: 'model', label: 'Model', options: CLAUDE_MODELS, default: 'opus' },
   {
     key: 'opusModel',
@@ -223,10 +231,16 @@ const list = (value: string): string[] =>
     .filter(Boolean)
 
 export const claudeEnv = (get: SettingReader): NodeJS.ProcessEnv => {
+  const config = claudeConfigDir(get(CLAUDE_ACCOUNT_KEY))
   const seconds = Number(get('commandSeconds'))
-  if (!Number.isFinite(seconds) || seconds <= 0) return {}
-  const ms = String(Math.round(seconds * 1000))
-  return { BASH_DEFAULT_TIMEOUT_MS: ms, BASH_MAX_TIMEOUT_MS: ms }
+  const timeout =
+    Number.isFinite(seconds) && seconds > 0
+      ? {
+          BASH_DEFAULT_TIMEOUT_MS: String(Math.round(seconds * 1000)),
+          BASH_MAX_TIMEOUT_MS: String(Math.round(seconds * 1000))
+        }
+      : {}
+  return { ...(config ? { CLAUDE_CONFIG_DIR: config } : {}), ...timeout }
 }
 
 function claudeModel(get: SettingReader): string {

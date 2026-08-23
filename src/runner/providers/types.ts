@@ -117,5 +117,5 @@ export interface Provider {
   start(prompt: string, cwd: string, hooks: RunHooks, settings?: AgentSettings, options?: RunOptions): RunningPrompt
   // Reads the account's rate-limit state from this machine (credentials,
   // session logs). null means the provider has no usage data to offer.
-  usage?(): Promise<AgentUsage | null>
+  usage?(settings?: AgentSettings): Promise<AgentUsage | null>
 }

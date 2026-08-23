@@ -2,7 +2,13 @@ import { spawn } from 'node:child_process'
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { goalBrief, goalCondition } from '../../shared/goal'
-import { resolveSettings, type AgentSettingField, type AgentSettingOption, type AgentUsage } from '../../shared/llm'
+import {
+  resolveSettings,
+  type AgentSettingField,
+  type AgentSettingOption,
+  type AgentSettings,
+  type AgentUsage
+} from '../../shared/llm'
 import { exitReason, failureText } from './failure'
 import { crewPath, resolveCommand } from './path'
 import { makeSink } from './run'
@@ -85,7 +91,7 @@ interface CliProviderOptions {
   goalCommand?: boolean
   steerable?: boolean
   mcp?: McpHandover
-  usage?: () => Promise<AgentUsage | null>
+  usage?: (settings: AgentSettings) => Promise<AgentUsage | null>
 }
 
 // A run is killed only after this long with no output at all. Reasoning models
@@ -110,7 +116,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
     mcp: opts.mcp,
     fields,
     detect: async () => commandExists(opts.command),
-    usage: opts.usage,
+    usage: opts.usage ? settings => opts.usage!(resolveSettings(fields(), settings ?? {})) : undefined,
     start: (prompt, cwd, hooks, settings = {}, options = {}): RunningPrompt => {
       const resolved = resolveSettings(fields(), settings)
       const read: SettingReader = key => resolved[key] ?? ''
