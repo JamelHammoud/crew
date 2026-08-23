@@ -75,24 +75,28 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
   }
   if (activity === 'searching') {
     return (
-      <>
+      <g data-part="search-mark">
+        <path
+          data-part="search-handle"
+          d="M58 58 L85 85"
+          fill="none"
+          stroke="#fff"
+          strokeWidth="14"
+          strokeLinecap="round"
+        />
         <g data-part="search-lens">
-          <circle cx="43" cy="40" r="32" />
-          <circle cx="43" cy="40" r="20" fill="#000" />
+          <circle data-part="search-ring" cx="39" cy="38" r="29" />
+          <circle data-part="search-hole" cx="39" cy="38" r="17" fill="#000" />
           <path
             data-part="search-glint"
-            d="M29 27 C34 22 41 20 47 21"
+            d="M24 25 C28 21 33 19 38 19"
             fill="none"
-            stroke="#fff"
-            strokeWidth="6"
+            stroke="#000"
+            strokeWidth="5.5"
             strokeLinecap="round"
           />
         </g>
-        <path
-          data-part="search-handle"
-          d="M62 61 C66 57 71 58 75 62 L94 81 C99 86 99 92 94 96 C90 100 84 99 80 95 L61 76 C57 72 57 66 62 61 Z"
-        />
-      </>
+      </g>
     )
   }
   if (activity === 'editing') {
