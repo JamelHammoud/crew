@@ -101,6 +101,7 @@ const READ = \`(() => {
     plus: box(plus),
     plusOpacity: plus ? getComputedStyle(plus).opacity : null,
     composer: box(composer),
+    composerFocused: composer === document.activeElement,
     history: box(named('Chat history')),
     threadHeader: Boolean(named('Mark done') || named('Back to chat')),
     card: box(document.querySelector('.glass.fixed')),
@@ -176,7 +177,9 @@ try {
   await compile(dir)
   const seen = await run(dir)
   if (seen.failed) throw new Error(seen.failed)
-  if (!seen.resting.composer || seen.resting.threadHeader) throw new Error('the personal composer did not stand alone')
+  if (!seen.resting.composer || seen.resting.threadHeader || !seen.resting.composerFocused) {
+    throw new Error('the personal composer did not stand alone with focus')
+  }
   if (seen.resting.plusOpacity !== '0' || seen.hovered.plusOpacity !== '1')
     throw new Error('the Chat plus did not follow hover')
   if (
@@ -184,7 +187,7 @@ try {
     !seen.history.cardText.includes('Chats') ||
     !seen.history.cardText.includes('No chats yet.')
   ) {
-    throw new Error('personal chat history did not open')
+    throw new Error('personal chat history did not open: ' + JSON.stringify(seen.history))
   }
   console.log(`Chat plus       ${seen.resting.plusOpacity} resting, ${seen.hovered.plusOpacity} hovered`)
   console.log(`Composer        ${seen.resting.composer.width} x ${seen.resting.composer.height}`)

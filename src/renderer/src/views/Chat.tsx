@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import ChatListSkeleton from '../components/ChatListSkeleton'
 import CommandChip from '../components/CommandChip'
 import Composer, { COMPOSER_MAX } from '../components/Composer'
@@ -80,6 +80,9 @@ export default function Chat({
 
   const ghost = commands.includes('ghost')
   const inputRef = useAutoResize(text, COMPOSER_MAX)
+  useEffect(() => {
+    if (personal && connection === 'online') inputRef.current?.focus({ preventScroll: true })
+  }, [connection, inputRef, personal])
   const mention = useMentionAutocomplete(text, write, inputRef, { commands: offered })
   const slash = useSlashCommands(text, write, takeCommand, inputRef, offered)
   const scrollRef = useRef<HTMLDivElement>(null)

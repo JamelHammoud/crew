@@ -85,6 +85,7 @@ describe('a personal chat window', () => {
     render(createElement(PersonalChatWindow))
 
     expect(screen.getByPlaceholderText('Message')).toBeTruthy()
+    expect(document.activeElement).toBe(screen.getByPlaceholderText('Message'))
     expect(screen.getByRole('button', { name: 'Chat history' })).toBeTruthy()
     expect(screen.queryByText('Ask Crew')).toBeNull()
   })
