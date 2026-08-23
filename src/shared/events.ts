@@ -271,6 +271,15 @@ export type SessionEvent =
   | {
       id: string
       ts: number
+      kind: 'subagent.said'
+      threadId: string
+      parentThreadId: string
+      name: string
+      text: string
+    }
+  | {
+      id: string
+      ts: number
       kind: 'subagent.returned'
       threadId: string
       parentThreadId: string

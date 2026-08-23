@@ -16,7 +16,7 @@ export interface LiveThread {
 // hands back for one thread has to be what that thread is drawn from.
 export const eventsOfThread = (events: SessionEvent[], threadId: string): SessionEvent[] =>
   events.filter(event =>
-    event.kind === 'subagent.started' || event.kind === 'subagent.ended'
+    event.kind === 'subagent.started' || event.kind === 'subagent.ended' || event.kind === 'subagent.said'
       ? event.parentThreadId === threadId
       : 'threadId' in event && event.threadId === threadId
   )

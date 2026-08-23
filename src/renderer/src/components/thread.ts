@@ -213,7 +213,7 @@ export interface Shown {
 export interface ThreadItem {
   key: string
   ts: number
-  kind: 'message' | 'reply' | 'note' | 'thinking' | 'tool' | 'subagent' | 'page'
+  kind: 'message' | 'reply' | 'note' | 'thinking' | 'tool' | 'subagent' | 'subagent-message' | 'page'
   author: string
   authorId?: string
   self: boolean
@@ -246,6 +246,7 @@ export interface ThreadItem {
   editedTs?: number
   voice?: boolean
   runs?: SubagentRun[]
+  helperThreadId?: string
   shown?: Shown
 }
 
@@ -302,6 +303,7 @@ export function sameItem(a: ThreadItem, b: ThreadItem): boolean {
     a.reactionTargetId === b.reactionTargetId &&
     a.editedTs === b.editedTs &&
     a.voice === b.voice &&
+    a.helperThreadId === b.helperThreadId &&
     a.files === b.files &&
     a.attachments === b.attachments &&
     a.mentionRefs === b.mentionRefs &&
@@ -383,6 +385,12 @@ export function describeStep(step: AgentStep | undefined): string {
 const stepItem = (step: AgentStep, author: string, promptId: string, live: boolean): ThreadItem | null => {
   const streaming = live && step.status === 'running'
   if (step.kind === 'tool' || step.kind === 'subagent') {
+    if (
+      step.kind === 'tool' &&
+      toolAction(step.name).terminal &&
+      /https?:\/\/(?:127\.0\.0\.1|localhost):\d+\/[^/\s'"`]+\/agents(?:[/?\s'"`]|$)/.test(step.detail ?? '')
+    )
+      return null
     return {
       key: `${promptId}:${step.id}`,
       ts: step.ts,
@@ -496,6 +504,18 @@ export function buildThread(
             stopped: home?.stopped
           }
         ]
+      })
+    }
+    if (event.kind === 'subagent.said') {
+      items.push({
+        key: event.id,
+        ts: event.ts,
+        kind: 'subagent-message',
+        author: event.name,
+        self: false,
+        text: event.text,
+        streaming: false,
+        helperThreadId: event.threadId
       })
     }
     if (event.kind === 'page.shown') {

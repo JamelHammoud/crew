@@ -81,6 +81,64 @@ describe('where a helper chip lands', () => {
     expect(eventsOfThread(events, PARENT).map(e => e.id)).toEqual(['m-1'])
     expect(eventsOfThread(events, CHILD).map(e => e.id)).toEqual(['m-2'])
   })
+
+  it('puts a helper follow-up in the parent as its own primitive', () => {
+    const event: SessionEvent = {
+      id: 'follow-up',
+      ts: 4,
+      kind: 'subagent.said',
+      threadId: CHILD,
+      parentThreadId: PARENT,
+      name: 'Scout',
+      text: 'also check the docs'
+    }
+
+    const [item] = buildThread(eventsOfThread([event], PARENT), {}, 'sam')
+    expect(item).toMatchObject({
+      kind: 'subagent-message',
+      author: 'Scout',
+      text: 'also check the docs',
+      helperThreadId: CHILD
+    })
+    expect(eventsOfThread([event], CHILD)).toHaveLength(0)
+  })
+
+  it('keeps Crew helper API calls out of the raw shell steps', () => {
+    const run: SessionEvent = {
+      id: 'parent-run',
+      ts: 1,
+      kind: 'agent.start',
+      promptId: 'parent-prompt',
+      agentId: 'a1',
+      agentLabel: 'Bubbles',
+      promptText: 'send help',
+      byName: 'Sam',
+      threadId: PARENT
+    }
+    const steps = {
+      'parent-prompt': [
+        {
+          id: 'spawn-call',
+          ts: 2,
+          kind: 'tool' as const,
+          status: 'done' as const,
+          name: 'Bash',
+          detail: "curl -s -X POST http://127.0.0.1:2739/code/agents/spawn -d '{\"name\":\"Scout\"}'"
+        },
+        {
+          id: 'ordinary-call',
+          ts: 3,
+          kind: 'tool' as const,
+          status: 'done' as const,
+          name: 'Bash',
+          detail: 'yarn test tests/subagent-chip-probe.test.ts'
+        }
+      ]
+    }
+
+    const items = buildThread([run], steps, 'sam')
+    expect(items.map(item => item.key)).toEqual(['parent-prompt:ordinary-call'])
+  })
 })
 
 const ran = (ts: number, threadId: string): SessionEvent => ({

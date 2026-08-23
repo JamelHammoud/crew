@@ -5,6 +5,7 @@ import PageRow from './PageRow'
 import StepGroup from './StepGroup'
 import StepRow from './StepRow'
 import SubagentChips from './SubagentChips'
+import SubagentMessage from './SubagentMessage'
 import { sameRun, stepBlocks, type StepBlock, type ThreadItem } from './thread'
 import { isNewDay } from './time'
 
@@ -47,6 +48,8 @@ function ThreadItems({
             {isNewDay(blocks[index - 1]?.ts, block.ts) && <DayDivider ts={block.ts} />}
             {item.kind === 'subagent' ? (
               <SubagentChips runs={item.runs ?? []} threadId={threadId} />
+            ) : item.kind === 'subagent-message' ? (
+              <SubagentMessage item={item} threadId={threadId} />
             ) : item.kind === 'page' && item.shown ? (
               <PageRow shown={item.shown} linked={follows(blocks[index - 1], block)} />
             ) : block.items.length > 1 ? (

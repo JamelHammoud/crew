@@ -304,6 +304,12 @@ describe('subagents', () => {
 
     const said = await post(`/agents/${child}/say`, { promptId: parent.promptId, text: 'also check the docs' })
     expect(said.status).toBe(200)
+    const followUp = await ui.waitForEvent(e => e.kind === 'subagent.said' && e.threadId === child)
+    expect(followUp).toMatchObject({
+      parentThreadId: parent.threadId,
+      name: 'Scout',
+      text: 'also check the docs'
+    })
 
     const look = await fetch(`${base}/agents/${child}?promptId=${parent.promptId}`).then(r => r.json())
     expect(look.state).toBe('working')

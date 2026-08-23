@@ -2520,6 +2520,15 @@ export class CrewSession {
     }
     thread.notify = true
     this.enqueuePrompt(agent, asker, trimmed, threadId, [], { messageId: randomUUID(), mentions: [agent.id] })
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'subagent.said',
+      threadId,
+      parentThreadId: thread.parentThreadId,
+      name: thread.helper ?? 'Helper',
+      text: trimmed
+    })
     return true
   }
 
