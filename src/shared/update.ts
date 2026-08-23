@@ -41,10 +41,8 @@ function share(percent: number): number {
 
 export function nextUpdate(state: UpdateState, said: UpdateWord): UpdateState {
   switch (said.word) {
-    // Landed is the end of the fetching, so nothing about a check moves it: the
-    // bytes are already here and the offer on the screen is the restart.
     case 'found': {
-      if (state.stage === 'getting' || state.stage === 'ready') return state
+      if (state.stage === 'getting') return state
       const standing = state.stage === 'found' && state.version === said.version
       return standing ? state : { ...state, stage: 'found', version: said.version, percent: 0, why: '' }
     }
@@ -97,11 +95,8 @@ export function updateStanding(state: UpdateState): boolean {
   return state.stage === 'ready'
 }
 
-// A window left open for a week has to keep looking, or the release after the
-// one it found is one it never hears about. Only a download in flight and an
-// update already down are left alone, since neither has anything to learn.
 export function worthChecking(stage: UpdateStage): boolean {
-  return stage === 'none' || stage === 'found' || stage === 'failed'
+  return stage !== 'getting'
 }
 
 // The installer replaces the whole app, and on Windows it force-kills every

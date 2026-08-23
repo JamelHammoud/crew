@@ -56,6 +56,8 @@ export class Updates {
     // the press after a restart lands straight on ready.
     up.autoInstallOnAppQuit = false
     up.on('update-available', info => {
+      if (this.state.stage === 'ready' && this.state.version === info.version) return
+      this.landed = false
       this.say({ word: 'found', version: info.version })
       this.say({ word: 'getting' })
     })

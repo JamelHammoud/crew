@@ -74,6 +74,45 @@ describe('the updater quit handoff', () => {
     updates.close()
   })
 
+  it('replaces a staged release when a newer one appears', async () => {
+    vi.useFakeTimers()
+    const { updates, updater } = setup()
+
+    updater.emit('update-available', { version: '0.2.0' })
+    updater.emit('update-downloaded', { version: '0.2.0' })
+    expect(updates.now()).toMatchObject({ stage: 'ready', version: '0.2.0' })
+
+    await vi.advanceTimersByTimeAsync(60 * 60 * 1000)
+    expect(updater.checkForUpdates).toHaveBeenCalledTimes(2)
+    updater.emit('update-available', { version: '0.10.0' })
+    expect(updates.now()).toMatchObject({ stage: 'getting', version: '0.10.0', percent: 0 })
+
+    updates.press()
+    expect(updater.quitAndInstall).not.toHaveBeenCalled()
+
+    updater.emit('update-downloaded', { version: '0.10.0' })
+    expect(updates.now()).toMatchObject({ stage: 'ready', version: '0.10.0', percent: 100 })
+
+    updates.press()
+    await vi.runAllTicks()
+    expect(updater.quitAndInstall).toHaveBeenCalledOnce()
+    updates.close()
+    vi.useRealTimers()
+  })
+
+  it('keeps the staged release when a check sees the same version', async () => {
+    vi.useFakeTimers()
+    const { updates, updater } = setup()
+
+    updater.emit('update-downloaded', { version: '0.2.0' })
+    await vi.advanceTimersByTimeAsync(60 * 60 * 1000)
+    updater.emit('update-available', { version: '0.2.0' })
+
+    expect(updates.now()).toMatchObject({ stage: 'ready', version: '0.2.0', percent: 100 })
+    updates.close()
+    vi.useRealTimers()
+  })
+
   it('lets Electron close the window before quitAndInstall emits before-quit', async () => {
     const { updates, updater, quitting } = setup()
     let closeWasAllowed = false
