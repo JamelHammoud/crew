@@ -22,6 +22,18 @@ describe('file edit history', () => {
     expect(redoFileEdit(history, '')).toEqual(snapshot('abc'))
   })
 
+  it('keeps identical characters typed inside a repeated run in the same step', () => {
+    const history = createFileHistory()
+    const before = 'a' + 'x'.repeat(100) + 'b'
+    const withX = before.slice(0, 40) + 'x' + before.slice(40)
+    const withY = withX.slice(0, 41) + 'y' + withX.slice(41)
+    recordFileEdit(history, snapshot(before, caret(40)), snapshot(withX, caret(41)), 'type', 0)
+    recordFileEdit(history, snapshot(withX, caret(41)), snapshot(withY, caret(42)), 'type', 100)
+
+    expect(undoFileEdit(history, withY)).toEqual(snapshot(before, caret(40)))
+    expect(redoFileEdit(history, before)).toEqual(snapshot(withY, caret(42)))
+  })
+
   it('starts another step after a pause or a caret move', () => {
     const history = createFileHistory()
     recordFileEdit(history, snapshot(''), snapshot('a'), 'type', 0)

@@ -34,10 +34,15 @@ const sameSelection = (one: FileSelection, two: FileSelection): boolean =>
 
 const collapsed = (selection: FileSelection): boolean => selection.start === selection.end
 
-const change = (before: string, after: string): Pick<FileHistoryEntry, 'from' | 'removed' | 'inserted'> => {
+const change = (
+  before: string,
+  after: string,
+  startHint: number
+): Pick<FileHistoryEntry, 'from' | 'removed' | 'inserted'> => {
   const max = Math.min(before.length, after.length)
+  const limit = Math.max(0, Math.min(startHint, max))
   let head = 0
-  while (head < max && before[head] === after[head]) head += 1
+  while (head < limit && before[head] === after[head]) head += 1
   let tail = 0
   while (tail < max - head && before[before.length - 1 - tail] === after[after.length - 1 - tail]) tail += 1
   return {
@@ -90,7 +95,13 @@ export function recordFileEdit(
   time = Date.now()
 ): void {
   if (before.text === after.text) return
-  const entry: FileHistoryEntry = { ...change(before.text, after.text), before: before.selection, after: after.selection, kind, time }
+  const entry: FileHistoryEntry = {
+    ...change(before.text, after.text, Math.min(before.selection.start, after.selection.start)),
+    before: before.selection,
+    after: after.selection,
+    kind,
+    time
+  }
   const previous = history.past[history.past.length - 1]
   if (!previous || !merge(previous, entry)) history.past.push(entry)
   if (history.past.length > LIMIT) history.past.splice(0, history.past.length - LIMIT)
