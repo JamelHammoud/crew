@@ -168,6 +168,19 @@ describe('an agent face', () => {
     expect(exit).not.toContain('scale(0.72)')
   })
 
+  it('brings each Thinking dot in briskly while keeping their stagger', () => {
+    const one = styles.split('@keyframes agent-thought-dot-one {')[1]?.split('\n}')[0] ?? ''
+    const two = styles.split('@keyframes agent-thought-dot-two {')[1]?.split('\n}')[0] ?? ''
+    const three = styles.split('@keyframes agent-thought-dot-three {')[1]?.split('\n}')[0] ?? ''
+
+    expect(one).toContain('10.5% {')
+    expect(one).toContain('14% {')
+    expect(two).toContain('20.5% {')
+    expect(two).toContain('24% {')
+    expect(three).toContain('30.5% {')
+    expect(three).toContain('34% {')
+  })
+
   it('builds Writing from one diagonal rounded pencil', () => {
     const object = face({ activity: 'editing' }).querySelector('[data-object="editing"]') as HTMLElement
 
