@@ -60,7 +60,12 @@ describe('the agent settings card', () => {
   it('writes the name down once it is settled, never on each keystroke', () => {
     const renamed: string[] = []
     render(
-      createElement(AgentCard, { agent, threadCount: 0, onSetting: () => {}, onRename: (label: string) => renamed.push(label) })
+      createElement(AgentCard, {
+        agent,
+        threadCount: 0,
+        onSetting: () => {},
+        onRename: (label: string) => renamed.push(label)
+      })
     )
     fireEvent.click(screen.getByRole('button', { name: 'Agent settings' }))
 
