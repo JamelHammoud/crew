@@ -89,6 +89,8 @@ app.whenReady().then(async () => {
     await wait(80)
     const scrolled = await js(read)
     await js(${JSON.stringify(focusEnd)})
+    await wait(80)
+    const focused = await js(read)
     await win.webContents.insertText('a')
     await win.webContents.insertText('b')
     await win.webContents.insertText('c')
@@ -102,7 +104,7 @@ app.whenReady().then(async () => {
     win.webContents.sendInputEvent({ type: 'keyUp', keyCode: 'Z', modifiers: ['meta', 'shift'] })
     await wait(100)
     const redone = await js(read)
-    console.log('CHECK ' + JSON.stringify({ before, scrolled, typed, undone, redone }))
+    console.log('CHECK ' + JSON.stringify({ before, scrolled, focused, typed, undone, redone }))
   } catch (error) {
     console.log('CHECK ' + JSON.stringify({ failed: String(error && error.stack), logs }))
   }
@@ -160,7 +162,7 @@ try {
   if (seen.scrolled.gutter.left !== seen.before.gutter.left) problems.push('the line numbers moved with the file')
   if (seen.scrolled.code.left >= seen.before.code.left - 800) problems.push('the code did not move under the line numbers')
   if (!seen.typed.value.endsWith('abc')) problems.push('typing did not reach the file')
-  if (seen.typed.scrollLeft !== seen.scrolled.scrollLeft) problems.push('typing moved the horizontal scroll')
+  if (seen.typed.scrollLeft !== seen.focused.scrollLeft) problems.push('typing moved the horizontal scroll')
   if (seen.undone.value !== line) problems.push('one undo did not remove the typing run')
   if (!seen.redone.value.endsWith('abc')) problems.push('redo did not restore the typing run')
   if (problems.length) throw new Error(problems.join('\n'))
