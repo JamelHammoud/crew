@@ -176,11 +176,29 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
   }
   if (activity === 'communicating') {
     return (
-      <path
-        data-part="message"
-        d="M8 43 L86 8 C93 5 98 10 95 17 L63 92 C61 97 55 97 52 92 L39 68 L16 56 C9 53 5 47 8 43 Z M40 62 L77 25 L33 55 Z"
-        fillRule="evenodd"
-      />
+      <>
+        <path
+          data-part="message"
+          d="M13 39 L85 8 C93 5 98 11 95 19 L67 89 C64 97 57 98 53 90 L41 68 L20 56 C11 51 7 43 13 39 Z M42 61 L77 25 L35 54 Z"
+          fillRule="evenodd"
+        />
+        <path
+          data-part="message-wake-one"
+          d="M8 70 C18 67 26 68 34 73"
+          fill="none"
+          stroke="#fff"
+          strokeWidth="7"
+          strokeLinecap="round"
+        />
+        <path
+          data-part="message-wake-two"
+          d="M13 84 C22 81 29 82 36 86"
+          fill="none"
+          stroke="#fff"
+          strokeWidth="6"
+          strokeLinecap="round"
+        />
+      </>
     )
   }
   return (
@@ -189,6 +207,15 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
       <path
         data-part="wrench-handle"
         d="M58 31 C65 38 65 49 59 56 L25 92 C20 97 12 97 7 92 C2 87 3 79 8 74 L42 39 C46 34 52 31 58 31 Z"
+      />
+      <circle data-part="tool-spark-one" cx="87" cy="21" r="5" />
+      <path
+        data-part="tool-spark-two"
+        d="M83 39 L93 44"
+        fill="none"
+        stroke="#fff"
+        strokeWidth="7"
+        strokeLinecap="round"
       />
     </>
   )
