@@ -415,14 +415,14 @@ describe('an agent face', () => {
     expect(box.querySelector('[data-object="designing"]')?.parentElement?.getAttribute('data-motion')).toBe('incoming')
     expect(box.querySelector('.agent-face-stage')?.getAttribute('data-motion')).toBe('hidden')
 
-    act(() => vi.advanceTimersByTime(300))
+    act(() => vi.advanceTimersByTime(240))
     expect(box.querySelector('[data-object="reading"]')).toBeNull()
     expect(box.querySelector('[data-object="designing"]')?.parentElement?.getAttribute('data-motion')).toBe('working')
 
     view.rerender(createElement(AgentIcon, { seed: SEED, activity: 'idle' }))
     expect(box.querySelector('[data-object="designing"]')?.parentElement?.getAttribute('data-motion')).toBe('outgoing')
     expect(box.querySelector('.agent-face-stage')?.getAttribute('data-motion')).toBe('incoming')
-    act(() => vi.advanceTimersByTime(300))
+    act(() => vi.advanceTimersByTime(240))
     expect(box.querySelector('.agent-activity-object')).toBeNull()
     expect(box.querySelector('.agent-face-stage')?.getAttribute('data-motion')).toBe('present')
     expect(styles).toContain('@keyframes agent-activity-in')
