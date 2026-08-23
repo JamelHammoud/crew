@@ -93,7 +93,7 @@ function windowShell(
   platform: NodeJS.Platform,
   preload: string,
   devTools: boolean,
-  theme: Theme
+  theme: Theme | null
 ): BrowserWindowConstructorOptions {
   const isWindows = platform === 'win32'
 
@@ -105,7 +105,7 @@ function windowShell(
     title: 'Crew',
     titleBarStyle: 'hiddenInset',
     trafficLightPosition: { x: 20, y: 27 },
-    ...(platform === 'darwin' ? { hasShadow: theme !== 'oled' } : {}),
+    ...(platform === 'darwin' ? { hasShadow: theme !== null && theme !== 'oled' } : {}),
     webPreferences: {
       preload,
       contextIsolation: true,
@@ -121,7 +121,7 @@ export function createWindowOptions(
   platform: NodeJS.Platform,
   preload: string,
   devTools: boolean,
-  theme: Theme = 'dark'
+  theme: Theme | null = 'dark'
 ): BrowserWindowConstructorOptions {
   return {
     width: 1200,
@@ -140,7 +140,7 @@ export function createThreadWindowOptions(
   platform: NodeJS.Platform,
   preload: string,
   devTools: boolean,
-  theme: Theme = 'dark'
+  theme: Theme | null = 'dark'
 ): BrowserWindowConstructorOptions {
   return {
     width: 720,

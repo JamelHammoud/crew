@@ -68,6 +68,7 @@ import { runtimeStateDir } from './runtime-state'
 import { appMenuTemplate, closePutsAway, createThreadWindowOptions, createWindowOptions } from './window-options'
 import { installBrowserFindForHost } from './browser-find'
 import { pinWindow, windowShapeOf } from './window-pin'
+import { setWindowShadow } from './window-shadow'
 
 app.setName('Crew')
 app.commandLine.appendSwitch('disable-backgrounding-occluded-windows')
@@ -226,7 +227,7 @@ let opening = openRequestOf(process.argv)
 let command = new CrewCommand(null)
 let resumed: Promise<unknown> = Promise.resolve()
 let iconTheme: IconTheme = 'dark'
-let appTheme: Theme = 'dark'
+let appTheme: Theme | null = null
 let chosenIcon: AppIconId = DEFAULT_APP_ICON
 
 // The tray panel is a window like any other as far as Electron is concerned,
@@ -693,9 +694,7 @@ app.whenReady().then(() => {
     const iconTheme = theme === 'light' ? 'light' : 'dark'
     nativeTheme.themeSource = iconTheme
     applyIcon(iconTheme, chosenIcon)
-    if (process.platform === 'darwin') {
-      for (const win of appWindows()) win.setHasShadow(theme !== 'oled')
-    }
+    for (const win of appWindows()) setWindowShadow(process.platform, win, theme !== 'oled')
   })
   ipcMain.handle('app:icon', (_event, icon: unknown) => applyIcon(iconTheme, cleanAppIcon(icon)))
   // Whether the machine sleeps is this window's own answer, said again on every

@@ -100,6 +100,7 @@ describe('window options', () => {
   it('turns off the native macOS edge for OLED', () => {
     expect(createWindowOptions('darwin', 'preload.mjs', true, 'oled').hasShadow).toBe(false)
     expect(createThreadWindowOptions('darwin', 'preload.mjs', true, 'oled').hasShadow).toBe(false)
+    expect(createWindowOptions('darwin', 'preload.mjs', true, null).hasShadow).toBe(false)
     expect(createWindowOptions('darwin', 'preload.mjs', true, 'dark').hasShadow).toBe(true)
     expect(createWindowOptions('darwin', 'preload.mjs', true, 'light').hasShadow).toBe(true)
   })
