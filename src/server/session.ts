@@ -4644,7 +4644,14 @@ export class CrewSession {
     // A helper is back only once its thread has gone quiet with nothing behind
     // it. A turn that lands mid-queue is still the same piece of work.
     if (thread?.parentThreadId && !this.subagentRunning(thread)) {
-      this.subagentReturn(thread, result.ok, result.text ?? result.error ?? '', stopped)
+      this.subagentReturn(
+        thread,
+        promptId,
+        result.ok,
+        result.text ?? result.error ?? '',
+        stopped,
+        run ? Math.max(0, Date.now() - run.startedAt) : undefined
+      )
     }
     if (thread && this.ghostOf(thread.id)?.post && !this.subagentRunning(thread)) {
       const out = this.subagentThreads(thread.id).some(one => this.subagentRunning(one))
@@ -5059,6 +5066,7 @@ export class CrewSession {
       if (moved) this.broadcast({ type: 'agent.added', agent: this.pooled(existing) })
       this.emit({ id: randomUUID(), ts: Date.now(), kind: 'agent.online', agentId: id, label: existing.label })
       this.runThreadsOf(existing)
+      this.deliverReturnsFor(existing.id)
       if (moved) this.persistMeta()
       return
     }
@@ -5081,6 +5089,7 @@ export class CrewSession {
     meta?.agentIds.push(id)
     this.broadcast({ type: 'agent.added', agent: this.pooled(agent) })
     this.emit({ id: randomUUID(), ts: Date.now(), kind: 'agent.online', agentId: id, label })
+    this.deliverReturnsFor(agent.id)
     this.persistMeta()
   }
 
