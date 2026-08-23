@@ -259,9 +259,18 @@ export type SessionEvent =
       kind: 'subagent.ended'
       threadId: string
       parentThreadId: string
+      promptId?: string
       ok: boolean
       ms: number
       stopped?: boolean
+    }
+  | {
+      id: string
+      ts: number
+      kind: 'subagent.returned'
+      threadId: string
+      parentThreadId: string
+      endedId: string
     }
   // What an agent asked the app to show. It is written down rather than said
   // once, because the row it draws in the thread is the way back to it after

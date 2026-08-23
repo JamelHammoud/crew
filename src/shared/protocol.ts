@@ -167,6 +167,7 @@ export type ClientMessage =
   | { type: 'schedule.run'; scheduleId: string }
   | { type: 'attachment.limit'; mb: number }
   | { type: 'subagent.stop'; threadId: string }
+  | { type: 'subagent.restart'; threadId: string }
   // What one person lets helpers do on their own machine. It is kept in that
   // window's own storage and said again on every connect, the way the volume is
   // kept, except this one has to reach the host to be worth anything.
@@ -290,6 +291,7 @@ export type ServerMessage =
       // because it is the side that knows the address they are reached at.
       spawnRoom?: number
       spawnProviders?: string[]
+      helpers?: boolean
       // Whether this thread keeps a board. The machine turns it into the words
       // about one for the same reason: the board is reached over http, and only
       // that side knows the address.

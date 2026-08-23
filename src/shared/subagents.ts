@@ -77,30 +77,40 @@ export function subagentPreamble(
   apiBase: string,
   promptId: string,
   left: number,
-  providers: string[] = []
+  providers: string[] = [],
+  available = left > 0
 ): string | null {
-  if (left <= 0) return null
+  if (!available) return null
+  const canSpawn = left > 0
   return [
     `## Helpers`,
     ``,
-    `You can split work off to a helper and keep going while it runs. A helper is a real agent on a real machine here, in this project, working on its own. You make one up as you need it: give it a short name and the whole of what it should do.`,
-    ``,
-    `  curl -s -X POST ${apiBase}/agents/spawn -H 'content-type: application/json' -d '{"promptId":"${promptId}","name":"Scout","subject":"reading the schema","task":"Find every table in the schema and list them with their columns. Do not change anything."}'`,
-    ``,
-    `That returns an id straight away. It does not wait.`,
-    ...(providers.length > 0
+    ...(canSpawn
       ? [
+          `You can split work off to a helper and keep going while it runs. A helper is a real agent on a real machine here, in this project, working on its own. You make one up as you need it: give it a short name and the whole of what it should do.`,
           ``,
-          `Add "provider" to run it on a particular CLI: ${providers.join(', ')}. Add "model" to pin the model. Leave both out and it runs where you are.`
+          `  curl -s -X POST ${apiBase}/agents/spawn -H 'content-type: application/json' -d '{"promptId":"${promptId}","name":"Scout","subject":"reading the schema","task":"Find every table in the schema and list them with their columns. Do not change anything."}'`,
+          ``,
+          `That returns an id straight away. It does not wait.`,
+          ...(providers.length > 0
+            ? [
+                ``,
+                `Add "provider" to run it on a particular CLI: ${providers.join(', ')}. Add "model" to pin the model. Leave both out and it runs where you are.`
+              ]
+            : []),
+          ``,
+          `Then carry on with your own work. When a helper finishes, its answer arrives in the middle of what you are doing, the way a message from a person does. You do not poll for it and you do not have to stop.`
         ]
       : []),
     ``,
-    `Then carry on with your own work. When a helper finishes, its answer arrives in the middle of what you are doing, the way a message from a person does. You do not poll for it and you do not have to stop.`,
-    ``,
+    `See every helper this thread has sent out, including helpers sent through another one:`,
+    `  curl -s '${apiBase}/agents?promptId=${promptId}'`,
     `Say something to one that is still going:`,
     `  curl -s -X POST ${apiBase}/agents/<id>/say -H 'content-type: application/json' -d '{"promptId":"${promptId}","text":"..."}'`,
-    `Read where one has got to:`,
+    `Read one in full:`,
     `  curl -s ${apiBase}/agents/<id>?promptId=${promptId}`,
+    `Run the last failed or stopped turn again:`,
+    `  curl -s -X POST ${apiBase}/agents/<id>/restart -H 'content-type: application/json' -d '{"promptId":"${promptId}"}'`,
     `Stop one:`,
     `  curl -s -X POST ${apiBase}/agents/<id>/stop -H 'content-type: application/json' -d '{"promptId":"${promptId}"}'`,
     ``,
