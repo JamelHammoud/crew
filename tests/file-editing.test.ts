@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { breakFileLine, indentFile } from '../src/renderer/src/components/fileEditing'
+import { breakFileLine, eraseFilePair, indentFile, pairFile } from '../src/renderer/src/components/fileEditing'
 
 describe('file indentation', () => {
   it('puts two spaces at a caret', () => {
@@ -58,5 +58,24 @@ describe('file line breaks', () => {
       start: 9,
       end: 9
     })
+  })
+})
+
+describe('file pairs', () => {
+  it('places the caret between a new pair', () => {
+    expect(pairFile('call', 4, 4, '(')).toEqual({ value: 'call()', start: 5, end: 5 })
+  })
+
+  it('wraps selected text and keeps the text selected', () => {
+    expect(pairFile('value', 0, 5, '"')).toEqual({ value: '"value"', start: 1, end: 6 })
+  })
+
+  it('steps over a closing mark that is already there', () => {
+    expect(pairFile('call()', 5, 5, ')')).toEqual({ value: 'call()', start: 6, end: 6 })
+  })
+
+  it('erases an empty pair together', () => {
+    expect(eraseFilePair('call()', 5, 5)).toEqual({ value: 'call', start: 4, end: 4 })
+    expect(eraseFilePair('(value)', 1, 6)).toBeNull()
   })
 })

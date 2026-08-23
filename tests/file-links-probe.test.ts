@@ -887,6 +887,37 @@ describe('file editing', () => {
     expect([editor.selectionStart, editor.selectionEnd]).toEqual([19, 19])
   })
 
+  it('pairs marks, keeps a wrapped selection, and erases an empty pair together', async () => {
+    useBrowser.getState().openFile('src/app.ts')
+    render(createElement(BrowserPanel))
+    await screen.findByText('const one = 1')
+    const editor = screen.getByRole('textbox', { name: 'File contents' }) as HTMLTextAreaElement
+    editor.setSelectionRange(6, 9)
+    fireEvent.keyDown(editor, { key: '"', shiftKey: true })
+    await waitFor(() => expect(editor.value.startsWith('const "one"')).toBe(true))
+    expect([editor.selectionStart, editor.selectionEnd]).toEqual([7, 10])
+    editor.setSelectionRange(11, 11)
+    fireEvent.keyDown(editor, { key: '(' })
+    await waitFor(() => expect(editor.value.slice(11, 13)).toBe('()'))
+    expect(editor.selectionStart).toBe(12)
+    fireEvent.keyDown(editor, { key: 'Backspace' })
+    await waitFor(() => expect(editor.value.slice(11, 13)).not.toBe('()'))
+    expect(editor.selectionStart).toBe(11)
+  })
+
+  it('marks the row holding the caret while the editor is active', async () => {
+    useBrowser.getState().openFile('src/app.ts')
+    render(createElement(BrowserPanel))
+    await screen.findByText('const one = 1')
+    const editor = screen.getByRole('textbox', { name: 'File contents' }) as HTMLTextAreaElement
+    const at = editor.value.indexOf('const two')
+    editor.setSelectionRange(at, at)
+    fireEvent.select(editor)
+    await waitFor(() => expect(document.querySelector('[data-row="1"]')?.className).toContain('bg-fg/[0.035]'))
+    fireEvent.blur(editor)
+    await waitFor(() => expect(document.querySelector('[data-row="1"]')?.className).not.toContain('bg-fg/[0.035]'))
+  })
+
   it('escape discards unsaved changes', async () => {
     useBrowser.getState().openFile('src/app.ts')
     render(createElement(BrowserPanel))

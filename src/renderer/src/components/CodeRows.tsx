@@ -6,13 +6,15 @@ export default function CodeRows({
   rows,
   gutter,
   line,
-  dirty
+  dirty,
+  activeRow
 }: {
   path: string
   rows: Row[]
   gutter: string
   line: number | null
   dirty: boolean
+  activeRow: number | null
 }) {
   const tokensFor = useHighlight(path, rows, dirty ? 150 : 0)
 
@@ -37,7 +39,9 @@ export default function CodeRows({
             key={index}
             data-row={index}
             data-line={row.line}
-            className={`flex px-4 ${row.changed ? 'bg-positive/10' : marked ? 'bg-fg/[0.07]' : ''}`}
+            className={`flex px-4 ${
+              row.changed ? 'bg-positive/10' : marked ? 'bg-fg/[0.07]' : activeRow === index ? 'bg-fg/[0.035]' : ''
+            }`}
           >
             <span
               style={{ minWidth: gutter }}

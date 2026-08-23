@@ -5,6 +5,7 @@ export interface FileEdit {
 }
 
 const INDENT = '  '
+const PAIRS: Record<string, string> = { '(': ')', '[': ']', '{': '}', "'": "'", '"': '"', '`': '`' }
 
 const lineStart = (value: string, at: number): number => value.lastIndexOf('\n', Math.max(0, at - 1)) + 1
 
@@ -58,4 +59,24 @@ export function breakFileLine(value: string, start: number, end: number): FileEd
   const next = value.slice(0, start) + put + value.slice(tail)
   const at = start + inner.length + 1
   return { value: next, start: at, end: at }
+}
+
+export function pairFile(value: string, start: number, end: number, key: string): FileEdit | null {
+  const close = PAIRS[key]
+  if (close) {
+    const next = value.slice(0, start) + key + value.slice(start, end) + close + value.slice(end)
+    return { value: next, start: start + 1, end: end + 1 }
+  }
+  if (start === end && Object.values(PAIRS).includes(key) && value[start] === key) {
+    return { value, start: start + 1, end: start + 1 }
+  }
+  return null
+}
+
+export function eraseFilePair(value: string, start: number, end: number): FileEdit | null {
+  if (start !== end || start === 0) return null
+  const open = value[start - 1]
+  if (PAIRS[open] !== value[start]) return null
+  const next = value.slice(0, start - 1) + value.slice(start + 1)
+  return { value: next, start: start - 1, end: start - 1 }
 }

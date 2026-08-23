@@ -6,7 +6,7 @@ import { useBrowser, type BrowserTab } from '../state/browser'
 import { baselineOf } from './baseline'
 import CodeRows from './CodeRows'
 import Empty from './Empty'
-import { breakFileLine, indentFile } from './fileEditing'
+import { breakFileLine, eraseFilePair, indentFile, pairFile } from './fileEditing'
 import FileTree from './FileTree'
 import FindBar from './FindBar'
 import { diffRows, editDoc, firstChange, joinRows, plainRows, rowAt, snap, toDoc, toShown } from './diffRows'
@@ -120,6 +120,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
   const [loadKey, setLoadKey] = useState(0)
   const [saving, setSaving] = useState(false)
   const [saveFailed, setSaveFailed] = useState(false)
+  const [activeRow, setActiveRow] = useState<number | null>(null)
   const bodyRef = useRef<HTMLDivElement>(null)
   const areaRef = useRef<HTMLTextAreaElement>(null)
   const codeRef = useRef<HTMLDivElement>(null)
@@ -262,6 +263,8 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
 
   const onEdit = (event: ChangeEvent<HTMLTextAreaElement>) => apply(event.target.value)
 
+  const placeActiveRow = (area: HTMLTextAreaElement) => setActiveRow(rowAt(rows, area.selectionEnd).index)
+
   const onKeys = (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if ((event.metaKey || event.ctrlKey) && event.key === 's') {
       event.preventDefault()
@@ -274,6 +277,24 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
         discard()
       }
       return
+    }
+    if (event.key === 'Backspace' && !event.metaKey && !event.ctrlKey && !event.altKey) {
+      const { selectionStart, selectionEnd, value } = event.currentTarget
+      const edit = eraseFilePair(value, selectionStart, selectionEnd)
+      if (edit) {
+        event.preventDefault()
+        apply(edit.value, edit)
+      }
+      return
+    }
+    if (!event.metaKey && !event.ctrlKey && !event.altKey) {
+      const { selectionStart, selectionEnd, value } = event.currentTarget
+      const edit = pairFile(value, selectionStart, selectionEnd, event.key)
+      if (edit) {
+        event.preventDefault()
+        apply(edit.value, edit)
+        return
+      }
     }
     if (event.key === 'Tab') {
       event.preventDefault()
@@ -312,13 +333,23 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
               data-find-scope
               className="relative min-h-full py-3 min-w-max font-mono text-xs leading-5 select-text"
             >
-              <CodeRows path={tab.path} rows={rows} gutter={gutter} line={tab.line} dirty={dirty} />
+              <CodeRows
+                path={tab.path}
+                rows={rows}
+                gutter={gutter}
+                line={tab.line}
+                dirty={dirty}
+                activeRow={activeRow}
+              />
               {editable && (
                 <textarea
                   ref={areaRef}
                   value={shown}
                   onChange={onEdit}
                   onKeyDown={onKeys}
+                  onFocus={event => placeActiveRow(event.currentTarget)}
+                  onSelect={event => placeActiveRow(event.currentTarget)}
+                  onBlur={() => setActiveRow(null)}
                   onCompositionStart={() => {
                     composing.current = true
                   }}
