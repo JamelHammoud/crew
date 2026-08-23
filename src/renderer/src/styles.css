@@ -1084,7 +1084,7 @@ textarea:placeholder-shown {
 }
 
 .agent-icon .agent-activity-object[data-object='running'] {
-  animation: agent-running 1.1s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+  animation: agent-running 1.8s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon .agent-activity-object[data-object='planning'] {
@@ -1849,46 +1849,37 @@ textarea:placeholder-shown {
 @keyframes agent-running {
   0%,
   100% {
-    transform: translateY(2%) rotate(-1deg) scale(1.02, 0.97);
+    transform: rotate(-0.4deg) scale(1);
   }
-  22% {
-    transform: translateY(3%) rotate(1deg) scale(1.04, 0.95);
-  }
-  48% {
-    transform: translateY(-5%) rotate(-1deg) scale(0.97, 1.05);
-  }
-  68% {
-    transform: translateY(-6%) rotate(1deg) scale(0.965, 1.055);
-  }
-  84% {
-    transform: translateY(1%) rotate(0) scale(1.03, 0.96);
+  50% {
+    transform: rotate(0.4deg) scale(1.008);
   }
 }
 
 .agent-icon [data-part='terminal'] {
-  animation: agent-terminal-shell 1.1s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+  animation: agent-terminal-shell 1.8s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon [data-part='terminal-prompt'] {
   transform-origin: left center;
-  animation: agent-terminal-prompt 1.1s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+  animation: agent-terminal-prompt 1.8s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon [data-part='terminal-cursor'] {
   transform-origin: left center;
-  animation: agent-terminal-cursor 1.1s steps(1, end) var(--agent-delay, 0ms) infinite;
+  animation: agent-terminal-cursor 1.8s steps(1, end) var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon [data-part='terminal-command-one'] {
-  animation: agent-terminal-command-one 1.1s steps(1, end) var(--agent-delay, 0ms) infinite;
+  animation: agent-terminal-command-one 1.8s steps(1, end) var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon [data-part='terminal-command-two'] {
-  animation: agent-terminal-command-two 1.1s steps(1, end) var(--agent-delay, 0ms) infinite;
+  animation: agent-terminal-command-two 1.8s steps(1, end) var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon [data-part='terminal-command-three'] {
-  animation: agent-terminal-command-three 1.1s steps(1, end) var(--agent-delay, 0ms) infinite;
+  animation: agent-terminal-command-three 1.8s steps(1, end) var(--agent-delay, 0ms) infinite;
 }
 
 @keyframes agent-terminal-shell {
