@@ -62,11 +62,22 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
             strokeLinecap="round"
           />
         </g>
-        <g data-part="page-turn">
+        <g data-part="page-turn-one">
           <path d="M50 36 C60 28 72 26 84 29 C87 30 89 33 89 37 V70 C89 73 86 75 82 74 C70 71 59 75 50 82 Z" />
           <path
-            data-part="page-turn-edge"
+            data-part="page-turn-edge-one"
             d="M55 39 C64 33 73 31 82 33"
+            fill="none"
+            stroke="#000"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+          />
+        </g>
+        <g data-part="page-turn-two">
+          <path d="M50 37 C59 30 70 28 81 31 C84 32 86 35 86 39 V68 C86 71 83 73 79 72 C68 70 58 75 50 81 Z" />
+          <path
+            data-part="page-turn-edge-two"
+            d="M55 40 C63 35 71 33 79 35"
             fill="none"
             stroke="#000"
             strokeWidth="3.5"
