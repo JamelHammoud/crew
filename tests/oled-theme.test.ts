@@ -12,6 +12,7 @@ describe('the OLED palette', () => {
     expect(oled).toContain('--color-ink-900: #000000')
     expect(oled).toContain('--color-ink-800: #0a0a0a')
     expect(oled).toContain('--color-ink-700: #171717')
+    expect(oled).toContain('--color-composer: #121212')
   })
 
   it('has its own foreground, status, and selection colors', () => {

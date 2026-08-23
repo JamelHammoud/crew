@@ -107,7 +107,7 @@ describe('commands in the composer', () => {
   it('turns the box itself over to ghost while the chip is on', () => {
     const composer = open()
     const shell = composer.closest('.rounded-shell') as HTMLElement
-    expect(shell.className).toContain('bg-ink-800')
+    expect(shell.className).toContain('bg-composer')
     expect(shell.className).not.toContain('border-dashed')
 
     fireEvent.change(composer, { target: { value: '/ghost ' } })
