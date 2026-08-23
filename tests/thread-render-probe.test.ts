@@ -236,22 +236,30 @@ describe('what a long thread draws again', () => {
     expect(screen.queryByText('step number 0')).toBeNull()
   })
 
-  it('shows the current activity in the composer header', () => {
-    const running: AgentStep = {
-      id: 'design',
+  it("shows this chat's activity in the composer header", () => {
+    const reading: AgentStep = {
+      id: 'read',
       ts: 300,
+      kind: 'tool',
+      status: 'running',
+      name: 'Read'
+    }
+    const designingElsewhere: AgentStep = {
+      id: 'design',
+      ts: 301,
       kind: 'tool',
       status: 'running',
       name: 'generateImage'
     }
     useCrew.setState({
-      ...seed([running]),
-      activePrompts: { [AGENT.id]: [PROMPT] },
+      ...seed([reading]),
+      activePrompts: { [AGENT.id]: [PROMPT, 'another-chat'] },
+      steps: { [PROMPT]: [reading], 'another-chat': [designingElsewhere] },
       threadPrompts: { [THREAD]: PROMPT }
     })
     const { container } = render(createElement(ThreadView, { threadId: THREAD }))
 
-    expect(container.querySelector('.agent-icon')?.getAttribute('data-activity')).toBe('designing')
-    expect(container.querySelector('[data-object="designing"]')).not.toBeNull()
+    expect(container.querySelector('.agent-icon')?.getAttribute('data-activity')).toBe('reading')
+    expect(container.querySelector('[data-object="reading"]')).not.toBeNull()
   })
 })
