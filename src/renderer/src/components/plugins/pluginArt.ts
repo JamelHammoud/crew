@@ -24,7 +24,7 @@ export const PLUGIN_ART: Record<string, string> = {
   figma: figmaMark,
   'figma-desktop': figmaMark,
   canva: canvaMark,
-  frontpages: 'https://frontpages.dev/favicon.ico',
+  frontpages: 'https://frontpages.dev/f.png',
   github: githubMark,
   sentry: sentryMark,
   context7: context7Mark,

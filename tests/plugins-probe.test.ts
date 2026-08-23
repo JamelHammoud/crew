@@ -82,8 +82,15 @@ describe('the plugins store', () => {
     for (const group of PLUGIN_GROUPS) expect(screen.getByText(group)).toBeTruthy()
   })
 
-  it('wears the service own mark rather than a drawing of ours', () => {
+  it('wears the service own mark and never leaves a broken image behind', () => {
     for (const offer of PLUGIN_OFFERS) expect(PLUGIN_ART[offer.name], offer.name).toBeTruthy()
+    plugins()
+    const frontpages = rowFor('Frontpages')
+    const mark = frontpages.querySelector('img')!
+    expect(mark.getAttribute('src')).toBe(PLUGIN_ART.frontpages)
+    fireEvent.error(mark)
+    expect(frontpages.querySelector('img')).toBeNull()
+    expect(frontpages.querySelector('canvas')).toBeTruthy()
   })
 
   it('connects and then adds the one a row names', async () => {
