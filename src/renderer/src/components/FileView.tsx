@@ -7,6 +7,7 @@ import { baselineOf } from './baseline'
 import CodeRows from './CodeRows'
 import Empty from './Empty'
 import FileTree from './FileTree'
+import FindBar from './FindBar'
 import { diffRows, editDoc, firstChange, joinRows, plainRows, rowAt, snap, toDoc, toShown } from './diffRows'
 import { useFileMenu } from './fileMenu'
 import HtmlView from './HtmlView'
@@ -102,6 +103,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
   const [saveFailed, setSaveFailed] = useState(false)
   const bodyRef = useRef<HTMLDivElement>(null)
   const areaRef = useRef<HTMLTextAreaElement>(null)
+  const codeRef = useRef<HTMLDivElement>(null)
   const caret = useRef<number | null>(null)
   const last = useRef(0)
   const composing = useRef(false)
@@ -268,7 +270,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
             ))}
           {file && reading && !asPage && <MarkdownView path={tab.path} text={text} partial={file.truncated || long} />}
           {file && !reading && (
-            <div className="relative min-h-full py-3 min-w-max font-mono text-xs leading-5 select-text">
+            <div ref={codeRef} className="relative min-h-full py-3 min-w-max font-mono text-xs leading-5 select-text">
               <CodeRows path={tab.path} rows={rows} gutter={gutter} line={tab.line} dirty={dirty} />
               {editable && (
                 <textarea
@@ -315,6 +317,15 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
           )}
         </div>
         {file && asPage && <HtmlView id={tab.id} path={tab.path} text={text} partial={file.truncated || long} />}
+        {file && !reading && active && (
+          <FindBar
+            containerRef={codeRef}
+            scrollerRef={bodyRef}
+            placeholder="Find in this file"
+            className="top-4 right-4"
+            selector="[data-code-text]"
+          />
+        )}
         {data?.kind === 'media' && <MediaView path={data.path} src={data.url} video={data.video} />}
         {((base && !reading) || dirty) && (
           <div className="absolute top-2.5 right-4 flex items-center gap-1.5">

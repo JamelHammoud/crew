@@ -47,7 +47,7 @@ export default function CodeRows({
             >
               {row.line}
             </span>
-            <span className="whitespace-pre text-fg-secondary pr-4">
+            <span data-code-text className="whitespace-pre text-fg-secondary pr-4">
               <LineText row={row} tokens={tokensFor(row)} tint="bg-positive/25" />
             </span>
           </div>

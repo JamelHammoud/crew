@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
 import { matchFiles, type FileContentMatch, type FileEntry, type FileMatch } from '../../../shared/files'
-import { ChevronRightGlyph, FileGlyph } from '../icons'
+import { ChevronRightGlyph, FileGlyph, FolderGlyph } from '../icons'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import { useFileMenu } from './fileMenu'
 import Marked from './Marked'
@@ -116,7 +116,7 @@ function Branch({ tab, path, depth }: { tab: BrowserTab; path: string; depth: nu
   )
 }
 
-function Match({ tab, match }: { tab: BrowserTab; match: FileMatch }) {
+function Match({ tab, match, dir }: { tab: BrowserTab; match: FileMatch; dir: boolean }) {
   const start = match.path.lastIndexOf('/') + 1
   const name = match.path.slice(start)
   const folder = start ? match.path.slice(0, start - 1) : ''
@@ -126,11 +126,16 @@ function Match({ tab, match }: { tab: BrowserTab; match: FileMatch }) {
       <button
         onClick={() => useBrowser.getState().navigateFile(tab.id, match.path)}
         onContextMenu={onContextMenu}
-        data-file={match.path}
+        data-file={dir ? undefined : match.path}
+        data-folder={dir ? match.path : undefined}
         style={{ paddingLeft: indent(0) }}
         className={`${row} ${tab.path === match.path ? picked : quiet}`}
       >
-        <FileGlyph className="w-3.5 h-3.5 shrink-0 text-fg-faint" />
+        {dir ? (
+          <FolderGlyph className="w-3.5 h-3.5 shrink-0 text-fg-muted" />
+        ) : (
+          <FileGlyph className="w-3.5 h-3.5 shrink-0 text-fg-faint" />
+        )}
         <span className="shrink-0 max-w-[70%] truncate">
           <Marked text={name} hits={match.hits.filter(hit => hit >= start).map(hit => hit - start)} />
         </span>
@@ -249,6 +254,7 @@ function Matches({
   tab,
   paths,
   names,
+  folders,
   contents,
   loading,
   failed,
@@ -257,6 +263,7 @@ function Matches({
   tab: BrowserTab
   paths: string[] | null
   names: FileMatch[]
+  folders: Set<string>
   contents: FileContentMatch[]
   loading: boolean
   failed: boolean
@@ -270,8 +277,8 @@ function Matches({
 
   return (
     <>
-      {names.length > 0 && <Heading>File names</Heading>}
-      {names.map(match => <Match key={match.path} tab={tab} match={match} />)}
+      {names.length > 0 && <Heading>Files and folders</Heading>}
+      {names.map(match => <Match key={match.path} tab={tab} match={match} dir={folders.has(match.path)} />)}
       {contents.length > 0 && <Heading>Contents</Heading>}
       {contents.map(match => <ContentMatch key={`${match.path}:${match.line}`} tab={tab} match={match} />)}
       {loading && <Loading depth={0} />}
@@ -283,7 +290,18 @@ function Matches({
 export default function FileTree({ tab }: { tab: BrowserTab }) {
   const [query, setQuery] = useState('')
   const paths = useProjectFiles(tab.generation)
-  const names = useMemo(() => (paths ? matchFiles(paths, query, MATCH_LIMIT) : []), [paths, query])
+  const folders = useMemo(() => {
+    const found = new Set<string>()
+    for (const path of paths ?? []) {
+      const parts = path.split('/').slice(0, -1)
+      for (let at = 1; at <= parts.length; at++) found.add(parts.slice(0, at).join('/'))
+    }
+    return found
+  }, [paths])
+  const names = useMemo(
+    () => (paths ? matchFiles([...folders, ...paths], query, MATCH_LIMIT) : []),
+    [paths, folders, query]
+  )
   const content = useContentMatches(query, tab.generation)
 
   const onKeys = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -310,6 +328,7 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
             tab={tab}
             paths={paths}
             names={names}
+            folders={folders}
             contents={content.matches}
             loading={content.loading}
             failed={content.failed}

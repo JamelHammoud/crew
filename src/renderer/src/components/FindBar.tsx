@@ -10,9 +10,8 @@ const fold = (s: string): string =>
     return lower.length === ch.length ? lower : ch
   }).join('')
 
-function computeMatches(root: HTMLElement, query: string): Range[] {
-  const needle = fold(query)
-  if (!needle) return []
+function rangesIn(root: HTMLElement, needle: string, limit: number): Range[] {
+  if (limit <= 0) return []
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT)
   const nodes: Text[] = []
   const starts: number[] = []
@@ -28,15 +27,23 @@ function computeMatches(root: HTMLElement, query: string): Range[] {
     while (node + 1 < nodes.length && starts[node + 1] <= offset) node++
     return [nodes[node], offset - starts[node]]
   }
-  for (
-    let at = haystack.indexOf(needle);
-    at !== -1 && ranges.length < 500;
-    at = haystack.indexOf(needle, at + needle.length)
-  ) {
+  for (let at = haystack.indexOf(needle); at !== -1 && ranges.length < limit; at = haystack.indexOf(needle, at + needle.length)) {
     const range = document.createRange()
     range.setStart(...place(at))
     range.setEnd(...place(at + needle.length))
     ranges.push(range)
+  }
+  return ranges
+}
+
+function computeMatches(root: HTMLElement, query: string, selector?: string): Range[] {
+  const needle = fold(query)
+  if (!needle) return []
+  const ranges: Range[] = []
+  const targets = selector ? root.querySelectorAll<HTMLElement>(selector) : [root]
+  for (const target of targets) {
+    ranges.push(...rangesIn(target, needle, 500 - ranges.length))
+    if (ranges.length >= 500) break
   }
   return ranges
 }
@@ -50,7 +57,8 @@ export default function FindBar({
   scrollerRef,
   placeholder = 'Find in page',
   className = 'top-[78px] right-8',
-  listens = true
+  listens = true,
+  selector
 }: {
   containerRef: RefObject<HTMLElement | null>
   scrollerRef: RefObject<HTMLElement | null>
@@ -61,6 +69,7 @@ export default function FindBar({
   // answers it, or the way to close the bar in front of you would depend on
   // which column was last touched.
   listens?: boolean
+  selector?: string
 }) {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
@@ -135,7 +144,7 @@ export default function FindBar({
     if (!root) return
     let timer: number | null = null
     const run = (reset: boolean) => {
-      const next = computeMatches(root, query)
+      const next = computeMatches(root, query, selector)
       setMatches(next)
       setActive(prev => (next.length === 0 ? 0 : reset ? 0 : Math.min(prev, next.length - 1)))
     }
@@ -150,7 +159,7 @@ export default function FindBar({
       observer.disconnect()
       if (timer !== null) window.clearTimeout(timer)
     }
-  }, [open, query, containerRef])
+  }, [open, query, containerRef, selector])
 
   useEffect(() => {
     const registry = globalThis.CSS?.highlights
@@ -199,6 +208,7 @@ export default function FindBar({
           }
         }}
         placeholder={placeholder}
+        aria-label={placeholder}
         className="flex-1 min-w-0 bg-transparent text-sm text-fg placeholder:text-fg/30 outline-none"
       />
       {query && (
