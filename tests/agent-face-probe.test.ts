@@ -150,7 +150,7 @@ describe('an agent face', () => {
   it('builds Running from a rounded terminal, prompt and cursor without command dots', () => {
     const object = face({ activity: 'running' }).querySelector('[data-object="running"]') as HTMLElement
 
-    expect(object.querySelector('[data-part="terminal"]')?.getAttribute('rx')).toBe('28')
+    expect(object.querySelector('[data-part="terminal"]')?.getAttribute('rx')).toBe('22')
     expect(object.querySelector('[data-part="terminal-prompt"]')).not.toBeNull()
     expect(object.querySelector('[data-part="terminal-cursor"]')).not.toBeNull()
     expect(object.querySelector('[data-part^="terminal-command-"]')).toBeNull()

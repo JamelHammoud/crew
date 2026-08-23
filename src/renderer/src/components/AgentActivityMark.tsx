@@ -135,7 +135,7 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
   if (activity === 'running') {
     return (
       <>
-        <rect data-part="terminal" x="4" y="17" width="92" height="66" rx="28" />
+        <rect data-part="terminal" x="4" y="17" width="92" height="66" rx="22" />
         <path
           data-part="terminal-prompt"
           d="M23 35 L37 50 L23 65"
