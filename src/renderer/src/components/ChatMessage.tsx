@@ -6,7 +6,7 @@ import Avatar from './Avatar'
 import { useCustomEmoji } from './customEmojiSheet'
 import { onlyEmoji } from './emojiTokens'
 import Markdown from './Markdown'
-import { MemberName, MentionText } from './Mention'
+import { HelperName, MemberName, MentionText } from './Mention'
 import MessageReactions from './MessageReactions'
 import MessageText from './MessageText'
 import Pill from './Pill'
@@ -129,11 +129,19 @@ function ChatMessage({
       <div className="min-w-0 flex-1 pt-0.5">
         {!linked && (
           <div className="flex items-baseline gap-2.5 select-none">
-            <MemberName id={nameId} name={item.author}>
-              <span className="text-base font-semibold text-fg-muted transition-colors hover:text-fg-secondary cursor-default">
-                {item.author}
-              </span>
-            </MemberName>
+            {item.helperSeed ? (
+              <HelperName threadId={item.helperSeed}>
+                <span className="text-base font-semibold text-fg-muted transition-colors hover:text-fg-secondary cursor-default">
+                  {item.author}
+                </span>
+              </HelperName>
+            ) : (
+              <MemberName id={nameId} name={item.author}>
+                <span className="text-base font-semibold text-fg-muted transition-colors hover:text-fg-secondary cursor-default">
+                  {item.author}
+                </span>
+              </MemberName>
+            )}
             <div className="flex items-baseline gap-1.5">
               <Tooltip label={formatFullTime(item.ts)}>
                 <span className="text-sm text-fg-faint cursor-default">{formatTime(item.ts)}</span>

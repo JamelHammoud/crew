@@ -26,6 +26,7 @@ import { tokenizeMentions, writtenRefs } from './mentionTokens'
 import Pill from './Pill'
 import ProviderMark from './ProviderMark'
 import Spinner from './Spinner'
+import SubagentMark from './SubagentMark'
 
 function CardRule({ className = '', children }: { className?: string; children: ReactNode }) {
   return <div className={`-mx-3 mt-2.5 border-t border-fg/[0.06] px-3 pt-2.5 ${className}`}>{children}</div>
@@ -116,6 +117,35 @@ export function AgentName({
       {children}
     </HoverCard>
   )
+}
+
+function HelperCardContent({ threadId }: { threadId: string }) {
+  const thread = useCrew(state => state.threads[threadId])
+  const agent = useCrew(state => state.agents.find(one => one.id === thread?.agentId))
+  if (!thread?.helper || !agent) return null
+  const field = agent.fields.find(one => one.key === 'model')
+  const model = thread.helperModel ?? agent.settings.model ?? field?.default ?? ''
+  const label = field ? settingLabel(field, { ...agent.settings, model }) : model || 'Default'
+  return (
+    <>
+      <CardHead
+        face={<SubagentMark seed={threadId} />}
+        name={thread.helper}
+        badge={<ProviderMark provider={agent.provider} />}
+        under={agent.label}
+      />
+      <CardRule>
+        <div className="flex items-baseline justify-between gap-3 text-xs">
+          <span className="shrink-0 text-fg/45">Model</span>
+          <span className="min-w-0 truncate text-fg/70">{label}</span>
+        </div>
+      </CardRule>
+    </>
+  )
+}
+
+export function HelperName({ threadId, children }: { threadId: string; children: ReactNode }) {
+  return <HoverCard content={<HelperCardContent threadId={threadId} />}>{children}</HoverCard>
 }
 
 function MentionChip({ self = false, children }: { self?: boolean; children: ReactNode }) {
