@@ -3,6 +3,7 @@ import PanelToggle from '../components/PanelToggle'
 import SidePanel from '../components/SidePanel'
 import Spinner from '../components/Spinner'
 import Toaster from '../components/Toaster'
+import { TOP_BAR_H } from '../components/TopBar'
 import { useCrew } from '../state/store'
 import { threadIdInHash } from '../../../shared/threadViews'
 import ThreadView from './ThreadView'
@@ -25,15 +26,14 @@ export default function ThreadWindow() {
   return (
     <div className="h-full flex relative">
       <div className="flex-1 min-w-0 relative">
-        {/* The window has no bar of its own, so this band is what it is dragged
-            by and what the traffic lights stand in. It is the app's own surface
-            with the same fade under it the chat wears, or the thread would be
-            read right up to the top edge of the window and under the lights. */}
         <div className="absolute top-0 inset-x-0 z-30 pointer-events-none">
-          <div className="app-drag pointer-events-auto h-14 bg-ink-900 flex items-center justify-end px-4">
+          <div className="page-scrim absolute inset-x-0 top-0" />
+          <div
+            style={{ height: TOP_BAR_H }}
+            className="app-drag relative pointer-events-auto flex items-center justify-end px-4"
+          >
             <PanelToggle />
           </div>
-          <div className="h-10 bg-gradient-to-b from-ink-900 to-transparent" />
         </div>
         {threadId && thread ? (
           <ThreadView threadId={threadId} alone />

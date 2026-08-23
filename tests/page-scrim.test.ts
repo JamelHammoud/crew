@@ -12,6 +12,7 @@ const app = read('App.tsx')
 const chat = read('views/Chat.tsx')
 const docs = read('views/Docs.tsx')
 const thread = read('views/ThreadView.tsx')
+const threadWindow = read('views/ThreadWindow.tsx')
 
 const block = (selector: string): string => {
   const at = styles.indexOf(selector)
@@ -56,7 +57,10 @@ describe('the scrim over the top of a page', () => {
     expect(alphaAt(HEIGHT)).toBe(0)
     expect(stops()[1].alpha).toBeLessThan(1)
     expect(app).toContain('page-scrim absolute inset-x-0 top-0')
+    expect(threadWindow).toContain('page-scrim absolute inset-x-0 top-0')
     expect(app).not.toContain('bg-gradient-to-b from-ink-900')
+    expect(threadWindow).not.toContain('bg-gradient-to-b from-ink-900')
+    expect(threadWindow).not.toContain('bg-ink-900')
   })
 
   it('never turns a corner, so nothing scrolling under it meets an edge', () => {
@@ -72,6 +76,7 @@ describe('the scrim over the top of a page', () => {
     expect(HEIGHT).toBeLessThan(TOP_BAR)
     expect(alphaAt(TOP_BAR)).toBe(0)
     expect(alphaAt(TOP_BAR / 2)).toBeLessThan(0.7)
+    expect(threadWindow).toContain('style={{ height: TOP_BAR_H }}')
   })
 
   it('is off the design board, which fades its own canvas in its own colour', () => {
