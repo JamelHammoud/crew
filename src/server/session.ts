@@ -4231,8 +4231,8 @@ export class CrewSession {
     }
     thread.queue.push(entry)
     if (this.emittedMessages.has(entry.messageId)) this.routed(entry.messageId, threadId, entry.promptId, 'queued')
-    this.broadcastQueue(thread)
     this.runThread(thread)
+    if (thread.queue.some(item => item.promptId === entry.promptId)) this.broadcastQueue(thread)
   }
 
   private queueItem(entry: QueuedPrompt): QueuedItem {
@@ -4311,8 +4311,8 @@ export class CrewSession {
       silent: steer.silent
     })
     if (!steer.silent) this.routed(steer.messageId, steer.threadId, promptId, 'queued')
-    this.broadcastQueue(thread)
     this.runThread(thread)
+    if (thread.queue.some(item => item.promptId === promptId)) this.broadcastQueue(thread)
   }
 
   private routed(messageId: string, threadId: string, promptId: string, mode: 'queued' | 'steered'): void {

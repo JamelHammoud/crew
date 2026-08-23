@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { Attachment } from '../../../shared/attachments'
+import { attachmentUrl, isImageType, type Attachment } from '../../../shared/attachments'
 import type { MessageReply } from '../../../shared/events'
 import {
   ChevronDownGlyph,
@@ -7,7 +7,10 @@ import {
   PencilGlyph,
   TrashGlyph
 } from '../icons'
-import MessageAttachments from './MessageAttachments'
+import { useBrowser } from '../state/browser'
+import { useCrew } from '../state/store'
+import { markFor } from './attachmentMark'
+import { EmojiText } from './Emoji'
 import Pill from './Pill'
 import ReplyQuote from './ReplyQuote'
 import Tooltip from './Tooltip'
@@ -20,6 +23,50 @@ export interface QueuedMessage {
   agentLabel?: string
   attachments?: Attachment[]
   replyTo?: MessageReply
+}
+
+function QueueAttachments({ attachments }: { attachments: Attachment[] }) {
+  const httpBase = useCrew(state => state.httpBase)
+  const shown = attachments.slice(0, 2)
+  const left = attachments.length - shown.length
+  return (
+    <span className="flex shrink-0 items-center gap-1">
+      {shown.map(attachment => {
+        const Mark = markFor(attachment.mime)
+        return (
+          <Tooltip key={attachment.id} label={attachment.name}>
+            <button
+              type="button"
+              onClick={() =>
+                useBrowser
+                  .getState()
+                  .openAttachment(
+                    attachmentUrl(httpBase, attachment),
+                    attachment.name,
+                    attachment.mime,
+                    attachment.size
+                  )
+              }
+              aria-label={`Open ${attachment.name}`}
+              className="flex h-7 max-w-28 items-center gap-1.5 rounded-lg border border-fg/10 px-1.5 text-fg-muted transition-colors hover:border-fg/25 hover:text-fg-secondary active:scale-95"
+            >
+              {isImageType(attachment.mime) ? (
+                <img
+                  src={attachmentUrl(httpBase, attachment)}
+                  alt=""
+                  className="h-4 w-4 shrink-0 rounded object-cover"
+                />
+              ) : (
+                <Mark className="h-3.5 w-3.5 shrink-0" />
+              )}
+              <span className="truncate text-xs">{attachment.name}</span>
+            </button>
+          </Tooltip>
+        )
+      })}
+      {left > 0 && <span className="text-xs text-fg-faint">+{left}</span>}
+    </span>
+  )
 }
 
 function QueueRow({
@@ -38,12 +85,31 @@ function QueueRow({
   onMove: (offset: number) => void
 }) {
   return (
-    <div className="group rounded-xl bg-ink-800 px-3.5 py-3">
-      <div className="flex min-w-0 items-center gap-2">
-        <span className="truncate text-sm font-semibold text-fg-muted">{item.author}</span>
-        {item.agentLabel && <Pill>{item.agentLabel}</Pill>}
+    <div className="group flex min-w-0 items-center gap-2 rounded-xl bg-ink-800 px-3 py-2">
+      <span className="max-w-24 shrink-0 truncate text-sm font-semibold text-fg-muted">{item.author}</span>
+      <div className="min-w-0 flex-1">
+        {item.replyTo && (
+          <div className="mb-0.5 flex min-w-0 items-center">
+            <ReplyQuote
+              targetId={item.replyTo.targetId}
+              authorId={item.replyTo.authorId}
+              authorName={item.replyTo.authorName}
+              label={`Replying to ${item.replyTo.authorName}`}
+              text={item.replyTo.text}
+              deleted={item.replyTo.deleted}
+            />
+          </div>
+        )}
+        <div className="flex min-w-0 items-center gap-2">
+          <span className="min-w-0 flex-1 truncate text-sm text-fg-secondary">
+            {item.text ? <EmojiText text={item.text.replace(/\s+/g, ' ').trim()} /> : 'Attachments'}
+          </span>
+          {item.attachments && item.attachments.length > 0 && <QueueAttachments attachments={item.attachments} />}
+        </div>
+      </div>
+      {item.agentLabel && <Pill>{item.agentLabel}</Pill>}
         {item.self && (
-          <div className="ml-auto flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+          <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
             <Tooltip label="Move earlier">
               <button
                 type="button"
@@ -88,23 +154,6 @@ function QueueRow({
             </Tooltip>
           </div>
         )}
-      </div>
-      {item.replyTo && (
-        <div className="mt-2 flex w-fit max-w-full items-center rounded-full bg-fg/[0.05] py-1 pl-2.5 pr-3.5">
-          <ReplyQuote
-            targetId={item.replyTo.targetId}
-            authorId={item.replyTo.authorId}
-            authorName={item.replyTo.authorName}
-            label={`Replying to ${item.replyTo.authorName}`}
-            text={item.replyTo.text}
-            deleted={item.replyTo.deleted}
-          />
-        </div>
-      )}
-      {item.text && (
-        <p className="mt-1 whitespace-pre-wrap break-words text-base leading-[22px] text-fg select-text">{item.text}</p>
-      )}
-      {item.attachments && <MessageAttachments attachments={item.attachments} />}
     </div>
   )
 }
@@ -138,7 +187,7 @@ export default function QueueBar({
         />
       </button>
       {open && (
-        <div className="space-y-2 pb-2 pt-1">
+        <div className="max-h-52 space-y-1.5 overflow-y-auto pb-2 pt-1 pr-0.5">
           {items.map((item, index) => (
             <QueueRow
               key={item.promptId}

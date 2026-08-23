@@ -378,11 +378,9 @@ describe('queued message cards', () => {
     )
 
     fireEvent.click(screen.getByText('2 messages queued'))
-    expect(
-      screen.getByText((_content, node) => node?.tagName === 'P' && node.textContent === 'first line\nsecond line')
-    ).toBeTruthy()
+    expect(screen.getByText('first line second line')).toBeTruthy()
     expect(screen.getByText('Replying to Ali')).toBeTruthy()
-    expect(screen.getByRole('img', { name: 'room.png' })).toBeTruthy()
+    expect(screen.getByLabelText('Open room.png')).toBeTruthy()
 
     fireEvent.click(screen.getAllByLabelText('Edit queued message')[0])
     expect(edit).toHaveBeenCalledWith('p1')
