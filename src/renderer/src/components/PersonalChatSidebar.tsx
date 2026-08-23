@@ -90,8 +90,7 @@ export default function PersonalChatSidebar({
             : 'w-[300px] bg-ink-900 border-r border-ink-700'
       }`}
     >
-      {!collapsed && (
-        <div className="w-[300px] h-full flex flex-col">
+      <div className={`w-[300px] h-full flex flex-col ${collapsed ? 'hidden' : ''}`}>
           <header
             data-personal-chat-header
             className={`group/header app-drag h-[70px] shrink-0 pl-4 pr-3 flex items-center gap-1 ${
@@ -243,7 +242,7 @@ export default function PersonalChatSidebar({
             <ScrollFade edges={edges} />
           </div>
         </div>
-      )}
+      </div>
     </aside>
   )
 }
