@@ -34,10 +34,8 @@ export default function AgentSettingsModal({
       title="Advanced"
       width={460}
       flush
-      className="max-h-[calc(100dvh-3rem)] flex flex-col"
-    >
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-6 space-y-5">
-        <div className="flex items-center gap-2">
+      header={
+        <div className="shrink-0 px-6 pt-6 flex items-center gap-2">
           <h3 className="text-base font-semibold text-fg">{label}</h3>
           {changed > 0 && (
             <button
@@ -48,10 +46,9 @@ export default function AgentSettingsModal({
             </button>
           )}
         </div>
-        <div>
-          <SettingSections fields={deeper} settings={settings} onChange={onChange} />
-        </div>
-        <div className="flex items-center justify-end">
+      }
+      footer={
+        <div className="shrink-0 px-6 pb-6 pt-5 flex items-center justify-end">
           <button
             onClick={onClose}
             className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold transition-all duration-150 hover:bg-fg/90 active:scale-95"
@@ -59,6 +56,10 @@ export default function AgentSettingsModal({
             Done
           </button>
         </div>
+      }
+    >
+      <div className="px-6 pt-5">
+        <SettingSections fields={deeper} settings={settings} onChange={onChange} />
       </div>
     </Modal>
   )

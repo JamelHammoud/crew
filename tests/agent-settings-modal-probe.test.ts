@@ -25,7 +25,7 @@ const fields: AgentSettingField[] = [
 ]
 
 describe('the advanced agent settings modal', () => {
-  it('keeps its page inside the window and scrolls it within the clipped card', () => {
+  it('keeps its header and footer outside the fading scroll body', () => {
     const { baseElement } = render(
       createElement(AgentSettingsModal, {
         open: true,
@@ -38,7 +38,9 @@ describe('the advanced agent settings modal', () => {
     )
 
     const dialog = screen.getByRole('dialog')
-    const page = baseElement.querySelector('.overflow-y-auto') as HTMLElement
+    const page = baseElement.querySelector('[data-modal-body]') as HTMLElement
+    const done = screen.getByRole('button', { name: 'Done' })
+    const heading = screen.getByRole('heading', { name: 'Grok' })
 
     expect(dialog.className).toContain('max-h-[calc(100dvh-3rem)]')
     expect(dialog.className).toContain('flex-col')
@@ -47,7 +49,9 @@ describe('the advanced agent settings modal', () => {
     expect(page.className).toContain('min-h-0')
     expect(page.className).toContain('flex-1')
     expect(page.className).toContain('overscroll-contain')
-    expect(screen.getByRole('button', { name: 'Done' })).not.toBeNull()
+    expect(page.className).toContain('scroll-fade')
+    expect(page.contains(heading)).toBe(false)
+    expect(page.contains(done)).toBe(false)
   })
 })
 
@@ -88,13 +92,17 @@ describe('the advanced screen while creating an agent', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Advanced' }))
 
     const dialog = screen.getByRole('dialog', { name: 'Advanced' })
-    const page = dialog.querySelector(':scope > .overflow-y-auto') as HTMLElement
+    const page = dialog.querySelector(':scope > [data-modal-body]') as HTMLElement
+    const back = screen.getByRole('button', { name: 'Back' })
+    const done = screen.getByRole('button', { name: 'Done' })
 
     expect(page).not.toBeNull()
     expect(page.parentElement).toBe(dialog)
-    expect(page.className).toContain('max-h-[calc(100dvh-3rem)]')
+    expect(dialog.className).toContain('max-h-full')
     expect(page.className).toContain('overscroll-contain')
+    expect(page.className).toContain('scroll-fade')
+    expect(page.contains(back)).toBe(false)
+    expect(page.contains(done)).toBe(false)
     expect(screen.getByText('Grok memory')).toBeTruthy()
-    expect(screen.getByRole('button', { name: 'Done' })).toBeTruthy()
   })
 })

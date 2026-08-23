@@ -1,5 +1,6 @@
-import { useEffect, type ReactNode } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
+import { useScrollFade } from './useScrollFade'
 
 // A card the app puts in front of everything, for the one thing it is asking
 // about. It stands in the body rather than where it was written, so a dialog
@@ -32,6 +33,9 @@ export default function Modal({
   className?: string
   children: ReactNode
 }) {
+  const body = useRef<HTMLDivElement>(null)
+  useScrollFade(body)
+
   useEffect(() => {
     if (!open) return
     const keys = (event: KeyboardEvent) => {
@@ -65,7 +69,9 @@ export default function Modal({
               </div>
             )}
         <div
-          className={`min-h-0 flex-1 overflow-y-auto overscroll-contain ${flush ? '' : 'px-6'} ${
+          ref={body}
+          data-modal-body
+          className={`scroll-fade min-h-0 flex-1 overflow-y-auto overscroll-contain ${flush ? '' : 'px-6'} ${
             footer === undefined && !flush ? 'pb-6' : ''
           }`}
         >
