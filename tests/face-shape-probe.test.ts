@@ -59,7 +59,7 @@ describe('the box a face stands in', () => {
     }
   })
 
-  it('leaves a cut out picture transparent in the silhouette that owns it', () => {
+  it('leaves a picture transparent inside its circular face', () => {
     const human = render(faces[0]).container.querySelector('img') as HTMLImageElement
     expect(human.className).toContain('rounded-full')
     expect(human.className).not.toMatch(/\bbg-/)
@@ -67,8 +67,8 @@ describe('the box a face stands in', () => {
     cleanup()
 
     const agent = render(faces[1]).container.querySelector('img') as HTMLImageElement
-    expect(agent.className).not.toContain('rounded-full')
-    expect(agent.style.clipPath).toContain('path(')
+    expect(agent.className).toContain('rounded-full')
+    expect(agent.style.clipPath).toBe('')
     expect(agent.className).not.toMatch(/\bbg-/)
     expect(agent.style.backgroundColor).toBe('')
   })

@@ -94,8 +94,8 @@ export default function AgentIcon({
   const file = useCrew(state => state.agents.find(agent => agent.id === seed)?.avatar)
   const httpBase = useCrew(state => state.httpBase)
   const shownActivity = activity ?? 'idle'
-  const performance = usePerformance(shownActivity)
   const src = photo ?? (file && httpBase ? attachmentFileUrl(httpBase, file) : undefined)
+  const performance = usePerformance(src ? 'idle' : shownActivity)
   const style = {
     ...(px ? { width: px, height: px } : {}),
     '--agent-delay': `${-pet.hue * 13}ms`
@@ -120,9 +120,7 @@ export default function AgentIcon({
           src={src}
           alt=""
           draggable={false}
-          className="agent-photo agent-face-stage block w-full h-full object-cover"
-          data-motion={faceMotion}
-          style={{ clipPath: `path('${path}')` }}
+          className="agent-photo block w-full h-full rounded-full object-cover"
         />
       ) : (
         <span className="agent-pet-body agent-face-stage absolute inset-0" data-motion={faceMotion}>
@@ -160,24 +158,22 @@ export default function AgentIcon({
           </svg>
         </span>
       )}
-      {performance.outgoing && performance.outgoing !== 'idle' && (
+      {!src && performance.outgoing && performance.outgoing !== 'idle' && (
         <AgentActivityMark
           key={`out-${performance.turn}-${performance.outgoing}`}
           activity={performance.outgoing}
           seed={seed}
           box={box}
-          src={src}
           motion="outgoing"
         />
       )}
-      {performance.changing && <AgentMorphBridge key={`bridge-${performance.turn}`} seed={seed} box={box} src={src} />}
-      {performance.current !== 'idle' && (
+      {!src && performance.changing && <AgentMorphBridge key={`bridge-${performance.turn}`} seed={seed} box={box} />}
+      {!src && performance.current !== 'idle' && (
         <AgentActivityMark
           key={`in-${performance.turn}-${performance.current}`}
           activity={performance.current}
           seed={seed}
           box={box}
-          src={src}
           motion={performance.changing ? 'incoming' : 'working'}
         />
       )}

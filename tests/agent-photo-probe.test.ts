@@ -47,12 +47,13 @@ describe('agent photos in the settings', () => {
     expect(section().querySelector('svg[viewBox="0 0 100 100"]')).toBeNull()
   })
 
-  it('leaves the picture its own transparency', () => {
+  it('shows the picture as a plain circular avatar', () => {
     seed({ ...agent, avatar: 'a-photo.png' })
     render(createElement(Agents))
 
     const face = section().querySelector('img') as HTMLImageElement
-    expect(face.style.clipPath).toContain('path(')
+    expect(face.style.clipPath).toBe('')
+    expect(face.className).toContain('rounded-full')
     expect(face.className).toContain('object-cover')
     expect(face.className).not.toMatch(/\bbg-/)
     expect(face.style.backgroundColor).toBe('')

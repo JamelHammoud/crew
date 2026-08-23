@@ -242,12 +242,12 @@ describe('an agent face', () => {
     expect(eyeGapAt(petOf(SEED), 48)).toBe(petOf(SEED).eyeGap)
   })
 
-  it('clips an uploaded photo to the same silhouette without drawing underneath it', () => {
+  it('shows an uploaded photo as a plain circle without drawing underneath it', () => {
     const box = face({ photo: PHOTO })
     const image = box.querySelector('img') as HTMLImageElement
 
-    expect(image.style.clipPath).toContain('path(')
-    expect(image.className).not.toContain('rounded-full')
+    expect(image.style.clipPath).toBe('')
+    expect(image.className).toContain('rounded-full')
     expect(box.querySelector('svg')).toBeNull()
     expect(box.querySelector('canvas')).toBeNull()
   })
@@ -272,14 +272,15 @@ describe('an agent face', () => {
     expect(box.querySelector('.agent-activity-object')).toBeNull()
   })
 
-  it('turns an uploaded face into the same activity object without generated art', () => {
+  it('keeps an uploaded face as a plain circle while the agent works', () => {
     const box = face({ photo: PHOTO, activity: 'reading' })
 
     expect(box.dataset.activity).toBe('reading')
     expect(box.querySelector('.agent-photo')).not.toBeNull()
     expect(box.querySelector('.agent-pet-drawing')).toBeNull()
-    expect(box.querySelector('.agent-activity-object img')).not.toBeNull()
-    expect(box.querySelector('.agent-activity-object canvas')).toBeNull()
+    expect(box.querySelector('.agent-face-stage')).toBeNull()
+    expect(box.querySelector('.agent-activity-object')).toBeNull()
+    expect(box.querySelector('.agent-morph-bridge')).toBeNull()
   })
 
   it('carries the old form through a state change before settling into the new one', () => {

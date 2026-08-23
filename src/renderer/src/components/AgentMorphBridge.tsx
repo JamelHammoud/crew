@@ -2,7 +2,7 @@ import { useId } from 'react'
 import GeneratedField from './art/GeneratedField'
 import { FIELD_LIGHT } from './art/pet'
 
-export default function AgentMorphBridge({ seed, box, src }: { seed: string; box: number; src?: string }) {
+export default function AgentMorphBridge({ seed, box }: { seed: string; box: number }) {
   const mask = useId()
   return (
     <span className="agent-morph-bridge absolute inset-0">
@@ -17,11 +17,7 @@ export default function AgentMorphBridge({ seed, box, src }: { seed: string; box
         </defs>
         <foreignObject width="100" height="100" mask={`url(#${mask})`}>
           <span className="relative block w-full h-full">
-            {src ? (
-              <img src={src} alt="" draggable={false} className="block w-full h-full object-cover" />
-            ) : (
-              <GeneratedField seed={seed} box={box} light={FIELD_LIGHT} />
-            )}
+            <GeneratedField seed={seed} box={box} light={FIELD_LIGHT} />
           </span>
         </foreignObject>
       </svg>

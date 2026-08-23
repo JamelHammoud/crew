@@ -258,13 +258,11 @@ export default function AgentActivityMark({
   activity,
   seed,
   box,
-  src,
   motion = 'working'
 }: {
   activity: Exclude<AgentActivity, 'idle'>
   seed: string
   box: number
-  src?: string
   motion?: 'incoming' | 'outgoing' | 'working'
 }) {
   const mask = useId()
@@ -281,11 +279,7 @@ export default function AgentActivityMark({
           </defs>
           <foreignObject width="100" height="100" mask={`url(#${mask})`}>
             <span className="relative block w-full h-full">
-              {src ? (
-                <img src={src} alt="" draggable={false} className="block w-full h-full object-cover" />
-              ) : (
-                <GeneratedField seed={seed} box={box} light={FIELD_LIGHT} />
-              )}
+              <GeneratedField seed={seed} box={box} light={FIELD_LIGHT} />
             </span>
           </foreignObject>
         </svg>
