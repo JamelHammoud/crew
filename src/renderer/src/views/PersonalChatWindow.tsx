@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ClockGlyph, CloseGlyph, PencilGlyph, PlusGlyph, SearchGlyph, TrashGlyph } from '../icons'
+import { ChatGlyph, ClockGlyph, CloseGlyph, PencilGlyph, PlusGlyph, SearchGlyph, TrashGlyph } from '../icons'
 import { stripMention } from '../../../shared/llm'
 import Tooltip from '../components/Tooltip'
 import Toaster from '../components/Toaster'
 import { TOP_BAR_H } from '../components/TopBar'
+import { formatShortDay, formatTime } from '../components/time'
 import { useCrew } from '../state/store'
 import Chat from './Chat'
 import ThreadView from './ThreadView'
@@ -17,19 +18,37 @@ export default function PersonalChatWindow() {
   const [editText, setEditText] = useState('')
   const [deleting, setDeleting] = useState<string | null>(null)
   const connection = useCrew(s => s.connection)
+  const events = useCrew(s => s.events)
   const threads = useCrew(s => s.threads)
   const readThread = useCrew(s => s.readThread)
   const renameThread = useCrew(s => s.renameThread)
   const deleteThread = useCrew(s => s.deleteThread)
   const thread = active ? threads[active] : undefined
-  const history = useMemo(
-    () =>
-      Object.values(threads)
+  const activity = useMemo(() => {
+    const latest: Record<string, number> = {}
+    for (const event of events) {
+      if (!('threadId' in event)) continue
+      latest[event.threadId] = Math.max(latest[event.threadId] ?? 0, event.ts)
+    }
+    return latest
+  }, [events])
+  const history = useMemo(() => {
+    const searched = query.trim().toLowerCase()
+    return Object.values(threads)
         .filter(one => !one.parentThreadId && !one.aside && !one.ghost)
-        .filter(one => one.title.toLowerCase().includes(query.trim().toLowerCase()))
-        .sort((a, b) => (b.startedAt ?? 0) - (a.startedAt ?? 0)),
-    [query, threads]
-  )
+        .filter(one => one.title.toLowerCase().includes(searched))
+        .sort((a, b) => (activity[b.id] ?? b.startedAt ?? 0) - (activity[a.id] ?? a.startedAt ?? 0))
+  }, [activity, query, threads])
+  const groups = useMemo(() => {
+    const grouped: Array<{ label: string; chats: typeof history }> = []
+    for (const chat of history) {
+      const label = formatShortDay(activity[chat.id] ?? chat.startedAt ?? 0)
+      const current = grouped.at(-1)
+      if (current?.label === label) current.chats.push(chat)
+      else grouped.push({ label, chats: [chat] })
+    }
+    return grouped
+  }, [activity, history])
 
   useEffect(() => {
     if (active) readThread(active)
@@ -149,13 +168,6 @@ export default function PersonalChatWindow() {
               <>
                 <h2 className="flex-1 text-lg font-bold text-fg">Chats</h2>
                 <button
-                  onClick={fresh}
-                  aria-label="New chat"
-                  className="w-9 h-9 mr-1 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
-                >
-                  <PlusGlyph className="w-4 h-4" />
-                </button>
-                <button
                   onClick={() => setSearching(true)}
                   aria-label="Search chats"
                   className="w-9 h-9 mr-1 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
@@ -173,60 +185,95 @@ export default function PersonalChatWindow() {
             )}
           </header>
           <div className="relative flex-1 min-h-0">
-            <div className="h-full overflow-y-auto px-3 pb-6">
-              {history.map(one => {
-                const title = stripMention(one.title, one.agentLabel) || 'Untitled'
-                return (
-                  <div key={one.id} className="group/history relative">
-                    {editing === one.id ? (
-                      <input
-                        autoFocus
-                        value={editText}
-                        onChange={event => setEditText(event.target.value)}
-                        onBlur={() => setEditing(null)}
-                        onKeyDown={event => {
-                          if (event.key === 'Enter') saveRename()
-                          if (event.key === 'Escape') setEditing(null)
-                        }}
-                        aria-label="Chat name"
-                        className="w-full h-10 rounded-xl bg-fg/[0.08] px-3 pr-20 text-sm text-fg outline-none"
-                      />
-                    ) : (
-                      <button
-                        onClick={() => open(one.id)}
-                        data-active={one.id === active ? '' : undefined}
-                        className="w-full px-3 pr-20 py-2.5 rounded-xl text-left text-sm text-fg/70 truncate transition-colors hover:bg-fg/[0.06] hover:text-fg data-active:bg-fg/[0.08] data-active:text-fg"
-                      >
-                        {title}
-                      </button>
-                    )}
-                    {editing !== one.id && (
-                      <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center opacity-0 group-hover/history:opacity-100 focus-within:opacity-100">
-                        <button
-                          onClick={() => beginRename(one.id, title)}
-                          aria-label={`Rename ${title}`}
-                          className="w-8 h-8 rounded-lg text-fg/45 flex items-center justify-center hover:bg-fg/[0.08] hover:text-fg"
-                        >
-                          <PencilGlyph className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => remove(one.id)}
-                          aria-label={deleting === one.id ? `Confirm delete ${title}` : `Delete ${title}`}
-                          className={`h-8 rounded-lg flex items-center justify-center hover:bg-danger/10 hover:text-danger ${
-                            deleting === one.id ? 'px-2 text-xs text-danger' : 'w-8 text-fg/45'
-                          }`}
-                        >
-                          {deleting === one.id ? 'Delete' : <TrashGlyph className="w-3.5 h-3.5" />}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
+            <div className="h-full overflow-y-auto px-4 pb-6">
+              {!searching && (
+                <button
+                  onClick={fresh}
+                  className="w-full h-11 mb-7 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-150 hover:bg-fg/90 active:scale-[0.98]"
+                >
+                  <PlusGlyph className="w-4 h-4" />
+                  New chat
+                </button>
+              )}
+              <div className="space-y-6">
+                {groups.map(group => (
+                  <section key={group.label}>
+                    <h3 className="px-2.5 mb-1.5 text-xs font-semibold text-fg/45">{group.label}</h3>
+                    <div className="rounded-card bg-ink-800 p-1.5">
+                      {group.chats.map(one => {
+                        const title = stripMention(one.title, one.agentLabel) || 'Untitled'
+                        const at = activity[one.id] ?? one.startedAt ?? 0
+                        return (
+                          <div key={one.id} className="group/history relative">
+                            {one.id === active && (
+                              <span className="absolute z-10 left-1.5 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-full bg-fg" />
+                            )}
+                            {editing === one.id ? (
+                              <div className="min-h-14 rounded-[15px] bg-fg/[0.08] pl-4 pr-3 py-2 flex items-center">
+                                <input
+                                  autoFocus
+                                  value={editText}
+                                  onChange={event => setEditText(event.target.value)}
+                                  onBlur={() => setEditing(null)}
+                                  onKeyDown={event => {
+                                    if (event.key === 'Enter') saveRename()
+                                    if (event.key === 'Escape') setEditing(null)
+                                  }}
+                                  aria-label="Chat name"
+                                  className="w-full bg-transparent text-sm font-medium text-fg outline-none"
+                                />
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => open(one.id)}
+                                data-active={one.id === active ? '' : undefined}
+                                className="w-full min-h-14 pl-4 pr-20 py-2 rounded-[15px] text-left transition-colors duration-150 hover:bg-fg/[0.05] data-active:bg-fg/[0.08]"
+                              >
+                                <span className="block text-sm font-medium text-fg/80 truncate group-hover/history:text-fg group-data-active/history:text-fg">
+                                  {title}
+                                </span>
+                                <span className="block mt-0.5 text-xs text-fg/40 truncate">{one.agentLabel}</span>
+                              </button>
+                            )}
+                            {editing !== one.id && (
+                              <>
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-fg/35 transition-opacity duration-150 group-hover/history:opacity-0 group-focus-within/history:opacity-0">
+                                  {formatTime(at)}
+                                </span>
+                                <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center rounded-xl bg-ink-700 p-0.5 opacity-0 transition-opacity duration-150 group-hover/history:opacity-100 focus-within:opacity-100">
+                                  <button
+                                    onClick={() => beginRename(one.id, title)}
+                                    aria-label={`Rename ${title}`}
+                                    className="w-8 h-8 rounded-[10px] text-fg/45 flex items-center justify-center hover:bg-fg/[0.08] hover:text-fg"
+                                  >
+                                    <PencilGlyph className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button
+                                    onClick={() => remove(one.id)}
+                                    aria-label={deleting === one.id ? `Confirm delete ${title}` : `Delete ${title}`}
+                                    className={`h-8 rounded-[10px] flex items-center justify-center hover:bg-danger/10 hover:text-danger ${
+                                      deleting === one.id ? 'px-2 text-xs text-danger' : 'w-8 text-fg/45'
+                                    }`}
+                                  >
+                                    {deleting === one.id ? 'Delete' : <TrashGlyph className="w-3.5 h-3.5" />}
+                                  </button>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </section>
+                ))}
+              </div>
               {connection === 'online' && history.length === 0 && (
-                <p className="px-6 mt-16 text-base text-fg-muted text-center">
-                  {query ? 'No chats found.' : 'No chats yet.'}
-                </p>
+                <div className="mt-20 flex flex-col items-center gap-4 text-center">
+                  <span className="w-12 h-12 rounded-card bg-ink-800 flex items-center justify-center text-fg/45">
+                    {query ? <SearchGlyph className="w-5 h-5" /> : <ChatGlyph className="w-5 h-5" />}
+                  </span>
+                  <p className="text-sm text-fg-muted">{query ? 'No chats found.' : 'No chats yet.'}</p>
+                </div>
               )}
             </div>
           </div>
