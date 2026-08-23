@@ -36,7 +36,7 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
             d="M19 47 C26 44 34 45 40 48"
             fill="none"
             stroke="#000"
-            strokeWidth="4.5"
+            strokeWidth="6.5"
             strokeLinecap="round"
           />
           <path
@@ -44,7 +44,7 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
             d="M19 60 C26 57 34 58 40 61"
             fill="none"
             stroke="#000"
-            strokeWidth="4.5"
+            strokeWidth="6.5"
             strokeLinecap="round"
           />
         </g>
@@ -58,7 +58,7 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
             d="M60 48 C66 45 74 44 81 47"
             fill="none"
             stroke="#000"
-            strokeWidth="4.5"
+            strokeWidth="6.5"
             strokeLinecap="round"
           />
           <path
@@ -66,7 +66,7 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
             d="M60 61 C66 58 74 57 81 60"
             fill="none"
             stroke="#000"
-            strokeWidth="4.5"
+            strokeWidth="6.5"
             strokeLinecap="round"
           />
         </g>
