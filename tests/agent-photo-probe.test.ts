@@ -69,7 +69,7 @@ describe('agent photos in the settings', () => {
     useCrew.setState({ agents: [agent] })
     rerender(createElement(Agents))
     expect(section().querySelector('img')).toBeNull()
-    expect(section().querySelector('svg[viewBox="0 0 100 100"]')).toBeTruthy()
+    expect(section().querySelector('.agent-pet-drawing')).toBeTruthy()
   })
 
   it('offers the upload straight away when there is no photo, and only to the owner', () => {

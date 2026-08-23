@@ -92,10 +92,9 @@ describe('an agent face', () => {
       expect(Number(eye.getAttribute('height'))).toBe(EYE_HEIGHT * 0.4)
       expect(Number(eye.getAttribute('rx'))).toBe((EYE_WIDTH / 2) * 0.4)
     }
-    expect(eyes.map(eye => Number(eye.getAttribute('x')) + (EYE_WIDTH / 2) * 0.4)).toEqual([
-      (pet.eyeX - gap / 2) * 0.4,
-      (pet.eyeX + gap / 2) * 0.4
-    ])
+    const centers = eyes.map(eye => Number(eye.getAttribute('x')) + (EYE_WIDTH / 2) * 0.4)
+    expect(centers[0]).toBeCloseTo((pet.eyeX - gap / 2) * 0.4, 8)
+    expect(centers[1]).toBeCloseTo((pet.eyeX + gap / 2) * 0.4, 8)
     expect(pet.eyeY).toBeLessThan(PET_GRID / 2)
   })
 
