@@ -102,7 +102,7 @@ app.whenReady().then(async () => {
     const redone = await js(read)
     console.log('CHECK ' + JSON.stringify({ before, scrolled, typed, undone, redone }))
   } catch (error) {
-    console.log('CHECK ' + JSON.stringify({ failed: String(error && error.stack) }))
+    console.log('CHECK ' + JSON.stringify({ failed: String(error && error.stack), logs }))
   }
   app.exit(0)
 })`
