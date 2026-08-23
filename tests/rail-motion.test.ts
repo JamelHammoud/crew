@@ -47,6 +47,7 @@ describe('the glass the expanded sidebar wears on macOS', () => {
     const oled = rule('.mac.oled .sidebar-pinned {')
     expect(opacity(oled)).toBeLessThan(opacity(rule('.mac .sidebar-pinned {')))
     expect(oled).toMatch(/backdrop-filter:\s*blur\(48px\)/)
+    expect(oled).toMatch(/brightness\(45%\)/)
   })
 })
 

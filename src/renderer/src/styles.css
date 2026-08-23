@@ -537,8 +537,8 @@ textarea:placeholder-shown {
 }
 
 .mac.oled .sidebar-pinned {
-  background: rgb(0 0 0 / 0.56);
-  backdrop-filter: blur(48px) saturate(160%);
+  background: rgb(0 0 0 / 0.38);
+  backdrop-filter: blur(48px) saturate(140%) brightness(45%);
 }
 
 .rail {
