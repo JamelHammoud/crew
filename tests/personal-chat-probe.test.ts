@@ -87,16 +87,20 @@ describe('a personal chat window', () => {
     expect(screen.getByPlaceholderText('Message')).toBeTruthy()
     expect(document.activeElement).toBe(screen.getByPlaceholderText('Message'))
     expect(screen.getByRole('button', { name: 'Chat history' })).toBeTruthy()
+    expect(document.querySelector('[data-personal-history]')?.classList.contains('translate-x-full')).toBe(true)
     expect(screen.queryByText('Ask Crew')).toBeNull()
   })
 
-  it('searches saved chats and opens one without the thread composer header', () => {
+  it('opens a Tasks-style drawer, searches saved chats, and opens one without the thread composer header', () => {
     const first = thread('first', 'Alpha question', 1)
     const second = thread('second', 'Beta answer', 2)
     useCrew.setState({ threads: { first, second }, events: [started(first), started(second)] })
     render(createElement(PersonalChatWindow))
 
     fireEvent.click(screen.getByRole('button', { name: 'Chat history' }))
+    expect(document.querySelector('[data-personal-history]')?.classList.contains('translate-x-0')).toBe(true)
+    expect(screen.getByRole('button', { name: 'Close chats' })).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: 'Search chats' }))
     fireEvent.change(screen.getByPlaceholderText('Search chats'), { target: { value: 'beta' } })
 
     expect(screen.queryByText('Alpha question')).toBeNull()
