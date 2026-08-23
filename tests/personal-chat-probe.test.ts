@@ -84,27 +84,24 @@ afterEach(() => {
 })
 
 describe('a personal chat window', () => {
-  it('starts blank with the shared composer and a history control', () => {
+  it('starts blank with the shared composer and its chat list beside it', () => {
     render(createElement(PersonalChatWindow))
 
     expect(screen.getByPlaceholderText('Message')).toBeTruthy()
     expect(document.activeElement).toBe(screen.getByPlaceholderText('Message'))
-    expect(screen.getByRole('button', { name: 'Chat history' })).toBeTruthy()
-    expect(document.querySelector('[data-personal-history]')?.classList.contains('translate-x-full')).toBe(true)
+    expect(document.querySelector('[data-personal-history]')).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'New chat' })).toBeTruthy()
+    expect(screen.getByRole('textbox', { name: 'Search chats' })).toBeTruthy()
     expect(screen.queryByText('Ask Crew')).toBeNull()
   })
 
-  it('opens a Tasks-style drawer, searches saved chats, and opens one without the thread composer header', () => {
+  it('searches saved chats and opens one without the thread composer header', () => {
     const first = thread('first', 'Alpha question', 1)
     const second = thread('second', 'Beta answer', 2)
     useCrew.setState({ threads: { first, second }, events: [started(first), started(second)] })
     render(createElement(PersonalChatWindow))
 
-    fireEvent.click(screen.getByRole('button', { name: 'Chat history' }))
-    expect(document.querySelector('[data-personal-history]')?.classList.contains('translate-x-0')).toBe(true)
-    expect(screen.getByRole('button', { name: 'Close chats' })).toBeTruthy()
-    fireEvent.click(screen.getByRole('button', { name: 'Search chats' }))
-    fireEvent.change(screen.getByPlaceholderText('Search chats'), { target: { value: 'beta' } })
+    fireEvent.change(screen.getByRole('textbox', { name: 'Search chats' }), { target: { value: 'beta' } })
 
     expect(screen.queryByText('Alpha question')).toBeNull()
     fireEvent.click(screen.getByText('Beta answer'))
@@ -119,7 +116,6 @@ describe('a personal chat window', () => {
     useCrew.setState({ threads: { one }, events: [started(one)] })
     render(createElement(PersonalChatWindow))
 
-    fireEvent.click(screen.getByRole('button', { name: 'Chat history' }))
     fireEvent.click(screen.getByRole('button', { name: 'Rename Old name' }))
     fireEvent.change(screen.getByRole('textbox', { name: 'Chat name' }), { target: { value: 'New name' } })
     fireEvent.keyDown(screen.getByRole('textbox', { name: 'Chat name' }), { key: 'Enter' })
