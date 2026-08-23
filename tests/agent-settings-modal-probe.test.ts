@@ -1,12 +1,13 @@
 // @vitest-environment jsdom
 
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import AgentCard from '../src/renderer/src/components/AgentCard'
 import CreateAgent from '../src/renderer/src/components/CreateAgent'
 import AgentSettingsModal from '../src/renderer/src/components/agent/AgentSettingsModal'
 import { grokFields } from '../src/runner/providers/grok'
-import type { AgentSettingField, ProviderCapability } from '../src/shared/llm'
+import type { AgentSettingField, PooledAgent, ProviderCapability } from '../src/shared/llm'
 
 Object.defineProperty(Element.prototype, 'getAnimations', {
   configurable: true,
@@ -19,23 +20,68 @@ afterEach(() => {
 })
 
 const fields: AgentSettingField[] = [
+  { key: 'model', label: 'Model', options: [{ value: '', label: 'Default' }], default: '' },
   { key: 'search', label: 'Web access', kind: 'switch', default: '', advanced: true, section: 'Tools' },
   { key: 'planning', label: 'Planning', kind: 'switch', default: '', advanced: true, section: 'Tools' },
   { key: 'turns', label: 'Most turns per message', kind: 'number', default: '', advanced: true, section: 'Limits' }
 ]
 
-describe('the advanced agent settings modal', () => {
+const agent: PooledAgent = {
+  id: 'ali/grok',
+  label: 'Grok',
+  provider: 'grok',
+  ownerId: 'ali',
+  ownerName: 'ALI',
+  status: 'idle',
+  runs: {},
+  settings: {},
+  fields
+}
+
+describe('the agent settings card', () => {
+  it('holds every control, so the row in the list holds none', () => {
+    const { container } = render(
+      createElement(AgentCard, { agent, threadCount: 0, onSetting: () => {}, onRename: () => {} })
+    )
+    const row = container.firstElementChild as HTMLElement
+
+    expect(within(row).queryByRole('button', { name: 'Model' })).toBeNull()
+    expect(within(row).queryByRole('button', { name: 'Advanced' })).toBeNull()
+    expect(screen.queryByRole('dialog')).toBeNull()
+
+    fireEvent.click(within(row).getByRole('button', { name: 'Agent settings' }))
+
+    const dialog = screen.getByRole('dialog')
+    expect(within(dialog).getByRole('button', { name: 'Model' })).toBeTruthy()
+    expect((within(dialog).getByLabelText('Agent name') as HTMLInputElement).value).toBe('Grok')
+    expect(within(dialog).getByRole('button', { name: 'Advanced' })).toBeTruthy()
+  })
+
+  it('writes the name down once it is settled, never on each keystroke', () => {
+    const renamed: string[] = []
+    render(
+      createElement(AgentCard, { agent, threadCount: 0, onSetting: () => {}, onRename: (label: string) => renamed.push(label) })
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Agent settings' }))
+
+    const name = screen.getByLabelText('Agent name')
+    fireEvent.change(name, { target: { value: 'Bubbles' } })
+    expect(renamed).toEqual([])
+    fireEvent.blur(name)
+    expect(renamed).toEqual(['Bubbles'])
+  })
+
   it('keeps its header and footer outside the fading scroll body', () => {
     const { baseElement } = render(
       createElement(AgentSettingsModal, {
         open: true,
-        label: 'Grok',
-        fields,
-        settings: {},
+        agent,
         onChange: () => {},
         onClose: () => {}
       })
     )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Advanced' }))
 
     const dialog = screen.getByRole('dialog')
     const page = baseElement.querySelector('[data-modal-body]') as HTMLElement
