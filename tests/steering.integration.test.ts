@@ -72,6 +72,12 @@ describe('steering a run in flight', () => {
     // The steer landed inside that same run rather than starting another one.
     expect(end.text).toContain('steered:New message from sam: actually do it the other way')
     expect(ui.events.filter(e => e.kind === 'agent.start')).toHaveLength(1)
+    expect(host.session.snapshot().threadEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ kind: 'agent.start', promptId: start.promptId }),
+        expect.objectContaining({ kind: 'agent.end', promptId: start.promptId })
+      ])
+    )
   })
 
   it('queues instead of steering when the agent cannot take a mid-run message', async () => {

@@ -92,4 +92,73 @@ describe('queued messages', () => {
     expect(ui.events.some(e => e.kind === 'agent.start' && e.promptId === item.promptId)).toBe(false)
     expect(ui.events.some(e => e.kind === 'message' && e.text === 'never mind')).toBe(false)
   })
+
+  it('returns the whole queued message to its author for editing', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    await connectRunner('jamel', { FAKE_CLI_DELAY_MS: '900' })
+    await ui.waitForEvent(e => e.kind === 'agent.online')
+
+    const fake = agentId('jamel', 'fake')
+    ui.chat('start @Fake', [fake])
+    const started = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Started
+    await ui.waitForEvent(e => e.kind === 'agent.start' && e.threadId === started.threadId)
+    ui.send({
+      type: 'chat.send',
+      text: 'look at this\nthen fix it',
+      mentions: [],
+      threadId: started.threadId,
+      attachments: [{ name: 'note.txt', mime: 'text/plain', data: Buffer.from('the note').toString('base64') }]
+    })
+    await waitUntil(() => queueOf(started.threadId).length === 1)
+    const item = queueOf(started.threadId)[0]
+    expect(item.attachments?.map(attachment => attachment.name)).toEqual(['note.txt'])
+
+    ui.send({ type: 'queue.take', promptId: item.promptId })
+    const taken = await ui.waitFor(message => message.type === 'queue.taken')
+    expect(taken).toMatchObject({
+      type: 'queue.taken',
+      threadId: started.threadId,
+      item: { promptId: item.promptId, text: 'look at this\nthen fix it' },
+      attachments: [{ name: 'note.txt', mime: 'text/plain', data: Buffer.from('the note').toString('base64') }]
+    })
+    await waitUntil(() => queueOf(started.threadId).length === 0)
+
+    await ui.waitForEvent(e => e.kind === 'agent.end' && e.threadId === started.threadId)
+    await new Promise(resolve => setTimeout(resolve, 200))
+    expect(ui.events.some(e => e.kind === 'agent.start' && e.promptId === item.promptId)).toBe(false)
+  })
+
+  it('runs queued messages in the order their author chose', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    await connectRunner('jamel', { FAKE_CLI_DELAY_MS: '1200' })
+    await ui.waitForEvent(e => e.kind === 'agent.online')
+
+    const fake = agentId('jamel', 'fake')
+    ui.chat('start @Fake', [fake])
+    const started = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Started
+    await ui.waitForEvent(e => e.kind === 'agent.start' && e.threadId === started.threadId)
+    ui.chat('one', [], started.threadId)
+    ui.chat('two', [], started.threadId)
+    ui.chat('three', [], started.threadId)
+    await waitUntil(() => queueOf(started.threadId).length === 3)
+
+    const one = queueOf(started.threadId).find(item => item.text === 'one')!
+    ui.send({ type: 'queue.move', promptId: one.promptId, to: 2 })
+    await waitUntil(() => queueOf(started.threadId).map(item => item.text).join(',') === 'two,three,one')
+
+    const starts: string[] = []
+    while (starts.length < 3) {
+      const next = (await ui.waitForEvent(
+        event =>
+          event.kind === 'agent.start' &&
+          event.threadId === started.threadId &&
+          ['one', 'two', 'three'].includes(event.promptText) &&
+          !starts.includes(event.promptText)
+      )) as Extract<SessionEvent, { kind: 'agent.start' }>
+      starts.push(next.promptText)
+    }
+    expect(starts).toEqual(['two', 'three', 'one'])
+  }, 10000)
 })
