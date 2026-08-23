@@ -200,9 +200,11 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
     caret.current = null
     const start = toShown(rows, want.start)
     const end = toShown(rows, want.end)
+    const index = rowAt(rows, end).index
     last.current = end
     area.setSelectionRange(start, end)
-    const row = bodyRef.current?.querySelector(`[data-row="${rowAt(rows, end).index}"]`)
+    if (document.activeElement === area) setActiveRow(index)
+    const row = bodyRef.current?.querySelector(`[data-row="${index}"]`)
     if (row instanceof HTMLElement) bringIntoY(row, bodyRef.current)
   }, [tick, shown, rows])
 
