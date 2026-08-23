@@ -7,6 +7,7 @@ import { relabelMentions, stripMention } from '../../../shared/llm'
 import { agentEndReactionTarget, agentStepReactionTarget, messageReactionTarget } from '../../../shared/reactions'
 import type { ThreadMeta } from '../state/store'
 import { shownPages } from '../../../shared/showPage'
+import { crewToolCall } from './crewTool'
 import { reactionGroups, type ReactionGroup } from './reactionGroups'
 import { isNewDay } from './time'
 import { toolAction } from './toolActions'
@@ -388,13 +389,9 @@ export function describeStep(step: AgentStep | undefined): string {
 const stepItem = (step: AgentStep, author: string, promptId: string, live: boolean): ThreadItem | null => {
   const streaming = live && step.status === 'running'
   if (step.kind === 'tool' || step.kind === 'subagent') {
-    const design =
-      step.kind === 'tool' && toolAction(step.name).terminal
-        ? /https?:\/\/(?:127\.0\.0\.1|localhost):\d+\/[^/\s'"`]+\/design\/([a-z0-9][a-z0-9-]*)(\/ops)?(?=[?\s'"`]|$)/.exec(
-            step.detail ?? ''
-          )
-        : null
-    if (design) {
+    const crewCall =
+      step.kind === 'tool' && toolAction(step.name).terminal ? crewToolCall(step.detail ?? '') : null
+    if (crewCall?.kind === 'design') {
       return {
         key: `${promptId}:${step.id}`,
         ts: step.ts,
@@ -404,17 +401,10 @@ const stepItem = (step: AgentStep, author: string, promptId: string, live: boole
         text: '',
         streaming,
         promptId,
-        design: { boardId: design[1], action: design[2] ? 'edit' : 'read' }
+        design: { boardId: crewCall.boardId, action: crewCall.action }
       }
     }
-    if (
-      step.kind === 'tool' &&
-      toolAction(step.name).terminal &&
-      /https?:\/\/(?:127\.0\.0\.1|localhost):\d+\/[^/\s'"`]+\/(?:agents(?:[/?\s'"`]|$)|page(?=[/?\s'"`]|$))/.test(
-        step.detail ?? ''
-      )
-    )
-      return null
+    if (crewCall?.kind === 'hidden') return null
     return {
       key: `${promptId}:${step.id}`,
       ts: step.ts,
