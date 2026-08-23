@@ -2942,7 +2942,7 @@ textarea:placeholder-shown {
 }
 
 .file-text-link {
-  color: var(--resource-color, inherit);
+  color: inherit;
 }
 
 .resource-chip:hover,
