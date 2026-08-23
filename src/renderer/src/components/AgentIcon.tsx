@@ -1,4 +1,4 @@
-import { useId, type CSSProperties } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
 import { attachmentFileUrl } from '../../../shared/attachments'
 import { useCrew } from '../state/store'
 import GeneratedField from './art/GeneratedField'
@@ -28,6 +28,42 @@ const DOTS = {
   md: 'w-2.5 h-2.5 ring-2',
   lg: 'w-3 h-3 ring-[2.5px]'
 } as const
+
+const ACTIVITY_TRANSITION_MS = 460
+
+interface ActivityPerformance {
+  current: AgentActivity
+  outgoing?: AgentActivity
+  changing: boolean
+  turn: number
+}
+
+function useActivityPerformance(activity: AgentActivity): ActivityPerformance {
+  const [performance, setPerformance] = useState<ActivityPerformance>({
+    current: activity,
+    changing: false,
+    turn: 0
+  })
+  const timer = useRef<ReturnType<typeof setTimeout>>()
+
+  useLayoutEffect(() => {
+    setPerformance(previous => {
+      if (previous.current === activity) return previous
+      return { current: activity, outgoing: previous.current, changing: true, turn: previous.turn + 1 }
+    })
+  }, [activity])
+
+  useEffect(() => {
+    if (!performance.changing) return
+    clearTimeout(timer.current)
+    timer.current = setTimeout(() => {
+      setPerformance(previous => ({ ...previous, outgoing: undefined, changing: false }))
+    }, ACTIVITY_TRANSITION_MS)
+    return () => clearTimeout(timer.current)
+  }, [performance.changing, performance.turn])
+
+  return performance
+}
 
 export default function AgentIcon({
   seed,
@@ -62,10 +98,20 @@ export default function AgentIcon({
   const httpBase = useCrew(state => state.httpBase)
   const shownActivity = activity ?? 'idle'
   const src = photo ?? (file && httpBase ? attachmentFileUrl(httpBase, file) : undefined)
+  const performance = useActivityPerformance(src ? 'idle' : shownActivity)
   const style = {
     ...(px ? { width: px, height: px } : {}),
     '--agent-delay': `${-pet.hue * 13}ms`
   } as CSSProperties
+  const faceMotion = performance.changing
+    ? performance.current === 'idle'
+      ? 'incoming'
+      : performance.outgoing === 'idle'
+        ? 'outgoing'
+        : 'hidden'
+    : performance.current === 'idle'
+      ? 'present'
+      : 'hidden'
   return (
     <span
       className={`${px ? '' : SIZES[size]} agent-icon relative inline-block align-middle shrink-0 ${className}`}
@@ -76,8 +122,8 @@ export default function AgentIcon({
         <img src={src} alt="" draggable={false} className="agent-photo block w-full h-full rounded-full object-cover" />
       ) : (
         <span
-          className={`agent-pet-body agent-face-stage absolute inset-0 ${shownActivity === 'idle' ? '' : 'hidden'}`}
-          data-motion={shownActivity === 'idle' ? 'present' : 'hidden'}
+          className="agent-pet-body agent-face-stage absolute inset-0"
+          data-motion={faceMotion}
         >
           <svg viewBox={`0 0 ${box} ${box}`} className="agent-pet-drawing absolute inset-0 w-full h-full" aria-hidden>
             <defs>
@@ -113,7 +159,24 @@ export default function AgentIcon({
           </svg>
         </span>
       )}
-      {!src && shownActivity !== 'idle' && <AgentActivityMark activity={shownActivity} seed={seed} box={box} />}
+      {!src && performance.outgoing && performance.outgoing !== 'idle' && (
+        <AgentActivityMark
+          key={`out-${performance.turn}-${performance.outgoing}`}
+          activity={performance.outgoing}
+          seed={seed}
+          box={box}
+          motion="outgoing"
+        />
+      )}
+      {!src && performance.current !== 'idle' && (
+        <AgentActivityMark
+          key={`in-${performance.turn}-${performance.current}`}
+          activity={performance.current}
+          seed={seed}
+          box={box}
+          motion={performance.changing ? 'incoming' : 'working'}
+        />
+      )}
       {presence && (
         <span
           className={`${DOTS[size]} absolute bottom-0 right-0 z-10 rounded-full ring-ink-900 transition-colors ${

@@ -8,6 +8,7 @@ const root = path.resolve(here, '..')
 const port = Number(process.env.CREW_AGENT_MOTION_PORT ?? 4317)
 
 const probe = `
+import { useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import AgentIcon from ${JSON.stringify(path.join(root, 'src/renderer/src/components/AgentIcon'))}
 
@@ -35,15 +36,34 @@ function Sample({ activity, label, index }) {
   )
 }
 
+function Transition() {
+  const [index, setIndex] = useState(0)
+  useEffect(() => {
+    const timer = setInterval(() => setIndex(value => (value + 1) % activities.length), 2400)
+    return () => clearInterval(timer)
+  }, [])
+  const [activity, label] = activities[index]
+  return (
+    <section className="rounded-card border border-ink-700 bg-ink-800/70 px-8 py-7 flex items-center gap-7">
+      <AgentIcon seed="motion-transition" px={112} activity={activity} />
+      <div>
+        <div className="text-lg font-semibold text-fg">State transition</div>
+        <div className="mt-1 text-sm text-fg/55">{label}</div>
+      </div>
+    </section>
+  )
+}
+
 function App() {
   return (
     <main className="min-h-screen bg-ink-900 text-fg px-10 py-10">
       <div className="mx-auto max-w-[1120px]">
-        <div className="mb-8">
+        <div className="mb-8 flex items-end justify-between gap-6">
           <div>
             <h1 className="text-lg font-semibold">Agent motion</h1>
             <p className="mt-1 text-sm text-fg/45">Large studies and the 28 px size used in Crew.</p>
           </div>
+          <Transition />
         </div>
         <section className="grid grid-cols-3 gap-4">
           {activities.map(([activity, label], index) => (
