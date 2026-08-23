@@ -57,9 +57,6 @@ function ChatMessage({
   const deletable = item.kind === 'message' && item.self
   const canEdit = deletable && editable
   const editing = draft !== null
-  // A helper is nobody in the crew, so the id its name is looked up under is its
-  // own run's: it matches no member and no agent, and the hover card that would
-  // have named the machine it ran on quietly stands down.
   const nameId = item.helperSeed ?? item.authorId
   const sheet = useCustomEmoji()
   const large = useMemo(() => onlyEmoji(item.text), [item.text, sheet])
