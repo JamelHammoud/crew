@@ -137,13 +137,11 @@ export default function PersonalChatSidebar({
                         <button
                           onClick={() => onOpen(one.id)}
                           aria-current={one.id === active ? 'page' : undefined}
-                          className="w-full min-h-14 px-3 pr-16 py-2 rounded-[15px] flex items-center gap-3 text-left transition-colors duration-150 hover:bg-fg/[0.05]"
+                          className={`w-full min-h-14 px-3 pr-16 py-2 rounded-[15px] flex items-center gap-3 text-left transition-colors duration-150 ${
+                            one.id === active ? 'bg-fg/[0.08]' : 'hover:bg-fg/[0.05]'
+                          }`}
                         >
-                          <span
-                            className={`rounded-full ${
-                              one.id === active ? 'ring-1 ring-fg/50 ring-offset-2 ring-offset-ink-850' : ''
-                            }`}
-                          >
+                          <span className="rounded-full">
                             <AgentIcon seed={one.agentId} size="md" />
                           </span>
                           <span className="min-w-0 flex-1">
