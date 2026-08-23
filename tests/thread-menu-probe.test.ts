@@ -185,16 +185,16 @@ describe('a right click on the thread itself', () => {
 
   function Background({ alone = false }: { alone?: boolean }) {
     const openMenu = useThreadMenu({ threadId: 'thread-2', opening: !alone, onOpen })
-    return (
-      <div>
-        <div onContextMenu={openMenu.onContextMenu}>Chat background</div>
-        {openMenu.menu}
-      </div>
+    return createElement(
+      'div',
+      null,
+      createElement('div', { onContextMenu: openMenu.onContextMenu }, 'Chat background'),
+      openMenu.menu
     )
   }
 
   it('keeps the window on top from the chat background and releases it there too', async () => {
-    render(<Background />)
+    render(createElement(Background))
 
     fireEvent.contextMenu(screen.getByText('Chat background'))
     expect(screen.getByText('Open in window')).toBeTruthy()
@@ -207,7 +207,7 @@ describe('a right click on the thread itself', () => {
   })
 
   it('keeps the pin action on a popped-out thread without offering to open another window', () => {
-    render(<Background alone />)
+    render(createElement(Background, { alone: true }))
 
     fireEvent.contextMenu(screen.getByText('Chat background'))
     expect(screen.getByText('Keep on top')).toBeTruthy()
