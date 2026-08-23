@@ -44,6 +44,7 @@ import { mentionsIn } from '../../../shared/llm'
 import { ArchiveGlyph, CheckGlyph, ChevronLeftGlyph, CloseGlyph, EyeGlyph, StopGlyph, WarningGlyph } from '../icons'
 import { pendingCount, useCrew } from '../state/store'
 import { useMessagePlugin } from '../state/messagePlugin'
+import { toast } from '../state/toast'
 
 const BACK_WIDTH = 40
 const AVATAR_WIDTH = 52
@@ -78,8 +79,11 @@ export default function ThreadView({
   const sendChat = useCrew(s => s.sendChat)
   const cancelPrompt = useCrew(s => s.cancelPrompt)
   const setThreadStatus = useCrew(s => s.setThreadStatus)
-  const editQueued = useCrew(s => s.editQueued)
   const removeQueued = useCrew(s => s.removeQueued)
+  const takeQueued = useCrew(s => s.takeQueued)
+  const moveQueued = useCrew(s => s.moveQueued)
+  const queueComposed = useCrew(s => s.queueComposed[threadId])
+  const clearQueueComposed = useCrew(s => s.clearQueueComposed)
   const closeThread = useCrew(s => s.closeThread)
   const focusThread = useCrew(s => s.focusThread)
   const text = useCrew(s => s.threadDrafts[threadId] ?? '')
@@ -102,6 +106,28 @@ export default function ThreadView({
     },
     [inputRef]
   )
+
+  useEffect(() => {
+    if (!queueComposed) return
+    const reply = queueComposed.replyTo
+    setReplyTo(
+      reply
+        ? {
+            key: reply.targetId,
+            ts: 0,
+            kind: 'message',
+            author: reply.authorName,
+            authorId: reply.authorId,
+            self: reply.authorId === selfId,
+            text: reply.text,
+            streaming: false,
+            reactionTargetId: reply.targetId
+          }
+        : null
+    )
+    clearQueueComposed(threadId)
+    inputRef.current?.focus({ preventScroll: true })
+  }, [clearQueueComposed, inputRef, queueComposed, selfId, threadId])
 
   const threadEvents = useMemo(() => eventsOfThread(events, threadId), [events, threadId])
   const runningStart = useMemo(() => lastStart(threadEvents, activePromptId), [activePromptId, threadEvents])
@@ -179,7 +205,9 @@ export default function ThreadView({
           author: item.authorName,
           self: item.authorId === selfId,
           text: item.text,
-          agentLabel: item.agentId !== thread?.agentId ? label : undefined
+          agentLabel: item.agentId !== thread?.agentId ? label : undefined,
+          attachments: item.attachments,
+          replyTo: item.replyTo
         }
       }),
     [agents, queueItems, selfId, thread?.agentId]
@@ -290,6 +318,14 @@ export default function ThreadView({
     thread.status === 'open'
       ? { label: 'Mark done', to: 'done' as const }
       : { label: thread.status === 'done' ? 'Reopen' : 'Unarchive', to: 'open' as const }
+  const editQueuedMessage = (promptId: string) => {
+    if (text.trim() || pendingCount(threadId) > 0 || replyTo) {
+      toast('Finish the message in the composer first.', { key: `queue-compose-${threadId}` })
+      inputRef.current?.focus({ preventScroll: true })
+      return
+    }
+    takeQueued(promptId)
+  }
 
   return (
     <div className="h-full flex">
@@ -332,7 +368,12 @@ export default function ThreadView({
                   onClick={jumpToBottom}
                 />
               )}
-              <QueueBar items={queuedMessages} onEdit={editQueued} onRemove={removeQueued} />
+              <QueueBar
+                items={queuedMessages}
+                onEdit={editQueuedMessage}
+                onRemove={removeQueued}
+                onMove={moveQueued}
+              />
               {replyTo && <ReplyPreview replyTo={replyTo} onCancel={() => setReplyTo(null)} />}
               {thread.ghost && <GhostBar />}
               <div
