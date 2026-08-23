@@ -158,8 +158,9 @@ describe('an agent face', () => {
 
     expect(object.querySelector('[data-part="writing-pencil"]')).not.toBeNull()
     expect(object.querySelector('[data-part="writing-pencil-body"]')?.getAttribute('d')).toMatch(/^M16 78 L27 54/)
-    expect(object.querySelector('[data-part="writing-pencil-seam"]')).not.toBeNull()
-    expect(object.querySelector('[data-part="writing-pencil-point"]')).not.toBeNull()
+    expect(object.querySelector('[data-part="writing-pencil-eraser"]')?.getAttribute('d')).toBe('M64 17 L84 37')
+    expect(object.querySelector('[data-part="writing-pencil-seam"]')).toBeNull()
+    expect(object.querySelector('[data-part="writing-pencil-point"]')).toBeNull()
     expect(object.querySelector('[data-part="writing-trail"]')).toBeNull()
     expect(styles).toContain('animation: agent-writing-pencil 3s')
     expect(styles).not.toContain('agent-writing-trail')

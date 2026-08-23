@@ -100,14 +100,13 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
             d="M16 78 L27 54 L67 14 C73 8 81 8 87 14 C93 20 93 28 87 34 L47 74 L23 89 C16 93 11 85 16 78 Z"
           />
           <path
-            data-part="writing-pencil-seam"
-            d="M27 54 L47 74"
+            data-part="writing-pencil-eraser"
+            d="M64 17 L84 37"
             fill="none"
             stroke="#000"
             strokeWidth="7"
             strokeLinecap="round"
           />
-          <circle data-part="writing-pencil-point" cx="19" cy="84" r="4" fill="#000" />
         </g>
       </>
     )
@@ -196,7 +195,7 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
       <>
         <path
           data-part="message"
-          d="M21 13 H77 C90 13 97 21 97 34 V51 C97 64 90 73 77 73 H57 L36 91 C28 98 18 92 23 83 L29 73 H21 C9 73 3 64 3 51 V34 C3 22 9 13 21 13 Z"
+          d="M50 6 C77 6 96 22 96 45 C96 65 81 79 60 82 L37 96 C30 100 23 94 27 86 L31 77 C15 71 5 59 5 44 C5 22 24 6 50 6 Z"
         />
         <circle data-part="message-dot-one" cx="30" cy="43" r="6.5" fill="#000" />
         <circle data-part="message-dot-two" cx="50" cy="43" r="6.5" fill="#000" />
