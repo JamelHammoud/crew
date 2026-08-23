@@ -164,6 +164,11 @@ describe('personal chat window options', () => {
     expect(personal.minHeight).toBe(thread.minHeight)
   })
 
+  it('stays hidden until its first frame is ready', () => {
+    expect(createPersonalChatWindowOptions('darwin', 'preload.mjs', true).show).toBe(false)
+    expect(createPersonalChatWindowOptions('win32', 'preload.mjs', true).show).toBe(false)
+  })
+
   it('wears the same native shell as the other chat window', () => {
     for (const platform of ['darwin', 'win32'] as const) {
       const personal = createPersonalChatWindowOptions(platform, 'preload.mjs', false)

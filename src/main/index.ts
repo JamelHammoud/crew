@@ -73,6 +73,7 @@ import {
   createThreadWindowOptions,
   createWindowOptions
 } from './window-options'
+import { showWhenReady } from './window-launch'
 import { installBrowserFindForHost } from './browser-find'
 import { pinWindow, windowShapeOf } from './window-pin'
 
@@ -389,6 +390,7 @@ function createWindow(threadId?: string, load = true, personal = false, browser 
         ? createThreadWindowOptions(process.platform, preload, inspectable)
         : createWindowOptions(process.platform, preload, inspectable)
   )
+  if (personal) showWhenReady(win)
   if (process.platform !== 'darwin') win.setIcon(appIcon(iconTheme, chosenIcon))
   const isAppUrl = (url: string) => url.startsWith('file://') || (devUrl ? url.startsWith(devUrl) : false)
   win.webContents.on('will-navigate', (event, url) => {

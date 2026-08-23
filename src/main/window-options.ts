@@ -152,6 +152,7 @@ export function createPersonalChatWindowOptions(
     height: 800,
     minWidth: 760,
     minHeight: 520,
+    show: false,
     ...windowShell(platform, preload, devTools)
   }
 }
