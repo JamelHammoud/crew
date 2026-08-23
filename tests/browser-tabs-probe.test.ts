@@ -227,6 +227,20 @@ describe('the tab strip', () => {
     expect(queryByText('First page')).toBeTruthy()
   })
 
+  it('closes tab search when its button is pressed again', () => {
+    openTwo()
+    const { getByRole, queryByRole } = render(createElement(BrowserPanel))
+    const button = getByRole('button', { name: 'Search tabs' })
+
+    fireEvent.click(button)
+    expect(getByRole('textbox', { name: 'Search tabs' })).toBeTruthy()
+
+    fireEvent.click(button)
+
+    expect(queryByRole('textbox', { name: 'Search tabs' })).toBeNull()
+    expect(button.getAttribute('aria-expanded')).toBe('false')
+  })
+
   it('opens a tab from the switcher and brings its pill into view', () => {
     laidOutRow()
     openFour()

@@ -68,8 +68,8 @@ export default function BrowserTabSwitcher({ tabs, activeTabId }: { tabs: Browse
       <Tooltip label={`Search ${tabs.length} tabs`} disabled={open}>
         <button
           onClick={() => {
-            setQuery('')
-            setOpen(true)
+            if (!open) setQuery('')
+            setOpen(!open)
           }}
           aria-label="Search tabs"
           aria-expanded={open}
