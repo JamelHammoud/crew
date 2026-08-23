@@ -2932,17 +2932,30 @@ textarea:placeholder-shown {
   @apply no-underline;
 }
 
-.resource-chip {
-  @apply inline-flex max-w-full items-center gap-1.5 align-middle font-sans text-inherit leading-inherit text-sky-300 light:text-sky-700 cursor-pointer no-underline hover:underline underline-offset-2 decoration-current;
+.resource-chip,
+.md a.resource-chip {
+  @apply inline-flex max-w-full items-center gap-1.5 align-middle text-sky-300 light:text-sky-700 cursor-pointer no-underline underline-offset-2 decoration-current;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.resource-chip:hover,
+.md a.resource-chip:hover {
+  text-decoration-line: underline;
 }
 
 .resource-chip-icon {
-  @apply h-[1.1em] w-[1.1em] shrink-0 text-inherit;
+  @apply h-[1.1em] w-[1.1em] shrink-0;
 }
 
 .resource-chip code,
 .md .resource-chip code {
-  @apply min-w-0 truncate bg-transparent p-0 font-sans text-inherit leading-inherit text-inherit;
+  @apply min-w-0 truncate bg-transparent p-0 text-inherit;
+  border-radius: 0;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
 }
 
 .md blockquote {

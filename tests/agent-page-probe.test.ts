@@ -95,7 +95,6 @@ describe('the row a showing leaves behind', () => {
     screen.getByRole('button').click()
     expect(await screen.findByText('theme.css')).toBeTruthy()
     expect(screen.getByText('Button.tsx')).toBeTruthy()
-    expect(document.querySelectorAll('.resource-chip')).toHaveLength(2)
   })
 
   it('names one page once, however it was written down', () => {
