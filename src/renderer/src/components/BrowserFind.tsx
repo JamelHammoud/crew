@@ -101,7 +101,7 @@ export default function BrowserFind({ tabId, onClose }: { tabId: string; onClose
   }
 
   return (
-    <div className="glass absolute top-4 right-4 z-50 flex w-[min(320px,calc(100%-32px))] items-center gap-0.5 rounded-full pl-3 pr-1.5 py-1.5 animate-pop">
+    <div className="glass absolute top-4 left-4 right-4 z-50 ml-auto flex max-w-80 items-center gap-0.5 rounded-full pl-3 pr-1.5 py-1.5 animate-pop">
       <SearchGlyph className="w-4 h-4 text-fg/45 shrink-0 mr-1.5" />
       <input
         ref={input}
