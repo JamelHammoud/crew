@@ -121,6 +121,10 @@ function makeTab(url = ''): BrowserTab {
   }
 }
 
+export function makeFileTab(path: string, line: number | null = null): BrowserTab {
+  return { ...makeTab(), kind: 'file', path, line }
+}
+
 // Every folder on the way down to a file, so a tree opened beside one that is
 // already showing lands on it rather than back at the top of the project.
 function reveal(open: string[], path: string): string[] {
@@ -342,7 +346,7 @@ export const useBrowser = create<BrowserState>((write, get) => {
     // for: keeping the file already showing is half the reason to ask for one,
     // and a row that says new tab and does nothing is worse than a second tab.
     addFileTab: (path, line = null) => {
-      const tab = { ...makeTab(), kind: 'file' as const, path, line }
+      const tab = makeFileTab(path, line)
       set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
     },
     openFiles: () => {

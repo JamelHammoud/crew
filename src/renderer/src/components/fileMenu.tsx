@@ -1,6 +1,6 @@
 import { useState, type MouseEvent, type ReactNode } from 'react'
-import { PlusGlyph } from '../icons'
-import { useBrowser } from '../state/browser'
+import { PlusGlyph, PopOutGlyph } from '../icons'
+import { makeFileTab, useBrowser } from '../state/browser'
 import { MenuItem, Popover } from './Popover'
 
 // The right click on anything in Files. The rows it hangs off are three
@@ -26,6 +26,14 @@ export function useFileMenu(path: string): {
           onClick={() => {
             setAt(null)
             useBrowser.getState().addFileTab(path)
+          }}
+        />
+        <MenuItem
+          icon={<PopOutGlyph />}
+          label="Open in new window"
+          onClick={() => {
+            setAt(null)
+            void window.crew.popOutBrowserTab(makeFileTab(path))
           }}
         />
       </Popover>

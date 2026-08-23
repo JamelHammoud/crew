@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { createElement } from 'react'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import BrowserPanel from '../src/renderer/src/components/BrowserPanel'
 import { useBrowser } from '../src/renderer/src/state/browser'
 import type { RepoFile } from '../src/shared/files'
@@ -41,8 +41,10 @@ const repo: Record<string, RepoFile> = {
 }
 
 const listed = ['readme.md', 'src/app.ts', 'src/renderer/panel.tsx', 'tests/app.test.ts']
+const popOutBrowserTab = vi.fn().mockResolvedValue(true)
 
 beforeEach(() => {
+  popOutBrowserTab.mockClear()
   useBrowser.setState({ tabs: [], activeTabId: null })
   Element.prototype.scrollIntoView = () => undefined
   Range.prototype.getBoundingClientRect = () =>
@@ -68,6 +70,7 @@ beforeEach(() => {
     writeFile: async () => null,
     revealFile: async () => undefined,
     openExternal: async () => undefined,
+    popOutBrowserTab,
     warmTerminal: () => undefined
   } as unknown as CrewBridge
 })
@@ -320,6 +323,20 @@ describe('the file explorer', () => {
     expect(tabs[0]!.path).toBe('')
     expect(tabs[0]!.tree).toBe(true)
     expect(activeTab().path).toBe('src/app.ts')
+  })
+
+  it('opens a file from the tree in a Browser window from its menu', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    fireEvent.click(await screen.findByText('src'))
+    await waitFor(() => expect(rowFor('src/app.ts')).toBeTruthy())
+
+    fireEvent.contextMenu(rowFor('src/app.ts')!)
+    fireEvent.click(screen.getByText('Open in new window'))
+
+    expect(popOutBrowserTab).toHaveBeenCalledOnce()
+    expect(popOutBrowserTab.mock.calls[0]![0]).toMatchObject({ kind: 'file', path: 'src/app.ts', line: null })
+    expect(useBrowser.getState().tabs).toHaveLength(1)
   })
 
   it('opens a file from the folder listing in a tab of its own', async () => {
