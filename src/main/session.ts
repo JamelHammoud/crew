@@ -29,14 +29,14 @@ import {
   readMachineDirs,
   readRepoFile,
   repoPathOf,
-  searchRepoFiles,
   writeLocalFile,
   writeRepoFile,
   type MediaHost
 } from './files'
+import { FileSearch, type FileContentSearch } from './fileSearch'
 import { locatePath } from './locate'
 import { SavedSessionStore } from './saved-session'
-import type { FileContentMatch, PathLocation, RepoFile } from '../shared/files'
+import type { PathLocation, RepoFile } from '../shared/files'
 import type { MachineDir } from '../shared/machinePath'
 import { cleanMemberName } from '../shared/people'
 
@@ -69,6 +69,7 @@ function lanAddress(): string {
 const AUTO_SYNC_MS = 5000
 
 export class AppSession {
+  private fileSearch = new FileSearch()
   private seat: Seat | null = null
   private doors: Doors
   private runner: Runner | null = null
@@ -210,8 +211,8 @@ export class AppSession {
     return this.folder ? listRepoFiles(this.folder) : []
   }
 
-  async searchFiles(query: string): Promise<FileContentMatch[]> {
-    return this.folder ? searchRepoFiles(this.folder, query) : []
+  async searchFiles(query: string): Promise<FileContentSearch> {
+    return this.folder ? this.fileSearch.search(this.folder, query) : { matches: [], limited: false }
   }
 
   async readDirs(query: string): Promise<MachineDir[]> {

@@ -18,6 +18,7 @@ import type { RecentJoin, RecentProject } from '../../shared/recent'
 import type { ScribeKeyState, ScribeSettings } from '../../shared/scribe'
 import type { Said } from '../../shared/scribeSaid'
 import type { CurrentSession, OpenOptions, ProjectPlan } from '../../shared/session'
+import type { FileContentSearch } from '../../main/fileSearch'
 import type { UpdateState } from '../../shared/update'
 
 declare global {
@@ -67,7 +68,7 @@ declare global {
     copyImage(src: string): Promise<boolean>
     readFile(path: string): Promise<RepoFile | null>
     listFiles(): Promise<string[]>
-    searchFiles(query: string): Promise<FileContentMatch[]>
+    searchFiles(query: string): Promise<FileContentSearch>
     readDirs(query: string): Promise<MachineDir[]>
     writeFile(path: string, text: string): Promise<RepoFile | null>
     locatePath(path: string): Promise<PathLocation>
