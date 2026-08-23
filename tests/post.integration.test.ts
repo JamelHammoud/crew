@@ -252,7 +252,8 @@ describe('a line an agent posts in the chat', () => {
 
     fails(runner, 'fake cli failed')
     sam.send({ type: 'chat.post', text: 'Say what changed again' })
-    await waitUntil(() => messagesIn(host.session.snapshot().events).length === 2)
+    await waitUntil(() => runner.prompts.length === 2)
+    await waitUntil(() => host.session.snapshot().agents[0]?.status === 'idle')
     await settle()
 
     const said = messagesIn(host.store.loadEvents())
