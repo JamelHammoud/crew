@@ -55,8 +55,8 @@ app.disableHardwareAcceleration()
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
 
-async function look(name, theme) {
-  const win = new BrowserWindow({ width: 272, height: 520, show: true, frame: false, transparent: true })
+async function look(win, name, theme) {
+  win.setContentSize(272, 520)
   await win.loadFile(path.join(__dirname, 'dist/index.html'), { search: '?state=' + name + '&theme=' + theme })
   await wait(700)
   const height = await win.webContents.executeJavaScript('window.trayProbe.height || document.getElementById("root").firstElementChild.offsetHeight')
@@ -76,18 +76,19 @@ async function look(name, theme) {
   })()\`)
   const image = await win.capturePage()
   fs.writeFileSync(path.join(${JSON.stringify(root)}, 'tray-look-' + name + '-' + theme + '.png'), image.toPNG())
-  win.destroy()
   return details
 }
 
 app.whenReady().then(async () => {
+  const win = new BrowserWindow({ width: 272, height: 520, show: true, frame: false, transparent: true })
   try {
-    const busy = await look('busy', 'dark')
-    const idle = await look('idle', 'light')
+    const busy = await look(win, 'busy', 'dark')
+    const idle = await look(win, 'idle', 'light')
     console.log('SEEN ' + JSON.stringify({ busy, idle }))
   } catch (error) {
     console.log('SEEN ' + JSON.stringify({ failed: String(error && error.message) }))
   }
+  win.destroy()
   app.exit(0)
 })`
 
