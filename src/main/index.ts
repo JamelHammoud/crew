@@ -55,6 +55,7 @@ import { Updates } from './updates'
 import { runtimeStateDir } from './runtime-state'
 import { appMenuTemplate, closePutsAway, createThreadWindowOptions, createWindowOptions } from './window-options'
 import { installBrowserFind } from './browser-find'
+import { pinWindow, windowShapeOf } from './window-pin'
 
 app.setName('Crew')
 app.commandLine.appendSwitch('disable-backgrounding-occluded-windows')
@@ -361,12 +362,7 @@ function createWindow(threadId?: string): BrowserWindow {
     if (/^https?:/i.test(url)) win.webContents.send('browser:open', url)
     return { action: 'deny' }
   })
-  const syncWindowShape = () =>
-    win.webContents.send('window:shape', {
-      square: win.isFullScreen() || win.isMaximized(),
-      full: win.isFullScreen(),
-      pinned: win.isAlwaysOnTop()
-    })
+  const syncWindowShape = () => win.webContents.send('window:shape', windowShapeOf(win))
   win.on('maximize', syncWindowShape)
   win.on('unmaximize', syncWindowShape)
   win.on('enter-full-screen', syncWindowShape)
@@ -577,13 +573,8 @@ app.whenReady().then(() => {
   ipcMain.handle('window:pin', (event, pinned: boolean) => {
     const win = BrowserWindow.fromWebContents(event.sender)
     if (!win || !appWindows().includes(win)) return false
-    win.setAlwaysOnTop(pinned === true)
-    const next = win.isAlwaysOnTop()
-    win.webContents.send('window:shape', {
-      square: win.isFullScreen() || win.isMaximized(),
-      full: win.isFullScreen(),
-      pinned: next
-    })
+    const next = pinWindow(win, pinned === true)
+    win.webContents.send('window:shape', windowShapeOf(win))
     return next
   })
   ipcMain.handle('session:close', async (_event, key: string) => {

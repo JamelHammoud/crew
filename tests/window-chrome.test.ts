@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { act, cleanup, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Modal from '../src/renderer/src/components/Modal'
@@ -10,7 +10,7 @@ import TopBar from '../src/renderer/src/components/TopBar'
 import WindowCorner from '../src/renderer/src/components/WindowCorner'
 import { applyPlatform, onMac } from '../src/renderer/src/state/platform'
 import { useTasks } from '../src/renderer/src/state/tasks'
-import { fullScreen, setFullScreen } from '../src/renderer/src/state/windowShape'
+import { fullScreen, setFullScreen, setWindowPinned } from '../src/renderer/src/state/windowShape'
 
 const MAC = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 crew/1.0'
 const WINDOWS = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 crew/1.0'
@@ -32,6 +32,7 @@ beforeEach(() => {
 afterEach(() => {
   cleanup()
   setFullScreen(false)
+  setWindowPinned(false)
   vi.unstubAllGlobals()
 })
 
@@ -90,6 +91,23 @@ describe('window chrome', () => {
 
     setFullScreen(true)
     expect(fullScreen()).toBe(true)
+  })
+
+  it('keeps this window on top until the same control releases it', async () => {
+    const setPinned = vi.fn(async (pinned: boolean) => pinned)
+    Object.defineProperty(window, 'crew', {
+      configurable: true,
+      value: { setWindowPinned: setPinned } as unknown as typeof window.crew
+    })
+    topBar()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Keep on top' }))
+    await waitFor(() => expect(setPinned).toHaveBeenCalledWith(true))
+    expect(screen.getByRole('button', { name: 'Stop keeping on top' }).getAttribute('aria-pressed')).toBe('true')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Stop keeping on top' }))
+    await waitFor(() => expect(setPinned).toHaveBeenCalledWith(false))
+    expect(screen.getByRole('button', { name: 'Keep on top' }).getAttribute('aria-pressed')).toBe('false')
   })
 })
 

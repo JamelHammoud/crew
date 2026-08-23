@@ -199,6 +199,7 @@ function useContentMatches(query: string, generation: number) {
   const [matches, setMatches] = useState<FileContentMatch[]>([])
   const [loading, setLoading] = useState(false)
   const [failed, setFailed] = useState(false)
+  const [limited, setLimited] = useState(false)
 
   useEffect(() => {
     const value = query.trim()
@@ -206,23 +207,27 @@ function useContentMatches(query: string, generation: number) {
       setMatches([])
       setLoading(false)
       setFailed(false)
+      setLimited(false)
       return
     }
     let alive = true
     setMatches([])
     setLoading(true)
     setFailed(false)
+    setLimited(false)
     const timer = window.setTimeout(() => {
       window.crew
         .searchFiles(value)
-        .then(found => {
+        .then(result => {
           if (!alive) return
-          setMatches(found)
+          setMatches(result.matches)
+          setLimited(result.limited)
           setLoading(false)
         })
         .catch(() => {
           if (!alive) return
           setMatches([])
+          setLimited(false)
           setLoading(false)
           setFailed(true)
         })
@@ -233,7 +238,7 @@ function useContentMatches(query: string, generation: number) {
     }
   }, [query, generation])
 
-  return { matches, loading, failed }
+  return { matches, loading, failed, limited }
 }
 
 function Heading({ children }: { children: string }) {
@@ -246,7 +251,8 @@ function Matches({
   names,
   contents,
   loading,
-  failed
+  failed,
+  limited
 }: {
   tab: BrowserTab
   paths: string[] | null
@@ -254,6 +260,7 @@ function Matches({
   contents: FileContentMatch[]
   loading: boolean
   failed: boolean
+  limited: boolean
 }) {
   if (!paths) return <Loading depth={0} />
   if (failed) return <p className="px-3 py-6 text-center text-[13px] text-danger">Could not search files</p>
@@ -268,6 +275,7 @@ function Matches({
       {contents.length > 0 && <Heading>Contents</Heading>}
       {contents.map(match => <ContentMatch key={`${match.path}:${match.line}`} tab={tab} match={match} />)}
       {loading && <Loading depth={0} />}
+      {!loading && limited && <p className="px-3 py-2 text-xs text-fg-faint">Some matches are not shown</p>}
     </>
   )
 }
@@ -305,6 +313,7 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
             contents={content.matches}
             loading={content.loading}
             failed={content.failed}
+            limited={content.limited}
           />
         ) : (
           <Branch tab={tab} path="" depth={0} />
