@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { matchFiles, type FileEntry, type FileMatch } from '../../../shared/files'
-import { ChevronRightGlyph, FileGlyph, SearchGlyph } from '../icons'
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
+import { matchFiles, type FileContentMatch, type FileEntry, type FileMatch } from '../../../shared/files'
+import { ChevronRightGlyph, FileGlyph } from '../icons'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import { useFileMenu } from './fileMenu'
 import Marked from './Marked'
+import SearchField from './SearchField'
 import { bringInto } from './scrollInto'
 import Skeleton from './Skeleton'
 
@@ -144,6 +145,35 @@ function Match({ tab, match }: { tab: BrowserTab; match: FileMatch }) {
   )
 }
 
+function ContentMatch({ tab, match }: { tab: BrowserTab; match: FileContentMatch }) {
+  const { onContextMenu, menu } = useFileMenu(match.path)
+  return (
+    <>
+      <button
+        onClick={() => useBrowser.getState().navigateFile(tab.id, match.path, match.line)}
+        onContextMenu={onContextMenu}
+        data-content-file={match.path}
+        data-content-line={match.line}
+        className={`w-full px-3 py-1.5 text-left transition-colors ${
+          tab.path === match.path && tab.line === match.line ? picked : quiet
+        }`}
+      >
+        <span className="flex min-w-0 items-center gap-1.5 text-xs">
+          <FileGlyph className="h-3.5 w-3.5 shrink-0 text-fg-faint" />
+          <span className="min-w-0 truncate text-fg-secondary">{match.path}</span>
+          <span className="shrink-0 text-fg-faint">:{match.line}</span>
+        </span>
+        <span className="mt-0.5 block truncate pl-5 font-mono text-xs text-fg-muted">
+          {match.text.slice(0, match.start)}
+          <span className="text-fg">{match.text.slice(match.start, match.end)}</span>
+          {match.text.slice(match.end)}
+        </span>
+      </button>
+      {menu}
+    </>
+  )
+}
+
 function useProjectFiles(generation: number): string[] | null {
   const [paths, setPaths] = useState<string[] | null>(null)
 
@@ -165,18 +195,79 @@ function useProjectFiles(generation: number): string[] | null {
   return paths
 }
 
-function Matches({ tab, paths, query }: { tab: BrowserTab; paths: string[] | null; query: string }) {
-  const found = useMemo(() => (paths ? matchFiles(paths, query, MATCH_LIMIT) : []), [paths, query])
+function useContentMatches(query: string, generation: number) {
+  const [matches, setMatches] = useState<FileContentMatch[]>([])
+  const [loading, setLoading] = useState(false)
+  const [failed, setFailed] = useState(false)
 
+  useEffect(() => {
+    const value = query.trim()
+    if (!value) {
+      setMatches([])
+      setLoading(false)
+      setFailed(false)
+      return
+    }
+    let alive = true
+    setMatches([])
+    setLoading(true)
+    setFailed(false)
+    const timer = window.setTimeout(() => {
+      window.crew
+        .searchFiles(value)
+        .then(found => {
+          if (!alive) return
+          setMatches(found)
+          setLoading(false)
+        })
+        .catch(() => {
+          if (!alive) return
+          setMatches([])
+          setLoading(false)
+          setFailed(true)
+        })
+    }, 160)
+    return () => {
+      alive = false
+      window.clearTimeout(timer)
+    }
+  }, [query, generation])
+
+  return { matches, loading, failed }
+}
+
+function Heading({ children }: { children: string }) {
+  return <p className="px-3 pb-1 pt-2 text-[11px] font-medium uppercase tracking-wide text-fg-faint">{children}</p>
+}
+
+function Matches({
+  tab,
+  paths,
+  names,
+  contents,
+  loading,
+  failed
+}: {
+  tab: BrowserTab
+  paths: string[] | null
+  names: FileMatch[]
+  contents: FileContentMatch[]
+  loading: boolean
+  failed: boolean
+}) {
   if (!paths) return <Loading depth={0} />
-  if (found.length === 0) {
-    return <p className="px-3 py-6 text-[13px] text-fg-faint text-center">Nothing here by that name</p>
+  if (failed) return <p className="px-3 py-6 text-center text-[13px] text-danger">Could not search files</p>
+  if (!loading && names.length === 0 && contents.length === 0) {
+    return <p className="px-3 py-6 text-center text-[13px] text-fg-faint">Nothing found</p>
   }
+
   return (
     <>
-      {found.map(match => (
-        <Match key={match.path} tab={tab} match={match} />
-      ))}
+      {names.length > 0 && <Heading>File names</Heading>}
+      {names.map(match => <Match key={match.path} tab={tab} match={match} />)}
+      {contents.length > 0 && <Heading>Contents</Heading>}
+      {contents.map(match => <ContentMatch key={`${match.path}:${match.line}`} tab={tab} match={match} />)}
+      {loading && <Loading depth={0} />}
     </>
   )
 }
@@ -184,24 +275,40 @@ function Matches({ tab, paths, query }: { tab: BrowserTab; paths: string[] | nul
 export default function FileTree({ tab }: { tab: BrowserTab }) {
   const [query, setQuery] = useState('')
   const paths = useProjectFiles(tab.generation)
+  const names = useMemo(() => (paths ? matchFiles(paths, query, MATCH_LIMIT) : []), [paths, query])
+  const content = useContentMatches(query, tab.generation)
+
+  const onKeys = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Escape' && query) {
+      event.preventDefault()
+      setQuery('')
+      return
+    }
+    if (event.key !== 'Enter') return
+    const firstName = names[0]
+    const firstContent = content.matches[0]
+    if (!firstName && !firstContent) return
+    event.preventDefault()
+    if (firstName) useBrowser.getState().navigateFile(tab.id, firstName.path)
+    else if (firstContent) useBrowser.getState().navigateFile(tab.id, firstContent.path, firstContent.line)
+  }
 
   return (
     <aside className="w-[42%] min-w-[168px] max-w-[288px] shrink-0 flex flex-col border-l border-ink-700">
-      <div className="p-2 shrink-0">
-        <div className="relative flex">
-          <SearchGlyph className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-fg-faint pointer-events-none" />
-          <input
-            value={query}
-            onChange={event => setQuery(event.target.value)}
-            placeholder="Filter files"
-            aria-label="Filter files"
-            spellCheck={false}
-            className="w-full h-9 pl-9 pr-3 rounded-full bg-fg/[0.06] text-sm text-fg placeholder:text-fg-faint outline-none transition-colors focus:bg-fg/[0.08]"
-          />
-        </div>
-      </div>
+      <SearchField value={query} onChange={setQuery} onKeyDown={onKeys} placeholder="Search files" />
       <div className="flex-1 min-h-0 overflow-auto pb-2">
-        {query.trim() ? <Matches tab={tab} paths={paths} query={query} /> : <Branch tab={tab} path="" depth={0} />}
+        {query.trim() ? (
+          <Matches
+            tab={tab}
+            paths={paths}
+            names={names}
+            contents={content.matches}
+            loading={content.loading}
+            failed={content.failed}
+          />
+        ) : (
+          <Branch tab={tab} path="" depth={0} />
+        )}
       </div>
     </aside>
   )

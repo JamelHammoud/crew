@@ -127,7 +127,7 @@ type BrowserState = {
   closeOthers(id: string): void
   closeAll(): void
   navigateTab(id: string, url: string): void
-  navigateFile(id: string, path: string): void
+  navigateFile(id: string, path: string, line?: number | null): void
   fileBack(id: string): void
   fileForward(id: string): void
   reloadTab(id: string): void
@@ -660,13 +660,13 @@ export const useBrowser = create<BrowserState>((write, get) => {
       settle()
     },
     navigateTab: (id, url) => set(s => ({ tabs: s.tabs.map(t => (t.id === id ? { ...t, initialUrl: url, url } : t)) })),
-    navigateFile: (id, path) =>
+    navigateFile: (id, path, line = null) =>
       set(s => ({
-        tabs: s.tabs.map(t =>
-          t.id === id && t.path !== path
-            ? { ...t, path, line: null, diff: null, back: [...t.back, t.path], forward: [] }
-            : t
-        )
+        tabs: s.tabs.map(t => {
+          if (t.id !== id) return t
+          if (t.path === path) return { ...t, line }
+          return { ...t, path, line, diff: null, back: [...t.back, t.path], forward: [] }
+        })
       })),
     fileBack: id =>
       set(s => ({
