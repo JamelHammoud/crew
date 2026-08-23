@@ -36,10 +36,6 @@ export default function PersonalChatWindow() {
   }, [active, readThread])
 
   useEffect(() => {
-    if (active && !threads[active]) setActive(null)
-  }, [active, threads])
-
-  useEffect(() => {
     if (!historyOpen) {
       setSearching(false)
       setQuery('')
@@ -91,6 +87,7 @@ export default function PersonalChatWindow() {
       return
     }
     deleteThread(threadId)
+    if (active === threadId) setActive(null)
     setDeleting(null)
   }
 

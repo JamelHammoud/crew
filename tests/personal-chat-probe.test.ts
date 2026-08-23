@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import PersonalChatWindow from '../src/renderer/src/views/PersonalChatWindow'
@@ -78,7 +78,10 @@ beforeEach(() => {
   })
 })
 
-afterEach(cleanup)
+afterEach(() => {
+  cleanup()
+  vi.restoreAllMocks()
+})
 
 describe('a personal chat window', () => {
   it('starts blank with the shared composer and a history control', () => {
@@ -126,5 +129,32 @@ describe('a personal chat window', () => {
     expect(deleteThread).not.toHaveBeenCalled()
     fireEvent.click(screen.getByRole('button', { name: 'Confirm delete Old name' }))
     expect(deleteThread).toHaveBeenCalledWith('one')
+  })
+
+  it('keeps a new chat selected while its start event is arriving', () => {
+    const id = '00000000-0000-4000-8000-000000000001'
+    const sendChat = vi.fn()
+    vi.spyOn(globalThis.crypto, 'randomUUID').mockReturnValue(id)
+    useCrew.setState({ sendChat })
+    render(createElement(PersonalChatWindow))
+
+    fireEvent.change(screen.getByPlaceholderText('Message'), { target: { value: 'Stay with this chat' } })
+    fireEvent.keyDown(screen.getByPlaceholderText('Message'), { key: 'Enter' })
+    expect(sendChat).toHaveBeenCalledWith(
+      'Stay with this chat',
+      undefined,
+      undefined,
+      undefined,
+      [agent.id],
+      [],
+      undefined,
+      id
+    )
+
+    const arriving = thread(id, 'Stay with this chat', 3)
+    act(() => useCrew.setState({ threads: { [id]: arriving }, events: [started(arriving)] }))
+
+    expect(screen.getByPlaceholderText('Send a message or @ someone')).toBeTruthy()
+    expect(screen.queryByPlaceholderText('Message')).toBeNull()
   })
 })
