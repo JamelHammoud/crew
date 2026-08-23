@@ -5,6 +5,9 @@ import { TRAY_HEIGHT, TRAY_ICON, TRAY_WIDTH } from './tray-png'
 
 const isMac = process.platform === 'darwin'
 
+export const trayHasContents = (state: PresenceSnapshot): boolean =>
+  state.waiting > 0 || (state.sharing && state.known)
+
 // The mark itself, as a template image: macOS reads the alpha and tints it to
 // whatever the menu bar is wearing, light or dark, and inverts it while the
 // panel is open.
@@ -55,7 +58,10 @@ export class CrewTray {
     if (isMac) {
       // No context menu is set: one would open on a left click as well, and
       // the left click belongs to the panel.
-      tray.on('click', () => this.panel.toggle(tray.getBounds()))
+      tray.on('click', () => {
+        if (trayHasContents(this.state)) this.panel.toggle(tray.getBounds())
+        else this.opts.openWindow()
+      })
       tray.on('right-click', () => tray.popUpContextMenu(this.menu()))
     } else {
       tray.on('click', this.opts.openWindow)

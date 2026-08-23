@@ -22,7 +22,7 @@ const STATES = {
       { id: 'codex', name: 'Codex', agent: true, threads: 4 }
     ]
   },
-  idle: { sharing: false, known: false, waiting: 0, here: [] }
+  idle: { sharing: true, known: true, waiting: 0, here: [] }
 }
 
 function probeSource() {
