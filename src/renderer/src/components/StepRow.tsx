@@ -37,7 +37,7 @@ export function FilePathLink({
   again?: unknown
 }) {
   useLocated([path], again)
-  if (isPrivate(path)) return <PrivateChip />
+  if (isPrivate(path)) return <PrivateChip path={path} />
   return (
     <FileTextLink path={path} diff={diff} className={className}>
       {shortFileLabel(path, labelFor(path, '', path))}

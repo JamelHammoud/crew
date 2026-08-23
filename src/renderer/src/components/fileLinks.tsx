@@ -184,9 +184,12 @@ export function fileTokens(text: string): FileToken[] {
   return tokens
 }
 
-function privateNode(doc: Document): HTMLElement {
-  const chip = doc.createElement('span')
+function privateNode(doc: Document, path: string, line: number | null): HTMLAnchorElement {
+  const chip = doc.createElement('a')
   chip.className = PRIVATE_CLASS
+  chip.dataset.path = targetFor(path)
+  chip.dataset.fullPath = path
+  if (line !== null) chip.dataset.line = String(line)
   chip.textContent = PRIVATE_LABEL
   return chip
 }
@@ -234,7 +237,7 @@ export function linkifyFiles(root: HTMLElement): string[] {
     const ref = parseFileRef(decoded)
     if (!ref || !moves(ref.path)) continue
     if (isPrivate(ref.path)) {
-      anchor.replaceWith(privateNode(doc))
+      anchor.replaceWith(privateNode(doc, ref.path, ref.line))
       continue
     }
     if (openable(ref.path)) linkedAnchor(anchor, ref)
@@ -245,7 +248,7 @@ export function linkifyFiles(root: HTMLElement): string[] {
     const ref = parseFileRef(text)
     if (!ref || !moves(ref.path)) continue
     if (isPrivate(ref.path)) {
-      code.replaceWith(privateNode(doc))
+      code.replaceWith(privateNode(doc, ref.path, ref.line))
       continue
     }
     const label = labelFor(ref.path, suffixOf(text), text)
@@ -272,7 +275,7 @@ export function linkifyFiles(root: HTMLElement): string[] {
         continue
       }
       if (isPrivate(token.path)) {
-        fragment.appendChild(privateNode(doc))
+        fragment.appendChild(privateNode(doc, token.path, token.line))
         continue
       }
       const label = labelFor(token.path, token.suffix, token.text)
@@ -399,8 +402,18 @@ export function FileTextLink({
   )
 }
 
-export function PrivateChip() {
-  return <span className={PRIVATE_CLASS}>{PRIVATE_LABEL}</span>
+export function PrivateChip({ path, line = null }: { path: string; line?: number | null }) {
+  const { onContextMenu, menu, menuOpen } = useFileMenu(targetFor(path), line)
+  return (
+    <>
+      <Tooltip label={<FullPath path={path} />} disabled={menuOpen} className="max-w-full align-middle">
+        <span onContextMenu={onContextMenu} className={PRIVATE_CLASS}>
+          {PRIVATE_LABEL}
+        </span>
+      </Tooltip>
+      {menu}
+    </>
+  )
 }
 
 export function UrlLink({ url }: { url: string }) {
@@ -441,7 +454,7 @@ export function TextWithFileLinks({
       {tokens.map((token, index) => {
         if (token.kind === 'url') return chips ? <UrlChip key={index} url={token.text} /> : <UrlLink key={index} url={token.text} />
         if (token.kind !== 'file') return <EmojiText key={index} text={token.text} />
-        if (isPrivate(token.path)) return <PrivateChip key={index} />
+        if (isPrivate(token.path)) return <PrivateChip key={index} path={token.path} line={token.line} />
         const label = labelFor(token.path, token.suffix, token.text)
         if (!openable(token.path)) return label
         if (inline) {
