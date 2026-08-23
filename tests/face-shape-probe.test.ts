@@ -59,16 +59,18 @@ describe('the box a face stands in', () => {
     }
   })
 
-  it('leaves a cut out picture its transparency rather than filling the circle', () => {
-    for (const face of faces) {
-      const { container } = render(face)
-      const picture = container.querySelector('img') as HTMLImageElement
+  it('leaves a cut out picture transparent in the silhouette that owns it', () => {
+    const human = render(faces[0]).container.querySelector('img') as HTMLImageElement
+    expect(human.className).toContain('rounded-full')
+    expect(human.className).not.toMatch(/\bbg-/)
+    expect(human.style.backgroundColor).toBe('')
+    cleanup()
 
-      expect(picture.className).toContain('rounded-full')
-      expect(picture.className).not.toMatch(/\bbg-/)
-      expect(picture.style.backgroundColor).toBe('')
-      cleanup()
-    }
+    const agent = render(faces[1]).container.querySelector('img') as HTMLImageElement
+    expect(agent.className).not.toContain('rounded-full')
+    expect(agent.style.clipPath).toContain('path(')
+    expect(agent.className).not.toMatch(/\bbg-/)
+    expect(agent.style.backgroundColor).toBe('')
   })
 
   it('is a circle where the profile button rings it', () => {
