@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type CSSProperties } from 'react'
 import PersonalChatSidebar from '../components/PersonalChatSidebar'
 import Toaster from '../components/Toaster'
 import { useCrew } from '../state/store'
@@ -33,7 +33,11 @@ export default function PersonalChatWindow() {
           if (active === threadId) fresh()
         }}
       />
-      <main data-personal-chat-content className="flex-1 min-w-0 relative">
+      <main
+        data-personal-chat-content
+        style={{ '--page-rest': '56px' } as CSSProperties}
+        className="flex-1 min-w-0 relative"
+      >
         {thread ? (
           <ThreadView threadId={thread.id} alone personal />
         ) : (
