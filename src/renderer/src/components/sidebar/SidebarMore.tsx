@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { PinGlyph } from '../../icons'
 import { playSound } from '../../media/sounds'
 import { useSidebar } from '../../state/sidebar'
@@ -108,10 +108,10 @@ export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab
         <Popover open onClose={menu.close} at={menu.at} anchor={rowRef} flush className="min-w-44">
           <div className="p-1.5" onPointerEnter={menu.hold} onPointerLeave={menu.leave}>
             {unpinned.map(item => (
-              <div key={item.id} className="contents">
+              <Fragment key={item.id}>
                 {item.id === 'plugins' && <MenuDivider />}
                 <MoreItem item={item} tab={tab} close={menu.close} onTab={onTab} onToolbox={openToolbox} />
-              </div>
+              </Fragment>
             ))}
           </div>
         </Popover>
