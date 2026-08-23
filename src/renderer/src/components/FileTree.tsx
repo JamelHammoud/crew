@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react'
 import { matchFiles, type FileContentMatch, type FileEntry, type FileMatch } from '../../../shared/files'
 import { ChevronRightGlyph, FileGlyph, FolderGlyph } from '../icons'
 import { useBrowser, type BrowserTab } from '../state/browser'
@@ -15,6 +15,11 @@ const quiet = 'text-fg-secondary hover:bg-fg/[0.04] hover:text-fg'
 const picked = 'bg-fg/[0.06] text-fg'
 
 const indent = (depth: number): string => `${8 + depth * 14}px`
+
+function openFile(tab: BrowserTab, path: string, event: MouseEvent, line: number | null = null): void {
+  if (event.shiftKey) useBrowser.getState().addFileTab(path, line)
+  else useBrowser.getState().navigateFile(tab.id, path, line)
+}
 
 function Loading({ depth }: { depth: number }) {
   return (
@@ -81,7 +86,7 @@ function Leaf({ tab, path, name, depth }: { tab: BrowserTab; path: string; name:
     <>
       <button
         ref={ref}
-        onClick={() => useBrowser.getState().navigateFile(tab.id, path)}
+        onClick={event => openFile(tab, path, event)}
         onContextMenu={onContextMenu}
         data-file={path}
         style={{ paddingLeft: indent(depth) }}
@@ -124,7 +129,10 @@ function Match({ tab, match, dir }: { tab: BrowserTab; match: FileMatch; dir: bo
   return (
     <>
       <button
-        onClick={() => useBrowser.getState().navigateFile(tab.id, match.path)}
+        onClick={event => {
+          if (dir) useBrowser.getState().navigateFile(tab.id, match.path)
+          else openFile(tab, match.path, event)
+        }}
         onContextMenu={onContextMenu}
         data-file={dir ? undefined : match.path}
         data-folder={dir ? match.path : undefined}
@@ -155,7 +163,7 @@ function ContentMatch({ tab, match }: { tab: BrowserTab; match: FileContentMatch
   return (
     <>
       <button
-        onClick={() => useBrowser.getState().navigateFile(tab.id, match.path, match.line)}
+        onClick={event => openFile(tab, match.path, event, match.line)}
         onContextMenu={onContextMenu}
         data-content-file={match.path}
         data-content-line={match.line}

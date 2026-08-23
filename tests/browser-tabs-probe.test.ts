@@ -448,6 +448,25 @@ describe('the tab strip', () => {
     expect(container.querySelector('[data-browser-tab-drop]')).toBeNull()
   })
 
+  it('scrolls the tab list while a native tab drag is held at its edge', () => {
+    laidOutRow()
+    openFour()
+    const { container } = render(createElement(BrowserPanel))
+    const row = rowOf(container) as HTMLElement
+    Object.defineProperty(row, 'scrollWidth', { value: 490, configurable: true })
+    row.scrollLeft = 50
+    const dataTransfer = {
+      types: ['application/x-crew-browser-tab'],
+      dropEffect: 'none'
+    }
+
+    fireEvent.dragOver(row, { clientX: VIEW - 1, dataTransfer })
+    expect(row.scrollLeft).toBe(62)
+
+    fireEvent.dragOver(row, { clientX: 1, dataTransfer })
+    expect(row.scrollLeft).toBe(50)
+  })
+
   it('leaves the row alone and picks the tab up when the pointer barely moved', () => {
     openTwo()
     const [first, second] = order()

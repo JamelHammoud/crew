@@ -307,6 +307,21 @@ describe('the file explorer', () => {
     expect(await screen.findByText('export const one = 1')).toBeTruthy()
   })
 
+  it('opens a file from the tree in a new tab when it is Shift-clicked', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    fireEvent.click(await screen.findByText('src'))
+    await waitFor(() => expect(rowFor('src/app.ts')).toBeTruthy())
+
+    fireEvent.click(rowFor('src/app.ts')!, { shiftKey: true })
+
+    const tabs = useBrowser.getState().tabs
+    expect(tabs).toHaveLength(2)
+    expect(tabs[0]!.path).toBe('')
+    expect(tabs[0]!.tree).toBe(true)
+    expect(activeTab().path).toBe('src/app.ts')
+  })
+
   it('opens a file from the folder listing in a tab of its own', async () => {
     useBrowser.getState().openFile('src')
     render(createElement(BrowserPanel))
@@ -360,6 +375,25 @@ describe('the file explorer', () => {
 
     expect(useBrowser.getState().tabs.length).toBe(2)
     expect(activeTab().path).toBe('src/renderer/panel.tsx')
+  })
+
+  it('opens a content match at its line in a new tab when it is Shift-clicked', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    fireEvent.change(await screen.findByLabelText('Search files'), {
+      target: { value: 'implementationDetail' }
+    })
+    const result = await waitFor(() => {
+      const found = document.querySelector('[data-content-file="src/renderer/panel.tsx"]')
+      expect(found).toBeTruthy()
+      return found as HTMLElement
+    })
+
+    fireEvent.click(result, { shiftKey: true })
+
+    expect(useBrowser.getState().tabs).toHaveLength(2)
+    expect(activeTab().path).toBe('src/renderer/panel.tsx')
+    expect(activeTab().line).toBe(7)
   })
 
   it('shows the files beside the one being looked at, not some other tab', () => {

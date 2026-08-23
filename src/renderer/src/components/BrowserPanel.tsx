@@ -46,6 +46,15 @@ import Tooltip from './Tooltip'
 export { showsImage } from './BrowserTabMark'
 
 const BROWSER_TAB_DRAG = 'application/x-crew-browser-tab'
+const TAB_SCROLL_EDGE = 56
+const TAB_SCROLL_STEP = 12
+
+function scrollTabStrip(strip: HTMLElement, x: number): void {
+  const box = strip.getBoundingClientRect()
+  const at = x - box.left
+  if (at < TAB_SCROLL_EDGE) strip.scrollLeft -= TAB_SCROLL_STEP
+  else if (at > box.width - TAB_SCROLL_EDGE) strip.scrollLeft += TAB_SCROLL_STEP
+}
 
 function tabDropIndex(strip: HTMLElement, x: number): number {
   const tabs = Array.from(strip.querySelectorAll<HTMLElement>('[data-tab]'))
@@ -152,6 +161,7 @@ export default function BrowserPanel({ standalone = false }: { standalone?: bool
             if (!event.dataTransfer.types.includes(BROWSER_TAB_DRAG)) return
             event.preventDefault()
             event.dataTransfer.dropEffect = 'move'
+            scrollTabStrip(event.currentTarget, event.clientX)
             const at = tabDropIndex(event.currentTarget, event.clientX)
             setTabDrop({ at, left: tabDropLeft(event.currentTarget, at) })
           }}
