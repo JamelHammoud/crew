@@ -41,7 +41,7 @@ function PluginStep({
       <div className="overflow-hidden rounded-card border border-ink-700 bg-ink-850">
         <button
           onClick={() => expandable && setOpen(!expanded)}
-          className={`group flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm select-none transition-colors active:scale-[0.99] ${
+          className={`group flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm select-none transition-colors ${
             expandable ? '' : 'cursor-default'
           }`}
         >
