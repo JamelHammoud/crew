@@ -98,34 +98,38 @@ export default function AgentActivityMark({
   activity,
   seed,
   box,
-  src
+  src,
+  motion = 'working'
 }: {
   activity: Exclude<AgentActivity, 'idle'>
   seed: string
   box: number
   src?: string
+  motion?: 'incoming' | 'outgoing' | 'working'
 }) {
   const mask = useId()
   return (
-    <span className="agent-activity-object absolute inset-0" data-object={activity}>
-      <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full" aria-hidden>
-        <defs>
-          <mask id={mask} maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
-            <g fill="#fff">
-              <ActivityShape activity={activity} />
-            </g>
-          </mask>
-        </defs>
-        <foreignObject width="100" height="100" mask={`url(#${mask})`}>
-          <span className="relative block w-full h-full">
-            {src ? (
-              <img src={src} alt="" draggable={false} className="block w-full h-full object-cover" />
-            ) : (
-              <GeneratedField seed={seed} box={box} light={FIELD_LIGHT} />
-            )}
-          </span>
-        </foreignObject>
-      </svg>
+    <span className="agent-activity-stage absolute inset-0" data-motion={motion}>
+      <span className="agent-activity-object absolute inset-0" data-object={activity}>
+        <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full" aria-hidden>
+          <defs>
+            <mask id={mask} maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
+              <g fill="#fff">
+                <ActivityShape activity={activity} />
+              </g>
+            </mask>
+          </defs>
+          <foreignObject width="100" height="100" mask={`url(#${mask})`}>
+            <span className="relative block w-full h-full">
+              {src ? (
+                <img src={src} alt="" draggable={false} className="block w-full h-full object-cover" />
+              ) : (
+                <GeneratedField seed={seed} box={box} light={FIELD_LIGHT} />
+              )}
+            </span>
+          </foreignObject>
+        </svg>
+      </span>
     </span>
   )
 }
