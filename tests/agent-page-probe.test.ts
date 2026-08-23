@@ -106,6 +106,44 @@ describe('the row a showing leaves behind', () => {
     const old = buildThread([shownEvent({ url: 'file:///Users/sam/site/index.html' })], {}, 'sam')
     expect(old.find(item => item.kind === 'page')?.shown?.pages).toEqual(['file:///Users/sam/site/index.html'])
   })
+
+  it('keeps the local Crew page call out of the thread', () => {
+    const run = ranEvent(1)
+    const shown = shownEvent({ ts: 3, promptId: RUN, pages: ['http://localhost:5173'] })
+    const steps = {
+      [RUN]: [
+        {
+          id: 'show',
+          ts: 2,
+          kind: 'tool' as const,
+          status: 'done' as const,
+          name: 'Bash',
+          detail:
+            'curl -s -X POST http://127.0.0.1:59508/6329c2/page -H \'content-type: application/json\' -d \'{"promptId":"p9","url":"http://localhost:5173"}\''
+        },
+        {
+          id: 'external',
+          ts: 4,
+          kind: 'tool' as const,
+          status: 'done' as const,
+          name: 'Bash',
+          detail: 'curl -s -X POST https://example.com/6329c2/page'
+        },
+        {
+          id: 'other',
+          ts: 5,
+          kind: 'tool' as const,
+          status: 'done' as const,
+          name: 'Bash',
+          detail: 'curl -s http://127.0.0.1:59508/6329c2/pages'
+        }
+      ]
+    }
+
+    const items = buildThread([run, shown], steps, 'sam')
+    expect(items.map(item => item.key)).toEqual(['p1', `${RUN}:external`, `${RUN}:other`])
+    expect(items[0].kind).toBe('page')
+  })
 })
 
 describe('the mark a showing wears', () => {

@@ -410,7 +410,9 @@ const stepItem = (step: AgentStep, author: string, promptId: string, live: boole
     if (
       step.kind === 'tool' &&
       toolAction(step.name).terminal &&
-      /https?:\/\/(?:127\.0\.0\.1|localhost):\d+\/[^/\s'"`]+\/agents(?:[/?\s'"`]|$)/.test(step.detail ?? '')
+      /https?:\/\/(?:127\.0\.0\.1|localhost):\d+\/[^/\s'"`]+\/(?:agents(?:[/?\s'"`]|$)|page(?=[/?\s'"`]|$))/.test(
+        step.detail ?? ''
+      )
     )
       return null
     return {
