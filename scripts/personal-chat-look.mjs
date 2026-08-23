@@ -75,7 +75,8 @@ useCrew.setState({
   events: [
     { id: 'alpha-started', ts: alpha.startedAt, kind: 'thread.started', threadId: alpha.id, agentId: alpha.agentId, agentLabel: alpha.agentLabel, title: alpha.title, byName: 'Jamel' },
     { id: 'beta-started', ts: beta.startedAt, kind: 'thread.started', threadId: beta.id, agentId: beta.agentId, agentLabel: beta.agentLabel, title: beta.title, byName: 'Jamel' },
-    { id: 'gamma-started', ts: gamma.startedAt, kind: 'thread.started', threadId: gamma.id, agentId: gamma.agentId, agentLabel: gamma.agentLabel, title: gamma.title, byName: 'Jamel' }
+    { id: 'gamma-started', ts: gamma.startedAt, kind: 'thread.started', threadId: gamma.id, agentId: gamma.agentId, agentLabel: gamma.agentLabel, title: gamma.title, byName: 'Jamel' },
+    { id: 'gamma-message', ts: gamma.startedAt + 1000, kind: 'message', threadId: gamma.id, authorId: 'jamel', authorName: 'Jamel', text: 'Something simple for four people.', mentions: [] }
   ],
   threads: { alpha, beta, gamma },
   threadPrompts: {},
