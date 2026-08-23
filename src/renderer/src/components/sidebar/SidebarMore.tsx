@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { PinGlyph } from '../../icons'
 import { playSound } from '../../media/sounds'
 import { useSidebar } from '../../state/sidebar'
@@ -64,6 +64,8 @@ export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab
   const pinned = useSidebarPins()
   const [toolbox, setToolbox] = useState<Spot | null>(null)
   const unpinned = SIDEBAR_ITEMS.filter(item => !pinned.includes(item.id))
+  const panelItems = unpinned.filter(item => ['files', 'review', 'terminal', 'web'].includes(item.id))
+  const crewItems = unpinned.filter(item => !panelItems.includes(item))
   const here = unpinned.some(item => itemTab(item.id) === tab)
   const open = menu.open
 
@@ -107,11 +109,26 @@ export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab
       {open && menu.at && (
         <Popover open onClose={menu.close} at={menu.at} anchor={rowRef} flush className="min-w-44">
           <div className="p-1.5" onPointerEnter={menu.hold} onPointerLeave={menu.leave}>
-            {unpinned.map(item => (
-              <Fragment key={item.id}>
-                {item.id === 'plugins' && <MenuDivider />}
-                <MoreItem item={item} tab={tab} close={menu.close} onTab={onTab} onToolbox={openToolbox} />
-              </Fragment>
+            {panelItems.map(item => (
+              <MoreItem
+                key={item.id}
+                item={item}
+                tab={tab}
+                close={menu.close}
+                onTab={onTab}
+                onToolbox={openToolbox}
+              />
+            ))}
+            {panelItems.length > 0 && crewItems.length > 0 && <MenuDivider />}
+            {crewItems.map(item => (
+              <MoreItem
+                key={item.id}
+                item={item}
+                tab={tab}
+                close={menu.close}
+                onTab={onTab}
+                onToolbox={openToolbox}
+              />
             ))}
           </div>
         </Popover>
