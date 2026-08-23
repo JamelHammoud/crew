@@ -157,8 +157,6 @@ app.whenReady().then(async () => {
     }
     const add = await until('Add an agent', () => named('Add an agent')?.disabled === false && named('Add an agent'))
     add.click()
-    ;(await until('Provider', () => named('Provider'))).click()
-    ;(await until('Grok', () => named('Grok'))).click()
     ;(await until('Advanced', () => named('Advanced'))).click()
     await until('Advanced dialog', () => document.querySelector('[role="dialog"][aria-label="Advanced"]'))
     await new Promise(resolve => setTimeout(resolve, 300))
