@@ -44,6 +44,7 @@ export interface ToolAction {
   prose?: boolean
   terminal?: boolean
   resource?: boolean
+  source?: string
 }
 
 const AGENT: ToolAction = {
@@ -153,10 +154,12 @@ const humanize = (name: string): string => {
   return words ? words[0].toUpperCase() + words.slice(1) : words
 }
 
-const mcpTool = (name: string): string | undefined => {
+const mcpTool = (name: string): { source: string; tool: string } | undefined => {
   if (!name.includes('__') && !name.includes('.')) return undefined
   const parts = name.split(/__|\./).filter(Boolean)
-  return parts.length > 1 ? parts[parts.length - 1] : undefined
+  if (parts[0]?.toLowerCase() === 'mcp') parts.shift()
+  if (parts.length < 2) return undefined
+  return { source: humanize(parts.slice(0, -1).join(' ')), tool: parts[parts.length - 1] }
 }
 
 export function toolAction(name: string | undefined, subagent = false): ToolAction {
@@ -167,8 +170,11 @@ export function toolAction(name: string | undefined, subagent = false): ToolActi
   if (known) return known
   const mcp = mcpTool(raw)
   if (mcp) {
-    const label = humanize(mcp)
-    return TOOLS.get(normalizeTool(mcp)) ?? { icon: PlugGlyph, run: label, done: label, prose: true }
+    const label = humanize(mcp.tool)
+    const action = TOOLS.get(normalizeTool(mcp.tool))
+    return action
+      ? { ...action, source: mcp.source }
+      : { icon: PlugGlyph, run: label, done: label, prose: true, source: mcp.source }
   }
   const label = humanize(raw)
   return { icon: BoxGlyph, run: label, done: label, prose: true }

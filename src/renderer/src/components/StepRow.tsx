@@ -21,6 +21,7 @@ import Markdown from './Markdown'
 import { selecting } from './selecting'
 import StepCode from './StepCode'
 import StepDiff from './StepDiff'
+import ToolCallDetail, { toolCallInfo } from './ToolCallDetail'
 import { sameItem, thoughtPreview, type ThreadItem } from './thread'
 import ThinkingMark from './ThinkingMark'
 import { THINKING, toolAction, type ToolAction, type ToolIcon } from './toolActions'
@@ -135,15 +136,17 @@ function StepRow({ item, linked, inGroup }: { item: ThreadItem; linked?: boolean
   const files = stepFiles(item)
   const totals = stepTotals(files)
   const detail = thinking ? '' : (item.detail ?? '')
+  const call = action.source ? toolCallInfo(detail) : null
   const opens = useOpener(detail, files)
   const preview = thinking ? thoughtPreview(item.text) : ''
   const expandable = thinking
     ? crowded(item.text)
-    : files.length > 0 || (!opens && Boolean(detail) && (!action.prose || crowded(detail)))
+    : files.length > 0 ||
+      (!opens && Boolean(detail) && (call ? call.fields.length > 0 : !action.prose || crowded(detail)))
   const query = useFindQuery()
   const found = expandable && carries(query, stepHidden(item))
   const expanded = expandable && (open ?? (found || (thinking && item.streaming)))
-  const subject = expanded ? '' : thinking ? preview : files.length === 0 ? (item.detail ?? '') : ''
+  const subject = expanded ? '' : thinking ? preview : files.length === 0 ? (call?.summary ?? item.detail ?? '') : ''
   const subjectRef = action.resource && subject ? parseFileRef(subject) : null
 
   return (
@@ -157,6 +160,11 @@ function StepRow({ item, linked, inGroup }: { item: ThreadItem; linked?: boolean
       >
         {thinking ? <ThinkingMark running={item.streaming} /> : <Mark icon={action.icon} running={item.streaming} />}
         <Label action={action} running={item.streaming} swap={thinking} />
+        {action.source && (
+          <span className="shrink-0 rounded-full border border-ink-700 px-1.5 text-xs leading-5 text-fg-muted">
+            {action.source}
+          </span>
+        )}
         {files.length > 0 && (
           <>
             {files.length === 1 ? (
@@ -204,6 +212,8 @@ function StepRow({ item, linked, inGroup }: { item: ThreadItem; linked?: boolean
             <div onClick={() => !selecting() && setOpen(false)} className="cursor-pointer">
               <Markdown text={item.text} className="md-quiet" stream={item.streaming} />
             </div>
+          ) : call ? (
+            <ToolCallDetail info={call} again={!item.streaming} />
           ) : action.prose ? (
             <p
               onClick={() => !selecting() && setOpen(false)}

@@ -99,7 +99,9 @@ describe('tool names', () => {
 
   it('names an mcp tool after the tool, not the plumbing', () => {
     expect(toolAction('mcp__figma__get_design_context').done).toBe('Get design context')
+    expect(toolAction('mcp__figma__get_design_context').source).toBe('Figma')
     expect(toolAction('figma.get_screenshot').done).toBe('Get screenshot')
+    expect(toolAction('figma.get_screenshot').source).toBe('Figma')
     expect(toolAction('mcp__figma__get_design_context').icon).toBe(toolAction('figma.get_screenshot').icon)
   })
 
@@ -172,6 +174,34 @@ describe('step rows', () => {
     const { container } = render(createElement(StepRow, { item: item({ name: 'WebSearch', detail: 'pooling llms' }) }))
     fireEvent.click(container.querySelector('button') as HTMLButtonElement)
     expect(useBrowser.getState().tabs.length).toBe(0)
+    expect(container.querySelectorAll('svg').length).toBe(1)
+  })
+
+  it('shows plugin calls as a source, a useful subject, and readable input fields', () => {
+    const detail = JSON.stringify({
+      title: 'Reconnect to Raylight',
+      code: 'await browser.open("https://www.raylight.app/editor/one")'
+    })
+    const { container } = render(
+      createElement(StepRow, { item: item({ name: 'raylight.js', detail }) })
+    )
+    expect(screen.getByText('Js')).not.toBeNull()
+    expect(screen.getByText('Raylight')).not.toBeNull()
+    expect(screen.getByText('Reconnect to Raylight')).not.toBeNull()
+    expect(container.textContent).not.toContain('"code"')
+    fireEvent.click(container.querySelector('button') as HTMLButtonElement)
+    expect(screen.getByText('Title')).not.toBeNull()
+    expect(screen.getByText('Code')).not.toBeNull()
+    expect(container.textContent).toContain('await browser.open')
+  })
+
+  it('keeps an empty plugin input out of the row', () => {
+    const { container } = render(
+      createElement(StepRow, { item: item({ name: 'raylight.get_editor_status', detail: '{}' }) })
+    )
+    expect(screen.getByText('Get editor status')).not.toBeNull()
+    expect(screen.getByText('Raylight')).not.toBeNull()
+    expect(container.textContent).not.toContain('{}')
     expect(container.querySelectorAll('svg').length).toBe(1)
   })
 
