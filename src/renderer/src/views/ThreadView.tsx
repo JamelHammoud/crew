@@ -6,7 +6,7 @@ import FilesChanged from '../components/FilesChanged'
 import FindBar from '../components/FindBar'
 import ForkedFrom from '../components/ForkedFrom'
 import GhostBar from '../components/GhostBar'
-import { FilesJump, JumpToBottom } from '../components/OverComposer'
+import { ThreadJumps } from '../components/OverComposer'
 import TypingLine from '../components/TypingLine'
 import { MemberName } from '../components/Mention'
 import { MentionMenu, useMentionAutocomplete } from '../components/MentionAutocomplete'
@@ -367,15 +367,17 @@ export default function ThreadView({
           />
           <div className="bg-ink-900 px-6 pb-6">
             <div className="relative max-w-[660px] mx-auto pointer-events-auto">
-              {scrolledUp && <JumpToBottom onClick={jumpToBottom} />}
-              {scrolledUp && diffTotals.files > 0 && (
-                <FilesJump
-                  files={diffTotals.files}
-                  added={diffTotals.added}
-                  removed={diffTotals.removed}
-                  onClick={jumpToBottom}
-                />
-              )}
+              {scrolledUp &&
+                (diffTotals.files > 0 ? (
+                  <ThreadJumps
+                    files={diffTotals.files}
+                    added={diffTotals.added}
+                    removed={diffTotals.removed}
+                    onClick={jumpToBottom}
+                  />
+                ) : (
+                  <JumpToBottom onClick={jumpToBottom} />
+                ))}
               <QueueBar
                 items={queuedMessages}
                 onEdit={editQueuedMessage}
