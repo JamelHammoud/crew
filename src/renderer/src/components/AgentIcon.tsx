@@ -1,4 +1,4 @@
-import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
 import { attachmentFileUrl } from '../../../shared/attachments'
 import { useCrew } from '../state/store'
 import GeneratedField from './art/GeneratedField'
@@ -96,6 +96,10 @@ export default function AgentIcon({
   const shownActivity = activity ?? automaticActivity
   const performance = usePerformance(shownActivity)
   const src = photo ?? (file && httpBase ? attachmentFileUrl(httpBase, file) : undefined)
+  const style = {
+    ...(px ? { width: px, height: px } : {}),
+    '--agent-delay': `${-pet.hue * 13}ms`
+  } as CSSProperties
   const faceMotion = performance.changing
     ? performance.current === 'idle'
       ? 'incoming'
@@ -109,7 +113,7 @@ export default function AgentIcon({
     <span
       className={`${px ? '' : SIZES[size]} agent-icon relative inline-block align-middle shrink-0 ${className}`}
       data-activity={shownActivity}
-      style={px ? { width: px, height: px } : undefined}
+      style={style}
     >
       {src ? (
         <img
