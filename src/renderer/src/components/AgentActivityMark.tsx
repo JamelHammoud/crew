@@ -35,8 +35,22 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
           data-part="page-right"
           d="M91 22 C79 17 64 20 53 29 C51 31 50 34 50 37 V85 C62 77 76 75 89 80 C94 82 97 78 97 73 V31 C97 27 95 24 91 22 Z"
         />
-        <path data-part="page-line-left" d="M17 39 C25 37 33 39 40 43" fill="none" stroke="#000" strokeWidth="6" strokeLinecap="round" />
-        <path data-part="page-line-right" d="M60 43 C68 39 76 37 84 39" fill="none" stroke="#000" strokeWidth="6" strokeLinecap="round" />
+        <path
+          data-part="page-line-left"
+          d="M17 39 C25 37 33 39 40 43"
+          fill="none"
+          stroke="#000"
+          strokeWidth="6"
+          strokeLinecap="round"
+        />
+        <path
+          data-part="page-line-right"
+          d="M60 43 C68 39 76 37 84 39"
+          fill="none"
+          stroke="#000"
+          strokeWidth="6"
+          strokeLinecap="round"
+        />
         <path data-part="page-turn" d="M53 30 C66 21 80 19 91 22 C77 24 66 32 59 45 C58 38 56 33 53 30 Z" />
       </>
     )
@@ -67,9 +81,30 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
     return (
       <>
         <rect data-part="writing-card" x="8" y="7" width="84" height="86" rx="27" />
-        <path data-part="writing-line-one" d="M25 32 H63" fill="none" stroke="#000" strokeWidth="8" strokeLinecap="round" />
-        <path data-part="writing-line-two" d="M25 51 H76" fill="none" stroke="#000" strokeWidth="8" strokeLinecap="round" />
-        <path data-part="writing-line-three" d="M25 70 H55" fill="none" stroke="#000" strokeWidth="8" strokeLinecap="round" />
+        <path
+          data-part="writing-line-one"
+          d="M25 32 H63"
+          fill="none"
+          stroke="#000"
+          strokeWidth="8"
+          strokeLinecap="round"
+        />
+        <path
+          data-part="writing-line-two"
+          d="M25 51 H76"
+          fill="none"
+          stroke="#000"
+          strokeWidth="8"
+          strokeLinecap="round"
+        />
+        <path
+          data-part="writing-line-three"
+          d="M25 70 H55"
+          fill="none"
+          stroke="#000"
+          strokeWidth="8"
+          strokeLinecap="round"
+        />
         <circle data-part="writing-caret-one" cx="70" cy="32" r="5" fill="#000" />
         <circle data-part="writing-caret-two" cx="83" cy="51" r="5" fill="#000" />
         <circle data-part="writing-caret-three" cx="62" cy="70" r="5" fill="#000" />
@@ -140,7 +175,14 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
           strokeLinecap="round"
           strokeLinejoin="round"
         />
-        <path data-part="plan-line-one" d="M40 21 H78" fill="none" stroke="#000" strokeWidth="6" strokeLinecap="round" />
+        <path
+          data-part="plan-line-one"
+          d="M40 21 H78"
+          fill="none"
+          stroke="#000"
+          strokeWidth="6"
+          strokeLinecap="round"
+        />
         <path
           data-part="plan-check-two"
           d="M18 50 L23 55 L31 45"
@@ -150,7 +192,14 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
           strokeLinecap="round"
           strokeLinejoin="round"
         />
-        <path data-part="plan-line-two" d="M40 51 H72" fill="none" stroke="#000" strokeWidth="6" strokeLinecap="round" />
+        <path
+          data-part="plan-line-two"
+          d="M40 51 H72"
+          fill="none"
+          stroke="#000"
+          strokeWidth="6"
+          strokeLinecap="round"
+        />
         <path
           data-part="plan-check-three"
           d="M18 80 L23 85 L31 75"
@@ -160,7 +209,14 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
           strokeLinecap="round"
           strokeLinejoin="round"
         />
-        <path data-part="plan-line-three" d="M40 81 H82" fill="none" stroke="#000" strokeWidth="6" strokeLinecap="round" />
+        <path
+          data-part="plan-line-three"
+          d="M40 81 H82"
+          fill="none"
+          stroke="#000"
+          strokeWidth="6"
+          strokeLinecap="round"
+        />
       </>
     )
   }
