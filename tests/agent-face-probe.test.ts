@@ -1,9 +1,6 @@
 // @vitest-environment jsdom
 
 import { act, cleanup, render } from '@testing-library/react'
-import { readFileSync } from 'node:fs'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import AgentIcon from '../src/renderer/src/components/AgentIcon'
@@ -24,8 +21,10 @@ import { activityForStep } from '../src/renderer/src/components/agentActivity'
 
 const SEED = 'jamel/claude'
 const PHOTO = 'http://192.0.2.10:2739/attachments/me.png'
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const styles = readFileSync(path.join(root, 'src/renderer/src/styles.css'), 'utf8')
+const styles = (require('node:fs') as typeof import('node:fs')).readFileSync(
+  `${process.cwd()}/src/renderer/src/styles.css`,
+  'utf8'
+)
 
 beforeEach(() => {
   useCrew.setState({ agents: [], httpBase: '', activePrompts: {}, steps: {} })
