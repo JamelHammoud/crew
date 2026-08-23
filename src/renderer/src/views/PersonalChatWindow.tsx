@@ -47,6 +47,7 @@ export default function PersonalChatWindow() {
       >
         {collapsed && (
           <div
+            data-personal-chat-collapsed-header
             className={`app-drag absolute top-0 left-0 z-40 h-[70px] pl-4 flex items-center ${
               full ? '' : 'mac:pl-[92px]'
             }`}
