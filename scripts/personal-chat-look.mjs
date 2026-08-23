@@ -22,6 +22,28 @@ import './probe.css'
 
 window.crew = { listFiles: async () => [] }
 
+const now = Date.now()
+const alpha = {
+  id: 'alpha',
+  agentId: 'jamel/fake',
+  agentLabel: 'Fake',
+  title: 'Plan a quiet weekend',
+  createdBy: 'Jamel',
+  startedAt: now - 36_000,
+  status: 'open',
+  mode: 'build'
+}
+const beta = {
+  id: 'beta',
+  agentId: 'jamel/fake',
+  agentLabel: 'Fake',
+  title: 'Compare two cameras',
+  createdBy: 'Jamel',
+  startedAt: now - 86_400_000,
+  status: 'open',
+  mode: 'build'
+}
+
 useCrew.setState({
   connection: 'online',
   place: 'personal',
@@ -39,8 +61,11 @@ useCrew.setState({
     fields: []
   }],
   members: [{ id: 'jamel', name: 'Jamel', connected: true }],
-  events: [],
-  threads: {},
+  events: [
+    { id: 'alpha-started', ts: alpha.startedAt, kind: 'thread.started', threadId: alpha.id, agentId: alpha.agentId, agentLabel: alpha.agentLabel, title: alpha.title, byName: 'Jamel' },
+    { id: 'beta-started', ts: beta.startedAt, kind: 'thread.started', threadId: beta.id, agentId: beta.agentId, agentLabel: beta.agentLabel, title: beta.title, byName: 'Jamel' }
+  ],
+  threads: { alpha, beta },
   threadPrompts: {},
   threadDrafts: {},
   threadCommands: {},
@@ -192,7 +217,9 @@ try {
     seen.resting.drawer.left <= seen.history.drawer.left ||
     seen.history.drawer.width !== 380 ||
     !seen.history.drawerText.includes('Chats') ||
-    !seen.history.drawerText.includes('No chats yet.')
+    !seen.history.drawerText.includes('New chat') ||
+    !seen.history.drawerText.includes('Plan a quiet weekend') ||
+    !seen.history.drawerText.includes('Compare two cameras')
   ) {
     throw new Error('personal chat history did not open: ' + JSON.stringify({ resting: seen.resting, open: seen.history }))
   }

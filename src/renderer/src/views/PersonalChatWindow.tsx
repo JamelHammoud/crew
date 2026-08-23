@@ -229,7 +229,11 @@ export default function PersonalChatWindow() {
                                 data-active={one.id === active ? '' : undefined}
                                 className="w-full min-h-14 pl-4 pr-20 py-2 rounded-[15px] text-left transition-colors duration-150 hover:bg-fg/[0.05] data-active:bg-fg/[0.08]"
                               >
-                                <span className="block text-sm font-medium text-fg/80 truncate group-hover/history:text-fg group-data-active/history:text-fg">
+                                <span
+                                  className={`block text-sm font-medium truncate ${
+                                    one.id === active ? 'text-fg' : 'text-fg/80 group-hover/history:text-fg'
+                                  }`}
+                                >
                                   {title}
                                 </span>
                                 <span className="block mt-0.5 text-xs text-fg/40 truncate">{one.agentLabel}</span>
