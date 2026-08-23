@@ -238,7 +238,10 @@ try {
     throw new Error('the personal composer did not stand alone with focus')
   }
   if (seen.resting.plusOpacity !== '0' || seen.hovered.plusOpacity !== '1')
-    throw new Error('the Chat plus did not follow hover')
+    throw new Error(
+      'the Chat plus did not follow hover: ' +
+        JSON.stringify({ resting: seen.resting.plusOpacity, hovered: seen.hovered.plusOpacity, box: seen.resting.plus })
+    )
   if (
     !seen.resting.history ||
     !seen.resting.content ||
