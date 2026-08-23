@@ -213,6 +213,13 @@ const bridge = {
   onOpenUrl: (listener: (url: string) => void): void => {
     ipcRenderer.on('browser:open', (_event, url: string) => listener(url))
   },
+  onFindInPage: (listener: () => void): (() => void) => {
+    const handler = () => listener()
+    ipcRenderer.on('browser:find', handler)
+    return () => {
+      ipcRenderer.off('browser:find', handler)
+    }
+  },
   onCrewTrouble: (listener: (message: string) => void): (() => void) => {
     const handler = (_event: unknown, message: string): void => listener(message)
     ipcRenderer.on('crew:trouble', handler)

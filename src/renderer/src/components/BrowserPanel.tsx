@@ -34,6 +34,7 @@ import { useReorder, type Reorder } from './useReorder'
 import AsideView from './AsideView'
 import AttachmentView from './attachment/AttachmentView'
 import BrowserTabView, { viewFor } from './BrowserTabView'
+import BrowserFind, { BrowserFindButton } from './BrowserFind'
 import FileView, { FileCrumbs } from './FileView'
 import GameView from './game/GameView'
 import ImageView from './ImageView'
@@ -93,6 +94,7 @@ export default function BrowserPanel() {
   const activeTabId = useBrowser(s => s.activeTabId)
   const active = tabs.find(t => t.id === activeTabId) ?? null
   const [newOpen, setNewOpen] = useState(false)
+  const [finding, setFinding] = useState(false)
   const opens = usePanelOpens()
   const strip = useRef<HTMLDivElement | null>(null)
   const row = useReorder((id, to) => useBrowser.getState().moveTab(id, to))
@@ -122,6 +124,18 @@ export default function BrowserPanel() {
     if (planThread && !browser.closedPlans.includes(planThread)) browser.showPlan(planThread)
     else browser.hidePlan()
   }, [planThread])
+
+  useEffect(() => setFinding(false), [activeTabId])
+
+  useEffect(() => {
+    const listen = window.crew.onFindInPage
+    if (!listen) return
+    return listen(() => {
+      const browser = useBrowser.getState()
+      const tab = browser.tabs.find(one => one.id === browser.activeTabId)
+      if (browser.open && tab?.kind === 'web' && tab.initialUrl) setFinding(true)
+    })
+  }, [])
 
   const reload = (tab: BrowserTab) => {
     if (showsImage(tab)) {
@@ -268,6 +282,13 @@ export default function BrowserPanel() {
             {active.loading ? <CloseGlyph className="w-4 h-4" /> : <RefreshGlyph className="w-4 h-4" />}
           </button>
           <UrlBar key={active.id} tab={active} />
+          <Tooltip label={finding ? 'Close find' : 'Find in page'} disabled={finding}>
+            <BrowserFindButton
+              open={finding}
+              disabled={!active.initialUrl}
+              onClick={() => setFinding(open => !open)}
+            />
+          </Tooltip>
           <Tooltip label="Open in your browser">
             <button
               onClick={() => void window.crew.openExternal(active.url)}
@@ -282,6 +303,9 @@ export default function BrowserPanel() {
       )}
 
       <div className="app-no-drag flex-1 min-h-0 relative border-t border-ink-700">
+        {active?.kind === 'web' && active.initialUrl && finding && (
+          <BrowserFind key={active.id} tabId={active.id} onClose={() => setFinding(false)} />
+        )}
         {tabs
           .filter(tab => (tab.kind === 'web' || tab.kind === 'image') && tab.initialUrl)
           .map(tab =>

@@ -54,6 +54,7 @@ import { threadWindowHash } from '../shared/threadViews'
 import { Updates } from './updates'
 import { runtimeStateDir } from './runtime-state'
 import { appMenuTemplate, closePutsAway, createThreadWindowOptions, createWindowOptions } from './window-options'
+import { installBrowserFind } from './browser-find'
 
 app.setName('Crew')
 app.commandLine.appendSwitch('disable-backgrounding-occluded-windows')
@@ -284,6 +285,7 @@ app.on('web-contents-created', (_event, contents) => {
     preferences.devTools = inspectable
   })
   if (contents.getType() !== 'webview') return
+  installBrowserFind(contents)
   installContextMenu(contents, true, inspectable)
   contents.setWindowOpenHandler(({ url }) => {
     if (/^https?:/i.test(url)) void contents.loadURL(url)

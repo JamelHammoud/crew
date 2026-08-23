@@ -121,6 +121,7 @@ declare global {
     onUpdate(listener: (state: UpdateState) => void): () => void
     onWindowShape(listener: (shape: { square: boolean; full: boolean }) => void): void
     onOpenUrl(listener: (url: string) => void): void
+    onFindInPage(listener: () => void): () => void
     onCrewTrouble(listener: (message: string) => void): () => void
   }
 
@@ -134,6 +135,8 @@ declare global {
     goForward(): void
     canGoBack(): boolean
     canGoForward(): boolean
+    findInPage(text: string, options?: { forward?: boolean; findNext?: boolean; matchCase?: boolean }): number
+    stopFindInPage(action: 'clearSelection' | 'keepSelection' | 'activateSelection'): void
   }
 
   interface Window {
