@@ -71,12 +71,16 @@ const read = ${JSON.stringify(read)}
 app.whenReady().then(async () => {
   const win = new BrowserWindow({ width: 720, height: 460, show: true, backgroundColor: '#141414' })
   const js = value => win.webContents.executeJavaScript(value)
+  const logs = []
+  win.webContents.on('console-message', (_event, _level, message) => logs.push(message))
   try {
     await win.loadFile(path.join(__dirname, 'dist/index.html'))
     for (let at = 0; at < 40; at += 1) {
       if (await js('Boolean(document.querySelector("textarea[aria-label=\\"File contents\\"]"))')) break
       await wait(50)
     }
+    if (!(await js('Boolean(document.querySelector("textarea[aria-label=\\"File contents\\"]"))')))
+      throw new Error('no editor: ' + logs.join(' | '))
     await wait(300)
     const before = await js(read)
     await js('document.querySelector(".overflow-auto").scrollLeft = 900')
