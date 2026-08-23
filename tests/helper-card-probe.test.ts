@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { act, createElement } from 'react'
-import { afterEach, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import ThreadItems from '../src/renderer/src/components/ThreadItems'
 import { buildThread } from '../src/renderer/src/components/thread'
 import { useCrew, type ThreadMeta } from '../src/renderer/src/state/store'
@@ -26,6 +26,7 @@ window.matchMedia = ((query: string) => ({
   dispatchEvent: () => false
 })) as typeof window.matchMedia
 Element.prototype.getAnimations ??= () => []
+Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true })
 
 const THREAD = 'helper-thread'
 const AGENT = 'bubbles'
@@ -78,9 +79,14 @@ const ended: SessionEvent = {
   threadId: THREAD
 }
 
+beforeEach(() => {
+  vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({ drawImage: vi.fn() } as never)
+})
+
 afterEach(() => {
   cleanup()
   vi.useRealTimers()
+  vi.restoreAllMocks()
 })
 
 it('shows the model the helper started with from its name in the helper thread', () => {
