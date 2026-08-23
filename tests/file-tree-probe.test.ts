@@ -50,8 +50,16 @@ beforeEach(() => {
     listFiles: async () => listed,
     searchFiles: async (query: string) => ({
       matches:
-        query.toLowerCase() === 'panel'
-          ? [{ path: 'src/renderer/panel.tsx', line: 1, text: 'export const panel = 2', start: 13, end: 18 }]
+        query.toLowerCase() === 'implementation detail'
+          ? [
+              {
+                path: 'src/renderer/panel.tsx',
+                line: 7,
+                text: 'const implementationDetail = true',
+                start: 6,
+                end: 27
+              }
+            ]
           : [],
       limited: false
     }),
@@ -158,6 +166,30 @@ describe('the file explorer', () => {
     fireEvent.click(rowFor('src/renderer/panel.tsx')!)
 
     expect(activeTab().path).toBe('src/renderer/panel.tsx')
+  })
+
+  it('finds text inside files and opens the matching line', async () => {
+    useBrowser.getState().openFile('src/renderer/panel.tsx')
+    render(createElement(BrowserPanel))
+    fireEvent.click(screen.getByLabelText('Show files'))
+
+    fireEvent.change(await screen.findByLabelText('Search files'), {
+      target: { value: 'implementation detail' }
+    })
+
+    const result = await waitFor(() => {
+      const found = document.querySelector('[data-content-file="src/renderer/panel.tsx"]')
+      expect(found).toBeTruthy()
+      return found as HTMLElement
+    })
+    expect(screen.getByText('Contents')).toBeTruthy()
+    expect(result.textContent).toContain('const implementationDetail = true')
+    expect(result.querySelector('.text-fg')?.textContent).toBe('implementationDetail')
+
+    fireEvent.click(result)
+
+    expect(activeTab().path).toBe('src/renderer/panel.tsx')
+    expect(activeTab().line).toBe(7)
   })
 
   it('says so plainly when nothing matches', async () => {
