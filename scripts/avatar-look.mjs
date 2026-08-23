@@ -118,9 +118,11 @@ await new Promise((accept, reject) => {
 
 const frames = Array.from({ length: 6 }, (_, index) => transition.replace(/\.png$/, `-${index}.png`))
 await new Promise((accept, reject) => {
-  const child = spawn('magick', ['montage', ...frames, '-tile', '3x2', '-geometry', '590x290+4+4', destination], {
-    stdio: ['ignore', 'pipe', 'pipe']
-  })
+  const child = spawn(
+    'magick',
+    ['(', ...frames.slice(0, 3), '+append', ')', '(', ...frames.slice(3), '+append', ')', '-append', destination],
+    { stdio: ['ignore', 'pipe', 'pipe'] }
+  )
   let error = ''
   child.stderr.on('data', chunk => (error += chunk))
   child.on('exit', code => {
