@@ -186,7 +186,7 @@ function makePet(seed: string): Pet {
   const hue = Math.floor(rand() * 360)
   const kind = PET_SHAPE_KINDS[Math.floor(rand() * PET_SHAPE_KINDS.length)]
   const variant = rand() * 2 - 1
-  const xRoll = rand()
+  rand()
   const yRoll = rand()
   const gapRoll = rand()
   const tilt = -3 + rand() * 6
