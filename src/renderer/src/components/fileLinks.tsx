@@ -334,7 +334,7 @@ export function FileChip({ path, line, text }: { path: string; line: number | nu
 }
 
 export function FullPath({ path }: { path: string }) {
-  return <span className="block max-w-[260px] break-all font-mono text-xs leading-5 text-fg-secondary">{path}</span>
+  return <span className="block max-w-[260px] break-all font-mono text-xs leading-4 text-fg-secondary">{path}</span>
 }
 
 const webName = (url: string): string => new URL(url).host.replace(/^www\./i, '') || url

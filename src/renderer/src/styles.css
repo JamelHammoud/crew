@@ -2934,7 +2934,7 @@ textarea:placeholder-shown {
 
 .resource-chip,
 .md a.resource-chip {
-  @apply inline-flex max-w-full items-center gap-1 align-middle text-sky-300 light:text-sky-700 cursor-pointer no-underline underline-offset-2 decoration-current;
+  @apply relative -top-px inline-flex max-w-full items-center gap-1 align-middle text-fg cursor-pointer no-underline underline-offset-2 decoration-current;
   font-family: inherit;
   font-size: inherit;
   line-height: inherit;
@@ -2946,7 +2946,7 @@ textarea:placeholder-shown {
 }
 
 .resource-chip-icon {
-  @apply h-[1.1em] w-[1.1em] shrink-0;
+  @apply h-[1em] w-[1em] shrink-0;
 }
 
 .resource-chip code,

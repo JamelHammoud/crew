@@ -169,7 +169,7 @@ function StepRow({ item, linked, inGroup }: { item: ThreadItem; linked?: boolean
           </>
         )}
         {subject && (
-          <span className={action.resource ? 'min-w-0 truncate text-inherit' : action.prose ? SUBJECT : SUBJECT_MONO}>
+          <span className={action.resource ? 'min-w-0 truncate text-fg-muted' : action.prose ? SUBJECT : SUBJECT_MONO}>
             {subjectRef && openable(subjectRef.path) ? (
               <FileChip
                 path={subjectRef.path}
