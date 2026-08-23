@@ -104,6 +104,9 @@ const lay = (root: HTMLElement) => {
   const strip = root.querySelector('.overflow-y-auto') as HTMLElement
   strip.getBoundingClientRect = () => ({ top: 0, left: 0, height: 400, width: 240 }) as DOMRect
   const groups = [...root.querySelectorAll<HTMLElement>('[data-reorder]')]
+  const list = groups[0]!.parentElement!
+  list.getBoundingClientRect = () =>
+    ({ top: TOP, left: 0, height: groups.length * TALL + (groups.length - 1) * GAP, width: 240 }) as DOMRect
   groups.forEach((group, index) => {
     const top = TOP + index * (TALL + GAP)
     group.getBoundingClientRect = () => ({ top, left: 0, height: TALL, width: 240 }) as DOMRect
@@ -171,7 +174,7 @@ describe('dragging a project up the list', () => {
     fireEvent.pointerUp(window)
   })
 
-  it('stands the line inside the head of the list rather than on its edge', () => {
+  it('stands the line at the head of the project list', () => {
     const { container } = render(Sidebar())
     const { groups } = lay(container)
     fireEvent.pointerDown(groups[0]!.querySelector('button')!, { button: 0, clientX: 40, clientY: 30 })
@@ -184,7 +187,31 @@ describe('dragging a project up the list', () => {
 
     fireEvent.pointerDown(groups[1]!.querySelector('button')!, { button: 0, clientX: 40, clientY: 110 })
     fireEvent.pointerMove(window, { clientX: 40, clientY: 2 })
-    expect(line(container)?.style.top).toBe(`${TOP / 2}px`)
+    expect(line(container)?.style.top).toBe(`${TOP}px`)
+    fireEvent.pointerUp(window)
+  })
+
+  it('uses the project list rather than the sidebar as the first drop boundary', () => {
+    const { container } = render(Sidebar())
+    const { groups } = lay(container)
+    const list = groups[0]!.parentElement!
+    const listTop = 220
+    list.getBoundingClientRect = () =>
+      ({ top: listTop, left: 0, height: groups.length * TALL + (groups.length - 1) * GAP, width: 240 }) as DOMRect
+    groups.forEach((group, index) => {
+      const top = listTop + index * (TALL + GAP)
+      group.getBoundingClientRect = () => ({ top, left: 0, height: TALL, width: 240 }) as DOMRect
+    })
+
+    fireEvent.pointerDown(groups[1]!.querySelector('button')!, {
+      button: 0,
+      clientX: 40,
+      clientY: listTop + TALL + GAP + 20
+    })
+    fireEvent.pointerMove(window, { clientX: 40, clientY: listTop - 1 })
+
+    expect(line(container)?.style.opacity).toBe('1')
+    expect(line(container)?.style.top).toBe(`${listTop}px`)
     fireEvent.pointerUp(window)
   })
 

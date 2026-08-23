@@ -68,6 +68,12 @@ export function useReorder(onMove: (id: string, to: number) => void, options: Op
         ? { left: box.top - bar.top + strip.scrollTop, width: box.height }
         : { left: box.left - bar.left + strip.scrollLeft, width: box.width }
     })
+    const list = items.every(item => item.parentElement === held.parentElement) ? held.parentElement : null
+    const listBox = list?.getBoundingClientRect()
+    const listStart =
+      list && list !== strip && listBox
+        ? (vertical ? listBox.top - bar.top + strip.scrollTop : listBox.left - bar.left + strip.scrollLeft)
+        : 0
     const startAt = coordinate(event) - start + scroll()
 
     let at = { x: event.clientX, y: event.clientY }
@@ -107,7 +113,7 @@ export function useReorder(onMove: (id: string, to: number) => void, options: Op
       if (!mark) return
       if (!half) half = mark.offsetHeight / 2
       mark.style.opacity = to === from ? '0' : '1'
-      mark.style.top = `${Math.max(half, boundary(boxes, from, to))}px`
+      mark.style.top = `${Math.max(half, boundary(boxes, from, to, listStart))}px`
     }
 
     const tick = () => {
@@ -119,7 +125,7 @@ export function useReorder(onMove: (id: string, to: number) => void, options: Op
         dragged.current = true
         if (carry) lift()
       }
-      const next = carry ? landingAt(boxes, from, point) : landing(boxes, from, dx)
+      const next = carry ? landingAt(boxes, from, point, listStart) : landing(boxes, from, dx)
       const moved = next !== to
       to = next
       if (carry) draw()

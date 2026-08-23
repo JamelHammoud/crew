@@ -42,7 +42,7 @@ export function gapOf(boxes: Box[]): number {
 // room is the list's own padding rather than a gap, and it is read the same way,
 // so the line at the head of the list stands inside the scroller instead of on
 // its edge, where the list clips it and half the dot is gone.
-export function boundary(boxes: Box[], from: number, to: number): number {
+export function boundary(boxes: Box[], from: number, to: number, start = 0): number {
   const box = boxes[to]
   if (!box) return 0
   if (to > from) {
@@ -50,7 +50,7 @@ export function boundary(boxes: Box[], from: number, to: number): number {
     return end(box) + (after ? after.left - end(box) : gapOf(boxes)) / 2
   }
   const before = boxes[to - 1]
-  return box.left - (before ? box.left - end(before) : box.left) / 2
+  return box.left - (before ? box.left - end(before) : box.left - start) / 2
 }
 
 // Where the pointer standing at a point in the row would drop. Nothing travels
@@ -61,11 +61,11 @@ export function boundary(boxes: Box[], from: number, to: number): number {
 // edge of that box, a hundred pixels under a pointer that has not reached it
 // yet. Crossing the line is what moves it, so the mark arrives where the pointer
 // already is and stands still until the pointer has really gone past.
-export function landingAt(boxes: Box[], from: number, at: number): number {
+export function landingAt(boxes: Box[], from: number, at: number, start = 0): number {
   let to = from
   boxes.forEach((_, index) => {
-    if (index > from && at > boundary(boxes, from, index)) to = Math.max(to, index)
-    if (index < from && at < boundary(boxes, from, index)) to = Math.min(to, index)
+    if (index > from && at > boundary(boxes, from, index, start)) to = Math.max(to, index)
+    if (index < from && at < boundary(boxes, from, index, start)) to = Math.min(to, index)
   })
   return to
 }
