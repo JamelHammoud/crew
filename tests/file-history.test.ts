@@ -62,7 +62,12 @@ describe('file edit history', () => {
   it('keeps structural edits separate and restores both selection directions', () => {
     const history = createFileHistory()
     const selected: FileSelection = { start: 2, end: 5, direction: 'backward' }
-    recordFileEdit(history, snapshot('one two', selected), snapshot('one "two"', { start: 5, end: 8, direction: 'backward' }), 'command')
+    recordFileEdit(
+      history,
+      snapshot('one two', selected),
+      snapshot('one "two"', { start: 5, end: 8, direction: 'backward' }),
+      'command'
+    )
     recordFileEdit(history, snapshot('one "two"'), snapshot('one "two"\n'), 'command')
 
     expect(undoFileEdit(history, 'one "two"\n')?.text).toBe('one "two"')

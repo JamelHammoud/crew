@@ -192,7 +192,8 @@ try {
   if (seen.before.scrollWidth <= seen.before.clientWidth) problems.push('the sample did not overflow')
   if (seen.scrolled.scrollLeft < 800) problems.push('the file did not scroll horizontally')
   if (seen.scrolled.gutter.left !== seen.before.gutter.left) problems.push('the line numbers moved with the file')
-  if (seen.scrolled.code.left >= seen.before.code.left - 800) problems.push('the code did not move under the line numbers')
+  if (seen.scrolled.code.left >= seen.before.code.left - 800)
+    problems.push('the code did not move under the line numbers')
   if (seen.typed.value !== edited) problems.push('typing did not reach the right place in the file')
   for (const [index, frame] of seen.frames.entries()) {
     const expected = line.slice(0, insertionAt) + typedText.slice(0, index + 1) + line.slice(insertionAt)
@@ -211,7 +212,9 @@ try {
   if (seen.menuUndone.value !== line) problems.push('the Edit menu did not undo the typing run')
   if (seen.menuRedone.value !== edited) problems.push('the Edit menu did not redo the typing run')
   if (problems.length) throw new Error(problems.join('\n'))
-  console.log(`File editor works in Electron. Gutter stayed at ${seen.before.gutter.left}px while code moved ${Math.round(seen.before.code.left - seen.scrolled.code.left)}px.`)
+  console.log(
+    `File editor works in Electron. Gutter stayed at ${seen.before.gutter.left}px while code moved ${Math.round(seen.before.code.left - seen.scrolled.code.left)}px.`
+  )
   console.log('Typing stayed in place. Keyboard and Edit menu undo and redo both restored the full run.')
 } finally {
   await rm(dir, { recursive: true, force: true })
