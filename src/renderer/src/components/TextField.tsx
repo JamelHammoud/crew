@@ -3,7 +3,7 @@ import { forwardRef, type InputHTMLAttributes, type TextareaHTMLAttributes } fro
 // A line of text somebody types. It is the sunken field the app uses wherever
 // something is asked for outright, rather than the pill a search wears.
 const FIELD =
-  'w-full bg-ink-800 rounded-2xl px-4 py-3 text-base text-fg placeholder:text-fg-muted outline-none transition-shadow duration-200 focus:shadow-[0_0_0_1px_rgb(255_255_255/0.12)] light:focus:shadow-[0_0_0_1px_rgb(0_0_0/0.14)]'
+  'w-full bg-ink-800 rounded-2xl px-4 py-3 text-base text-fg placeholder:text-fg-muted outline-none transition-shadow duration-200 focus:shadow-[inset_0_0_0_1px_rgb(255_255_255/0.12)] light:focus:shadow-[inset_0_0_0_1px_rgb(0_0_0/0.14)]'
 
 // The same field standing on glass, where a sunken surface would be a solid grey
 // patch and the muted greys inside it would vanish over whatever is behind. It
@@ -18,7 +18,7 @@ const GLASS =
 // first line of type sits inside the bend. So it takes the radius a box wears,
 // squarer than the pills around it and softer than the card it stands on.
 const AREA =
-  'w-full resize-none bg-ink-800 rounded-xl px-4 py-3 text-base leading-6 text-fg placeholder:text-fg-muted outline-none transition-shadow duration-200 focus:shadow-[0_0_0_1px_rgb(255_255_255/0.12)] light:focus:shadow-[0_0_0_1px_rgb(0_0_0/0.14)]'
+  'w-full resize-none bg-ink-800 rounded-xl px-4 py-3 text-base leading-6 text-fg placeholder:text-fg-muted outline-none transition-shadow duration-200 focus:shadow-[inset_0_0_0_1px_rgb(255_255_255/0.12)] light:focus:shadow-[inset_0_0_0_1px_rgb(0_0_0/0.14)]'
 
 const GLASS_AREA =
   'w-full resize-none bg-fg/[0.07] rounded-xl px-3.5 py-2.5 text-sm leading-5 text-fg placeholder:text-fg/30 outline-none transition-colors duration-150 hover:bg-fg/[0.1] focus:bg-fg/[0.14]'

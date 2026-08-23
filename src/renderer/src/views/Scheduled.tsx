@@ -51,7 +51,7 @@ export default function Scheduled() {
               placeholder="Search"
               aria-label="Search schedules"
               spellCheck={false}
-              className="w-56 h-10 pl-10 pr-4 rounded-full bg-ink-800 text-sm text-fg placeholder:text-fg-muted outline-none transition-shadow duration-200 focus:shadow-[0_0_0_1px_rgb(255_255_255/0.12)] light:focus:shadow-[0_0_0_1px_rgb(0_0_0/0.14)]"
+              className="w-56 h-10 pl-10 pr-4 rounded-full bg-ink-800 text-sm text-fg placeholder:text-fg-muted outline-none transition-shadow duration-200 focus:shadow-[inset_0_0_0_1px_rgb(255_255_255/0.12)] light:focus:shadow-[inset_0_0_0_1px_rgb(0_0_0/0.14)]"
             />
           </div>
         </div>
