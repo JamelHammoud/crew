@@ -243,11 +243,15 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
           </span>
         </button>
       )}
-      <Modal open={open} onClose={() => setOpen(false)} title={TITLES[screen]} width={460} flush>
-        <div className="max-h-[calc(100dvh-3rem)] overflow-y-auto overscroll-contain rounded-[inherit]">
-          <ScreenSwap screen={screen} depth={DEPTH[screen]}>
-            {screen === 'agent' ? (
-            <div className="p-6 space-y-5">
+      <Modal
+        open={open}
+        onClose={() => setOpen(false)}
+        title={TITLES[screen]}
+        width={460}
+        flush
+        header={
+          screen === 'agent' ? (
+            <div className="shrink-0 px-6 pt-6 flex items-center gap-3.5">
               <div className="flex items-center gap-3.5">
                 <ProviderMark provider={provider} className="w-12 h-12 rounded-2xl" />
                 <TextField
@@ -261,6 +265,85 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
                   className="h-10 text-base"
                 />
               </div>
+            </div>
+          ) : screen === 'advanced' ? (
+            <div className="shrink-0 px-6 pt-6 flex items-center gap-2">
+              <button
+                onClick={() => setScreen('agent')}
+                aria-label="Back"
+                className="w-9 h-9 shrink-0 rounded-full bg-fg/[0.07] flex items-center justify-center text-fg/70 transition-all duration-150 hover:bg-fg/[0.12] hover:text-fg active:scale-95"
+              >
+                <ChevronLeftGlyph className="w-[18px] h-[18px]" />
+              </button>
+              <h3 className="text-base font-semibold text-fg">{cap?.label}</h3>
+              {changed > 0 && (
+                <button
+                  onClick={putBack}
+                  className="ml-auto text-sm font-semibold text-fg/45 transition-colors hover:text-fg active:scale-95"
+                >
+                  Reset
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="shrink-0 px-6 pt-6">
+              <h3 className="text-base font-semibold text-fg">Add a provider</h3>
+            </div>
+          )
+        }
+        footer={
+          screen === 'agent' ? (
+            <div className="shrink-0 px-6 pb-6 pt-5 flex items-center justify-end gap-2">
+              <button
+                onClick={() => setOpen(false)}
+                className="h-10 px-4 rounded-full text-sm font-semibold text-fg/45 transition-colors hover:text-fg"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={create}
+                disabled={busy || !name.trim() || !ready}
+                className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-2 transition-all duration-150 hover:bg-fg/90 active:scale-95 disabled:bg-fg/10 disabled:text-fg/45"
+              >
+                {busy && <Spinner size={14} />}
+                Create
+              </button>
+            </div>
+          ) : screen === 'advanced' ? (
+            <div className="shrink-0 px-6 pb-6 pt-5 flex items-center justify-end">
+              <button
+                onClick={() => setScreen('agent')}
+                className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold transition-all duration-150 hover:bg-fg/90 active:scale-95"
+              >
+                Done
+              </button>
+            </div>
+          ) : (
+            <div className="shrink-0 px-6 pb-6 pt-5 flex items-center justify-end gap-2">
+              <button
+                onClick={() => {
+                  setAddError('')
+                  setScreen('agent')
+                }}
+                className="h-10 px-4 rounded-full text-sm font-semibold text-fg/45 transition-colors hover:text-fg"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => void addServer()}
+                disabled={adding || !address.trim()}
+                className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-2 transition-all duration-150 hover:bg-fg/90 active:scale-95 disabled:bg-fg/10 disabled:text-fg/45"
+              >
+                {adding && <Spinner size={14} />}
+                Add
+              </button>
+            </div>
+          )
+        }
+      >
+        <ScreenSwap screen={screen} depth={DEPTH[screen]}>
+          {screen === 'agent' ? (
+            <div className="px-6 pt-5 space-y-5">
               <div>
                 <Row label="Provider" bleed>
                   <Select
@@ -293,58 +376,13 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
               )}
               {!installing && cap?.note && <p className="text-sm text-fg/45">{cap.note}</p>}
               {error && <p className="text-sm text-danger">{error}</p>}
-              <div className="flex items-center justify-end gap-2">
-                <button
-                  onClick={() => setOpen(false)}
-                  className="h-10 px-4 rounded-full text-sm font-semibold text-fg/45 transition-colors hover:text-fg"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={create}
-                  disabled={busy || !name.trim() || !ready}
-                  className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-2 transition-all duration-150 hover:bg-fg/90 active:scale-95 disabled:bg-fg/10 disabled:text-fg/45"
-                >
-                  {busy && <Spinner size={14} />}
-                  Create
-                </button>
-              </div>
             </div>
-            ) : screen === 'advanced' ? (
-            <div className="p-6 space-y-5">
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setScreen('agent')}
-                  aria-label="Back"
-                  className="w-9 h-9 shrink-0 rounded-full bg-fg/[0.07] flex items-center justify-center text-fg/70 transition-all duration-150 hover:bg-fg/[0.12] hover:text-fg active:scale-95"
-                >
-                  <ChevronLeftGlyph className="w-[18px] h-[18px]" />
-                </button>
-                <h3 className="text-base font-semibold text-fg">{cap?.label}</h3>
-                {changed > 0 && (
-                  <button
-                    onClick={putBack}
-                    className="ml-auto text-sm font-semibold text-fg/45 transition-colors hover:text-fg active:scale-95"
-                  >
-                    Reset
-                  </button>
-                )}
-              </div>
-              <div>
-                <SettingSections fields={deeper} settings={settings} onChange={setSetting} />
-              </div>
-              <div className="flex items-center justify-end">
-                <button
-                  onClick={() => setScreen('agent')}
-                  className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold transition-all duration-150 hover:bg-fg/90 active:scale-95"
-                >
-                  Done
-                </button>
-              </div>
+          ) : screen === 'advanced' ? (
+            <div className="px-6 pt-5">
+              <SettingSections fields={deeper} settings={settings} onChange={setSetting} />
             </div>
-            ) : (
-            <div className="p-6 space-y-5">
-              <h3 className="text-base font-semibold text-fg">Add a provider</h3>
+          ) : (
+            <div className="px-6 pt-5 space-y-5">
               <div className="space-y-2">
                 <TextField
                   glass
@@ -396,29 +434,9 @@ export default function CreateAgent({ alone, compact }: { alone?: boolean; compa
                 </div>
               )}
               {addError && <p className="text-sm text-danger">{addError}</p>}
-              <div className="flex items-center justify-end gap-2">
-                <button
-                  onClick={() => {
-                    setAddError('')
-                    setScreen('agent')
-                  }}
-                  className="h-10 px-4 rounded-full text-sm font-semibold text-fg/45 transition-colors hover:text-fg"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => void addServer()}
-                  disabled={adding || !address.trim()}
-                  className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-2 transition-all duration-150 hover:bg-fg/90 active:scale-95 disabled:bg-fg/10 disabled:text-fg/45"
-                >
-                  {adding && <Spinner size={14} />}
-                  Add
-                </button>
-              </div>
             </div>
-            )}
-          </ScreenSwap>
-        </div>
+          )}
+        </ScreenSwap>
       </Modal>
     </>
   )
