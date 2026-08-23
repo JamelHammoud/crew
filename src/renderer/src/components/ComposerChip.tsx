@@ -7,18 +7,45 @@ import { CloseGlyph } from '../icons'
 export default function ComposerChip({
   mark,
   label,
+  pressLabel,
+  pressed,
+  onPress,
   removeLabel,
   onRemove
 }: {
   mark: ReactNode
   label: string
+  pressLabel?: string
+  pressed?: boolean
+  onPress?: () => void
   removeLabel: string
   onRemove: () => void
 }) {
-  return (
-    <span className="h-10 pl-4 pr-1.5 rounded-full border border-ink-600 flex items-center gap-2 text-sm text-fg shrink-0">
+  const contents = (
+    <>
       {mark}
       <span className="truncate">{label}</span>
+    </>
+  )
+
+  return (
+    <span
+      className={`h-10 pl-4 pr-1.5 rounded-full border flex items-center gap-2 text-sm text-fg shrink-0 transition-colors ${
+        pressed ? 'border-fg/20' : 'border-ink-600'
+      }`}
+    >
+      {onPress ? (
+        <button
+          onClick={onPress}
+          aria-label={pressLabel}
+          aria-expanded={pressed}
+          className="h-full flex items-center gap-2 min-w-0 text-fg/80 hover:text-fg transition-colors cursor-pointer"
+        >
+          {contents}
+        </button>
+      ) : (
+        contents
+      )}
       <button
         onClick={onRemove}
         aria-label={removeLabel}

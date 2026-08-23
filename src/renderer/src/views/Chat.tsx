@@ -273,7 +273,7 @@ export default function Chat({
               chips={[
                 // The standing one comes first, so a command arriving beside it
                 // never moves it out from under the pointer.
-                <DefaultAgentChip key="agent" />,
+                <DefaultAgentChip key="agent" inputRef={inputRef} />,
                 ...commands.map(name => (
                   <CommandChip
                     key={name}

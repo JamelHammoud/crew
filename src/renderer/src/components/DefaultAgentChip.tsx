@@ -1,7 +1,10 @@
+import { useState, type RefObject } from 'react'
 import { useDefaultAgent } from '../state/defaultAgent'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
 import ComposerChip from './ComposerChip'
+import DefaultAgentPicker from './DefaultAgentPicker'
+import { Popover } from './Popover'
 
 // Who takes what you send, standing in the composer until it is taken off. It
 // is the one chip that survives a send, since it is a standing choice rather
@@ -13,17 +16,32 @@ import ComposerChip from './ComposerChip'
 // the welcome, so a window still connecting has none of them yet and would take
 // the choice off on the way in, and a crew that never had them is one to walk
 // back out of with the choice still standing.
-export default function DefaultAgentChip() {
+export default function DefaultAgentChip({ inputRef }: { inputRef: RefObject<HTMLTextAreaElement> }) {
+  const [open, setOpen] = useState(false)
   const aimed = useDefaultAgent(s => s.agentId)
   const agent = useCrew(s => s.agents.find(held => held.id === aimed))
+  const anyone = useCrew(s => s.agents.some(held => held.status !== 'offline'))
   const aim = useDefaultAgent(s => s.aim)
   if (!agent) return null
   return (
-    <ComposerChip
-      mark={<AgentIcon seed={agent.id} size="xs" presence={agent.status === 'offline' ? 'offline' : 'online'} />}
-      label={agent.label}
-      removeLabel={`Stop sending to ${agent.label}`}
-      onRemove={() => aim(null)}
-    />
+    <span className="inline-flex">
+      <ComposerChip
+        mark={<AgentIcon seed={agent.id} size="xs" presence={agent.status === 'offline' ? 'offline' : 'online'} />}
+        label={agent.label}
+        pressLabel={anyone ? 'Choose another agent' : undefined}
+        pressed={open}
+        onPress={anyone ? () => setOpen(held => !held) : undefined}
+        removeLabel={`Stop sending to ${agent.label}`}
+        onRemove={() => aim(null)}
+      />
+      <Popover open={open} onClose={() => setOpen(false)} align="start" side="top" flush>
+        <DefaultAgentPicker
+          onPick={() => {
+            setOpen(false)
+            inputRef.current?.focus()
+          }}
+        />
+      </Popover>
+    </span>
   )
 }

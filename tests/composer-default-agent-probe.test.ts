@@ -148,6 +148,33 @@ describe('the agent standing on the chat composer', () => {
     expect(screen.getByLabelText('Stop sending to Kimi')).toBeTruthy()
   })
 
+  it('opens the agents from the standing chip and switches in place', () => {
+    const composer = open()
+    pick('Bubbles')
+
+    fireEvent.click(screen.getByLabelText('Choose another agent'))
+    expect(screen.getByText('Kimi').closest('button')).toBeTruthy()
+
+    const row = screen.getByText('Kimi').closest('button') as HTMLButtonElement
+    row.focus()
+    fireEvent.click(row)
+
+    expect(screen.queryByLabelText('Stop sending to Bubbles')).toBeNull()
+    expect(screen.getByLabelText('Stop sending to Kimi')).toBeTruthy()
+    expect(useDefaultAgent.getState().agentId).toBe('ali/kimi')
+    expect(document.activeElement).toBe(composer)
+  })
+
+  it('keeps the remove action separate from opening the agents', () => {
+    open()
+    pick('Bubbles')
+
+    fireEvent.click(screen.getByLabelText('Stop sending to Bubbles'))
+
+    expect(screen.queryByText('Kimi')).toBeNull()
+    expect(useDefaultAgent.getState().agentId).toBeNull()
+  })
+
   it('carries the plus from its rows to the faces in one movement', () => {
     open()
     fireEvent.click(screen.getByLabelText('Add to your message'))
