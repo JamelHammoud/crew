@@ -1,5 +1,5 @@
 import { promises as fs } from 'node:fs'
-import type { FileContentMatch } from '../shared/files'
+import type { FileContentMatch, FileContentSearch } from '../shared/files'
 import { listRepoFiles } from '../shared/repoFiles'
 import { resolveRepoPath } from './files'
 
@@ -12,11 +12,6 @@ type CachedFile = {
   size: number
   text: string | null
   partial: boolean
-}
-
-export type FileContentSearch = {
-  matches: FileContentMatch[]
-  limited: boolean
 }
 
 function matchText(line: string, at: number, length: number): Pick<FileContentMatch, 'text' | 'start' | 'end'> {

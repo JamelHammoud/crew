@@ -132,6 +132,11 @@ export interface FileContentMatch {
   end: number
 }
 
+export interface FileContentSearch {
+  matches: FileContentMatch[]
+  limited: boolean
+}
+
 function scan(text: string, needle: string, from: number): number[] | null {
   const hits: number[] = []
   let at = from

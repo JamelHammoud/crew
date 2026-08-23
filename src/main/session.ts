@@ -33,10 +33,10 @@ import {
   writeRepoFile,
   type MediaHost
 } from './files'
-import { FileSearch, type FileContentSearch } from './fileSearch'
+import { FileSearch } from './fileSearch'
 import { locatePath } from './locate'
 import { SavedSessionStore } from './saved-session'
-import type { PathLocation, RepoFile } from '../shared/files'
+import type { FileContentSearch, PathLocation, RepoFile } from '../shared/files'
 import type { MachineDir } from '../shared/machinePath'
 import { cleanMemberName } from '../shared/people'
 
