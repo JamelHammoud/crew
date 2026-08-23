@@ -28,37 +28,39 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
       <>
         <path
           data-part="book-body"
-          d="M50 18 C40 18 30 18 24 18 C20 18 17 22 17 27 C17 42 17 60 17 75 C17 81 21 84 27 84 C36 84 43 84 50 84 C57 84 64 84 73 84 C79 84 83 81 83 75 C83 60 83 42 83 27 C83 22 80 18 76 18 C70 18 60 18 50 18 Z"
+          d="M50 35 C40 27 27 24 13 28 C10 29 8 32 8 36 V75 C8 79 11 81 15 80 C29 76 41 79 50 86 C59 79 71 76 85 80 C89 81 92 79 92 75 V36 C92 32 90 29 87 28 C73 24 60 27 50 35 Z"
         />
         <path
-          data-part="book-line-left"
-          d="M20 46 C28 43 36 45 43 49 M20 58 C28 55 36 57 43 61"
+          data-part="book-line-one"
+          d="M20 46 C28 43 36 45 42 49"
           fill="none"
           stroke="#000"
           strokeWidth="4.5"
           strokeLinecap="round"
         />
         <path
-          data-part="book-line-right"
-          d="M57 49 C64 45 72 43 80 46 M57 61 C64 57 72 55 80 58"
+          data-part="book-line-two"
+          d="M20 58 C28 55 36 57 42 61"
           fill="none"
           stroke="#000"
           strokeWidth="4.5"
           strokeLinecap="round"
         />
         <path
-          data-part="page-turn-one"
-          d="M50 36 C60 28 72 26 84 29 C87 30 89 33 89 37 C89 48 89 59 89 70 C89 73 86 75 82 74 C70 71 59 75 50 82 C50 66 50 51 50 36 Z"
+          data-part="book-line-three"
+          d="M58 49 C64 45 72 43 80 46"
+          fill="none"
           stroke="#000"
-          strokeWidth="2.5"
-          strokeLinejoin="round"
+          strokeWidth="4.5"
+          strokeLinecap="round"
         />
         <path
-          data-part="page-turn-two"
-          d="M50 36 C60 28 72 26 84 29 C87 30 89 33 89 37 C89 48 89 59 89 70 C89 73 86 75 82 74 C70 71 59 75 50 82 C50 66 50 51 50 36 Z"
+          data-part="book-line-four"
+          d="M58 61 C64 57 72 55 80 58"
+          fill="none"
           stroke="#000"
-          strokeWidth="2.5"
-          strokeLinejoin="round"
+          strokeWidth="4.5"
+          strokeLinecap="round"
         />
         <path data-part="book-spine" d="M50 36 V84" fill="none" stroke="#000" strokeWidth="3" strokeLinecap="round" />
       </>
