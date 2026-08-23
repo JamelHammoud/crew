@@ -73,14 +73,7 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
             strokeLinecap="round"
           />
         </g>
-        <path
-          data-part="book-spine"
-          d="M50 36 V84"
-          fill="none"
-          stroke="#000"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
+        <path data-part="book-spine" d="M50 36 V84" fill="none" stroke="#000" strokeWidth="3" strokeLinecap="round" />
       </>
     )
   }

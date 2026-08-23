@@ -155,10 +155,34 @@ describe('subagents', () => {
     expect(out.parentThreadId).toBe(parent.threadId)
   })
 
+  it('returns to the agent that sent it after the parent thread changes hands', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    await connectRunner(5000, 20)
+    await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === fake)
+
+    const parent = await openParent(ui, steery)
+    const spawned = await post('/agents/spawn', {
+      promptId: parent.promptId,
+      name: 'Scout',
+      provider: 'fake',
+      subject: 'check ownership',
+      task: 'check ownership'
+    })
+    const child = spawned.body.threadId as string
+    await ui.waitForEvent(e => e.kind === 'subagent.ended' && e.threadId === child)
+    ui.chat('take over', [fake], parent.threadId)
+    await ui.waitForEvent(e => e.kind === 'thread.agent' && e.threadId === parent.threadId && e.agentId === fake)
+
+    const originalEnd = (await ui.waitForEvent(e => e.kind === 'agent.end' && e.promptId === parent.promptId)) as End
+    expect(originalEnd.agentId).toBe(steery)
+    expect(originalEnd.text).toContain('steered:Scout finished after')
+  })
+
   it('gathers a run of helpers finishing together into one interruption', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
-    await connectRunner(20, 20)
+    const secondRunner = await connectRunner(20, 20)
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === fake)
 
     const parent = await openParent(ui, fake)
@@ -367,6 +391,19 @@ describe('subagents', () => {
     expect(
       host.session.snapshot().events.filter(e => e.kind === 'subagent.returned' && e.threadId === child)
     ).toHaveLength(1)
+
+    secondUi.close()
+    secondRunner.close()
+    await host.close()
+
+    host = await startHost(repoPath)
+    base = host.url.replace('ws://', 'http://').replace('/ws', '')
+    const thirdUi = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(thirdUi)
+    await connectRunner(20, 20)
+    await thirdUi.waitForEvent(e => e.kind === 'agent.online' && e.agentId === steery)
+    await new Promise(resolve => setTimeout(resolve, 1800))
+    expect(thirdUi.events.some(e => e.kind === 'agent.start' && e.threadId === parent.threadId)).toBe(false)
   })
 
   it('comes back from a wait inside its bound rather than hanging on', async () => {
