@@ -136,7 +136,6 @@ function Builder({ tool, onClose }: { tool: CrewTool | null; onClose: () => void
           onChange={took}
         />
       </div>
-
     </Modal>
   )
 }

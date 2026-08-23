@@ -4,15 +4,7 @@ import { FolderGlyph } from '../../icons'
 
 // Somebody else's session. It still needs a folder on this machine, because
 // that is where any agent you bring along does its work.
-export function JoinLinkAction({
-  busy,
-  glass,
-  onJoin
-}: {
-  busy: boolean
-  glass?: boolean
-  onJoin: () => void
-}) {
+export function JoinLinkAction({ busy, glass, onJoin }: { busy: boolean; glass?: boolean; onJoin: () => void }) {
   const size = glass ? 'h-10 text-sm' : 'h-12 text-base'
   return (
     <button

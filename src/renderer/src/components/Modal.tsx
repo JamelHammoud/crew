@@ -77,9 +77,7 @@ export default function Modal({
         >
           {children}
         </div>
-        {footer !== undefined && (
-          <div className={`shrink-0 ${flush ? '' : 'px-6 pb-6 pt-5'}`}>{footer}</div>
-        )}
+        {footer !== undefined && <div className={`shrink-0 ${flush ? '' : 'px-6 pb-6 pt-5'}`}>{footer}</div>}
       </div>
     </div>,
     document.body
