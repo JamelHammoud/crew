@@ -72,7 +72,7 @@ describe('find in an open webpage', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Find in page' }))
     const input = screen.getByRole('textbox', { name: 'Find in page' })
-    expect(input).toHaveFocus()
+    expect(document.activeElement).toBe(input)
 
     fireEvent.change(input, { target: { value: 'crew' } })
     expect(findInPage).toHaveBeenLastCalledWith('crew', { forward: true, findNext: false })
@@ -144,6 +144,6 @@ describe('find in an open webpage', () => {
     useBrowser.setState({ tabs: [], activeTabId: null, open: false })
     useBrowser.getState().addTab()
     const empty = render(createElement(BrowserPanel))
-    expect(empty.getByRole('button', { name: 'Find in page' })).toBeDisabled()
+    expect((empty.getByRole('button', { name: 'Find in page' }) as HTMLButtonElement).disabled).toBe(true)
   })
 })
