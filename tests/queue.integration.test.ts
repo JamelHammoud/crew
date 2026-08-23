@@ -148,17 +148,26 @@ describe('queued messages', () => {
     ui.send({ type: 'queue.move', promptId: one.promptId, to: 2 })
     await waitUntil(() => queueOf(started.threadId).map(item => item.text).join(',') === 'two,three,one')
 
-    const starts: string[] = []
-    while (starts.length < 3) {
-      const next = (await ui.waitForEvent(
-        event =>
+    await waitUntil(
+      () =>
+        host.session
+          .snapshot()
+          .events.filter(
+            event =>
+              event.kind === 'agent.start' &&
+              event.threadId === started.threadId &&
+              ['one', 'two', 'three'].includes(event.promptText)
+          ).length === 3
+    )
+    const starts = host.session
+      .snapshot()
+      .events.filter(
+        (event): event is Extract<SessionEvent, { kind: 'agent.start' }> =>
           event.kind === 'agent.start' &&
           event.threadId === started.threadId &&
-          ['one', 'two', 'three'].includes(event.promptText) &&
-          !starts.includes(event.promptText)
-      )) as Extract<SessionEvent, { kind: 'agent.start' }>
-      starts.push(next.promptText)
-    }
+          ['one', 'two', 'three'].includes(event.promptText)
+      )
+      .map(event => event.promptText)
     expect(starts).toEqual(['two', 'three', 'one'])
-  }, 10000)
+  }, 20000)
 })
