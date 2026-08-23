@@ -142,18 +142,20 @@ export default function Chat({ personal = false, onStart }: { personal?: boolean
   const send = () => {
     if (!text.trim() && pendingCount(CHAT_KEY) === 0) return
     const startId = personal ? globalThis.crypto.randomUUID() : undefined
-    const target = aimOf(text, agents, aimed) ?? (personal ? agents.find(agent => agent.status !== 'offline')?.id : undefined)
+    const targets =
+      aimOf(text, agents, aimed) ??
+      (personal ? agents.filter(agent => agent.status !== 'offline').slice(0, 1).map(agent => agent.id) : undefined)
     sendChat(
       text,
       undefined,
       undefined,
       replyTo?.reactionTargetId,
-      target ? [target] : undefined,
+      targets,
       commands,
       useMessagePlugin.getState().picked[CHAT_KEY],
       startId
     )
-    if (startId && target) onStart?.(startId)
+    if (startId && targets?.length) onStart?.(startId)
     useMessagePlugin.getState().taken(CHAT_KEY)
     setReplyTo(null)
     mention.close()
