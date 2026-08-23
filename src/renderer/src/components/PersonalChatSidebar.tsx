@@ -112,7 +112,7 @@ export default function PersonalChatSidebar({
           {groups.map(group => (
             <section key={group.label}>
               <h2 className="px-2 mb-1.5 text-xs font-semibold text-fg/45">{group.label}</h2>
-              <div data-personal-history-group className="space-y-1">
+              <div data-personal-history-group className="flex flex-col gap-1">
                 {group.chats.map(one => {
                   const title = stripMention(one.title, one.agentLabel) || 'Untitled'
                   const at = activity[one.id] ?? one.startedAt ?? 0
