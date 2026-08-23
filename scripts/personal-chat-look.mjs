@@ -135,20 +135,19 @@ const READ = \`(() => {
   const named = name => [...document.querySelectorAll('button')].find(button => button.getAttribute('aria-label') === name)
   const plus = named('New personal chat')
   const composer = document.querySelector('textarea[placeholder="Message"]')
-  const drawer = document.querySelector('[data-personal-history]')
+  const history = document.querySelector('[data-personal-history]')
+  const content = document.querySelector('[data-personal-chat-content]')
   const current = document.querySelector('button[aria-current="page"]')
-  const group = current?.closest('section')?.querySelector('.rounded-card')
+  const group = current?.closest('section')?.querySelector('[data-personal-history-group]')
   return {
     plus: box(plus),
     plusOpacity: plus ? getComputedStyle(plus).opacity : null,
     composer: box(composer),
     composerFocused: composer === document.activeElement,
-    history: box(named('Chat history')),
+    history: box(history),
+    content: box(content),
     threadHeader: Boolean(named('Mark done') || named('Back to chat')),
-    drawer: box(drawer),
-    drawerHidden: drawer?.getAttribute('aria-hidden'),
-    drawerTransform: drawer ? getComputedStyle(drawer).transform : null,
-    drawerText: drawer?.textContent ?? '',
+    historyText: history?.textContent ?? '',
     current: box(current),
     currentBackground: current ? getComputedStyle(current).backgroundColor : null,
     groupGap: group ? getComputedStyle(group).rowGap : null
