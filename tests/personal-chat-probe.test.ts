@@ -2,6 +2,7 @@ import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import PersonalChatWindow from '../src/renderer/src/views/PersonalChatWindow'
+import { setPref } from '../src/renderer/src/state/prefs'
 import { useCrew, type ThreadMeta } from '../src/renderer/src/state/store'
 import type { SessionEvent } from '../src/shared/events'
 import type { PooledAgent } from '../src/shared/llm'
@@ -55,6 +56,7 @@ beforeEach(() => {
   renameThread.mockClear()
   deleteThread.mockClear()
   window.crew = { listFiles: async () => [] } as unknown as CrewBridge
+  setPref('glassSidebar', true)
   useCrew.setState({
     connection: 'online',
     place: 'personal',
@@ -93,6 +95,16 @@ describe('a personal chat window', () => {
     expect(screen.getByRole('button', { name: 'New chat' })).toBeTruthy()
     expect(screen.getByRole('textbox', { name: 'Search chats' })).toBeTruthy()
     expect(screen.queryByText('Ask Crew')).toBeNull()
+  })
+
+  it('follows the glass sidebar setting', () => {
+    render(createElement(PersonalChatWindow))
+    const sidebar = document.querySelector('[data-personal-history]')
+    expect(sidebar?.classList.contains('sidebar-pinned')).toBe(true)
+
+    act(() => setPref('glassSidebar', false))
+    expect(sidebar?.classList.contains('sidebar-pinned')).toBe(false)
+    expect(sidebar?.classList.contains('bg-ink-900')).toBe(true)
   })
 
   it('collapses and restores the chat list without remounting the conversation', () => {
