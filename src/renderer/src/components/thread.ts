@@ -389,8 +389,7 @@ export function describeStep(step: AgentStep | undefined): string {
 const stepItem = (step: AgentStep, author: string, promptId: string, live: boolean): ThreadItem | null => {
   const streaming = live && step.status === 'running'
   if (step.kind === 'tool' || step.kind === 'subagent') {
-    const crewCall =
-      step.kind === 'tool' && toolAction(step.name).terminal ? crewToolCall(step.detail ?? '') : null
+    const crewCall = step.kind === 'tool' && toolAction(step.name).terminal ? crewToolCall(step.detail ?? '') : null
     if (crewCall?.kind === 'design') {
       return {
         key: `${promptId}:${step.id}`,

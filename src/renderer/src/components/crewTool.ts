@@ -1,6 +1,4 @@
-export type CrewToolCall =
-  | { kind: 'design'; boardId: string; action: 'read' | 'edit' }
-  | { kind: 'hidden' }
+export type CrewToolCall = { kind: 'design'; boardId: string; action: 'read' | 'edit' } | { kind: 'hidden' }
 
 const URL = /https?:\/\/[^\s'"`|;&<>()]+/gi
 const BOARD_ID = /^[a-z0-9][a-z0-9-]*$/
@@ -15,8 +13,7 @@ const local = (url: globalThis.URL): boolean => {
 const route = (url: globalThis.URL): string[] | null => {
   const parts = url.pathname.split('/').filter(Boolean)
   if (parts[0] === 'design' || INTERNAL.has(parts[0] ?? '')) return parts
-  if (CREW_CODE.test(parts[0] ?? '') && (parts[1] === 'design' || INTERNAL.has(parts[1] ?? '')))
-    return parts.slice(1)
+  if (CREW_CODE.test(parts[0] ?? '') && (parts[1] === 'design' || INTERNAL.has(parts[1] ?? ''))) return parts.slice(1)
   return null
 }
 

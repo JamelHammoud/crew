@@ -33,10 +33,7 @@ describe('design API work in a thread', () => {
           'edit',
           `curl -s -X POST http://localhost:59206/6329c2/design/landing-1abc/ops -H 'content-type: application/json'`
         ),
-        step(
-          'direct-pipe',
-          'curl -s http://127.0.0.1:2739/design/untitled-4lus | python3 -c \'import json,sys\''
-        ),
+        step('direct-pipe', "curl -s http://127.0.0.1:2739/design/untitled-4lus | python3 -c 'import json,sys'"),
         step('quoted-query', "wget -qO- 'http://[::1]:2739/design/other-2abc?fresh=1'")
       ]
     }
