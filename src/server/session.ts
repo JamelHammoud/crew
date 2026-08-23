@@ -553,7 +553,7 @@ export class CrewSession {
             e.kind !== 'message.deleted' &&
             e.kind !== 'message.edited' &&
             e.kind !== 'huddle.deleted' &&
-            !('threadId' in e && deletedThreads.has(e.threadId) && e.kind !== 'thread.deleted') &&
+            !('threadId' in e && typeof e.threadId === 'string' && deletedThreads.has(e.threadId) && e.kind !== 'thread.deleted') &&
             !(e.kind === 'message' && deleted.has(e.id)) &&
             !(e.kind === 'message.reaction' && deletedTargets.has(e.targetId)) &&
             !inDeletedHuddle(e)
