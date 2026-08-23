@@ -8,19 +8,14 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
     return (
       <>
         <g data-part="thought-cloud">
-          <ellipse data-part="thought-core" cx="50" cy="48" rx="34" ry="24" />
-          <circle data-part="thought-lobe-one" cx="23" cy="35" r="19" />
-          <circle data-part="thought-lobe-two" cx="45" cy="24" r="23" />
-          <circle data-part="thought-lobe-three" cx="72" cy="34" r="20" />
-          <circle data-part="thought-lobe-four" cx="77" cy="55" r="20" />
-          <circle data-part="thought-lobe-five" cx="53" cy="65" r="20" />
-          <circle data-part="thought-lobe-six" cx="27" cy="58" r="19" />
+          <ellipse data-part="thought-core" cx="50" cy="53" rx="40" ry="31" />
+          <circle data-part="thought-lobe-one" cx="26" cy="33" r="20" />
+          <circle data-part="thought-lobe-two" cx="49" cy="25" r="23" />
+          <circle data-part="thought-lobe-three" cx="74" cy="34" r="20" />
         </g>
-        <circle data-part="thought-tail-one" cx="25" cy="84" r="7.5" />
-        <circle data-part="thought-tail-two" cx="13" cy="94" r="4" />
-        <circle data-part="thought-dot-one" cx="33" cy="45" r="7" fill="#000" />
-        <circle data-part="thought-dot-two" cx="51" cy="45" r="7" fill="#000" />
-        <circle data-part="thought-dot-three" cx="69" cy="45" r="7" fill="#000" />
+        <circle data-part="thought-dot-one" cx="31" cy="52" r="7.5" fill="#000" />
+        <circle data-part="thought-dot-two" cx="50" cy="52" r="7.5" fill="#000" />
+        <circle data-part="thought-dot-three" cx="69" cy="52" r="7.5" fill="#000" />
       </>
     )
   }

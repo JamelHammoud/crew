@@ -20,7 +20,6 @@ export const FIELD_LIGHT = 1
 export const PET_SHAPE_KINDS = [
   'circle',
   'teardrop',
-  'cloud',
   'square',
   'egg',
   'capsule',
@@ -32,6 +31,22 @@ export const PET_SHAPE_KINDS = [
   'decagon',
   'bean'
 ] as const
+
+const PET_SHAPE_STREAM: readonly PetShapeKind[] = [
+  'circle',
+  'teardrop',
+  'circle',
+  'square',
+  'egg',
+  'capsule',
+  'triangle',
+  'pentagon',
+  'hexagon',
+  'tall-hexagon',
+  'octagon',
+  'decagon',
+  'bean'
+]
 
 export type PetShapeKind = (typeof PET_SHAPE_KINDS)[number]
 
@@ -56,7 +71,6 @@ interface EyeRoom {
 const EYE_ROOMS: Record<PetShapeKind, EyeRoom> = {
   circle: { left: 18, right: 82, top: 15, bottom: 70 },
   teardrop: { left: 24, right: 79, top: 21, bottom: 68 },
-  cloud: { left: 22, right: 83, top: 25, bottom: 69 },
   square: { left: 16, right: 84, top: 14, bottom: 72 },
   egg: { left: 21, right: 79, top: 16, bottom: 70 },
   capsule: { left: 14, right: 86, top: 28, bottom: 72 },
@@ -72,7 +86,6 @@ const EYE_ROOMS: Record<PetShapeKind, EyeRoom> = {
 const EYE_SCALES: Record<PetShapeKind, number> = {
   circle: 1,
   teardrop: 0.92,
-  cloud: 0.96,
   square: 1,
   egg: 1,
   capsule: 0.82,
@@ -154,9 +167,6 @@ function bodyFor(kind: PetShapeKind, variant: number, box: number): string {
   if (kind === 'teardrop') {
     return `M ${at(46)} ${at(10)} C ${at(48)} ${at(7)} ${at(52)} ${at(7)} ${at(54)} ${at(10)} C ${at(62 + v)} ${at(22)} ${at(84)} ${at(38 - v)} ${at(87)} ${at(56)} C ${at(90)} ${at(76)} ${at(74)} ${at(91)} ${at(51)} ${at(92)} C ${at(28)} ${at(93)} ${at(11)} ${at(77)} ${at(14)} ${at(56)} C ${at(17)} ${at(38)} ${at(38 - v)} ${at(22)} ${at(46)} ${at(10)} Z`
   }
-  if (kind === 'cloud') {
-    return `M ${at(19)} ${at(76)} C ${at(7)} ${at(71)} ${at(6)} ${at(54)} ${at(17)} ${at(46)} C ${at(14)} ${at(31)} ${at(31)} ${at(21 - v)} ${at(44)} ${at(28)} C ${at(54)} ${at(14)} ${at(76)} ${at(21)} ${at(78)} ${at(39)} C ${at(94)} ${at(40)} ${at(98)} ${at(62)} ${at(85)} ${at(70)} C ${at(77)} ${at(84)} ${at(58 + v)} ${at(83)} ${at(49)} ${at(78)} C ${at(39)} ${at(87)} ${at(26)} ${at(84)} ${at(19)} ${at(76)} Z`
-  }
   if (kind === 'square') {
     return `M ${at(28)} ${at(9 + v)} C ${at(16)} ${at(10)} ${at(10)} ${at(17)} ${at(9)} ${at(29)} L ${at(8)} ${at(71)} C ${at(8)} ${at(84)} ${at(16)} ${at(91)} ${at(29)} ${at(92)} L ${at(72)} ${at(91 - v)} C ${at(85)} ${at(91)} ${at(92)} ${at(83)} ${at(92)} ${at(70)} L ${at(91)} ${at(28)} C ${at(91)} ${at(15)} ${at(83)} ${at(8)} ${at(70)} ${at(8)} Z`
   }
@@ -184,7 +194,7 @@ export function petPath(pet: Pick<Pet, 'kind' | 'variant'>, box: number = PET_GR
 function makePet(seed: string): Pet {
   const rand = prng(seed)
   const hue = Math.floor(rand() * 360)
-  const kind = PET_SHAPE_KINDS[Math.floor(rand() * PET_SHAPE_KINDS.length)]
+  const kind = PET_SHAPE_STREAM[Math.floor(rand() * PET_SHAPE_STREAM.length)]
   const variant = rand() * 2 - 1
   rand()
   const yRoll = rand()
