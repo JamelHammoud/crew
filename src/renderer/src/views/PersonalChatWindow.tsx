@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ChatGlyph, ClockGlyph, CloseGlyph, PencilGlyph, PlusGlyph, SearchGlyph, TrashGlyph } from '../icons'
 import { stripMention } from '../../../shared/llm'
+import AgentIcon from '../components/AgentIcon'
 import Tooltip from '../components/Tooltip'
 import Toaster from '../components/Toaster'
 import { TOP_BAR_H } from '../components/TopBar'
@@ -227,16 +228,19 @@ export default function PersonalChatWindow() {
                               <button
                                 onClick={() => open(one.id)}
                                 data-active={one.id === active ? '' : undefined}
-                                className="w-full min-h-14 pl-4 pr-20 py-2 rounded-[15px] text-left transition-colors duration-150 hover:bg-fg/[0.05] data-active:bg-fg/[0.08]"
+                                className="w-full min-h-14 pl-4 pr-20 py-2 rounded-[15px] flex items-center gap-3 text-left transition-colors duration-150 hover:bg-fg/[0.05] data-active:bg-fg/[0.08]"
                               >
-                                <span
-                                  className={`block text-sm font-medium truncate ${
-                                    one.id === active ? 'text-fg' : 'text-fg/80 group-hover/history:text-fg'
-                                  }`}
-                                >
-                                  {title}
+                                <AgentIcon seed={one.agentId} size="sm" />
+                                <span className="min-w-0 flex-1">
+                                  <span
+                                    className={`block text-sm font-medium truncate ${
+                                      one.id === active ? 'text-fg' : 'text-fg/80 group-hover/history:text-fg'
+                                    }`}
+                                  >
+                                    {title}
+                                  </span>
+                                  <span className="block mt-0.5 text-xs text-fg/40 truncate">{one.agentLabel}</span>
                                 </span>
-                                <span className="block mt-0.5 text-xs text-fg/40 truncate">{one.agentLabel}</span>
                               </button>
                             )}
                             {editing !== one.id && (
