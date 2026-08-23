@@ -34,6 +34,7 @@ import { markFor } from './attachmentMark'
 import { usePanelOpens, type PanelOpen } from './panelOpens'
 import { bringInto } from './scrollInto'
 import { useReorder, type Reorder } from './useReorder'
+import { useScrollFade } from './useScrollFade'
 import AsideView from './AsideView'
 import AttachmentView from './attachment/AttachmentView'
 import BrowserTabView, { viewFor } from './BrowserTabView'
@@ -104,6 +105,7 @@ export default function BrowserPanel() {
   const opens = usePanelOpens()
   const strip = useRef<HTMLDivElement | null>(null)
   const row = useReorder((id, to) => useBrowser.getState().moveTab(id, to))
+  useScrollFade(strip, 'horizontal')
   // The plan comes with the thread you are in and goes when you leave it.
   const planThread = useCrew(s => (s.openThreadId && s.threads[s.openThreadId]?.plan ? s.openThreadId : null))
 
@@ -168,7 +170,7 @@ export default function BrowserPanel() {
             row.ref(node)
             strip.current = node
           }}
-          className="app-no-drag flex-1 min-w-0 flex items-center gap-1.5 overflow-x-auto overflow-y-hidden no-scrollbar"
+          className="scroll-fade-x app-no-drag flex-1 min-w-0 flex items-center gap-1.5 overflow-x-auto overflow-y-hidden no-scrollbar"
         >
           {tabs.length === 0 && <StartPill />}
           {tabs.map(tab => (

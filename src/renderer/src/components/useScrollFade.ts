@@ -1,16 +1,22 @@
 import { useEffect, type RefObject } from 'react'
 
 const EDGE = 1
+type Axis = 'horizontal' | 'vertical'
 
-export function useScrollFade(ref: RefObject<HTMLElement | null>): void {
+export function useScrollFade(ref: RefObject<HTMLElement | null>, axis: Axis = 'vertical'): void {
   useEffect(() => {
     const el = ref.current
     if (!el) return
     let frame = 0
     const read = (): void => {
       frame = 0
-      el.toggleAttribute('data-fade-top', el.scrollTop > EDGE)
-      el.toggleAttribute('data-fade-bottom', el.scrollTop + el.clientHeight < el.scrollHeight - EDGE)
+      if (axis === 'horizontal') {
+        el.toggleAttribute('data-fade-left', el.scrollLeft > EDGE)
+        el.toggleAttribute('data-fade-right', el.scrollLeft + el.clientWidth < el.scrollWidth - EDGE)
+      } else {
+        el.toggleAttribute('data-fade-top', el.scrollTop > EDGE)
+        el.toggleAttribute('data-fade-bottom', el.scrollTop + el.clientHeight < el.scrollHeight - EDGE)
+      }
     }
     const soon = (): void => {
       if (frame) return
@@ -28,5 +34,5 @@ export function useScrollFade(ref: RefObject<HTMLElement | null>): void {
       box.disconnect()
       rows.disconnect()
     }
-  }, [ref])
+  }, [axis, ref])
 }

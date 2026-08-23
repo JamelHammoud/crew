@@ -139,6 +139,8 @@ export function useReorder(onMove: (id: string, to: number) => void, options: Op
     // reading happens on a frame of its own as well as on every move.
     const step = () => {
       frame = requestAnimationFrame(step)
+      tick()
+      if (!taken) return
       const past = pointer - start
       if (past < EDGE) {
         if (vertical) strip.scrollTop -= STEP
@@ -147,7 +149,6 @@ export function useReorder(onMove: (id: string, to: number) => void, options: Op
         if (vertical) strip.scrollTop += STEP
         else strip.scrollLeft += STEP
       }
-      tick()
     }
 
     const move = (moved: PointerEvent) => {

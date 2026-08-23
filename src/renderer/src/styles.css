@@ -533,6 +533,18 @@ textarea:placeholder-shown {
   initial-value: 0px;
 }
 
+@property --fade-left {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --fade-right {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
 .rail-threads {
   --rail-row: calc(var(--text-sm--line-height) + 12px);
   --rail-gap: 2px;
@@ -561,8 +573,31 @@ textarea:placeholder-shown {
   --fade-bottom: var(--fade-run);
 }
 
+.scroll-fade-x {
+  --fade-run: 24px;
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--fade-left),
+    #000 calc(100% - var(--fade-right)),
+    transparent 100%
+  );
+  transition:
+    --fade-left 0.15s ease-out,
+    --fade-right 0.15s ease-out;
+}
+
+.scroll-fade-x[data-fade-left] {
+  --fade-left: var(--fade-run);
+}
+
+.scroll-fade-x[data-fade-right] {
+  --fade-right: var(--fade-run);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .scroll-fade {
+  .scroll-fade,
+  .scroll-fade-x {
     transition-duration: 1ms;
   }
 }

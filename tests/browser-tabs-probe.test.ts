@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act, fireEvent, render } from '@testing-library/react'
+import { act, fireEvent, render, waitFor } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { cleanup } from '@testing-library/react'
@@ -182,6 +182,24 @@ describe('the tab strip', () => {
     expect(scrolled.map(one => one.top)).toEqual([0])
   })
 
+  it('fades only the end that has more tabs past it', async () => {
+    openFour()
+    const { container } = render(createElement(BrowserPanel))
+    const row = rowOf(container) as HTMLElement
+    Object.defineProperty(row, 'clientWidth', { value: VIEW, configurable: true })
+    Object.defineProperty(row, 'scrollWidth', { value: 490, configurable: true })
+
+    fireEvent.scroll(row)
+    await waitFor(() => expect(row.hasAttribute('data-fade-right')).toBe(true))
+    expect(row.className).toContain('scroll-fade-x')
+    expect(row.hasAttribute('data-fade-left')).toBe(false)
+
+    row.scrollLeft = 190
+    fireEvent.scroll(row)
+    await waitFor(() => expect(row.hasAttribute('data-fade-left')).toBe(true))
+    expect(row.hasAttribute('data-fade-right')).toBe(false)
+  })
+
   it('closes one tab from its own menu', () => {
     openTwo()
     const { container, getByText } = render(createElement(BrowserPanel))
@@ -288,6 +306,34 @@ describe('the tab strip', () => {
 
     expect(order()).toEqual([first, second])
     expect(useBrowser.getState().activeTabId).toBe(first)
+  })
+
+  it('does not carry the strip while a tab near its edge is being clicked', () => {
+    openFour()
+    const [, second] = order()
+    const { container } = render(createElement(BrowserPanel))
+    const items = laidOut(container)
+    const row = rowOf(container) as HTMLElement
+    row.scrollLeft = 90
+    let next: FrameRequestCallback | null = null
+    const request = vi.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => {
+      next = callback
+      return 1
+    })
+    const cancel = vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => undefined)
+
+    act(() => {
+      fireEvent.pointerDown(items[1]!, { button: 0, clientX: 10 })
+      const frame = next as FrameRequestCallback | null
+      frame?.(0)
+      fireEvent.pointerUp(window)
+      fireEvent.click(items[1]!)
+    })
+
+    expect(row.scrollLeft).toBe(90)
+    expect(useBrowser.getState().activeTabId).toBe(second)
+    request.mockRestore()
+    cancel.mockRestore()
   })
 
   // A drag is arranging the row rather than going anywhere, so the tab that is up
