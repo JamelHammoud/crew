@@ -132,6 +132,7 @@ export type SessionEvent =
       helper?: string
       subject?: string
       depth?: number
+      helperModel?: string
       notify?: boolean
     }
   | { id: string; ts: number; kind: 'thread.plan'; threadId: string; text: string; agentId: string; agentLabel: string }
@@ -253,6 +254,7 @@ export type SessionEvent =
       agentId: string
       agentLabel: string
       byName: string
+      model?: string
     }
   | {
       id: string

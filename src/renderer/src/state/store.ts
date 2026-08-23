@@ -114,6 +114,7 @@ export interface ThreadMeta {
   helper?: string
   subject?: string
   depth?: number
+  helperModel?: string
 }
 
 export type DesignServerMessage = Extract<
@@ -526,7 +527,8 @@ const foldThread = (threads: Record<string, ThreadMeta>, event: SessionEvent): b
         parentPromptId: event.parentPromptId,
         helper: event.helper,
         subject: event.subject,
-        depth: event.depth
+        depth: event.depth,
+        helperModel: event.helperModel
       }
       return true
     case 'thread.plan':
