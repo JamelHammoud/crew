@@ -147,7 +147,8 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
   const docRef = useRef('')
   const selection = useRef<FileSelection>({ start: 0, end: 0, direction: 'none' })
   const history = useRef(createFileHistory())
-  const pendingInput = useRef<{ selection: FileSelection; inputType: string } | null>(null)
+  const pendingInput = useRef<{ selection: FileSelection; inputType: string; scrollLeft: number } | null>(null)
+  const heldScrollLeft = useRef<number | null>(null)
   const last = useRef(0)
   const composing = useRef(false)
   const scrolled = useRef<{ load: number; target: number | null }>({ load: -1, target: null })
@@ -229,7 +230,13 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
 
   useLayoutEffect(() => {
     const area = areaRef.current
-    if (!area || composing.current) return
+    const body = bodyRef.current
+    if (!area) return
+    if (composing.current) {
+      if (body && heldScrollLeft.current !== null) body.scrollLeft = heldScrollLeft.current
+      heldScrollLeft.current = null
+      return
+    }
     if (area.value !== shown) area.value = shown
     const want = caret.current
     if (want === null) return
@@ -243,6 +250,8 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
     if (document.activeElement === area) setActiveRow(index)
     const row = bodyRef.current?.querySelector(`[data-row="${index}"]`)
     if (row instanceof HTMLElement) bringIntoY(row, bodyRef.current)
+    if (body && heldScrollLeft.current !== null) body.scrollLeft = heldScrollLeft.current
+    heldScrollLeft.current = null
   }, [tick, shown, rows])
 
   useEffect(() => {
@@ -267,6 +276,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
     kind: FileEditKind = 'command',
     beforeSelection?: FileSelection
   ) => {
+    if (heldScrollLeft.current === null) heldScrollLeft.current = bodyRef.current?.scrollLeft ?? null
     const before = beforeSelection ?? (areaRef.current ? readSelection(areaRef.current) : selection.current)
     const edit = editDoc(rows, doc, shown, next)
     let after: FileSelection
@@ -291,6 +301,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
 
   const restore = (snapshot: FileSnapshot | null) => {
     if (!snapshot) return
+    heldScrollLeft.current = bodyRef.current?.scrollLeft ?? null
     caret.current = snapshot.selection
     selection.current = snapshot.selection
     pendingInput.current = null
@@ -345,12 +356,15 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
       else redo()
       return
     }
-    pendingInput.current = { selection: readSelection(event.currentTarget), inputType }
+    const scrollLeft = bodyRef.current?.scrollLeft ?? 0
+    heldScrollLeft.current = scrollLeft
+    pendingInput.current = { selection: readSelection(event.currentTarget), inputType, scrollLeft }
   }
 
   const onEdit = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const pending = pendingInput.current
     pendingInput.current = null
+    if (pending) heldScrollLeft.current = pending.scrollLeft
     const inputType = pending?.inputType || (event.nativeEvent as InputEvent).inputType || ''
     apply(event.target.value, undefined, kindOf(inputType), pending?.selection ?? selection.current)
   }
@@ -464,6 +478,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
                   }}
                   onCompositionEnd={() => {
                     composing.current = false
+                    setTick(value => value + 1)
                   }}
                   aria-label="File contents"
                   spellCheck={false}
