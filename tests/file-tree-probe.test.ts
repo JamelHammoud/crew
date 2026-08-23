@@ -50,14 +50,14 @@ beforeEach(() => {
     listFiles: async () => listed,
     searchFiles: async (query: string) => ({
       matches:
-        query.toLowerCase() === 'implementation detail'
+        query.toLowerCase() === 'implementationdetail'
           ? [
               {
                 path: 'src/renderer/panel.tsx',
                 line: 7,
                 text: 'const implementationDetail = true',
                 start: 6,
-                end: 27
+                end: 26
               }
             ]
           : [],
@@ -174,7 +174,7 @@ describe('the file explorer', () => {
     fireEvent.click(screen.getByLabelText('Show files'))
 
     fireEvent.change(await screen.findByLabelText('Search files'), {
-      target: { value: 'implementation detail' }
+      target: { value: 'implementationDetail' }
     })
 
     const result = await waitFor(() => {
