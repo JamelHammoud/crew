@@ -59,11 +59,9 @@ describe('personal chat history', () => {
     const second = await startHost(folder)
     hosts.push(second)
     expect(
-      second.session
-        .snapshot()
-        .threadEvents.some(
-          event => event.kind === 'thread.renamed' && event.threadId === threadId && event.title === 'The useful answer'
-        )
+      (second.session.snapshot().threadEvents ?? []).some(
+        event => event.kind === 'thread.renamed' && event.threadId === threadId && event.title === 'The useful answer'
+      )
     ).toBe(true)
 
     const secondUi = await TestUi.connect(second.url, 'Jamel', second.code)
@@ -77,7 +75,7 @@ describe('personal chat history', () => {
 
     const third = await startHost(folder)
     hosts.push(third)
-    const events = third.session.snapshot().threadEvents
+    const events = third.session.snapshot().threadEvents ?? []
     expect(events.some(event => event.kind === 'thread.started' && event.threadId === threadId)).toBe(false)
     expect(events.some(event => event.kind === 'thread.deleted' && event.threadId === threadId)).toBe(true)
   })
