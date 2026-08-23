@@ -221,8 +221,10 @@ describe('the tab strip', () => {
     fireEvent.click(getByRole('button', { name: 'Search tabs' }))
     fireEvent.change(getByRole('textbox', { name: 'Search tabs' }), { target: { value: 'second' } })
 
-    expect(queryByText('First page')).toBeNull()
-    expect(getByRole('button', { name: /Second page/ })).toBeTruthy()
+    const results = Array.from(document.querySelectorAll('[data-tab-result]'))
+    expect(results).toHaveLength(1)
+    expect(results[0]!.textContent).toContain('Second page')
+    expect(queryByText('First page')).toBeTruthy()
   })
 
   it('opens a tab from the switcher and brings its pill into view', () => {
@@ -234,7 +236,7 @@ describe('the tab strip', () => {
     scrolled.length = 0
 
     fireEvent.click(getByRole('button', { name: 'Search tabs' }))
-    fireEvent.click(getByRole('button', { name: /First page/ }))
+    fireEvent.click(document.querySelector(`[data-tab-result="${first.id}"] button`)!)
 
     expect(useBrowser.getState().activeTabId).toBe(first.id)
     expect(scrolled.at(-1)?.left).toBe(0)
@@ -242,7 +244,7 @@ describe('the tab strip', () => {
 
   it('closes a tab from the switcher without opening it', () => {
     openThree()
-    const [first, , third] = useBrowser.getState().tabs
+    const [first, second, third] = useBrowser.getState().tabs
     act(() => useBrowser.getState().updateTab(second!.id, { title: 'Middle page' }))
     const { getByRole } = render(createElement(BrowserPanel))
 
@@ -264,7 +266,7 @@ describe('the tab strip', () => {
 
   it('cycles through tabs in both directions', () => {
     openThree()
-    const [first, second, third] = useBrowser.getState().tabs
+    const [first, , third] = useBrowser.getState().tabs
     render(createElement(BrowserPanel))
 
     fireEvent.keyDown(window, { key: 'Tab', ctrlKey: true })
@@ -495,7 +497,7 @@ describe('the tab strip', () => {
     const [, second] = order()
     const { container } = render(createElement(BrowserPanel))
 
-    fireEvent.auxClick(pillFor(container, order()[0]!)!, { button: 1 })
+    pillFor(container, order()[0]!)!.dispatchEvent(new MouseEvent('auxclick', { button: 1, bubbles: true }))
 
     expect(order()).toEqual([second])
   })
