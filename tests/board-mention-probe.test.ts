@@ -153,15 +153,25 @@ describe('a design API chip', () => {
     expect(useCrew.getState().designTarget).toBe('landing-1abc')
   })
 
-  it('keeps the tool-call gap between design chips in one run', () => {
+  it('keeps the tool-call gap around design chips in one run', () => {
     boot(false)
     cleanup()
-    render(
+    const { container } = render(
       createElement(ThreadItems, {
         items: [
           {
-            key: 'design-read',
+            key: 'thinking-before',
             ts: 1,
+            kind: 'thinking',
+            author: 'Bubbles',
+            self: false,
+            text: 'Planning the board',
+            streaming: false,
+            promptId: 'prompt-1'
+          },
+          {
+            key: 'design-read',
+            ts: 2,
             kind: 'design',
             author: 'Bubbles',
             self: false,
@@ -171,21 +181,33 @@ describe('a design API chip', () => {
             design: { boardId: 'landing-1abc', action: 'read' }
           },
           {
-            key: 'design-edit',
-            ts: 2,
+            key: 'thinking-after',
+            ts: 3,
+            kind: 'thinking',
+            author: 'Bubbles',
+            self: false,
+            text: 'Checking the board',
+            streaming: false,
+            promptId: 'prompt-1'
+          },
+          {
+            key: 'design-other-run',
+            ts: 4,
             kind: 'design',
             author: 'Bubbles',
             self: false,
             text: '',
             streaming: false,
-            promptId: 'prompt-1',
+            promptId: 'prompt-2',
             design: { boardId: 'landing-1abc', action: 'edit' }
           }
         ]
       })
     )
 
-    expect(screen.getByRole('button', { name: 'Read Landing' }).closest('div')?.className).not.toContain('-mt-3')
-    expect(screen.getByRole('button', { name: 'Edited Landing' }).closest('div')?.className).toContain('-mt-3')
+    expect(container.children[0].className).not.toContain('-mt-3')
+    expect(container.children[1].className).toContain('-mt-3')
+    expect(container.children[2].className).toContain('-mt-3')
+    expect(container.children[3].className).not.toContain('-mt-3')
   })
 })
