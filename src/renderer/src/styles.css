@@ -1291,28 +1291,28 @@ textarea:placeholder-shown {
 @keyframes agent-thought-lobe {
   0%,
   100% {
-    transform: translate(0, -68%) scale(1.08, 0.92);
+    transform: translate(0, -75%) scale(1.08, 0.92);
   }
   12.5% {
-    transform: translate(60%, -48%) scale(0.95, 1.07);
+    transform: translate(67%, -53%) scale(0.95, 1.07);
   }
   25% {
-    transform: translate(85%, 0) scale(1.07, 0.93);
+    transform: translate(94%, 0) scale(1.07, 0.93);
   }
   37.5% {
-    transform: translate(60%, 48%) scale(0.96, 1.06);
+    transform: translate(67%, 53%) scale(0.96, 1.06);
   }
   50% {
-    transform: translate(0, 68%) scale(1.08, 0.92);
+    transform: translate(0, 75%) scale(1.08, 0.92);
   }
   62.5% {
-    transform: translate(-60%, 48%) scale(0.96, 1.06);
+    transform: translate(-67%, 53%) scale(0.96, 1.06);
   }
   75% {
-    transform: translate(-85%, 0) scale(1.07, 0.93);
+    transform: translate(-94%, 0) scale(1.07, 0.93);
   }
   87.5% {
-    transform: translate(-60%, -48%) scale(0.95, 1.07);
+    transform: translate(-67%, -53%) scale(0.95, 1.07);
   }
 }
 
