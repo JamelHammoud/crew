@@ -13,8 +13,9 @@ import { publishPresence } from './state/trayPresence'
 import { setFullScreen, setWindowPinned } from './state/windowShape'
 import ScribeWindow from './views/ScribeWindow'
 import ThreadWindow from './views/ThreadWindow'
+import PersonalChatWindow from './views/PersonalChatWindow'
 import TrayPanel from './views/TrayPanel'
-import { threadIdInHash } from '../../shared/threadViews'
+import { PERSONAL_CHAT_HASH, threadIdInHash } from '../../shared/threadViews'
 import './styles.css'
 
 // One renderer, four windows. The app itself, a thread somebody popped out, the
@@ -24,13 +25,14 @@ import './styles.css'
 // so it boots the way the app does.
 const WINDOWS: Record<string, () => JSX.Element> = {
   '#tray': TrayPanel,
-  '#scribe': ScribeWindow
+  '#scribe': ScribeWindow,
+  [PERSONAL_CHAT_HASH]: PersonalChatWindow
 }
 
 const hash = window.location.hash
 const popped = threadIdInHash(hash) !== null
 const Aside = popped ? ThreadWindow : (WINDOWS[hash] ?? null)
-const joins = Aside === null || popped
+const joins = Aside === null || popped || hash === PERSONAL_CHAT_HASH
 const root = document.getElementById('root')!
 
 applyPlatform()
