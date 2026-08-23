@@ -29,7 +29,7 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
         <g data-part="book-page-left">
           <path
             data-part="book-page-left-body"
-            d="M44 31 C35 26 24 25 15 28 C11 29 8 33 8 38 V72 C8 77 12 80 17 79 C27 76 36 78 43 83 C46 85 48 82 48 78 V38 C48 35 47 33 44 31 Z"
+            d="M42 31 C34 26 24 25 15 28 C11 29 8 33 8 38 V72 C8 77 12 80 17 79 C27 76 35 78 41 83 C44 85 46 82 46 78 V38 C46 35 45 33 42 31 Z"
           />
           <path
             data-part="book-line-one"
@@ -51,7 +51,7 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
         <g data-part="book-page-right">
           <path
             data-part="book-page-right-body"
-            d="M56 31 C65 26 76 25 85 28 C89 29 92 33 92 38 V72 C92 77 88 80 83 79 C73 76 64 78 57 83 C54 85 52 82 52 78 V38 C52 35 53 33 56 31 Z"
+            d="M58 31 C66 26 76 25 85 28 C89 29 92 33 92 38 V72 C92 77 88 80 83 79 C73 76 65 78 59 83 C56 85 54 82 54 78 V38 C54 35 55 33 58 31 Z"
           />
           <path
             data-part="book-line-three"

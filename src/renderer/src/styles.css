@@ -1397,12 +1397,12 @@ textarea:placeholder-shown {
 }
 
 .agent-icon [data-part='book-page-left'] {
-  transform-origin: 100% 55%;
+  transform-origin: 50% 70%;
   animation: agent-book-page-left 2.8s ease-in-out var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon [data-part='book-page-right'] {
-  transform-origin: 0 55%;
+  transform-origin: 50% 70%;
   animation: agent-book-page-right 2.8s ease-in-out var(--agent-delay, 0ms) infinite;
 }
 
@@ -1425,26 +1425,26 @@ textarea:placeholder-shown {
 @keyframes agent-book-page-left {
   0%,
   100% {
-    transform: rotate(0) translateY(0) scale(1);
+    transform: translateY(0) scaleY(1);
   }
   45% {
-    transform: rotate(-1.8deg) translateY(-1.5%) scale(1.015, 0.99);
+    transform: translateY(-1.5%) scaleY(0.99);
   }
   72% {
-    transform: rotate(0.7deg) translateY(0.5%) scale(0.995, 1.01);
+    transform: translateY(0.5%) scaleY(1.01);
   }
 }
 
 @keyframes agent-book-page-right {
   0%,
   100% {
-    transform: rotate(0) translateY(0) scale(1);
+    transform: translateY(0) scaleY(1);
   }
   45% {
-    transform: rotate(1.8deg) translateY(-1.5%) scale(1.015, 0.99);
+    transform: translateY(-1.5%) scaleY(0.99);
   }
   72% {
-    transform: rotate(-0.7deg) translateY(0.5%) scale(0.995, 1.01);
+    transform: translateY(0.5%) scaleY(1.01);
   }
 }
 
