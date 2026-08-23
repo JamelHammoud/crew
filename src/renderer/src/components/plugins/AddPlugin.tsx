@@ -39,7 +39,28 @@ export default function AddPlugin() {
         </span>
         <span className="text-base font-semibold text-fg">Add one of your own</span>
       </button>
-      <Modal open={open} onClose={() => setOpen(false)} title="Add a plugin">
+      <Modal
+        open={open}
+        onClose={() => setOpen(false)}
+        title="Add a plugin"
+        footer={
+          <div className="flex items-center justify-end gap-2">
+            <button
+              onClick={() => setOpen(false)}
+              className="h-10 px-4 rounded-full text-sm font-semibold text-fg/45 transition-colors hover:text-fg"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={send}
+              disabled={!label.trim() || !where.trim()}
+              className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold transition-all duration-150 hover:bg-fg/90 active:scale-95 disabled:bg-fg/10 disabled:text-fg/45"
+            >
+              Add
+            </button>
+          </div>
+        }
+      >
         <div className="mt-4 space-y-3">
           <TextField
             ref={first}
@@ -62,21 +83,6 @@ export default function AddPlugin() {
           />
         </div>
         {trouble && <p className="mt-2.5 text-sm text-danger">{trouble}</p>}
-        <div className="mt-5 flex items-center justify-end gap-2">
-          <button
-            onClick={() => setOpen(false)}
-            className="h-10 px-4 rounded-full text-sm font-semibold text-fg/45 transition-colors hover:text-fg"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={send}
-            disabled={!label.trim() || !where.trim()}
-            className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold transition-all duration-150 hover:bg-fg/90 active:scale-95 disabled:bg-fg/10 disabled:text-fg/45"
-          >
-            Add
-          </button>
-        </div>
       </Modal>
     </>
   )

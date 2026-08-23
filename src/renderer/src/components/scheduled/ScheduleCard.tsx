@@ -61,7 +61,29 @@ export default function ScheduleCard({
   }
 
   return (
-    <Modal open={open} onClose={onClose} title={schedule ? 'Edit schedule' : 'New schedule'} width={520}>
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={schedule ? 'Edit schedule' : 'New schedule'}
+      width={520}
+      footer={
+        <div className="flex items-center justify-end gap-2">
+          <button
+            onClick={onClose}
+            className="h-10 px-4 rounded-full text-sm font-semibold text-fg/45 transition-colors hover:text-fg"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={send}
+            disabled={!ready}
+            className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold transition-all duration-150 hover:bg-fg/90 active:scale-95 disabled:bg-fg/10 disabled:text-fg/45"
+          >
+            {schedule ? 'Save' : 'Add'}
+          </button>
+        </div>
+      }
+    >
       <div className="mt-4 space-y-4">
         <TextField
           glass
@@ -84,21 +106,6 @@ export default function ScheduleCard({
         <ScheduleWhen when={when} onChange={setWhen} />
       </div>
       {trouble && <p className="mt-3 text-sm text-danger">{trouble}</p>}
-      <div className="mt-5 flex items-center justify-end gap-2">
-        <button
-          onClick={onClose}
-          className="h-10 px-4 rounded-full text-sm font-semibold text-fg/45 transition-colors hover:text-fg"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={send}
-          disabled={!ready}
-          className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold transition-all duration-150 hover:bg-fg/90 active:scale-95 disabled:bg-fg/10 disabled:text-fg/45"
-        >
-          {schedule ? 'Save' : 'Add'}
-        </button>
-      </div>
     </Modal>
   )
 }

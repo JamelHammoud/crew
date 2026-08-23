@@ -74,7 +74,29 @@ function NameCard({
   }
 
   return (
-    <Modal open={open} onClose={onClose} title={title}>
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={title}
+      footer={
+        <div className="flex items-center justify-end gap-2">
+          <button
+            onClick={onClose}
+            className="h-10 px-4 rounded-full text-sm font-semibold text-fg/45 transition-colors hover:text-fg"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => void send()}
+            disabled={!name.trim() || busy}
+            className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-2 transition-all duration-150 hover:bg-fg/90 active:scale-95 disabled:bg-fg/10 disabled:text-fg/45"
+          >
+            {busy && <Spinner size={14} />}
+            {action}
+          </button>
+        </div>
+      }
+    >
       <div className="mt-4 flex items-center gap-3">
         <span className="w-12 h-12 shrink-0 rounded-xl bg-fg/[0.06] flex items-center justify-center overflow-hidden">
           {picture}
@@ -95,22 +117,6 @@ function NameCard({
         />
       </div>
       {trouble && <p className="mt-2.5 text-sm text-danger">{trouble}</p>}
-      <div className="mt-5 flex items-center justify-end gap-2">
-        <button
-          onClick={onClose}
-          className="h-10 px-4 rounded-full text-sm font-semibold text-fg/45 transition-colors hover:text-fg"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={() => void send()}
-          disabled={!name.trim() || busy}
-          className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-2 transition-all duration-150 hover:bg-fg/90 active:scale-95 disabled:bg-fg/10 disabled:text-fg/45"
-        >
-          {busy && <Spinner size={14} />}
-          {action}
-        </button>
-      </div>
     </Modal>
   )
 }
