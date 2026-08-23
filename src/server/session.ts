@@ -407,9 +407,7 @@ const THREAD_EVENT_KINDS = new Set<SessionEvent['kind']>([
   'thread.archived',
   'thread.agent',
   'thread.status',
-  'message.route',
-  'agent.start',
-  'agent.end'
+  'message.route'
 ])
 
 // A person is one row per game however they happen to be capitalised, since a

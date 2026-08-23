@@ -58,6 +58,26 @@ describe('queued messages', () => {
     return { started, item }
   }
 
+  it('does not show an idle message in the queue on its way into a run', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    await connectRunner('jamel', { FAKE_CLI_DELAY_MS: '300' })
+    await ui.waitForEvent(e => e.kind === 'agent.online')
+
+    const from = ui.messages.length
+    ui.chat('start now @Fake', [agentId('jamel', 'fake')])
+    const started = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Started
+    await ui.waitForEvent(e => e.kind === 'agent.start' && e.threadId === started.threadId)
+
+    const queueStates = ui.messages
+      .slice(from)
+      .filter(
+        (message): message is Extract<(typeof ui.messages)[number], { type: 'queue.state' }> =>
+          message.type === 'queue.state' && message.threadId === started.threadId
+      )
+    expect(queueStates.some(message => message.items.length > 0)).toBe(false)
+  })
+
   it('keeps a queued message out of the thread until it runs, and applies edits', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
