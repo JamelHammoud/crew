@@ -3,7 +3,7 @@ import type { CommandName } from './commands'
 import type { CustomEmoji } from './customEmoji'
 import type { DesignBoardMeta, DesignDocument, DesignPresence } from './design'
 import type { DocPage } from './docs'
-import type { SessionEvent, ThreadStatus, Todo } from './events'
+import type { MessageReply, SessionEvent, ThreadStatus, Todo } from './events'
 import type { GameScore } from './games'
 import type { HuddleRoom, HuddleSignal } from './huddle'
 import type { AgentSettingField, AgentSettings, AgentStep, AgentUsage, PooledAgent, RunStep } from './llm'
@@ -52,6 +52,8 @@ export interface QueuedItem {
   text: string
   agentId: string
   agentLabel: string
+  attachments?: Attachment[]
+  replyTo?: MessageReply
 }
 
 export interface SessionSnapshot {
@@ -208,6 +210,8 @@ export type ClientMessage =
   | { type: 'game.score'; gameId: string; score: number }
   | { type: 'queue.edit'; promptId: string; text: string }
   | { type: 'queue.remove'; promptId: string }
+  | { type: 'queue.take'; promptId: string }
+  | { type: 'queue.move'; promptId: string; to: number }
   | { type: 'prompt.cancel'; promptId: string }
   | { type: 'agent.settings'; agentId: string; settings: AgentSettings }
   | { type: 'agent.rename'; agentId: string; label: string }
@@ -233,6 +237,13 @@ export type ServerMessage =
   | { type: 'member.renamed'; fromId: string; member: MemberInfo }
   | { type: 'member.avatar'; memberId: string; file: string | null }
   | { type: 'queue.state'; threadId: string; items: QueuedItem[] }
+  | {
+      type: 'queue.taken'
+      threadId: string
+      item: QueuedItem
+      attachments: OutgoingAttachment[]
+    }
+  | { type: 'queue.take.failed'; promptId: string; message: string }
   | { type: 'agent.added'; agent: PooledAgent }
   | { type: 'agent.removed'; agentId: string }
   | { type: 'agent.renamed'; agentId: string; label: string }

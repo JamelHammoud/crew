@@ -1,4 +1,5 @@
 import { randomBytes, randomUUID } from 'node:crypto'
+import fs from 'node:fs'
 import type { WebSocket } from 'ws'
 import { CODE_BYTES } from '../shared/link'
 import {
@@ -406,7 +407,9 @@ const THREAD_EVENT_KINDS = new Set<SessionEvent['kind']>([
   'thread.archived',
   'thread.agent',
   'thread.status',
-  'message.route'
+  'message.route',
+  'agent.start',
+  'agent.end'
 ])
 
 // A person is one row per game however they happen to be capitalised, since a
@@ -1195,6 +1198,12 @@ export class CrewSession {
         break
       case 'queue.remove':
         if (meta.role === 'ui') this.handleQueueRemove(member, msg.promptId)
+        break
+      case 'queue.take':
+        if (meta.role === 'ui') this.handleQueueTake(ws, member, msg.promptId)
+        break
+      case 'queue.move':
+        if (meta.role === 'ui') this.handleQueueMove(member, msg.promptId, msg.to)
         break
       case 'prompt.cancel':
         if (meta.role === 'ui') this.handleCancel(msg.promptId)
@@ -3864,6 +3873,49 @@ export class CrewSession {
     this.broadcastQueue(found.thread)
   }
 
+  private handleQueueTake(ws: WebSocket, member: Member, promptId: string): void {
+    const found = this.queuedEntry(promptId)
+    if (!found || found.entry.authorId !== member.id) return
+    const attachments = found.entry.attachments.map(attachment => {
+      const ghost = this.ghostFiles.get(attachment.file)?.data
+      const stored = this.store.attachmentPath(attachment.file)
+      const data = ghost ?? (stored ? fs.readFileSync(stored) : null)
+      return data ? { name: attachment.name, mime: attachment.mime, data: data.toString('base64') } : null
+    })
+    if (attachments.some(item => item === null)) {
+      this.send(ws, { type: 'queue.take.failed', promptId, message: 'One of the files could not be opened.' })
+      return
+    }
+    found.thread.queue = found.thread.queue.filter(item => item.promptId !== promptId)
+    const shared =
+      found.thread.queue.some(item => item.messageId === found.entry.messageId) ||
+      [...this.prompts.values()].some(ref => ref.messageId === found.entry.messageId)
+    if (this.emittedMessages.has(found.entry.messageId) && !shared) {
+      this.handleDeleteMessage(member, found.entry.messageId)
+    }
+    this.send(ws, {
+      type: 'queue.taken',
+      threadId: found.thread.id,
+      item: this.queueItem(found.entry),
+      attachments: attachments.filter((item): item is OutgoingAttachment => item !== null)
+    })
+    this.broadcastQueue(found.thread)
+  }
+
+  private handleQueueMove(member: Member, promptId: string, to: number): void {
+    const found = this.queuedEntry(promptId)
+    if (!found || found.entry.authorId !== member.id || !Number.isInteger(to)) return
+    const from = found.thread.queue.findIndex(item => item.promptId === promptId)
+    if (from < 0) return
+    const next = found.thread.queue.slice()
+    const [entry] = next.splice(from, 1)
+    const at = Math.max(0, Math.min(to, next.length))
+    next.splice(at, 0, entry)
+    if (next.every((item, index) => item === found.thread.queue[index])) return
+    found.thread.queue = next
+    this.broadcastQueue(found.thread)
+  }
+
   private handleDocRename(member: Member, from: string, to: string, title?: string): void {
     if (from === to || from === ROOT_PAGE || !this.docs.has(from)) return
     if (to === from || to.startsWith(`${from}/`)) return
@@ -4183,15 +4235,21 @@ export class CrewSession {
     this.runThread(thread)
   }
 
+  private queueItem(entry: QueuedPrompt): QueuedItem {
+    return {
+      promptId: entry.promptId,
+      authorId: entry.authorId,
+      authorName: entry.byName,
+      text: entry.text,
+      agentId: entry.agentId,
+      agentLabel: this.agents.get(entry.agentId)?.label ?? '',
+      attachments: entry.attachments.length > 0 ? entry.attachments : undefined,
+      replyTo: entry.replyTo
+    }
+  }
+
   private queueItems(thread: Thread): QueuedItem[] {
-    return thread.queue.map(({ promptId, authorId, byName, text, agentId }) => ({
-      promptId,
-      authorId,
-      authorName: byName,
-      text,
-      agentId,
-      agentLabel: this.agents.get(agentId)?.label ?? ''
-    }))
+    return thread.queue.map(entry => this.queueItem(entry))
   }
 
   private broadcastQueue(thread: Thread): void {
