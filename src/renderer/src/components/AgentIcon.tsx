@@ -121,10 +121,7 @@ export default function AgentIcon({
       {src ? (
         <img src={src} alt="" draggable={false} className="agent-photo block w-full h-full rounded-full object-cover" />
       ) : (
-        <span
-          className="agent-pet-body agent-face-stage absolute inset-0"
-          data-motion={faceMotion}
-        >
+        <span className="agent-pet-body agent-face-stage absolute inset-0" data-motion={faceMotion}>
           <svg viewBox={`0 0 ${box} ${box}`} className="agent-pet-drawing absolute inset-0 w-full h-full" aria-hidden>
             <defs>
               <mask id={mask} maskUnits="userSpaceOnUse" x={0} y={0} width={box} height={box}>
