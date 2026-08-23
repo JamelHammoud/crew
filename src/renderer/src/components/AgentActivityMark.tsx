@@ -7,12 +7,14 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
   if (activity === 'thinking') {
     return (
       <>
-        <path
-          data-part="thought"
-          d="M18 20 C25 9 42 6 57 10 C74 7 90 18 91 34 C98 45 91 61 79 67 C71 80 51 83 39 76 C23 81 8 70 9 55 C2 43 7 28 18 20 Z"
-        />
-        <circle data-part="thought-tail-one" cx="28" cy="85" r="7" />
-        <circle data-part="thought-tail-two" cx="14" cy="94" r="3.5" />
+        <g data-part="thought-cloud">
+          <path d="M18 22 C25 10 39 7 52 11 C65 6 82 12 87 25 C98 31 99 47 91 56 C91 69 79 78 66 76 C56 84 39 82 32 74 C18 77 7 67 9 54 C1 45 6 29 18 22 Z" />
+          <circle cx="24" cy="84" r="7" />
+          <circle cx="12" cy="94" r="3.5" />
+        </g>
+        <circle data-part="thought-dot-one" cx="35" cy="45" r="6.5" fill="#000" />
+        <circle data-part="thought-dot-two" cx="53" cy="45" r="6.5" fill="#000" />
+        <circle data-part="thought-dot-three" cx="71" cy="45" r="6.5" fill="#000" />
       </>
     )
   }
@@ -27,6 +29,12 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
           data-part="page-right"
           d="M92 22 C80 17 66 19 53 28 L53 85 C66 76 79 74 92 79 C95 80 97 77 97 73 L97 29 C97 25 95 23 92 22 Z"
         />
+        <path
+          data-part="page-turn"
+          d="M53 29 C65 20 78 19 89 22 C75 25 67 34 64 49 C61 40 57 33 53 29 Z"
+          fill="#000"
+        />
+        <path data-part="page-spine" d="M50 31 V84" fill="none" stroke="#000" strokeWidth="5" strokeLinecap="round" />
       </>
     )
   }
@@ -35,7 +43,15 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
       <>
         <g data-part="search-lens">
           <circle cx="43" cy="40" r="32" />
-          <circle cx="43" cy="40" r="18" fill="#000" />
+          <circle cx="43" cy="40" r="20" fill="#000" />
+          <path
+            data-part="search-glint"
+            d="M29 27 C34 22 41 20 47 21"
+            fill="none"
+            stroke="#fff"
+            strokeWidth="6"
+            strokeLinecap="round"
+          />
         </g>
         <path
           data-part="search-handle"
