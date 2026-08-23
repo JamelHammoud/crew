@@ -80,7 +80,7 @@ export function usePanelOpens(): PanelOpen[] {
         open: () => browser().addTerminal(undefined, useCrew.getState().folder)
       },
       { id: 'file', label: 'Files', mark: <FolderGlyph />, scope: 'panel', open: () => browser().openFiles() },
-      { id: 'web', label: 'Web page', mark: <GlobeGlyph />, scope: 'panel', open: () => browser().addTab() },
+      { id: 'web', label: 'Web', mark: <GlobeGlyph />, scope: 'panel', open: () => browser().addTab() },
       { id: 'music', label: 'Music', mark: <MusicGlyph />, scope: 'panel', open: () => browser().openMusic() },
       { id: 'game', label: 'Games', mark: <GameGlyph />, scope: 'panel', open: () => browser().openGame() }
     )

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { MouseEvent, ReactNode } from 'react'
 
 export default function NavRow({
   icon,
@@ -8,7 +8,8 @@ export default function NavRow({
   expanded,
   menu,
   after,
-  onClick
+  onClick,
+  onContextMenu
 }: {
   icon: ReactNode
   label: string
@@ -18,11 +19,13 @@ export default function NavRow({
   menu?: boolean
   after?: ReactNode
   onClick: () => void
+  onContextMenu?: (event: MouseEvent) => void
 }) {
   return (
     <div className="group relative">
       <button
         onClick={onClick}
+        onContextMenu={onContextMenu}
         aria-current={current ? 'page' : undefined}
         aria-expanded={expanded}
         aria-haspopup={menu ? 'menu' : undefined}

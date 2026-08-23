@@ -1,0 +1,37 @@
+import type { Glyph } from '../../components/glyph'
+import {
+  AtGlyph,
+  BranchGlyph,
+  ClockGlyph,
+  FolderGlyph,
+  GameGlyph,
+  GlobeGlyph,
+  MusicGlyph,
+  TerminalGlyph,
+  ToolboxGlyph
+} from '../../icons'
+import type { SidebarItemId } from '../../state/sidebarPins'
+import type { Tab } from '../navTabs'
+
+export type SidebarItem = {
+  id: SidebarItemId
+  label: string
+  Icon: Glyph
+}
+
+export const SIDEBAR_ITEMS: readonly SidebarItem[] = [
+  { id: 'files', label: 'Files', Icon: FolderGlyph },
+  { id: 'review', label: 'Review', Icon: BranchGlyph },
+  { id: 'terminal', label: 'Terminal', Icon: TerminalGlyph },
+  { id: 'plugins', label: 'Plugins', Icon: AtGlyph },
+  { id: 'scheduled', label: 'Scheduled', Icon: ClockGlyph },
+  { id: 'toolbox', label: 'Toolbox', Icon: ToolboxGlyph },
+  { id: 'web', label: 'Web', Icon: GlobeGlyph },
+  { id: 'music', label: 'Music', Icon: MusicGlyph },
+  { id: 'games', label: 'Games', Icon: GameGlyph }
+]
+
+export function itemTab(id: SidebarItemId): Tab | null {
+  if (id === 'plugins' || id === 'scheduled') return id
+  return null
+}
