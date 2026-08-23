@@ -4,6 +4,7 @@ import { useCrew } from '../state/store'
 import GeneratedField from './art/GeneratedField'
 import { FIELD_LIGHT, PET_GRID, eyeGapAt, eyeSize, petOf, petPath } from './art/pet'
 import { activityForAgent, type AgentActivity } from './agentActivity'
+import AgentActivityMark from './AgentActivityMark'
 
 const SIZES = {
   xs: 'w-5 h-5',
@@ -111,6 +112,9 @@ export default function AgentIcon({
             </foreignObject>
           </svg>
         </span>
+      )}
+      {shownActivity !== 'idle' && (
+        <AgentActivityMark activity={shownActivity} seed={seed} box={box} src={src} />
       )}
       {presence && (
         <span
