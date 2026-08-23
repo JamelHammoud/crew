@@ -6,7 +6,6 @@ import Counts from './Counts'
 import { carries, stepHidden, useFindQuery } from './find'
 import {
   FileChip,
-  FileTextLink,
   isPrivate,
   labelFor,
   openable,
