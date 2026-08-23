@@ -5,7 +5,7 @@ export type UpdateStage = 'none' | 'found' | 'getting' | 'ready' | 'failed'
 
 // The three ways it can go wrong are three different sentences, so what went
 // wrong rides in the state and the words are picked off it where they are drawn.
-export type UpdateWhy = '' | 'download' | 'install' | 'others'
+export type UpdateWhy = '' | 'install' | 'others'
 
 export interface UpdateState {
   stage: UpdateStage
@@ -37,10 +37,6 @@ export type UpdateWord =
 function share(percent: number): number {
   if (!Number.isFinite(percent)) return 0
   return Math.min(100, Math.max(0, Math.round(percent)))
-}
-
-function failing(state: UpdateState, why: UpdateWhy): UpdateState {
-  return { ...state, stage: 'failed', percent: 0, why, told: state.told + 1 }
 }
 
 export function nextUpdate(state: UpdateState, said: UpdateWord): UpdateState {
@@ -75,10 +71,8 @@ export function nextUpdate(state: UpdateState, said: UpdateWord): UpdateState {
             percent: 100,
             why: ''
           }
-    // A check that could not reach the internet is nothing to say. Only a
-    // download somebody asked for and did not get is worth a word.
     case 'error':
-      return state.stage === 'getting' ? failing(state, 'download') : state
+      return state.stage === 'getting' ? { ...state, stage: 'failed', percent: 0, why: '' } : state
     // An install that did not happen is the one thing said after it landed, and
     // it is a moment rather than a new state: the bytes are here, the offer on
     // the screen has not changed, and the press is the same press. Falling back
@@ -90,18 +84,17 @@ export function nextUpdate(state: UpdateState, said: UpdateWord): UpdateState {
   }
 }
 
-export type UpdatePress = 'get' | 'restart' | 'none'
+export type UpdatePress = 'restart' | 'none'
 
 // One press, and what it means is read off where the update has got to. Asking
 // again after a failure is the same press as asking the first time.
 export function pressDoes(stage: UpdateStage): UpdatePress {
-  if (stage === 'found' || stage === 'failed') return 'get'
   if (stage === 'ready') return 'restart'
   return 'none'
 }
 
 export function updateStanding(state: UpdateState): boolean {
-  return state.stage !== 'none'
+  return state.stage === 'ready'
 }
 
 // A window left open for a week has to keep looking, or the release after the

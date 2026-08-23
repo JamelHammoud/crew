@@ -50,12 +50,15 @@ export class Updates {
     this.live = true
     const up = this.updater()
     up.logger = this.logger()
-    up.autoDownload = false
+    up.autoDownload = true
     // Crew decides when the app may be replaced, so nothing installs itself on
     // the way out. Nothing is lost by that: the download stays on the disk, so
     // the press after a restart lands straight on ready.
     up.autoInstallOnAppQuit = false
-    up.on('update-available', info => this.say({ word: 'found', version: info.version }))
+    up.on('update-available', info => {
+      this.say({ word: 'found', version: info.version })
+      this.say({ word: 'getting' })
+    })
     up.on('update-not-available', () => this.say({ word: 'nothing' }))
     up.on('download-progress', progress => this.say({ word: 'progress', percent: progress.percent }))
     up.on('update-downloaded', info => {
@@ -77,20 +80,9 @@ export class Updates {
     return this.state
   }
 
-  // The one press. What it does is read off what has really arrived rather than
-  // off the stage alone, so pressing again after the install was held tries the
-  // install rather than fetching a file that is already on the disk.
   press(): void {
-    if (!this.live || this.going) return
-    if (this.landed) {
-      void this.install()
-      return
-    }
-    if (this.state.stage !== 'found' && this.state.stage !== 'failed') return
-    this.say({ word: 'getting' })
-    void this.updater()
-      .downloadUpdate()
-      .catch(() => this.say({ word: 'error' }))
+    if (!this.live || this.going || !this.landed) return
+    void this.install()
   }
 
   tell(win: BrowserWindow): void {
@@ -114,14 +106,8 @@ export class Updates {
   private say(said: UpdateWord): void {
     const next = nextUpdate(this.state, said)
     if (next === this.state) return
-    // Landing is what asks for the install, rather than standing there landed. An
-    // install that was held leaves the stage where it is, so anything read off
-    // the stage alone would ask again for the thing that was just refused, and
-    // answer itself, forever.
-    const landing = next.stage === 'ready' && this.state.stage !== 'ready'
     this.state = next
     for (const win of this.host.windows()) this.tell(win)
-    if (landing) void this.install()
   }
 
   // Silent and running again on the other side, because the press was somebody

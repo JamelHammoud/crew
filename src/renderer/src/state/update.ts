@@ -15,8 +15,7 @@ function say(why: UpdateWhy): void {
     toast('Quit your other Crews to update', { key: 'update' })
     return
   }
-  const word = why === 'install' ? 'Crew did not update' : 'The update did not arrive'
-  toast.fail(word, { key: 'update' })
+  if (why === 'install') toast.fail('Crew did not update', { key: 'update' })
 }
 
 function put(next: UpdateState): void {
