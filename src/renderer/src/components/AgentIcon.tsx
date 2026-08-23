@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import { attachmentFileUrl } from '../../../shared/attachments'
 import { useCrew } from '../state/store'
 import GeneratedField from './art/GeneratedField'
@@ -53,6 +54,8 @@ export default function AgentIcon({
   const box = px ?? BOX[size]
   const gap = eyeGapAt(pet, box)
   const path = petPath(pet, box)
+  const mask = useId()
+  const unit = box / PET_GRID
   const file = useCrew(state => state.agents.find(agent => agent.id === seed)?.avatar)
   const httpBase = useCrew(state => state.httpBase)
   const automaticActivity = useCrew(state => activityForAgent(state.activePrompts[seed], state.steps))
@@ -74,27 +77,38 @@ export default function AgentIcon({
         />
       ) : (
         <span className="agent-pet-body absolute inset-0">
-          <GeneratedField seed={seed} box={box} light={FIELD_LIGHT} clip={`path('${path}')`} />
-          <svg viewBox={`0 0 ${PET_GRID} ${PET_GRID}`} className="agent-pet-drawing absolute inset-0 w-full h-full" aria-hidden>
-            <path d={pet.body} fill="none" stroke="currentColor" strokeOpacity={0.1} strokeWidth={2} />
-            <g className="agent-pet-eyes" transform={`rotate(${pet.tilt} ${pet.eyeX} ${pet.eyeY})`}>
-              <rect
-                x={pet.eyeX - gap / 2 - EYE_RADIUS}
-                y={pet.eyeY - EYE_HEIGHT / 2}
-                width={EYE_WIDTH}
-                height={EYE_HEIGHT}
-                rx={EYE_RADIUS}
-                fill="#fff"
-              />
-              <rect
-                x={pet.eyeX + gap / 2 - EYE_RADIUS}
-                y={pet.eyeY - EYE_HEIGHT / 2}
-                width={EYE_WIDTH}
-                height={EYE_HEIGHT}
-                rx={EYE_RADIUS}
-                fill="#fff"
-              />
-            </g>
+          <svg viewBox={`0 0 ${box} ${box}`} className="agent-pet-drawing absolute inset-0 w-full h-full" aria-hidden>
+            <defs>
+              <mask id={mask} maskUnits="userSpaceOnUse" x={0} y={0} width={box} height={box}>
+                <path d={path} fill="#fff" />
+                <g transform={`rotate(${pet.tilt} ${pet.eyeX * unit} ${pet.eyeY * unit})`}>
+                  <g className="agent-pet-eyes">
+                    <rect
+                      x={(pet.eyeX - gap / 2 - EYE_RADIUS) * unit}
+                      y={(pet.eyeY - EYE_HEIGHT / 2) * unit}
+                      width={EYE_WIDTH * unit}
+                      height={EYE_HEIGHT * unit}
+                      rx={EYE_RADIUS * unit}
+                      fill="#000"
+                    />
+                    <rect
+                      x={(pet.eyeX + gap / 2 - EYE_RADIUS) * unit}
+                      y={(pet.eyeY - EYE_HEIGHT / 2) * unit}
+                      width={EYE_WIDTH * unit}
+                      height={EYE_HEIGHT * unit}
+                      rx={EYE_RADIUS * unit}
+                      fill="#000"
+                    />
+                  </g>
+                </g>
+              </mask>
+            </defs>
+            <foreignObject width={box} height={box} mask={`url(#${mask})`}>
+              <span className="agent-pet-field relative block w-full h-full">
+                <GeneratedField seed={seed} box={box} light={FIELD_LIGHT} />
+              </span>
+            </foreignObject>
+            <path d={path} fill="none" stroke="currentColor" strokeOpacity={0.1} strokeWidth={Math.max(1, box / 20)} />
           </svg>
         </span>
       )}

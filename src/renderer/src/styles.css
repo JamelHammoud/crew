@@ -1069,10 +1069,10 @@ textarea:placeholder-shown {
 @keyframes agent-thinking-eyes {
   0%,
   100% {
-    transform: translate(-2px, 1px);
+    transform: translate(-12%, 6%);
   }
   50% {
-    transform: translate(3px, -3px);
+    transform: translate(18%, -18%);
   }
 }
 
@@ -1080,11 +1080,11 @@ textarea:placeholder-shown {
   0%,
   14%,
   100% {
-    transform: translateX(-5px) scaleY(0.86);
+    transform: translateX(-28%) scaleY(0.86);
   }
   43%,
   57% {
-    transform: translateX(5px) scaleY(0.86);
+    transform: translateX(28%) scaleY(0.86);
   }
 }
 
@@ -1138,11 +1138,11 @@ textarea:placeholder-shown {
   }
 
   .agent-icon[data-activity='thinking'] .agent-pet-eyes {
-    transform: translate(3px, -3px);
+    transform: translate(18%, -18%);
   }
 
   .agent-icon[data-activity='reading'] .agent-pet-eyes {
-    transform: translateX(5px) scaleY(0.86);
+    transform: translateX(28%) scaleY(0.86);
   }
 
   .agent-icon[data-activity='writing'] .agent-pet-body {

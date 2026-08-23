@@ -78,7 +78,7 @@ describe('an agent face', () => {
     expect(box.querySelector('.rounded-full')).toBeNull()
   })
 
-  it('draws two white capsule eyes high in the shape', () => {
+  it('cuts two capsule eyes through the shape', () => {
     const box = face()
     const eyes = Array.from(box.querySelectorAll('.agent-pet-eyes rect')) as SVGRectElement[]
     const pet = petOf(SEED)
@@ -86,14 +86,14 @@ describe('an agent face', () => {
 
     expect(eyes).toHaveLength(2)
     for (const eye of eyes) {
-      expect(eye.getAttribute('fill')).toBe('#fff')
-      expect(Number(eye.getAttribute('width'))).toBe(EYE_WIDTH)
-      expect(Number(eye.getAttribute('height'))).toBe(EYE_HEIGHT)
-      expect(Number(eye.getAttribute('rx'))).toBe(EYE_WIDTH / 2)
+      expect(eye.getAttribute('fill')).toBe('#000')
+      expect(Number(eye.getAttribute('width'))).toBe(EYE_WIDTH * 0.4)
+      expect(Number(eye.getAttribute('height'))).toBe(EYE_HEIGHT * 0.4)
+      expect(Number(eye.getAttribute('rx'))).toBe((EYE_WIDTH / 2) * 0.4)
     }
-    expect(eyes.map(eye => Number(eye.getAttribute('x')) + EYE_WIDTH / 2)).toEqual([
-      pet.eyeX - gap / 2,
-      pet.eyeX + gap / 2
+    expect(eyes.map(eye => Number(eye.getAttribute('x')) + (EYE_WIDTH / 2) * 0.4)).toEqual([
+      (pet.eyeX - gap / 2) * 0.4,
+      (pet.eyeX + gap / 2) * 0.4
     ])
     expect(pet.eyeY).toBeLessThan(PET_GRID / 2)
   })
@@ -129,8 +129,9 @@ describe('an agent face', () => {
   it('keeps daylight between the capsule eyes at every drawn size', () => {
     const space = (size: string, box: number): number => {
       const eyes = Array.from(face({ size }).querySelectorAll('.agent-pet-eyes rect')) as SVGRectElement[]
-      const centers = eyes.map(eye => Number(eye.getAttribute('x')) + EYE_WIDTH / 2)
-      return ((centers[1] - centers[0] - EYE_WIDTH) / PET_GRID) * box
+      const width = (EYE_WIDTH / PET_GRID) * box
+      const centers = eyes.map(eye => Number(eye.getAttribute('x')) + width / 2)
+      return centers[1] - centers[0] - width
     }
     const small = space('xs', 20)
     cleanup()
