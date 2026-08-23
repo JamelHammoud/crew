@@ -1645,6 +1645,11 @@ textarea:placeholder-shown {
   animation: agent-brush-tip 1.55s cubic-bezier(0.45, 0, 0.2, 1) calc(var(--agent-delay, 0ms) - 90ms) infinite;
 }
 
+.agent-icon [data-part='paint-stroke'] {
+  stroke-dasharray: 140;
+  animation: agent-paint-stroke 1.55s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+}
+
 @keyframes agent-brush-handle {
   0%,
   100% {
@@ -1668,6 +1673,27 @@ textarea:placeholder-shown {
   }
   70% {
     transform: rotate(-1deg) scale(0.985, 1.025);
+  }
+}
+
+@keyframes agent-paint-stroke {
+  0%,
+  8% {
+    stroke-dashoffset: 140;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  68%,
+  78% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  94%,
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
   }
 }
 
