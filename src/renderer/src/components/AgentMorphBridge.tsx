@@ -1,5 +1,6 @@
 import { useEffect, useId, useMemo, useRef } from 'react'
 import { interpolate } from 'flubber'
+import { svgPathProperties } from 'svg-path-properties'
 import GeneratedField from './art/GeneratedField'
 import { FIELD_LIGHT, petOf } from './art/pet'
 import type { AgentActivity } from './agentActivity'
@@ -7,6 +8,15 @@ import { AGENT_MORPH_MS, morphDrawing } from './agentMorph'
 
 const ease = (progress: number): number =>
   progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2
+
+const ring = (path: string): Array<[number, number]> => {
+  const geometry = new svgPathProperties(path)
+  const length = geometry.getTotalLength()
+  return Array.from({ length: 64 }, (_, index) => {
+    const point = geometry.getPointAtLength((length * index) / 64)
+    return [point.x, point.y]
+  })
+}
 
 export default function AgentMorphBridge({
   seed,
@@ -29,7 +39,9 @@ export default function AgentMorphBridge({
     const paths = [body.current, ...features.current]
     const starts = [source.body, ...source.features]
     const ends = [target.body, ...target.features]
-    const mixers = starts.map((start, index) => interpolate(start, ends[index], { maxSegmentLength: 2 }))
+    const mixers = starts.map((start, index) =>
+      interpolate(ring(start), ring(ends[index]), { maxSegmentLength: false })
+    )
     const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
     if (reduced) {
       paths.forEach((path, index) => path?.setAttribute('d', ends[index]))
