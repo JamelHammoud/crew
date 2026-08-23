@@ -155,6 +155,19 @@ describe('an agent face', () => {
     expect(keyframes).toContain('scale(1.09, 1.12)')
   })
 
+  it('lets the Thinking dots fade out without shrinking or springing', () => {
+    const rule = styles.split(".agent-icon [data-part='thought-dot-one'] {")[1]?.split('}')[0] ?? ''
+    const keyframes = styles.split('@keyframes agent-thought-dot-one {')[1]?.split('\n}')[0] ?? ''
+    const exit = keyframes.split('84% {')[1] ?? ''
+
+    expect(rule).toContain('4.4s linear')
+    expect(exit).toContain('animation-timing-function: ease-in-out')
+    expect(exit).toContain('91%,')
+    expect(exit).toContain('opacity: 0')
+    expect(exit.match(/transform: scale\(1\)/g)).toHaveLength(2)
+    expect(exit).not.toContain('scale(0.72)')
+  })
+
   it('builds Writing from one diagonal rounded pencil', () => {
     const object = face({ activity: 'editing' }).querySelector('[data-object="editing"]') as HTMLElement
 
