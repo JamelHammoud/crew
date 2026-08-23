@@ -8,13 +8,13 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
     return (
       <>
         <g data-part="thought-cloud">
-          <path d="M18 22 C25 10 39 7 52 11 C65 6 82 12 87 25 C98 31 99 47 91 56 C91 69 79 78 66 76 C56 84 39 82 32 74 C18 77 7 67 9 54 C1 45 6 29 18 22 Z" />
-          <circle data-part="thought-tail-one" cx="24" cy="84" r="7" />
-          <circle data-part="thought-tail-two" cx="12" cy="94" r="3.5" />
+          <path d="M21 74 C11 72 5 63 8 53 C2 45 6 34 16 30 C17 20 27 14 37 16 C45 7 59 7 68 15 C80 13 91 22 91 34 C100 40 100 53 92 60 C90 71 78 77 68 74 C58 82 43 81 34 74 C30 76 25 76 21 74 Z" />
+          <circle data-part="thought-tail-one" cx="25" cy="84" r="7.5" />
+          <circle data-part="thought-tail-two" cx="13" cy="94" r="4" />
         </g>
-        <circle data-part="thought-dot-one" cx="35" cy="45" r="6.5" fill="#000" />
-        <circle data-part="thought-dot-two" cx="53" cy="45" r="6.5" fill="#000" />
-        <circle data-part="thought-dot-three" cx="71" cy="45" r="6.5" fill="#000" />
+        <circle data-part="thought-dot-one" cx="33" cy="45" r="7" fill="#000" />
+        <circle data-part="thought-dot-two" cx="51" cy="45" r="7" fill="#000" />
+        <circle data-part="thought-dot-three" cx="69" cy="45" r="7" fill="#000" />
       </>
     )
   }
@@ -23,14 +23,15 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
       <>
         <path
           data-part="page-left"
-          d="M8 22 C20 17 34 19 47 28 L47 85 C34 76 21 74 8 79 C5 80 3 77 3 73 L3 29 C3 25 5 23 8 22 Z"
+          d="M9 22 C21 17 36 20 47 29 C49 31 50 34 50 37 V85 C38 77 24 75 11 80 C6 82 3 78 3 73 V31 C3 27 5 24 9 22 Z"
         />
         <path
           data-part="page-right"
-          d="M92 22 C80 17 66 19 53 28 L53 85 C66 76 79 74 92 79 C95 80 97 77 97 73 L97 29 C97 25 95 23 92 22 Z"
+          d="M91 22 C79 17 64 20 53 29 C51 31 50 34 50 37 V85 C62 77 76 75 89 80 C94 82 97 78 97 73 V31 C97 27 95 24 91 22 Z"
         />
-        <path data-part="page-turn" d="M53 29 C65 20 78 19 89 22 C75 25 67 34 64 49 C61 40 57 33 53 29 Z" fill="#000" />
-        <path data-part="page-spine" d="M50 31 V84" fill="none" stroke="#000" strokeWidth="5" strokeLinecap="round" />
+        <path data-part="page-line-left" d="M17 39 C25 37 33 39 40 43" fill="none" stroke="#000" strokeWidth="6" strokeLinecap="round" />
+        <path data-part="page-line-right" d="M60 43 C68 39 76 37 84 39" fill="none" stroke="#000" strokeWidth="6" strokeLinecap="round" />
+        <path data-part="page-turn" d="M53 30 C66 21 80 19 91 22 C77 24 66 32 59 45 C58 38 56 33 53 30 Z" />
       </>
     )
   }
