@@ -148,8 +148,8 @@ export function createPersonalChatWindowOptions(
   devTools: boolean
 ): BrowserWindowConstructorOptions {
   return {
-    width: 1040,
-    height: 760,
+    width: 1200,
+    height: 800,
     minWidth: 760,
     minHeight: 520,
     ...windowShell(platform, preload, devTools)

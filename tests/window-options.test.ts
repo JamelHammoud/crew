@@ -157,6 +157,8 @@ describe('personal chat window options', () => {
     const personal = createPersonalChatWindowOptions('darwin', 'preload.mjs', true)
     const thread = createThreadWindowOptions('darwin', 'preload.mjs', true)
 
+    expect(personal.width).toBe(1200)
+    expect(personal.height).toBe(800)
     expect(personal.width ?? 0).toBeGreaterThan(thread.width ?? 0)
     expect(personal.minWidth).toBe(760)
     expect(personal.minHeight).toBe(thread.minHeight)
