@@ -27,10 +27,7 @@ describe('the OLED palette', () => {
     expect(terminalTheme('dark').background).toBe('#141414')
   })
 
-  it('does not draw a ring around the window edge in any theme', () => {
-    const windowRules = [...styles.matchAll(/(?:^|\n)([^\n{}]*#root[^\n{}]*)\s*\{([^{}]*)\}/g)]
-
-    expect(windowRules.length).toBeGreaterThan(0)
-    for (const [, , body] of windowRules) expect(body).not.toContain('box-shadow: inset')
+  it('does not draw a light ring around the black window edge', () => {
+    expect(styles).toMatch(/\.oled #root \{\s*box-shadow: none;\s*\}/)
   })
 })

@@ -294,6 +294,15 @@ body {
   @apply bg-ink-900;
   border-radius: 20px;
   overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.07);
+}
+
+.light #root {
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.08);
+}
+
+.oled #root {
+  box-shadow: none;
 }
 
 #root.square {

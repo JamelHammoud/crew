@@ -186,6 +186,8 @@ describe('the settings', () => {
   it('uses a glass sidebar by default and saves when it is turned off', () => {
     show('appearance')
     const glass = screen.getByRole('switch', { name: 'Glass sidebar' })
+    const icon = screen.getByRole('heading', { name: 'App icon' })
+    expect(icon.compareDocumentPosition(glass) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
     expect(glass.getAttribute('aria-checked')).toBe('true')
 
     fireEvent.click(glass)
