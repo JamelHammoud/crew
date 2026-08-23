@@ -181,9 +181,12 @@ describe('the sidebar', () => {
   })
 
   it('wears the app background instead of glass when glass is turned off', () => {
-    setPref('glassSidebar', false)
     const floating = render(Sidebar({ overlay: true, strong: true }))
-    const floatingSidebar = floating.container.querySelector('aside')
+    let floatingSidebar = floating.container.querySelector('aside')
+    expect(floatingSidebar?.className).toContain('glass')
+
+    act(() => setPref('glassSidebar', false))
+    floatingSidebar = floating.container.querySelector('aside')
     expect(floatingSidebar?.className).toContain('bg-ink-900')
     expect(floatingSidebar?.className).toContain('rounded-r-card')
     expect(floatingSidebar?.className).not.toContain('glass')
