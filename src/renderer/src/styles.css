@@ -1308,8 +1308,7 @@ textarea:placeholder-shown {
 
 @keyframes agent-thought-dot-one {
   0%,
-  5%,
-  100% {
+  5% {
     opacity: 0;
     transform: scale(0.2);
   }
@@ -1339,8 +1338,7 @@ textarea:placeholder-shown {
 
 @keyframes agent-thought-dot-two {
   0%,
-  15%,
-  100% {
+  15% {
     opacity: 0;
     transform: scale(0.2);
   }
@@ -1370,8 +1368,7 @@ textarea:placeholder-shown {
 
 @keyframes agent-thought-dot-three {
   0%,
-  25%,
-  100% {
+  25% {
     opacity: 0;
     transform: scale(0.2);
   }
