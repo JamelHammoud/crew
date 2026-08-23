@@ -25,6 +25,12 @@ const DARK: ITheme = {
   brightWhite: '#ffffff'
 }
 
+const OLED: ITheme = {
+  ...DARK,
+  background: '#000000',
+  cursorAccent: '#000000'
+}
+
 const LIGHT: ITheme = {
   background: '#ffffff',
   foreground: '#1f1f1f',
@@ -49,6 +55,6 @@ const LIGHT: ITheme = {
   brightWhite: '#141414'
 }
 
-export const terminalTheme = (theme: Theme): ITheme => (theme === 'light' ? LIGHT : DARK)
+export const terminalTheme = (theme: Theme): ITheme => (theme === 'light' ? LIGHT : theme === 'oled' ? OLED : DARK)
 
 export const TERMINAL_FONT = '"Cascadia Mono", ui-monospace, "SF Mono", Menlo, monospace'

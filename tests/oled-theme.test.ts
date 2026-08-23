@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
+import { terminalTheme } from '../src/renderer/src/components/terminalTheme'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const styles = readFileSync(path.join(root, 'src/renderer/src/styles.css'), 'utf8')
@@ -18,5 +19,11 @@ describe('the OLED palette', () => {
     for (const token of ['--color-fg:', '--color-positive:', '--color-danger:', '--color-attention:', '--color-selection:']) {
       expect(oled).toContain(token)
     }
+  })
+
+  it('gives the terminal the same true-black background', () => {
+    expect(terminalTheme('oled').background).toBe('#000000')
+    expect(terminalTheme('oled').cursorAccent).toBe('#000000')
+    expect(terminalTheme('dark').background).toBe('#141414')
   })
 })

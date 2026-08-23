@@ -1,12 +1,10 @@
-import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
+import { useId, type CSSProperties } from 'react'
 import { attachmentFileUrl } from '../../../shared/attachments'
 import { useCrew } from '../state/store'
 import GeneratedField from './art/GeneratedField'
 import { FIELD_LIGHT, PET_GRID, eyeGapAt, eyeSize, petOf, petPath } from './art/pet'
 import type { AgentActivity } from './agentActivity'
 import AgentActivityMark from './AgentActivityMark'
-import AgentMorphBridge from './AgentMorphBridge'
-import { AGENT_MORPH_MS } from './agentMorph'
 
 const SIZES = {
   xs: 'w-5 h-5',
@@ -30,36 +28,6 @@ const DOTS = {
   md: 'w-2.5 h-2.5 ring-2',
   lg: 'w-3 h-3 ring-[2.5px]'
 } as const
-
-interface Performance {
-  current: AgentActivity
-  outgoing?: AgentActivity
-  changing: boolean
-  turn: number
-}
-
-function usePerformance(activity: AgentActivity): Performance {
-  const [performance, setPerformance] = useState<Performance>({ current: activity, changing: false, turn: 0 })
-  const timer = useRef<ReturnType<typeof setTimeout>>()
-
-  useLayoutEffect(() => {
-    setPerformance(previous => {
-      if (previous.current === activity) return previous
-      return { current: activity, outgoing: previous.current, changing: true, turn: previous.turn + 1 }
-    })
-  }, [activity])
-
-  useEffect(() => {
-    if (!performance.changing) return
-    clearTimeout(timer.current)
-    timer.current = setTimeout(() => {
-      setPerformance(previous => ({ ...previous, outgoing: undefined, changing: false }))
-    }, AGENT_MORPH_MS)
-    return () => clearTimeout(timer.current)
-  }, [performance.changing, performance.turn])
-
-  return performance
-}
 
 export default function AgentIcon({
   seed,
@@ -94,20 +62,10 @@ export default function AgentIcon({
   const httpBase = useCrew(state => state.httpBase)
   const shownActivity = activity ?? 'idle'
   const src = photo ?? (file && httpBase ? attachmentFileUrl(httpBase, file) : undefined)
-  const performance = usePerformance(src ? 'idle' : shownActivity)
   const style = {
     ...(px ? { width: px, height: px } : {}),
     '--agent-delay': `${-pet.hue * 13}ms`
   } as CSSProperties
-  const faceMotion = performance.changing
-    ? performance.current === 'idle'
-      ? 'incoming'
-      : performance.outgoing === 'idle'
-        ? 'outgoing'
-        : 'hidden'
-    : performance.current === 'idle'
-      ? 'present'
-      : 'hidden'
   return (
     <span
       className={`${px ? '' : SIZES[size]} agent-icon relative inline-block align-middle shrink-0 ${className}`}
@@ -117,7 +75,10 @@ export default function AgentIcon({
       {src ? (
         <img src={src} alt="" draggable={false} className="agent-photo block w-full h-full rounded-full object-cover" />
       ) : (
-        <span className="agent-pet-body agent-face-stage absolute inset-0" data-motion={faceMotion}>
+        <span
+          className={`agent-pet-body agent-face-stage absolute inset-0 ${shownActivity === 'idle' ? '' : 'hidden'}`}
+          data-motion={shownActivity === 'idle' ? 'present' : 'hidden'}
+        >
           <svg viewBox={`0 0 ${box} ${box}`} className="agent-pet-drawing absolute inset-0 w-full h-full" aria-hidden>
             <defs>
               <mask id={mask} maskUnits="userSpaceOnUse" x={0} y={0} width={box} height={box}>
@@ -152,33 +113,7 @@ export default function AgentIcon({
           </svg>
         </span>
       )}
-      {!src && performance.outgoing && performance.outgoing !== 'idle' && (
-        <AgentActivityMark
-          key={`out-${performance.turn}-${performance.outgoing}`}
-          activity={performance.outgoing}
-          seed={seed}
-          box={box}
-          motion="outgoing"
-        />
-      )}
-      {!src && performance.changing && performance.outgoing && (
-        <AgentMorphBridge
-          key={`bridge-${performance.turn}`}
-          seed={seed}
-          box={box}
-          from={performance.outgoing}
-          to={performance.current}
-        />
-      )}
-      {!src && performance.current !== 'idle' && (
-        <AgentActivityMark
-          key={`in-${performance.turn}-${performance.current}`}
-          activity={performance.current}
-          seed={seed}
-          box={box}
-          motion={performance.changing ? 'incoming' : 'working'}
-        />
-      )}
+      {!src && shownActivity !== 'idle' && <AgentActivityMark activity={shownActivity} seed={seed} box={box} />}
       {presence && (
         <span
           className={`${DOTS[size]} absolute bottom-0 right-0 z-10 rounded-full ring-ink-900 transition-colors ${
