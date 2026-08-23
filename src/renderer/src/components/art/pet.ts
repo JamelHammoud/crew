@@ -12,9 +12,8 @@ function prng(seed: string): () => number {
 }
 
 export const PET_GRID = 100
-export const EYE_WIDTH = 8
-export const EYE_HEIGHT = 17
-export const EYE_RADIUS = EYE_WIDTH / 2
+export const EYE_WIDTH = 10
+export const EYE_HEIGHT = 22
 export const MIN_EYE_GAP = 1.2
 export const FIELD_LIGHT = 1
 
@@ -31,6 +30,55 @@ export interface Pet {
   eyeY: number
   eyeGap: number
   tilt: number
+}
+
+interface EyeRoom {
+  left: number
+  right: number
+  top: number
+  bottom: number
+}
+
+const EYE_ROOMS: Record<PetShapeKind, EyeRoom> = {
+  circle: { left: 18, right: 82, top: 15, bottom: 70 },
+  teardrop: { left: 24, right: 79, top: 21, bottom: 68 },
+  cloud: { left: 22, right: 83, top: 25, bottom: 69 },
+  square: { left: 16, right: 84, top: 14, bottom: 72 },
+  egg: { left: 21, right: 79, top: 16, bottom: 70 },
+  capsule: { left: 14, right: 86, top: 28, bottom: 72 },
+  triangle: { left: 29, right: 71, top: 30, bottom: 70 }
+}
+
+const EYE_SCALES: Record<PetShapeKind, number> = {
+  circle: 1,
+  teardrop: 0.95,
+  cloud: 1,
+  square: 1,
+  egg: 1,
+  capsule: 0.92,
+  triangle: 0.86
+}
+
+export interface EyeSize {
+  width: number
+  height: number
+  radius: number
+}
+
+export function eyeSize(pet: Pick<Pet, 'kind'>): EyeSize {
+  const scale = EYE_SCALES[pet.kind]
+  const width = EYE_WIDTH * scale
+  return { width, height: EYE_HEIGHT * scale, radius: width / 2 }
+}
+
+const eyeExtents = (size: EyeSize, tilt: number): { x: number; y: number } => {
+  const angle = (Math.abs(tilt) * Math.PI) / 180
+  const cosine = Math.cos(angle)
+  const sine = Math.sin(angle)
+  return {
+    x: (size.width / 2) * cosine + (size.height / 2) * sine,
+    y: (size.width / 2) * sine + (size.height / 2) * cosine
+  }
 }
 
 const rounded = (value: number): number => Math.round(value * 1000) / 1000
@@ -71,10 +119,22 @@ function makePet(seed: string): Pet {
   const hue = Math.floor(rand() * 360)
   const kind = PET_SHAPE_KINDS[Math.floor(rand() * PET_SHAPE_KINDS.length)]
   const variant = rand() * 2 - 1
-  const eyeX = 53 + rand() * 5
-  const eyeY = kind === 'triangle' ? 47 + rand() * 4 : kind === 'cloud' ? 43 + rand() * 4 : 39 + rand() * 5
-  const eyeGap = 15 + rand() * 5
+  const xRoll = rand()
+  const yRoll = rand()
+  const gapRoll = rand()
   const tilt = -13 + rand() * 10
+  const room = EYE_ROOMS[kind]
+  const size = eyeSize({ kind })
+  const extent = eyeExtents(size, tilt)
+  const minimumGap = size.width + (MIN_EYE_GAP * PET_GRID) / 20
+  const maximumGap = Math.min(21, room.right - room.left - extent.x * 2 - 2)
+  const eyeGap = minimumGap + gapRoll * Math.max(0, maximumGap - minimumGap)
+  const left = room.left + extent.x + eyeGap / 2
+  const right = room.right - extent.x - eyeGap / 2
+  const top = room.top + extent.y
+  const bottom = room.bottom - extent.y
+  const eyeX = left + (right - left) * (0.55 + xRoll * 0.45)
+  const eyeY = top + (bottom - top) * (0.15 + yRoll * 0.35)
   const pet = { hue, kind, variant, eyeX, eyeY, eyeGap, tilt, body: '' }
   return { ...pet, body: petPath(pet) }
 }
@@ -91,7 +151,18 @@ export function petOf(seed: string): Pet {
 }
 
 export function eyeGapAt(pet: Pet, box: number): number {
-  return Math.max(pet.eyeGap, EYE_WIDTH + (MIN_EYE_GAP * PET_GRID) / box)
+  return Math.max(pet.eyeGap, eyeSize(pet).width + (MIN_EYE_GAP * PET_GRID) / box)
+}
+
+export function eyesFit(pet: Pet): boolean {
+  const room = EYE_ROOMS[pet.kind]
+  const extent = eyeExtents(eyeSize(pet), pet.tilt)
+  return (
+    pet.eyeX - pet.eyeGap / 2 - extent.x >= room.left &&
+    pet.eyeX + pet.eyeGap / 2 + extent.x <= room.right &&
+    pet.eyeY - extent.y >= room.top &&
+    pet.eyeY + extent.y <= room.bottom
+  )
 }
 
 export function petHue(seed: string): number {

@@ -27,8 +27,8 @@ import { coverFor } from '${where}/src/renderer/src/components/art/coverArt'
 import { coverArt } from '${where}/src/renderer/src/components/art/coverSeed'
 import { shapePath, subagentShape } from '${where}/src/renderer/src/components/art/subagentShape'
 import { paletteFor } from '${where}/src/shared/art'
-import { petOf, eyeGapAt, EYE_WIDTH, EYE_HEIGHT, EYE_RADIUS, FIELD_LIGHT, PET_GRID } from '${where}/src/renderer/src/components/art/pet'
-window.CrewCovers = { musicItems, coverFor, coverArt, shapePath, subagentShape, paletteFor, petOf, eyeGapAt, EYE_WIDTH, EYE_HEIGHT, EYE_RADIUS, FIELD_LIGHT, PET_GRID }
+import { petOf, eyeGapAt, eyeSize, FIELD_LIGHT, PET_GRID } from '${where}/src/renderer/src/components/art/pet'
+window.CrewCovers = { musicItems, coverFor, coverArt, shapePath, subagentShape, paletteFor, petOf, eyeGapAt, eyeSize, FIELD_LIGHT, PET_GRID }
 `
 
 const PAGE = `<!doctype html><html><body style="margin:0"><script src="covers.js"></script><script>
@@ -138,7 +138,7 @@ window.marks = () => {
   return { png: canvas.toDataURL('image/png'), kinds }
 }
 window.faces = () => {
-  const { coverFor, paletteFor, petOf, eyeGapAt, EYE_WIDTH, EYE_HEIGHT, EYE_RADIUS, FIELD_LIGHT, PET_GRID } = window.CrewCovers
+  const { coverFor, paletteFor, petOf, eyeGapAt, eyeSize, FIELD_LIGHT, PET_GRID } = window.CrewCovers
   const SIZES = [20, 28, 40, 48]
   const COLS = 8
   const ids = Array.from({ length: 48 }, (_, i) => 'every-' + i)
@@ -174,11 +174,12 @@ window.faces = () => {
     face.scale(unit, unit)
     face.globalCompositeOperation = 'destination-out'
     const gap = eyeGapAt(pet, box)
+    const eyes = eyeSize(pet)
     face.translate(pet.eyeX, pet.eyeY)
     face.rotate((pet.tilt * Math.PI) / 180)
     for (const side of [-1, 1]) {
       face.beginPath()
-      face.roundRect((side * gap) / 2 - EYE_RADIUS, -EYE_HEIGHT / 2, EYE_WIDTH, EYE_HEIGHT, EYE_RADIUS)
+      face.roundRect((side * gap) / 2 - eyes.radius, -eyes.height / 2, eyes.width, eyes.height, eyes.radius)
       face.fill()
     }
     face.restore()

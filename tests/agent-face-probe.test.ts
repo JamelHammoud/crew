@@ -5,13 +5,13 @@ import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import AgentIcon from '../src/renderer/src/components/AgentIcon'
 import {
-  EYE_HEIGHT,
-  EYE_WIDTH,
   FIELD_LIGHT,
   MIN_EYE_GAP,
   PET_GRID,
   PET_SHAPE_KINDS,
   eyeGapAt,
+  eyeSize,
+  eyesFit,
   petOf,
   petPath
 } from '../src/renderer/src/components/art/pet'
@@ -50,6 +50,10 @@ describe('the pet an agent wears', () => {
     expect(petPath({ kind: 'triangle', variant: 0 })).toMatch(/^M 45 15 C 47 9 53 9 56 15/)
   })
 
+  it('keeps the enlarged rotated eyes inside every silhouette', () => {
+    for (let index = 0; index < 1400; index++) expect(eyesFit(petOf(`fit-${index}`))).toBe(true)
+  })
+
   it('keeps the seeded identity stable', () => {
     const pet = petOf(SEED)
     expect(pet.hue).toBe(225)
@@ -86,15 +90,16 @@ describe('an agent face', () => {
     const eyes = Array.from(box.querySelectorAll('.agent-pet-eyes rect')) as SVGRectElement[]
     const pet = petOf(SEED)
     const gap = eyeGapAt(pet, 40)
+    const size = eyeSize(pet)
 
     expect(eyes).toHaveLength(2)
     for (const eye of eyes) {
       expect(eye.getAttribute('fill')).toBe('#000')
-      expect(Number(eye.getAttribute('width'))).toBe(EYE_WIDTH * 0.4)
-      expect(Number(eye.getAttribute('height'))).toBe(EYE_HEIGHT * 0.4)
-      expect(Number(eye.getAttribute('rx'))).toBe((EYE_WIDTH / 2) * 0.4)
+      expect(Number(eye.getAttribute('width'))).toBe(size.width * 0.4)
+      expect(Number(eye.getAttribute('height'))).toBe(size.height * 0.4)
+      expect(Number(eye.getAttribute('rx'))).toBe(size.radius * 0.4)
     }
-    const centers = eyes.map(eye => Number(eye.getAttribute('x')) + (EYE_WIDTH / 2) * 0.4)
+    const centers = eyes.map(eye => Number(eye.getAttribute('x')) + size.radius * 0.4)
     expect(centers[0]).toBeCloseTo((pet.eyeX - gap / 2) * 0.4, 8)
     expect(centers[1]).toBeCloseTo((pet.eyeX + gap / 2) * 0.4, 8)
     expect(pet.eyeY).toBeLessThan(PET_GRID / 2)
@@ -131,7 +136,7 @@ describe('an agent face', () => {
   it('keeps daylight between the capsule eyes at every drawn size', () => {
     const space = (size: string, box: number): number => {
       const eyes = Array.from(face({ size }).querySelectorAll('.agent-pet-eyes rect')) as SVGRectElement[]
-      const width = (EYE_WIDTH / PET_GRID) * box
+      const width = (eyeSize(petOf(SEED)).width / PET_GRID) * box
       const centers = eyes.map(eye => Number(eye.getAttribute('x')) + width / 2)
       return centers[1] - centers[0] - width
     }

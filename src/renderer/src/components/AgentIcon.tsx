@@ -2,7 +2,7 @@ import { useId } from 'react'
 import { attachmentFileUrl } from '../../../shared/attachments'
 import { useCrew } from '../state/store'
 import GeneratedField from './art/GeneratedField'
-import { EYE_HEIGHT, EYE_RADIUS, EYE_WIDTH, FIELD_LIGHT, PET_GRID, eyeGapAt, petOf, petPath } from './art/pet'
+import { FIELD_LIGHT, PET_GRID, eyeGapAt, eyeSize, petOf, petPath } from './art/pet'
 import { activityForAgent, type AgentActivity } from './agentActivity'
 
 const SIZES = {
@@ -53,6 +53,7 @@ export default function AgentIcon({
   const pet = petOf(seed)
   const box = px ?? BOX[size]
   const gap = eyeGapAt(pet, box)
+  const eyes = eyeSize(pet)
   const path = petPath(pet, box)
   const mask = useId()
   const unit = box / PET_GRID
@@ -84,19 +85,19 @@ export default function AgentIcon({
                 <g transform={`rotate(${pet.tilt} ${pet.eyeX * unit} ${pet.eyeY * unit})`}>
                   <g className="agent-pet-eyes">
                     <rect
-                      x={(pet.eyeX - gap / 2 - EYE_RADIUS) * unit}
-                      y={(pet.eyeY - EYE_HEIGHT / 2) * unit}
-                      width={EYE_WIDTH * unit}
-                      height={EYE_HEIGHT * unit}
-                      rx={EYE_RADIUS * unit}
+                      x={(pet.eyeX - gap / 2 - eyes.radius) * unit}
+                      y={(pet.eyeY - eyes.height / 2) * unit}
+                      width={eyes.width * unit}
+                      height={eyes.height * unit}
+                      rx={eyes.radius * unit}
                       fill="#000"
                     />
                     <rect
-                      x={(pet.eyeX + gap / 2 - EYE_RADIUS) * unit}
-                      y={(pet.eyeY - EYE_HEIGHT / 2) * unit}
-                      width={EYE_WIDTH * unit}
-                      height={EYE_HEIGHT * unit}
-                      rx={EYE_RADIUS * unit}
+                      x={(pet.eyeX + gap / 2 - eyes.radius) * unit}
+                      y={(pet.eyeY - eyes.height / 2) * unit}
+                      width={eyes.width * unit}
+                      height={eyes.height * unit}
+                      rx={eyes.radius * unit}
                       fill="#000"
                     />
                   </g>
