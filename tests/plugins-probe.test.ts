@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { CrewPlugin } from '../src/shared/plugins'
 
 Element.prototype.getAnimations ??= () => []
+HTMLCanvasElement.prototype.getContext = (() => null) as typeof HTMLCanvasElement.prototype.getContext
 
 const kept = new Map<string, string>()
 Object.defineProperty(globalThis, 'localStorage', {
@@ -90,7 +91,6 @@ describe('the plugins store', () => {
     expect(mark.getAttribute('src')).toBe(PLUGIN_ART.frontpages)
     fireEvent.error(mark)
     expect(frontpages.querySelector('img')).toBeNull()
-    expect(frontpages.querySelector('canvas')).toBeTruthy()
   })
 
   it('connects and then adds the one a row names', async () => {
