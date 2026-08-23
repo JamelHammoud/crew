@@ -42,6 +42,12 @@ describe('the glass the expanded sidebar wears on macOS', () => {
   it('keeps the light surface translucent too', () => {
     expect(opacity(rule('.mac.light .sidebar-pinned {'))).toBeLessThan(1)
   })
+
+  it('makes the OLED surface the clearest and most frosted', () => {
+    const oled = rule('.mac.oled .sidebar-pinned {')
+    expect(opacity(oled)).toBeLessThan(opacity(rule('.mac .sidebar-pinned {')))
+    expect(oled).toMatch(/backdrop-filter:\s*blur\(48px\)/)
+  })
 })
 
 describe('the way the hovered rail arrives and leaves', () => {

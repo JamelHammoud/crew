@@ -64,8 +64,8 @@ describe('what a floating panel lets through', () => {
     expect(alphaOf('.oled .sidebar-glass.glass-strong')).toBeGreaterThan(alphaOf('.oled .sidebar-glass'))
   })
 
-  it('makes the OLED sidebar darker and less transparent than the regular dark sidebar', () => {
-    expect(alphaOf('.oled .sidebar-glass')).toBeGreaterThan(alphaOf('.sidebar-glass'))
-    expect(alphaOf('.mac.oled .sidebar-pinned')).toBeGreaterThan(alphaOf('.mac .sidebar-pinned'))
+  it('makes the OLED sidebar blacker and more transparent than the regular dark sidebar', () => {
+    expect(alphaOf('.oled .sidebar-glass')).toBeLessThan(alphaOf('.sidebar-glass'))
+    expect(alphaOf('.mac.oled .sidebar-pinned')).toBeLessThan(alphaOf('.mac .sidebar-pinned'))
   })
 })

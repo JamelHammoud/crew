@@ -518,11 +518,13 @@ textarea:placeholder-shown {
 }
 
 .oled .sidebar-glass {
-  background: rgb(3 3 3 / 0.96);
+  background: rgb(0 0 0 / 0.9);
+  backdrop-filter: blur(48px) saturate(160%);
 }
 
 .oled .sidebar-glass.glass-strong {
-  background: rgb(2 2 2 / 0.985);
+  background: rgb(0 0 0 / 0.94);
+  backdrop-filter: blur(56px) saturate(160%);
 }
 
 .mac .sidebar-pinned {
@@ -535,7 +537,8 @@ textarea:placeholder-shown {
 }
 
 .mac.oled .sidebar-pinned {
-  background: rgb(0 0 0 / 0.84);
+  background: rgb(0 0 0 / 0.56);
+  backdrop-filter: blur(48px) saturate(160%);
 }
 
 .rail {
