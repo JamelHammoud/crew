@@ -245,7 +245,7 @@ try {
     seen.resting.history.width !== 300 ||
     seen.resting.history.left !== 260 ||
     seen.resting.content.left !== 560 ||
-    !seen.resting.historyText.includes('Chats') ||
+    !seen.resting.historyText.includes('Chat') ||
     !seen.resting.historyText.includes('Plan a quiet weekend') ||
     !seen.resting.historyText.includes('Compare two cameras')
   ) {

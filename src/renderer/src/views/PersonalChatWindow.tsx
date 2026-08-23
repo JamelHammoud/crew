@@ -44,7 +44,7 @@ export default function PersonalChatWindow() {
           >
             {thread && (
               <div className="app-no-drag flex items-center gap-2">
-                <AgentIcon seed={thread.agentId} size="xs" />
+                <AgentIcon seed={thread.agentId} size="sm" />
                 <span className="text-sm font-semibold text-fg/80">{thread.agentLabel}</span>
               </div>
             )}

@@ -68,8 +68,8 @@ export default function PersonalChatSidebar({
 
   return (
     <aside data-personal-history className="w-[300px] shrink-0 bg-ink-850 border-r border-ink-700 flex flex-col">
-      <header className="app-drag h-[70px] shrink-0 pl-4 pr-3 mac:pl-[76px] flex items-center gap-2">
-        <h1 className="flex-1 text-lg font-bold text-fg">Chats</h1>
+      <header className="app-drag h-[70px] shrink-0 pl-4 pr-3 mac:pl-[92px] flex items-center gap-2">
+        <h1 className="flex-1 text-lg font-bold text-fg">Chat</h1>
         <Tooltip label="New chat">
           <button
             onClick={() => {
@@ -144,7 +144,7 @@ export default function PersonalChatSidebar({
                               one.id === active ? 'ring-1 ring-fg/50 ring-offset-2 ring-offset-ink-850' : ''
                             }`}
                           >
-                            <AgentIcon seed={one.agentId} size="sm" />
+                            <AgentIcon seed={one.agentId} size="md" />
                           </span>
                           <span className="min-w-0 flex-1">
                             <span
