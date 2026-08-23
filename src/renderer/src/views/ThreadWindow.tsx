@@ -4,7 +4,6 @@ import SidePanel from '../components/SidePanel'
 import Spinner from '../components/Spinner'
 import Toaster from '../components/Toaster'
 import { TOP_BAR_H } from '../components/TopBar'
-import WindowPin from '../components/WindowPin'
 import { useCrew } from '../state/store'
 import { threadIdInHash } from '../../../shared/threadViews'
 import ThreadView from './ThreadView'
@@ -31,9 +30,8 @@ export default function ThreadWindow() {
           <div className="page-scrim absolute inset-x-0 top-0" />
           <div
             style={{ height: TOP_BAR_H }}
-            className="app-drag relative pointer-events-auto flex items-center justify-end gap-1 px-4"
+            className="app-drag relative pointer-events-auto flex items-center justify-end px-4"
           >
-            <WindowPin />
             <PanelToggle />
           </div>
         </div>

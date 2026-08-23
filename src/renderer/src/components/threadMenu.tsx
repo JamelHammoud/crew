@@ -1,8 +1,9 @@
 import { useState, type MouseEvent, type ReactNode } from 'react'
 import { threadMenuActions, type ThreadOpenAction } from '../../../shared/threadViews'
-import { ArchiveGlyph, CheckGlyph, CopyGlyph, CloseGlyph, ColumnsGlyph, PopOutGlyph, UndoGlyph } from '../icons'
+import { ArchiveGlyph, CheckGlyph, CopyGlyph, CloseGlyph, ColumnsGlyph, PinGlyph, PopOutGlyph, UndoGlyph } from '../icons'
 import { useCrew } from '../state/store'
 import { toast } from '../state/toast'
+import { setWindowPinned, useWindowPinned } from '../state/windowShape'
 import { MenuDivider, MenuItem, Popover } from './Popover'
 import { selecting } from './selecting'
 
@@ -95,8 +96,25 @@ export function ThreadIdItem({ threadId, onDone }: { threadId: string; onDone: (
   )
 }
 
+export function WindowPinItem({ onDone }: { onDone: () => void }) {
+  const pinned = useWindowPinned()
+  const label = pinned ? 'Stop keeping on top' : 'Keep on top'
+
+  return (
+    <MenuItem
+      icon={<PinGlyph />}
+      label={label}
+      onClick={() => {
+        onDone()
+        void window.crew.setWindowPinned(!pinned).then(setWindowPinned)
+      }}
+    />
+  )
+}
+
 export function useThreadMenu({
   status,
+  opening = true,
   ...props
 }: {
   threadId: string
@@ -106,6 +124,7 @@ export function useThreadMenu({
   // reaches the crew it is in, so a thread in another project is opened from
   // here and finished there.
   status?: boolean
+  opening?: boolean
   onOpen: () => void
 }): { onContextMenu: (event: MouseEvent) => void; menu: ReactNode } {
   const [at, setAt] = useState<{ x: number; y: number } | null>(null)
@@ -118,7 +137,8 @@ export function useThreadMenu({
     },
     menu: (
       <Popover open={at !== null} onClose={() => setAt(null)} at={at ?? undefined} className="min-w-52">
-        <ThreadOpenItems {...props} onDone={() => setAt(null)} />
+        {opening && <ThreadOpenItems {...props} onDone={() => setAt(null)} />}
+        <WindowPinItem onDone={() => setAt(null)} />
         {status && <MenuDivider />}
         {status && <ThreadStatusItems threadId={props.threadId} onDone={() => setAt(null)} />}
         <MenuDivider />
