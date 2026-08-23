@@ -4,8 +4,10 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent 
 import { useBrowser } from '../state/browser'
 import { useCustomEmoji } from './customEmojiSheet'
 import { emojifyHtml } from './emojiHtml'
-import { linkifyFiles, locatePaths, openHref } from './fileLinks'
+import { FullPath, linkifyFiles, locatePaths, openHref } from './fileLinks'
 import { morph } from './mdMorph'
+import { movedBy } from './movedBy'
+import { TooltipBubble } from './Tooltip'
 
 function markTasks(container: HTMLElement) {
   for (const box of Array.from(container.querySelectorAll('li > input[type="checkbox"]'))) {
@@ -58,8 +60,11 @@ export default function Markdown({
 }) {
   const host = useRef<HTMLDivElement>(null)
   const drawn = useRef(false)
+  const tipTimer = useRef<number | null>(null)
+  const tipAnchor = useRef<HTMLElement | null>(null)
   const sheet = useCustomEmoji()
   const [resolved, setResolved] = useState(0)
+  const [tip, setTip] = useState<{ path: string; rect: DOMRect } | null>(null)
   const { page, unknown } = useMemo(() => {
     const container = document.createElement('div')
     container.innerHTML = DOMPurify.sanitize(marked.parse(text, { async: false, breaks }) as string)
@@ -92,6 +97,39 @@ export default function Markdown({
     }
   }, [unknown])
 
+  useEffect(() => {
+    return () => {
+      if (tipTimer.current !== null) window.clearTimeout(tipTimer.current)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!tip) return
+    const onScroll = (event: Event) => {
+      if (movedBy(event, tipAnchor.current)) setTip(null)
+    }
+    window.addEventListener('scroll', onScroll, { capture: true, passive: true })
+    return () => window.removeEventListener('scroll', onScroll, { capture: true })
+  }, [tip])
+
+  const onMouseOver = (event: MouseEvent<HTMLDivElement>) => {
+    const link = (event.target as HTMLElement).closest<HTMLElement>('a.file-link[data-full-path]')
+    if (!link || link.contains(event.relatedTarget as Node | null)) return
+    if (tipTimer.current !== null) window.clearTimeout(tipTimer.current)
+    tipTimer.current = window.setTimeout(() => {
+      tipAnchor.current = link
+      setTip({ path: link.dataset.fullPath ?? '', rect: link.getBoundingClientRect() })
+    }, 300)
+  }
+
+  const onMouseOut = (event: MouseEvent<HTMLDivElement>) => {
+    const link = (event.target as HTMLElement).closest<HTMLElement>('a.file-link[data-full-path]')
+    if (!link || link.contains(event.relatedTarget as Node | null)) return
+    if (tipTimer.current !== null) window.clearTimeout(tipTimer.current)
+    tipAnchor.current = null
+    setTip(null)
+  }
+
   const onClick = (event: MouseEvent<HTMLDivElement>) => {
     const link = (event.target as HTMLElement).closest('a')
     if (!link) return
@@ -105,5 +143,16 @@ export default function Markdown({
     openHref(link.getAttribute('href') ?? '')
   }
 
-  return <div ref={host} className={`md select-text ${className}`} onClick={onClick} />
+  return (
+    <>
+      <div
+        ref={host}
+        className={`md select-text ${className}`}
+        onClick={onClick}
+        onMouseOver={onMouseOver}
+        onMouseOut={onMouseOut}
+      />
+      {tip && <TooltipBubble label={<FullPath path={tip.path} />} rect={tip.rect} />}
+    </>
+  )
 }
