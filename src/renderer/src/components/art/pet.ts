@@ -189,7 +189,7 @@ function makePet(seed: string): Pet {
   const xRoll = rand()
   const yRoll = rand()
   const gapRoll = rand()
-  const tilt = -4 + rand() * 8
+  const tilt = -3 + rand() * 6
   const room = EYE_ROOMS[kind]
   const size = eyeSize({ kind })
   const extent = eyeExtents(size, tilt)
@@ -200,8 +200,8 @@ function makePet(seed: string): Pet {
   const right = room.right - extent.x - eyeGap / 2
   const top = room.top + extent.y
   const bottom = room.bottom - extent.y
-  const eyeX = (left + right) / 2 + (right - left) * (xRoll - 0.5) * 0.18
-  const eyeY = top + (bottom - top) * (0.32 + (yRoll - 0.5) * 0.12)
+  const eyeX = (left + right) / 2
+  const eyeY = top + (bottom - top) * (0.48 + (yRoll - 0.5) * 0.08)
   const pet = { hue, kind, variant, eyeX, eyeY, eyeGap, tilt, body: '' }
   return { ...pet, body: petPath(pet) }
 }
