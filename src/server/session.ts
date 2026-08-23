@@ -1397,8 +1397,7 @@ export class CrewSession {
           voice: talking,
           holding: holding || goal,
           goal,
-          plugin,
-          threadId: startId
+          plugin
         })
       }
       return
@@ -1437,7 +1436,8 @@ export class CrewSession {
           voice: talking,
           tickets: reporting,
           goal,
-          plugin
+          plugin,
+          threadId: startId
         })
         return
       }
