@@ -7,8 +7,12 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const styles = readFileSync(path.join(root, 'src/renderer/src/styles.css'), 'utf8')
 const renderer = readFileSync(path.join(root, 'src/renderer/src/main.tsx'), 'utf8')
 
-const block = (selector: string): string =>
-  new RegExp(`${selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\{([^}]*)\\}`).exec(styles)?.[1] ?? ''
+const blocks = [...styles.matchAll(/^([^@\s][^{}\n]*?)\s*\{\n([^{}]*?)\n\}/gm)].map(([, selector, body]) => ({
+  selector: selector.trim(),
+  body
+}))
+
+const block = (selector: string): string => blocks.find(rule => rule.selector === selector)?.body ?? ''
 
 describe('the app window corner', () => {
   it('lets macOS clip its native app and thread windows once', () => {

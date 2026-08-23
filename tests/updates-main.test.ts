@@ -3,7 +3,7 @@ import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import type { AppUpdater } from 'electron-updater'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Updates, type UpdatesHost } from '../src/main/updates'
 
 class FakeUpdater extends EventEmitter {
@@ -14,6 +14,8 @@ class FakeUpdater extends EventEmitter {
   checkForUpdates = vi.fn<() => Promise<unknown>>(() => Promise.resolve(null))
   downloadUpdate = vi.fn(() => Promise.resolve([]))
 }
+
+afterEach(() => vi.useRealTimers())
 
 function setup(checkForUpdates?: () => Promise<unknown>): {
   updates: Updates
@@ -94,10 +96,9 @@ describe('the updater quit handoff', () => {
     expect(updates.now()).toMatchObject({ stage: 'ready', version: '0.10.0', percent: 100 })
 
     updates.press()
-    await vi.runAllTicks()
+    await Promise.resolve()
     expect(updater.quitAndInstall).toHaveBeenCalledOnce()
     updates.close()
-    vi.useRealTimers()
   })
 
   it('keeps the staged release when a check sees the same version', async () => {
@@ -110,7 +111,6 @@ describe('the updater quit handoff', () => {
 
     expect(updates.now()).toMatchObject({ stage: 'ready', version: '0.2.0', percent: 100 })
     updates.close()
-    vi.useRealTimers()
   })
 
   it('lets Electron close the window before quitAndInstall emits before-quit', async () => {
