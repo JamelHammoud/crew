@@ -504,6 +504,7 @@ function TabPill({
         ref={pillRef}
         data-tab={tab.id}
         data-reorder={tab.id}
+        data-active={active ? '' : undefined}
         onPointerDown={row.take(tab.id)}
         onClick={() => {
           if (!row.dragged()) useBrowser.getState().selectTab(tab.id)
@@ -514,7 +515,7 @@ function TabPill({
         }}
         // Everything but where a pill stands is transitioned, since where it
         // stands is written by the drag itself and has to keep up with a pointer.
-        className={`group relative flex items-center gap-1.5 h-9 pl-3 pr-1.5 rounded-full text-sm font-medium max-w-[180px] shrink-0 transition-[color,background-color,scale] duration-150 active:scale-95 ${
+        className={`browser-tab group relative flex items-center gap-1.5 h-9 px-3 rounded-full text-sm font-medium max-w-[180px] shrink-0 transition-[color,background-color,scale] duration-150 active:scale-95 ${
           active
             ? 'bg-ink-800 text-fg'
             : menuAt
@@ -562,16 +563,18 @@ function TabPill({
           <GlobeGlyph className="w-4 h-4 shrink-0" />
         )}
         <span className="truncate">{tabLabel(tab)}</span>
-        <span
-          onPointerDown={event => event.stopPropagation()}
-          onClick={event => {
-            event.stopPropagation()
-            useBrowser.getState().closeTab(tab.id)
-          }}
-          aria-label="Close tab"
-          className="w-5 h-5 shrink-0 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-fg/10"
-        >
-          <CloseGlyph className="w-3 h-3" />
+        <span className="browser-tab-close pointer-events-none absolute inset-y-0 right-0 flex w-11 items-center justify-end rounded-r-full pr-1.5 opacity-0 transition-opacity group-hover:opacity-100">
+          <span
+            onPointerDown={event => event.stopPropagation()}
+            onClick={event => {
+              event.stopPropagation()
+              useBrowser.getState().closeTab(tab.id)
+            }}
+            aria-label="Close tab"
+            className="pointer-events-auto flex h-5 w-5 items-center justify-center rounded-full hover:bg-fg/10"
+          >
+            <CloseGlyph className="w-3 h-3" />
+          </span>
         </span>
       </button>
       <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined}>

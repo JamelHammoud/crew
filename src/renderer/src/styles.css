@@ -595,6 +595,18 @@ textarea:placeholder-shown {
   --fade-right: var(--fade-run);
 }
 
+.browser-tab-close {
+  background: linear-gradient(
+    to right,
+    transparent,
+    color-mix(in srgb, var(--color-fg) 4%, var(--color-ink-900)) 45%
+  );
+}
+
+.browser-tab[data-active] .browser-tab-close {
+  background: linear-gradient(to right, transparent, var(--color-ink-800) 45%);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .scroll-fade,
   .scroll-fade-x {

@@ -413,6 +413,19 @@ describe('the tab strip', () => {
     expect(order()).toEqual([second])
   })
 
+  it('floats the close control over the tab and fades the label beneath it', () => {
+    openTwo()
+    const { getAllByLabelText } = render(createElement(BrowserPanel))
+    const close = getAllByLabelText('Close tab')[0] as HTMLElement
+    const fade = close.parentElement as HTMLElement
+
+    expect(fade.className).toContain('absolute')
+    expect(fade.className).toContain('browser-tab-close')
+    expect(fade.className).toContain('opacity-0')
+    expect(fade.className).toContain('group-hover:opacity-100')
+    expect(close.parentElement?.parentElement?.className).toContain('px-3')
+  })
+
   it('leaves the tab menu closed until a right click asks for it', () => {
     openTwo()
     const { queryByText } = render(createElement(BrowserPanel))
