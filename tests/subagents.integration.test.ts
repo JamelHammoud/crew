@@ -80,6 +80,7 @@ describe('subagents', () => {
       promptId: parent.promptId,
       name: 'Scout',
       provider: 'fake',
+      model: 'large',
       subject: 'read the schema',
       task: 'find every table in the schema'
     })
@@ -93,6 +94,10 @@ describe('subagents', () => {
     expect(out.subject).toBe('read the schema')
     expect(out.parentThreadId).toBe(parent.threadId)
     expect(out.parentPromptId).toBe(parent.promptId)
+    const helperThread = ui.events.find(
+      event => event.kind === 'thread.started' && event.threadId === out.threadId
+    ) as Extract<SessionEvent, { kind: 'thread.started' }>
+    expect(helperThread.helperModel).toBe('large')
     // It asked for a CLI by name, so it ran on that machine's agent for it
     // rather than on the one that asked.
     expect(out.agentId).toBe(fake)
