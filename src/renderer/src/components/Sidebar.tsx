@@ -11,6 +11,7 @@ import type { Place } from '../views/home/place'
 import { createDocPage } from './doc/docsPages'
 import { TABS, TAB_ICON, type Tab } from './navTabs'
 import NavRow from './sidebar/NavRow'
+import NewChat from './sidebar/NewChat'
 import NewPage from './sidebar/NewPage'
 import NewPlace from './sidebar/NewPlace'
 import PlaceFace from './sidebar/PlaceFace'
@@ -161,6 +162,12 @@ export default function Sidebar({
     createDocPage('')
   }, [goToTab])
 
+  const newChat = useCallback(() => {
+    void window.crew.openPersonalChat(name).catch(err => {
+      toast.fail(said(err), { key: 'open-personal-chat' })
+    })
+  }, [name])
+
   const stop = useCallback((place: Place) => void closePlace(place.key), [closePlace])
 
   const forget = useCallback(
@@ -207,7 +214,13 @@ export default function Sidebar({
                 lit={tab === one.id && one.id !== 'docs'}
                 current={tab === one.id}
                 expanded={one.id === 'docs' ? tab === 'docs' : undefined}
-                after={one.id === 'docs' ? <NewPage onClick={newPage} /> : undefined}
+                after={
+                  one.id === 'chat' ? (
+                    <NewChat onClick={newChat} />
+                  ) : one.id === 'docs' ? (
+                    <NewPage onClick={newPage} />
+                  ) : undefined
+                }
                 onClick={() => goToTab(one.id)}
               />
               {one.id === 'docs' && <SidebarDocs open={tab === 'docs'} />}
