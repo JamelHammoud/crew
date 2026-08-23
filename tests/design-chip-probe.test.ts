@@ -60,7 +60,7 @@ describe('design API work in a thread', () => {
     }
 
     const items = buildThread([run], steps, 'jamel')
-    expect(items.map(item => item.kind)).toEqual(['tool', 'tool'])
+    expect(items.map(item => item.kind)).toEqual(['tool', 'tool', 'tool', 'tool'])
     expect(items.map(item => item.detail)).toEqual(steps.prompt.map(item => item.detail))
   })
 })

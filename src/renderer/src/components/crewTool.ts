@@ -4,6 +4,7 @@ export type CrewToolCall =
 
 const URL = /https?:\/\/[^\s'"`|;&<>()]+/gi
 const BOARD_ID = /^[a-z0-9][a-z0-9-]*$/
+const CREW_CODE = /^(?:[a-f0-9]{6,}|code)$/
 const INTERNAL = new Set(['agents', 'memory', 'page', 'tickets'])
 
 const local = (url: globalThis.URL): boolean => {
@@ -14,7 +15,8 @@ const local = (url: globalThis.URL): boolean => {
 const route = (url: globalThis.URL): string[] | null => {
   const parts = url.pathname.split('/').filter(Boolean)
   if (parts[0] === 'design' || INTERNAL.has(parts[0] ?? '')) return parts
-  if (parts[1] === 'design' || INTERNAL.has(parts[1] ?? '')) return parts.slice(1)
+  if (CREW_CODE.test(parts[0] ?? '') && (parts[1] === 'design' || INTERNAL.has(parts[1] ?? '')))
+    return parts.slice(1)
   return null
 }
 
