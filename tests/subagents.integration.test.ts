@@ -211,7 +211,7 @@ describe('subagents', () => {
   it('refuses a spawn that names a run nobody is doing, and one with nothing to do', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
-    const secondRunner = await connectRunner(20, 20)
+    await connectRunner(20, 20)
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === fake)
 
     const dead = await post('/agents/spawn', {
@@ -379,7 +379,7 @@ describe('subagents', () => {
     base = host.url.replace('ws://', 'http://').replace('/ws', '')
     const secondUi = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(secondUi)
-    await connectRunner(20, 20)
+    const secondRunner = await connectRunner(20, 20)
 
     const returned = (await secondUi.waitForEvent(
       e => e.kind === 'agent.start' && e.threadId === parent.threadId && e.promptId !== parent.promptId,
