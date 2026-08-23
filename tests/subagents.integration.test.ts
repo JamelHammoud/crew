@@ -295,7 +295,7 @@ describe('subagents', () => {
     expect(trespass.status).toBe(404)
   })
 
-  it('lists nested helpers and runs a failed turn again', async () => {
+  it('lists helpers and runs a failed turn again', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
     await connectRunner(9000, 20, true)

@@ -2547,10 +2547,11 @@ export class CrewSession {
   // Where a helper has got to, for a parent that would rather look than wait.
   subagentState(threadId: string): {
     id: string
+    parentId: string
     subject: string
     helper: string
     agent: string
-    state: 'working' | 'done' | 'failed'
+    state: 'working' | 'done' | 'stopped' | 'failed'
     ms: number
     said: string
     tokens: number
@@ -2578,10 +2579,11 @@ export class CrewSession {
     const active = thread.running ? this.agents.get(thread.agentId)?.runs.get(thread.running) : undefined
     return {
       id: threadId,
+      parentId: thread.parentThreadId,
       subject: thread.subject ?? thread.title,
       helper: thread.helper ?? '',
       agent: thread.agentLabel,
-      state: working ? 'working' : end?.ok === false ? 'failed' : 'done',
+      state: working ? 'working' : end?.stopped ? 'stopped' : end?.ok === false ? 'failed' : 'done',
       ms: working ? (active ? Math.max(0, Date.now() - active.startedAt) : 0) : (end?.ms ?? 0),
       said: working ? '' : (end?.text ?? end?.error ?? ''),
       tokens,
@@ -2623,9 +2625,6 @@ export class CrewSession {
     })
   }
 
-  // A helper has gone quiet with nothing behind it. Its answer is held for a
-  // breath so a run of them arriving together is one interruption, then handed
-  // to whatever the parent is doing.
   private parentAgentOf(thread: Thread): AgentState | undefined {
     const start = thread.parentPromptId
       ? this.eventsOf(thread.parentThreadId ?? '').find(
