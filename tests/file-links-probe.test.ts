@@ -905,6 +905,43 @@ describe('file editing', () => {
     expect(editor.selectionStart).toBe(11)
   })
 
+  it('undoes and redoes editor commands with their selections', async () => {
+    useBrowser.getState().openFile('src/app.ts')
+    render(createElement(BrowserPanel))
+    await screen.findByText('const one = 1')
+    const editor = screen.getByRole('textbox', { name: 'File contents' }) as HTMLTextAreaElement
+    editor.focus()
+    editor.setSelectionRange(6, 9, 'backward')
+    fireEvent.select(editor)
+    fireEvent.keyDown(editor, { key: '"', shiftKey: true })
+    await waitFor(() => expect(editor.value.startsWith('const "one"')).toBe(true))
+
+    fireEvent.keyDown(editor, { key: 'z', metaKey: true })
+    await waitFor(() => expect(editor.value.startsWith('const one')).toBe(true))
+    expect([editor.selectionStart, editor.selectionEnd, editor.selectionDirection]).toEqual([6, 9, 'backward'])
+
+    fireEvent.keyDown(editor, { key: 'z', metaKey: true, shiftKey: true })
+    await waitFor(() => expect(editor.value.startsWith('const "one"')).toBe(true))
+    expect([editor.selectionStart, editor.selectionEnd, editor.selectionDirection]).toEqual([7, 10, 'backward'])
+  })
+
+  it('makes discard undoable and clears redo after a new edit', async () => {
+    useBrowser.getState().openFile('src/app.ts')
+    render(createElement(BrowserPanel))
+    await screen.findByText('const one = 1')
+    const editor = screen.getByRole('textbox', { name: 'File contents' }) as HTMLTextAreaElement
+    fireEvent.change(editor, { target: { value: 'draft' } })
+    await waitFor(() => expect(editor.value).toBe('draft'))
+    fireEvent.keyDown(editor, { key: 'Escape' })
+    await waitFor(() => expect(editor.value).toContain('const one = 1'))
+    fireEvent.keyDown(editor, { key: 'z', metaKey: true })
+    await waitFor(() => expect(editor.value).toBe('draft'))
+    fireEvent.change(editor, { target: { value: 'different' } })
+    await waitFor(() => expect(editor.value).toBe('different'))
+    fireEvent.keyDown(editor, { key: 'y', metaKey: true })
+    expect(editor.value).toBe('different')
+  })
+
   it('marks the row holding the caret while the editor is active', async () => {
     useBrowser.getState().openFile('src/app.ts')
     render(createElement(BrowserPanel))

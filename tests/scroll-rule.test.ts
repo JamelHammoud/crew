@@ -70,6 +70,16 @@ describe('what may be scrolled', () => {
   })
 })
 
+describe('the file line-number gutter', () => {
+  it('stays at the left edge while the code moves under it', () => {
+    const source = readFileSync(path.join(renderer, 'components/CodeRows.tsx'), 'utf8')
+    const at = source.indexOf('data-code-gutter')
+    const block = source.slice(at, source.indexOf('>', at))
+    expect(block).toContain('sticky left-0')
+    expect(block).toContain('bg-ink-900')
+  })
+})
+
 describe('the row a tab stands in', () => {
   it('wears it, so a bar never eats the height the pills are drawn at', () => {
     expect(classOf('components/BrowserPanel.tsx', 'overflow-x-auto')).toContain('no-scrollbar')
