@@ -293,7 +293,13 @@ export default function ThreadView({
     }
   }
 
-  const openMenu = useThreadMenu({ threadId, opening: !alone, windowPin: true, onOpen: () => focusThread(threadId) })
+  const openMenu = useThreadMenu({
+    threadId,
+    status: true,
+    opening: !alone,
+    windowPin: true,
+    onOpen: () => focusThread(threadId)
+  })
   const onBackground = (event: React.MouseEvent) => {
     if (selecting() || ownsMenu(event.target)) return
     openMenu.onContextMenu(event)

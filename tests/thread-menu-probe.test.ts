@@ -184,7 +184,13 @@ describe('a right click on the thread itself', () => {
   })
 
   function Background({ alone = false }: { alone?: boolean }) {
-    const openMenu = useThreadMenu({ threadId: 'thread-2', opening: !alone, windowPin: true, onOpen })
+    const openMenu = useThreadMenu({
+      threadId: 'thread-2',
+      status: true,
+      opening: !alone,
+      windowPin: true,
+      onOpen
+    })
     return createElement(
       'div',
       null,
@@ -212,5 +218,17 @@ describe('a right click on the thread itself', () => {
     fireEvent.contextMenu(screen.getByText('Chat background'))
     expect(screen.getByText('Keep on top')).toBeTruthy()
     expect(screen.queryByText('Open in window')).toBeNull()
+  })
+
+  it('marks done and archives from the chat background', () => {
+    render(createElement(Background))
+
+    fireEvent.contextMenu(screen.getByText('Chat background'))
+    fireEvent.click(screen.getByText('Mark done'))
+    expect(sent).toHaveBeenCalledWith({ type: 'thread.status', threadId: 'thread-2', status: 'done' })
+
+    fireEvent.contextMenu(screen.getByText('Chat background'))
+    fireEvent.click(screen.getByText('Archive thread'))
+    expect(sent).toHaveBeenCalledWith({ type: 'thread.archive', threadId: 'thread-2' })
   })
 })
