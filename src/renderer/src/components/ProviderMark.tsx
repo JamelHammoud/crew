@@ -24,17 +24,21 @@ const MARKS: Record<string, string> = {
 // generated field before, a different photograph for every address, which said
 // the addresses were different from each other where the only thing worth saying
 // is that none of them is a vendor.
+//
+// Only the artwork wears a tile and a rim. Both are there for a picture that
+// runs to its own edge: the rim gives the two marks that reach theirs an edge to
+// stand on, and the tile is the shape somebody's logo is worn in everywhere
+// else. A line drawing has neither, so a surface under it would be a swatch
+// nobody asked for and the rim would be a box drawn around nothing. It stands
+// bare in the foreground at an opacity, the way every other mark in a row does,
+// and the stroke is read off the size the caller is wearing it at.
 export default function ProviderMark({ provider, className = 'w-4 h-4' }: { provider: string; className?: string }) {
   const src = MARKS[provider]
+  if (!src)
+    return <ServerGlyph className={`block shrink-0 text-fg/70 ${className}`} strokeWidth={wearWeight(STROKE, className)} />
   return (
     <span className={`relative shrink-0 overflow-hidden rounded-[22%] ${className}`}>
-      {src ? (
-        <img src={src} alt="" draggable={false} className="w-full h-full object-cover" />
-      ) : (
-        <span className="absolute inset-0 bg-fg/[0.08] text-fg/70">
-          <ServerGlyph className="block w-full h-full" strokeWidth={wearWeight(STROKE, className)} />
-        </span>
-      )}
+      <img src={src} alt="" draggable={false} className="w-full h-full object-cover" />
       <InsetRing className="ring-1 ring-inset ring-fg/5" />
     </span>
   )
