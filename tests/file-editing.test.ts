@@ -1,5 +1,27 @@
 import { describe, expect, it } from 'vitest'
+import { editDoc, plainRows } from '../src/renderer/src/components/diffRows'
 import { breakFileLine, eraseFilePair, indentFile, pairFile } from '../src/renderer/src/components/fileEditing'
+
+describe('file input mapping', () => {
+  it('places an identical character at the native caret inside a repeated run', () => {
+    const before = 'before ' + 'x'.repeat(100) + ' after'
+    const at = 40
+    const after = before.slice(0, at) + 'x' + before.slice(at)
+    expect(editDoc(plainRows(before), before, before, after, at)).toEqual({ text: after, at: at + 1 })
+  })
+
+  it('keeps typing beside the inserted character instead of jumping to the end of the run', () => {
+    const before = 'before ' + 'x'.repeat(100) + ' after'
+    const at = 40
+    const withX = before.slice(0, at) + 'x' + before.slice(at)
+    const withY = withX.slice(0, at + 1) + 'y' + withX.slice(at + 1)
+    const first = editDoc(plainRows(before), before, before, withX, at)
+    expect(editDoc(plainRows(first.text), first.text, first.text, withY, at + 1)).toEqual({
+      text: withY,
+      at: at + 2
+    })
+  })
+})
 
 describe('file indentation', () => {
   it('puts two spaces at a caret', () => {

@@ -147,7 +147,12 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
   const docRef = useRef('')
   const selection = useRef<FileSelection>({ start: 0, end: 0, direction: 'none' })
   const history = useRef(createFileHistory())
-  const pendingInput = useRef<{ selection: FileSelection; inputType: string; scrollLeft: number } | null>(null)
+  const pendingInput = useRef<{
+    selection: FileSelection
+    shownStart: number
+    inputType: string
+    scrollLeft: number
+  } | null>(null)
   const heldScrollLeft = useRef<number | null>(null)
   const last = useRef(0)
   const composing = useRef(false)
@@ -274,11 +279,14 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
     next: string,
     nextSelection?: { start: number; end: number; direction?: FileSelection['direction'] },
     kind: FileEditKind = 'command',
-    beforeSelection?: FileSelection
+    beforeSelection?: FileSelection,
+    startHint?: number
   ) => {
     if (heldScrollLeft.current === null) heldScrollLeft.current = bodyRef.current?.scrollLeft ?? null
-    const before = beforeSelection ?? (areaRef.current ? readSelection(areaRef.current) : selection.current)
-    const edit = editDoc(rows, doc, shown, next)
+    const area = areaRef.current
+    const before = beforeSelection ?? (area ? readSelection(area) : selection.current)
+    const hint = startHint ?? (area && nextSelection ? Math.min(area.selectionStart, nextSelection.start) : undefined)
+    const edit = editDoc(rows, doc, shown, next, hint)
     let after: FileSelection
     if (nextSelection) {
       const nextRows = baseline === null ? plainRows(edit.text) : diffRows(baseline, edit.text)
@@ -370,7 +378,12 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
     }
     const scrollLeft = bodyRef.current?.scrollLeft ?? 0
     heldScrollLeft.current = scrollLeft
-    pendingInput.current = { selection: readSelection(event.currentTarget), inputType, scrollLeft }
+    pendingInput.current = {
+      selection: readSelection(event.currentTarget),
+      shownStart: event.currentTarget.selectionStart,
+      inputType,
+      scrollLeft
+    }
   }
 
   const onEdit = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -378,7 +391,13 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
     pendingInput.current = null
     if (pending) heldScrollLeft.current = pending.scrollLeft
     const inputType = pending?.inputType || (event.nativeEvent as InputEvent).inputType || ''
-    apply(event.target.value, undefined, kindOf(inputType), pending?.selection ?? selection.current)
+    const nextSelection = {
+      start: event.target.selectionStart,
+      end: event.target.selectionEnd,
+      direction: event.target.selectionDirection
+    }
+    const startHint = pending ? Math.min(pending.shownStart, nextSelection.start) : undefined
+    apply(event.target.value, nextSelection, kindOf(inputType), pending?.selection ?? selection.current, startHint)
   }
 
   const placeActiveRow = (area: HTMLTextAreaElement) => {

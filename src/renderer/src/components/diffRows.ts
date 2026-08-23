@@ -302,10 +302,17 @@ export function snap(rows: Row[], at: number, back: boolean): number {
   return behind ? startOf(rows, pick) + rows[pick].text.length : startOf(rows, pick)
 }
 
-export function editDoc(rows: Row[], doc: string, before: string, after: string): { text: string; at: number } {
+export function editDoc(
+  rows: Row[],
+  doc: string,
+  before: string,
+  after: string,
+  startHint?: number
+): { text: string; at: number } {
   const max = Math.min(before.length, after.length)
+  const limit = startHint === undefined ? max : Math.max(0, Math.min(startHint, max))
   let head = 0
-  while (head < max && before[head] === after[head]) head += 1
+  while (head < limit && before[head] === after[head]) head += 1
   let tail = 0
   while (tail < max - head && before[before.length - 1 - tail] === after[after.length - 1 - tail]) tail += 1
   const put = after.slice(head, after.length - tail)
