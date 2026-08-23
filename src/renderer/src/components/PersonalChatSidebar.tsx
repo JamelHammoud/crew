@@ -242,7 +242,6 @@ export default function PersonalChatSidebar({
             <ScrollFade edges={edges} />
           </div>
         </div>
-      </div>
     </aside>
   )
 }
