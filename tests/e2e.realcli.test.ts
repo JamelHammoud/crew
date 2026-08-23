@@ -27,16 +27,20 @@ async function gitLog(repo: string): Promise<string> {
 }
 
 describe.skipIf(!RUN)('real end to end (CREW_REAL_CLI=1)', () => {
-  it('runs GPT-5.6 Sol through the real Codex provider', async () => {
+  it('runs GPT-5.6 Sol with its saved instructions through the real Codex provider', async () => {
     const run = codexProvider.start(
-      'Reply with exactly: crew-sol-ok\nThis thread uses the design board "Untitled Board".\n{"kind":"note","text":"Hero section"}',
+      'Introduce yourself in one sentence.',
       process.cwd(),
       { onStep: () => {} },
-      { model: 'gpt-5.6-sol', effort: 'low' }
+      {
+        model: 'gpt-5.6-sol',
+        effort: 'low',
+        instructions: 'Reply to every message with exactly: crew-sol-instructions-ok'
+      }
     )
 
     const result = await run.done
-    expect(result.text).toContain('crew-sol-ok')
+    expect(result.text.trim()).toBe('crew-sol-instructions-ok')
   }, 120000)
 
   it('hosts a session, chats with a real agent, and syncs state with git', async () => {
