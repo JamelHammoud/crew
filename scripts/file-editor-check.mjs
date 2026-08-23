@@ -35,10 +35,6 @@ createRoot(document.getElementById('root')).render(React.createElement(FileView,
 `
 }
 
-const main = `const { app, BrowserWindow } = require('electron')
-const path = require('node:path')
-app.disableHardwareAcceleration()
-const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
 const read = `(() => {
   const scroller = document.querySelector('.overflow-auto')
   const gutter = document.querySelector('[data-code-gutter]')
@@ -60,6 +56,18 @@ const read = `(() => {
   }
 })()`
 
+const focusEnd = `(() => {
+  const area = document.querySelector('textarea[aria-label="File contents"]')
+  area.focus()
+  area.setSelectionRange(area.value.length, area.value.length)
+})()`
+
+const main = `const { app, BrowserWindow } = require('electron')
+const path = require('node:path')
+app.disableHardwareAcceleration()
+const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
+const read = ${JSON.stringify(read)}
+
 app.whenReady().then(async () => {
   const win = new BrowserWindow({ width: 720, height: 460, show: true, backgroundColor: '#141414' })
   const js = value => win.webContents.executeJavaScript(value)
@@ -74,7 +82,7 @@ app.whenReady().then(async () => {
     await js('document.querySelector(".overflow-auto").scrollLeft = 900')
     await wait(80)
     const scrolled = await js(read)
-    await js(`(() => { const area = document.querySelector('textarea[aria-label="File contents"]'); area.focus(); area.setSelectionRange(area.value.length, area.value.length) })()`)
+    await js(${JSON.stringify(focusEnd)})
     await win.webContents.insertText('a')
     await win.webContents.insertText('b')
     await win.webContents.insertText('c')
