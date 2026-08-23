@@ -8,10 +8,13 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
     return (
       <>
         <g data-part="thought-cloud">
-          <rect data-part="thought-body" x="9" y="29" width="84" height="47" rx="23.5" />
-          <circle data-part="thought-lobe-one" cx="26" cy="31" r="18" />
-          <circle data-part="thought-lobe-two" cx="49" cy="24" r="22" />
-          <circle data-part="thought-lobe-three" cx="73" cy="33" r="19" />
+          <ellipse data-part="thought-core" cx="50" cy="48" rx="34" ry="24" />
+          <circle data-part="thought-lobe-one" cx="23" cy="35" r="19" />
+          <circle data-part="thought-lobe-two" cx="45" cy="24" r="23" />
+          <circle data-part="thought-lobe-three" cx="72" cy="34" r="20" />
+          <circle data-part="thought-lobe-four" cx="77" cy="55" r="20" />
+          <circle data-part="thought-lobe-five" cx="53" cy="65" r="20" />
+          <circle data-part="thought-lobe-six" cx="27" cy="58" r="19" />
         </g>
         <circle data-part="thought-tail-one" cx="25" cy="84" r="7.5" />
         <circle data-part="thought-tail-two" cx="13" cy="94" r="4" />
