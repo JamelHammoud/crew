@@ -142,8 +142,16 @@ describe('where a helper chip lands', () => {
           detail: 'curl -s -X POST http://localhost:2739/code/agents/child-thread/say'
         },
         {
-          id: 'external-call',
+          id: 'direct-wrapped-call',
           ts: 5,
+          kind: 'tool' as const,
+          status: 'done' as const,
+          name: 'Bash',
+          detail: "result=$(curl -s 'http://127.0.0.1:2739/agents?promptId=parent-prompt')"
+        },
+        {
+          id: 'external-call',
+          ts: 6,
           kind: 'tool' as const,
           status: 'done' as const,
           name: 'Bash',

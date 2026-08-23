@@ -32,13 +32,20 @@ describe('design API work in a thread', () => {
         step(
           'edit',
           `curl -s -X POST http://localhost:59206/6329c2/design/landing-1abc/ops -H 'content-type: application/json'`
-        )
+        ),
+        step(
+          'direct-pipe',
+          'curl -s http://127.0.0.1:2739/design/untitled-4lus | python3 -c \'import json,sys\''
+        ),
+        step('quoted-query', "wget -qO- 'http://[::1]:2739/design/other-2abc?fresh=1'")
       ]
     }
 
     expect(buildThread([run], steps, 'jamel').map(item => item.design)).toEqual([
       { boardId: 'landing-1abc', action: 'read' },
-      { boardId: 'landing-1abc', action: 'edit' }
+      { boardId: 'landing-1abc', action: 'edit' },
+      { boardId: 'untitled-4lus', action: 'read' },
+      { boardId: 'other-2abc', action: 'read' }
     ])
   })
 
@@ -46,7 +53,9 @@ describe('design API work in a thread', () => {
     const steps = {
       prompt: [
         step('external', 'curl -s https://example.com/6329c2/design/landing-1abc'),
-        step('other', 'curl -s http://127.0.0.1:59206/6329c2/files/landing-1abc')
+        step('other', 'curl -s http://127.0.0.1:59206/6329c2/files/landing-1abc'),
+        step('nested', 'curl -s http://127.0.0.1:59206/a/b/design/landing-1abc'),
+        step('near-miss', 'curl -s http://127.0.0.1:59206/design/landing-1abc/export')
       ]
     }
 
