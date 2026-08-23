@@ -27,7 +27,7 @@ export default function PersonalChatWindow() {
   const activity = useMemo(() => {
     const latest: Record<string, number> = {}
     for (const event of events) {
-      if (!('threadId' in event)) continue
+      if (!('threadId' in event) || !event.threadId) continue
       latest[event.threadId] = Math.max(latest[event.threadId] ?? 0, event.ts)
     }
     return latest
