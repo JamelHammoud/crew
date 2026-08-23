@@ -1506,16 +1506,16 @@ textarea:placeholder-shown {
 @keyframes agent-writing-pencil {
   0%,
   100% {
-    transform: translateX(-8%) rotate(-2deg) scale(1.01, 0.99);
+    transform: translate(-5%, 3%) rotate(-2deg) scale(1.01, 0.99);
   }
   18% {
-    transform: translateX(-10%) rotate(-3deg) scale(1.035, 0.965);
+    transform: translate(-7%, 5%) rotate(-3deg) scale(1.035, 0.965);
   }
   62% {
-    transform: translateX(8%) rotate(2deg) scale(0.985, 1.02);
+    transform: translate(5%, -3%) rotate(2deg) scale(0.985, 1.02);
   }
   78% {
-    transform: translate(10%, -4%) rotate(4deg) scale(1.025, 0.975);
+    transform: translate(7%, -5%) rotate(4deg) scale(1.025, 0.975);
   }
   88% {
     transform: translate(-6%, -7%) rotate(-3deg) scale(0.97, 1.03);
@@ -1552,20 +1552,28 @@ textarea:placeholder-shown {
   }
 }
 
-.agent-icon [data-part='design-nib'] {
-  transform-origin: center bottom;
-  animation: agent-design-nib 3.1s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+.agent-icon [data-part='design-palette'] {
+  transform-origin: center;
+  animation: agent-design-palette 3.1s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
 }
 
-.agent-icon [data-part='design-aperture'] {
-  animation: agent-design-aperture 1.55s ease-in-out var(--agent-delay, 0ms) infinite alternate;
+.agent-icon [data-part^='design-color'] {
+  animation: agent-design-color 3.1s cubic-bezier(0.34, 1.56, 0.64, 1) var(--agent-delay, 0ms) infinite;
 }
 
-.agent-icon [data-part='design-slit'] {
-  animation: agent-design-slit 3.1s ease-in-out var(--agent-delay, 0ms) infinite;
+.agent-icon [data-part='design-color-two'] {
+  animation-delay: calc(var(--agent-delay, 0ms) - 170ms);
 }
 
-@keyframes agent-design-nib {
+.agent-icon [data-part='design-color-three'] {
+  animation-delay: calc(var(--agent-delay, 0ms) - 340ms);
+}
+
+.agent-icon [data-part='design-thumb'] {
+  animation: agent-design-thumb 3.1s ease-in-out var(--agent-delay, 0ms) infinite;
+}
+
+@keyframes agent-design-palette {
   0%,
   100% {
     transform: rotate(-1deg) scale(1.01, 0.99);
@@ -1577,26 +1585,32 @@ textarea:placeholder-shown {
     transform: rotate(-1deg) scale(1.025, 0.975);
   }
   82% {
-    transform: translateY(-3%) rotate(0.5deg) scale(0.98, 1.025);
+    transform: translateY(-2%) rotate(0.5deg) scale(0.98, 1.025);
   }
 }
 
-@keyframes agent-design-aperture {
-  from {
-    transform: scale(0.78);
+@keyframes agent-design-color {
+  0%,
+  18%,
+  72%,
+  100% {
+    transform: scale(1);
   }
-  to {
+  30% {
+    transform: scale(0.68);
+  }
+  42% {
     transform: scale(1.12);
   }
 }
 
-@keyframes agent-design-slit {
+@keyframes agent-design-thumb {
   0%,
   100% {
-    transform: scaleY(0.86);
+    transform: rotate(-2deg) scale(0.92, 1.05);
   }
   50% {
-    transform: scaleY(1.08);
+    transform: rotate(2deg) scale(1.08, 0.95);
   }
 }
 
@@ -1642,10 +1656,6 @@ textarea:placeholder-shown {
   animation: agent-plan-board 3.2s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
 }
 
-.agent-icon [data-part='plan-clip'] {
-  animation: agent-plan-clip 3.2s cubic-bezier(0.34, 1.56, 0.64, 1) var(--agent-delay, 0ms) infinite;
-}
-
 .agent-icon [data-part^='plan-check'],
 .agent-icon [data-part^='plan-line'] {
   stroke-dasharray: 40;
@@ -1671,20 +1681,6 @@ textarea:placeholder-shown {
   }
   72% {
     transform: scale(1.015, 0.985);
-  }
-}
-
-@keyframes agent-plan-clip {
-  0%,
-  12%,
-  100% {
-    transform: translateY(0) scale(1);
-  }
-  18% {
-    transform: translateY(-12%) scale(1.08, 0.92);
-  }
-  28% {
-    transform: translateY(4%) scale(0.96, 1.05);
   }
 }
 
@@ -1739,14 +1735,9 @@ textarea:placeholder-shown {
   }
 }
 
-.agent-icon [data-part='message-back'] {
-  transform-origin: left bottom;
-  animation: agent-message-back 2.8s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
-}
-
-.agent-icon [data-part='message-front'] {
-  transform-origin: right bottom;
-  animation: agent-message-front 2.8s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+.agent-icon [data-part='message'] {
+  transform-origin: center bottom;
+  animation: agent-message-flex 2.8s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon [data-part^='message-dot'] {
@@ -1757,29 +1748,20 @@ textarea:placeholder-shown {
   animation-delay: calc(var(--agent-delay, 0ms) - 180ms);
 }
 
-@keyframes agent-message-back {
-  0%,
-  100% {
-    transform: translate(0, 2%) scale(1.01, 0.99);
-  }
-  34% {
-    transform: translate(2%, -4%) scale(0.98, 1.03);
-  }
-  62% {
-    transform: translate(0, 1%) scale(1.02, 0.98);
-  }
+.agent-icon [data-part='message-dot-three'] {
+  animation-delay: calc(var(--agent-delay, 0ms) - 360ms);
 }
 
-@keyframes agent-message-front {
+@keyframes agent-message-flex {
   0%,
   100% {
-    transform: translate(0, 1%) scale(1.01, 0.99);
+    transform: scale(1.01, 0.99);
   }
   38% {
-    transform: translate(-2%, 2%) scale(1.02, 0.98);
+    transform: scale(1.025, 0.975);
   }
   70% {
-    transform: translate(-1%, -4%) scale(0.98, 1.03);
+    transform: scale(0.985, 1.025);
   }
 }
 
