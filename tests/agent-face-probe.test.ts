@@ -183,16 +183,27 @@ describe('an agent face', () => {
     expect(keyframes).toContain('translateY(-3%)')
   })
 
-  it('keeps Reading as a simple open book and animates only its text lines', () => {
+  it('keeps Reading as two rounded pages with a clear gutter and motion that begins blank', () => {
     const object = face({ activity: 'reading' }).querySelector('[data-object="reading"]') as HTMLElement
     const lines = styles.split(".agent-icon [data-part^='book-line'] {")[1]?.split('}')[0] ?? ''
+    const motion = styles.split(".agent-icon .agent-activity-object[data-object='reading'] {")[1]?.split('}')[0] ?? ''
 
-    expect(object.querySelector('[data-part="book-body"]')).not.toBeNull()
+    expect(object.querySelector('[data-part="book-page-left"]')).not.toBeNull()
+    expect(object.querySelector('[data-part="book-page-right"]')).not.toBeNull()
+    expect(object.querySelector('[data-part="book-page-left-body"]')?.getAttribute('d')).toContain('48 78')
+    expect(object.querySelector('[data-part="book-page-right-body"]')?.getAttribute('d')).toContain('52 78')
     expect(object.querySelectorAll('[data-part^="book-line"]')).toHaveLength(4)
     expect(object.querySelector('[data-part^="page-turn"]')).toBeNull()
-    expect(object.querySelector('[data-part="book-spine"]')?.getAttribute('d')).toBe('M50 36 V84')
-    expect(lines).toContain('animation: agent-book-line 3.2s')
-    expect(styles).not.toContain('@keyframes agent-reading')
+    expect(object.querySelector('[data-part="book-spine"]')).toBeNull()
+    expect(lines).toContain('stroke-dashoffset: 30')
+    expect(lines).toContain('opacity: 0')
+    expect(lines).toContain('animation: agent-book-line 2.8s')
+    expect(lines).toContain('infinite both')
+    expect(motion).toContain('1.7s ease-in-out')
+    expect(motion).toContain('infinite alternate')
+    expect(styles).toContain('@keyframes agent-reading')
+    expect(styles).toContain('@keyframes agent-book-page-left')
+    expect(styles).toContain('@keyframes agent-book-page-right')
     expect(styles).not.toContain('@keyframes agent-book-body')
     expect(styles).not.toContain('@keyframes agent-page-turn')
   })
@@ -371,27 +382,37 @@ describe('an agent face', () => {
     expect(box.querySelector('.agent-pet-drawing')).toBeNull()
     expect(box.querySelector('.agent-face-stage')).toBeNull()
     expect(box.querySelector('.agent-activity-object')).toBeNull()
-    expect(box.querySelector('.agent-morph-bridge')).toBeNull()
+    expect(box.querySelector('.agent-activity-stage')).toBeNull()
   })
 
-  it('switches activity states directly without a morph bridge', () => {
+  it('crossfades activity states through overlapping blurred shapes', () => {
+    vi.useFakeTimers()
     const view = render(createElement(AgentIcon, { seed: SEED, activity: 'idle' }))
     const box = view.container.firstElementChild as HTMLElement
 
     view.rerender(createElement(AgentIcon, { seed: SEED, activity: 'reading' }))
-    expect(box.querySelector('.agent-face-stage')?.getAttribute('data-motion')).toBe('hidden')
-    expect(box.querySelector('[data-object="reading"]')?.parentElement?.getAttribute('data-motion')).toBe('working')
-    expect(box.querySelector('.agent-morph-bridge')).toBeNull()
+    expect(box.querySelector('.agent-face-stage')?.getAttribute('data-motion')).toBe('outgoing')
+    expect(box.querySelector('[data-object="reading"]')?.parentElement?.getAttribute('data-motion')).toBe('incoming')
 
     view.rerender(createElement(AgentIcon, { seed: SEED, activity: 'designing' }))
-    expect(box.querySelector('[data-object="reading"]')).toBeNull()
-    expect(box.querySelector('.agent-morph-bridge')).toBeNull()
-    expect(box.querySelector('[data-object="designing"]')?.parentElement?.getAttribute('data-motion')).toBe('working')
+    expect(box.querySelector('[data-object="reading"]')?.parentElement?.getAttribute('data-motion')).toBe('outgoing')
+    expect(box.querySelector('[data-object="designing"]')?.parentElement?.getAttribute('data-motion')).toBe('incoming')
     expect(box.querySelector('.agent-face-stage')?.getAttribute('data-motion')).toBe('hidden')
 
+    act(() => vi.advanceTimersByTime(460))
+    expect(box.querySelector('[data-object="reading"]')).toBeNull()
+    expect(box.querySelector('[data-object="designing"]')?.parentElement?.getAttribute('data-motion')).toBe('working')
+
     view.rerender(createElement(AgentIcon, { seed: SEED, activity: 'idle' }))
+    expect(box.querySelector('[data-object="designing"]')?.parentElement?.getAttribute('data-motion')).toBe('outgoing')
+    expect(box.querySelector('.agent-face-stage')?.getAttribute('data-motion')).toBe('incoming')
+    act(() => vi.advanceTimersByTime(460))
     expect(box.querySelector('.agent-activity-object')).toBeNull()
     expect(box.querySelector('.agent-face-stage')?.getAttribute('data-motion')).toBe('present')
+    expect(styles).toContain('@keyframes agent-activity-in')
+    expect(styles).toContain('filter: blur(6px)')
+    expect(styles).toContain('@keyframes agent-activity-out')
+    vi.useRealTimers()
   })
 })
 

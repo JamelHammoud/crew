@@ -2006,14 +2006,19 @@ textarea:placeholder-shown {
     animation: none;
   }
 
-  .agent-icon .agent-face-stage[data-motion='hidden'] {
+  .agent-icon .agent-face-stage[data-motion='hidden'],
+  .agent-icon .agent-face-stage[data-motion='outgoing'],
+  .agent-icon .agent-activity-stage[data-motion='outgoing'] {
     opacity: 0;
   }
 
+  .agent-icon .agent-face-stage[data-motion='incoming'],
   .agent-icon .agent-face-stage[data-motion='present'],
+  .agent-icon .agent-activity-stage[data-motion='incoming'],
   .agent-icon .agent-activity-stage[data-motion='working'] {
     opacity: 1;
     transform: none;
+    filter: none;
   }
 }
 
