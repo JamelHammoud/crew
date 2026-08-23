@@ -46,6 +46,8 @@ describe('the pet an agent wears', () => {
       expect(pet.body).toMatch(/[Ca]/)
       expect(pet.body.endsWith('Z')).toBe(true)
     }
+    expect(petPath({ kind: 'teardrop', variant: 0 })).toMatch(/^M 46 10 C 48 7 52 7 54 10/)
+    expect(petPath({ kind: 'triangle', variant: 0 })).toMatch(/^M 45 15 C 47 9 53 9 56 15/)
   })
 
   it('keeps the seeded identity stable', () => {

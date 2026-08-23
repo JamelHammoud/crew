@@ -45,7 +45,7 @@ function bodyFor(kind: PetShapeKind, variant: number, box: number): string {
     return `M ${center} ${at(7)} a ${radius} ${radius} 0 1 1 0 ${at(86)} a ${radius} ${radius} 0 1 1 0 ${at(-86)} Z`
   }
   if (kind === 'teardrop') {
-    return `M ${at(50)} ${at(7)} C ${at(58 + v)} ${at(20)} ${at(84)} ${at(37 - v)} ${at(87)} ${at(56)} C ${at(90)} ${at(76)} ${at(74)} ${at(91)} ${at(51)} ${at(92)} C ${at(28)} ${at(93)} ${at(11)} ${at(77)} ${at(14)} ${at(56)} C ${at(17)} ${at(37)} ${at(42 - v)} ${at(20)} ${at(50)} ${at(7)} Z`
+    return `M ${at(46)} ${at(10)} C ${at(48)} ${at(7)} ${at(52)} ${at(7)} ${at(54)} ${at(10)} C ${at(62 + v)} ${at(22)} ${at(84)} ${at(38 - v)} ${at(87)} ${at(56)} C ${at(90)} ${at(76)} ${at(74)} ${at(91)} ${at(51)} ${at(92)} C ${at(28)} ${at(93)} ${at(11)} ${at(77)} ${at(14)} ${at(56)} C ${at(17)} ${at(38)} ${at(38 - v)} ${at(22)} ${at(46)} ${at(10)} Z`
   }
   if (kind === 'cloud') {
     return `M ${at(19)} ${at(76)} C ${at(7)} ${at(71)} ${at(6)} ${at(54)} ${at(17)} ${at(46)} C ${at(14)} ${at(31)} ${at(31)} ${at(21 - v)} ${at(44)} ${at(28)} C ${at(54)} ${at(14)} ${at(76)} ${at(21)} ${at(78)} ${at(39)} C ${at(94)} ${at(40)} ${at(98)} ${at(62)} ${at(85)} ${at(70)} C ${at(77)} ${at(84)} ${at(58 + v)} ${at(83)} ${at(49)} ${at(78)} C ${at(39)} ${at(87)} ${at(26)} ${at(84)} ${at(19)} ${at(76)} Z`
@@ -59,7 +59,7 @@ function bodyFor(kind: PetShapeKind, variant: number, box: number): string {
   if (kind === 'capsule') {
     return `M ${at(28)} ${at(27 - v)} L ${at(72)} ${at(28)} C ${at(88)} ${at(28)} ${at(94)} ${at(38)} ${at(93)} ${at(51)} C ${at(92)} ${at(65)} ${at(84)} ${at(73 + v)} ${at(70)} ${at(74)} L ${at(27)} ${at(73)} C ${at(13)} ${at(72)} ${at(6)} ${at(64)} ${at(7)} ${at(50)} C ${at(8)} ${at(36)} ${at(14)} ${at(28)} ${at(28)} ${at(27 - v)} Z`
   }
-  return `M ${at(50)} ${at(8)} C ${at(55)} ${at(8)} ${at(59)} ${at(12)} ${at(63)} ${at(19)} L ${at(90)} ${at(70 + v)} C ${at(96)} ${at(82)} ${at(87)} ${at(91)} ${at(74)} ${at(91)} L ${at(26)} ${at(91)} C ${at(13)} ${at(91)} ${at(4)} ${at(82)} ${at(10)} ${at(70 + v)} L ${at(37)} ${at(19)} C ${at(41)} ${at(12)} ${at(45)} ${at(8)} ${at(50)} ${at(8)} Z`
+  return `M ${at(45)} ${at(15)} C ${at(47)} ${at(9)} ${at(53)} ${at(9)} ${at(56)} ${at(15)} L ${at(90)} ${at(70 + v)} C ${at(96)} ${at(82)} ${at(87)} ${at(91)} ${at(74)} ${at(91)} L ${at(26)} ${at(91)} C ${at(13)} ${at(91)} ${at(4)} ${at(82)} ${at(10)} ${at(70 + v)} L ${at(41)} ${at(20)} C ${at(42)} ${at(18)} ${at(43)} ${at(16)} ${at(45)} ${at(15)} Z`
 }
 
 export function petPath(pet: Pick<Pet, 'kind' | 'variant'>, box: number = PET_GRID): string {
