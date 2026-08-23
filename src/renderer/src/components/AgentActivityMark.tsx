@@ -67,7 +67,9 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
         <path data-part="writing-line-one" d="M25 32 H63" fill="none" stroke="#000" strokeWidth="8" strokeLinecap="round" />
         <path data-part="writing-line-two" d="M25 51 H76" fill="none" stroke="#000" strokeWidth="8" strokeLinecap="round" />
         <path data-part="writing-line-three" d="M25 70 H55" fill="none" stroke="#000" strokeWidth="8" strokeLinecap="round" />
-        <circle data-part="writing-caret" cx="68" cy="70" r="5" fill="#000" />
+        <circle data-part="writing-caret-one" cx="70" cy="32" r="5" fill="#000" />
+        <circle data-part="writing-caret-two" cx="83" cy="51" r="5" fill="#000" />
+        <circle data-part="writing-caret-three" cx="62" cy="70" r="5" fill="#000" />
       </>
     )
   }
