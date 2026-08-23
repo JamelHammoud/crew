@@ -25,15 +25,17 @@ export function indentFile(value: string, start: number, end: number, out: boole
   const lines = value.slice(range.from, range.to).split('\n')
   let removedBeforeStart = 0
   let delta = 0
-  const changed = lines.map((line, index) => {
-    const at = range.from + lines.slice(0, index).reduce((sum, one) => sum + one.length + 1, 0)
+  let at = range.from
+  const changed = lines.map(line => {
     if (!out) {
       delta += INDENT.length
+      at += line.length + 1
       return INDENT + line
     }
     const take = line.startsWith('\t') ? 1 : Math.min(INDENT.length, line.match(/^ */)?.[0].length ?? 0)
     if (at < start) removedBeforeStart += take
     delta -= take
+    at += line.length + 1
     return line.slice(take)
   })
   const next = value.slice(0, range.from) + changed.join('\n') + value.slice(range.to)

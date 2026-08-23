@@ -123,7 +123,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
   const bodyRef = useRef<HTMLDivElement>(null)
   const areaRef = useRef<HTMLTextAreaElement>(null)
   const codeRef = useRef<HTMLDivElement>(null)
-  const caret = useRef<number | null>(null)
+  const caret = useRef<{ start: number; end: number } | null>(null)
   const last = useRef(0)
   const composing = useRef(false)
   const scrolled = useRef<{ load: number; target: number | null }>({ load: -1, target: null })
@@ -197,10 +197,11 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
     const want = caret.current
     if (want === null) return
     caret.current = null
-    const at = toShown(rows, want)
-    last.current = at
-    area.setSelectionRange(at, at)
-    const row = bodyRef.current?.querySelector(`[data-row="${rowAt(rows, at).index}"]`)
+    const start = toShown(rows, want.start)
+    const end = toShown(rows, want.end)
+    last.current = end
+    area.setSelectionRange(start, end)
+    const row = bodyRef.current?.querySelector(`[data-row="${rowAt(rows, end).index}"]`)
     if (row instanceof HTMLElement) bringIntoY(row, bodyRef.current)
   }, [tick, shown, rows])
 
@@ -219,9 +220,17 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
 
   const dirty = writable && !!file && doc !== file.text
 
-  const apply = (next: string) => {
+  const apply = (next: string, selection?: { start: number; end: number }) => {
     const edit = editDoc(rows, doc, shown, next)
-    caret.current = edit.at
+    if (selection) {
+      const nextRows = baseline === null ? plainRows(edit.text) : diffRows(baseline, edit.text)
+      caret.current = {
+        start: toDoc(nextRows, selection.start),
+        end: toDoc(nextRows, selection.end)
+      }
+    } else {
+      caret.current = { start: edit.at, end: edit.at }
+    }
     setSaveFailed(false)
     setDoc(edit.text)
     setTick(value => value + 1)
@@ -244,7 +253,8 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
   const discard = () => {
     if (!file) return
     const area = areaRef.current
-    caret.current = area ? toDoc(rows, area.selectionStart) : 0
+    const at = area ? toDoc(rows, area.selectionStart) : 0
+    caret.current = { start: at, end: at }
     setDoc(file.text)
     setTick(value => value + 1)
     setSaveFailed(false)
@@ -269,16 +279,14 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
       event.preventDefault()
       const { selectionStart, selectionEnd, value } = event.currentTarget
       const edit = indentFile(value, selectionStart, selectionEnd, event.shiftKey)
-      apply(edit.value)
-      caret.current = toDoc(rows, edit.start)
+      apply(edit.value, edit)
       return
     }
     if (event.key === 'Enter' && !composing.current && !event.metaKey && !event.ctrlKey && !event.altKey) {
       event.preventDefault()
       const { selectionStart, selectionEnd, value } = event.currentTarget
       const edit = breakFileLine(value, selectionStart, selectionEnd)
-      apply(edit.value)
-      caret.current = toDoc(rows, edit.start)
+      apply(edit.value, edit)
     }
   }
 
