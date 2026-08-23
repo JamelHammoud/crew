@@ -151,7 +151,7 @@ const dir = await stage()
 try {
   await compile(dir)
   const seen = await run(dir)
-  if (seen.failed) throw new Error(seen.failed)
+  if (seen.failed) throw new Error(`${seen.failed}\n${(seen.logs ?? []).join('\n')}`)
   const problems = []
   if (seen.before.scrollWidth <= seen.before.clientWidth) problems.push('the sample did not overflow')
   if (seen.scrolled.scrollLeft < 800) problems.push('the file did not scroll horizontally')

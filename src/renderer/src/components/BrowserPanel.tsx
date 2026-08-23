@@ -49,8 +49,19 @@ const BROWSER_TAB_DRAG = 'application/x-crew-browser-tab'
 
 function tabDropIndex(strip: HTMLElement, x: number): number {
   const tabs = Array.from(strip.querySelectorAll<HTMLElement>('[data-tab]'))
-  const after = tabs.findIndex(tab => x < tab.getBoundingClientRect().left + tab.getBoundingClientRect().width / 2)
+  const after = tabs.findIndex(tab => {
+    const box = tab.getBoundingClientRect()
+    return x < box.left + box.width / 2
+  })
   return after < 0 ? tabs.length : after
+}
+
+function tabDropLeft(strip: HTMLElement, index: number): number {
+  const tabs = Array.from(strip.querySelectorAll<HTMLElement>('[data-tab]'))
+  const next = tabs[index]
+  if (next) return next.offsetLeft - 4
+  const last = tabs[tabs.length - 1]
+  return last ? last.offsetLeft + last.offsetWidth + 4 : 16
 }
 
 // A helper tab wears the mark of the helper it is reading, which is what makes
@@ -71,7 +82,7 @@ export default function BrowserPanel({ standalone = false }: { standalone?: bool
   const opens = usePanelOpens()
   const strip = useRef<HTMLDivElement | null>(null)
   const row = useReorder((id, to) => useBrowser.getState().moveTab(id, to))
-  const [tabDropAt, setTabDropAt] = useState<number | null>(null)
+  const [tabDrop, setTabDrop] = useState<{ at: number; left: number } | null>(null)
   useScrollFade(strip, 'horizontal')
   // The plan comes with the thread you are in and goes when you leave it.
   const planThread = useCrew(s => (s.openThreadId && s.threads[s.openThreadId]?.plan ? s.openThreadId : null))
@@ -141,29 +152,33 @@ export default function BrowserPanel({ standalone = false }: { standalone?: bool
             if (!event.dataTransfer.types.includes(BROWSER_TAB_DRAG)) return
             event.preventDefault()
             event.dataTransfer.dropEffect = 'move'
-            setTabDropAt(tabDropIndex(event.currentTarget, event.clientX))
+            const at = tabDropIndex(event.currentTarget, event.clientX)
+            setTabDrop({ at, left: tabDropLeft(event.currentTarget, at) })
           }}
           onDragLeave={event => {
-            if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setTabDropAt(null)
+            if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setTabDrop(null)
           }}
           onDrop={event => {
             const token = event.dataTransfer.getData(BROWSER_TAB_DRAG)
             if (!token) return
             event.preventDefault()
             const to = tabDropIndex(event.currentTarget, event.clientX)
-            setTabDropAt(null)
+            setTabDrop(null)
             void window.crew.dropBrowserTab(token, to)
           }}
-          className="scroll-fade-x app-no-drag -ml-4 pl-4 flex-1 min-w-0 flex items-center gap-1.5 overflow-x-auto overflow-y-hidden no-scrollbar"
+          className="scroll-fade-x app-no-drag relative -ml-4 pl-4 flex-1 min-w-0 flex items-center gap-1.5 overflow-x-auto overflow-y-hidden no-scrollbar"
         >
           {tabs.length === 0 && <StartPill />}
-          {tabs.map((tab, index) => (
-            <Fragment key={tab.id}>
-              {tabDropAt === index && <span data-browser-tab-drop className="h-6 w-0.5 shrink-0 rounded-full bg-fg" />}
-              <TabPill tab={tab} active={tab.id === activeTabId} row={row} strip={strip} />
-            </Fragment>
+          {tabs.map(tab => (
+            <TabPill key={tab.id} tab={tab} active={tab.id === activeTabId} row={row} strip={strip} />
           ))}
-          {tabDropAt === tabs.length && <span data-browser-tab-drop className="h-6 w-0.5 shrink-0 rounded-full bg-fg" />}
+          {tabDrop && (
+            <span
+              data-browser-tab-drop={tabDrop.at}
+              className="pointer-events-none absolute top-1/2 z-10 h-6 w-0.5 -translate-y-1/2 rounded-full bg-fg"
+              style={{ left: tabDrop.left }}
+            />
+          )}
         </div>
         <BrowserTabSwitcher tabs={tabs} activeTabId={activeTabId} />
         <span className="app-no-drag shrink-0 flex">
@@ -498,7 +513,7 @@ function TabPill({
           const token = crypto.randomUUID()
           event.dataTransfer.effectAllowed = 'move'
           event.dataTransfer.setData(BROWSER_TAB_DRAG, token)
-          window.crew.beginBrowserTabDrag(token, tab)
+          if (!window.crew.beginBrowserTabDrag(token, tab)) event.preventDefault()
         }}
         onPointerDown={row.take(tab.id)}
         onClick={() => {

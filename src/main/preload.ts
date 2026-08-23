@@ -112,7 +112,8 @@ const bridge = {
   popOutThread: (threadId: string, key?: string): Promise<void> =>
     ipcRenderer.invoke('window:pop-thread', threadId, key),
   popOutBrowserTab: (tab: BrowserTab): Promise<boolean> => ipcRenderer.invoke('window:pop-browser-tab', tab),
-  beginBrowserTabDrag: (token: string, tab: BrowserTab): void => ipcRenderer.send('browser:drag-tab', token, tab),
+  beginBrowserTabDrag: (token: string, tab: BrowserTab): boolean =>
+    ipcRenderer.sendSync('browser:drag-tab', token, tab) === true,
   dropBrowserTab: (token: string, to: number): Promise<boolean> => ipcRenderer.invoke('browser:drop-tab', token, to),
   closeBrowserWindow: (): void => ipcRenderer.send('window:close-browser'),
   setWindowPinned: (pinned: boolean): Promise<boolean> => ipcRenderer.invoke('window:pin', pinned),

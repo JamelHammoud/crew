@@ -21,7 +21,7 @@ const BrowserPanel = (await import('../src/renderer/src/components/BrowserPanel'
 const scrolled: { el: Element; left: number; top: number }[] = []
 const askedIntoView: Element[] = []
 const popOutBrowserTab = vi.fn().mockResolvedValue(true)
-const beginBrowserTabDrag = vi.fn()
+const beginBrowserTabDrag = vi.fn(() => true)
 const dropBrowserTab = vi.fn().mockResolvedValue(true)
 
 const VIEW = 300

@@ -626,7 +626,7 @@ app.whenReady().then(() => {
     })
   })
   ipcMain.on('browser:drag-tab', (event, token: string, tab: BrowserTab) => {
-    browserTabTransfers.begin(event.sender, token, tab)
+    event.returnValue = browserTabTransfers.begin(event.sender, token, tab)
   })
   ipcMain.handle('browser:drop-tab', (event, token: string, to: number) =>
     browserTabTransfers.drop(event.sender, token, to)
