@@ -4545,6 +4545,7 @@ export class CrewSession {
     // A question on the side answers itself. Sending work out of one would put
     // helpers on a thread nobody can see and nobody asked for work in.
     const canSend = prefs.on && !thread.aside && !thread.voice && (thread.depth ?? 0) < DEPTH_LIMIT
+    const helperAccess = canSend || born.length > 0
     return {
       type: 'prompt',
       promptId: entry.promptId,
@@ -4558,6 +4559,7 @@ export class CrewSession {
       ghost: this.ghostOf(thread.id) ? true : undefined,
       spawnRoom: canSend ? room : 0,
       spawnProviders: canSend ? this.spawnProviders() : undefined,
+      helpers: helperAccess || undefined,
       tickets: thread.tickets,
       voice: thread.voice ? true : undefined,
       goal: entry.goal ? goalCondition(entry.text) || undefined : undefined,

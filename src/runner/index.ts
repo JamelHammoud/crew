@@ -324,6 +324,7 @@ export class Runner {
           msg.ghost === true,
           msg.spawnRoom ?? 0,
           msg.spawnProviders ?? [],
+          msg.helpers === true,
           msg.tickets === true,
           msg.goal,
           msg.memories,
@@ -410,6 +411,7 @@ export class Runner {
     ghost = false,
     spawnRoom = 0,
     spawnProviders: string[] = [],
+    helpers = spawnRoom > 0,
     tickets = false,
     goal?: string,
     memories?: CrewMemory[],
@@ -443,7 +445,7 @@ export class Runner {
     const preambles = [
       memories ? memoryPreamble(this.httpBase, promptId, memories) : '',
       boardsPreamble(this.httpBase, forAgentId, designBoard, designBoards, reachable),
-      subagentPreamble(this.httpBase, promptId, spawnRoom, spawnProviders),
+      subagentPreamble(this.httpBase, promptId, spawnRoom, spawnProviders, helpers),
       pagePreamble(this.httpBase, promptId),
       pluginPreamble(this.httpBase, promptId, plugins ?? [], Boolean(agent.provider.mcp), usePlugin),
       tickets ? ticketPreamble(this.httpBase, promptId) : ''

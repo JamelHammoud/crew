@@ -333,6 +333,7 @@ interface CrewState {
   renameCustomEmoji: (emojiId: string, name: string) => string | null
   removeCustomEmoji: (emojiId: string) => void
   stopSubagent: (threadId: string) => void
+  restartSubagent: (threadId: string) => void
   postScore: (gameId: string, score: number) => void
   cancelPrompt: (promptId: string) => void
   updateDoc: (page: string, text: string, title?: string) => void
@@ -1695,6 +1696,9 @@ export const useCrew = create<CrewState>((set, get) => {
     },
     stopSubagent: threadId => {
       socket.send({ type: 'subagent.stop', threadId })
+    },
+    restartSubagent: threadId => {
+      socket.send({ type: 'subagent.restart', threadId })
     },
     postScore: (gameId, score) => {
       socket.send({ type: 'game.score', gameId, score })
