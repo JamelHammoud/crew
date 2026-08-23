@@ -157,10 +157,17 @@ const humanize = (name: string): string => {
 
 const mcpTool = (name: string): { source: string; tool: string } | undefined => {
   if (!name.includes('__') && !name.includes('.')) return undefined
-  const parts = name.split(/__|\./).filter(Boolean)
-  if (parts[0]?.toLowerCase() === 'mcp') parts.shift()
-  if (parts.length < 2) return undefined
-  return { source: humanize(parts.slice(0, -1).join(' ')), tool: parts[parts.length - 1] }
+  if (name.includes('__')) {
+    const parts = name.split('__').filter(Boolean)
+    if (parts[0]?.toLowerCase() === 'mcp') parts.shift()
+    if (parts.length < 2) return undefined
+    return { source: humanize(parts.slice(0, -1).join(' ')), tool: parts[parts.length - 1] }
+  }
+  const split = name.lastIndexOf('.')
+  if (split <= 0 || split === name.length - 1) return undefined
+  const rawSource = name.slice(0, split)
+  const source = rawSource.includes('.') ? rawSource[0].toUpperCase() + rawSource.slice(1) : humanize(rawSource)
+  return { source, tool: name.slice(split + 1) }
 }
 
 export function toolAction(name: string | undefined, subagent = false): ToolAction {

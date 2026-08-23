@@ -103,6 +103,7 @@ describe('tool names', () => {
     expect(toolAction('figma.get_screenshot').done).toBe('Get screenshot')
     expect(toolAction('figma.get_screenshot').source).toBe('Figma')
     expect(toolAction('mcp__figma__get_design_context').icon).toBe(toolAction('figma.get_screenshot').icon)
+    expect(toolAction('dev.foxglove.studio.run_command').source).toBe('Dev.foxglove.studio')
   })
 
   it('reads a tool nobody has heard of as words', () => {
