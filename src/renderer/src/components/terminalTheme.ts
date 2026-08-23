@@ -1,4 +1,4 @@
-import type { ITheme } from '@xterm/xterm'
+import type { ITerminalOptions, ITheme } from '@xterm/xterm'
 import type { Theme } from '../state/theme'
 
 const DARK: ITheme = {
@@ -58,3 +58,14 @@ const LIGHT: ITheme = {
 export const terminalTheme = (theme: Theme): ITheme => (theme === 'light' ? LIGHT : theme === 'oled' ? OLED : DARK)
 
 export const TERMINAL_FONT = '"Cascadia Mono", ui-monospace, "SF Mono", Menlo, monospace'
+
+export const terminalOptions = (theme: Theme): ITerminalOptions => ({
+  cursorBlink: true,
+  customGlyphs: true,
+  fontFamily: TERMINAL_FONT,
+  fontSize: 13,
+  lineHeight: 1,
+  macOptionIsMeta: false,
+  scrollback: 5000,
+  theme: terminalTheme(theme)
+})

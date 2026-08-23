@@ -4,6 +4,7 @@ import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import BrowserPanel from '../src/renderer/src/components/BrowserPanel'
 import { useBrowser } from '../src/renderer/src/state/browser'
+import { terminalOptions } from '../src/renderer/src/components/terminalTheme'
 
 if (!Element.prototype.getAnimations) {
   Element.prototype.getAnimations = () => []
@@ -146,5 +147,11 @@ describe('a terminal tab', () => {
 
     await waitFor(() => expect(closed).toEqual([id]))
     expect(useBrowser.getState().tabs).toHaveLength(0)
+  })
+})
+
+describe('terminal cell geometry', () => {
+  it('draws block graphics without space between rows', () => {
+    expect(terminalOptions('dark')).toMatchObject({ customGlyphs: true, lineHeight: 1 })
   })
 })

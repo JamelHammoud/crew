@@ -6,7 +6,7 @@ import { useEffect, useRef } from 'react'
 import { onMac } from '../state/platform'
 import { useTheme } from '../state/theme'
 import { useBrowser, type BrowserTab } from '../state/browser'
-import { TERMINAL_FONT, terminalTheme } from './terminalTheme'
+import { terminalOptions, terminalTheme } from './terminalTheme'
 
 const shifted = (event: KeyboardEvent, letter: string): boolean =>
   event.ctrlKey && event.shiftKey && event.key.toLowerCase() === letter
@@ -34,15 +34,7 @@ export default function TerminalView({ tab, active }: { tab: BrowserTab; active:
   useEffect(() => {
     const host = hostRef.current
     if (!host) return
-    const term = new Terminal({
-      cursorBlink: true,
-      fontFamily: TERMINAL_FONT,
-      fontSize: 13,
-      lineHeight: 1.35,
-      macOptionIsMeta: false,
-      scrollback: 5000,
-      theme: terminalTheme(themeRef.current)
-    })
+    const term = new Terminal(terminalOptions(themeRef.current))
     const fit = new FitAddon()
     term.loadAddon(fit)
     term.loadAddon(new WebLinksAddon((_event, url) => useBrowser.getState().openUrl(url)))
