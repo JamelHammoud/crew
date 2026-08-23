@@ -49,7 +49,22 @@ export default function Settings() {
   useEffect(() => closeSettings, [])
 
   return (
-    <Modal open={tab !== null} onClose={closeSettings} title="Settings" width={WIDTH} flush>
+    <Modal
+      open={tab !== null}
+      onClose={closeSettings}
+      title="Settings"
+      width={WIDTH}
+      flush
+      header={
+        <button
+          onClick={closeSettings}
+          aria-label="Close settings"
+          className="absolute top-3.5 right-3.5 z-10 w-8 h-8 rounded-full flex items-center justify-center text-fg/45 transition-colors hover:text-fg hover:bg-fg/[0.07] active:scale-95"
+        >
+          <CloseGlyph className="w-[18px] h-[18px]" />
+        </button>
+      }
+    >
       <div className="flex" style={{ height: HEIGHT, maxHeight: 'calc(100vh - 120px)' }}>
         <nav aria-label="Settings" className="w-[228px] shrink-0 border-r border-fg/[0.07] p-2.5 overflow-y-auto">
           {GROUPS.map(group => (
@@ -89,13 +104,6 @@ export default function Settings() {
               <Panel tab={tab} />
             </div>
           )}
-          <button
-            onClick={closeSettings}
-            aria-label="Close settings"
-            className="absolute top-3.5 right-3.5 z-10 w-8 h-8 rounded-full flex items-center justify-center text-fg/45 transition-colors hover:text-fg hover:bg-fg/[0.07] active:scale-95"
-          >
-            <CloseGlyph className="w-[18px] h-[18px]" />
-          </button>
         </div>
       </div>
     </Modal>

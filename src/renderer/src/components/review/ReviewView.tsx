@@ -256,26 +256,28 @@ export default function ReviewView() {
         open={ask !== null}
         onClose={() => setAsk(null)}
         title={ask?.kind === 'drop' ? 'Drop stash' : 'Discard changes'}
+        footer={
+          <div className="flex items-center justify-end gap-2">
+            <button
+              onClick={() => setAsk(null)}
+              className="h-10 rounded-full px-4 text-sm font-semibold text-fg/45 transition-colors hover:text-fg"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => void settle()}
+              className="h-10 rounded-full bg-danger px-5 text-sm font-semibold text-fg transition-all duration-150 hover:scale-[1.03] active:scale-95"
+            >
+              {ask?.kind === 'drop' ? 'Drop stash' : 'Discard changes'}
+            </button>
+          </div>
+        }
       >
         <p className="mt-3 text-sm text-fg/45">
           {ask?.kind === 'drop'
             ? 'What is in this stash goes for good.'
             : `The changes in ${ask?.kind === 'discard' ? ask.what : ''} go for good.`}
         </p>
-        <div className="mt-5 flex items-center justify-end gap-2">
-          <button
-            onClick={() => setAsk(null)}
-            className="h-10 rounded-full px-4 text-sm font-semibold text-fg/45 transition-colors hover:text-fg"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={() => void settle()}
-            className="h-10 rounded-full bg-danger px-5 text-sm font-semibold text-fg transition-all duration-150 hover:scale-[1.03] active:scale-95"
-          >
-            {ask?.kind === 'drop' ? 'Drop stash' : 'Discard changes'}
-          </button>
-        </div>
       </Modal>
     </div>
   )
