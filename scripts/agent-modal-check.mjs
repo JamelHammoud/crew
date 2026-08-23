@@ -196,6 +196,9 @@ app.whenReady().then(async () => {
   const doneFits = result.doneTop >= result.dialogTop && result.doneBottom <= result.dialogBottom
   console.log('CHECK ' + JSON.stringify({ ...result, fits, doneFits }))
   app.exit(fits && result.scrolls && result.controlsFixed && result.fadesBottom && result.fadesTop && doneFits ? 0 : 1)
+}).catch(error => {
+  console.error(error)
+  app.exit(1)
 })
 `
 
