@@ -43,7 +43,7 @@ describe('the pet an agent wears', () => {
     const pets = Array.from({ length: 700 }, (_, index) => petOf(`every-${index}`))
     expect(new Set(pets.map(pet => pet.kind))).toEqual(new Set(PET_SHAPE_KINDS))
     for (const pet of pets) {
-      expect(pet.body).toMatch(/[Ca]/)
+      expect(pet.body).toMatch(/[CQa]/)
       expect(pet.body.endsWith('Z')).toBe(true)
     }
     expect(petPath({ kind: 'teardrop', variant: 0 })).toMatch(/^M 46 10 C 48 7 52 7 54 10/)
@@ -57,17 +57,17 @@ describe('the pet an agent wears', () => {
   it('keeps the seeded identity stable', () => {
     const pet = petOf(SEED)
     expect(pet.hue).toBe(225)
-    expect(pet.kind).toBe('cloud')
-    expect(pet.eyeX).toBeCloseTo(60.759, 3)
-    expect(pet.eyeY).toBeCloseTo(46.453, 3)
-    expect(pet.eyeGap).toBeCloseTo(18.37, 2)
+    expect(pet.kind).toBe('capsule')
+    expect(pet.eyeX).toBeCloseTo(61.533, 3)
+    expect(pet.eyeY).toBeCloseTo(49.406, 3)
+    expect(pet.eyeGap).toBeCloseTo(17.949, 3)
     expect(pet.tilt).toBeCloseTo(-3.959, 3)
   })
 
   it('scales one silhouette to the box without changing its family', () => {
     const pet = petOf(SEED)
     expect(petPath(pet, 20)).not.toBe(pet.body)
-    expect(petPath(pet, 20)).toContain('M 3.8 15.2')
+    expect(petPath(pet, 20)).toContain('M 5.6 5.098')
     expect(petPath(pet, PET_GRID)).toBe(pet.body)
   })
 })
