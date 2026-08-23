@@ -176,6 +176,21 @@ describe('the plugins store', () => {
     expect(open.parentElement!.className).not.toContain('absolute')
   })
 
+  it('keeps connect at the row edge when an installed plugin needs this computer', () => {
+    const figma = held('figma')
+    window.crew = {
+      connectPlugin: vi.fn().mockResolvedValue({ ok: true, message: 'Connected.' }),
+      pluginStatus: vi.fn().mockResolvedValue(false)
+    } as unknown as CrewBridge
+    useCrew.setState({ plugins: [figma] })
+    plugins()
+    const connect = screen.getByRole('button', { name: 'Connect Figma' })
+    const remove = screen.getByRole('button', { name: 'Take Figma out' })
+    expect(connect.closest('[data-plugin-actions]')).toBe(remove.closest('[data-plugin-actions]'))
+    expect(remove.parentElement!.className).toContain('absolute')
+    expect(connect.parentElement!.className).not.toContain('absolute')
+  })
+
   it('takes one out', () => {
     const gone: string[] = []
     useCrew.setState({ plugins: [held('figma')], removePlugin: id => gone.push(id) })
