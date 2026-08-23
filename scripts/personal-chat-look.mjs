@@ -137,7 +137,7 @@ createRoot(document.getElementById('root')).render(React.createElement(Page))
 `
 }
 
-const MAIN = `const { app, BrowserWindow } = require('electron')
+const MAIN = `const { app, BrowserWindow, screen } = require('electron')
 const path = require('node:path')
 const fs = require('node:fs')
 app.disableHardwareAcceleration()
@@ -184,18 +184,19 @@ const READ = \`(() => {
 
 app.whenReady().then(async () => {
   const win = new BrowserWindow({ width: 1240, height: 760, show: true, backgroundColor: '#141414' })
+  const scale = screen.getDisplayMatching(win.getBounds()).scaleFactor
+  const move = at => win.webContents.sendInputEvent({ type: 'mouseMove', x: at.x / scale, y: at.y / scale })
   const seen = {}
   try {
     await win.loadFile(path.join(__dirname, 'dist/index.html'))
     await wait(800)
     seen.resting = await win.webContents.executeJavaScript(READ)
     const plus = seen.resting.plus
-    win.webContents.sendInputEvent({ type: 'mouseMove', x: plus.left + plus.width / 2, y: plus.top + plus.height / 2 })
+    move({ x: plus.left + plus.width / 2, y: plus.top + plus.height / 2 })
     await wait(800)
     seen.hovered = await win.webContents.executeJavaScript(READ)
     const collapse = seen.resting.collapse
-    win.webContents.sendInputEvent({
-      type: 'mouseMove',
+    move({
       x: collapse.left + collapse.width / 2,
       y: collapse.top + collapse.height / 2
     })
@@ -226,7 +227,7 @@ app.whenReady().then(async () => {
     const hover = await win.webContents.executeJavaScript(
       \`(() => { const row = [...document.querySelectorAll('button')].find(button => button.textContent?.includes('Plan a quiet weekend')); const box = row.getBoundingClientRect(); return { x: box.left + box.width / 2, y: box.top + box.height / 2 } })()\`
     )
-    win.webContents.sendInputEvent({ type: 'mouseMove', x: hover.x, y: hover.y })
+    move(hover)
     await wait(200)
     seen.active = await win.webContents.executeJavaScript(READ)
     await win.webContents.executeJavaScript(
