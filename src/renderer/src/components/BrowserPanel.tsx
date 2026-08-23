@@ -100,6 +100,7 @@ export default function BrowserPanel() {
   const active = tabs.find(t => t.id === activeTabId) ?? null
   const [newOpen, setNewOpen] = useState(false)
   const [finding, setFinding] = useState(false)
+  const [findFocus, setFindFocus] = useState(0)
   const opens = usePanelOpens()
   const strip = useRef<HTMLDivElement | null>(null)
   const row = useReorder((id, to) => useBrowser.getState().moveTab(id, to))
@@ -138,7 +139,10 @@ export default function BrowserPanel() {
     return listen(() => {
       const browser = useBrowser.getState()
       const tab = browser.tabs.find(one => one.id === browser.activeTabId)
-      if (browser.open && tab?.kind === 'web' && tab.initialUrl) setFinding(true)
+      if (browser.open && tab?.kind === 'web' && tab.initialUrl) {
+        setFinding(true)
+        setFindFocus(value => value + 1)
+      }
     })
   }, [])
 
@@ -302,7 +306,14 @@ export default function BrowserPanel() {
           </button>
           <UrlBar key={active.id} tab={active} />
           <Tooltip label={finding ? 'Close find' : 'Find in page'} disabled={finding}>
-            <BrowserFindButton open={finding} disabled={!active.initialUrl} onClick={() => setFinding(open => !open)} />
+            <BrowserFindButton
+              open={finding}
+              disabled={!active.initialUrl}
+              onClick={() => {
+                setFinding(open => !open)
+                if (!finding) setFindFocus(value => value + 1)
+              }}
+            />
           </Tooltip>
           <Tooltip label="Open in your browser">
             <button
@@ -319,7 +330,7 @@ export default function BrowserPanel() {
 
       <div className="app-no-drag flex-1 min-h-0 relative border-t border-ink-700">
         {active?.kind === 'web' && active.initialUrl && finding && (
-          <BrowserFind key={active.id} tabId={active.id} onClose={() => setFinding(false)} />
+          <BrowserFind key={active.id} tabId={active.id} focus={findFocus} onClose={() => setFinding(false)} />
         )}
         {tabs
           .filter(tab => (tab.kind === 'web' || tab.kind === 'image') && tab.initialUrl)

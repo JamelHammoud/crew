@@ -26,7 +26,7 @@ export function BrowserFindButton({ open, disabled, onClick }: { open: boolean; 
   )
 }
 
-export default function BrowserFind({ tabId, onClose }: { tabId: string; onClose(): void }) {
+export default function BrowserFind({ tabId, focus, onClose }: { tabId: string; focus: number; onClose(): void }) {
   const [query, setQuery] = useState('')
   const [result, setResult] = useState<Result>({ active: 0, matches: 0 })
   const input = useRef<HTMLInputElement>(null)
@@ -85,7 +85,8 @@ export default function BrowserFind({ tabId, onClose }: { tabId: string; onClose
 
   useEffect(() => {
     input.current?.focus()
-  }, [])
+    input.current?.select()
+  }, [focus])
 
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Escape') {

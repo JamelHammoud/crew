@@ -145,6 +145,24 @@ describe('the file explorer', () => {
     expect(rowFor('src/renderer/panel.tsx')!.textContent).toContain('src/renderer')
   })
 
+  it('finds a folder by name and opens the folder itself', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    await screen.findByText('src')
+
+    fireEvent.change(screen.getByLabelText('Search files'), { target: { value: 'renderer' } })
+
+    const result = await waitFor(() => {
+      const found = document.querySelector('[data-folder="src/renderer"]')
+      expect(found).toBeTruthy()
+      return found as HTMLElement
+    })
+    fireEvent.click(result)
+
+    expect(activeTab().path).toBe('src/renderer')
+    expect(await screen.findByText('panel.tsx')).toBeTruthy()
+  })
+
   it('picks out the letters that matched', async () => {
     useBrowser.getState().openFiles()
     render(createElement(BrowserPanel))

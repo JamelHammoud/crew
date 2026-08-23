@@ -110,6 +110,8 @@ export default function FindBar({
     const onKey = (e: KeyboardEvent) => {
       const mod = e.metaKey || e.ctrlKey
       if (mod && !e.altKey && !e.shiftKey && e.key.toLowerCase() === 'f') {
+        const scope = e.target instanceof Element ? e.target.closest('[data-find-scope]') : null
+        if (scope && !containerRef.current?.contains(scope)) return
         if (!listensRef.current && !openRef.current) return
         e.preventDefault()
         setOpen(true)
@@ -132,7 +134,7 @@ export default function FindBar({
     }
     window.addEventListener('keydown', onKey, true)
     return () => window.removeEventListener('keydown', onKey, true)
-  }, [])
+  }, [containerRef])
 
   useEffect(() => {
     if (!open) {

@@ -156,7 +156,14 @@ describe('find in an open webpage', () => {
     const screen = render(createElement(BrowserPanel))
 
     act(() => openFind?.())
-    expect(screen.getByRole('textbox', { name: 'Find in page' })).toBeTruthy()
+    const input = screen.getByRole('textbox', { name: 'Find in page' })
+    fireEvent.change(input, { target: { value: 'crew' } })
+    input.blur()
+    expect(document.activeElement).not.toBe(input)
+    act(() => openFind?.())
+    expect(document.activeElement).toBe(input)
+    expect((input as HTMLInputElement).selectionStart).toBe(0)
+    expect((input as HTMLInputElement).selectionEnd).toBe(4)
 
     cleanup()
     useBrowser.setState({ tabs: [], activeTabId: null, open: false })

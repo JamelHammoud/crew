@@ -270,7 +270,11 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
             ))}
           {file && reading && !asPage && <MarkdownView path={tab.path} text={text} partial={file.truncated || long} />}
           {file && !reading && (
-            <div ref={codeRef} className="relative min-h-full py-3 min-w-max font-mono text-xs leading-5 select-text">
+            <div
+              ref={codeRef}
+              data-find-scope
+              className="relative min-h-full py-3 min-w-max font-mono text-xs leading-5 select-text"
+            >
               <CodeRows path={tab.path} rows={rows} gutter={gutter} line={tab.line} dirty={dirty} />
               {editable && (
                 <textarea
