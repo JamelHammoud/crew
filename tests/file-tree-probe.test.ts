@@ -45,6 +45,8 @@ const listed = ['readme.md', 'src/app.ts', 'src/renderer/panel.tsx', 'tests/app.
 beforeEach(() => {
   useBrowser.setState({ tabs: [], activeTabId: null })
   Element.prototype.scrollIntoView = () => undefined
+  Range.prototype.getBoundingClientRect = () =>
+    ({ left: 0, right: 10, top: 0, bottom: 10, width: 10, height: 10, x: 0, y: 0, toJSON: () => ({}) })
   window.crew = {
     readFile: async (path: string) => repo[path] ?? { kind: 'missing', path },
     listFiles: async () => listed,
