@@ -25,6 +25,7 @@ import {
   markDeletedReplies,
   mergeEvents,
   trimEvents,
+  type MessageReply,
   type SessionEvent,
   type ThreadMode,
   type ThreadStatus,
@@ -211,6 +212,7 @@ interface CrewState {
   loadingHistory: boolean
   docs: Record<string, DocPage>
   queues: Record<string, QueuedItem[]>
+  queueComposed: Record<string, { promptId: string; replyTo?: MessageReply }>
   steps: Record<string, AgentStep[]>
   tokens: Record<string, number>
   costs: Record<string, number>
@@ -338,6 +340,9 @@ interface CrewState {
   deleteDoc: (page: string) => void
   editQueued: (promptId: string, text: string) => void
   removeQueued: (promptId: string) => void
+  takeQueued: (promptId: string) => void
+  moveQueued: (promptId: string, to: number) => void
+  clearQueueComposed: (threadId: string) => void
   updateAgentSetting: (agentId: string, key: string, value: string) => void
   renameAgent: (agentId: string, label: string) => void
   renameSelf: (name: string) => boolean
@@ -395,6 +400,7 @@ const EMPTY = {
   loadingHistory: false,
   docs: {},
   queues: {},
+  queueComposed: {},
   steps: {},
   tokens: {},
   costs: {},
@@ -1032,6 +1038,30 @@ export const useCrew = create<CrewState>((set, get) => {
       }
       case 'queue.state':
         set(state => ({ queues: { ...state.queues, [msg.threadId]: msg.items } }))
+        break
+      case 'queue.taken':
+        set(state => ({
+          threadDrafts: { ...state.threadDrafts, [msg.threadId]: msg.item.text },
+          threadCommands: {
+            ...state.threadCommands,
+            [msg.threadId]: state.threadPrompts[msg.threadId] ? ['queue'] : []
+          },
+          pending: {
+            ...state.pending,
+            [msg.threadId]: msg.attachments.map((attachment, index) => ({
+              ...attachment,
+              id: msg.item.attachments?.[index]?.id ?? crypto.randomUUID(),
+              size: msg.item.attachments?.[index]?.size ?? 0
+            }))
+          },
+          queueComposed: {
+            ...state.queueComposed,
+            [msg.threadId]: { promptId: msg.item.promptId, replyTo: msg.item.replyTo }
+          }
+        }))
+        break
+      case 'queue.take.failed':
+        toast.fail(msg.message, { key: `queue-take-${msg.promptId}` })
         break
       case 'event':
         applyEvent(msg.event)
@@ -1712,6 +1742,20 @@ export const useCrew = create<CrewState>((set, get) => {
     },
     removeQueued: promptId => {
       socket.send({ type: 'queue.remove', promptId })
+    },
+    takeQueued: promptId => {
+      socket.send({ type: 'queue.take', promptId })
+    },
+    moveQueued: (promptId, to) => {
+      socket.send({ type: 'queue.move', promptId, to })
+    },
+    clearQueueComposed: threadId => {
+      set(state => {
+        if (!state.queueComposed[threadId]) return {}
+        const queueComposed = { ...state.queueComposed }
+        delete queueComposed[threadId]
+        return { queueComposed }
+      })
     },
     updateAgentSetting: (agentId, key, value) => {
       set(state => ({
