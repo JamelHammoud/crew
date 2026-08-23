@@ -42,7 +42,41 @@ function Builder({ tool, onClose }: { tool: CrewTool | null; onClose: () => void
   }
 
   return (
-    <Modal open onClose={onClose} title={tool ? 'Edit tool' : 'New tool'} width={520}>
+    <Modal
+      open
+      onClose={onClose}
+      title={tool ? 'Edit tool' : 'New tool'}
+      width={520}
+      footer={
+        <div className="flex items-center gap-2">
+          {tool && (
+            <button
+              onClick={() => {
+                removeTool(tool.id)
+                onClose()
+              }}
+              className="h-10 px-4 rounded-full text-sm font-semibold text-fg/45 transition-colors hover:text-danger"
+            >
+              Remove
+            </button>
+          )}
+          <div className="flex-1" />
+          <button
+            onClick={onClose}
+            className="h-10 px-4 rounded-full text-sm font-semibold text-fg/45 transition-colors hover:text-fg"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={save}
+            disabled={!ready}
+            className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold transition-all duration-150 hover:bg-fg/90 active:scale-95 disabled:bg-fg/10 disabled:text-fg/45"
+          >
+            {tool ? 'Save' : 'Add to toolbox'}
+          </button>
+        </div>
+      }
+    >
       <div className="mt-4 space-y-4">
         <div className="flex items-center gap-3">
           <span ref={markRef} className="group relative flex shrink-0">
@@ -103,33 +137,6 @@ function Builder({ tool, onClose }: { tool: CrewTool | null; onClose: () => void
         />
       </div>
 
-      <div className="mt-5 flex items-center gap-2">
-        {tool && (
-          <button
-            onClick={() => {
-              removeTool(tool.id)
-              onClose()
-            }}
-            className="h-10 px-4 rounded-full text-sm font-semibold text-fg/45 transition-colors hover:text-danger"
-          >
-            Remove
-          </button>
-        )}
-        <div className="flex-1" />
-        <button
-          onClick={onClose}
-          className="h-10 px-4 rounded-full text-sm font-semibold text-fg/45 transition-colors hover:text-fg"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={save}
-          disabled={!ready}
-          className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold transition-all duration-150 hover:bg-fg/90 active:scale-95 disabled:bg-fg/10 disabled:text-fg/45"
-        >
-          {tool ? 'Save' : 'Add to toolbox'}
-        </button>
-      </div>
     </Modal>
   )
 }
