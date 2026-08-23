@@ -1,8 +1,3 @@
-// The pet an agent wears, before anything is drawn: a body and two eyes, worked
-// out from the agent's id. It is kept apart from the drawing the way a cover's
-// scene is, so it can be read without a canvas in the room and drawn on a sheet
-// beside every other one.
-
 function prng(seed: string): () => number {
   let hash = 2166136261
   for (const char of seed) {
@@ -16,87 +11,72 @@ function prng(seed: string): () => number {
   }
 }
 
-export const EYE_RADIUS = 4.5
-
-// The box the body and the eyes are laid out on, the way a glyph is drawn on 24.
 export const PET_GRID = 100
+export const EYE_WIDTH = 8
+export const EYE_HEIGHT = 17
+export const EYE_RADIUS = EYE_WIDTH / 2
+export const MIN_EYE_GAP = 1.2
+export const FIELD_LIGHT = 1
+
+export const PET_SHAPE_KINDS = ['circle', 'teardrop', 'cloud', 'square', 'egg', 'capsule', 'triangle'] as const
+
+export type PetShapeKind = (typeof PET_SHAPE_KINDS)[number]
 
 export interface Pet {
   hue: number
+  kind: PetShapeKind
   body: string
+  variant: number
+  eyeX: number
   eyeY: number
   eyeGap: number
   tilt: number
 }
 
-// How far back along each edge a corner is cut before it is turned, on the 100
-// box. Nothing a pet is made of comes to a point: the angular family is there so
-// that not every one of them is a blob, and it keeps its flat sides and its
-// count either way. A corner is what the stroke's round join was already trying
-// to do at 3.5 and could not be seen doing at the size a pet is worn.
-const CORNER = 9
+const rounded = (value: number): number => Math.round(value * 1000) / 1000
 
-// A polygon turned at every vertex. The cut is held under a share of the shorter
-// of the two edges meeting there, or a corner standing on a short edge reaches
-// past the middle of it and the two cuts cross, which folds the outline inside
-// out.
-const turned = (coords: Array<[number, number]>): string => {
-  const count = coords.length
-  const along = (from: [number, number], to: [number, number], by: number): [number, number] => {
-    const run = Math.hypot(to[0] - from[0], to[1] - from[1]) || 1
-    const step = Math.min(by, run * 0.42) / run
-    return [from[0] + (to[0] - from[0]) * step, from[1] + (to[1] - from[1]) * step]
+function bodyFor(kind: PetShapeKind, variant: number, box: number): string {
+  const unit = box / PET_GRID
+  const at = (value: number): number => rounded(value * unit)
+  const v = variant * 3
+  if (kind === 'circle') {
+    const center = at(50)
+    const radius = at(43)
+    return `M ${center} ${at(7)} a ${radius} ${radius} 0 1 1 0 ${at(86)} a ${radius} ${radius} 0 1 1 0 ${at(-86)} Z`
   }
-  const parts: string[] = []
-  for (let i = 0; i < count; i++) {
-    const here = coords[i]
-    const back = along(here, coords[(i + count - 1) % count], CORNER)
-    const on = along(here, coords[(i + 1) % count], CORNER)
-    parts.push(`${i === 0 ? 'M' : 'L'} ${back.join(' ')} Q ${here.join(' ')} ${on.join(' ')}`)
+  if (kind === 'teardrop') {
+    return `M ${at(50)} ${at(7)} C ${at(58 + v)} ${at(20)} ${at(84)} ${at(37 - v)} ${at(87)} ${at(56)} C ${at(90)} ${at(76)} ${at(74)} ${at(91)} ${at(51)} ${at(92)} C ${at(28)} ${at(93)} ${at(11)} ${at(77)} ${at(14)} ${at(56)} C ${at(17)} ${at(37)} ${at(42 - v)} ${at(20)} ${at(50)} ${at(7)} Z`
   }
-  return `${parts.join(' ')} Z`
+  if (kind === 'cloud') {
+    return `M ${at(19)} ${at(76)} C ${at(7)} ${at(71)} ${at(6)} ${at(54)} ${at(17)} ${at(46)} C ${at(14)} ${at(31)} ${at(31)} ${at(21 - v)} ${at(44)} ${at(28)} C ${at(54)} ${at(14)} ${at(76)} ${at(21)} ${at(78)} ${at(39)} C ${at(94)} ${at(40)} ${at(98)} ${at(62)} ${at(85)} ${at(70)} C ${at(77)} ${at(84)} ${at(58 + v)} ${at(83)} ${at(49)} ${at(78)} C ${at(39)} ${at(87)} ${at(26)} ${at(84)} ${at(19)} ${at(76)} Z`
+  }
+  if (kind === 'square') {
+    return `M ${at(28)} ${at(9 + v)} C ${at(16)} ${at(10)} ${at(10)} ${at(17)} ${at(9)} ${at(29)} L ${at(8)} ${at(71)} C ${at(8)} ${at(84)} ${at(16)} ${at(91)} ${at(29)} ${at(92)} L ${at(72)} ${at(91 - v)} C ${at(85)} ${at(91)} ${at(92)} ${at(83)} ${at(92)} ${at(70)} L ${at(91)} ${at(28)} C ${at(91)} ${at(15)} ${at(83)} ${at(8)} ${at(70)} ${at(8)} Z`
+  }
+  if (kind === 'egg') {
+    return `M ${at(50)} ${at(7)} C ${at(68 + v)} ${at(7)} ${at(80)} ${at(28)} ${at(85)} ${at(52)} C ${at(90)} ${at(76)} ${at(74)} ${at(92)} ${at(50)} ${at(93)} C ${at(26)} ${at(92)} ${at(10)} ${at(76)} ${at(15)} ${at(52)} C ${at(20)} ${at(28)} ${at(32 - v)} ${at(7)} ${at(50)} ${at(7)} Z`
+  }
+  if (kind === 'capsule') {
+    return `M ${at(28)} ${at(27 - v)} L ${at(72)} ${at(28)} C ${at(88)} ${at(28)} ${at(94)} ${at(38)} ${at(93)} ${at(51)} C ${at(92)} ${at(65)} ${at(84)} ${at(73 + v)} ${at(70)} ${at(74)} L ${at(27)} ${at(73)} C ${at(13)} ${at(72)} ${at(6)} ${at(64)} ${at(7)} ${at(50)} C ${at(8)} ${at(36)} ${at(14)} ${at(28)} ${at(28)} ${at(27 - v)} Z`
+  }
+  return `M ${at(50)} ${at(8)} C ${at(55)} ${at(8)} ${at(59)} ${at(12)} ${at(63)} ${at(19)} L ${at(90)} ${at(70 + v)} C ${at(96)} ${at(82)} ${at(87)} ${at(91)} ${at(74)} ${at(91)} L ${at(26)} ${at(91)} C ${at(13)} ${at(91)} ${at(4)} ${at(82)} ${at(10)} ${at(70 + v)} L ${at(37)} ${at(19)} C ${at(41)} ${at(12)} ${at(45)} ${at(8)} ${at(50)} ${at(8)} Z`
 }
 
-function blobPath(rand: () => number, straight: boolean): string {
-  const points = straight ? 5 + Math.floor(rand() * 3) : 8
-  const jitter = straight ? 8 : 11
-  const coords: Array<[number, number]> = []
-  for (let i = 0; i < points; i++) {
-    const angle = (i / points) * Math.PI * 2 - Math.PI / 2
-    const radius = 30 + (rand() - 0.5) * 2 * jitter
-    coords.push([50 + Math.cos(angle) * radius, 54 + Math.sin(angle) * radius * 0.92])
-  }
-  const cx = coords.reduce((sum, c) => sum + c[0], 0) / points
-  const cy = coords.reduce((sum, c) => sum + c[1], 0) / points
-  for (const c of coords) {
-    c[0] += 50 - cx
-    c[1] += 53 - cy
-  }
-  if (straight) {
-    return turned(coords)
-  }
-  const mid = (a: [number, number], b: [number, number]): [number, number] => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]
-  let path = `M ${mid(coords[points - 1], coords[0]).join(' ')}`
-  for (let i = 0; i < points; i++) {
-    const next = coords[(i + 1) % points]
-    path += ` Q ${coords[i].join(' ')} ${mid(coords[i], next).join(' ')}`
-  }
-  return path + ' Z'
+export function petPath(pet: Pick<Pet, 'kind' | 'variant'>, box: number = PET_GRID): string {
+  return bodyFor(pet.kind, pet.variant, box)
 }
 
-// The numbers come off one stream in the order they are read here, so nothing
-// about this may be reordered: a pet is the same pet on everyone's screen and on
-// the day after a change, and reading the stream another way is a different one.
 function makePet(seed: string): Pet {
   const rand = prng(seed)
-  const pet = {
-    hue: Math.floor(rand() * 360),
-    body: blobPath(rand, rand() < 0.3),
-    eyeY: 48 + rand() * 8,
-    eyeGap: 11 + rand() * 7
-  }
-  rand()
-  return { ...pet, tilt: (rand() - 0.5) * 14 }
+  const hue = Math.floor(rand() * 360)
+  const kind = PET_SHAPE_KINDS[Math.floor(rand() * PET_SHAPE_KINDS.length)]
+  const variant = rand() * 2 - 1
+  const eyeX = 53 + rand() * 5
+  const eyeY = kind === 'triangle' ? 47 + rand() * 4 : kind === 'cloud' ? 43 + rand() * 4 : 39 + rand() * 5
+  const eyeGap = 15 + rand() * 5
+  const tilt = -13 + rand() * 10
+  const pet = { hue, kind, variant, eyeX, eyeY, eyeGap, tilt, body: '' }
+  return { ...pet, body: petPath(pet) }
 }
 
 const pets = new Map<string, Pet>()
@@ -110,40 +90,10 @@ export function petOf(seed: string): Pet {
   return pet
 }
 
-// How much of the tile the pet takes. It is a drawing decision rather than
-// something the seed answers, so it is applied to the shape rather than built
-// into it: the pet is the pet, and this is how much room the picture behind it
-// gets. Drawn at its own size the body fills the circle and what is left of the
-// field is a rim, which is a white shape on a colored ring rather than a shape
-// standing on a photograph.
-export const BODY = 0.86
-
-// How much light the picture under a pet carries. It is the same scene the
-// covers are photographed in, stood a little further back from the light, so the
-// white shape on it is the brightest thing in the tile. A cover is looked at on
-// its own and a face is worn in a row of them at 20 across, where the white is
-// the whole of what has to be read.
-export const FIELD_LIGHT = 0.78
-
-// The least that may stand between the two eye holes, in real pixels at the size
-// the pet is drawn. Two holes that close up are one slot, and a slot across the
-// middle of a white shape is not a face: at 20 across, which is what a pet is
-// worn at in a mention menu, the narrowest pair a seed hands out leaves under
-// half a pixel between them and they merge.
-export const MIN_BRIDGE = 1.2
-
-// So the gap is opened at draw time rather than seeded wider. Equal on the ruler
-// is not equal to the eye, which is the same reason a circle is not 17 on the
-// keylines and the shadow is a share of the box: the pet is one pet at every
-// size, and what changes is what the size can hold. Seeding it wider instead
-// would redraw everybody's face for the sake of the smallest one it is worn at.
 export function eyeGapAt(pet: Pet, box: number): number {
-  return Math.max(pet.eyeGap, EYE_RADIUS * 2 + (MIN_BRIDGE * PET_GRID) / (box * BODY))
+  return Math.max(pet.eyeGap, EYE_WIDTH + (MIN_EYE_GAP * PET_GRID) / box)
 }
 
-// The one number a cursor takes off a pet. A cursor has to be one legible color
-// rather than a picture, so it reads the hue the pet was seeded with even though
-// nothing about the mark is painted in it any more.
 export function petHue(seed: string): number {
   return petOf(seed).hue
 }

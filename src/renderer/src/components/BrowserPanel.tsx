@@ -1,12 +1,9 @@
 import { Fragment, useEffect, useRef, useState, type KeyboardEvent } from 'react'
-import { canPreview, isImageUrl } from '../../../shared/files'
-import { gameFor } from '../../../shared/games'
+import { canPreview } from '../../../shared/files'
 import { normalizeUrl } from '../../../shared/urls'
 import {
   ArrowLeftGlyph,
   ArrowRightGlyph,
-  BranchGlyph,
-  ChecklistGlyph,
   CloseGlyph,
   CloseOthersGlyph,
   CollapseGlyph,
@@ -14,29 +11,23 @@ import {
   ExternalLinkGlyph,
   ExpandGlyph,
   FolderGlyph,
-  GameGlyph,
   GlobeGlyph,
-  GroupGlyph,
-  MusicGlyph,
   PanelRightGlyph,
-  PhotoGlyph,
   PlusGlyph,
-  QuestionGlyph,
   RefreshGlyph,
-  TerminalGlyph,
-  TicketGlyph,
   XCircleGlyph
 } from '../icons'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import { useCrew } from '../state/store'
 import { useFullScreen } from '../state/windowShape'
-import { markFor } from './attachmentMark'
 import { usePanelOpens, type PanelOpen } from './panelOpens'
 import { bringInto } from './scrollInto'
 import { useReorder, type Reorder } from './useReorder'
 import { useScrollFade } from './useScrollFade'
 import AsideView from './AsideView'
 import AttachmentView from './attachment/AttachmentView'
+import BrowserTabMark, { browserTabLabel, showsImage } from './BrowserTabMark'
+import BrowserTabSwitcher from './BrowserTabSwitcher'
 import BrowserTabView, { viewFor } from './BrowserTabView'
 import BrowserFind, { BrowserFindButton } from './BrowserFind'
 import FileView, { FileCrumbs } from './FileView'
@@ -46,46 +37,12 @@ import MusicView from './music/MusicView'
 import PlanView from './PlanView'
 import ReviewView from './review/ReviewView'
 import WorkView from './work/WorkView'
-import SubagentMark from './SubagentMark'
 import SubagentPanel from './subagents/SubagentPanel'
 import { MenuDivider, MenuItem, Popover } from './Popover'
 import Spinner from './Spinner'
 import TerminalView from './TerminalView'
 import Tooltip from './Tooltip'
-import PluginMark from './plugins/PluginMark'
-
-export const showsImage = (tab: BrowserTab): boolean =>
-  tab.kind === 'image' || (tab.kind === 'web' && isImageUrl(tab.initialUrl))
-
-const imageName = (url: string): string => (url.split(/[?#]/)[0] ?? '').split('/').pop() || 'Image'
-
-function tabLabel(tab: BrowserTab): string {
-  if (tab.plugin) return tab.pluginLabel
-  if (tab.kind === 'plan') return 'Plan'
-  if (tab.kind === 'work') return 'Board'
-  // What was asked, so a row of questions is read at a glance.
-  if (tab.kind === 'aside') return tab.title || 'Question'
-  // A helper tab says which helper you are reading, so a row of three of them
-  // is read at a glance rather than being three tabs called the same thing.
-  if (tab.kind === 'agent')
-    return tab.threadId ? (useCrew.getState().threads[tab.threadId]?.helper ?? 'Helper') : 'Helpers'
-  if (tab.kind === 'review') return 'Review'
-  if (tab.kind === 'music') return 'Music'
-  // A games tab says which game you are in, and keeps the same mark whichever
-  // one that is. Out of a game it is the tab's own name again.
-  if (tab.kind === 'game') return gameFor(tab.game ?? '')?.name ?? 'Games'
-  if (tab.kind === 'terminal') return tab.title || 'Terminal'
-  if (tab.kind === 'attachment') return tab.title || 'File'
-  if (tab.kind === 'file') return tab.path.split('/').pop() || 'Files'
-  if (showsImage(tab)) return tab.title || imageName(tab.initialUrl)
-  if (tab.title) return tab.title
-  if (!tab.url) return 'New tab'
-  try {
-    return new URL(tab.url).hostname
-  } catch {
-    return tab.url
-  }
-}
+export { showsImage } from './BrowserTabMark'
 
 // A helper tab wears the mark of the helper it is reading, which is what makes
 // a row of three of them read at a glance. The list of them wears the same mark

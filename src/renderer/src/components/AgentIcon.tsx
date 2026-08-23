@@ -1,8 +1,7 @@
-import { useId } from 'react'
 import { attachmentFileUrl } from '../../../shared/attachments'
 import { useCrew } from '../state/store'
 import GeneratedField from './art/GeneratedField'
-import { BODY, EYE_RADIUS, FIELD_LIGHT, PET_GRID, eyeGapAt, petOf } from './art/pet'
+import { EYE_HEIGHT, EYE_RADIUS, EYE_WIDTH, FIELD_LIGHT, PET_GRID, eyeGapAt, petOf, petPath } from './art/pet'
 import { activityForAgent, type AgentActivity } from './agentActivity'
 
 const SIZES = {
@@ -53,7 +52,7 @@ export default function AgentIcon({
   const pet = petOf(seed)
   const box = px ?? BOX[size]
   const gap = eyeGapAt(pet, box)
-  const mask = useId()
+  const path = petPath(pet, box)
   const file = useCrew(state => state.agents.find(agent => agent.id === seed)?.avatar)
   const httpBase = useCrew(state => state.httpBase)
   const automaticActivity = useCrew(state => activityForAgent(state.activePrompts[seed], state.steps))
@@ -66,31 +65,38 @@ export default function AgentIcon({
       style={px ? { width: px, height: px } : undefined}
     >
       {src ? (
-        <img src={src} alt="" draggable={false} className="agent-photo block w-full h-full rounded-full object-cover" />
+        <img
+          src={src}
+          alt=""
+          draggable={false}
+          className="agent-photo block w-full h-full object-cover"
+          style={{ clipPath: `path('${path}')` }}
+        />
       ) : (
-        <>
-          <GeneratedField seed={seed} box={box} light={FIELD_LIGHT} className="rounded-full overflow-hidden" />
-          {/* The eyes are cut out rather than painted on, the way the arrow is
-              cut out of the tile it stands in, so what comes through them is
-              whatever the picture is doing behind rather than one fixed colour
-              over a surface that changes under it. */}
-          <svg
-            viewBox={`0 0 ${PET_GRID} ${PET_GRID}`}
-            className="agent-pet-drawing absolute inset-0 w-full h-full rounded-full overflow-hidden"
-            aria-hidden
-          >
-            <mask id={mask}>
-              <g transform={`rotate(${pet.tilt} 50 54) translate(50 53) scale(${BODY}) translate(-50 -53)`}>
-                <path d={pet.body} fill="#fff" stroke="#fff" strokeWidth={7} strokeLinejoin="round" />
-                <g className="agent-pet-eyes">
-                  <circle cx={50 - gap / 2} cy={pet.eyeY} r={EYE_RADIUS} fill="#000" />
-                  <circle cx={50 + gap / 2} cy={pet.eyeY} r={EYE_RADIUS} fill="#000" />
-                </g>
-              </g>
-            </mask>
-            <rect width={PET_GRID} height={PET_GRID} fill="#fff" mask={`url(#${mask})`} />
+        <span className="agent-pet-body absolute inset-0">
+          <GeneratedField seed={seed} box={box} light={FIELD_LIGHT} clip={`path('${path}')`} />
+          <svg viewBox={`0 0 ${PET_GRID} ${PET_GRID}`} className="agent-pet-drawing absolute inset-0 w-full h-full" aria-hidden>
+            <path d={pet.body} fill="none" stroke="currentColor" strokeOpacity={0.1} strokeWidth={2} />
+            <g className="agent-pet-eyes" transform={`rotate(${pet.tilt} ${pet.eyeX} ${pet.eyeY})`}>
+              <rect
+                x={pet.eyeX - gap / 2 - EYE_RADIUS}
+                y={pet.eyeY - EYE_HEIGHT / 2}
+                width={EYE_WIDTH}
+                height={EYE_HEIGHT}
+                rx={EYE_RADIUS}
+                fill="#fff"
+              />
+              <rect
+                x={pet.eyeX + gap / 2 - EYE_RADIUS}
+                y={pet.eyeY - EYE_HEIGHT / 2}
+                width={EYE_WIDTH}
+                height={EYE_HEIGHT}
+                rx={EYE_RADIUS}
+                fill="#fff"
+              />
+            </g>
           </svg>
-        </>
+        </span>
       )}
       {presence && (
         <span

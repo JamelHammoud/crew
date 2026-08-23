@@ -52,7 +52,7 @@ describe('agent photos in the settings', () => {
     render(createElement(Agents))
 
     const face = section().querySelector('img') as HTMLImageElement
-    expect(face.className).toContain('rounded-full')
+    expect(face.style.clipPath).toContain('path(')
     expect(face.className).toContain('object-cover')
     expect(face.className).not.toMatch(/\bbg-/)
     expect(face.style.backgroundColor).toBe('')
