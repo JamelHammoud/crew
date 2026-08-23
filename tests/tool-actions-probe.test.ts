@@ -216,7 +216,7 @@ describe('step rows', () => {
     expect(container.querySelectorAll('button').length).toBe(1)
   })
 
-  it('uses a code chip and the call title for the JavaScript runner', () => {
+  it('shows the JavaScript runner as an ordinary code step', () => {
     const detail = JSON.stringify({ title: 'Reconnect to Raylight', code: 'await browser.open("https://raylight.app")' })
     const { container } = render(
       createElement(StepRow, { item: item({ name: 'node_repl.js', detail }) })
@@ -225,9 +225,11 @@ describe('step rows', () => {
     expect(screen.getByText('Ran code')).not.toBeNull()
     expect(container.textContent).not.toContain('Node repl')
     expect(container.querySelector('img')).toBeNull()
+    expect(container.querySelector('button')?.className).not.toContain('border-ink-700')
     expect(container.textContent).not.toContain('await browser.open')
     fireEvent.click(container.querySelector('button') as HTMLButtonElement)
     expect(screen.getByText('Code')).not.toBeNull()
+    expect(screen.getByText('Title')).not.toBeNull()
     expect(screen.getAllByText('Reconnect to Raylight')).toHaveLength(1)
     expect(container.textContent).toContain('await browser.open')
   })

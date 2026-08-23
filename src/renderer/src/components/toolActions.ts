@@ -17,7 +17,6 @@ import {
   FolderGlyph,
   GlobeGlyph,
   ImageGlyph,
-  JavaScriptGlyph,
   NotebookGlyph,
   OutputGlyph,
   PageGlyph,
@@ -61,7 +60,7 @@ const WORKING: ToolAction = { icon: BoxGlyph, run: 'Working', done: 'Working', p
 export const THINKING: ToolAction = { icon: ThinkingGlyph, run: 'Thinking', done: 'Thought', prose: true }
 
 const JAVASCRIPT: ToolAction = {
-  icon: JavaScriptGlyph,
+  icon: CodeGlyph,
   run: 'Running code',
   done: 'Ran code',
   prose: true,

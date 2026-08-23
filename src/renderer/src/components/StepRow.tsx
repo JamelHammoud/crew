@@ -137,7 +137,7 @@ function StepRow({ item, linked, inGroup }: { item: ThreadItem; linked?: boolean
   const files = stepFiles(item)
   const totals = stepTotals(files)
   const detail = thinking ? '' : (item.detail ?? '')
-  const call = action.source ? toolCallInfo(detail) : null
+  const call = action.source || action.runtime ? toolCallInfo(detail) : null
   const opens = useOpener(detail, files)
   const preview = thinking ? thoughtPreview(item.text) : ''
   const expandable = thinking
@@ -150,8 +150,7 @@ function StepRow({ item, linked, inGroup }: { item: ThreadItem; linked?: boolean
   const subject = expanded ? '' : thinking ? preview : files.length === 0 ? (call?.summary ?? item.detail ?? '') : ''
   const subjectRef = action.resource && subject ? parseFileRef(subject) : null
 
-  if (action.source || action.runtime)
-    return <ToolChipStep item={item} action={action} linked={linked} inGroup={inGroup} />
+  if (action.source) return <ToolChipStep item={item} action={action} linked={linked} inGroup={inGroup} />
 
   return (
     <div

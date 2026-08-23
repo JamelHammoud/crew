@@ -361,7 +361,7 @@ const sameStep = (a: ThreadItem, b: ThreadItem): boolean => {
   if (a.kind !== 'tool' || b.kind !== 'tool') return false
   const one = toolAction(a.name, a.subagent)
   const two = toolAction(b.name, b.subagent)
-  if (one.source || two.source || one.runtime || two.runtime) return false
+  if (one.source || two.source) return false
   return one.icon === two.icon && one.done === two.done
 }
 
