@@ -117,7 +117,7 @@ export default function PersonalChatWindow() {
                         autoFocus
                         value={editText}
                         onChange={event => setEditText(event.target.value)}
-                        onBlur={saveRename}
+                        onBlur={() => setEditing(null)}
                         onKeyDown={event => {
                           if (event.key === 'Enter') saveRename()
                           if (event.key === 'Escape') setEditing(null)
