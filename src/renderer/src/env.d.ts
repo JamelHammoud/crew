@@ -5,7 +5,7 @@ import type { AppIconId } from '../../shared/appIcon'
 import type { SystemDetails } from '../../shared/feedback'
 import type { OpenRequest } from '../../shared/cli'
 import type { CommandDone, CommandState } from '../../shared/crewCommand'
-import type { PathLocation, RepoFile } from '../../shared/files'
+import type { FileContentMatch, PathLocation, RepoFile } from '../../shared/files'
 import type { MachineDir } from '../../shared/machinePath'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../../shared/llm'
 import type { MediaAccess, MediaKind, ScreenSource } from '../../shared/media'
@@ -67,6 +67,7 @@ declare global {
     copyImage(src: string): Promise<boolean>
     readFile(path: string): Promise<RepoFile | null>
     listFiles(): Promise<string[]>
+    searchFiles(query: string): Promise<FileContentMatch[]>
     readDirs(query: string): Promise<MachineDir[]>
     writeFile(path: string, text: string): Promise<RepoFile | null>
     locatePath(path: string): Promise<PathLocation>

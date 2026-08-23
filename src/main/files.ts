@@ -1,7 +1,15 @@
 import { promises as fs } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import { imageType, mediaType, type FileEntry, type RepoFile, type RepoPathKind } from '../shared/files'
+import {
+  imageType,
+  mediaType,
+  type FileContentMatch,
+  type FileEntry,
+  type RepoFile,
+  type RepoPathKind
+} from '../shared/files'
+import { listRepoFiles } from '../shared/repoFiles'
 import type { MachineDir } from '../shared/machinePath'
 
 export { listRepoFiles } from '../shared/repoFiles'
@@ -12,6 +20,9 @@ export interface MediaHost {
 
 const MAX_BYTES = 512 * 1024
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024
+const MAX_SEARCH_BYTES = 1024 * 1024
+const MAX_SEARCH_TEXT = 240
+const SEARCH_BATCH = 20
 const DIR_LIMIT = 4000
 const CASELESS = process.platform === 'darwin' || process.platform === 'win32'
 
@@ -200,4 +211,57 @@ export async function writeLocalFile(target: string, text: string): Promise<Repo
   const absolute = expandHome(target)
   if (!path.isAbsolute(absolute)) return null
   return (await writeAt(path.resolve(absolute), text)) ? readLocalFile(target) : null
+}
+
+function matchText(line: string, at: number, length: number): Pick<FileContentMatch, 'text' | 'start' | 'end'> {
+  if (line.length <= MAX_SEARCH_TEXT) return { text: line, start: at, end: at + length }
+  const room = MAX_SEARCH_TEXT - 2
+  const from = Math.max(0, Math.min(at - 80, line.length - room))
+  const to = Math.min(line.length, from + room)
+  const before = from > 0 ? '…' : ''
+  const after = to < line.length ? '…' : ''
+  return {
+    text: `${before}${line.slice(from, to)}${after}`,
+    start: before.length + at - from,
+    end: before.length + at - from + length
+  }
+}
+
+async function searchFile(root: string, relative: string, needle: string, limit: number): Promise<FileContentMatch[]> {
+  const absolute = resolveRepoPath(root, relative)
+  if (!absolute) return []
+  const handle = await fs.open(absolute, 'r').catch(() => null)
+  if (!handle) return []
+  try {
+    const stat = await handle.stat()
+    if (!stat.isFile()) return []
+    const buffer = Buffer.alloc(Math.min(stat.size, MAX_SEARCH_BYTES))
+    const { bytesRead } = await handle.read(buffer, 0, buffer.length, 0)
+    const bytes = buffer.subarray(0, bytesRead)
+    if (bytes.subarray(0, 8000).includes(0)) return []
+    const matches: FileContentMatch[] = []
+    for (const [index, raw] of bytes.toString('utf8').split('\n').entries()) {
+      const line = raw.endsWith('\r') ? raw.slice(0, -1) : raw
+      const at = line.toLocaleLowerCase().indexOf(needle)
+      if (at < 0) continue
+      matches.push({ path: relative, line: index + 1, ...matchText(line, at, needle.length) })
+      if (matches.length >= limit) break
+    }
+    return matches
+  } finally {
+    await handle.close()
+  }
+}
+
+export async function searchRepoFiles(root: string, query: string, limit = 80): Promise<FileContentMatch[]> {
+  const needle = query.trim().slice(0, 200).toLocaleLowerCase()
+  if (!needle || limit <= 0) return []
+  const paths = await listRepoFiles(root)
+  const found: FileContentMatch[] = []
+  for (let at = 0; at < paths.length && found.length < limit; at += SEARCH_BATCH) {
+    const batch = paths.slice(at, at + SEARCH_BATCH)
+    const matches = await Promise.all(batch.map(file => searchFile(root, file, needle, limit - found.length)))
+    found.push(...matches.flat())
+  }
+  return found.slice(0, limit)
 }

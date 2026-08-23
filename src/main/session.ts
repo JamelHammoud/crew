@@ -29,13 +29,14 @@ import {
   readMachineDirs,
   readRepoFile,
   repoPathOf,
+  searchRepoFiles,
   writeLocalFile,
   writeRepoFile,
   type MediaHost
 } from './files'
 import { locatePath } from './locate'
 import { SavedSessionStore } from './saved-session'
-import type { PathLocation, RepoFile } from '../shared/files'
+import type { FileContentMatch, PathLocation, RepoFile } from '../shared/files'
 import type { MachineDir } from '../shared/machinePath'
 import { cleanMemberName } from '../shared/people'
 
@@ -207,6 +208,10 @@ export class AppSession {
 
   async listFiles(): Promise<string[]> {
     return this.folder ? listRepoFiles(this.folder) : []
+  }
+
+  async searchFiles(query: string): Promise<FileContentMatch[]> {
+    return this.folder ? searchRepoFiles(this.folder, query) : []
   }
 
   async readDirs(query: string): Promise<MachineDir[]> {

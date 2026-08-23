@@ -746,6 +746,7 @@ app.whenReady().then(() => {
     crews.inView(event.sender.id).readFile(target, mediaFor(event.sender))
   )
   ipcMain.handle('file:list', event => crews.inView(event.sender.id).listFiles())
+  ipcMain.handle('file:search', (event, query: string) => crews.inView(event.sender.id).searchFiles(query))
   ipcMain.handle('file:dirs', (event, query: string) => crews.inView(event.sender.id).readDirs(query))
   ipcMain.handle('file:write', (event, target: string, text: string) =>
     crews.inView(event.sender.id).writeFile(target, text)

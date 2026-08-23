@@ -4,7 +4,7 @@ import type { AppIconId } from '../shared/appIcon'
 import type { SystemDetails } from '../shared/feedback'
 import type { OpenRequest } from '../shared/cli'
 import type { CommandDone, CommandState } from '../shared/crewCommand'
-import type { PathLocation, RepoFile } from '../shared/files'
+import type { FileContentMatch, PathLocation, RepoFile } from '../shared/files'
 import type { MachineDir } from '../shared/machinePath'
 import type { MediaAccess, MediaKind, ScreenSource } from '../shared/media'
 import type { ModelServer } from '../shared/modelServers'
@@ -78,6 +78,7 @@ const bridge = {
   copyImage: (src: string): Promise<boolean> => ipcRenderer.invoke('clipboard:image', src),
   readFile: (path: string): Promise<RepoFile | null> => ipcRenderer.invoke('file:read', path),
   listFiles: (): Promise<string[]> => ipcRenderer.invoke('file:list'),
+  searchFiles: (query: string): Promise<FileContentMatch[]> => ipcRenderer.invoke('file:search', query),
   readDirs: (query: string): Promise<MachineDir[]> => ipcRenderer.invoke('file:dirs', query),
   writeFile: (path: string, text: string): Promise<RepoFile | null> => ipcRenderer.invoke('file:write', path, text),
   locatePath: (path: string): Promise<PathLocation> => ipcRenderer.invoke('file:locate', path),

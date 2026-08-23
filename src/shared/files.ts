@@ -124,6 +124,14 @@ export interface FileMatch {
   hits: number[]
 }
 
+export interface FileContentMatch {
+  path: string
+  line: number
+  text: string
+  start: number
+  end: number
+}
+
 function scan(text: string, needle: string, from: number): number[] | null {
   const hits: number[] = []
   let at = from
