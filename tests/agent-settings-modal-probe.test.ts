@@ -74,6 +74,8 @@ const capabilities: ProviderCapability[] = [
 
 describe('the advanced screen while creating an agent', () => {
   it('keeps the Grok settings inside a window-height scroller', async () => {
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(300)
+    vi.spyOn(HTMLElement.prototype, 'scrollHeight', 'get').mockReturnValue(600)
     Object.defineProperty(window, 'crew', {
       configurable: true,
       value: {
@@ -103,6 +105,11 @@ describe('the advanced screen while creating an agent', () => {
     expect(page.className).toContain('scroll-fade')
     expect(page.contains(back)).toBe(false)
     expect(page.contains(done)).toBe(false)
+    await waitFor(() => expect(page.hasAttribute('data-fade-bottom')).toBe(true))
+    page.scrollTop = 300
+    fireEvent.scroll(page)
+    await waitFor(() => expect(page.hasAttribute('data-fade-top')).toBe(true))
+    expect(page.hasAttribute('data-fade-bottom')).toBe(false)
     expect(screen.getByText('Grok memory')).toBeTruthy()
   })
 })
