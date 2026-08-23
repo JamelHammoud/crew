@@ -21,6 +21,8 @@ const BrowserPanel = (await import('../src/renderer/src/components/BrowserPanel'
 const scrolled: { el: Element; left: number; top: number }[] = []
 const askedIntoView: Element[] = []
 const popOutBrowserTab = vi.fn().mockResolvedValue(true)
+const beginBrowserTabDrag = vi.fn()
+const dropBrowserTab = vi.fn().mockResolvedValue(true)
 
 const VIEW = 300
 const TALL = 36
@@ -37,7 +39,14 @@ beforeEach(() => {
     Object.defineProperty(this, 'scrollTop', { value: to.top ?? 0, configurable: true })
   }) as unknown as Element['scrollTo']
   popOutBrowserTab.mockClear()
-  window.crew = { warmTerminal: () => undefined, popOutBrowserTab } as unknown as CrewBridge
+  beginBrowserTabDrag.mockClear()
+  dropBrowserTab.mockClear()
+  window.crew = {
+    warmTerminal: () => undefined,
+    popOutBrowserTab,
+    beginBrowserTabDrag,
+    dropBrowserTab
+  } as unknown as CrewBridge
   useBrowser.setState({ tabs: [], activeTabId: null, open: false, fullScreen: false })
 })
 
@@ -412,6 +421,33 @@ describe('the tab strip', () => {
     expect(order()).toEqual([third, first, second])
   })
 
+  it('hands a dragged tab to another Browser window at the aimed place', () => {
+    openTwo()
+    const { container } = render(createElement(BrowserPanel))
+    const items = laidOut(container)
+    const values = new Map<string, string>()
+    const dataTransfer = {
+      types: ['application/x-crew-browser-tab'],
+      effectAllowed: 'none',
+      dropEffect: 'none',
+      setData: (type: string, value: string) => values.set(type, value),
+      getData: (type: string) => values.get(type) ?? ''
+    }
+
+    fireEvent.dragStart(items[0]!, { dataTransfer })
+    fireEvent.dragOver(rowOf(container)!, { clientX: 150, dataTransfer })
+
+    expect(container.querySelector('[data-browser-tab-drop]')).toBeTruthy()
+
+    fireEvent.drop(rowOf(container)!, { clientX: 150, dataTransfer })
+
+    const token = values.get('application/x-crew-browser-tab')
+    expect(token).toBeTruthy()
+    expect(beginBrowserTabDrag).toHaveBeenCalledWith(token, useBrowser.getState().tabs[0])
+    expect(dropBrowserTab).toHaveBeenCalledWith(token, 2)
+    expect(container.querySelector('[data-browser-tab-drop]')).toBeNull()
+  })
+
   it('leaves the row alone and picks the tab up when the pointer barely moved', () => {
     openTwo()
     const [first, second] = order()
@@ -597,6 +633,32 @@ describe('a tab opened by another Crew window', () => {
       opened.id,
       expect.not.stringMatching(`^${opened.id}$`)
     ])
+  })
+
+  it('inserts a moved tab at the drop point without replacing the tabs already there', () => {
+    openTwo()
+    const [first, second] = useBrowser.getState().tabs
+    const source = { ...first!, id: 'other-window-tab', url: 'https://example.com/moved' }
+
+    useBrowser.getState().insertWindowTab(source, 1)
+
+    const state = useBrowser.getState()
+    expect(state.tabs.map(one => one.url)).toEqual([
+      first!.url,
+      'https://example.com/moved',
+      second!.url
+    ])
+    expect(state.tabs[1]!.id).not.toBe(source.id)
+    expect(state.activeTabId).toBe(state.tabs[1]!.id)
+  })
+
+  it('turns a drop gap into the right same-window order', () => {
+    openThree()
+    const [first, second, third] = useBrowser.getState().tabs
+
+    useBrowser.getState().dropTab(first!.id, 3)
+
+    expect(useBrowser.getState().tabs.map(one => one.id)).toEqual([second!.id, third!.id, first!.id])
   })
 
   it('does not show panel controls in a standalone Browser', () => {
