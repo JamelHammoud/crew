@@ -20,7 +20,7 @@ function DesignChip({ item }: { item: ThreadItem }) {
       className="group flex min-w-0 max-w-full items-center gap-2 pl-2 pr-3 py-1 rounded-full border border-ink-700 bg-ink-800/60 transition-all enabled:active:scale-[0.98] enabled:hover:border-ink-600 enabled:hover:bg-ink-700 disabled:cursor-default"
     >
       <FrameGlyph className={`w-4 h-4 shrink-0 text-sky-300 light:text-sky-700 ${item.streaming ? 'pulse-soft' : ''}`} />
-      <span className="max-w-[16rem] truncate text-sm text-fg-secondary group-enabled:group-hover:text-fg">
+      <span className="max-w-[16rem] truncate text-sm text-fg-secondary group-hover:text-fg">
         {board?.name ?? boardId}
       </span>
       <span className={`shrink-0 text-xs ${item.streaming ? 'text-fg-muted' : 'text-fg-faint'}`}>{status}</span>
