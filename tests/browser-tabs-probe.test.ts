@@ -454,7 +454,7 @@ describe('the tab strip', () => {
     const { container } = render(createElement(BrowserPanel))
     const row = rowOf(container) as HTMLElement
     Object.defineProperty(row, 'scrollWidth', { value: 490, configurable: true })
-    row.scrollLeft = 50
+    Object.defineProperty(row, 'scrollLeft', { value: 50, writable: true, configurable: true })
     const dataTransfer = {
       types: ['application/x-crew-browser-tab'],
       dropEffect: 'none'
