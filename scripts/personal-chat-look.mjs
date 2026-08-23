@@ -44,6 +44,16 @@ const beta = {
   status: 'open',
   mode: 'build'
 }
+const gamma = {
+  id: 'gamma',
+  agentId: 'jamel/fake',
+  agentLabel: 'Fake',
+  title: 'Draft a dinner menu',
+  createdBy: 'Jamel',
+  startedAt: now - 72_000,
+  status: 'open',
+  mode: 'build'
+}
 
 useCrew.setState({
   connection: 'online',
@@ -64,9 +74,10 @@ useCrew.setState({
   members: [{ id: 'jamel', name: 'Jamel', connected: true }],
   events: [
     { id: 'alpha-started', ts: alpha.startedAt, kind: 'thread.started', threadId: alpha.id, agentId: alpha.agentId, agentLabel: alpha.agentLabel, title: alpha.title, byName: 'Jamel' },
-    { id: 'beta-started', ts: beta.startedAt, kind: 'thread.started', threadId: beta.id, agentId: beta.agentId, agentLabel: beta.agentLabel, title: beta.title, byName: 'Jamel' }
+    { id: 'beta-started', ts: beta.startedAt, kind: 'thread.started', threadId: beta.id, agentId: beta.agentId, agentLabel: beta.agentLabel, title: beta.title, byName: 'Jamel' },
+    { id: 'gamma-started', ts: gamma.startedAt, kind: 'thread.started', threadId: gamma.id, agentId: gamma.agentId, agentLabel: gamma.agentLabel, title: gamma.title, byName: 'Jamel' }
   ],
-  threads: { alpha, beta },
+  threads: { alpha, beta, gamma },
   threadPrompts: {},
   threadDrafts: {},
   threadCommands: {},
@@ -125,6 +136,8 @@ const READ = \`(() => {
   const plus = named('New personal chat')
   const composer = document.querySelector('textarea[placeholder="Message"]')
   const drawer = document.querySelector('[data-personal-history]')
+  const current = document.querySelector('button[aria-current="page"]')
+  const group = current?.closest('section')?.querySelector('.rounded-card')
   return {
     plus: box(plus),
     plusOpacity: plus ? getComputedStyle(plus).opacity : null,
@@ -135,7 +148,10 @@ const READ = \`(() => {
     drawer: box(drawer),
     drawerHidden: drawer?.getAttribute('aria-hidden'),
     drawerTransform: drawer ? getComputedStyle(drawer).transform : null,
-    drawerText: drawer?.textContent ?? ''
+    drawerText: drawer?.textContent ?? '',
+    current: box(current),
+    currentBackground: current ? getComputedStyle(current).backgroundColor : null,
+    groupGap: group ? getComputedStyle(group).rowGap : null
   }
 })()\`
 
@@ -153,6 +169,20 @@ app.whenReady().then(async () => {
     await win.webContents.executeJavaScript(\`[...document.querySelectorAll('button')].find(button => button.getAttribute('aria-label') === 'Chat history').click()\`)
     await wait(350)
     seen.history = await win.webContents.executeJavaScript(READ)
+    await win.webContents.executeJavaScript(
+      \`[...document.querySelectorAll('button')].find(button => button.textContent?.includes('Draft a dinner menu')).click()\`
+    )
+    await wait(250)
+    await win.webContents.executeJavaScript(
+      \`[...document.querySelectorAll('button')].find(button => button.getAttribute('aria-label') === 'Chat history').click()\`
+    )
+    await wait(250)
+    const hover = await win.webContents.executeJavaScript(
+      \`(() => { const row = [...document.querySelectorAll('button')].find(button => button.textContent?.includes('Plan a quiet weekend')); const box = row.getBoundingClientRect(); return { x: box.left + box.width / 2, y: box.top + box.height / 2 } })()\`
+    )
+    win.webContents.sendInputEvent({ type: 'mouseMove', x: hover.x, y: hover.y })
+    await wait(200)
+    seen.active = await win.webContents.executeJavaScript(READ)
     fs.writeFileSync(${JSON.stringify(shot)}, (await win.webContents.capturePage()).toPNG())
   } catch (error) {
     seen.failed = String(error && error.stack)
@@ -225,6 +255,9 @@ try {
     !seen.history.drawerText.includes('Compare two cameras')
   ) {
     throw new Error('personal chat history did not open: ' + JSON.stringify({ resting: seen.resting, open: seen.history }))
+  }
+  if (!seen.active.current || seen.active.groupGap === 'normal' || seen.active.currentBackground !== 'rgba(0, 0, 0, 0)') {
+    throw new Error('personal chat active state did not stay separate: ' + JSON.stringify(seen.active))
   }
   console.log(`Chat plus       ${seen.resting.plusOpacity} resting, ${seen.hovered.plusOpacity} hovered`)
   console.log(`Composer        ${seen.resting.composer.width} x ${seen.resting.composer.height}`)
