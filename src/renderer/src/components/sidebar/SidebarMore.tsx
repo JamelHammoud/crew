@@ -3,7 +3,7 @@ import { PinGlyph } from '../../icons'
 import { playSound } from '../../media/sounds'
 import { useSidebar } from '../../state/sidebar'
 import { setSidebarPinned, useSidebarPins } from '../../state/sidebarPins'
-import { MenuItem, Popover } from '../Popover'
+import { MenuDivider, MenuItem, Popover } from '../Popover'
 import Toolbox from '../Toolbox'
 import { useHoverMenu, type Spot } from '../useHoverMenu'
 import { MoreIcon, TAB_ICON, type Tab } from '../navTabs'
@@ -108,14 +108,10 @@ export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab
         <Popover open onClose={menu.close} at={menu.at} anchor={rowRef} flush className="min-w-44">
           <div className="p-1.5" onPointerEnter={menu.hold} onPointerLeave={menu.leave}>
             {unpinned.map(item => (
-              <MoreItem
-                key={item.id}
-                item={item}
-                tab={tab}
-                close={menu.close}
-                onTab={onTab}
-                onToolbox={openToolbox}
-              />
+              <div key={item.id} className="contents">
+                {item.id === 'plugins' && <MenuDivider />}
+                <MoreItem item={item} tab={tab} close={menu.close} onTab={onTab} onToolbox={openToolbox} />
+              </div>
             ))}
           </div>
         </Popover>

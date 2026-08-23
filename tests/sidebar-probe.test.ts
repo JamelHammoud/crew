@@ -202,7 +202,7 @@ describe('the sidebar', () => {
     await waitFor(() => expect(useSidebar.getState().peeking).toBe(false))
   })
 
-  it('holds every extra in the requested order', async () => {
+  it('holds every extra in two groups and the requested order', async () => {
     render(Sidebar())
     fireEvent.pointerEnter(screen.getByRole('button', { name: 'More' }).parentElement as HTMLElement)
     const files = await screen.findByRole('button', { name: 'Files' })
@@ -211,13 +211,16 @@ describe('the sidebar', () => {
       'Files',
       'Review',
       'Terminal',
+      'Web',
       'Plugins',
       'Scheduled',
       'Toolbox',
-      'Web',
-      'Music',
-      'Games'
+      'Browser'
     ])
+    const divider = menu.querySelector('.h-px') as HTMLElement
+    expect(divider.previousElementSibling?.textContent).toBe('Web')
+    expect(divider.nextElementSibling?.textContent).toBe('Plugins')
+    expect(divider.className).toContain('-mx-1.5')
   })
 
   it('pins a More item above More, keeps it across a mount, and removes it from the menu', async () => {
@@ -339,6 +342,17 @@ describe('the sidebar', () => {
     expect(useBrowser.getState().open).toBe(true)
     expect(useBrowser.getState().tabs.map(tab => tab.kind)).toEqual(['web'])
     await waitFor(() => expect(screen.queryByRole('button', { name: 'Web' })).toBeNull())
+  })
+
+  it('opens the panel on Start from the Browser row in More', async () => {
+    render(Sidebar())
+    const more = screen.getByRole('button', { name: 'More' })
+    fireEvent.pointerEnter(more.parentElement as HTMLElement)
+    fireEvent.click(await screen.findByRole('button', { name: 'Browser' }))
+
+    expect(useBrowser.getState().open).toBe(true)
+    expect(useBrowser.getState().tabs).toHaveLength(0)
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Browser' })).toBeNull())
   })
 
   it('opens the toolbox off the More row and holds a hovered rail up while it stands', async () => {

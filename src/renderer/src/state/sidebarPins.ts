@@ -4,12 +4,11 @@ export const SIDEBAR_ITEM_IDS = [
   'files',
   'review',
   'terminal',
+  'web',
   'plugins',
   'scheduled',
   'toolbox',
-  'web',
-  'music',
-  'games'
+  'browser'
 ] as const
 
 export type SidebarItemId = (typeof SIDEBAR_ITEM_IDS)[number]

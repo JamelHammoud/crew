@@ -17,6 +17,5 @@ export function openSidebarItem(id: SidebarItemId, onTab: (tab: Tab) => void, on
   else if (id === 'review') browser.openReview()
   else if (id === 'terminal') browser.addTerminal(undefined, useCrew.getState().folder)
   else if (id === 'web') browser.addTab()
-  else if (id === 'music') browser.openMusic()
-  else browser.openGame()
+  else browser.openPanel()
 }
