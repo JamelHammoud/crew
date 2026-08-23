@@ -51,6 +51,9 @@ const read = `(() => {
     gutter: box(gutter),
     code: box(code),
     paddingLeft: getComputedStyle(area).paddingLeft,
+    editorScrollLeft: area.scrollLeft,
+    editorScrollWidth: area.scrollWidth,
+    editorClientWidth: area.clientWidth,
     value: area.value,
     selection: [area.selectionStart, area.selectionEnd]
   }
@@ -184,6 +187,10 @@ try {
   if (seen.scrolled.gutter.left !== seen.before.gutter.left) problems.push('the line numbers moved with the file')
   if (seen.scrolled.code.left >= seen.before.code.left - 800) problems.push('the code did not move under the line numbers')
   if (!seen.typed.value.endsWith('abc')) problems.push('typing did not reach the file')
+  if (seen.focused.editorScrollLeft !== 0 || seen.typed.editorScrollLeft !== 0)
+    problems.push(
+      `the hidden editor moved away from the code layer from ${seen.focused.editorScrollLeft} to ${seen.typed.editorScrollLeft}`
+    )
   if (seen.typed.scrollLeft !== seen.focused.scrollLeft)
     problems.push(`typing moved the horizontal scroll from ${seen.focused.scrollLeft} to ${seen.typed.scrollLeft}`)
   if (seen.undone.value !== line) problems.push('one undo did not remove the typing run')
