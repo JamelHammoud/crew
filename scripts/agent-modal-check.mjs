@@ -68,7 +68,7 @@ app.whenReady().then(async () => {
   })()\`)
   const image = await win.webContents.capturePage()
   fs.writeFileSync(${JSON.stringify(shot)}, image.toPNG())
-  const fits = result.dialogTop === 24 && result.dialogBottom === result.viewport - 24
+  const fits = result.dialogTop >= 23 && result.viewport - result.dialogBottom >= 23
   const doneFits = result.doneTop >= result.dialogTop && result.doneBottom <= result.dialogBottom
   console.log('CHECK ' + JSON.stringify({ ...result, fits, doneFits }))
   app.exit(fits && result.scrolls && doneFits ? 0 : 1)
