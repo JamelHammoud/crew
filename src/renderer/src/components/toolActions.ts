@@ -43,6 +43,7 @@ export interface ToolAction {
   many?: string
   prose?: boolean
   terminal?: boolean
+  resource?: boolean
 }
 
 const AGENT: ToolAction = {
@@ -59,7 +60,7 @@ export const THINKING: ToolAction = { icon: ThinkingGlyph, run: 'Thinking', done
 const TABLE: Array<[string, ToolAction]> = [
   [
     'read readfile viewfile view cat openfile readmediafile',
-    { icon: ReadGlyph, run: 'Reading', done: 'Read', many: 'Read files' }
+    { icon: ReadGlyph, run: 'Reading', done: 'Read', many: 'Read files', resource: true }
   ],
   [
     'edit editfile edits multiedit strreplace strreplacefile strreplaceeditor applypatch patch filechange write writefile createfile create newfile savefile',

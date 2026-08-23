@@ -167,7 +167,7 @@ function StepRow({ item, linked, inGroup }: { item: ThreadItem; linked?: boolean
         )}
         {subject && (
           <span className={action.prose ? SUBJECT : SUBJECT_MONO}>
-            <TextWithFileLinks text={subject} inline again={!item.streaming} />
+            <TextWithFileLinks text={subject} inline={!action.resource} chips={action.resource} again={!item.streaming} />
           </span>
         )}
         {expandable && <Chevron open={expanded} />}

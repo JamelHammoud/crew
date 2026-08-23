@@ -1,7 +1,9 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import type { PathLocation } from '../../../shared/files'
+import { FileGlyph, GlobeGlyph } from '../icons'
 import { useBrowser } from '../state/browser'
 import { EmojiText } from './Emoji'
+import Tooltip from './Tooltip'
 
 export interface FileRef {
   path: string
@@ -190,13 +192,25 @@ function privateNode(doc: Document): HTMLElement {
 
 function linkNode(doc: Document, path: string, line: number | null, label: string): HTMLAnchorElement {
   const anchor = doc.createElement('a')
-  anchor.className = 'file-link'
+  anchor.className = 'file-link resource-chip'
   anchor.dataset.path = targetFor(path)
+  anchor.dataset.fullPath = path
   if (line !== null) anchor.dataset.line = String(line)
+  anchor.appendChild(FileGlyph.element(doc, 'resource-chip-icon'))
   const code = doc.createElement('code')
-  code.textContent = label
+  code.textContent = compactLabel(path, label)
   anchor.appendChild(code)
   return anchor
+}
+
+function linkedAnchor(anchor: HTMLAnchorElement, ref: FileRef): void {
+  anchor.classList.add('file-link', 'resource-chip')
+  anchor.dataset.path = targetFor(ref.path)
+  anchor.dataset.fullPath = ref.path
+  if (ref.line !== null) anchor.dataset.line = String(ref.line)
+  const content = anchor.ownerDocument.createElement('code')
+  content.append(...anchor.childNodes)
+  anchor.append(FileGlyph.element(anchor.ownerDocument, 'resource-chip-icon'), content)
 }
 
 export function linkifyFiles(root: HTMLElement): string[] {
@@ -209,6 +223,20 @@ export function linkifyFiles(root: HTMLElement): string[] {
       return false
     }
     return shifts(path, location)
+  }
+  for (const anchor of [...root.querySelectorAll('a')]) {
+    const raw = anchor.getAttribute('href') ?? ''
+    let decoded = raw
+    try {
+      decoded = decodeURIComponent(raw)
+    } catch {}
+    const ref = parseFileRef(decoded)
+    if (!ref || !moves(ref.path)) continue
+    if (isPrivate(ref.path)) {
+      anchor.replaceWith(privateNode(doc))
+      continue
+    }
+    if (openable(ref.path)) linkedAnchor(anchor, ref)
   }
   for (const code of [...root.querySelectorAll('code')]) {
     if (code.closest('pre, a')) continue
@@ -284,16 +312,48 @@ const openFile = (path: string, line: number | null, diff: string | null = null)
 
 export function FileChip({ path, line, text }: { path: string; line: number | null; text: string }) {
   return (
-    <code
-      onClick={event => {
-        event.stopPropagation()
-        openFile(path, line)
-      }}
-      className="font-mono text-[13px] bg-ink-800 rounded-md px-1.5 py-0.5 cursor-pointer transition-colors hover:bg-ink-700 hover:text-fg"
+    <Tooltip
+      label={<FullPath path={path} />}
+      className="max-w-full align-middle"
     >
-      {text}
-    </code>
+      <span
+        onClick={event => {
+          event.stopPropagation()
+          openFile(path, line)
+        }}
+        className="resource-chip"
+      >
+        <FileGlyph className="resource-chip-icon" />
+        <code>{compactLabel(path, text)}</code>
+      </span>
+    </Tooltip>
   )
+}
+
+export function FullPath({ path }: { path: string }) {
+  return <span className="block max-w-[260px] break-all font-mono text-xs leading-5 text-fg-secondary">{path}</span>
+}
+
+export function UrlChip({ url }: { url: string }) {
+  return (
+    <Tooltip label={<FullPath path={url} />} className="max-w-full">
+      <button
+        type="button"
+        onClick={() => useBrowser.getState().showPage(url)}
+        className="resource-chip"
+      >
+        <GlobeGlyph className="resource-chip-icon" />
+        <span className="truncate">{new URL(url).host || url}</span>
+      </button>
+    </Tooltip>
+  )
+}
+
+function compactLabel(path: string, text: string): string {
+  if (locationOf(path)?.kind !== 'local' || !/^[/\\]|^[A-Za-z]:[\\/]/.test(path)) return text
+  const suffix = text.match(/:\d+(?::\d+)?$/)?.[0] ?? (text.endsWith('/') ? '/' : '')
+  const file = path.split(/[\\/]/).filter(Boolean).at(-1) ?? text
+  return file + suffix
 }
 
 // Steps and thinking are already set in faint mono, so a link there keeps the
@@ -344,7 +404,17 @@ export function UrlLink({ url }: { url: string }) {
   )
 }
 
-export function TextWithFileLinks({ text, inline, again }: { text: string; inline?: boolean; again?: unknown }) {
+export function TextWithFileLinks({
+  text,
+  inline,
+  chips,
+  again
+}: {
+  text: string
+  inline?: boolean
+  chips?: boolean
+  again?: unknown
+}) {
   const tokens = fileTokens(text)
   useLocated(
     tokens.flatMap(token => (token.kind === 'file' ? [token.path] : [])),
@@ -354,7 +424,7 @@ export function TextWithFileLinks({ text, inline, again }: { text: string; inlin
   return (
     <>
       {tokens.map((token, index) => {
-        if (token.kind === 'url') return <UrlLink key={index} url={token.text} />
+        if (token.kind === 'url') return chips ? <UrlChip key={index} url={token.text} /> : <UrlLink key={index} url={token.text} />
         if (token.kind !== 'file') return <EmojiText key={index} text={token.text} />
         if (isPrivate(token.path)) return <PrivateChip key={index} />
         const label = labelFor(token.path, token.suffix, token.text)

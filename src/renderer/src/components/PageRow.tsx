@@ -1,7 +1,7 @@
 import { memo, useState } from 'react'
 import { filePathOf, pageName } from '../../../shared/urls'
 import { useBrowser } from '../state/browser'
-import { isPrivate, PrivateChip, useLocated } from './fileLinks'
+import { FileChip, isPrivate, PrivateChip, UrlChip, useLocated } from './fileLinks'
 import { openShown, shownPaths } from './openShown'
 import { Chevron, FilePathLink, Label, rowClass, SUBJECT, SUBJECT_MONO } from './StepRow'
 import { sameShown, type Shown } from './thread'
@@ -14,16 +14,8 @@ const countOf = (pages: string[]): string => `${pages.length} ${allFiles(pages) 
 
 function ShownLink({ page }: { page: string }) {
   const path = filePathOf(page)
-  if (path !== null) return <FilePathLink path={path} className={SUBJECT_MONO} />
-  return (
-    <button
-      type="button"
-      onClick={() => useBrowser.getState().showPage(page)}
-      className={`${SUBJECT_MONO} cursor-pointer transition-colors hover:text-fg hover:underline underline-offset-2`}
-    >
-      {pageName(page)}
-    </button>
-  )
+  if (path !== null) return <FileChip path={path} line={null} text={pageName(page)} />
+  return <UrlChip url={page} />
 }
 
 // A run showing its work, as the row it leaves behind. It reads the way every

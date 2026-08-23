@@ -2932,12 +2932,21 @@ textarea:placeholder-shown {
   @apply no-underline;
 }
 
-.md a.file-link code {
-  @apply cursor-pointer transition-colors;
+.resource-chip {
+  @apply inline-flex max-w-full items-center gap-1.5 rounded-full border border-ink-700 bg-ink-800 px-2 py-0.5 align-middle text-xs leading-4 text-fg-secondary cursor-pointer transition-colors hover:border-ink-600 hover:bg-ink-700 hover:text-fg;
+}
+
+.resource-chip-icon {
+  @apply h-3.5 w-3.5 shrink-0 text-fg-muted;
+}
+
+.resource-chip code,
+.md .resource-chip code {
+  @apply min-w-0 truncate bg-transparent p-0 text-[11px] text-inherit;
 }
 
 .md a.file-link:hover code {
-  @apply bg-ink-700 text-fg;
+  @apply text-fg;
 }
 
 .md blockquote {
