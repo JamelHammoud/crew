@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { claudeArgs, claudeEnv, claudeFields } from '../src/runner/providers/claude'
+import { claudeConfigDir, claudeProfileId } from '../src/runner/providers/claude-profile'
 import { codexArgs, codexFields } from '../src/runner/providers/codex'
 import { geminiArgs, geminiFields } from '../src/runner/providers/gemini'
 import { grokArgs, grokEnv, grokFields } from '../src/runner/providers/grok'
@@ -114,6 +115,17 @@ describe('what a person picks is what goes out', () => {
       BASH_DEFAULT_TIMEOUT_MS: '240000',
       BASH_MAX_TIMEOUT_MS: '240000'
     })
+  })
+
+  it('claude runs a named account in its own config directory', () => {
+    expect(claudeEnv(reader({ account: 'Work Account' }))).toEqual({
+      CLAUDE_CONFIG_DIR: claudeConfigDir('Work Account')
+    })
+  })
+
+  it('claude turns an account name into one safe profile directory', () => {
+    expect(claudeProfileId('../../Wörk Account')).toBe('work-account')
+    expect(claudeConfigDir('../../Wörk Account', '/users/sam')).toBe('/users/sam/.crew/claude/work-account')
   })
 
   it('claude turns thinking off through the one control that has an off', () => {

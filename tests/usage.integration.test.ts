@@ -108,6 +108,36 @@ describe('usage limits', () => {
     )) as Extract<ServerMessage, { type: 'agent.usage' }>
     expect(second.usage.fetchedAt).toBeGreaterThan(first.usage.fetchedAt)
   })
+
+  it('reads usage with each agent account setting', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    const seen: string[] = []
+    const provider: Provider = {
+      ...makeFakeProvider(),
+      fields: () => [{ key: 'account', label: 'Account', kind: 'text', default: '' }],
+      usage: async settings => {
+        const account = settings?.account ?? ''
+        seen.push(account)
+        return { ...sampleUsage(), accountId: account, accountLabel: account }
+      }
+    }
+    await connectRunner('jamel', provider)
+    const runner = runners[0]
+    runner.addAgent({
+      instanceId: 'work',
+      provider: 'fake',
+      name: 'Fake Work',
+      settings: { account: 'work' }
+    })
+
+    const msg = (await ui.waitFor(
+      message => message.type === 'agent.usage' && message.usage.accountId === 'work'
+    )) as Extract<ServerMessage, { type: 'agent.usage' }>
+    expect(msg.agentId).toBe(agentId('jamel', 'work'))
+    expect(seen).toContain('')
+    expect(seen).toContain('work')
+  })
 })
 
 describe('claude usage parsing', () => {
