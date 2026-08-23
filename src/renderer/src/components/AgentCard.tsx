@@ -4,7 +4,7 @@ import { PencilGlyph, StopGlyph, TrashGlyph } from '../icons'
 import AgentIcon from './AgentIcon'
 import AgentSettingsModal from './agent/AgentSettingsModal'
 import PhotoPicker from './PhotoPicker'
-import Pill from './Pill'
+import ProviderMark from './ProviderMark'
 import Spinner from './Spinner'
 import Tooltip from './Tooltip'
 import UsageFooter from './UsageFooter'
@@ -45,7 +45,7 @@ export default function AgentCard({
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               <span className="text-base font-semibold text-fg truncate">{agent.label}</span>
-              <Pill glass>{agent.provider}</Pill>
+              <ProviderMark provider={agent.provider} />
             </div>
             <span className="text-sm text-fg/45">{agent.ownerName}</span>
           </div>
