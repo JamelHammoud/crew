@@ -108,7 +108,7 @@ describe('the composer overlay', () => {
 
     expect(overlay.className).toContain('z-10')
     expect(sprite.style.backgroundImage).toMatch(/64\.png/)
-    expect(sprite.parentElement?.className).toContain('bg-composer')
+    expect(sprite.parentElement?.className).toContain('bg-ink-800')
     expect(overlay.textContent).toContain('well 😔')
   })
 })
@@ -137,9 +137,9 @@ describe('the room around what is typed', () => {
     const foot = card.querySelector('.composer-scrim-up') as HTMLElement
 
     expect(top.className).toContain('top-0')
-    expect(top.className).toContain('bg-composer')
+    expect(top.className).toContain('bg-ink-800')
     expect(foot.className).toContain('bottom-0')
-    expect(foot.className).toContain('bg-composer')
+    expect(foot.className).toContain('bg-ink-800')
     for (const scrim of [top, foot]) {
       expect(scrim.className).toContain('pointer-events-none')
       expect(scrim.className).toContain('z-20')

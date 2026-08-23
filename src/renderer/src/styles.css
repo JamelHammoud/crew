@@ -17,7 +17,6 @@
   --color-ink-600: #333333;
   --color-ink-500: #454545;
   --color-ink-hover: #1d1d1d;
-  --color-composer: #222222;
 
   --color-fg: #ffffff;
   --color-fg-secondary: #b3b3b3;
@@ -240,7 +239,6 @@
   --color-ink-600: #d6d6d6;
   --color-ink-500: #b8b8b8;
   --color-ink-hover: #f5f5f5;
-  --color-composer: #f2f2f2;
 
   --color-fg: #141414;
   --color-fg-secondary: #555555;
@@ -258,12 +256,11 @@
   --color-ink-950: #000000;
   --color-ink-900: #000000;
   --color-ink-850: #050505;
-  --color-ink-800: #0a0a0a;
+  --color-ink-800: #121212;
   --color-ink-700: #171717;
   --color-ink-600: #222222;
   --color-ink-500: #363636;
   --color-ink-hover: #0d0d0d;
-  --color-composer: #121212;
 
   --color-fg: #f5f5f5;
   --color-fg-secondary: #adadad;

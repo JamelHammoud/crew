@@ -196,7 +196,7 @@ export default function Composer({
   // Nothing typed here is kept, so the box stops being a solid one: it drops to
   // the page's own surface and wears the dashed stroke a hidden thread wears
   // everywhere else. The border stands in both states so the row cannot shift.
-  const surface = ghost ? 'bg-ink-900' : 'bg-composer'
+  const surface = ghost ? 'bg-ink-900' : 'bg-ink-800'
 
   const tray = pendingCount > 0
   const above = tray ? 'pt-5' : ''
