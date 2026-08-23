@@ -164,7 +164,7 @@ app.whenReady().then(async () => {
     seen.resting = await win.webContents.executeJavaScript(READ)
     const plus = seen.resting.plus
     win.webContents.sendInputEvent({ type: 'mouseMove', x: plus.left + plus.width / 2, y: plus.top + plus.height / 2 })
-    await wait(300)
+    await wait(800)
     seen.hovered = await win.webContents.executeJavaScript(READ)
     await win.webContents.executeJavaScript(
       \`[...document.querySelectorAll('button')].find(button => button.textContent?.includes('Draft a dinner menu')).click()\`
