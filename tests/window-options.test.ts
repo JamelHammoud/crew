@@ -215,9 +215,12 @@ describe('the application menu', () => {
     for (const devTools of [true, false]) {
       const roles = everyRole(appMenuTemplate('darwin', devTools))
 
-      for (const role of ['undo', 'redo', 'cut', 'copy', 'paste', 'selectAll']) {
+      for (const role of ['cut', 'copy', 'paste', 'selectAll']) {
         expect(roles).toContain(role)
       }
+      const items = everyItem(appMenuTemplate('darwin', devTools))
+      expect(items.find(item => item.label === 'Undo')?.accelerator).toBe('Cmd+Z')
+      expect(items.find(item => item.label === 'Redo')?.accelerator).toBe('Cmd+Shift+Z')
     }
   })
 

@@ -315,6 +315,18 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
 
   const redo = () => restore(redoFileEdit(history.current, docRef.current))
 
+  useEffect(() => {
+    const area = areaRef.current
+    if (!area) return
+    const onCommand = (event: Event) => {
+      const command = (event as CustomEvent).detail
+      if (command === 'undo') undo()
+      if (command === 'redo') redo()
+    }
+    area.addEventListener('crew-edit-command', onCommand)
+    return () => area.removeEventListener('crew-edit-command', onCommand)
+  }, [editable, doc])
+
   const save = async () => {
     if (saving || !dirty) return
     setSaving(true)
@@ -481,6 +493,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
                     setTick(value => value + 1)
                   }}
                   aria-label="File contents"
+                  data-edit-history="file"
                   spellCheck={false}
                   autoCorrect="off"
                   autoCapitalize="off"

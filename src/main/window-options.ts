@@ -157,14 +157,30 @@ export function createPersonalChatWindowOptions(
   }
 }
 
-// Without an application menu the standard clipboard accelerators (copy, cut,
-// paste, select-all, undo, redo) are never registered, so they do nothing
-// inside the app. Registering the roles wires them up on every platform.
-//
-// The View menu is written out rather than taken as the `viewMenu` role,
-// because that role carries Toggle Developer Tools and its accelerator, and a
-// shipped Crew has no dev tools to toggle. Reload and the zoom stay: `⌘R` is
-// the app's own and the canvas is written around it.
+function editMenuItem(command: 'undo' | 'redo', isMac: boolean): MenuItemConstructorOptions {
+  const key = command === 'undo' ? 'Z' : isMac ? 'Shift+Z' : 'Y'
+  const modifier = isMac ? 'Cmd' : 'Ctrl'
+  return {
+    label: command === 'undo' ? 'Undo' : 'Redo',
+    accelerator: `${modifier}+${key}`,
+    click: (_item, window) => {
+      if (!window) return
+      const contents = window.webContents
+      void contents
+        .executeJavaScript("document.activeElement?.dataset.editHistory === 'file'")
+        .then(file => {
+          if (file) {
+            return contents.executeJavaScript(
+              `document.activeElement?.dispatchEvent(new CustomEvent('crew-edit-command', { detail: '${command}' }))`
+            )
+          }
+          contents[command]()
+        })
+        .catch(() => contents[command]())
+    }
+  }
+}
+
 export function appMenuTemplate(platform: NodeJS.Platform, devTools: boolean): MenuItemConstructorOptions[] {
   const isMac = platform === 'darwin'
   return [
@@ -173,8 +189,8 @@ export function appMenuTemplate(platform: NodeJS.Platform, devTools: boolean): M
     {
       label: 'Edit',
       submenu: [
-        { role: 'undo' },
-        { role: 'redo' },
+        editMenuItem('undo', isMac),
+        editMenuItem('redo', isMac),
         { type: 'separator' },
         { role: 'cut' },
         { role: 'copy' },
