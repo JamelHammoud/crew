@@ -24,14 +24,14 @@ export function useScrollFade(ref: RefObject<HTMLElement | null>, axis: Axis = '
     }
     read()
     el.addEventListener('scroll', soon, { passive: true })
-    const box = new ResizeObserver(soon)
-    box.observe(el)
+    const box = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(soon)
+    box?.observe(el)
     const rows = new MutationObserver(soon)
     rows.observe(el, { childList: true, subtree: true })
     return () => {
       cancelAnimationFrame(frame)
       el.removeEventListener('scroll', soon)
-      box.disconnect()
+      box?.disconnect()
       rows.disconnect()
     }
   }, [axis, ref])
