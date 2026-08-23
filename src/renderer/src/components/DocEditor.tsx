@@ -157,7 +157,7 @@ export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: 
     <div ref={containerRef} className="doc flex-1 min-h-0">
       <BlockNoteView
         editor={editor}
-        theme={theme}
+        theme={theme === 'light' ? 'light' : 'dark'}
         onChange={handleChange}
         formattingToolbar={false}
         slashMenu={false}

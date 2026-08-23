@@ -11,7 +11,8 @@ import { Page, Row, Section } from './parts'
 // the one the app is wearing, the way the design canvas pins its own palette.
 const PAPER: Record<Theme, { page: string; raised: string; ink: string }> = {
   dark: { page: '#141414', raised: '#222222', ink: '#ffffff' },
-  light: { page: '#ffffff', raised: '#f2f2f2', ink: '#141414' }
+  light: { page: '#ffffff', raised: '#f2f2f2', ink: '#141414' },
+  oled: { page: '#000000', raised: '#0a0a0a', ink: '#f5f5f5' }
 }
 
 const DISCS = [0, 1, 2]
@@ -66,7 +67,8 @@ function Preview({ theme }: { theme: Theme }) {
 
 const CHOICES: Array<{ theme: Theme; label: string }> = [
   { theme: 'dark', label: 'Dark' },
-  { theme: 'light', label: 'Light' }
+  { theme: 'light', label: 'Light' },
+  { theme: 'oled', label: 'OLED' }
 ]
 
 // The picked one is marked the way a theme card is, so the two blocks read as
@@ -82,13 +84,14 @@ const TILE = 88
 // The one that follows the theme turns over with the cards above it. The rest
 // are pictures somebody chose, so they stand whatever the window wears.
 function IconTile({ icon, theme, on }: { icon: AppIconDef; theme: Theme; on: boolean }) {
+  const art = icon.flips ? (theme === 'light' ? 'light' : 'dark') : icon.id
   return (
     <button
       onClick={() => applyAppIcon(icon.id)}
       aria-pressed={on}
       className={`${CARD} ${on ? PICKED : RESTING} flex flex-col items-center p-1.5 pt-4`}
     >
-      <img src={ICON_ART[icon.flips ? theme : icon.id]} alt="" width={TILE} height={TILE} draggable={false} />
+      <img src={ICON_ART[art]} alt="" width={TILE} height={TILE} draggable={false} />
       <span className="flex items-center gap-1.5 pt-3 pb-1 text-sm font-medium text-fg">
         {icon.label}
         {on && <CheckGlyph className="w-4 h-4" />}
@@ -104,7 +107,7 @@ export default function Appearance() {
 
   return (
     <Page title="Appearance">
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-3 gap-3">
         {CHOICES.map(choice => {
           const on = theme === choice.theme
           return (

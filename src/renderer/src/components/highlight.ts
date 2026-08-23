@@ -9,7 +9,8 @@ const MAX_CHARS = 200_000
 
 export const THEME_NAMES: Record<Theme, string> = {
   dark: 'github-dark-default',
-  light: 'github-light-default'
+  light: 'github-light-default',
+  oled: 'github-dark-default'
 }
 
 const languages: Record<string, LanguageInput> = {

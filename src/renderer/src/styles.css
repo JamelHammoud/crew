@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 
 @custom-variant light (&:where(.light, .light *));
+@custom-variant oled (&:where(.oled, .oled *));
 @custom-variant mac (&:where(.mac, .mac *));
 @custom-variant shift (&:where([data-shift] *));
 
@@ -251,6 +252,28 @@
   --color-selection: rgb(0 0 0 / 0.12);
 }
 
+.oled {
+  --color-ink-950: #000000;
+  --color-ink-900: #000000;
+  --color-ink-850: #050505;
+  --color-ink-800: #0a0a0a;
+  --color-ink-700: #171717;
+  --color-ink-600: #222222;
+  --color-ink-500: #363636;
+  --color-ink-hover: #0d0d0d;
+
+  --color-fg: #f5f5f5;
+  --color-fg-secondary: #adadad;
+  --color-fg-muted: #6d6d6d;
+  --color-fg-faint: #424242;
+
+  --color-positive: #45d47c;
+  --color-danger: #f16f6f;
+  --color-attention: #f5ba22;
+
+  --color-selection: rgb(255 255 255 / 0.18);
+}
+
 html,
 body,
 #root {
@@ -440,6 +463,12 @@ textarea:placeholder-shown {
   --glass-shadow: 0 16px 48px rgb(0 0 0 / 0.14), 0 2px 8px rgb(0 0 0 / 0.08);
 }
 
+.oled {
+  --glass-bg: rgb(6 6 6 / 0.95);
+  --glass-line: rgb(255 255 255 / 0.09);
+  --glass-shadow: 0 16px 48px rgb(0 0 0 / 0.72), 0 2px 8px rgb(0 0 0 / 0.5);
+}
+
 .glass {
   background: var(--glass-bg);
   /* No -webkit- fallback: Electron's Chromium only honors the standard property,
@@ -462,6 +491,10 @@ textarea:placeholder-shown {
   background: rgb(252 252 252 / 0.975);
 }
 
+.oled .glass-strong {
+  background: rgb(3 3 3 / 0.985);
+}
+
 .sidebar-glass {
   background: rgb(24 24 24 / 0.92);
   backdrop-filter: blur(32px) saturate(180%);
@@ -480,6 +513,14 @@ textarea:placeholder-shown {
   background: rgb(252 252 252 / 0.97);
 }
 
+.oled .sidebar-glass {
+  background: rgb(3 3 3 / 0.96);
+}
+
+.oled .sidebar-glass.glass-strong {
+  background: rgb(2 2 2 / 0.985);
+}
+
 .mac .sidebar-pinned {
   background: rgb(24 24 24 / 0.62);
   backdrop-filter: blur(32px) saturate(180%);
@@ -487,6 +528,10 @@ textarea:placeholder-shown {
 
 .mac.light .sidebar-pinned {
   background: rgb(252 252 252 / 0.72);
+}
+
+.mac.oled .sidebar-pinned {
+  background: rgb(0 0 0 / 0.84);
 }
 
 .rail {
@@ -643,6 +688,11 @@ textarea:placeholder-shown {
   --glass-shadow: 0 8px 24px rgb(0 0 0 / 0.18), 0 2px 6px rgb(0 0 0 / 0.1), inset 0 1px 0 rgb(255 255 255 / 0.8);
 }
 
+.oled .glass-pill {
+  --glass-bg: linear-gradient(rgb(16 16 16 / 0.94), rgb(2 2 2 / 0.97));
+  --glass-shadow: 0 8px 24px rgb(0 0 0 / 0.68), 0 2px 6px rgb(0 0 0 / 0.48), inset 0 1px 0 rgb(255 255 255 / 0.1);
+}
+
 /* Glass with a light of its own behind it, the way the music bar is lit by the
    cover of whatever is playing. That light lands on top of the tint rather than
    under it, so a panel wearing it reads brighter than everything it floats over.
@@ -655,6 +705,10 @@ textarea:placeholder-shown {
 
 .light .glass-lit {
   --glass-bg: rgb(255 255 255 / 0.72);
+}
+
+.oled .glass-lit {
+  --glass-bg: rgb(0 0 0 / 0.72);
 }
 
 /* A word from the app arriving under the header. It comes in from the right and
