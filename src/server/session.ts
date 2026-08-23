@@ -2169,7 +2169,12 @@ export class CrewSession {
     const parent = this.askingThread(promptId)
     const child = this.threads.get(threadId)
     if (!parent || !child) return null
-    return child.parentThreadId === parent.id ? child : null
+    let at: Thread | undefined = child
+    while (at?.parentThreadId) {
+      if (at.parentThreadId === parent.id) return child
+      at = this.threads.get(at.parentThreadId)
+    }
+    return null
   }
 
   subagentSpawn(
@@ -2199,6 +2204,19 @@ export class CrewSession {
   subagentWait(promptId: string, threadIds: string[], ms: number): Promise<{ finished: string[]; pending: string[] }> {
     const mine = threadIds.filter(id => this.helperOf(promptId, id))
     return this.waitSubagents(mine, ms)
+  }
+
+  subagentList(promptId: string): ReturnType<CrewSession['subagentState']>[] | null {
+    const parent = this.askingThread(promptId)
+    if (!parent) return null
+    return [...this.threads.values()]
+      .filter(thread => this.helperOf(promptId, thread.id))
+      .map(thread => this.subagentState(thread.id))
+      .filter(state => state !== null)
+  }
+
+  subagentRestart(promptId: string, threadId: string): boolean {
+    return this.helperOf(promptId, threadId) ? this.restartSubagent(threadId) : false
   }
 
   // The board is a thread, so what a call writes is decided by the run asking
@@ -2477,7 +2495,39 @@ export class CrewSession {
       name: parentAgent?.label ?? SYSTEM_AUTHOR_NAME,
       connections: new Set()
     }
+    thread.notify = true
     this.enqueuePrompt(agent, asker, trimmed, threadId, [], { messageId: randomUUID(), mentions: [agent.id] })
+    return true
+  }
+
+  restartSubagent(threadId: string): boolean {
+    const thread = this.threads.get(threadId)
+    if (!thread?.parentThreadId || this.subagentRunning(thread)) return false
+    const events = this.eventsOf(threadId)
+    const end = [...events]
+      .reverse()
+      .find(
+        (event): event is Extract<SessionEvent, { kind: 'agent.end' }> =>
+          event.kind === 'agent.end' && event.threadId === threadId
+      )
+    if (!end || end.ok) return false
+    const start = events.find(
+      (event): event is Extract<SessionEvent, { kind: 'agent.start' }> =>
+        event.kind === 'agent.start' && event.promptId === end.promptId
+    )
+    const agent = this.agents.get(thread.agentId)
+    if (!start?.promptText.trim() || !agent || (!agent.runner && !agent.dropTimer)) return false
+    const parentAgent = this.parentAgentOf(thread)
+    const asker: Member = {
+      id: parentAgent?.id ?? SYSTEM_AUTHOR_ID,
+      name: parentAgent?.label ?? SYSTEM_AUTHOR_NAME,
+      connections: new Set()
+    }
+    thread.notify = true
+    this.enqueuePrompt(agent, asker, start.promptText, threadId, [], {
+      messageId: randomUUID(),
+      mentions: [agent.id]
+    })
     return true
   }
 
@@ -2525,13 +2575,14 @@ export class CrewSession {
     for (const [promptId, run] of this.agents.get(thread.agentId)?.runs ?? []) {
       if (this.prompts.get(promptId)?.threadId === threadId) tokens += run.tokens
     }
+    const active = thread.running ? this.agents.get(thread.agentId)?.runs.get(thread.running) : undefined
     return {
       id: threadId,
       subject: thread.subject ?? thread.title,
       helper: thread.helper ?? '',
       agent: thread.agentLabel,
       state: working ? 'working' : end?.ok === false ? 'failed' : 'done',
-      ms: Math.max(0, Date.now() - (thread.startedAt ?? Date.now())),
+      ms: working ? (active ? Math.max(0, Date.now() - active.startedAt) : 0) : (end?.ms ?? 0),
       said: working ? '' : (end?.text ?? end?.error ?? ''),
       tokens,
       files: [...files]
@@ -2575,63 +2626,115 @@ export class CrewSession {
   // A helper has gone quiet with nothing behind it. Its answer is held for a
   // breath so a run of them arriving together is one interruption, then handed
   // to whatever the parent is doing.
-  private subagentReturn(thread: Thread, ok: boolean, text: string, stopped = false): void {
+  private parentAgentOf(thread: Thread): AgentState | undefined {
+    const start = thread.parentPromptId
+      ? this.eventsOf(thread.parentThreadId ?? '').find(
+          (event): event is Extract<SessionEvent, { kind: 'agent.start' }> =>
+            event.kind === 'agent.start' && event.promptId === thread.parentPromptId
+        )
+      : undefined
+    return this.agents.get(start?.agentId ?? this.threads.get(thread.parentThreadId ?? '')?.agentId ?? '')
+  }
+
+  private returnKey(parentThreadId: string, agentId: string): string {
+    return `${parentThreadId}\n${agentId}`
+  }
+
+  private holdSubagentReturn(
+    thread: Thread,
+    ended: Extract<SessionEvent, { kind: 'subagent.ended' }>,
+    text: string
+  ): void {
+    const parentId = thread.parentThreadId
+    const target = this.parentAgentOf(thread)
+    if (!parentId || !target || !ended.promptId) return
+    const key = this.returnKey(parentId, target.id)
+    const item = {
+      endedId: ended.id,
+      promptId: ended.promptId,
+      threadId: thread.id,
+      name: thread.helper ?? thread.agentLabel,
+      subject: thread.subject ?? thread.title,
+      ok: ended.ok,
+      ms: ended.ms,
+      text
+    }
+    const held = this.returns.get(key)
+    if (held) {
+      if (!held.items.some(one => one.endedId === ended.id)) held.items.push(item)
+      return
+    }
+    const timer = setTimeout(() => this.deliverReturns(key), RETURN_COALESCE_MS)
+    timer.unref?.()
+    this.returns.set(key, { timer, parentThreadId: parentId, agentId: target.id, items: [item] })
+  }
+
+  private subagentReturn(
+    thread: Thread,
+    promptId: string,
+    ok: boolean,
+    text: string,
+    stopped = false,
+    elapsed?: number
+  ): void {
     const parentId = thread.parentThreadId
     if (!parentId) return
     for (const wait of [...this.waits]) {
       if (wait.threadIds.includes(thread.id)) wait.settle()
     }
-    const ms = Math.max(0, Date.now() - (thread.startedAt ?? Date.now()))
-    this.emit({
+    const ms = elapsed ?? Math.max(0, Date.now() - (thread.startedAt ?? Date.now()))
+    const ended: Extract<SessionEvent, { kind: 'subagent.ended' }> = {
       id: randomUUID(),
       ts: Date.now(),
       kind: 'subagent.ended',
       threadId: thread.id,
       parentThreadId: parentId,
+      promptId,
       ok,
       ms,
       stopped: stopped || undefined
-    })
+    }
+    this.emit(ended)
     if (thread.notify === false) return
     const woken = this.wakes.get(parentId) ?? 0
     if (woken >= WAKE_LIMIT) return
-    const held = this.returns.get(parentId)
-    const item: SubagentReturn = {
-      name: thread.helper ?? thread.agentLabel,
-      subject: thread.subject ?? thread.title,
-      ok,
-      ms,
-      text
-    }
-    if (held) {
-      held.items.push(item)
-      return
-    }
-    const timer = setTimeout(() => this.deliverReturns(parentId), RETURN_COALESCE_MS)
-    timer.unref?.()
-    this.returns.set(parentId, { timer, items: [item] })
+    this.holdSubagentReturn(thread, ended, text)
   }
 
-  private deliverReturns(parentThreadId: string): void {
-    const held = this.returns.get(parentThreadId)
-    this.returns.delete(parentThreadId)
-    const parent = this.threads.get(parentThreadId)
-    if (!held || !parent) return
-    this.wakes.set(parentThreadId, (this.wakes.get(parentThreadId) ?? 0) + 1)
-    const stillOut = this.subagentThreads(parentThreadId)
+  private deliverReturns(key: string): void {
+    const held = this.returns.get(key)
+    if (!held) return
+    const parent = this.threads.get(held.parentThreadId)
+    const agent = this.agents.get(held.agentId)
+    if (!parent || !agent) {
+      this.returns.delete(key)
+      return
+    }
+    if (!agent.runner && !agent.dropTimer) return
+    this.returns.delete(key)
+    this.wakes.set(held.parentThreadId, (this.wakes.get(held.parentThreadId) ?? 0) + 1)
+    const stillOut = this.subagentThreads(held.parentThreadId)
       .filter(thread => this.subagentRunning(thread))
       .map(thread => thread.helper ?? thread.agentLabel)
     const text = returnText(held.items, stillOut)
-    const agent = this.agents.get(parent.agentId)
-    if (!agent?.runner && !agent?.dropTimer) return
     const steer: PendingSteer = {
       messageId: randomUUID(),
       text,
       byName: SYSTEM_AUTHOR_NAME,
       authorId: SYSTEM_AUTHOR_ID,
-      threadId: parentThreadId,
+      threadId: held.parentThreadId,
       attachments: [],
       silent: true
+    }
+    for (const item of held.items) {
+      this.emit({
+        id: randomUUID(),
+        ts: Date.now(),
+        kind: 'subagent.returned',
+        threadId: item.threadId,
+        parentThreadId: held.parentThreadId,
+        endedId: item.endedId
+      })
     }
     const running = parent.running ? this.prompts.get(parent.running)?.agentId : undefined
     if (agent.runner && parent.running && running === agent.id && agent.steerable) {
@@ -2639,6 +2742,12 @@ export class CrewSession {
       return
     }
     this.requeueSteer(agent, steer)
+  }
+
+  private deliverReturnsFor(agentId: string): void {
+    for (const [key, held] of this.returns) {
+      if (held.agentId === agentId) this.deliverReturns(key)
+    }
   }
 
   // 'Do' is the moment a todo becomes real work: a thread starts with the
