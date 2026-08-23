@@ -182,7 +182,7 @@ describe('subagents', () => {
   it('gathers a run of helpers finishing together into one interruption', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
-    const secondRunner = await connectRunner(20, 20)
+    await connectRunner(20, 20)
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === fake)
 
     const parent = await openParent(ui, fake)
@@ -211,7 +211,7 @@ describe('subagents', () => {
   it('refuses a spawn that names a run nobody is doing, and one with nothing to do', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
-    await connectRunner(20, 20)
+    const secondRunner = await connectRunner(20, 20)
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === fake)
 
     const dead = await post('/agents/spawn', {
