@@ -5,7 +5,7 @@ import PresenceList from '../components/PresenceList'
 import { CheckCircleGlyph, LeaveGlyph, WindowGlyph } from '../icons'
 import { showTheme } from '../state/theme'
 
-const LIST = 400
+const LIST = 388
 
 function Nothing({ children }: { children: string }): ReactElement {
   return <p className="px-3 py-4 text-sm text-fg/45 text-center">{children}</p>

@@ -92,20 +92,18 @@ describe('tray panel', () => {
   it('badges what is waiting and offers it as a way in', () => {
     show({ sharing: true, known: true, waiting: 3 })
 
-    expect(screen.getByText('3')).toBeTruthy()
     expect(screen.getByText('Review 3 tasks')).toBeTruthy()
   })
 
-  it('names a single task in the singular and stops the badge at ninety nine', () => {
+  it('names a single task in the singular and keeps the exact count', () => {
     show({ sharing: true, known: true, waiting: 1 })
     expect(screen.getByText('Review 1 task')).toBeTruthy()
 
     show({ sharing: true, known: true, waiting: 12 })
-    expect(screen.getByText('12')).toBeTruthy()
     expect(screen.getByText('Review 12 tasks')).toBeTruthy()
 
     show({ sharing: true, known: true, waiting: 140 })
-    expect(screen.getByText('99+')).toBeTruthy()
+    expect(screen.getByText('Review 140 tasks')).toBeTruthy()
   })
 
   it('leaves the badge off when nothing is waiting', () => {
@@ -113,6 +111,15 @@ describe('tray panel', () => {
 
     expect(screen.queryByText('0')).toBeNull()
     expect(screen.queryByText(/Review \d+ tasks?/)).toBeNull()
+  })
+
+  it('clips the roster sideways and replaces the system focus outline with a Crew row', () => {
+    show({ sharing: true, known: true, here: [person('m1', 'Ali')] })
+
+    const panel = screen.getByText('Open Crew').closest('div[class*="overflow-x-hidden"]') as HTMLElement
+    const roster = screen.getByText('Online').parentElement?.parentElement as HTMLElement
+    expect(panel.className).toContain('[&_button]:focus-visible:outline-none')
+    expect(roster.className).toContain('overflow-x-hidden')
   })
 
   it('opens the app from the panel', () => {
