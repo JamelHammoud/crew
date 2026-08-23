@@ -3,12 +3,14 @@ import { cleanup, createEvent, fireEvent, render, screen } from '@testing-librar
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import ThreadRow from '../src/renderer/src/components/sidebar/ThreadRow'
-import { ownsMenu } from '../src/renderer/src/components/threadMenu'
+import { ownsMenu, useThreadMenu } from '../src/renderer/src/components/threadMenu'
 import { CrewSocket } from '../src/renderer/src/api/ws'
 import { useCrew, type ThreadMeta } from '../src/renderer/src/state/store'
+import { setWindowPinned } from '../src/renderer/src/state/windowShape'
 import type { LiveThread } from '../src/shared/threads'
 
 const popOutThread = vi.fn()
+const pinWindow = vi.fn(async (pinned: boolean) => pinned)
 const onOpen = vi.fn()
 const onOpenToRight = vi.fn()
 const written = vi.fn(async () => {})
@@ -48,15 +50,20 @@ const said = (): string[] =>
 
 beforeEach(() => {
   popOutThread.mockClear()
+  pinWindow.mockClear()
   onOpen.mockClear()
   onOpenToRight.mockClear()
   written.mockClear()
   sent.mockClear()
-  window.crew = { popOutThread } as unknown as CrewBridge
+  window.crew = { popOutThread, setWindowPinned: pinWindow } as unknown as CrewBridge
+  setWindowPinned(false)
   useCrew.setState({ openThreadIds: ['thread-1'], openThreadId: 'thread-1', threads: meta('open') })
 })
 
-afterEach(cleanup)
+afterEach(() => {
+  cleanup()
+  setWindowPinned(false)
+})
 
 describe('the right click on a thread in the rail', () => {
   it('opens one to the right rather than in place of it', () => {
@@ -174,5 +181,36 @@ describe('a right click on the thread itself', () => {
     expect(ownsMenu(under('<a href="https://crew.dev"><span>crew</span></a>').firstElementChild)).toBe(true)
     expect(ownsMenu(under('<p>what an agent said</p>'))).toBe(false)
     expect(ownsMenu(null)).toBe(false)
+  })
+
+  function Background({ alone = false }: { alone?: boolean }) {
+    const openMenu = useThreadMenu({ threadId: 'thread-2', opening: !alone, onOpen })
+    return (
+      <div>
+        <div onContextMenu={openMenu.onContextMenu}>Chat background</div>
+        {openMenu.menu}
+      </div>
+    )
+  }
+
+  it('keeps the window on top from the chat background and releases it there too', async () => {
+    render(<Background />)
+
+    fireEvent.contextMenu(screen.getByText('Chat background'))
+    expect(screen.getByText('Open in window')).toBeTruthy()
+    fireEvent.click(screen.getByText('Keep on top'))
+    await vi.waitFor(() => expect(pinWindow).toHaveBeenCalledWith(true))
+
+    fireEvent.contextMenu(screen.getByText('Chat background'))
+    fireEvent.click(screen.getByText('Stop keeping on top'))
+    await vi.waitFor(() => expect(pinWindow).toHaveBeenCalledWith(false))
+  })
+
+  it('keeps the pin action on a popped-out thread without offering to open another window', () => {
+    render(<Background alone />)
+
+    fireEvent.contextMenu(screen.getByText('Chat background'))
+    expect(screen.getByText('Keep on top')).toBeTruthy()
+    expect(screen.queryByText('Open in window')).toBeNull()
   })
 })
