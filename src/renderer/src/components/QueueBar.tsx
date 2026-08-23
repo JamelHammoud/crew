@@ -20,6 +20,7 @@ export interface QueuedMessage {
   promptId: string
   author: string
   self: boolean
+  sendable: boolean
   text: string
   agentLabel?: string
   attachments?: Attachment[]
@@ -113,16 +114,18 @@ function QueueRow({
       {item.agentLabel && <Pill>{item.agentLabel}</Pill>}
         {item.self && (
           <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
-            <Tooltip label="Send now">
-              <button
-                type="button"
-                onClick={onSend}
-                aria-label="Send queued message now"
-                className="flex h-7 w-7 items-center justify-center rounded-full text-fg-muted transition-colors hover:bg-fg/[0.08] hover:text-fg"
-              >
-                <SendGlyph className="h-3.5 w-3.5" />
-              </button>
-            </Tooltip>
+            {item.sendable && (
+              <Tooltip label="Send now">
+                <button
+                  type="button"
+                  onClick={onSend}
+                  aria-label="Send queued message now"
+                  className="flex h-7 w-7 items-center justify-center rounded-full text-fg-muted transition-colors hover:bg-fg/[0.08] hover:text-fg"
+                >
+                  <SendGlyph className="h-3.5 w-3.5" />
+                </button>
+              </Tooltip>
+            )}
             <Tooltip label="Move earlier">
               <button
                 type="button"

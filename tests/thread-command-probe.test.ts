@@ -353,6 +353,7 @@ describe('queued message cards', () => {
             promptId: 'p1',
             author: 'Jamel',
             self: true,
+            sendable: true,
             text: 'first line\nsecond line',
             attachments: [
               {
@@ -370,7 +371,7 @@ describe('queued message cards', () => {
               text: 'Try the other wall'
             }
           },
-          { promptId: 'p2', author: 'Jamel', self: true, text: 'after that' }
+          { promptId: 'p2', author: 'Jamel', self: true, sendable: true, text: 'after that' }
         ],
         onEdit: edit,
         onRemove: vi.fn(),

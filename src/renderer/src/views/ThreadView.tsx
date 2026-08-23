@@ -205,13 +205,14 @@ export default function ThreadView({
           promptId: item.promptId,
           author: item.authorName,
           self: item.authorId === selfId,
+          sendable: Boolean(activePromptId) && steerable && item.agentId === runningAgentId,
           text: item.text,
           agentLabel: item.agentId !== thread?.agentId ? label : undefined,
           attachments: item.attachments,
           replyTo: item.replyTo
         }
       }),
-    [agents, queueItems, selfId, thread?.agentId]
+    [activePromptId, agents, queueItems, runningAgentId, selfId, steerable, thread?.agentId]
   )
   const startedAt = runningStart?.ts
   const diffTotals = useMemo(() => {
