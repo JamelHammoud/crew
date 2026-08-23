@@ -18,7 +18,7 @@ export default function CodeRows({
 }) {
   const tokensFor = useHighlight(path, rows, dirty ? 150 : 0)
 
-  const gutter = (text: string | number, tone: string, tint: string) => (
+  const lineNumber = (text: string | number, tone: string, tint: string) => (
     <span
       data-code-gutter
       style={{ minWidth: `calc(2rem + ${gutter})` }}
@@ -35,7 +35,7 @@ export default function CodeRows({
         if (row.line === null) {
           return (
             <div key={index} data-row={index} data-gone className="flex bg-danger/10">
-              {gutter('−', 'text-danger/60', 'bg-danger/10')}
+              {lineNumber('−', 'text-danger/60', 'bg-danger/10')}
               <span className="whitespace-pre text-fg-muted pr-4">
                 <LineText row={row} tokens={undefined} tint="bg-danger/25" />
               </span>
@@ -52,7 +52,7 @@ export default function CodeRows({
               row.changed ? 'bg-positive/10' : marked ? 'bg-fg/[0.07]' : activeRow === index ? 'bg-fg/[0.035]' : ''
             }`}
           >
-            {gutter(
+            {lineNumber(
               row.line,
               `tabular-nums ${row.changed || marked ? 'text-fg' : 'text-fg-faint'}`,
               row.changed ? 'bg-positive/10' : marked ? 'bg-fg/[0.07]' : activeRow === index ? 'bg-fg/[0.035]' : ''
