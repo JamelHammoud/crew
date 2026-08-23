@@ -119,6 +119,15 @@ const drag = (item: HTMLElement, from: number, by: number) => {
 }
 
 describe('the tab strip', () => {
+  it('puts its resting inset inside the scroller so tabs can reach the Browser edge', () => {
+    openTwo()
+    const { container } = render(createElement(BrowserPanel))
+    const row = rowOf(container) as HTMLElement
+
+    expect(row.className).toContain('-ml-4')
+    expect(row.className).toContain('pl-4')
+  })
+
   it('brings a newly opened tab into view', () => {
     laidOutRow()
     openFour()

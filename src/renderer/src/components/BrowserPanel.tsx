@@ -170,7 +170,7 @@ export default function BrowserPanel() {
             row.ref(node)
             strip.current = node
           }}
-          className="scroll-fade-x app-no-drag flex-1 min-w-0 flex items-center gap-1.5 overflow-x-auto overflow-y-hidden no-scrollbar"
+          className="scroll-fade-x app-no-drag -ml-4 pl-4 flex-1 min-w-0 flex items-center gap-1.5 overflow-x-auto overflow-y-hidden no-scrollbar"
         >
           {tabs.length === 0 && <StartPill />}
           {tabs.map(tab => (
