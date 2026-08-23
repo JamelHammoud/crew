@@ -2,6 +2,7 @@ import { attachmentUrl, fileSize, isImageType, type Attachment } from '../../../
 import { useBrowser } from '../state/browser'
 import { useCrew } from '../state/store'
 import { markFor } from './attachmentMark'
+import { useImageMenu } from './imageMenu'
 import Tooltip from './Tooltip'
 
 const open = (attachment: Attachment, httpBase: string): void =>
@@ -26,6 +27,27 @@ function FileRow({ attachment, httpBase }: { attachment: Attachment; httpBase: s
   )
 }
 
+function ImageAttachment({ attachment, httpBase }: { attachment: Attachment; httpBase: string }) {
+  const src = attachmentUrl(httpBase, attachment)
+  const { menuOpen, menu, onContextMenu } = useImageMenu(src)
+  return (
+    <Tooltip label={attachment.name} disabled={menuOpen}>
+      <button
+        onClick={() => open(attachment, httpBase)}
+        onContextMenu={onContextMenu}
+        aria-label={`Open ${attachment.name}`}
+      >
+        <img
+          src={src}
+          alt={attachment.name}
+          className="max-h-64 rounded-xl border border-fg/10 transition-opacity hover:opacity-90"
+        />
+      </button>
+      {menu}
+    </Tooltip>
+  )
+}
+
 export default function MessageAttachments({ attachments }: { attachments: Attachment[] }) {
   const httpBase = useCrew(s => s.httpBase)
   if (attachments.length === 0) return null
@@ -36,15 +58,7 @@ export default function MessageAttachments({ attachments }: { attachments: Attac
       {images.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {images.map(attachment => (
-            <Tooltip key={attachment.id} label={attachment.name}>
-              <button onClick={() => open(attachment, httpBase)} aria-label={`Open ${attachment.name}`}>
-                <img
-                  src={attachmentUrl(httpBase, attachment)}
-                  alt={attachment.name}
-                  className="max-h-64 rounded-xl border border-fg/10 transition-opacity hover:opacity-90"
-                />
-              </button>
-            </Tooltip>
+            <ImageAttachment key={attachment.id} attachment={attachment} httpBase={httpBase} />
           ))}
         </div>
       )}

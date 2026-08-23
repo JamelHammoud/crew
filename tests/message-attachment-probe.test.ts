@@ -5,8 +5,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Attachment } from '../src/shared/attachments'
 
 const openExternal = vi.fn()
+const copyImage = vi.fn()
 
-window.crew = { openExternal } as unknown as typeof window.crew
+window.crew = { openExternal, copyImage } as unknown as typeof window.crew
 
 const { useBrowser } = await import('../src/renderer/src/state/browser')
 const { useCrew } = await import('../src/renderer/src/state/store')
@@ -42,6 +43,7 @@ const draw = (attachments: Attachment[]) => render(createElement(MessageAttachme
 
 beforeEach(() => {
   openExternal.mockClear()
+  copyImage.mockReset().mockResolvedValue(true)
   useBrowser.setState({ tabs: [], activeTabId: null })
   useCrew.setState({ httpBase: BASE })
 })
@@ -102,6 +104,20 @@ describe('a message carrying a picture and a file', () => {
       initialUrl: `${BASE}/attachments/a.png`,
       mime: 'image/png'
     })
+  })
+
+  it('copies a picture from its preview without opening it', () => {
+    const { getByLabelText, getByText } = draw([picture])
+    const preview = getByLabelText('Open balance.png')
+    const parentMenu = vi.fn()
+    preview.parentElement!.addEventListener('contextmenu', parentMenu)
+
+    fireEvent.contextMenu(preview, { clientX: 44, clientY: 72 })
+    fireEvent.click(getByText('Copy image'))
+
+    expect(copyImage).toHaveBeenCalledWith(`${BASE}/attachments/a.png`)
+    expect(useBrowser.getState().tabs).toHaveLength(0)
+    expect(parentMenu).not.toHaveBeenCalled()
   })
 
   it('is nothing at all when the message carries nothing', () => {
