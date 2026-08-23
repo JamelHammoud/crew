@@ -48,7 +48,7 @@ function PageRow({ shown, linked, agentId }: { shown: Shown; linked?: boolean; a
         {many && <Chevron open={open} />}
       </button>
       {many && open && (
-        <div className="mt-1 mb-1.5 pl-7 flex flex-col items-start gap-1">
+        <div className="mt-1 mb-1.5 pl-7 flex flex-col items-start gap-1 text-sm">
           {pages.map(page => (
             <ShownLink key={page} page={page} />
           ))}
