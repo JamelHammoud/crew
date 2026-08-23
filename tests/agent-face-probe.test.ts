@@ -117,14 +117,30 @@ describe('an agent face', () => {
     }
   })
 
-  it('forms Designing as a rounded handle and brush tip', () => {
+  it('forms Designing as a rounded handle, brush tip and painted stroke', () => {
     const object = face({ activity: 'designing' }).querySelector('[data-object="designing"]') as HTMLElement
     const pieces = object.querySelectorAll('mask path')
 
-    expect(pieces).toHaveLength(2)
+    expect(pieces).toHaveLength(3)
     expect(pieces[0].getAttribute('d')).toMatch(/^M61 5 C69 3/)
     expect(pieces[1].getAttribute('d')).toMatch(/^M38 66 C47 64/)
+    expect(object.querySelector('[data-part="paint-stroke"]')).not.toBeNull()
     expect(object.querySelector('.agent-pet-eyes')).toBeNull()
+  })
+
+  it('builds Thinking from an animated cloud and three sequential dots', () => {
+    const object = face({ activity: 'thinking' }).querySelector('[data-object="thinking"]') as HTMLElement
+
+    expect(object.querySelector('[data-part="thought-cloud"]')).not.toBeNull()
+    expect(object.querySelectorAll('[data-part^="thought-dot-"]')).toHaveLength(3)
+  })
+
+  it('builds Writing from a moving pen and a drawn stroke', () => {
+    const object = face({ activity: 'editing' }).querySelector('[data-object="editing"]') as HTMLElement
+
+    expect(object.querySelector('[data-part="writing-pen"]')).not.toBeNull()
+    expect(object.querySelector('[data-part="writing-stroke"]')).not.toBeNull()
+    expect(object.querySelector('[data-part="pencil"]')).toBeNull()
   })
 
   it('gives every activity a moving part inside its silhouette', () => {
