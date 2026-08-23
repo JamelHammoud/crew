@@ -17,9 +17,9 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
           <circle data-part="thought-lobe-six" cx="50" cy="49" r="14.5" />
           <circle data-part="thought-lobe-seven" cx="50" cy="49" r="14.5" />
         </g>
-        <circle data-part="thought-dot-one" cx="31" cy="49" r="7.5" fill="#000" />
-        <circle data-part="thought-dot-two" cx="50" cy="49" r="7.5" fill="#000" />
-        <circle data-part="thought-dot-three" cx="69" cy="49" r="7.5" fill="#000" />
+        <circle data-part="thought-dot-one" cx="31" cy="49" r="6.5" fill="#000" />
+        <circle data-part="thought-dot-two" cx="50" cy="49" r="6.5" fill="#000" />
+        <circle data-part="thought-dot-three" cx="69" cy="49" r="6.5" fill="#000" />
       </>
     )
   }
