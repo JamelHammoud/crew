@@ -17,7 +17,21 @@ export const EYE_HEIGHT = 22
 export const MIN_EYE_GAP = 1.2
 export const FIELD_LIGHT = 1
 
-export const PET_SHAPE_KINDS = ['circle', 'teardrop', 'cloud', 'square', 'egg', 'capsule', 'triangle'] as const
+export const PET_SHAPE_KINDS = [
+  'circle',
+  'teardrop',
+  'cloud',
+  'square',
+  'egg',
+  'capsule',
+  'triangle',
+  'pentagon',
+  'hexagon',
+  'tall-hexagon',
+  'octagon',
+  'decagon',
+  'bean'
+] as const
 
 export type PetShapeKind = (typeof PET_SHAPE_KINDS)[number]
 
@@ -46,7 +60,13 @@ const EYE_ROOMS: Record<PetShapeKind, EyeRoom> = {
   square: { left: 16, right: 84, top: 14, bottom: 72 },
   egg: { left: 21, right: 79, top: 16, bottom: 70 },
   capsule: { left: 14, right: 86, top: 28, bottom: 72 },
-  triangle: { left: 29, right: 71, top: 30, bottom: 70 }
+  triangle: { left: 29, right: 71, top: 30, bottom: 70 },
+  pentagon: { left: 25, right: 75, top: 27, bottom: 70 },
+  hexagon: { left: 21, right: 79, top: 22, bottom: 71 },
+  'tall-hexagon': { left: 26, right: 74, top: 24, bottom: 70 },
+  octagon: { left: 20, right: 80, top: 20, bottom: 72 },
+  decagon: { left: 19, right: 81, top: 19, bottom: 72 },
+  bean: { left: 23, right: 79, top: 23, bottom: 70 }
 }
 
 const EYE_SCALES: Record<PetShapeKind, number> = {
@@ -56,7 +76,13 @@ const EYE_SCALES: Record<PetShapeKind, number> = {
   square: 1,
   egg: 1,
   capsule: 0.92,
-  triangle: 0.86
+  triangle: 0.86,
+  pentagon: 0.9,
+  hexagon: 0.96,
+  'tall-hexagon': 0.88,
+  octagon: 1,
+  decagon: 1,
+  bean: 0.96
 }
 
 export interface EyeSize {
@@ -83,6 +109,39 @@ const eyeExtents = (size: EyeSize, tilt: number): { x: number; y: number } => {
 
 const rounded = (value: number): number => Math.round(value * 1000) / 1000
 
+type Point = [number, number]
+
+const toward = (from: Point, to: Point, distance: number): Point => {
+  const length = Math.hypot(to[0] - from[0], to[1] - from[1]) || 1
+  const step = Math.min(distance, length * 0.32) / length
+  return [from[0] + (to[0] - from[0]) * step, from[1] + (to[1] - from[1]) * step]
+}
+
+function roundedPolygon(
+  sides: number,
+  box: number,
+  rotation: number,
+  radiusX: number,
+  radiusY: number,
+  corner: number
+): string {
+  const unit = box / PET_GRID
+  const points: Point[] = Array.from({ length: sides }, (_, index) => {
+    const angle = rotation + (index / sides) * Math.PI * 2
+    return [(50 + Math.cos(angle) * radiusX) * unit, (51 + Math.sin(angle) * radiusY) * unit]
+  })
+  const parts: string[] = []
+  for (let index = 0; index < sides; index++) {
+    const here = points[index]
+    const before = toward(here, points[(index + sides - 1) % sides], corner * unit)
+    const after = toward(here, points[(index + 1) % sides], corner * unit)
+    parts.push(
+      `${index === 0 ? 'M' : 'L'} ${before.map(rounded).join(' ')} Q ${here.map(rounded).join(' ')} ${after.map(rounded).join(' ')}`
+    )
+  }
+  return `${parts.join(' ')} Z`
+}
+
 function bodyFor(kind: PetShapeKind, variant: number, box: number): string {
   const unit = box / PET_GRID
   const at = (value: number): number => rounded(value * unit)
@@ -107,7 +166,15 @@ function bodyFor(kind: PetShapeKind, variant: number, box: number): string {
   if (kind === 'capsule') {
     return `M ${at(28)} ${at(27 - v)} L ${at(72)} ${at(28)} C ${at(88)} ${at(28)} ${at(94)} ${at(38)} ${at(93)} ${at(51)} C ${at(92)} ${at(65)} ${at(84)} ${at(73 + v)} ${at(70)} ${at(74)} L ${at(27)} ${at(73)} C ${at(13)} ${at(72)} ${at(6)} ${at(64)} ${at(7)} ${at(50)} C ${at(8)} ${at(36)} ${at(14)} ${at(28)} ${at(28)} ${at(27 - v)} Z`
   }
-  return `M ${at(45)} ${at(15)} C ${at(47)} ${at(9)} ${at(53)} ${at(9)} ${at(56)} ${at(15)} L ${at(90)} ${at(70 + v)} C ${at(96)} ${at(82)} ${at(87)} ${at(91)} ${at(74)} ${at(91)} L ${at(26)} ${at(91)} C ${at(13)} ${at(91)} ${at(4)} ${at(82)} ${at(10)} ${at(70 + v)} L ${at(41)} ${at(20)} C ${at(42)} ${at(18)} ${at(43)} ${at(16)} ${at(45)} ${at(15)} Z`
+  if (kind === 'triangle') {
+    return `M ${at(45)} ${at(15)} C ${at(47)} ${at(9)} ${at(53)} ${at(9)} ${at(56)} ${at(15)} L ${at(90)} ${at(70 + v)} C ${at(96)} ${at(82)} ${at(87)} ${at(91)} ${at(74)} ${at(91)} L ${at(26)} ${at(91)} C ${at(13)} ${at(91)} ${at(4)} ${at(82)} ${at(10)} ${at(70 + v)} L ${at(41)} ${at(20)} C ${at(42)} ${at(18)} ${at(43)} ${at(16)} ${at(45)} ${at(15)} Z`
+  }
+  if (kind === 'pentagon') return roundedPolygon(5, box, -Math.PI / 2, 42 + v, 42, 9)
+  if (kind === 'hexagon') return roundedPolygon(6, box, 0, 43, 40 + v, 8)
+  if (kind === 'tall-hexagon') return roundedPolygon(6, box, -Math.PI / 2, 37 + v, 44, 8)
+  if (kind === 'octagon') return roundedPolygon(8, box, Math.PI / 8, 43 + v, 42, 6.5)
+  if (kind === 'decagon') return roundedPolygon(10, box, -Math.PI / 2, 43, 43 + v, 5.5)
+  return `M ${at(21)} ${at(73)} C ${at(8)} ${at(61)} ${at(15)} ${at(39)} ${at(30)} ${at(33)} C ${at(36)} ${at(12)} ${at(64 + v)} ${at(9)} ${at(72)} ${at(29)} C ${at(94)} ${at(34)} ${at(96)} ${at(64)} ${at(78)} ${at(73)} C ${at(68)} ${at(91)} ${at(42)} ${at(90)} ${at(34)} ${at(78)} C ${at(29)} ${at(80)} ${at(25)} ${at(78)} ${at(21)} ${at(73)} Z`
 }
 
 export function petPath(pet: Pick<Pet, 'kind' | 'variant'>, box: number = PET_GRID): string {

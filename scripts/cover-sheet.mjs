@@ -141,7 +141,7 @@ window.faces = () => {
   const { coverFor, paletteFor, petOf, eyeGapAt, eyeSize, FIELD_LIGHT, PET_GRID } = window.CrewCovers
   const SIZES = [20, 28, 40, 48]
   const COLS = 8
-  const ids = Array.from({ length: 48 }, (_, i) => 'every-' + i)
+  const ids = Array.from({ length: 96 }, (_, i) => 'every-' + i)
   const CELL = 162
   const TALL = 64
   const LABEL = 26
