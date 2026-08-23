@@ -108,7 +108,6 @@ export default function AgentIcon({
                 <GeneratedField seed={seed} box={box} light={FIELD_LIGHT} />
               </span>
             </foreignObject>
-            <path d={path} fill="none" stroke="currentColor" strokeOpacity={0.1} strokeWidth={Math.max(1, box / 20)} />
           </svg>
         </span>
       )}

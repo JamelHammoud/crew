@@ -98,18 +98,17 @@ describe('an agent face', () => {
     expect(pet.eyeY).toBeLessThan(PET_GRID / 2)
   })
 
-  it('stands the eyes and inset edge over the clipped field', () => {
+  it('stands the cut-out eyes over the clipped field without an edge or shadow', () => {
     const body = face().querySelector('.agent-pet-body') as HTMLElement
     const drawing = body.firstElementChild as SVGSVGElement
     const layers = Array.from(drawing.children)
     const field = layers.findIndex(one => one.tagName.toLowerCase() === 'foreignobject')
     const definitions = layers.findIndex(one => one.tagName.toLowerCase() === 'defs')
-    const edge = body.querySelector('svg > path') as SVGPathElement
 
     expect(definitions).toBe(0)
     expect(field).toBe(1)
-    expect(edge.getAttribute('fill')).toBe('none')
-    expect(edge.getAttribute('stroke-opacity')).toBe('0.1')
+    expect(drawing.querySelector(':scope > path')).toBeNull()
+    expect(body.className).not.toContain('shadow')
   })
 
   it('fills the silhouette from the palette its own id answers to', () => {
