@@ -29,6 +29,7 @@ if (typeof globalThis.CSS === 'undefined') {
 }
 
 const { default: Chat } = await import('../src/renderer/src/views/Chat')
+const { default: DesignChip } = await import('../src/renderer/src/components/DesignChip')
 const { useCrew } = await import('../src/renderer/src/state/store')
 
 const events: SessionEvent[] = [
@@ -126,5 +127,28 @@ describe('picking a board in the composer', () => {
     expect(screen.queryByText('#Plan')).toBeNull()
     fireEvent.keyDown(input, { key: 'Enter' })
     expect(input.value).toBe('#Landing ')
+  })
+})
+
+describe('a design API chip', () => {
+  it('opens the named board', () => {
+    boot(false)
+    cleanup()
+    render(
+      createElement(DesignChip, {
+        item: {
+          key: 'design',
+          ts: 1,
+          kind: 'design',
+          author: 'Bubbles',
+          self: false,
+          text: '',
+          streaming: false,
+          design: { boardId: 'landing-1abc', action: 'read' }
+        }
+      })
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Landing Read' }))
+    expect(useCrew.getState().designTarget).toBe('landing-1abc')
   })
 })

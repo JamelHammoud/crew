@@ -1,22 +1,7 @@
-// @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { createElement } from 'react'
-import { afterEach, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import type { AgentStep } from '../src/shared/llm'
 import type { SessionEvent } from '../src/shared/events'
-import DesignChip from '../src/renderer/src/components/DesignChip'
-import { buildThread, type ThreadItem } from '../src/renderer/src/components/thread'
-import { useCrew } from '../src/renderer/src/state/store'
-
-class TestResizeObserver {
-  observe(): void {}
-  unobserve(): void {}
-  disconnect(): void {}
-}
-
-global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
-
-afterEach(cleanup)
+import { buildThread } from '../src/renderer/src/components/thread'
 
 const run: SessionEvent = {
   id: 'run',
@@ -68,28 +53,5 @@ describe('design API work in a thread', () => {
     const items = buildThread([run], steps, 'jamel')
     expect(items.map(item => item.kind)).toEqual(['tool', 'tool'])
     expect(items.map(item => item.detail)).toEqual(steps.prompt.map(item => item.detail))
-  })
-
-  it('opens the named board from the chip', () => {
-    useCrew.setState({
-      boards: [{ id: 'landing-1abc', name: 'Landing' }],
-      designTarget: null,
-      docsTarget: null
-    })
-    const item: ThreadItem = {
-      key: 'design',
-      ts: 1,
-      kind: 'design',
-      author: 'Bubbles',
-      self: false,
-      text: '',
-      streaming: false,
-      design: { boardId: 'landing-1abc', action: 'read' }
-    }
-
-    render(createElement(DesignChip, { item }))
-    fireEvent.click(screen.getByRole('button', { name: 'Landing Read' }))
-
-    expect(useCrew.getState().designTarget).toBe('landing-1abc')
   })
 })
