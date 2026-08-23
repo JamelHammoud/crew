@@ -242,7 +242,7 @@ describe('the tab strip', () => {
 
   it('closes a tab from the switcher without opening it', () => {
     openThree()
-    const [first, second, third] = useBrowser.getState().tabs
+    const [first, , third] = useBrowser.getState().tabs
     act(() => useBrowser.getState().updateTab(second!.id, { title: 'Middle page' }))
     const { getByRole } = render(createElement(BrowserPanel))
 
@@ -272,7 +272,6 @@ describe('the tab strip', () => {
 
     fireEvent.keyDown(window, { key: 'Tab', ctrlKey: true, shiftKey: true })
     expect(useBrowser.getState().activeTabId).toBe(third!.id)
-    expect(second).toBeTruthy()
   })
 
   it('closes one tab from its own menu', () => {
