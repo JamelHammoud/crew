@@ -194,7 +194,7 @@ function DocCardContent({ page }: { page: string }) {
   )
 }
 
-function BoardCardContent({ boardId }: { boardId: string }) {
+export function BoardCardContent({ boardId }: { boardId: string }) {
   const board = useCrew(s => s.boards.find(b => b.id === boardId))
   if (!board) return null
   return (

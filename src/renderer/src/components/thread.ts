@@ -213,7 +213,7 @@ export interface Shown {
 export interface ThreadItem {
   key: string
   ts: number
-  kind: 'message' | 'reply' | 'note' | 'thinking' | 'tool' | 'subagent' | 'subagent-message' | 'page'
+  kind: 'message' | 'reply' | 'note' | 'thinking' | 'tool' | 'subagent' | 'subagent-message' | 'design' | 'page'
   author: string
   authorId?: string
   self: boolean
@@ -247,6 +247,7 @@ export interface ThreadItem {
   voice?: boolean
   runs?: SubagentRun[]
   helperThreadId?: string
+  design?: { boardId: string; action: 'read' | 'edit' }
   shown?: Shown
 }
 
@@ -304,6 +305,8 @@ export function sameItem(a: ThreadItem, b: ThreadItem): boolean {
     a.editedTs === b.editedTs &&
     a.voice === b.voice &&
     a.helperThreadId === b.helperThreadId &&
+    a.design?.boardId === b.design?.boardId &&
+    a.design?.action === b.design?.action &&
     a.files === b.files &&
     a.attachments === b.attachments &&
     a.mentionRefs === b.mentionRefs &&
@@ -385,6 +388,25 @@ export function describeStep(step: AgentStep | undefined): string {
 const stepItem = (step: AgentStep, author: string, promptId: string, live: boolean): ThreadItem | null => {
   const streaming = live && step.status === 'running'
   if (step.kind === 'tool' || step.kind === 'subagent') {
+    const design =
+      step.kind === 'tool' && toolAction(step.name).terminal
+        ? /https?:\/\/(?:127\.0\.0\.1|localhost):\d+\/[^/\s'"`]+\/design\/([a-z0-9][a-z0-9-]*)(\/ops)?(?=[?\s'"`]|$)/.exec(
+            step.detail ?? ''
+          )
+        : null
+    if (design) {
+      return {
+        key: `${promptId}:${step.id}`,
+        ts: step.ts,
+        kind: 'design',
+        author,
+        self: false,
+        text: '',
+        streaming,
+        promptId,
+        design: { boardId: design[1], action: design[2] ? 'edit' : 'read' }
+      }
+    }
     if (
       step.kind === 'tool' &&
       toolAction(step.name).terminal &&

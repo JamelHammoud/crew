@@ -1,6 +1,7 @@
 import { Fragment, memo, useMemo } from 'react'
 import ChatMessage from './ChatMessage'
 import DayDivider from './DayDivider'
+import DesignChip from './DesignChip'
 import PageRow from './PageRow'
 import StepGroup from './StepGroup'
 import StepRow from './StepRow'
@@ -50,6 +51,8 @@ function ThreadItems({
               <SubagentChips runs={item.runs ?? []} threadId={threadId} />
             ) : item.kind === 'subagent-message' ? (
               <SubagentMessage item={item} threadId={threadId} />
+            ) : item.kind === 'design' && item.design ? (
+              <DesignChip item={item} />
             ) : item.kind === 'page' && item.shown ? (
               <PageRow shown={item.shown} linked={follows(blocks[index - 1], block)} />
             ) : block.items.length > 1 ? (
