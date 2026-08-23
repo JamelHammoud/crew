@@ -112,6 +112,7 @@
     "avatar-look": "node scripts/avatar-look.mjs",
     "agent-modal-check": "node scripts/agent-modal-check.mjs",
     "card-look": "node scripts/card-look.mjs",
+    "tray-look": "node scripts/tray-look.mjs",
     "thread-card-look": "node scripts/thread-card-look.mjs",
     "plus-look": "node scripts/plus-look.mjs",
     "composer-look": "node scripts/composer-look.mjs",
