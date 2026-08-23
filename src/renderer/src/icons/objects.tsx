@@ -168,6 +168,25 @@ export const ToolboxGlyph = glyph(
   </>
 )
 
+// A server somebody stood up themselves, which is the one thing a provider with
+// no logo of its own ever is. Two bays rather than three: a rack is read off the
+// repetition rather than off the count, and three outlined bays at 16 close
+// their counters up into one block of hatching. The gap between them is 2.5,
+// which is the least two 2 strokes can stand apart and still be two. The lamp is
+// the one moment of character and it is filled, the same reason the sun in the
+// photo is: a ring that small closes into a smudge where a dot is a dot.
+const BAY = { x: 3, width: 18, height: 5.75, rx: 1.75 }
+const LAMP = { cx: 6.75, r: 1.2, fill: 'currentColor', stroke: 'none' }
+
+export const ServerGlyph = glyph(
+  <>
+    <rect {...BAY} y={4} />
+    <rect {...BAY} y={14.25} />
+    <circle {...LAMP} cy={6.875} />
+    <circle {...LAMP} cy={17.125} />
+  </>
+)
+
 export const PlugGlyph = glyph(
   <>
     <path d="M5.9 6.5H18.1A1.5 1.5 0 0 1 19.6 8V12.5A5 5 0 0 1 14.6 17.5H9.4A5 5 0 0 1 4.4 12.5V8A1.5 1.5 0 0 1 5.9 6.5Z" />
