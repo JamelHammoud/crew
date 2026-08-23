@@ -185,6 +185,58 @@ describe('an agent face', () => {
     expect(keyframes).toContain('translateY(-3%)')
   })
 
+  it('turns a page while Reading and carries the whole book in a continuous bob', () => {
+    const object = face({ activity: 'reading' }).querySelector('[data-object="reading"]') as HTMLElement
+    const rule = styles.split(".agent-icon .agent-activity-object[data-object='reading'] {")[1]?.split('}')[0] ?? ''
+
+    expect(object.querySelectorAll('[data-part^="page-"]')).toHaveLength(5)
+    expect(object.querySelector('[data-part="page-turn"]')).not.toBeNull()
+    expect(rule).toContain('2.9s ease-in-out')
+    expect(styles).toContain("[data-part='page-turn']")
+    expect(styles).toContain('@keyframes agent-page-turn')
+  })
+
+  it('sweeps a lens and its glint while Searching', () => {
+    const object = face({ activity: 'searching' }).querySelector('[data-object="searching"]') as HTMLElement
+    const rule = styles.split(".agent-icon .agent-activity-object[data-object='searching'] {")[1]?.split('}')[0] ?? ''
+
+    expect(object.querySelector('[data-part="search-lens"]')).not.toBeNull()
+    expect(object.querySelector('[data-part="search-handle"]')).not.toBeNull()
+    expect(object.querySelector('[data-part="search-glint"]')).not.toBeNull()
+    expect(rule).toContain('2.6s ease-in-out')
+    expect(styles).toContain('@keyframes agent-search-glint')
+  })
+
+  it('draws all three rows in Planning instead of leaving the last row still', () => {
+    const object = face({ activity: 'planning' }).querySelector('[data-object="planning"]') as HTMLElement
+
+    expect(object.querySelectorAll('[data-part^="plan-row-"]')).toHaveLength(3)
+    expect(object.querySelectorAll('[data-part^="plan-check-"]')).toHaveLength(3)
+    expect(object.querySelectorAll('[data-part^="plan-line-"]')).toHaveLength(3)
+    expect(styles).toContain("[data-part='plan-check-three']")
+    expect(styles).toContain('animation: agent-plan-mark-three 3.6s')
+  })
+
+  it('keeps Communicating readable as one bubble with a three-dot wave', () => {
+    const object = face({ activity: 'communicating' }).querySelector('[data-object="communicating"]') as HTMLElement
+
+    expect(object.querySelector('[data-part="message"]')).not.toBeNull()
+    expect(object.querySelectorAll('[data-part^="message-dot-"]')).toHaveLength(3)
+    expect(object.querySelector('[data-part="message-two"]')).toBeNull()
+    expect(styles).toContain("[data-part^='message-dot']")
+    expect(styles).toContain('@keyframes agent-message-dot')
+  })
+
+  it('turns the general action gear around a breathing center', () => {
+    const object = face({ activity: 'acting' }).querySelector('[data-object="acting"]') as HTMLElement
+
+    expect(object.querySelector('[data-part="tool-gear"]')).not.toBeNull()
+    expect(object.querySelector('[data-part="tool-pulse"]')).not.toBeNull()
+    expect(styles).toContain("[data-part='tool-gear']")
+    expect(styles).toContain('animation: agent-tool-gear 3.8s linear')
+    expect(styles).toContain('animation: agent-tool-pulse 1.9s ease-in-out')
+  })
+
   it('gives every activity a moving part inside its silhouette', () => {
     const activities = [
       'thinking',
