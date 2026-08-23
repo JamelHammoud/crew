@@ -300,7 +300,9 @@ interface Thread {
 // so a run of them arriving together is one interruption rather than three.
 interface PendingReturn {
   timer: NodeJS.Timeout
-  items: SubagentReturn[]
+  parentThreadId: string
+  agentId: string
+  items: Array<SubagentReturn & { endedId: string; promptId: string; threadId: string }>
 }
 
 // A parent parked on a wait, and what it is waiting for.
@@ -586,6 +588,7 @@ export class CrewSession {
           helper: event.helper,
           subject: event.subject,
           depth: event.depth,
+          notify: event.notify,
           startedAt: event.ts
         })
       }
@@ -833,6 +836,39 @@ export class CrewSession {
       }
       this.events.push(close)
       store.appendEvent(close)
+      const thread = event.threadId ? this.threads.get(event.threadId) : undefined
+      if (thread?.parentThreadId) {
+        const returned = this.events.some(
+          one => one.kind === 'subagent.ended' && one.threadId === thread.id && one.promptId === event.promptId
+        )
+        if (!returned) {
+          const home: SessionEvent = {
+            id: randomUUID(),
+            ts: close.ts,
+            kind: 'subagent.ended',
+            threadId: thread.id,
+            parentThreadId: thread.parentThreadId,
+            promptId: event.promptId,
+            ok: false,
+            ms: Math.max(0, close.ts - event.ts)
+          }
+          this.events.push(home)
+          store.appendEvent(home)
+        }
+      }
+    }
+    const delivered = new Set(
+      this.events.filter(event => event.kind === 'subagent.returned').map(event => event.endedId)
+    )
+    for (const event of this.events) {
+      if (event.kind !== 'subagent.ended' || !event.promptId || event.stopped || delivered.has(event.id)) continue
+      const thread = this.threads.get(event.threadId)
+      if (!thread || thread.notify === false) continue
+      const end = this.events.find(
+        one => one.kind === 'agent.end' && one.promptId === event.promptId && one.threadId === event.threadId
+      )
+      if (!end || end.kind !== 'agent.end') continue
+      this.holdSubagentReturn(thread, event, end.text ?? end.error ?? '')
     }
     const ended = new Set<string>()
     for (const event of this.events) {
@@ -1092,6 +1128,10 @@ export class CrewSession {
         break
       case 'subagent.stop':
         if (meta.role === 'ui' && !this.hiddenFrom(ws, msg.threadId)) this.stopSubagent(msg.threadId)
+        break
+      case 'subagent.restart':
+        if (meta.role === 'ui' && !this.hiddenFrom(ws, msg.threadId) && !this.restartSubagent(msg.threadId))
+          this.refuse('That helper cannot be run again.', ws, msg.threadId)
         break
       case 'subagent.prefs':
         if (meta.role === 'ui') member.helpers = cleanPrefs(msg)
@@ -1619,7 +1659,8 @@ export class CrewSession {
       parentPromptId: sent?.parentPromptId,
       helper: sent?.name,
       subject: sent?.subject,
-      depth: sent?.depth
+      depth: sent?.depth,
+      notify: sent?.notify
     })
     this.enqueuePrompt(agent, member, text, threadId, attachments, {
       messageId: randomUUID(),

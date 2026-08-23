@@ -132,6 +132,7 @@ export type SessionEvent =
       helper?: string
       subject?: string
       depth?: number
+      notify?: boolean
     }
   | { id: string; ts: number; kind: 'thread.plan'; threadId: string; text: string; agentId: string; agentLabel: string }
   | { id: string; ts: number; kind: 'thread.implement'; threadId: string; byName: string }

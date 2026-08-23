@@ -229,6 +229,12 @@ function serveAgents(session: CrewSession, raw: string, req: http.IncomingMessag
     })
     return true
   }
+  if (req.method === 'GET' && url === '/agents') {
+    const promptId = new URLSearchParams(query).get('promptId') ?? ''
+    const agents = session.subagentList(promptId)
+    sendJson(res, agents ? 200 : 404, agents ?? { error: 'That prompt is not a run.' })
+    return true
+  }
   const say = /^\/agents\/([\w-]+)\/say$/.exec(url)
   if (req.method === 'POST' && say) {
     readJson(req, res, MAX_AGENT_BODY, body => {
@@ -242,6 +248,14 @@ function serveAgents(session: CrewSession, raw: string, req: http.IncomingMessag
     readJson(req, res, MAX_AGENT_BODY, body => {
       const ok = session.subagentStop(said(body, 'promptId'), stop[1])
       sendJson(res, ok ? 200 : 404, ok ? { ok } : { error: 'No helper of yours with that id.' })
+    })
+    return true
+  }
+  const restart = /^\/agents\/([\w-]+)\/restart$/.exec(url)
+  if (req.method === 'POST' && restart) {
+    readJson(req, res, MAX_AGENT_BODY, body => {
+      const ok = session.subagentRestart(said(body, 'promptId'), restart[1])
+      sendJson(res, ok ? 200 : 409, ok ? { ok } : { error: 'That helper cannot be run again.' })
     })
     return true
   }
