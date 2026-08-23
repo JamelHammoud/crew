@@ -95,6 +95,20 @@ describe('a personal chat window', () => {
     expect(screen.queryByText('Ask Crew')).toBeNull()
   })
 
+  it('collapses and restores the chat list without remounting the conversation', () => {
+    render(createElement(PersonalChatWindow))
+    const composer = screen.getByPlaceholderText('Message')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Hide chat list' }))
+    expect(document.querySelector('[data-personal-history]')?.classList.contains('w-0')).toBe(true)
+    expect(screen.getByRole('button', { name: 'Show chat list' })).toBeTruthy()
+    expect(screen.getByPlaceholderText('Message')).toBe(composer)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Show chat list' }))
+    expect(document.querySelector('[data-personal-history]')?.classList.contains('w-[300px]')).toBe(true)
+    expect(screen.getByPlaceholderText('Message')).toBe(composer)
+  })
+
   it('searches saved chats and opens one without the thread composer header', () => {
     const first = thread('first', 'Alpha question', 1)
     const second = thread('second', 'Beta answer', 2)
