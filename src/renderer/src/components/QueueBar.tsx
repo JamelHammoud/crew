@@ -114,60 +114,60 @@ function QueueRow({
       {item.agentLabel && <Pill>{item.agentLabel}</Pill>}
       {item.self && (
         <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
-            {item.sendable && (
-              <Tooltip label="Send now">
-                <button
-                  type="button"
-                  onClick={onSend}
-                  aria-label="Send queued message now"
-                  className="flex h-7 w-7 items-center justify-center rounded-full text-fg-muted transition-colors hover:bg-fg/[0.08] hover:text-fg"
-                >
-                  <SendGlyph className="h-3.5 w-3.5" />
-                </button>
-              </Tooltip>
-            )}
-            <Tooltip label="Move earlier">
+          {item.sendable && (
+            <Tooltip label="Send now">
               <button
                 type="button"
-                onClick={() => onMove(-1)}
-                disabled={first}
-                aria-label="Move queued message earlier"
-                className="flex h-7 w-7 items-center justify-center rounded-full text-fg-muted transition-colors hover:bg-fg/[0.08] hover:text-fg disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-fg-muted"
-              >
-                <ChevronUpGlyph className="h-3.5 w-3.5" />
-              </button>
-            </Tooltip>
-            <Tooltip label="Move later">
-              <button
-                type="button"
-                onClick={() => onMove(1)}
-                disabled={last}
-                aria-label="Move queued message later"
-                className="flex h-7 w-7 items-center justify-center rounded-full text-fg-muted transition-colors hover:bg-fg/[0.08] hover:text-fg disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-fg-muted"
-              >
-                <ChevronDownGlyph className="h-3.5 w-3.5" />
-              </button>
-            </Tooltip>
-            <Tooltip label="Edit in composer">
-              <button
-                type="button"
-                onClick={onEdit}
-                aria-label="Edit queued message"
+                onClick={onSend}
+                aria-label="Send queued message now"
                 className="flex h-7 w-7 items-center justify-center rounded-full text-fg-muted transition-colors hover:bg-fg/[0.08] hover:text-fg"
               >
-                <PencilGlyph className="h-3.5 w-3.5" />
+                <SendGlyph className="h-3.5 w-3.5" />
               </button>
             </Tooltip>
-            <Tooltip label="Remove from queue">
-              <button
-                type="button"
-                onClick={onRemove}
-                aria-label="Remove from queue"
-                className="flex h-7 w-7 items-center justify-center rounded-full text-fg-muted transition-colors hover:bg-danger/10 hover:text-danger"
-              >
-                <TrashGlyph className="h-3.5 w-3.5" />
-              </button>
-            </Tooltip>
+          )}
+          <Tooltip label="Move earlier">
+            <button
+              type="button"
+              onClick={() => onMove(-1)}
+              disabled={first}
+              aria-label="Move queued message earlier"
+              className="flex h-7 w-7 items-center justify-center rounded-full text-fg-muted transition-colors hover:bg-fg/[0.08] hover:text-fg disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-fg-muted"
+            >
+              <ChevronUpGlyph className="h-3.5 w-3.5" />
+            </button>
+          </Tooltip>
+          <Tooltip label="Move later">
+            <button
+              type="button"
+              onClick={() => onMove(1)}
+              disabled={last}
+              aria-label="Move queued message later"
+              className="flex h-7 w-7 items-center justify-center rounded-full text-fg-muted transition-colors hover:bg-fg/[0.08] hover:text-fg disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-fg-muted"
+            >
+              <ChevronDownGlyph className="h-3.5 w-3.5" />
+            </button>
+          </Tooltip>
+          <Tooltip label="Edit in composer">
+            <button
+              type="button"
+              onClick={onEdit}
+              aria-label="Edit queued message"
+              className="flex h-7 w-7 items-center justify-center rounded-full text-fg-muted transition-colors hover:bg-fg/[0.08] hover:text-fg"
+            >
+              <PencilGlyph className="h-3.5 w-3.5" />
+            </button>
+          </Tooltip>
+          <Tooltip label="Remove from queue">
+            <button
+              type="button"
+              onClick={onRemove}
+              aria-label="Remove from queue"
+              className="flex h-7 w-7 items-center justify-center rounded-full text-fg-muted transition-colors hover:bg-danger/10 hover:text-danger"
+            >
+              <TrashGlyph className="h-3.5 w-3.5" />
+            </button>
+          </Tooltip>
         </div>
       )}
     </div>
