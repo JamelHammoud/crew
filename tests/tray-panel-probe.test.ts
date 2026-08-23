@@ -60,14 +60,17 @@ describe('tray panel', () => {
   it('says nothing is running before a session is started', () => {
     show({})
 
-    expect(screen.getByText('No session')).toBeTruthy()
-    expect(screen.queryByText('Open Crew to see who is here.')).toBeNull()
+    expect(screen.queryByText('Online')).toBeNull()
+    expect(screen.queryByText('Working')).toBeNull()
+    expect(screen.getByText('Open Crew')).toBeTruthy()
   })
 
   it('says to open the app when no window is there to ask', () => {
     show({ sharing: true })
 
-    expect(screen.getByText('Open Crew to see who is here.')).toBeTruthy()
+    expect(screen.queryByText('Online')).toBeNull()
+    expect(screen.queryByText('Working')).toBeNull()
+    expect(screen.getByText('Open Crew')).toBeTruthy()
   })
 
   it('lists the people online and the agents working', () => {
@@ -120,7 +123,7 @@ describe('tray panel', () => {
   })
 
   it('quits from the panel', () => {
-    fireEvent.click(screen.getByText('Quit'))
+    fireEvent.click(screen.getByText('Quit Crew'))
 
     expect(bridge.quitCrew).toHaveBeenCalled()
   })
