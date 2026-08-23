@@ -176,17 +176,17 @@ app.whenReady().then(async () => {
       x: collapse.left + collapse.width / 2,
       y: collapse.top + collapse.height / 2
     })
-    await wait(300)
+    await wait(800)
     seen.collapseHovered = await win.webContents.executeJavaScript(READ)
     await win.webContents.executeJavaScript(
       \`[...document.querySelectorAll('button')].find(button => button.getAttribute('aria-label') === 'Hide chat list').click()\`
     )
-    await wait(300)
+    await wait(800)
     seen.collapsed = await win.webContents.executeJavaScript(READ)
     await win.webContents.executeJavaScript(
       \`[...document.querySelectorAll('button')].find(button => button.getAttribute('aria-label') === 'Show chat list').click()\`
     )
-    await wait(300)
+    await wait(800)
     seen.reopened = await win.webContents.executeJavaScript(READ)
     await win.webContents.executeJavaScript(
       \`[...document.querySelectorAll('button')].find(button => button.textContent?.includes('Draft a dinner menu')).click()\`

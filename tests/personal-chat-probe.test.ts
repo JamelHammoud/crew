@@ -55,6 +55,17 @@ const deleteThread = vi.fn()
 beforeEach(() => {
   renameThread.mockClear()
   deleteThread.mockClear()
+  const values = new Map<string, string>()
+  vi.stubGlobal('localStorage', {
+    get length() {
+      return values.size
+    },
+    clear: () => values.clear(),
+    getItem: (key: string) => values.get(key) ?? null,
+    key: (index: number) => [...values.keys()][index] ?? null,
+    removeItem: (key: string) => values.delete(key),
+    setItem: (key: string, value: string) => values.set(key, value)
+  } satisfies Storage)
   window.crew = { listFiles: async () => [] } as unknown as CrewBridge
   setPref('glassSidebar', true)
   useCrew.setState({
@@ -83,6 +94,7 @@ beforeEach(() => {
 afterEach(() => {
   cleanup()
   vi.restoreAllMocks()
+  vi.unstubAllGlobals()
 })
 
 describe('a personal chat window', () => {

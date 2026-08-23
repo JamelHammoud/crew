@@ -76,7 +76,7 @@ export default function PersonalChatSidebar({
     <aside
       data-personal-history
       aria-hidden={collapsed}
-      inert={collapsed}
+      inert={collapsed ? true : undefined}
       className={`shrink-0 overflow-hidden transition-[width,border-color] duration-200 ${
         collapsed
           ? 'w-0 border-r border-transparent'
