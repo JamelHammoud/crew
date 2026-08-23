@@ -18,14 +18,13 @@ export default function CodeRows({
 }) {
   const tokensFor = useHighlight(path, rows, dirty ? 150 : 0)
 
-  const lineNumber = (text: string | number, tone: string, tint: string) => (
+  const lineNumber = (text: string | number, tone: string, tint?: string) => (
     <span
       data-code-gutter
-      style={{ minWidth: `calc(2rem + ${gutter})` }}
+      style={{ minWidth: `calc(2rem + ${gutter})`, backgroundColor: tint }}
       className={`sticky left-0 z-10 shrink-0 box-border px-4 text-right select-none bg-ink-900 ${tone}`}
     >
-      {tint && <span className={`absolute inset-0 ${tint}`} />}
-      <span className="relative">{text}</span>
+      {text}
     </span>
   )
 
@@ -35,7 +34,11 @@ export default function CodeRows({
         if (row.line === null) {
           return (
             <div key={index} data-row={index} data-gone className="flex bg-danger/10">
-              {lineNumber('−', 'text-danger/60', 'bg-danger/10')}
+              {lineNumber(
+                '−',
+                'text-danger/60',
+                'color-mix(in srgb, var(--color-danger) 10%, var(--color-ink-900))'
+              )}
               <span className="whitespace-pre text-fg-muted pr-4">
                 <LineText row={row} tokens={undefined} tint="bg-danger/25" />
               </span>
@@ -55,7 +58,13 @@ export default function CodeRows({
             {lineNumber(
               row.line,
               `tabular-nums ${row.changed || marked ? 'text-fg' : 'text-fg-faint'}`,
-              row.changed ? 'bg-positive/10' : marked ? 'bg-fg/[0.07]' : activeRow === index ? 'bg-fg/[0.035]' : ''
+              row.changed
+                ? 'color-mix(in srgb, var(--color-positive) 10%, var(--color-ink-900))'
+                : marked
+                  ? 'color-mix(in srgb, var(--color-fg) 7%, var(--color-ink-900))'
+                  : activeRow === index
+                    ? 'color-mix(in srgb, var(--color-fg) 3.5%, var(--color-ink-900))'
+                    : undefined
             )}
             <span data-code-text className="whitespace-pre text-fg-secondary pr-4">
               <LineText row={row} tokens={tokensFor(row)} tint="bg-positive/25" />

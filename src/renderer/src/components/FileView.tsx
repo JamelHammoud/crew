@@ -391,7 +391,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
       const edit = eraseFilePair(value, selectionStart, selectionEnd)
       if (edit) {
         event.preventDefault()
-        apply(edit.value, edit, 'command')
+        apply(edit.value, { ...edit, direction: event.currentTarget.selectionDirection }, 'command')
       }
       return
     }
@@ -400,7 +400,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
       const edit = pairFile(value, selectionStart, selectionEnd, event.key)
       if (edit) {
         event.preventDefault()
-        apply(edit.value, edit, 'command')
+        apply(edit.value, { ...edit, direction: event.currentTarget.selectionDirection }, 'command')
         return
       }
     }
@@ -408,14 +408,14 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
       event.preventDefault()
       const { selectionStart, selectionEnd, value } = event.currentTarget
       const edit = indentFile(value, selectionStart, selectionEnd, event.shiftKey)
-      apply(edit.value, edit, 'command')
+      apply(edit.value, { ...edit, direction: event.currentTarget.selectionDirection }, 'command')
       return
     }
     if (event.key === 'Enter' && !composing.current && !event.metaKey && !event.ctrlKey && !event.altKey) {
       event.preventDefault()
       const { selectionStart, selectionEnd, value } = event.currentTarget
       const edit = breakFileLine(value, selectionStart, selectionEnd)
-      apply(edit.value, edit, 'command')
+      apply(edit.value, { ...edit, direction: event.currentTarget.selectionDirection }, 'command')
     }
   }
 
