@@ -220,17 +220,12 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
     return (
       <>
         <path
-          data-part="message-one"
-          d="M19 10 H72 C82 10 89 18 89 28 V48 C89 58 81 66 71 66 H45 L29 77 C24 80 19 76 21 70 L22 66 H19 C9 66 3 58 3 48 V28 C3 18 9 10 19 10 Z"
+          data-part="message"
+          d="M17 13 H83 C92 13 97 20 97 29 V55 C97 64 90 71 81 71 H54 L32 87 C27 91 21 86 24 80 L28 71 H17 C8 71 3 64 3 55 V29 C3 20 8 13 17 13 Z"
         />
-        <path
-          data-part="message-two"
-          d="M48 49 H81 C91 49 97 57 97 67 V76 C97 86 91 93 81 93 H77 L79 96 C81 99 77 102 73 99 L64 93 H48 C38 93 31 86 31 76 V67 C31 57 38 49 48 49 Z"
-        />
-        <circle data-part="message-dot-one" cx="28" cy="38" r="6" fill="#000" />
-        <circle data-part="message-dot-two" cx="47" cy="38" r="6" fill="#000" />
-        <circle data-part="message-dot-three" cx="66" cy="38" r="6" fill="#000" />
-        <circle data-part="reply-dot" cx="65" cy="71" r="6" fill="#000" />
+        <circle data-part="message-dot-one" cx="31" cy="42" r="6" fill="#000" />
+        <circle data-part="message-dot-two" cx="50" cy="42" r="6" fill="#000" />
+        <circle data-part="message-dot-three" cx="69" cy="42" r="6" fill="#000" />
       </>
     )
   }

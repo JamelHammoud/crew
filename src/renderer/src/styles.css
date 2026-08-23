@@ -1072,19 +1072,19 @@ textarea:placeholder-shown {
 }
 
 .agent-icon .agent-activity-object[data-object='reading'] {
-  animation: agent-reading 3.4s cubic-bezier(0.45, 0, 0.25, 1) var(--agent-delay, 0ms) infinite;
+  animation: agent-reading 2.9s ease-in-out var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon .agent-activity-object[data-object='searching'] {
-  animation: agent-searching 2.2s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+  animation: agent-searching 2.6s ease-in-out var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon .agent-activity-object[data-object='editing'] {
-  animation: agent-editing 3.6s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+  animation: agent-editing 3.2s ease-in-out var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon .agent-activity-object[data-object='designing'] {
-  animation: agent-designing 2.6s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+  animation: agent-designing 2.8s ease-in-out var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon .agent-activity-object[data-object='running'] {
@@ -1092,15 +1092,15 @@ textarea:placeholder-shown {
 }
 
 .agent-icon .agent-activity-object[data-object='planning'] {
-  animation: agent-planning 3s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+  animation: agent-planning 3.6s ease-in-out var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon .agent-activity-object[data-object='communicating'] {
-  animation: agent-communicating 1.9s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+  animation: agent-communicating 2.4s ease-in-out var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon .agent-activity-object[data-object='acting'] {
-  animation: agent-acting 1.5s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+  animation: agent-acting 3.8s ease-in-out var(--agent-delay, 0ms) infinite;
 }
 
 @keyframes agent-form-out {
