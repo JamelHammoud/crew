@@ -1895,22 +1895,16 @@ textarea:placeholder-shown {
   .agent-icon .agent-face-stage,
   .agent-icon .agent-pet-eyes,
   .agent-icon .agent-activity-stage,
-  .agent-icon .agent-morph-bridge,
   .agent-icon .agent-activity-object,
   .agent-icon .agent-activity-object [data-part] {
     animation: none;
   }
 
-  .agent-icon .agent-face-stage[data-motion='hidden'],
-  .agent-icon .agent-face-stage[data-motion='outgoing'],
-  .agent-icon .agent-activity-stage[data-motion='outgoing'],
-  .agent-icon .agent-morph-bridge {
+  .agent-icon .agent-face-stage[data-motion='hidden'] {
     opacity: 0;
   }
 
-  .agent-icon .agent-face-stage[data-motion='incoming'],
   .agent-icon .agent-face-stage[data-motion='present'],
-  .agent-icon .agent-activity-stage[data-motion='incoming'],
   .agent-icon .agent-activity-stage[data-motion='working'] {
     opacity: 1;
     transform: none;
