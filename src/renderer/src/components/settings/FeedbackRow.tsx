@@ -61,7 +61,28 @@ export default function FeedbackRow() {
       <Row label="Feedback">
         <Action label="Submit feedback" onClick={() => setOpen(true)} />
       </Row>
-      <Modal open={open} onClose={() => setOpen(false)} title="Submit feedback">
+      <Modal
+        open={open}
+        onClose={() => setOpen(false)}
+        title="Submit feedback"
+        footer={
+          <div className="flex items-center justify-end gap-2">
+            <button
+              onClick={() => setOpen(false)}
+              className="h-10 px-4 rounded-full text-sm font-semibold text-fg/45 transition-colors hover:text-fg"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => void (stuck ? copy() : send())}
+              disabled={!said}
+              className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold transition-colors duration-150 hover:bg-fg/90 active:scale-95 disabled:bg-fg/10 disabled:text-fg/45"
+            >
+              {stuck ? 'Copy' : 'Send'}
+            </button>
+          </div>
+        }
+      >
         <textarea
           ref={field}
           value={text}
@@ -76,21 +97,6 @@ export default function FeedbackRow() {
             No mail app opened. Copy it and send it to <span className="select-text">{FEEDBACK_EMAIL}</span>.
           </p>
         )}
-        <div className="mt-5 flex items-center justify-end gap-2">
-          <button
-            onClick={() => setOpen(false)}
-            className="h-10 px-4 rounded-full text-sm font-semibold text-fg/45 transition-colors hover:text-fg"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={() => void (stuck ? copy() : send())}
-            disabled={!said}
-            className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold transition-colors duration-150 hover:bg-fg/90 active:scale-95 disabled:bg-fg/10 disabled:text-fg/45"
-          >
-            {stuck ? 'Copy' : 'Send'}
-          </button>
-        </div>
       </Modal>
     </>
   )

@@ -51,7 +51,29 @@ export default function PlaylistName({
   }
 
   return (
-    <Modal open={open} onClose={onClose} title={title}>
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={title}
+      footer={
+        <div className="flex items-center justify-end gap-2">
+          <button
+            onClick={onClose}
+            className="h-10 px-4 rounded-full text-sm font-semibold text-fg/45 transition-colors hover:text-fg"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => void send()}
+            disabled={!asked || busy}
+            className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-2 transition-all duration-150 hover:scale-[1.03] active:scale-95 disabled:bg-fg/10 disabled:text-fg/45 disabled:scale-100"
+          >
+            {busy && <Spinner size={14} />}
+            {action}
+          </button>
+        </div>
+      }
+    >
       <input
         ref={field}
         autoFocus
@@ -68,22 +90,6 @@ export default function PlaylistName({
         className="mt-4 w-full h-11 px-3.5 rounded-xl bg-fg/[0.07] text-sm text-fg placeholder:text-fg/35 outline-none border-none transition-colors focus:bg-fg/[0.11]"
       />
       {trouble && <p className="mt-3 text-sm text-danger">That did not go through. Try again.</p>}
-      <div className="mt-5 flex items-center justify-end gap-2">
-        <button
-          onClick={onClose}
-          className="h-10 px-4 rounded-full text-sm font-semibold text-fg/45 transition-colors hover:text-fg"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={() => void send()}
-          disabled={!asked || busy}
-          className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-2 transition-all duration-150 hover:scale-[1.03] active:scale-95 disabled:bg-fg/10 disabled:text-fg/45 disabled:scale-100"
-        >
-          {busy && <Spinner size={14} />}
-          {action}
-        </button>
-      </div>
     </Modal>
   )
 }

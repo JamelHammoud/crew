@@ -34,7 +34,27 @@ export default function PlaceName({
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Rename">
+    <Modal
+      open={open}
+      onClose={onClose}
+      title="Rename"
+      footer={
+        <div className="flex items-center justify-end gap-2">
+          <button
+            onClick={onClose}
+            className="h-10 px-4 rounded-full text-sm font-semibold text-fg/45 transition-colors hover:text-fg"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={send}
+            className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold transition-all duration-150 hover:scale-[1.03] active:scale-95"
+          >
+            Rename
+          </button>
+        </div>
+      }
+    >
       <TextField
         glass
         ref={field}
@@ -50,20 +70,6 @@ export default function PlaceName({
         }}
         className="mt-4 h-11 rounded-xl"
       />
-      <div className="mt-5 flex items-center justify-end gap-2">
-        <button
-          onClick={onClose}
-          className="h-10 px-4 rounded-full text-sm font-semibold text-fg/45 transition-colors hover:text-fg"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={send}
-          className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold transition-all duration-150 hover:scale-[1.03] active:scale-95"
-        >
-          Rename
-        </button>
-      </div>
     </Modal>
   )
 }
