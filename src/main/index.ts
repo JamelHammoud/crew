@@ -21,6 +21,7 @@ import {
 } from '../runner/pluginOauth'
 import { setBadge, showAlert } from './alerts'
 import { KeepAwake } from './awake'
+import { openBrowserTabWindow } from './browser-tab-window'
 import { windowForAlert, type AgentAlert } from '../shared/alerts'
 import { cleanAppIcon, DEFAULT_APP_ICON, type AppIconId } from '../shared/appIcon'
 import type { BrowserTab } from '../shared/browserTab'
@@ -602,17 +603,11 @@ app.whenReady().then(() => {
   })
   ipcMain.handle('window:pop-browser-tab', (event, tab: BrowserTab) => {
     const place = crews.keyInView(event.sender.id)
-    if (!place) return false
-    const win = createWindow(undefined, false)
-    if (!crews.switchTo(win.webContents.id, place)) {
-      win.destroy()
-      return false
-    }
-    win.webContents.once('did-finish-load', () => {
-      if (!win.webContents.isDestroyed()) win.webContents.send('browser:open-tab', tab)
+    return openBrowserTabWindow(tab, place, {
+      create: () => createWindow(undefined, false),
+      join: (id, target) => crews.switchTo(id, target),
+      load: win => loadWindow(win)
     })
-    loadWindow(win)
-    return true
   })
   ipcMain.handle('window:open-project', async (_event, key: string) => {
     const win = createWindow(undefined, false)

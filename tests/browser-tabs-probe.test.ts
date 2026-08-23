@@ -20,6 +20,7 @@ const BrowserPanel = (await import('../src/renderer/src/components/BrowserPanel'
 
 const scrolled: { el: Element; left: number; top: number }[] = []
 const askedIntoView: Element[] = []
+const popOutBrowserTab = vi.fn().mockResolvedValue(true)
 
 const VIEW = 300
 const TALL = 36
@@ -35,7 +36,8 @@ beforeEach(() => {
     Object.defineProperty(this, 'scrollLeft', { value: to.left ?? 0, configurable: true })
     Object.defineProperty(this, 'scrollTop', { value: to.top ?? 0, configurable: true })
   }) as unknown as Element['scrollTo']
-  window.crew = { warmTerminal: () => undefined } as unknown as CrewBridge
+  popOutBrowserTab.mockClear()
+  window.crew = { warmTerminal: () => undefined, popOutBrowserTab } as unknown as CrewBridge
   useBrowser.setState({ tabs: [], activeTabId: null })
 })
 
@@ -299,6 +301,22 @@ describe('the tab strip', () => {
     fireEvent.click(getByText('Close tab'))
 
     expect(useBrowser.getState().tabs.map(t => t.id)).toEqual([second!.id])
+  })
+
+  it('opens a copy of a tab in a new Crew window from its menu', () => {
+    openTwo()
+    const { container, getByText } = render(createElement(BrowserPanel))
+    const [first, second] = useBrowser.getState().tabs
+    act(() => useBrowser.getState().updateTab(first!.id, { url: 'https://example.com/one/current', title: 'Current' }))
+
+    fireEvent.contextMenu(pillFor(container, first!.id)!)
+    fireEvent.click(getByText('Open in new window'))
+
+    expect(popOutBrowserTab).toHaveBeenCalledOnce()
+    expect(popOutBrowserTab).toHaveBeenCalledWith(
+      expect.objectContaining({ id: first!.id, url: 'https://example.com/one/current', title: 'Current' })
+    )
+    expect(order()).toEqual([first!.id, second!.id])
   })
 
   it('closes tabs to the right from its own menu', () => {
