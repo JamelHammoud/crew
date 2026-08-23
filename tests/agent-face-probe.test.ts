@@ -267,8 +267,7 @@ describe('an agent face', () => {
 })
 
 describe('agent activity objects', () => {
-  const activity = (name: string) =>
-    activityForStep({ id: name, ts: 1, kind: 'tool', status: 'running', name })
+  const activity = (name: string) => activityForStep({ id: name, ts: 1, kind: 'tool', status: 'running', name })
 
   it('routes live work to a recognizable object family', () => {
     expect(activityForStep(undefined)).toBe('thinking')

@@ -32,7 +32,10 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
   }
   if (activity === 'editing') {
     return (
-      <path d="M69 8 C74 3 81 3 86 8 L92 14 C97 19 97 26 92 31 L39 84 L14 94 C9 96 5 92 7 87 L17 62 Z M22 69 L31 78 L73 36 L64 27 Z" fillRule="evenodd" />
+      <path
+        d="M69 8 C74 3 81 3 86 8 L92 14 C97 19 97 26 92 31 L39 84 L14 94 C9 96 5 92 7 87 L17 62 Z M22 69 L31 78 L73 36 L64 27 Z"
+        fillRule="evenodd"
+      />
     )
   }
   if (activity === 'designing') {
@@ -47,7 +50,14 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
     return (
       <>
         <rect x="5" y="13" width="90" height="74" rx="17" />
-        <path d="M23 35 L38 50 L23 65" fill="none" stroke="#000" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
+        <path
+          d="M23 35 L38 50 L23 65"
+          fill="none"
+          stroke="#000"
+          strokeWidth="8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
         <path d="M48 66 H73" fill="none" stroke="#000" strokeWidth="8" strokeLinecap="round" />
       </>
     )
@@ -57,12 +67,24 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
       <>
         <path d="M20 12 H80 C87 12 91 17 91 24 V88 C91 94 87 97 80 97 H20 C13 97 9 94 9 88 V24 C9 17 13 12 20 12 Z" />
         <rect x="32" y="5" width="36" height="17" rx="8.5" />
-        <path d="M25 42 L31 48 L42 35 M50 43 H75 M25 68 L31 74 L42 61 M50 69 H75" fill="none" stroke="#000" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+        <path
+          d="M25 42 L31 48 L42 35 M50 43 H75 M25 68 L31 74 L42 61 M50 69 H75"
+          fill="none"
+          stroke="#000"
+          strokeWidth="6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
       </>
     )
   }
   if (activity === 'communicating') {
-    return <path d="M8 43 L86 8 C93 5 98 10 95 17 L63 92 C61 97 55 97 52 92 L39 68 L16 56 C9 53 5 47 8 43 Z M40 62 L77 25 L33 55 Z" fillRule="evenodd" />
+    return (
+      <path
+        d="M8 43 L86 8 C93 5 98 10 95 17 L63 92 C61 97 55 97 52 92 L39 68 L16 56 C9 53 5 47 8 43 Z M40 62 L77 25 L33 55 Z"
+        fillRule="evenodd"
+      />
+    )
   }
   return (
     <>

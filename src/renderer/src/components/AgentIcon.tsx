@@ -113,9 +113,7 @@ export default function AgentIcon({
           </svg>
         </span>
       )}
-      {shownActivity !== 'idle' && (
-        <AgentActivityMark activity={shownActivity} seed={seed} box={box} src={src} />
-      )}
+      {shownActivity !== 'idle' && <AgentActivityMark activity={shownActivity} seed={seed} box={box} src={src} />}
       {presence && (
         <span
           className={`${DOTS[size]} absolute bottom-0 right-0 z-10 rounded-full ring-ink-900 transition-colors ${
