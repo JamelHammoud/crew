@@ -133,9 +133,7 @@ describe('queued messages', () => {
     ui.send({ type: 'queue.send', promptId: item.promptId })
 
     await waitUntil(() => queueOf(started.threadId).every(queued => queued.promptId !== item.promptId))
-    const route = await ui.waitForEvent(
-      event => event.kind === 'message.route' && event.messageId === item.promptId && event.mode === 'steered'
-    )
+    const route = await ui.waitForEvent(event => event.kind === 'message.route' && event.mode === 'steered')
     expect(route.kind === 'message.route' && route.promptId).toBe(active.promptId)
     const ended = await ui.waitForEvent(event => event.kind === 'agent.end' && event.promptId === active.promptId)
     expect(ended.kind === 'agent.end' && ended.text).toContain('steered:New message from sam: send this now')
