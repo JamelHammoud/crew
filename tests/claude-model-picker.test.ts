@@ -3,6 +3,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { createElement } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import CreateAgent from '../src/renderer/src/components/CreateAgent'
+import { useBrowser } from '../src/renderer/src/state/browser'
 import type { AgentDef, ProviderCapability } from '../src/shared/llm'
 
 Object.defineProperty(Element.prototype, 'getAnimations', {
@@ -14,6 +15,14 @@ const capability: ProviderCapability = {
   provider: 'claude',
   label: 'Claude',
   fields: [
+    {
+      key: 'account',
+      label: 'Account',
+      kind: 'text',
+      default: '',
+      placeholder: 'Default',
+      action: 'claude-login'
+    },
     {
       key: 'model',
       label: 'Model',
@@ -46,6 +55,7 @@ const capability: ProviderCapability = {
 
 afterEach(() => {
   cleanup()
+  useBrowser.getState().closeAll()
   vi.restoreAllMocks()
 })
 
@@ -117,5 +127,33 @@ describe('claude model picker', () => {
 
     expect(screen.queryByText('Version')).toBeNull()
     expect((screen.getByPlaceholderText('Agent name') as HTMLInputElement).value).toBe('Claude Sonnet')
+  })
+
+  it('opens Claude sign-in in a terminal for the named account and keeps the draft', async () => {
+    Object.defineProperty(window, 'crew', {
+      configurable: true,
+      value: {
+        agentCapabilities: vi.fn(async () => [capability]),
+        modelServers: vi.fn(async () => [])
+      } as unknown as Window['crew']
+    })
+
+    render(createElement(CreateAgent))
+
+    const add = screen.getByRole('button', { name: 'Add an agent' }) as HTMLButtonElement
+    await waitFor(() => expect(add.disabled).toBe(false))
+    fireEvent.click(add)
+    fireEvent.change(screen.getByPlaceholderText('Default'), { target: { value: 'Work Account' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Sign in' }))
+
+    expect(screen.queryByRole('dialog')).toBeNull()
+    expect(useBrowser.getState()).toMatchObject({ open: true })
+    expect(useBrowser.getState().tabs.at(-1)).toMatchObject({
+      kind: 'terminal',
+      command: 'CLAUDE_CONFIG_DIR="$HOME/.crew/claude/work-account" claude auth login --claudeai'
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Add an agent' }))
+    expect((screen.getByPlaceholderText('Default') as HTMLInputElement).value).toBe('Work Account')
   })
 })
