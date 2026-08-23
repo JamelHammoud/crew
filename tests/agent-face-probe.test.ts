@@ -4,22 +4,19 @@ import { act, cleanup, render } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import AgentIcon from '../src/renderer/src/components/AgentIcon'
-import SubagentMark from '../src/renderer/src/components/SubagentMark'
 import {
-  BODY,
-  EYE_RADIUS,
+  EYE_HEIGHT,
+  EYE_WIDTH,
   FIELD_LIGHT,
-  MIN_BRIDGE,
+  MIN_EYE_GAP,
   PET_GRID,
+  PET_SHAPE_KINDS,
   eyeGapAt,
-  petOf
+  petOf,
+  petPath
 } from '../src/renderer/src/components/art/pet'
 import { paletteFor } from '../src/shared/art'
 import { useCrew } from '../src/renderer/src/state/store'
-
-// The look is judged on `yarn covers`, which draws every face on one page. This
-// holds the rules underneath it: a white face, eyes that are holes rather than
-// paint, and a picture behind that is the agent's own.
 
 const SEED = 'jamel/claude'
 const PHOTO = 'http://192.0.2.10:2739/attachments/me.png'
@@ -39,119 +36,117 @@ const face = (props: Record<string, unknown> = {}): HTMLElement =>
 describe('the pet an agent wears', () => {
   it('is the same pet for one id and a different one for two', () => {
     expect(petOf(SEED)).toEqual(petOf(SEED))
-    expect(petOf('ali/codex').body).not.toBe(petOf(SEED).body)
+    expect(petOf('ali/codex')).not.toEqual(petOf(SEED))
   })
 
-  // The angular family keeps its flat sides and its count, and every vertex is
-  // turned rather than pointed: nothing a pet is made of comes to a corner.
-  it('never comes to a hard corner, whichever family it was drawn from', () => {
-    for (let i = 0; i < 400; i++) {
-      const body = petOf(`every-${i}`).body
-      expect(body).toContain('Q')
-      expect(body).not.toMatch(/L[^QZ]*L/)
+  it('uses every silhouette family and closes each one through curves', () => {
+    const pets = Array.from({ length: 700 }, (_, index) => petOf(`every-${index}`))
+    expect(new Set(pets.map(pet => pet.kind))).toEqual(new Set(PET_SHAPE_KINDS))
+    for (const pet of pets) {
+      expect(pet.body).toMatch(/[Ca]/)
+      expect(pet.body.endsWith('Z')).toBe(true)
     }
   })
 
-  // The numbers come off one stream in the order makePet reads them, so
-  // reordering that reads a different pet for everybody who already has one.
-  it('reads its stream in the order it always did, so nobody wakes up to a new face', () => {
+  it('keeps the seeded identity stable', () => {
     const pet = petOf(SEED)
     expect(pet.hue).toBe(225)
-    expect(pet.eyeY).toBeCloseTo(55.084, 3)
-    expect(pet.eyeGap).toBeCloseTo(13.402, 3)
-    expect(pet.tilt).toBeCloseTo(4.271, 3)
+    expect(pet.kind).toBe('teardrop')
+    expect(pet.eyeX).toBeCloseTo(55.95, 2)
+    expect(pet.eyeY).toBeCloseTo(46.707, 3)
+    expect(pet.eyeGap).toBeCloseTo(18.38, 2)
+    expect(pet.tilt).toBeCloseTo(-8.474, 2)
+  })
+
+  it('scales one silhouette to the box without changing its family', () => {
+    const pet = petOf(SEED)
+    expect(petPath(pet, 20)).not.toBe(pet.body)
+    expect(petPath(pet, 20)).toContain('M 10 1.4')
+    expect(petPath(pet, PET_GRID)).toBe(pet.body)
   })
 })
 
 describe('an agent face', () => {
-  it('is white, and nothing about it is painted in the hue any more', () => {
-    const box = face()
-    const shape = box.querySelector('svg rect') as SVGRectElement
-    const body = box.querySelector('svg mask path') as SVGPathElement
+  it('uses its generated field as the silhouette instead of a circular background', () => {
+    const box = face({ size: 'xs' })
+    const body = box.querySelector('.agent-pet-body') as HTMLElement
+    const field = body.firstElementChild as HTMLElement
 
-    expect(shape.getAttribute('fill')).toBe('#fff')
-    expect(body.getAttribute('fill')).toBe('#fff')
-    expect(body.getAttribute('stroke')).toBe('#fff')
-    expect(box.innerHTML).not.toContain('oklch')
+    expect(field.style.clipPath).toContain('path(')
+    expect(field.style.clipPath).toContain(petPath(petOf(SEED), 20).slice(0, 20))
+    expect(field.className).not.toContain('rounded-full')
+    expect(box.querySelector('.rounded-full')).toBeNull()
   })
 
-  it('cuts the eyes out rather than painting them, so the picture comes through', () => {
+  it('draws two white capsule eyes high in the shape', () => {
     const box = face()
-    const eyes = Array.from(box.querySelectorAll('svg mask circle'))
+    const eyes = Array.from(box.querySelectorAll('.agent-pet-eyes rect')) as SVGRectElement[]
     const pet = petOf(SEED)
+    const gap = eyeGapAt(pet, 40)
 
     expect(eyes).toHaveLength(2)
-    for (const eye of eyes) expect(eye.getAttribute('fill')).toBe('#000')
-    const gap = eyeGapAt(pet, 40)
-    expect(eyes.map(eye => Number(eye.getAttribute('cx')))).toEqual([50 - gap / 2, 50 + gap / 2])
+    for (const eye of eyes) {
+      expect(eye.getAttribute('fill')).toBe('#fff')
+      expect(Number(eye.getAttribute('width'))).toBe(EYE_WIDTH)
+      expect(Number(eye.getAttribute('height'))).toBe(EYE_HEIGHT)
+      expect(Number(eye.getAttribute('rx'))).toBe(EYE_WIDTH / 2)
+    }
+    expect(eyes.map(eye => Number(eye.getAttribute('x')) + EYE_WIDTH / 2)).toEqual([
+      pet.eyeX - gap / 2,
+      pet.eyeX + gap / 2
+    ])
+    expect(pet.eyeY).toBeLessThan(PET_GRID / 2)
   })
 
-  it('stands the picture behind the face rather than over it', () => {
-    const box = face()
-    const layers = Array.from(box.children)
-    const field = layers.findIndex(one => one.className.includes('rounded-full'))
+  it('stands the eyes and inset edge over the clipped field', () => {
+    const body = face().querySelector('.agent-pet-body') as HTMLElement
+    const layers = Array.from(body.children)
+    const field = layers.findIndex(one => one.tagName.toLowerCase() === 'span')
     const drawing = layers.findIndex(one => one.tagName.toLowerCase() === 'svg')
+    const edge = body.querySelector('svg > path') as SVGPathElement
 
-    expect(field).toBeGreaterThanOrEqual(0)
-    expect(drawing).toBeGreaterThan(field)
+    expect(field).toBe(0)
+    expect(drawing).toBe(1)
+    expect(edge.getAttribute('fill')).toBe('none')
+    expect(edge.getAttribute('stroke-opacity')).toBe('0.1')
   })
 
-  it('is photographed in the palette its own id answers to', () => {
-    const sky = (box: HTMLElement): string => {
-      const field = Array.from(box.children).find(one => one.className.includes('rounded-full'))!
+  it('fills the silhouette from the palette its own id answers to', () => {
+    const color = (box: HTMLElement): string => {
+      const field = box.querySelector('.agent-pet-body > span') as HTMLElement
       return (field.firstElementChild as HTMLElement).style.backgroundColor
     }
-    const mine = sky(face())
+    const mine = color(face({ size: 'xs' }))
     cleanup()
-    const theirs = sky(face({ seed: 'ali/kimi' }))
+    const theirs = color(face({ seed: 'ali/kimi', size: 'xs' }))
 
     expect(paletteFor(SEED)).not.toEqual(paletteFor('ali/kimi'))
     expect(mine).not.toBe('')
     expect(mine).not.toBe(theirs)
+    expect(FIELD_LIGHT).toBe(1)
   })
 
-  // Two holes closer together than a pixel are one slot, and a slot across the
-  // middle of a white shape is not a face.
-  it('keeps a bridge between the eyes at the size they are really drawn', () => {
-    const bridge = (size: string, box: number): number => {
-      const eyes = Array.from(face({ size }).querySelectorAll('svg mask circle'))
-      const gap = eyes.map(eye => Number(eye.getAttribute('cx')))
-      return ((gap[1] - gap[0] - EYE_RADIUS * 2) / PET_GRID) * box * BODY
+  it('keeps daylight between the capsule eyes at every drawn size', () => {
+    const space = (size: string, box: number): number => {
+      const eyes = Array.from(face({ size }).querySelectorAll('.agent-pet-eyes rect')) as SVGRectElement[]
+      const centers = eyes.map(eye => Number(eye.getAttribute('x')) + EYE_WIDTH / 2)
+      return ((centers[1] - centers[0] - EYE_WIDTH) / PET_GRID) * box
     }
-    const small = bridge('xs', 20)
+    const small = space('xs', 20)
     cleanup()
-    const large = bridge('lg', 48)
+    const large = space('lg', 48)
 
-    expect(small).toBeGreaterThanOrEqual(MIN_BRIDGE - 0.001)
-    expect(large).toBeGreaterThanOrEqual(MIN_BRIDGE - 0.001)
-    // Opened only as far as the size asks for, so a face is not two faces.
+    expect(small).toBeGreaterThanOrEqual(MIN_EYE_GAP - 0.001)
+    expect(large).toBeGreaterThanOrEqual(MIN_EYE_GAP - 0.001)
     expect(eyeGapAt(petOf(SEED), 48)).toBe(petOf(SEED).eyeGap)
   })
 
-  // Less light on the scene rather than an ink over it, so every color in the
-  // palette is still there and the white shape is the brightest thing in the
-  // tile. A helper's mark is the picture itself and carries nothing white, so
-  // it is left at the light the covers are photographed in.
-  it('stands the pet on the same picture under less light, and only the pet', () => {
-    const picture = (box: HTMLElement): HTMLElement =>
-      Array.from(box.querySelectorAll('span')).find(one => one.style.filter)!
-
-    const worn = picture(face()).style.filter
-    cleanup()
-    const bare = picture(render(createElement(SubagentMark, { seed: SEED })).container.firstElementChild as HTMLElement)
-      .style.filter
-
-    expect(FIELD_LIGHT).toBeLessThan(1)
-    expect(worn).toContain(`brightness(${FIELD_LIGHT})`)
-    expect(worn).toContain('blur')
-    expect(bare).toContain('blur')
-    expect(bare).not.toContain('brightness')
-  })
-
-  it('draws none of it where somebody has put a photo on', () => {
+  it('clips an uploaded photo to the same silhouette without drawing underneath it', () => {
     const box = face({ photo: PHOTO })
+    const image = box.querySelector('img') as HTMLImageElement
 
-    expect(box.querySelector('img')).not.toBeNull()
+    expect(image.style.clipPath).toContain('path(')
+    expect(image.className).not.toContain('rounded-full')
     expect(box.querySelector('svg')).toBeNull()
     expect(box.querySelector('canvas')).toBeNull()
   })
