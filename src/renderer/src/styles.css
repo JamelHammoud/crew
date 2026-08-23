@@ -1025,6 +1025,7 @@ textarea:placeholder-shown {
 .agent-icon .agent-face-stage,
 .agent-icon .agent-pet-eyes,
 .agent-icon .agent-activity-stage,
+.agent-icon .agent-morph-bridge,
 .agent-icon .agent-activity-object,
 .agent-icon .agent-activity-object [data-part] {
   transform-box: fill-box;
@@ -1046,6 +1047,11 @@ textarea:placeholder-shown {
 .agent-icon .agent-activity-stage[data-motion='outgoing'] {
   z-index: 1;
   animation: agent-form-out 520ms linear both;
+}
+
+.agent-icon .agent-morph-bridge {
+  z-index: 3;
+  animation: agent-morph-bridge 720ms linear both;
 }
 
 .agent-icon .agent-face-stage[data-motion='hidden'] {
@@ -1109,39 +1115,74 @@ textarea:placeholder-shown {
   63.5% {
     opacity: 1;
     transform: translate(0, 4%) rotate(12deg) scale(0.18, 0.5);
+    filter: blur(1px);
   }
   63.6%,
   100% {
     opacity: 0;
     transform: translate(0, 4%) rotate(12deg) scale(0.18, 0.5);
+    filter: blur(1px);
   }
 }
 
 @keyframes agent-form-in {
   0%,
-  45.9% {
+  54.9% {
     opacity: 0;
-    transform: translate(0, 4%) rotate(12deg) scale(0.18, 0.5);
+    transform: translate(0, 4%) rotate(-12deg) scale(0.18, 0.5);
+    filter: blur(1px);
   }
-  46% {
+  55% {
     opacity: 1;
-    transform: translate(0, 4%) rotate(12deg) scale(0.18, 0.5);
+    transform: translate(0, 4%) rotate(-12deg) scale(0.18, 0.5);
+    filter: blur(1px);
   }
-  58% {
+  65% {
     opacity: 1;
     transform: translate(2%, -5%) rotate(6deg) scale(0.78, 1.16);
+    filter: blur(0);
   }
-  72% {
+  78% {
     opacity: 1;
     transform: translate(-1%, 2%) rotate(-3deg) scale(1.07, 0.91);
   }
-  86% {
+  90% {
     opacity: 1;
     transform: translate(0, -1%) rotate(1deg) scale(0.98, 1.03);
   }
   100% {
     opacity: 1;
     transform: translate(0, 0) rotate(0) scale(1);
+  }
+}
+
+@keyframes agent-morph-bridge {
+  0%,
+  43.9% {
+    opacity: 0;
+    transform: translate(0, 4%) rotate(12deg) scale(0.18, 0.5);
+    filter: blur(1px);
+  }
+  44% {
+    opacity: 1;
+    transform: translate(0, 4%) rotate(12deg) scale(0.18, 0.5);
+    filter: blur(1px);
+  }
+  49.5% {
+    opacity: 1;
+    transform: translate(0, 2%) rotate(1deg) scale(0.45, 0.35);
+    filter: blur(0.45px);
+  }
+  55% {
+    opacity: 1;
+    transform: translate(0, 4%) rotate(-12deg) scale(0.18, 0.5);
+    filter: blur(1px);
+  }
+  55.1%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 4%) rotate(-12deg) scale(0.18, 0.5);
+    filter: blur(1px);
   }
 }
 
@@ -1660,6 +1701,7 @@ textarea:placeholder-shown {
   .agent-icon .agent-face-stage,
   .agent-icon .agent-pet-eyes,
   .agent-icon .agent-activity-stage,
+  .agent-icon .agent-morph-bridge,
   .agent-icon .agent-activity-object,
   .agent-icon .agent-activity-object [data-part] {
     animation: none;
@@ -1667,7 +1709,8 @@ textarea:placeholder-shown {
 
   .agent-icon .agent-face-stage[data-motion='hidden'],
   .agent-icon .agent-face-stage[data-motion='outgoing'],
-  .agent-icon .agent-activity-stage[data-motion='outgoing'] {
+  .agent-icon .agent-activity-stage[data-motion='outgoing'],
+  .agent-icon .agent-morph-bridge {
     opacity: 0;
   }
 
