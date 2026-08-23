@@ -214,7 +214,7 @@ function linkedAnchor(anchor: HTMLAnchorElement, ref: FileRef): void {
   if (ref.line !== null) anchor.dataset.line = String(ref.line)
   const content = anchor.ownerDocument.createElement('code')
   content.textContent = shortFileLabel(ref.path, ref.line === null ? ref.path : `${ref.path}:${ref.line}`)
-  anchor.append(FileGlyph.element(anchor.ownerDocument, 'resource-chip-icon'), content)
+  anchor.replaceChildren(FileGlyph.element(anchor.ownerDocument, 'resource-chip-icon'), content)
 }
 
 export function linkifyFiles(root: HTMLElement): string[] {
