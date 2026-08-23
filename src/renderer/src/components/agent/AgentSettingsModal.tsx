@@ -28,8 +28,15 @@ export default function AgentSettingsModal({
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Advanced" width={460} flush>
-      <div className="max-h-[calc(100vh-3rem)] overflow-y-auto overscroll-contain p-6 space-y-5">
+    <Modal
+      open={open}
+      onClose={onClose}
+      title="Advanced"
+      width={460}
+      flush
+      className="max-h-[calc(100dvh-3rem)] flex flex-col"
+    >
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-6 space-y-5">
         <div className="flex items-center gap-2">
           <h3 className="text-base font-semibold text-fg">{label}</h3>
           {changed > 0 && (

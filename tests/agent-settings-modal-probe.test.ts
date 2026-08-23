@@ -30,9 +30,12 @@ describe('the advanced agent settings modal', () => {
     const dialog = screen.getByRole('dialog')
     const page = baseElement.querySelector('.overflow-y-auto') as HTMLElement
 
+    expect(dialog.className).toContain('max-h-[calc(100dvh-3rem)]')
+    expect(dialog.className).toContain('flex-col')
     expect(dialog.className).toContain('overflow-hidden')
     expect(page.parentElement).toBe(dialog)
-    expect(page.className).toContain('max-h-[calc(100vh-3rem)]')
+    expect(page.className).toContain('min-h-0')
+    expect(page.className).toContain('flex-1')
     expect(page.className).toContain('overscroll-contain')
     expect(screen.getByRole('button', { name: 'Done' })).not.toBeNull()
   })
