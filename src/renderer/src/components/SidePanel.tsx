@@ -7,6 +7,7 @@ const STILL_WITHIN = 3
 
 export default function SidePanel() {
   const open = useBrowser(s => s.open)
+  const fullScreen = useBrowser(s => s.fullScreen)
   const width = useBrowser(s => s.width)
   const [dragging, setDragging] = useState(false)
   const lastRelease = useRef(0)
@@ -45,15 +46,20 @@ export default function SidePanel() {
 
   return (
     <div
-      className={`relative shrink-0 overflow-hidden bg-ink-900 ${open ? 'border-l border-ink-700' : ''} ${
-        dragging ? '' : 'transition-[width] duration-200'
-      }`}
-      style={{ width: open ? width : 0 }}
+      data-browser-fullscreen={open && fullScreen ? '' : undefined}
+      className={
+        open && fullScreen
+          ? 'fixed inset-0 z-[60] overflow-hidden bg-ink-900'
+          : `relative shrink-0 overflow-hidden bg-ink-900 ${open ? 'border-l border-ink-700' : ''} ${
+              dragging ? '' : 'transition-[width] duration-200'
+            }`
+      }
+      style={open && fullScreen ? undefined : { width: open ? width : 0 }}
     >
-      <div className="absolute inset-y-0 left-0 h-full" style={{ width }}>
+      <div className="absolute inset-y-0 left-0 h-full" style={{ width: open && fullScreen ? '100%' : width }}>
         <BrowserPanel />
       </div>
-      {open && (
+      {open && !fullScreen && (
         <div
           onPointerDown={startResize}
           className="absolute inset-y-0 left-0 w-1.5 z-10 cursor-col-resize hover:bg-fg/10 transition-colors"

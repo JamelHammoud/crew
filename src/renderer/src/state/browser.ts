@@ -71,6 +71,7 @@ export type PanelMemory = {
   activeTabId: string | null
   width: number
   open: boolean
+  fullScreen: boolean
   closedPlans: string[]
   closedBoards: string[]
 }
@@ -81,6 +82,7 @@ type BrowserState = {
   // tab existing, so it can be open on nothing and say what it can hold, and so
   // closing it is putting it away rather than throwing away what is in it.
   open: boolean
+  fullScreen: boolean
   tabs: BrowserTab[]
   activeTabId: string | null
   // The threads whose plan was put away by hand. A plan comes up with the
@@ -94,6 +96,7 @@ type BrowserState = {
   togglePanel(): void
   openPanel(): void
   closePanel(): void
+  toggleFullScreen(): void
   openUrl(url: string): void
   openPlugin(plugin: PluginReference, url?: string): void
   showPage(url: string): void
@@ -237,12 +240,13 @@ export const useBrowser = create<BrowserState>((write, get) => {
   // that came with a thread you have left, and every tab closed by hand.
   // Opening it again on nothing is what the Start tab is for.
   const settle = () => {
-    if (get().tabs.length === 0) write({ open: false } as never)
+    if (get().tabs.length === 0) write({ open: false, fullScreen: false } as never)
   }
 
   return {
     width: DEFAULT_WIDTH,
     open: false,
+    fullScreen: false,
     tabs: [],
     activeTabId: null,
     closedPlans: [],
@@ -251,12 +255,13 @@ export const useBrowser = create<BrowserState>((write, get) => {
     resetWidth: () => set({ width: clampWidth(DEFAULT_WIDTH) }),
     // Closing keeps what is in it, so it is a toggle rather than a way to lose
     // three tabs by aiming at the wrong thing.
-    togglePanel: () => write({ open: !get().open }),
+    togglePanel: () => write(get().open ? { open: false, fullScreen: false } : { open: true }),
     // Standing the panel up on what is already in it. A tab that is there
     // already is not something arriving, so asking for one by name never opens
     // the panel on its own: only somebody pressing something does.
     openPanel: () => write({ open: true }),
-    closePanel: () => write({ open: false }),
+    closePanel: () => write({ open: false, fullScreen: false }),
+    toggleFullScreen: () => write({ fullScreen: !get().fullScreen }),
     openUrl: url => {
       const { tabs, activeTabId } = get()
       const existing = tabs.find(t => t.kind === 'web' && t.url === url)
@@ -618,17 +623,18 @@ export const useBrowser = create<BrowserState>((write, get) => {
       settle()
     },
     stash: () => {
-      const { tabs, activeTabId, width, open, closedPlans, closedBoards } = get()
+      const { tabs, activeTabId, width, open, fullScreen, closedPlans, closedBoards } = get()
       const mine = tabs.filter(t => t.kind !== 'terminal')
       const terminals = tabs.filter(t => t.kind === 'terminal')
       const held = terminals.some(t => t.id === activeTabId) ? activeTabId : null
-      write({ tabs: terminals, activeTabId: held ?? terminals[0]?.id ?? null })
+      write({ tabs: terminals, activeTabId: held ?? terminals[0]?.id ?? null, fullScreen: false })
       settle()
       return {
         tabs: mine,
         activeTabId: mine.some(t => t.id === activeTabId) ? activeTabId : null,
         width,
         open,
+        fullScreen,
         closedPlans,
         closedBoards
       }
@@ -643,6 +649,7 @@ export const useBrowser = create<BrowserState>((write, get) => {
           activeTabId: held ?? terminals[0]?.id ?? null,
           width: DEFAULT_WIDTH,
           open: terminals.length > 0,
+          fullScreen: false,
           closedPlans: [],
           closedBoards: []
         })
@@ -654,6 +661,7 @@ export const useBrowser = create<BrowserState>((write, get) => {
         activeTabId: held ?? memory.activeTabId,
         width: memory.width,
         open: memory.open,
+        fullScreen: memory.fullScreen,
         closedPlans: memory.closedPlans,
         closedBoards: memory.closedBoards
       })

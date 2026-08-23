@@ -9,8 +9,10 @@ import {
   ChecklistGlyph,
   CloseGlyph,
   CloseOthersGlyph,
+  CollapseGlyph,
   DocGlyph,
   ExternalLinkGlyph,
+  ExpandGlyph,
   FolderGlyph,
   GameGlyph,
   GlobeGlyph,
@@ -27,6 +29,7 @@ import {
 } from '../icons'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import { useCrew } from '../state/store'
+import { useFullScreen } from '../state/windowShape'
 import { markFor } from './attachmentMark'
 import { usePanelOpens, type PanelOpen } from './panelOpens'
 import { bringInto } from './scrollInto'
@@ -92,6 +95,8 @@ const iconButton =
 export default function BrowserPanel() {
   const tabs = useBrowser(s => s.tabs)
   const activeTabId = useBrowser(s => s.activeTabId)
+  const panelFullScreen = useBrowser(s => s.fullScreen)
+  const windowFullScreen = useFullScreen()
   const active = tabs.find(t => t.id === activeTabId) ?? null
   const [newOpen, setNewOpen] = useState(false)
   const [finding, setFinding] = useState(false)
@@ -149,7 +154,11 @@ export default function BrowserPanel() {
 
   return (
     <div className="h-full flex flex-col">
-      <header className="app-drag h-[70px] px-4 flex items-center gap-1.5 shrink-0">
+      <header
+        className={`app-drag h-[70px] px-4 flex items-center gap-1.5 shrink-0 ${
+          panelFullScreen && !windowFullScreen ? 'mac:pl-[92px]' : ''
+        }`}
+      >
         <div
           ref={node => {
             row.ref(node)
@@ -188,6 +197,16 @@ export default function BrowserPanel() {
             ))}
           </Popover>
         </span>
+        <Tooltip label={panelFullScreen ? 'Exit full screen' : 'Full screen'}>
+          <button
+            onClick={() => useBrowser.getState().toggleFullScreen()}
+            aria-label={panelFullScreen ? 'Exit full screen' : 'Full screen'}
+            aria-pressed={panelFullScreen}
+            className={`app-no-drag ${iconButton}`}
+          >
+            {panelFullScreen ? <CollapseGlyph className="w-4 h-4" /> : <ExpandGlyph className="w-4 h-4" />}
+          </button>
+        </Tooltip>
         <Tooltip label="Close">
           <button
             onClick={() => useBrowser.getState().closePanel()}
