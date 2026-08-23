@@ -4,7 +4,15 @@ import { ComputerGlyph, FolderGlyph } from '../../icons'
 // The one question a project is ever asked, and only the first time it is
 // opened. The two stand side by side rather than stacked, because it is a
 // choice between two places and a column of rows reads as a list.
-export default function WhereTo({ busy, onPick }: { busy: boolean; onPick: (home: CrewHome) => void }) {
+export default function WhereTo({
+  busy,
+  heading = true,
+  onPick
+}: {
+  busy: boolean
+  heading?: boolean
+  onPick: (home: CrewHome) => void
+}) {
   const options: Array<{ home: CrewHome; mark: JSX.Element; title: string; line: string }> = [
     {
       home: 'folder',
@@ -22,7 +30,7 @@ export default function WhereTo({ busy, onPick }: { busy: boolean; onPick: (home
 
   return (
     <div className="space-y-7 text-center">
-      <h2 className="text-lg font-semibold text-fg">Where should this crew be saved?</h2>
+      {heading && <h2 className="text-lg font-semibold text-fg">Where should this crew be saved?</h2>}
       <div className="grid grid-cols-2 gap-3">
         {options.map(option => (
           <button

@@ -4,8 +4,8 @@ import { said } from '../../api/said'
 import { BranchGlyph, FolderGlyph, LinkGlyph, PlusGlyph } from '../../icons'
 import { useSidebar } from '../../state/sidebar'
 import { useCrew } from '../../state/store'
-import JoinLink from '../../views/home/JoinLink'
-import CloneRepo from '../../views/home/CloneRepo'
+import JoinLink, { JoinLinkAction } from '../../views/home/JoinLink'
+import CloneRepo, { CloneRepoAction } from '../../views/home/CloneRepo'
 import WhereTo from '../../views/home/WhereTo'
 import Modal from '../Modal'
 import { MenuItem, Popover } from '../Popover'
@@ -145,10 +145,22 @@ export default function NewPlace({
           />
         </Popover>
       </div>
-      <Modal open={asking !== null} onClose={() => setAsking(null)} title="" width={520} flush>
-        <div className="p-6">
+      <Modal
+        open={asking !== null}
+        onClose={() => setAsking(null)}
+        title="Where should this crew be saved?"
+        width={520}
+        flush
+        header={
+          <div className="shrink-0 px-6 pt-6 text-center">
+            <h2 className="text-lg font-semibold text-fg">Where should this crew be saved?</h2>
+          </div>
+        }
+      >
+        <div className="px-6 pt-7 pb-6">
           <WhereTo
             busy={busy}
+            heading={false}
             onPick={home => {
               const picked = asking
               setAsking(null)
@@ -165,19 +177,54 @@ export default function NewPlace({
         title=""
         width={420}
         flush
+        header={
+          <div className="shrink-0 px-6 pt-6 text-center">
+            <h2 className="text-lg font-semibold text-fg">Clone a Git repo</h2>
+          </div>
+        }
+        footer={
+          <div className="shrink-0 px-6 pb-6 pt-5">
+            <CloneRepoAction busy={cloning} onClone={() => void clone()} />
+          </div>
+        }
       >
-        <div className="p-6 space-y-4">
-          <CloneRepo remote={remote} busy={cloning} onRemote={setRemote} onClone={() => void clone()} />
+        <div className="px-6 pt-7 space-y-4">
+          <CloneRepo
+            remote={remote}
+            busy={cloning}
+            heading={false}
+            action={false}
+            onRemote={setRemote}
+            onClone={() => void clone()}
+          />
           {error && <p className="text-sm text-danger animate-pop">{error}</p>}
         </div>
       </Modal>
-      <Modal open={joining} onClose={() => setJoining(false)} title="" width={420} flush>
-        <div className="p-6 space-y-4">
+      <Modal
+        open={joining}
+        onClose={() => setJoining(false)}
+        title="Join a crew"
+        width={420}
+        flush
+        header={
+          <div className="shrink-0 px-6 pt-6 text-center">
+            <h2 className="text-lg font-semibold text-fg">Join a crew</h2>
+          </div>
+        }
+        footer={
+          <div className="shrink-0 px-6 pb-6 pt-5">
+            <JoinLinkAction busy={going} glass onJoin={() => void join()} />
+          </div>
+        }
+      >
+        <div className="px-6 pt-7 space-y-4">
           <JoinLink
             glass
             link={link}
             folder={folder}
             busy={going}
+            heading={false}
+            action={false}
             onLink={setLink}
             onPickFolder={async () => {
               const picked = await window.crew.pickFolder()
