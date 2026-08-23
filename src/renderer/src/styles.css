@@ -1221,20 +1221,32 @@ textarea:placeholder-shown {
   }
 }
 
-.agent-icon [data-part='thought-body'] {
-  animation: agent-thought-body 4.4s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+.agent-icon [data-part='thought-core'] {
+  animation: agent-thought-core 4.4s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
 }
 
-.agent-icon [data-part='thought-lobe-one'] {
-  animation: agent-thought-lobe-one 4.4s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+.agent-icon [data-part^='thought-lobe'] {
+  animation: agent-thought-lobe 4.4s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon [data-part='thought-lobe-two'] {
-  animation: agent-thought-lobe-two 4.4s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+  animation-delay: calc(var(--agent-delay, 0ms) - 180ms);
 }
 
 .agent-icon [data-part='thought-lobe-three'] {
-  animation: agent-thought-lobe-three 4.4s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+  animation-delay: calc(var(--agent-delay, 0ms) - 360ms);
+}
+
+.agent-icon [data-part='thought-lobe-four'] {
+  animation-delay: calc(var(--agent-delay, 0ms) - 540ms);
+}
+
+.agent-icon [data-part='thought-lobe-five'] {
+  animation-delay: calc(var(--agent-delay, 0ms) - 720ms);
+}
+
+.agent-icon [data-part='thought-lobe-six'] {
+  animation-delay: calc(var(--agent-delay, 0ms) - 900ms);
 }
 
 .agent-icon [data-part='thought-tail-one'] {
@@ -1257,70 +1269,35 @@ textarea:placeholder-shown {
   animation: agent-thought-dot-three 4.4s cubic-bezier(0.34, 1.56, 0.64, 1) var(--agent-delay, 0ms) infinite;
 }
 
-@keyframes agent-thought-body {
+@keyframes agent-thought-core {
   0%,
   100% {
-    transform: scale(1, 0.98);
-  }
-  18% {
-    transform: scale(1.02, 1.01);
-  }
-  38% {
-    transform: scale(0.99, 1.02);
-  }
-  58% {
-    transform: scale(1.015, 0.99);
-  }
-  78% {
-    transform: scale(0.985, 1.015);
-  }
-}
-
-@keyframes agent-thought-lobe-one {
-  0%,
-  100% {
-    transform: translate(2%, 3%) scale(0.92, 1.05);
+    transform: scale(1.01, 0.99);
   }
   24% {
-    transform: translate(-3%, -4%) scale(1.12, 0.94);
+    transform: scale(0.99, 1.025);
   }
-  52% {
-    transform: translate(2%, -1%) scale(0.97, 1.09);
+  48% {
+    transform: scale(1.02, 0.985);
   }
-  78% {
-    transform: translate(-1%, 3%) scale(1.06, 0.96);
-  }
-}
-
-@keyframes agent-thought-lobe-two {
-  0%,
-  100% {
-    transform: translateY(-1%) scale(1.04, 0.96);
-  }
-  18% {
-    transform: translate(2%, 3%) scale(0.94, 1.1);
-  }
-  44% {
-    transform: translate(-2%, -3%) scale(1.08, 0.95);
-  }
-  70% {
-    transform: translate(1%, 2%) scale(0.96, 1.07);
+  72% {
+    transform: scale(0.985, 1.02);
   }
 }
 
-@keyframes agent-thought-lobe-three {
+@keyframes agent-thought-lobe {
   0%,
   100% {
-    transform: translate(-2%, 2%) scale(0.96, 1.06);
+    transform: translate(0, 0) scale(1);
   }
-  28% {
-    transform: translate(3%, -3%) scale(1.1, 0.94);
+  8% {
+    transform: translate(-2%, -3%) scale(1.13, 0.91);
   }
-  56% {
-    transform: translate(-1%, 3%) scale(0.93, 1.11);
+  16% {
+    transform: translate(1%, 2%) scale(0.96, 1.08);
   }
-  82% {
-    transform: translate(2%, -1%) scale(1.07, 0.97);
+  25% {
+    transform: translate(0, 0) scale(1);
   }
 }
 
