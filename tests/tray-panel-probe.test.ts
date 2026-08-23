@@ -17,7 +17,6 @@ const bridge = {
   onTrayTheme: vi.fn(() => () => {}),
   resizeTray: vi.fn(),
   openWindow: vi.fn(),
-  quitCrew: vi.fn(),
   closeTray: vi.fn()
 }
 
@@ -62,7 +61,7 @@ describe('tray panel', () => {
 
     expect(screen.queryByText('Online')).toBeNull()
     expect(screen.queryByText('Working')).toBeNull()
-    expect(screen.getByText('Open Crew')).toBeTruthy()
+    expect(screen.queryByRole('button')).toBeNull()
   })
 
   it('says to open the app when no window is there to ask', () => {
@@ -70,7 +69,7 @@ describe('tray panel', () => {
 
     expect(screen.queryByText('Online')).toBeNull()
     expect(screen.queryByText('Working')).toBeNull()
-    expect(screen.getByText('Open Crew')).toBeTruthy()
+    expect(screen.queryByRole('button')).toBeNull()
   })
 
   it('lists the people online and the agents working', () => {
@@ -120,19 +119,6 @@ describe('tray panel', () => {
     const roster = screen.getByText('Online').parentElement?.parentElement as HTMLElement
     expect(panel.className).toContain('[&_button]:focus-visible:outline-none')
     expect(roster.className).toContain('overflow-x-hidden')
-  })
-
-  it('opens the app from the panel', () => {
-    show({ sharing: true, known: true })
-    fireEvent.click(screen.getByText('Open Crew'))
-
-    expect(bridge.openWindow).toHaveBeenCalled()
-  })
-
-  it('quits from the panel', () => {
-    fireEvent.click(screen.getByText('Quit Crew'))
-
-    expect(bridge.quitCrew).toHaveBeenCalled()
   })
 
   it('reports its own height, so the window is only as tall as the list', () => {

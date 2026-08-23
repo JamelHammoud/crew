@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactElement } from 'react'
 import { emptyPresence, type PresenceSnapshot } from '../../../shared/presence'
 import { MenuDivider, MenuItem } from '../components/Popover'
 import PresenceList from '../components/PresenceList'
-import { CheckCircleGlyph, LeaveGlyph, WindowGlyph } from '../icons'
+import { CheckCircleGlyph } from '../icons'
 import { showTheme } from '../state/theme'
 
 const LIST = 388
@@ -44,7 +44,6 @@ export default function TrayPanel(): ReactElement {
 
   const waiting = state.waiting
   const hasPresence = state.sharing && state.known
-  const hasSummary = waiting > 0 || hasPresence
 
   return (
     <div
@@ -64,9 +63,6 @@ export default function TrayPanel(): ReactElement {
           <Here state={state} />
         </div>
       )}
-      {hasSummary && <MenuDivider />}
-      <MenuItem icon={<WindowGlyph />} label="Open Crew" onClick={() => window.crew.openWindow()} />
-      <MenuItem icon={<LeaveGlyph />} label="Quit Crew" onClick={() => window.crew.quitCrew()} />
     </div>
   )
 }

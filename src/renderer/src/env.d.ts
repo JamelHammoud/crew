@@ -80,7 +80,6 @@ declare global {
     onTrayTheme(listener: (theme: 'dark' | 'light') => void): () => void
     resizeTray(height: number): void
     openWindow(): void
-    quitCrew(): void
     openProjectWindow(key: string): Promise<boolean>
     popOutThread(threadId: string, key?: string): Promise<void>
     setWindowPinned(pinned: boolean): Promise<boolean>

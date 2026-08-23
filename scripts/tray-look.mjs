@@ -41,7 +41,6 @@ window.crew = {
   onTrayTheme: listener => { queueMicrotask(() => listener(theme)); return () => {} },
   resizeTray: height => { window.trayProbe.height = height },
   openWindow: () => { window.trayProbe.opened++ },
-  quitCrew: () => { window.trayProbe.quit++ },
   closeTray: () => {}
 }
 createRoot(document.getElementById('root')).render(React.createElement(TrayPanel))

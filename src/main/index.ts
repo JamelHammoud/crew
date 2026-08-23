@@ -684,7 +684,6 @@ app.whenReady().then(() => {
   ipcMain.on('presence:publish', (_event, here: Present[]) => tray.update({ here, known: true }))
   ipcMain.on('tray:size', (_event, height: number) => tray.resizePanel(height))
   ipcMain.on('tray:open', () => openWindow())
-  ipcMain.on('tray:quit', () => app.quit())
   ipcMain.on('tray:hide', () => tray.hidePanel())
   // Everything about dictation is this machine's own, so the settings ride in
   // the window that holds them and are handed here to be acted on. Nothing about
