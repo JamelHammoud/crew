@@ -164,6 +164,8 @@ export type SessionEvent =
       byName: string
     }
   | { id: string; ts: number; kind: 'thread.status'; threadId: string; status: ThreadStatus; byName: string }
+  | { id: string; ts: number; kind: 'thread.renamed'; threadId: string; title: string; byName: string }
+  | { id: string; ts: number; kind: 'thread.deleted'; threadId: string; byName: string }
   | { id: string; ts: number; kind: 'todo.added'; todoId: string; text: string; agentId?: string; byName: string }
   | { id: string; ts: number; kind: 'todo.edited'; todoId: string; text: string; agentId?: string; byName: string }
   | { id: string; ts: number; kind: 'todo.removed'; todoId: string; byName: string }

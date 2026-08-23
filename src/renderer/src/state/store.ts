@@ -307,6 +307,8 @@ interface CrewState {
   editMessage: (messageId: string, text: string) => void
   reactToMessage: (targetId: string, emoji: ReactionEmoji) => void
   setThreadStatus: (threadId: string, status: ThreadStatus) => void
+  renameThread: (threadId: string, title: string) => void
+  deleteThread: (threadId: string) => void
   implementPlan: (threadId: string) => void
   postChat: (text: string, agentId?: string) => void
   addTodo: (text: string, agentId?: string) => void
@@ -554,6 +556,14 @@ const foldThread = (threads: Record<string, ThreadMeta>, event: SessionEvent): b
     case 'thread.agent':
       if (!threads[event.threadId]) return false
       threads[event.threadId] = { ...threads[event.threadId], agentId: event.agentId, agentLabel: event.agentLabel }
+      return true
+    case 'thread.renamed':
+      if (!threads[event.threadId]) return false
+      threads[event.threadId] = { ...threads[event.threadId], title: event.title }
+      return true
+    case 'thread.deleted':
+      if (!threads[event.threadId]) return false
+      delete threads[event.threadId]
       return true
   }
   return false
@@ -1530,6 +1540,12 @@ export const useCrew = create<CrewState>((set, get) => {
       socket.send(
         status === 'archived' ? { type: 'thread.archive', threadId } : { type: 'thread.status', threadId, status }
       )
+    },
+    renameThread: (threadId, title) => {
+      socket.send({ type: 'thread.rename', threadId, title })
+    },
+    deleteThread: threadId => {
+      socket.send({ type: 'thread.delete', threadId })
     },
     implementPlan: threadId => {
       socket.send({ type: 'plan.implement', threadId })

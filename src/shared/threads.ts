@@ -52,6 +52,14 @@ export function activeThreads(events: SessionEvent[], working: (threadId: string
         if (event.status === 'open') break
         open.delete(event.threadId)
         break
+      case 'thread.renamed': {
+        const thread = open.get(event.threadId)
+        if (thread) thread.title = event.title
+        break
+      }
+      case 'thread.deleted':
+        open.delete(event.threadId)
+        break
     }
     const stirred = stirs(event)
     const thread = stirred ? open.get(stirred) : undefined

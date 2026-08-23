@@ -409,6 +409,8 @@ const THREAD_EVENT_KINDS = new Set<SessionEvent['kind']>([
   'thread.archived',
   'thread.agent',
   'thread.status',
+  'thread.renamed',
+  'thread.deleted',
   'message.route'
 ])
 
@@ -532,6 +534,7 @@ export class CrewSession {
       })
     }
     const loaded = store.loadEvents()
+    const deletedThreads = new Set(loaded.filter(e => e.kind === 'thread.deleted').map(e => e.threadId))
     const deleted = new Set(loaded.filter(e => e.kind === 'message.deleted').map(e => e.messageId))
     const deletedTargets = new Set([...deleted].map(messageReactionTarget))
     const deletedHuddles = new Set(loaded.filter(e => e.kind === 'huddle.deleted').map(e => e.huddleId))
@@ -550,6 +553,7 @@ export class CrewSession {
             e.kind !== 'message.deleted' &&
             e.kind !== 'message.edited' &&
             e.kind !== 'huddle.deleted' &&
+            !('threadId' in e && deletedThreads.has(e.threadId) && e.kind !== 'thread.deleted') &&
             !(e.kind === 'message' && deleted.has(e.id)) &&
             !(e.kind === 'message.reaction' && deletedTargets.has(e.targetId)) &&
             !inDeletedHuddle(e)
@@ -608,6 +612,11 @@ export class CrewSession {
         const thread = this.threads.get(event.threadId)
         if (thread) thread.status = event.status
       }
+      if (event.kind === 'thread.renamed') {
+        const thread = this.threads.get(event.threadId)
+        if (thread) thread.title = event.title
+      }
+      if (event.kind === 'thread.deleted') this.threads.delete(event.threadId)
       if (event.kind === 'todo.added') {
         this.todos.set(event.todoId, {
           id: event.todoId,
@@ -1058,6 +1067,16 @@ export class CrewSession {
       case 'thread.status':
         if (meta.role === 'ui' && !this.hiddenFrom(ws, msg.threadId)) {
           this.handleThreadStatus(member, msg.threadId, msg.status)
+        }
+        break
+      case 'thread.rename':
+        if (meta.role === 'ui' && !this.hiddenFrom(ws, msg.threadId)) {
+          this.handleThreadRename(member, msg.threadId, msg.title)
+        }
+        break
+      case 'thread.delete':
+        if (meta.role === 'ui' && !this.hiddenFrom(ws, msg.threadId)) {
+          this.handleThreadDelete(ws, member, msg.threadId)
         }
         break
       case 'plan.implement':
@@ -3030,6 +3049,25 @@ export class CrewSession {
     if (!thread || !THREAD_STATUSES.has(status) || thread.status === status) return
     thread.status = status
     this.emit({ id: randomUUID(), ts: Date.now(), kind: 'thread.status', threadId, status, byName: member.name })
+  }
+
+  private handleThreadRename(member: Member, threadId: string, title: string): void {
+    const thread = this.threads.get(threadId)
+    const clean = this.titleFrom(title)
+    if (!thread || !clean || clean === thread.title) return
+    thread.title = clean
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'thread.renamed', threadId, title: clean, byName: member.name })
+  }
+
+  private handleThreadDelete(ws: WebSocket, member: Member, threadId: string): void {
+    const thread = this.threads.get(threadId)
+    if (!thread) return
+    if (thread.running || thread.queue.length > 0) {
+      this.refuse('Wait for this chat to finish before deleting it.', ws)
+      return
+    }
+    this.threads.delete(threadId)
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'thread.deleted', threadId, byName: member.name })
   }
 
   private saveAttachments(incoming?: OutgoingAttachment[], hidden?: WebSocket): Attachment[] {
