@@ -51,17 +51,17 @@ describe('the pet an agent wears', () => {
   it('keeps the seeded identity stable', () => {
     const pet = petOf(SEED)
     expect(pet.hue).toBe(225)
-    expect(pet.kind).toBe('teardrop')
-    expect(pet.eyeX).toBeCloseTo(55.95, 2)
+    expect(pet.kind).toBe('cloud')
+    expect(pet.eyeX).toBeCloseTo(55.392, 3)
     expect(pet.eyeY).toBeCloseTo(46.707, 3)
-    expect(pet.eyeGap).toBeCloseTo(18.38, 2)
-    expect(pet.tilt).toBeCloseTo(-8.474, 2)
+    expect(pet.eyeGap).toBeCloseTo(17.37, 2)
+    expect(pet.tilt).toBeCloseTo(-3.959, 3)
   })
 
   it('scales one silhouette to the box without changing its family', () => {
     const pet = petOf(SEED)
     expect(petPath(pet, 20)).not.toBe(pet.body)
-    expect(petPath(pet, 20)).toContain('M 10 1.4')
+    expect(petPath(pet, 20)).toContain('M 3.8 15.2')
     expect(petPath(pet, PET_GRID)).toBe(pet.body)
   })
 })
@@ -69,11 +69,12 @@ describe('the pet an agent wears', () => {
 describe('an agent face', () => {
   it('uses its generated field as the silhouette instead of a circular background', () => {
     const box = face({ size: 'xs' })
-    const body = box.querySelector('.agent-pet-body') as HTMLElement
-    const field = body.firstElementChild as HTMLElement
+    const shape = box.querySelector('mask > path') as SVGPathElement
+    const field = box.querySelector('.agent-pet-field') as HTMLElement
+    const picture = box.querySelector('foreignObject') as SVGForeignObjectElement
 
-    expect(field.style.clipPath).toContain('path(')
-    expect(field.style.clipPath).toContain(petPath(petOf(SEED), 20).slice(0, 20))
+    expect(shape.getAttribute('d')).toBe(petPath(petOf(SEED), 20))
+    expect(picture.getAttribute('mask')).toMatch(/^url\(#.+\)$/)
     expect(field.className).not.toContain('rounded-full')
     expect(box.querySelector('.rounded-full')).toBeNull()
   })
@@ -100,20 +101,21 @@ describe('an agent face', () => {
 
   it('stands the eyes and inset edge over the clipped field', () => {
     const body = face().querySelector('.agent-pet-body') as HTMLElement
-    const layers = Array.from(body.children)
-    const field = layers.findIndex(one => one.tagName.toLowerCase() === 'span')
-    const drawing = layers.findIndex(one => one.tagName.toLowerCase() === 'svg')
+    const drawing = body.firstElementChild as SVGSVGElement
+    const layers = Array.from(drawing.children)
+    const field = layers.findIndex(one => one.tagName.toLowerCase() === 'foreignobject')
+    const definitions = layers.findIndex(one => one.tagName.toLowerCase() === 'defs')
     const edge = body.querySelector('svg > path') as SVGPathElement
 
-    expect(field).toBe(0)
-    expect(drawing).toBe(1)
+    expect(definitions).toBe(0)
+    expect(field).toBe(1)
     expect(edge.getAttribute('fill')).toBe('none')
     expect(edge.getAttribute('stroke-opacity')).toBe('0.1')
   })
 
   it('fills the silhouette from the palette its own id answers to', () => {
     const color = (box: HTMLElement): string => {
-      const field = box.querySelector('.agent-pet-body > span') as HTMLElement
+      const field = box.querySelector('.agent-pet-field > span') as HTMLElement
       return (field.firstElementChild as HTMLElement).style.backgroundColor
     }
     const mine = color(face({ size: 'xs' }))
