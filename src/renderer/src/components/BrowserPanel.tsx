@@ -51,7 +51,7 @@ export { showsImage } from './BrowserTabMark'
 const iconButton =
   'w-9 h-9 shrink-0 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95 disabled:opacity-30 disabled:pointer-events-none'
 
-export default function BrowserPanel() {
+export default function BrowserPanel({ standalone = false }: { standalone?: boolean }) {
   const tabs = useBrowser(s => s.tabs)
   const activeTabId = useBrowser(s => s.activeTabId)
   const panelFullScreen = useBrowser(s => s.fullScreen)
@@ -120,7 +120,7 @@ export default function BrowserPanel() {
     <div className="h-full flex flex-col">
       <header
         className={`app-drag h-[70px] px-4 flex items-center gap-1.5 shrink-0 ${
-          panelFullScreen && !windowFullScreen ? 'mac:pl-[92px]' : ''
+          (standalone || panelFullScreen) && !windowFullScreen ? 'mac:pl-[92px]' : ''
         }`}
       >
         <div

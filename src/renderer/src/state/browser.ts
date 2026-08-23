@@ -533,7 +533,7 @@ export const useBrowser = create<BrowserState>((write, get) => {
         canGoBack: false,
         canGoForward: false
       }
-      write({ tabs: [opened], activeTabId: id, open: true, fullScreen: false })
+      write({ tabs: [opened], activeTabId: id, open: true, fullScreen: true })
     },
     selectTab: id => set({ activeTabId: id }),
     // The row is the order somebody put it in, so a tab dragged into another
