@@ -23,6 +23,7 @@ import { setBadge, showAlert } from './alerts'
 import { KeepAwake } from './awake'
 import { windowForAlert, type AgentAlert } from '../shared/alerts'
 import { cleanAppIcon, DEFAULT_APP_ICON, type AppIconId } from '../shared/appIcon'
+import type { BrowserTab } from '../shared/browserTab'
 import type { SystemDetails } from '../shared/feedback'
 import { pluginForConnection, type PluginConnectionInput, type PluginConnectionResult } from '../shared/plugins'
 import { copyImage } from './clipboard'
@@ -598,6 +599,20 @@ app.whenReady().then(() => {
     win.on('closed', () => {
       if (popped.get(at) === win) popped.delete(at)
     })
+  })
+  ipcMain.handle('window:pop-browser-tab', (event, tab: BrowserTab) => {
+    const place = crews.keyInView(event.sender.id)
+    if (!place) return false
+    const win = createWindow(undefined, false)
+    if (!crews.switchTo(win.webContents.id, place)) {
+      win.destroy()
+      return false
+    }
+    win.webContents.once('did-finish-load', () => {
+      if (!win.webContents.isDestroyed()) win.webContents.send('browser:open-tab', tab)
+    })
+    loadWindow(win)
+    return true
   })
   ipcMain.handle('window:open-project', async (_event, key: string) => {
     const win = createWindow(undefined, false)

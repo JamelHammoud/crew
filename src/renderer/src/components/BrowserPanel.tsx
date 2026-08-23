@@ -13,6 +13,7 @@ import {
   FolderGlyph,
   GlobeGlyph,
   PanelRightGlyph,
+  PopOutGlyph,
   PlusGlyph,
   RefreshGlyph,
   XCircleGlyph
@@ -497,6 +498,15 @@ function TabPill({
         </span>
       </button>
       <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined}>
+        <MenuItem
+          icon={<PopOutGlyph />}
+          label="Open in new window"
+          onClick={() => {
+            setMenuAt(null)
+            void window.crew.popOutBrowserTab(tab)
+          }}
+        />
+        <MenuDivider />
         <MenuItem
           icon={<CloseGlyph />}
           label="Close tab"

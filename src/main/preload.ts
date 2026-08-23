@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import type { AgentAlert } from '../shared/alerts'
 import type { AppIconId } from '../shared/appIcon'
+import type { BrowserTab } from '../shared/browserTab'
 import type { SystemDetails } from '../shared/feedback'
 import type { OpenRequest } from '../shared/cli'
 import type { CommandDone, CommandState } from '../shared/crewCommand'
@@ -110,6 +111,7 @@ const bridge = {
   closeTray: (): void => ipcRenderer.send('tray:hide'),
   popOutThread: (threadId: string, key?: string): Promise<void> =>
     ipcRenderer.invoke('window:pop-thread', threadId, key),
+  popOutBrowserTab: (tab: BrowserTab): Promise<boolean> => ipcRenderer.invoke('window:pop-browser-tab', tab),
   setWindowPinned: (pinned: boolean): Promise<boolean> => ipcRenderer.invoke('window:pin', pinned),
   appVersion: (): Promise<string> => ipcRenderer.invoke('app:version'),
   systemInfo: (): Promise<SystemDetails> => ipcRenderer.invoke('app:system'),
@@ -218,6 +220,9 @@ const bridge = {
   },
   onOpenUrl: (listener: (url: string) => void): void => {
     ipcRenderer.on('browser:open', (_event, url: string) => listener(url))
+  },
+  onOpenBrowserTab: (listener: (tab: BrowserTab) => void): void => {
+    ipcRenderer.on('browser:open-tab', (_event, tab: BrowserTab) => listener(tab))
   },
   onFindInPage: (listener: () => void): (() => void) => {
     const handler = () => listener()

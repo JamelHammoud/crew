@@ -2,6 +2,7 @@
 
 import type { AgentAlert } from '../../shared/alerts'
 import type { AppIconId } from '../../shared/appIcon'
+import type { BrowserTab } from '../../shared/browserTab'
 import type { SystemDetails } from '../../shared/feedback'
 import type { OpenRequest } from '../../shared/cli'
 import type { CommandDone, CommandState } from '../../shared/crewCommand'
@@ -84,6 +85,7 @@ declare global {
     openProjectWindow(key: string): Promise<boolean>
     openPersonalChat(name: string): Promise<boolean>
     popOutThread(threadId: string, key?: string): Promise<void>
+    popOutBrowserTab(tab: BrowserTab): Promise<boolean>
     setWindowPinned(pinned: boolean): Promise<boolean>
     closeTray(): void
     appVersion(): Promise<string>
@@ -99,6 +101,7 @@ declare global {
     onTerminalData(listener: (id: string, chunk: string) => void): () => void
     onTerminalExit(listener: (id: string) => void): () => void
     onNotificationOpen(listener: (threadId: string, place: string | null) => void): () => void
+    onOpenBrowserTab(listener: (tab: BrowserTab) => void): void
     applyScribe(settings: ScribeSettings): Promise<ScribeKeyState>
     scribeState(): Promise<ScribeKeyState>
     openScribePermission(): Promise<void>

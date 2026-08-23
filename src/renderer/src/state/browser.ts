@@ -1,65 +1,9 @@
 import { canPreview } from '../../../shared/files'
+import type { BrowserTab } from '../../../shared/browserTab'
 import { offerForAppUrl, pluginOwnsUrl, resolvePlugin, type PluginReference } from '../../../shared/plugins'
 import { create } from 'zustand'
 
-export type BrowserTab = {
-  id: string
-  kind:
-    | 'web'
-    | 'file'
-    | 'terminal'
-    | 'image'
-    | 'attachment'
-    | 'music'
-    | 'game'
-    | 'plan'
-    | 'work'
-    | 'aside'
-    | 'agent'
-    | 'review'
-  initialUrl: string
-  url: string
-  title: string
-  favicon: string | null
-  loading: boolean
-  error: string
-  canGoBack: boolean
-  canGoForward: boolean
-  path: string
-  line: number | null
-  diff: string | null
-  // What a terminal tab was opened to run, typed into the shell once it is up.
-  command: string | null
-  folder: string
-  mime: string
-  size: number
-  // Which game a games tab is standing in, or null for the list of them. It
-  // rides on the tab so the pill can say what you are playing and so a look at
-  // another tab does not put you back at the top of the list.
-  game: string | null
-  // Whose plan a plan tab holds, or which helper a helper tab is reading. A
-  // plan tab stands only while that thread is the one open; a helper tab is
-  // ordinary, and travels between the list and the one it is reading by
-  // writing its own threadId.
-  threadId: string
-  // The thread whose helpers a helper tab is standing in. It rides on the tab
-  // so the way back out of one is still there after a look at another tab.
-  parentThreadId: string
-  back: string[]
-  forward: string[]
-  // Whether the file tree is standing beside the file, and which folders in it
-  // are open. Both ride on the tab, so a tree survives a look at another tab.
-  tree: boolean
-  open: string[]
-  // Whether a file that is written to be read as a page, a markdown one or an
-  // html one, is being read that way rather than as the text it is written in.
-  // It rides on the tab, so walking from one page to the next keeps reading them
-  // the way you asked for.
-  preview: boolean
-  generation: number
-  plugin: string | null
-  pluginLabel: string
-}
+export type { BrowserTab } from '../../../shared/browserTab'
 
 export const DEFAULT_WIDTH = 480
 export const PLUGIN_WIDTH = 760
@@ -122,6 +66,7 @@ type BrowserState = {
   toggleFolder(id: string, path: string): void
   addTab(): void
   addTerminal(command?: string, folder?: string): void
+  openWindowTab(tab: BrowserTab): void
   stash(): PanelMemory
   restore(memory: PanelMemory | null): void
   selectTab(id: string): void
@@ -574,6 +519,21 @@ export const useBrowser = create<BrowserState>((write, get) => {
     addTerminal: (command, folder = '') => {
       const tab = { ...makeTab(), kind: 'terminal' as const, command: command ?? null, folder }
       set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
+    },
+    openWindowTab: tab => {
+      const id = makeTab().id
+      const initialUrl = tab.kind === 'web' ? tab.url || tab.initialUrl : tab.initialUrl
+      const opened = {
+        ...tab,
+        id,
+        initialUrl,
+        url: initialUrl,
+        loading: false,
+        error: '',
+        canGoBack: false,
+        canGoForward: false
+      }
+      write({ tabs: [opened], activeTabId: id, open: true, fullScreen: false })
     },
     selectTab: id => set({ activeTabId: id }),
     // The row is the order somebody put it in, so a tab dragged into another

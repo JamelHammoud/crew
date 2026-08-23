@@ -53,6 +53,7 @@ if (joins) {
     setWindowPinned(shape.pinned)
   })
   window.crew.onOpenUrl(url => useBrowser.getState().openUrl(url))
+  window.crew.onOpenBrowserTab(tab => useBrowser.getState().openWindowTab(tab))
 }
 
 // What this machine says about itself is said by the app's own window and not by
