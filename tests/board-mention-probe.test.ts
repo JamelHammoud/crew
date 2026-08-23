@@ -30,6 +30,7 @@ if (typeof globalThis.CSS === 'undefined') {
 
 const { default: Chat } = await import('../src/renderer/src/views/Chat')
 const { default: DesignChip } = await import('../src/renderer/src/components/DesignChip')
+const { default: ThreadItems } = await import('../src/renderer/src/components/ThreadItems')
 const { useCrew } = await import('../src/renderer/src/state/store')
 
 const events: SessionEvent[] = [
@@ -150,5 +151,41 @@ describe('a design API chip', () => {
     )
     fireEvent.click(screen.getByRole('button', { name: 'Read Landing' }))
     expect(useCrew.getState().designTarget).toBe('landing-1abc')
+  })
+
+  it('keeps the tool-call gap between design chips in one run', () => {
+    boot(false)
+    cleanup()
+    render(
+      createElement(ThreadItems, {
+        items: [
+          {
+            key: 'design-read',
+            ts: 1,
+            kind: 'design',
+            author: 'Bubbles',
+            self: false,
+            text: '',
+            streaming: false,
+            promptId: 'prompt-1',
+            design: { boardId: 'landing-1abc', action: 'read' }
+          },
+          {
+            key: 'design-edit',
+            ts: 2,
+            kind: 'design',
+            author: 'Bubbles',
+            self: false,
+            text: '',
+            streaming: false,
+            promptId: 'prompt-1',
+            design: { boardId: 'landing-1abc', action: 'edit' }
+          }
+        ]
+      })
+    )
+
+    expect(screen.getByRole('button', { name: 'Read Landing' }).closest('div')?.className).not.toContain('-mt-3')
+    expect(screen.getByRole('button', { name: 'Edited Landing' }).closest('div')?.className).toContain('-mt-3')
   })
 })

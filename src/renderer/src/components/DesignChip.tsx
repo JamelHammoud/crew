@@ -5,7 +5,7 @@ import HoverCard from './HoverCard'
 import { BoardCardContent } from './Mention'
 import { sameItem, type ThreadItem } from './thread'
 
-function DesignChip({ item }: { item: ThreadItem }) {
+function DesignChip({ item, linked }: { item: ThreadItem; linked?: boolean }) {
   const boardId = item.design?.boardId ?? ''
   const action = item.design?.action ?? 'read'
   const board = useCrew(state => state.boards.find(one => one.id === boardId))
@@ -30,10 +30,13 @@ function DesignChip({ item }: { item: ThreadItem }) {
   )
 
   return (
-    <div className="flex items-center pl-13 pr-4 py-1 select-none">
+    <div className={`flex items-center pl-13 pr-4 py-1 select-none ${linked ? '-mt-3' : ''}`}>
       {board ? <HoverCard content={<BoardCardContent boardId={boardId} />}>{chip}</HoverCard> : chip}
     </div>
   )
 }
 
-export default memo(DesignChip, (before, after) => sameItem(before.item, after.item))
+export default memo(
+  DesignChip,
+  (before, after) => before.linked === after.linked && sameItem(before.item, after.item)
+)
