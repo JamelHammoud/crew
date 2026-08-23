@@ -1,4 +1,4 @@
-import type { BrowserWindowConstructorOptions, MenuItemConstructorOptions } from 'electron'
+import type { BrowserWindow, BrowserWindowConstructorOptions, MenuItemConstructorOptions } from 'electron'
 
 // The tray panel. Never `skipTaskbar`: on macOS that turns the app into an
 // accessory, and the icon leaves the dock and does not come back.
@@ -165,10 +165,10 @@ function editMenuItem(command: 'undo' | 'redo', isMac: boolean): MenuItemConstru
     accelerator: `${modifier}+${key}`,
     click: (_item, window) => {
       if (!window) return
-      const contents = window.webContents
+      const contents = (window as BrowserWindow).webContents
       void contents
         .executeJavaScript("document.activeElement?.dataset.editHistory === 'file'")
-        .then(file => {
+        .then((file: boolean) => {
           if (file) {
             return contents.executeJavaScript(
               `document.activeElement?.dispatchEvent(new CustomEvent('crew-edit-command', { detail: '${command}' }))`
