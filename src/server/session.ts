@@ -836,6 +836,26 @@ export class CrewSession {
       }
       this.events.push(close)
       store.appendEvent(close)
+    }
+    const ended = new Set<string>()
+    for (const event of this.events) {
+      if (event.kind === 'agent.end') ended.add(event.promptId)
+    }
+    for (const event of [...this.events]) {
+      if (event.kind !== 'agent.start' || ended.has(event.promptId)) continue
+      const close: SessionEvent = {
+        id: randomUUID(),
+        ts: Date.now(),
+        kind: 'agent.end',
+        promptId: event.promptId,
+        agentId: event.agentId,
+        agentLabel: event.agentLabel,
+        threadId: event.threadId,
+        ok: false,
+        error: 'Interrupted by a restart'
+      }
+      this.events.push(close)
+      store.appendEvent(close)
       const thread = event.threadId ? this.threads.get(event.threadId) : undefined
       if (thread?.parentThreadId) {
         const returned = this.events.some(
@@ -869,26 +889,6 @@ export class CrewSession {
       )
       if (!end || end.kind !== 'agent.end') continue
       this.holdSubagentReturn(thread, event, end.text ?? end.error ?? '')
-    }
-    const ended = new Set<string>()
-    for (const event of this.events) {
-      if (event.kind === 'agent.end') ended.add(event.promptId)
-    }
-    for (const event of [...this.events]) {
-      if (event.kind !== 'agent.start' || ended.has(event.promptId)) continue
-      const close: SessionEvent = {
-        id: randomUUID(),
-        ts: Date.now(),
-        kind: 'agent.end',
-        promptId: event.promptId,
-        agentId: event.agentId,
-        agentLabel: event.agentLabel,
-        threadId: event.threadId,
-        ok: false,
-        error: 'Interrupted by a restart'
-      }
-      this.events.push(close)
-      store.appendEvent(close)
     }
     for (const [page, doc] of Object.entries(store.loadDocs())) this.docs.set(page, doc)
     if (!this.docs.has(ROOT_PAGE)) {
