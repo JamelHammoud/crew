@@ -592,7 +592,10 @@ describe('a tab opened by another Crew window', () => {
 
     useBrowser.getState().addTab()
 
-    expect(useBrowser.getState().tabs.map(one => one.id)).toEqual([opened.id, expect.not.stringMatching(`^${opened.id}$`)])
+    expect(useBrowser.getState().tabs.map(one => one.id)).toEqual([
+      opened.id,
+      expect.not.stringMatching(`^${opened.id}$`)
+    ])
   })
 })
 

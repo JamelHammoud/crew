@@ -87,9 +87,7 @@ describe('a Browser tab window', () => {
     const made = windowDouble()
     const load = vi.fn()
 
-    expect(
-      openBrowserTabWindow(tab, 'project-one', { create: () => made.win, join: () => null, load })
-    ).toBe(false)
+    expect(openBrowserTabWindow(tab, 'project-one', { create: () => made.win, join: () => null, load })).toBe(false)
     expect(made.destroy).toHaveBeenCalledOnce()
     expect(load).not.toHaveBeenCalled()
   })

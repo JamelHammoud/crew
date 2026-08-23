@@ -7,11 +7,7 @@ type BrowserTabWindowOptions = {
   load(win: BrowserWindow): void
 }
 
-export function openBrowserTabWindow(
-  tab: BrowserTab,
-  place: string | null,
-  options: BrowserTabWindowOptions
-): boolean {
+export function openBrowserTabWindow(tab: BrowserTab, place: string | null, options: BrowserTabWindowOptions): boolean {
   if (!place) return false
   const win = options.create()
   if (!options.join(win.webContents.id, place)) {
