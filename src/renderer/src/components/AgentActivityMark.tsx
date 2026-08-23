@@ -78,15 +78,15 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
       <g data-part="search-mark">
         <path
           data-part="search-handle"
-          d="M58 58 L81 81"
+          d="M56 56 L77 77"
           fill="none"
           stroke="#fff"
           strokeWidth="14"
           strokeLinecap="round"
         />
         <g data-part="search-lens">
-          <circle data-part="search-ring" cx="39" cy="38" r="29" />
-          <circle data-part="search-hole" cx="39" cy="38" r="17" fill="#000" />
+          <circle data-part="search-ring" cx="39" cy="38" r="26.5" />
+          <circle data-part="search-hole" cx="39" cy="38" r="15.5" fill="#000" />
         </g>
       </g>
     )
