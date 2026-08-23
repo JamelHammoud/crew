@@ -1022,10 +1022,135 @@ textarea:placeholder-shown {
   animation: generating 1.1s ease-in-out infinite alternate;
 }
 
+.agent-icon .agent-pet-drawing,
+.agent-icon .agent-photo,
+.agent-icon .agent-pet-eyes {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.agent-icon[data-activity='thinking'] .agent-pet-drawing {
+  animation: agent-thinking 1.8s cubic-bezier(0.45, 0, 0.3, 1) infinite;
+}
+
+.agent-icon[data-activity='thinking'] .agent-pet-eyes {
+  animation: agent-thinking-eyes 1.8s cubic-bezier(0.45, 0, 0.3, 1) infinite;
+}
+
+.agent-icon[data-activity='reading'] .agent-pet-eyes {
+  animation: agent-reading 1.45s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.agent-icon[data-activity='writing'] .agent-pet-drawing {
+  animation: agent-writing 0.78s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.agent-icon[data-activity='acting'] .agent-pet-drawing {
+  animation: agent-acting 1.05s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+}
+
+.agent-icon[data-activity='thinking'] .agent-photo,
+.agent-icon[data-activity='reading'] .agent-photo,
+.agent-icon[data-activity='writing'] .agent-photo,
+.agent-icon[data-activity='acting'] .agent-photo {
+  animation: agent-photo-working 1.5s cubic-bezier(0.45, 0, 0.3, 1) infinite;
+}
+
+@keyframes agent-thinking {
+  0%,
+  100% {
+    transform: rotate(-2deg) translateY(0) scale(0.98, 1.02);
+  }
+  50% {
+    transform: rotate(3deg) translateY(-3%) scale(1.02, 0.98);
+  }
+}
+
+@keyframes agent-thinking-eyes {
+  0%,
+  100% {
+    transform: translate(-2px, 1px);
+  }
+  50% {
+    transform: translate(3px, -3px);
+  }
+}
+
+@keyframes agent-reading {
+  0%,
+  14%,
+  100% {
+    transform: translateX(-5px) scaleY(0.86);
+  }
+  43%,
+  57% {
+    transform: translateX(5px) scaleY(0.86);
+  }
+}
+
+@keyframes agent-writing {
+  0%,
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+  48% {
+    transform: translateY(3%) scale(1.04, 0.94);
+  }
+  62% {
+    transform: translateY(-2%) scale(0.98, 1.03);
+  }
+}
+
+@keyframes agent-acting {
+  0%,
+  100% {
+    transform: rotate(-2deg) translateY(1%) scale(1.02, 0.98);
+  }
+  45% {
+    transform: rotate(2deg) translateY(-4%) scale(0.96, 1.05);
+  }
+  70% {
+    transform: rotate(0) translateY(0) scale(1.03, 0.97);
+  }
+}
+
+@keyframes agent-photo-working {
+  0%,
+  100% {
+    transform: rotate(-1deg) translateY(0);
+  }
+  50% {
+    transform: rotate(1deg) translateY(-3%);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .design-generating,
-  .pulse-soft {
+  .pulse-soft,
+  .agent-icon .agent-pet-drawing,
+  .agent-icon .agent-photo,
+  .agent-icon .agent-pet-eyes {
     animation: none;
+  }
+
+  .agent-icon[data-activity='thinking'] .agent-pet-drawing {
+    transform: rotate(2deg);
+  }
+
+  .agent-icon[data-activity='thinking'] .agent-pet-eyes {
+    transform: translate(3px, -3px);
+  }
+
+  .agent-icon[data-activity='reading'] .agent-pet-eyes {
+    transform: translateX(5px) scaleY(0.86);
+  }
+
+  .agent-icon[data-activity='writing'] .agent-pet-drawing {
+    transform: translateY(2%) scale(1.03, 0.96);
+  }
+
+  .agent-icon[data-activity='acting'] .agent-pet-drawing {
+    transform: rotate(-2deg) translateY(-2%) scale(0.98, 1.03);
   }
 }
 

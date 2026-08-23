@@ -3,6 +3,7 @@ import { attachmentFileUrl } from '../../../shared/attachments'
 import { useCrew } from '../state/store'
 import GeneratedField from './art/GeneratedField'
 import { BODY, EYE_RADIUS, FIELD_LIGHT, PET_GRID, eyeGapAt, petOf } from './art/pet'
+import { activityForAgent, type AgentActivity } from './agentActivity'
 
 const SIZES = {
   xs: 'w-5 h-5',
@@ -33,6 +34,7 @@ export default function AgentIcon({
   px,
   presence,
   photo,
+  activity,
   className = ''
 }: {
   seed: string
@@ -45,6 +47,7 @@ export default function AgentIcon({
   // For the tray panel, which is handed the picture rather than the session it
   // came from.
   photo?: string
+  activity?: AgentActivity
   className?: string
 }) {
   const pet = petOf(seed)
@@ -53,14 +56,17 @@ export default function AgentIcon({
   const mask = useId()
   const file = useCrew(state => state.agents.find(agent => agent.id === seed)?.avatar)
   const httpBase = useCrew(state => state.httpBase)
+  const automaticActivity = useCrew(state => activityForAgent(state.activePrompts[seed], state.steps))
+  const shownActivity = activity ?? automaticActivity
   const src = photo ?? (file && httpBase ? attachmentFileUrl(httpBase, file) : undefined)
   return (
     <span
-      className={`${px ? '' : SIZES[size]} relative inline-block align-middle shrink-0 ${className}`}
+      className={`${px ? '' : SIZES[size]} agent-icon relative inline-block align-middle shrink-0 ${className}`}
+      data-activity={shownActivity}
       style={px ? { width: px, height: px } : undefined}
     >
       {src ? (
-        <img src={src} alt="" draggable={false} className="block w-full h-full rounded-full object-cover" />
+        <img src={src} alt="" draggable={false} className="agent-photo block w-full h-full rounded-full object-cover" />
       ) : (
         <>
           <GeneratedField seed={seed} box={box} light={FIELD_LIGHT} className="rounded-full overflow-hidden" />
@@ -68,12 +74,18 @@ export default function AgentIcon({
               cut out of the tile it stands in, so what comes through them is
               whatever the picture is doing behind rather than one fixed colour
               over a surface that changes under it. */}
-          <svg viewBox={`0 0 ${PET_GRID} ${PET_GRID}`} className="absolute inset-0 w-full h-full" aria-hidden>
+          <svg
+            viewBox={`0 0 ${PET_GRID} ${PET_GRID}`}
+            className="agent-pet-drawing absolute inset-0 w-full h-full rounded-full overflow-hidden"
+            aria-hidden
+          >
             <mask id={mask}>
               <g transform={`rotate(${pet.tilt} 50 54) translate(50 53) scale(${BODY}) translate(-50 -53)`}>
                 <path d={pet.body} fill="#fff" stroke="#fff" strokeWidth={7} strokeLinejoin="round" />
-                <circle cx={50 - gap / 2} cy={pet.eyeY} r={EYE_RADIUS} fill="#000" />
-                <circle cx={50 + gap / 2} cy={pet.eyeY} r={EYE_RADIUS} fill="#000" />
+                <g className="agent-pet-eyes">
+                  <circle cx={50 - gap / 2} cy={pet.eyeY} r={EYE_RADIUS} fill="#000" />
+                  <circle cx={50 + gap / 2} cy={pet.eyeY} r={EYE_RADIUS} fill="#000" />
+                </g>
               </g>
             </mask>
             <rect width={PET_GRID} height={PET_GRID} fill="#fff" mask={`url(#${mask})`} />

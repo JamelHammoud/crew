@@ -8,13 +8,6 @@ import { GRAIN, type Mesh, meshOf } from './mesh'
 // handed. An agent's face and a helper's mark are the same picture in two
 // silhouettes, so it is written once here rather than twice in the two.
 
-// Under this the shader is not worth what it buys. A row of faces is a dozen
-// marks, the picture is drawn at 512 and cached per id, and a wall of them on
-// the first paint of a panel costs more than the difference can be seen. The
-// mesh underneath is the same palette laid out the same way, so what it stands
-// down to is the picture blurred rather than a colour.
-export const WORTH_DRAWING = 40
-
 export default function GeneratedField({
   seed,
   box,
@@ -36,14 +29,10 @@ export default function GeneratedField({
   className?: string
 }) {
   const tile = useRef<HTMLCanvasElement>(null)
-  const [drawn, setDrawn] = useState(box >= WORTH_DRAWING)
+  const [drawn, setDrawn] = useState(true)
   const subject = useMemo(() => ({ id: seed, colors: paletteFor(seed) }), [seed])
 
   useEffect(() => {
-    if (box < WORTH_DRAWING) {
-      setDrawn(false)
-      return
-    }
     const canvas = tile.current
     if (!canvas) return
     const art = coverFor(subject)

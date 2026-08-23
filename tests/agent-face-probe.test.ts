@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, render } from '@testing-library/react'
+import { act, cleanup, render } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import AgentIcon from '../src/renderer/src/components/AgentIcon'
@@ -25,7 +25,7 @@ const SEED = 'jamel/claude'
 const PHOTO = 'http://192.0.2.10:2739/attachments/me.png'
 
 beforeEach(() => {
-  useCrew.setState({ agents: [], httpBase: '' })
+  useCrew.setState({ agents: [], httpBase: '', activePrompts: {}, steps: {} })
 })
 
 afterEach(() => {
@@ -154,5 +154,51 @@ describe('an agent face', () => {
     expect(box.querySelector('img')).not.toBeNull()
     expect(box.querySelector('svg')).toBeNull()
     expect(box.querySelector('canvas')).toBeNull()
+  })
+
+  it('keeps a live agent moving in the state its latest step names', () => {
+    const box = face()
+
+    expect(box.dataset.activity).toBe('idle')
+    act(() => useCrew.setState({ activePrompts: { [SEED]: ['p1'] } }))
+    expect(box.dataset.activity).toBe('thinking')
+
+    act(() =>
+      useCrew.setState({
+        steps: {
+          p1: [{ id: 'read', ts: 1, kind: 'tool', status: 'running', name: 'Read' }]
+        }
+      })
+    )
+    expect(box.dataset.activity).toBe('reading')
+
+    act(() =>
+      useCrew.setState({
+        steps: {
+          p1: [{ id: 'edit', ts: 2, kind: 'tool', status: 'running', name: 'Edit' }]
+        }
+      })
+    )
+    expect(box.dataset.activity).toBe('writing')
+
+    act(() =>
+      useCrew.setState({
+        steps: {
+          p1: [{ id: 'bash', ts: 3, kind: 'tool', status: 'running', name: 'Bash' }]
+        }
+      })
+    )
+    expect(box.dataset.activity).toBe('acting')
+
+    act(() => useCrew.setState({ activePrompts: {} }))
+    expect(box.dataset.activity).toBe('idle')
+  })
+
+  it('moves an uploaded face without drawing the generated pet underneath it', () => {
+    const box = face({ photo: PHOTO, activity: 'reading' })
+
+    expect(box.dataset.activity).toBe('reading')
+    expect(box.querySelector('.agent-photo')).not.toBeNull()
+    expect(box.querySelector('.agent-pet-drawing')).toBeNull()
   })
 })
