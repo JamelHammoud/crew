@@ -219,6 +219,10 @@ describe('the file explorer', () => {
 
     fireEvent.keyDown(editor, { key: 'f', ctrlKey: true })
     const find = await screen.findByRole('textbox', { name: 'Find in this file' })
+    const bar = find.parentElement!
+    expect(bar.className.split(' ')).toContain('left-4')
+    expect(bar.className.split(' ')).toContain('max-w-80')
+    expect(bar.className.split(' ')).not.toContain('w-80')
     fireEvent.change(find, { target: { value: 'EXPORT' } })
 
     expect(await screen.findByText('1/1')).toBeTruthy()
