@@ -12,7 +12,7 @@ const blocks = [...styles.matchAll(/^([^@\s][^{}\n]*?)\s*\{\n([^{}]*?)\n\}/gm)].
   body
 }))
 
-const block = (selector: string): string => blocks.find(rule => rule.selector === selector)?.body ?? ''
+const block = (selector: string): string => blocks.filter(rule => rule.selector === selector).at(-1)?.body ?? ''
 
 describe('the app window corner', () => {
   it('lets macOS clip its native app and thread windows once', () => {
