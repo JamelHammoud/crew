@@ -162,25 +162,29 @@ export default function BrowserPanel({ standalone = false }: { standalone?: bool
             ))}
           </Popover>
         </span>
-        <Tooltip label={panelFullScreen ? 'Exit full screen' : 'Full screen'}>
-          <button
-            onClick={() => useBrowser.getState().toggleFullScreen()}
-            aria-label={panelFullScreen ? 'Exit full screen' : 'Full screen'}
-            aria-pressed={panelFullScreen}
-            className={`app-no-drag ${iconButton}`}
-          >
-            {panelFullScreen ? <CollapseGlyph className="w-4 h-4" /> : <ExpandGlyph className="w-4 h-4" />}
-          </button>
-        </Tooltip>
-        <Tooltip label="Close">
-          <button
-            onClick={() => useBrowser.getState().closePanel()}
-            aria-label="Close"
-            className={`app-no-drag ${iconButton}`}
-          >
-            <CloseGlyph className="w-4 h-4" />
-          </button>
-        </Tooltip>
+        {!standalone && (
+          <>
+            <Tooltip label={panelFullScreen ? 'Exit full screen' : 'Full screen'}>
+              <button
+                onClick={() => useBrowser.getState().toggleFullScreen()}
+                aria-label={panelFullScreen ? 'Exit full screen' : 'Full screen'}
+                aria-pressed={panelFullScreen}
+                className={`app-no-drag ${iconButton}`}
+              >
+                {panelFullScreen ? <CollapseGlyph className="w-4 h-4" /> : <ExpandGlyph className="w-4 h-4" />}
+              </button>
+            </Tooltip>
+            <Tooltip label="Close">
+              <button
+                onClick={() => useBrowser.getState().closePanel()}
+                aria-label="Close"
+                className={`app-no-drag ${iconButton}`}
+              >
+                <CloseGlyph className="w-4 h-4" />
+              </button>
+            </Tooltip>
+          </>
+        )}
       </header>
 
       {active && active.kind === 'file' && (

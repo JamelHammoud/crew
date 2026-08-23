@@ -14,8 +14,9 @@ import { setFullScreen, setWindowPinned } from './state/windowShape'
 import ScribeWindow from './views/ScribeWindow'
 import ThreadWindow from './views/ThreadWindow'
 import PersonalChatWindow from './views/PersonalChatWindow'
+import BrowserWindow from './views/BrowserWindow'
 import TrayPanel from './views/TrayPanel'
-import { PERSONAL_CHAT_HASH, threadIdInHash } from '../../shared/threadViews'
+import { BROWSER_WINDOW_HASH, PERSONAL_CHAT_HASH, threadIdInHash } from '../../shared/threadViews'
 import './styles.css'
 
 // One renderer, four windows. The app itself, a thread somebody popped out, the
@@ -26,13 +27,14 @@ import './styles.css'
 const WINDOWS: Record<string, () => JSX.Element> = {
   '#tray': TrayPanel,
   '#scribe': ScribeWindow,
-  [PERSONAL_CHAT_HASH]: PersonalChatWindow
+  [PERSONAL_CHAT_HASH]: PersonalChatWindow,
+  [BROWSER_WINDOW_HASH]: BrowserWindow
 }
 
 const hash = window.location.hash
 const popped = threadIdInHash(hash) !== null
 const Aside = popped ? ThreadWindow : (WINDOWS[hash] ?? null)
-const joins = Aside === null || popped || hash === PERSONAL_CHAT_HASH
+const joins = Aside === null || popped || hash === PERSONAL_CHAT_HASH || hash === BROWSER_WINDOW_HASH
 const root = document.getElementById('root')!
 
 if (joins) root.classList.add('native-shell')
