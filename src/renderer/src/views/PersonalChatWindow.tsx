@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ClockGlyph, PencilGlyph, PlusGlyph, SearchGlyph, TrashGlyph } from '../icons'
+import { ClockGlyph, CloseGlyph, PencilGlyph, PlusGlyph, SearchGlyph, TrashGlyph } from '../icons'
 import { stripMention } from '../../../shared/llm'
-import { Popover } from '../components/Popover'
 import Tooltip from '../components/Tooltip'
 import Toaster from '../components/Toaster'
 import { TOP_BAR_H } from '../components/TopBar'
@@ -12,6 +11,7 @@ import ThreadView from './ThreadView'
 export default function PersonalChatWindow() {
   const [active, setActive] = useState<string | null>(null)
   const [historyOpen, setHistoryOpen] = useState(false)
+  const [searching, setSearching] = useState(false)
   const [query, setQuery] = useState('')
   const [editing, setEditing] = useState<string | null>(null)
   const [editText, setEditText] = useState('')
@@ -39,14 +39,38 @@ export default function PersonalChatWindow() {
     if (active && !threads[active]) setActive(null)
   }, [active, threads])
 
+  useEffect(() => {
+    if (!historyOpen) {
+      setSearching(false)
+      setQuery('')
+      return
+    }
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setHistoryOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [historyOpen])
+
+  const closeHistory = () => {
+    setHistoryOpen(false)
+    setEditing(null)
+    setDeleting(null)
+  }
+
+  const closeSearch = () => {
+    setSearching(false)
+    setQuery('')
+  }
+
   const open = (threadId: string) => {
     setActive(threadId)
-    setHistoryOpen(false)
+    closeHistory()
   }
 
   const fresh = () => {
     setActive(null)
-    setHistoryOpen(false)
+    closeHistory()
   }
 
   const beginRename = (threadId: string, title: string) => {
@@ -87,27 +111,72 @@ export default function PersonalChatWindow() {
               <ClockGlyph className="w-5 h-5" />
             </button>
           </Tooltip>
-          <Popover open={historyOpen} onClose={() => setHistoryOpen(false)} className="w-[320px]">
-            <div className="px-2 pt-1.5 pb-2 flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-fg">Chats</h2>
-              <button
-                onClick={fresh}
-                aria-label="New chat"
-                className="w-8 h-8 rounded-full text-fg/70 flex items-center justify-center transition-[color,background-color,transform] hover:bg-fg/[0.08] hover:text-fg active:scale-95"
-              >
-                <PlusGlyph className="w-4 h-4" />
-              </button>
-            </div>
-            <div className="relative mx-1 mb-1.5">
-              <SearchGlyph className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-fg/40 pointer-events-none" />
-              <input
-                value={query}
-                onChange={event => setQuery(event.target.value)}
-                placeholder="Search chats"
-                className="w-full h-9 rounded-full bg-fg/[0.06] pl-9 pr-3 text-sm text-fg placeholder:text-fg/40 outline-none focus:bg-fg/[0.08]"
-              />
-            </div>
-            <div className="max-h-[420px] overflow-y-auto">
+        </div>
+      </div>
+      {thread ? <ThreadView threadId={thread.id} alone personal /> : <Chat personal onStart={setActive} />}
+      {historyOpen && <div className="absolute inset-0 z-30" onClick={closeHistory} />}
+      <div className="absolute inset-0 z-50 overflow-hidden pointer-events-none">
+        <aside
+          data-personal-history
+          aria-hidden={!historyOpen}
+          className={`app-no-drag pointer-events-auto absolute inset-y-0 right-0 w-[380px] bg-ink-900 border-l border-ink-700 shadow-2xl shadow-black/40 light:shadow-black/10 flex flex-col transition-transform duration-200 ${
+            historyOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
+        >
+          <header className="h-[70px] px-5 flex items-center shrink-0">
+            {searching ? (
+              <>
+                <SearchGlyph className="w-4 h-4 shrink-0 text-fg-muted" />
+                <input
+                  autoFocus
+                  value={query}
+                  onChange={event => setQuery(event.target.value)}
+                  onKeyDown={event => {
+                    if (event.key === 'Escape') {
+                      event.stopPropagation()
+                      closeSearch()
+                    }
+                  }}
+                  placeholder="Search chats"
+                  className="flex-1 min-w-0 mx-2.5 bg-transparent text-base text-fg placeholder:text-fg-faint outline-none"
+                />
+                <button
+                  onClick={closeSearch}
+                  aria-label="Close search"
+                  className="w-9 h-9 shrink-0 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
+                >
+                  <CloseGlyph className="w-4 h-4" />
+                </button>
+              </>
+            ) : (
+              <>
+                <h2 className="flex-1 text-lg font-bold text-fg">Chats</h2>
+                <button
+                  onClick={fresh}
+                  aria-label="New chat"
+                  className="w-9 h-9 mr-1 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
+                >
+                  <PlusGlyph className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setSearching(true)}
+                  aria-label="Search chats"
+                  className="w-9 h-9 mr-1 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
+                >
+                  <SearchGlyph className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={closeHistory}
+                  aria-label="Close chats"
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
+                >
+                  <CloseGlyph className="w-4 h-4" />
+                </button>
+              </>
+            )}
+          </header>
+          <div className="relative flex-1 min-h-0">
+            <div className="h-full overflow-y-auto px-3 pb-6">
               {history.map(one => {
                 const title = stripMention(one.title, one.agentLabel) || 'Untitled'
                 return (
@@ -158,15 +227,14 @@ export default function PersonalChatWindow() {
                 )
               })}
               {connection === 'online' && history.length === 0 && (
-                <p className="px-3 py-8 text-sm text-fg/45 text-center">
+                <p className="px-6 mt-16 text-base text-fg-muted text-center">
                   {query ? 'No chats found.' : 'No chats yet.'}
                 </p>
               )}
             </div>
-          </Popover>
-        </div>
+          </div>
+        </aside>
       </div>
-      {thread ? <ThreadView threadId={thread.id} alone personal /> : <Chat personal onStart={setActive} />}
       <Toaster />
     </div>
   )
