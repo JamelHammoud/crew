@@ -33,15 +33,21 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
   if (activity === 'searching') {
     return (
       <>
-        <circle cx="43" cy="40" r="32" />
-        <path d="M62 61 C66 57 71 58 75 62 L94 81 C99 86 99 92 94 96 C90 100 84 99 80 95 L61 76 C57 72 57 66 62 61 Z" />
-        <circle cx="43" cy="40" r="18" fill="#000" />
+        <g data-part="search-lens">
+          <circle cx="43" cy="40" r="32" />
+          <circle cx="43" cy="40" r="18" fill="#000" />
+        </g>
+        <path
+          data-part="search-handle"
+          d="M62 61 C66 57 71 58 75 62 L94 81 C99 86 99 92 94 96 C90 100 84 99 80 95 L61 76 C57 72 57 66 62 61 Z"
+        />
       </>
     )
   }
   if (activity === 'editing') {
     return (
       <path
+        data-part="pencil"
         d="M69 8 C74 3 81 3 86 8 L92 14 C97 19 97 26 92 31 L39 84 L14 94 C9 96 5 92 7 87 L17 62 Z M22 69 L31 78 L73 36 L64 27 Z"
         fillRule="evenodd"
       />
@@ -64,8 +70,9 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
   if (activity === 'running') {
     return (
       <>
-        <rect x="5" y="13" width="90" height="74" rx="17" />
+        <rect data-part="terminal" x="5" y="13" width="90" height="74" rx="17" />
         <path
+          data-part="terminal-prompt"
           d="M23 35 L38 50 L23 65"
           fill="none"
           stroke="#000"
@@ -73,22 +80,58 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
           strokeLinecap="round"
           strokeLinejoin="round"
         />
-        <path d="M48 66 H73" fill="none" stroke="#000" strokeWidth="8" strokeLinecap="round" />
+        <path
+          data-part="terminal-cursor"
+          d="M48 66 H73"
+          fill="none"
+          stroke="#000"
+          strokeWidth="8"
+          strokeLinecap="round"
+        />
       </>
     )
   }
   if (activity === 'planning') {
     return (
       <>
-        <path d="M20 12 H80 C87 12 91 17 91 24 V88 C91 94 87 97 80 97 H20 C13 97 9 94 9 88 V24 C9 17 13 12 20 12 Z" />
-        <rect x="32" y="5" width="36" height="17" rx="8.5" />
         <path
-          d="M25 42 L31 48 L42 35 M50 43 H75 M25 68 L31 74 L42 61 M50 69 H75"
+          data-part="plan-board"
+          d="M20 12 H80 C87 12 91 17 91 24 V88 C91 94 87 97 80 97 H20 C13 97 9 94 9 88 V24 C9 17 13 12 20 12 Z"
+        />
+        <rect data-part="plan-clip" x="32" y="5" width="36" height="17" rx="8.5" />
+        <path
+          data-part="plan-check-one"
+          d="M25 42 L31 48 L42 35"
           fill="none"
           stroke="#000"
           strokeWidth="6"
           strokeLinecap="round"
           strokeLinejoin="round"
+        />
+        <path
+          data-part="plan-line-one"
+          d="M50 43 H75"
+          fill="none"
+          stroke="#000"
+          strokeWidth="6"
+          strokeLinecap="round"
+        />
+        <path
+          data-part="plan-check-two"
+          d="M25 68 L31 74 L42 61"
+          fill="none"
+          stroke="#000"
+          strokeWidth="6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          data-part="plan-line-two"
+          d="M50 69 H75"
+          fill="none"
+          stroke="#000"
+          strokeWidth="6"
+          strokeLinecap="round"
         />
       </>
     )
@@ -96,6 +139,7 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
   if (activity === 'communicating') {
     return (
       <path
+        data-part="message"
         d="M8 43 L86 8 C93 5 98 10 95 17 L63 92 C61 97 55 97 52 92 L39 68 L16 56 C9 53 5 47 8 43 Z M40 62 L77 25 L33 55 Z"
         fillRule="evenodd"
       />
@@ -103,8 +147,14 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
   }
   return (
     <>
-      <path d="M57 6 C68 8 77 15 81 25 L69 37 L59 35 L56 25 L67 14 C63 11 59 9 57 6 Z" />
-      <path d="M58 31 C65 38 65 49 59 56 L25 92 C20 97 12 97 7 92 C2 87 3 79 8 74 L42 39 C46 34 52 31 58 31 Z" />
+      <path
+        data-part="wrench-head"
+        d="M57 6 C68 8 77 15 81 25 L69 37 L59 35 L56 25 L67 14 C63 11 59 9 57 6 Z"
+      />
+      <path
+        data-part="wrench-handle"
+        d="M58 31 C65 38 65 49 59 56 L25 92 C20 97 12 97 7 92 C2 87 3 79 8 74 L42 39 C46 34 52 31 58 31 Z"
+      />
     </>
   )
 }
