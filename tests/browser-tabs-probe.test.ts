@@ -209,6 +209,72 @@ describe('the tab strip', () => {
     expect(row.hasAttribute('data-fade-right')).toBe(false)
   })
 
+  it('keeps every open tab in a searchable switcher', () => {
+    openThree()
+    const [first, second] = useBrowser.getState().tabs
+    act(() => {
+      useBrowser.getState().updateTab(first!.id, { title: 'First page' })
+      useBrowser.getState().updateTab(second!.id, { title: 'Second page' })
+    })
+    const { getByRole, queryByText } = render(createElement(BrowserPanel))
+
+    fireEvent.click(getByRole('button', { name: 'Search tabs' }))
+    fireEvent.change(getByRole('textbox', { name: 'Search tabs' }), { target: { value: 'second' } })
+
+    expect(queryByText('First page')).toBeNull()
+    expect(getByRole('button', { name: /Second page/ })).toBeTruthy()
+  })
+
+  it('opens a tab from the switcher and brings its pill into view', () => {
+    laidOutRow()
+    openFour()
+    const first = useBrowser.getState().tabs[0]!
+    act(() => useBrowser.getState().updateTab(first.id, { title: 'First page' }))
+    const { getByRole } = render(createElement(BrowserPanel))
+    scrolled.length = 0
+
+    fireEvent.click(getByRole('button', { name: 'Search tabs' }))
+    fireEvent.click(getByRole('button', { name: /First page/ }))
+
+    expect(useBrowser.getState().activeTabId).toBe(first.id)
+    expect(scrolled.at(-1)?.left).toBe(0)
+  })
+
+  it('closes a tab from the switcher without opening it', () => {
+    openThree()
+    const [first, second, third] = useBrowser.getState().tabs
+    act(() => useBrowser.getState().updateTab(second!.id, { title: 'Middle page' }))
+    const { getByRole } = render(createElement(BrowserPanel))
+
+    fireEvent.click(getByRole('button', { name: 'Search tabs' }))
+    fireEvent.click(getByRole('button', { name: 'Close Middle page' }))
+
+    expect(order()).toEqual([first!.id, third!.id])
+    expect(useBrowser.getState().activeTabId).toBe(third!.id)
+  })
+
+  it('opens tab search from the browser shortcut', () => {
+    openTwo()
+    const { getByRole } = render(createElement(BrowserPanel))
+
+    fireEvent.keyDown(window, { key: 'a', metaKey: true, shiftKey: true })
+
+    expect(getByRole('textbox', { name: 'Search tabs' })).toBeTruthy()
+  })
+
+  it('cycles through tabs in both directions', () => {
+    openThree()
+    const [first, second, third] = useBrowser.getState().tabs
+    render(createElement(BrowserPanel))
+
+    fireEvent.keyDown(window, { key: 'Tab', ctrlKey: true })
+    expect(useBrowser.getState().activeTabId).toBe(first!.id)
+
+    fireEvent.keyDown(window, { key: 'Tab', ctrlKey: true, shiftKey: true })
+    expect(useBrowser.getState().activeTabId).toBe(third!.id)
+    expect(second).toBeTruthy()
+  })
+
   it('closes one tab from its own menu', () => {
     openTwo()
     const { container, getByText } = render(createElement(BrowserPanel))
@@ -218,6 +284,18 @@ describe('the tab strip', () => {
     fireEvent.click(getByText('Close tab'))
 
     expect(useBrowser.getState().tabs.map(t => t.id)).toEqual([second!.id])
+  })
+
+  it('closes tabs to the right from its own menu', () => {
+    openFour()
+    const [first, second] = useBrowser.getState().tabs
+    const { container, getByText } = render(createElement(BrowserPanel))
+
+    fireEvent.contextMenu(pillFor(container, second!.id)!)
+    fireEvent.click(getByText('Close tabs to the right'))
+
+    expect(order()).toEqual([first!.id, second!.id])
+    expect(useBrowser.getState().activeTabId).toBe(second!.id)
   })
 
   it('keeps the tab the menu was opened on and closes the rest', () => {
@@ -409,6 +487,16 @@ describe('the tab strip', () => {
       fireEvent.pointerUp(window)
       fireEvent.click(close)
     })
+
+    expect(order()).toEqual([second])
+  })
+
+  it('closes a tab with a middle click', () => {
+    openTwo()
+    const [, second] = order()
+    const { container } = render(createElement(BrowserPanel))
+
+    fireEvent.auxClick(pillFor(container, order()[0]!)!, { button: 1 })
 
     expect(order()).toEqual([second])
   })
