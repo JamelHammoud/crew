@@ -64,12 +64,14 @@ export default function ThreadView({
   threadId,
   many = false,
   focused = true,
-  alone = false
+  alone = false,
+  personal = false
 }: {
   threadId: string
   many?: boolean
   focused?: boolean
   alone?: boolean
+  personal?: boolean
 }) {
   const { events, steps } = useThreadRead(threadId)
   const selfId = useCrew(s => s.selfId)
@@ -362,7 +364,7 @@ export default function ThreadView({
             ) : (
               ended && <RunEnded end={ended} />
             )}
-            <FilesChanged steps={threadSteps} />
+            {!personal && <FilesChanged steps={threadSteps} />}
           </div>
         </div>
 
@@ -383,20 +385,23 @@ export default function ThreadView({
                 ) : (
                   <JumpToBottom onClick={jumpToBottom} />
                 ))}
-              <QueueBar
-                items={queuedMessages}
-                onEdit={editQueuedMessage}
-                onRemove={removeQueued}
-                onSend={sendQueued}
-                onMove={moveQueued}
-              />
+              {!personal && (
+                <QueueBar
+                  items={queuedMessages}
+                  onEdit={editQueuedMessage}
+                  onRemove={removeQueued}
+                  onSend={sendQueued}
+                  onMove={moveQueued}
+                />
+              )}
               {replyTo && <ReplyPreview replyTo={replyTo} onCancel={() => setReplyTo(null)} />}
               {thread.ghost && <GhostBar />}
-              <div
-                className={`relative bg-ink-900 border border-b-0 border-ink-700 rounded-t-[30px] pb-12 -mb-9 ${
-                  thread.ghost ? 'border-dashed' : ''
-                }`}
-              >
+              {!personal && (
+                <div
+                  className={`relative bg-ink-900 border border-b-0 border-ink-700 rounded-t-[30px] pb-12 -mb-9 ${
+                    thread.ghost ? 'border-dashed' : ''
+                  }`}
+                >
                 <div ref={setHeaderRow} className="flex items-center gap-3 px-3 pt-2.5">
                   {!alone && (
                     <Tooltip label={many ? 'Close' : 'Back to chat'}>
@@ -470,7 +475,8 @@ export default function ThreadView({
                     )}
                   </div>
                 </div>
-              </div>
+                </div>
+              )}
               <div className="relative">
                 <Composer
                   attachmentKey={threadId}
