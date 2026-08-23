@@ -13,6 +13,7 @@ import {
   FolderGlyph,
   GlobeGlyph,
   PanelRightGlyph,
+  PinGlyph,
   PopOutGlyph,
   PlusGlyph,
   RefreshGlyph,
@@ -517,8 +518,12 @@ function TabPill({
 }) {
   const pillRef = useRef<HTMLButtonElement>(null)
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
-  const others = useBrowser(s => s.tabs.length > 1)
-  const after = useBrowser(s => s.tabs.findIndex(one => one.id === tab.id) < s.tabs.length - 1)
+  const others = useBrowser(s => s.tabs.some(one => one.id !== tab.id && !one.pinned))
+  const after = useBrowser(s => {
+    const index = s.tabs.findIndex(one => one.id === tab.id)
+    return s.tabs.some((one, at) => at > index && !one.pinned)
+  })
+  const unpinned = useBrowser(s => s.tabs.some(one => !one.pinned))
 
   useEffect(() => {
     if (active && pillRef.current) bringInto(pillRef.current, strip.current, 'smooth')
@@ -531,6 +536,7 @@ function TabPill({
         data-tab={tab.id}
         data-reorder={tab.id}
         data-active={active ? '' : undefined}
+        data-pinned={tab.pinned ? '' : undefined}
         draggable
         onDragStart={event => {
           row.cancel()
@@ -569,6 +575,7 @@ function TabPill({
       >
         <BrowserTabMark tab={tab} />
         <span className="truncate">{browserTabLabel(tab)}</span>
+        {tab.pinned && <PinGlyph className="w-3 h-3 shrink-0 text-fg-faint" />}
         <span className="browser-tab-close pointer-events-none absolute inset-y-0 right-0 flex w-11 items-center justify-end rounded-r-full pr-1.5 opacity-0 transition-opacity group-hover:opacity-100">
           <span
             onPointerDown={event => event.stopPropagation()}
@@ -590,6 +597,14 @@ function TabPill({
           onClick={() => {
             setMenuAt(null)
             void window.crew.popOutBrowserTab(tab)
+          }}
+        />
+        <MenuItem
+          icon={<PinGlyph />}
+          label={tab.pinned ? 'Unpin tab' : 'Pin tab'}
+          onClick={() => {
+            setMenuAt(null)
+            useBrowser.getState().togglePinned(tab.id)
           }}
         />
         <MenuDivider />
@@ -621,14 +636,16 @@ function TabPill({
             }}
           />
         )}
-        <MenuItem
-          icon={<XCircleGlyph />}
-          label="Close all tabs"
-          onClick={() => {
-            setMenuAt(null)
-            useBrowser.getState().closeAll()
-          }}
-        />
+        {unpinned && (
+          <MenuItem
+            icon={<XCircleGlyph />}
+            label="Close all tabs"
+            onClick={() => {
+              setMenuAt(null)
+              useBrowser.getState().closeAll()
+            }}
+          />
+        )}
       </Popover>
     </>
   )

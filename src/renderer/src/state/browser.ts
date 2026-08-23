@@ -74,6 +74,7 @@ type BrowserState = {
   moveTab(id: string, to: number): void
   dropTab(id: string, to: number): void
   closeTab(id: string): void
+  togglePinned(id: string): void
   closeOthers(id: string): void
   closeAfter(id: string): void
   closeAll(): void
@@ -115,6 +116,7 @@ function makeTab(url = ''): BrowserTab {
     tree: false,
     open: [],
     preview: false,
+    pinned: false,
     generation: 0,
     plugin: null,
     pluginLabel: ''
@@ -591,13 +593,17 @@ export const useBrowser = create<BrowserState>((write, get) => {
       })
       settle()
     },
+    togglePinned: id =>
+      set(s => ({ tabs: s.tabs.map(tab => (tab.id === id ? { ...tab, pinned: !tab.pinned } : tab)) })),
     closeOthers: id => {
       set(s => {
         const kept = s.tabs.find(t => t.id === id)
-        if (!kept || s.tabs.length < 2) return {}
-        const gone = s.tabs.filter(t => t.id !== id)
+        if (!kept) return {}
+        const gone = s.tabs.filter(t => t.id !== id && !t.pinned)
+        if (gone.length === 0) return {}
+        const tabs = s.tabs.filter(t => t.id === id || t.pinned)
         return {
-          tabs: [kept],
+          tabs,
           activeTabId: kept.id,
           closedPlans: remember(s.closedPlans, gone, 'plan'),
           closedBoards: remember(s.closedBoards, gone, 'work')
@@ -609,8 +615,9 @@ export const useBrowser = create<BrowserState>((write, get) => {
       set(s => {
         const index = s.tabs.findIndex(t => t.id === id)
         if (index < 0 || index === s.tabs.length - 1) return {}
-        const tabs = s.tabs.slice(0, index + 1)
-        const gone = s.tabs.slice(index + 1)
+        const gone = s.tabs.filter((tab, at) => at > index && !tab.pinned)
+        if (gone.length === 0) return {}
+        const tabs = s.tabs.filter((tab, at) => at <= index || tab.pinned)
         return {
           tabs,
           activeTabId: tabs.some(tab => tab.id === s.activeTabId) ? s.activeTabId : id,
@@ -621,12 +628,16 @@ export const useBrowser = create<BrowserState>((write, get) => {
       settle()
     },
     closeAll: () => {
-      set(s => ({
-        tabs: [],
-        activeTabId: null,
-        closedPlans: remember(s.closedPlans, s.tabs, 'plan'),
-        closedBoards: remember(s.closedBoards, s.tabs, 'work')
-      }))
+      set(s => {
+        const next = without(s, tab => !tab.pinned)
+        if (!next) return {}
+        const gone = s.tabs.filter(tab => !tab.pinned)
+        return {
+          ...next,
+          closedPlans: remember(s.closedPlans, gone, 'plan'),
+          closedBoards: remember(s.closedBoards, gone, 'work')
+        }
+      })
       settle()
     },
     stash: () => {

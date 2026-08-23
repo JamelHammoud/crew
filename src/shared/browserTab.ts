@@ -36,6 +36,7 @@ export type BrowserTab = {
   tree: boolean
   open: string[]
   preview: boolean
+  pinned: boolean
   generation: number
   plugin: string | null
   pluginLabel: string

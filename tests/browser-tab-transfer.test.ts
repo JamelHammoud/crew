@@ -28,6 +28,7 @@ const tab = {
   tree: false,
   open: [],
   preview: false,
+  pinned: false,
   generation: 0,
   plugin: null,
   pluginLabel: ''
