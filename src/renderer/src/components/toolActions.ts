@@ -151,6 +151,7 @@ const humanize = (name: string): string => {
     .replace(/[_.\-/]+/g, ' ')
     .trim()
     .toLowerCase()
+  if (words === 'js') return 'JS'
   return words ? words[0].toUpperCase() + words.slice(1) : words
 }
 

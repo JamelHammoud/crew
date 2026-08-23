@@ -186,7 +186,7 @@ describe('step rows', () => {
       createElement(StepRow, { item: item({ name: 'raylight.js', detail }) })
     )
     expect(screen.getByText('Used Raylight')).not.toBeNull()
-    expect(screen.getByText('Js')).not.toBeNull()
+    expect(screen.getByText('JS')).not.toBeNull()
     expect(screen.queryByText('Reconnect to Raylight')).toBeNull()
     expect(container.textContent).not.toContain('"code"')
     fireEvent.click(container.querySelector('button') as HTMLButtonElement)
@@ -203,7 +203,7 @@ describe('step rows', () => {
     expect(screen.getByText('Get editor status')).not.toBeNull()
     expect(screen.getByText('Used Raylight')).not.toBeNull()
     expect(container.textContent).not.toContain('{}')
-    expect(container.querySelectorAll('svg').length).toBe(1)
+    expect(container.querySelectorAll('button').length).toBe(1)
   })
 
   it('opens a command into something you can read and copy', () => {
