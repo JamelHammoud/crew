@@ -123,7 +123,7 @@ describe('where a helper chip lands', () => {
           kind: 'tool' as const,
           status: 'done' as const,
           name: 'Bash',
-          detail: "curl -s -X POST http://127.0.0.1:2739/code/agents/spawn -d '{\"name\":\"Scout\"}'"
+          detail: 'curl -s -X POST http://127.0.0.1:2739/code/agents/spawn -d \'{"name":"Scout"}\''
         },
         {
           id: 'ordinary-call',
