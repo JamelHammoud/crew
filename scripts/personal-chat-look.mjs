@@ -181,12 +181,14 @@ app.whenReady().then(async () => {
     await win.webContents.executeJavaScript(
       \`[...document.querySelectorAll('button')].find(button => button.getAttribute('aria-label') === 'Hide chat list').click()\`
     )
-    await wait(800)
+    seen.collapsing = await win.webContents.executeJavaScript(READ)
+    await wait(300)
     seen.collapsed = await win.webContents.executeJavaScript(READ)
     await win.webContents.executeJavaScript(
       \`[...document.querySelectorAll('button')].find(button => button.getAttribute('aria-label') === 'Show chat list').click()\`
     )
-    await wait(800)
+    seen.reopening = await win.webContents.executeJavaScript(READ)
+    await wait(300)
     seen.reopened = await win.webContents.executeJavaScript(READ)
     await win.webContents.executeJavaScript(
       \`[...document.querySelectorAll('button')].find(button => button.textContent?.includes('Draft a dinner menu')).click()\`

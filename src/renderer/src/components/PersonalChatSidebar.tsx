@@ -76,7 +76,6 @@ export default function PersonalChatSidebar({
     <aside
       data-personal-history
       aria-hidden={collapsed}
-      inert={collapsed ? true : undefined}
       className={`shrink-0 overflow-hidden transition-[width,border-color] duration-200 ${
         collapsed
           ? 'w-0 border-r border-transparent'
@@ -85,7 +84,7 @@ export default function PersonalChatSidebar({
             : 'w-[300px] bg-ink-900 border-r border-ink-700'
       }`}
     >
-      <div className="w-[300px] h-full flex flex-col">
+      {!collapsed && <div className="w-[300px] h-full flex flex-col">
         <header className="group/header app-drag h-[70px] shrink-0 pl-4 pr-3 mac:pl-[100px] flex items-center gap-1">
           <h1 className="flex-1 text-lg font-bold text-fg">Chat</h1>
           <Tooltip label="Hide chat list">
@@ -228,7 +227,7 @@ export default function PersonalChatSidebar({
             </div>
           )}
         </div>
-      </div>
+      </div>}
     </aside>
   )
 }
