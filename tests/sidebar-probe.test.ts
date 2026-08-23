@@ -65,6 +65,7 @@ const LINK = 'crew://192.0.2.10:2739/a1b2c3'
 
 const asked: string[] = []
 const joined: Array<[string, string, string]> = []
+const openedWindows: string[] = []
 let picked: string | null = null
 let live: LivePlace[] = []
 let joins: RecentJoin[] = []
@@ -99,6 +100,7 @@ window.crew = {
     joined.push([link, folder, name])
     return Promise.resolve(sessionFor(folder))
   },
+  openProjectWindow: (key: string) => (openedWindows.push(key), Promise.resolve(true)),
   pickFolder: () => Promise.resolve(picked),
   cloneRepo: () => Promise.resolve(null),
   projectPlan: () => Promise.resolve({ known: true, home: 'folder', crewRemote: null, crewHere: true }),
@@ -137,6 +139,7 @@ const reachIn = (root: HTMLElement) => root.querySelector('.app-no-drag') as HTM
 beforeEach(async () => {
   asked.length = 0
   joined.length = 0
+  openedWindows.length = 0
   picked = null
   live = []
   joins = []
@@ -546,6 +549,13 @@ describe('the sidebar', () => {
     expect(screen.queryByRole('button', { name: 'Stop project' })).toBeNull()
     expect(screen.queryByRole('button', { name: 'Remove from the list' })).toBeNull()
     expect(screen.queryByRole('button', { name: 'Copy link' })).toBeNull()
+  })
+
+  it('opens a project in a new window from its menu', async () => {
+    render(Sidebar())
+    fireEvent.contextMenu(screen.getByText('one'))
+    fireEvent.click(await screen.findByRole('button', { name: 'Open in new window' }))
+    expect(openedWindows).toEqual([`project:${ONE}`])
   })
 
   it('copies the link off a crew somebody was invited to, from the row it stands on', async () => {

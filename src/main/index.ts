@@ -359,7 +359,18 @@ function warmTerminals(): void {
   }
 }
 
-function createWindow(threadId?: string): BrowserWindow {
+function loadWindow(win: BrowserWindow, threadId?: string): void {
+  const page = path.join(dirname, '../renderer/index.html')
+  if (devUrl) {
+    void win.loadURL(threadId ? devUrl + threadWindowHash(threadId) : devUrl)
+  } else if (threadId) {
+    void win.loadFile(page, { hash: threadWindowHash(threadId).slice(1) })
+  } else {
+    void win.loadFile(page)
+  }
+}
+
+function createWindow(threadId?: string, load = true): BrowserWindow {
   const preload = path.join(dirname, '../preload/preload.mjs')
   const win = new BrowserWindow(
     threadId
@@ -426,14 +437,7 @@ function createWindow(threadId?: string): BrowserWindow {
   win.on('closed', () => {
     if (appWindows().length === 0) tray.update({ here: [], known: false })
   })
-  const page = path.join(dirname, '../renderer/index.html')
-  if (devUrl) {
-    win.loadURL(threadId ? devUrl + threadWindowHash(threadId) : devUrl)
-  } else if (threadId) {
-    win.loadFile(page, { hash: threadWindowHash(threadId).slice(1) })
-  } else {
-    win.loadFile(page)
-  }
+  if (load) loadWindow(win, threadId)
   return win
 }
 
@@ -584,6 +588,22 @@ app.whenReady().then(() => {
     win.on('closed', () => {
       if (popped.get(at) === win) popped.delete(at)
     })
+  })
+  ipcMain.handle('window:open-project', async (_event, key: string) => {
+    const win = createWindow(undefined, false)
+    try {
+      const opened = await crews.openIn(win.webContents.id, key)
+      if (!opened) {
+        win.destroy()
+        return false
+      }
+      loadWindow(win)
+      warmTerminals()
+      return true
+    } catch (error) {
+      win.destroy()
+      throw error
+    }
   })
   ipcMain.handle('window:pin', (event, pinned: boolean) => {
     const win = BrowserWindow.fromWebContents(event.sender)

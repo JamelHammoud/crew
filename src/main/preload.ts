@@ -104,6 +104,7 @@ const bridge = {
   },
   resizeTray: (height: number): void => ipcRenderer.send('tray:size', height),
   openWindow: (): void => ipcRenderer.send('tray:open'),
+  openProjectWindow: (key: string): Promise<boolean> => ipcRenderer.invoke('window:open-project', key),
   closeTray: (): void => ipcRenderer.send('tray:hide'),
   popOutThread: (threadId: string, key?: string): Promise<void> =>
     ipcRenderer.invoke('window:pop-thread', threadId, key),

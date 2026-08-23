@@ -126,6 +126,12 @@ export default function Sidebar({
     [go]
   )
 
+  const openPlaceWindow = useCallback((place: Place) => {
+    void window.crew.openProjectWindow(place.key).catch(err => {
+      toast.fail(said(err), { key: 'open-place-window' })
+    })
+  }, [])
+
   const goToThread = useCallback(
     (place: Place, threadId: string, toRight: boolean) => {
       useCrew.getState().wantThread(threadId)
@@ -222,6 +228,7 @@ export default function Sidebar({
               threads={threadsOf.get(place.key) ?? NO_THREADS}
               openThreadIds={place.key === here ? openThreadIds : EMPTY_THREADS}
               onOpen={goToPlace}
+              onOpenWindow={openPlaceWindow}
               onOpenThread={goToThread}
               onStop={stop}
               onRename={renamePlace}

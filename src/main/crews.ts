@@ -11,7 +11,7 @@ import {
 import { crewHere } from '../server/crewRepo'
 import type { ProviderCapability } from '../shared/llm'
 import { cleanServerName, serverUrl, serverUrlIn, type ModelServer } from '../shared/modelServers'
-import { projectPlace, type LivePlace } from '../shared/places'
+import { joinPlace, projectPlace, type LivePlace } from '../shared/places'
 import { projectKey, readCrewRemote } from '../shared/project'
 import type { RecentJoin, RecentProject } from '../shared/recent'
 import type { CurrentSession, OpenOptions, ProjectPlan } from '../shared/session'
@@ -131,6 +131,22 @@ export class Crews {
     if (!current) return null
     this.look(id, key)
     return current
+  }
+
+  async openIn(id: number, key: string): Promise<CurrentSession | null> {
+    const live = this.switchTo(id, key)
+    if (live) return live
+    const project = this.recentProjects().find(one => projectPlace(one.folder) === key)
+    if (project) {
+      return this.start(id, project.folder, project.name, {
+        home: project.home,
+        share: project.shared,
+        sync: project.sync
+      })
+    }
+    const joined = this.recentJoins().find(one => joinPlace(one.link) === key)
+    if (joined) return this.join(id, joined.link, joined.folder, joined.name)
+    return null
   }
 
   rename(id: number, name: string): CurrentSession | null {

@@ -14,6 +14,7 @@ export interface PlaceGroupProps {
   threads: LiveThread[]
   openThreadIds: string[]
   onOpen: (place: Place) => void
+  onOpenWindow: (place: Place) => void
   onOpenThread: (place: Place, threadId: string, toRight: boolean) => void
   onStop: (place: Place) => void
   onRename: (place: Place, name: string) => void
@@ -53,7 +54,8 @@ export const samePlaceGroup = (a: PlaceGroupProps, b: PlaceGroupProps): boolean 
   a.busy === b.busy &&
   a.stoppable === b.stoppable &&
   a.openThreadIds === b.openThreadIds &&
-  a.onOpen === b.onOpen &&
+    a.onOpen === b.onOpen &&
+    a.onOpenWindow === b.onOpenWindow &&
   a.onOpenThread === b.onOpenThread &&
   a.onStop === b.onStop &&
   a.onRename === b.onRename &&
