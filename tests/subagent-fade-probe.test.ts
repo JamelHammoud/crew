@@ -47,6 +47,7 @@ const thread: ThreadMeta = {
 
 beforeEach(() => {
   Element.prototype.scrollIntoView = () => {}
+  vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null)
   window.crew = { warmTerminal: () => undefined } as unknown as CrewBridge
   useCrew.setState({
     threads: { [CHILD]: thread },
@@ -60,7 +61,10 @@ beforeEach(() => {
   })
 })
 
-afterEach(cleanup)
+afterEach(() => {
+  cleanup()
+  vi.restoreAllMocks()
+})
 
 function boot() {
   const view = render(createElement(SubagentRun, { threadId: CHILD }))
