@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import PersonalChatWindow from '../src/renderer/src/views/PersonalChatWindow'
 import { setPref } from '../src/renderer/src/state/prefs'
 import { useCrew, type ThreadMeta } from '../src/renderer/src/state/store'
+import { setFullScreen } from '../src/renderer/src/state/windowShape'
 import type { SessionEvent } from '../src/shared/events'
 import type { PooledAgent } from '../src/shared/llm'
 
@@ -67,6 +68,7 @@ beforeEach(() => {
     setItem: (key: string, value: string) => values.set(key, value)
   } satisfies Storage)
   window.crew = { listFiles: async () => [] } as unknown as CrewBridge
+  setFullScreen(false)
   setPref('glassSidebar', true)
   useCrew.setState({
     connection: 'online',
@@ -117,6 +119,39 @@ describe('a personal chat window', () => {
     act(() => setPref('glassSidebar', false))
     expect(sidebar?.classList.contains('sidebar-pinned')).toBe(false)
     expect(sidebar?.classList.contains('bg-ink-900')).toBe(true)
+  })
+
+  it('shows a top fade after the chat list scrolls', () => {
+    const chats = Object.fromEntries(
+      Array.from({ length: 12 }, (_, index) => {
+        const one = thread(`chat-${index}`, `Chat ${index}`, index + 1)
+        return [one.id, one]
+      })
+    )
+    useCrew.setState({ threads: chats, events: Object.values(chats).map(started) })
+    render(createElement(PersonalChatWindow))
+
+    const scroller = document.querySelector('[data-personal-history-scroll]') as HTMLDivElement
+    Object.defineProperties(scroller, {
+      clientHeight: { configurable: true, value: 300 },
+      scrollHeight: { configurable: true, value: 900 }
+    })
+    scroller.scrollTop = 80
+    fireEvent.scroll(scroller)
+
+    expect(document.querySelector('[data-scroll-fade="top"]')?.classList.contains('opacity-100')).toBe(true)
+  })
+
+  it('removes the stoplight reserve in fullscreen', () => {
+    render(createElement(PersonalChatWindow))
+    const header = document.querySelector('[data-personal-chat-header]')
+    expect(header?.classList.contains('mac:pl-[100px]')).toBe(true)
+
+    act(() => setFullScreen(true))
+    expect(header?.classList.contains('mac:pl-[100px]')).toBe(false)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Hide chat list' }))
+    expect(screen.getByRole('button', { name: 'Show chat list' }).parentElement?.className).not.toContain('mac:pl-[92px]')
   })
 
   it('collapses and restores the chat list without remounting the conversation', () => {
