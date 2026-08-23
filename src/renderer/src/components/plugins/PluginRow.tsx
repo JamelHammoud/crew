@@ -65,7 +65,10 @@ export default function PluginRow({
           </Tooltip>
         )}
         {onRemove && (
-          <Tooltip label={`Take ${label} out`} className={hasStableAction ? 'absolute right-full top-0 mr-1' : undefined}>
+          <Tooltip
+            label={`Take ${label} out`}
+            className={hasStableAction ? 'absolute right-full top-0 mr-1' : undefined}
+          >
             <button
               onClick={onRemove}
               aria-label={`Take ${label} out`}
