@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { applyTheme, storedTheme, toggleTheme } from '../src/renderer/src/state/theme'
 
 const store = new Map<string, string>()
+const setTheme = vi.fn()
 vi.stubGlobal('localStorage', {
   getItem: (key: string) => store.get(key) ?? null,
   setItem: (key: string, value: string) => void store.set(key, value),
@@ -13,6 +14,8 @@ vi.stubGlobal('localStorage', {
 describe('theme', () => {
   beforeEach(() => {
     store.clear()
+    setTheme.mockClear()
+    Object.defineProperty(window, 'crew', { value: { setTheme }, configurable: true })
     document.documentElement.classList.remove('light', 'oled')
   })
 
@@ -38,6 +41,7 @@ describe('theme', () => {
     expect(document.documentElement.classList.contains('oled')).toBe(true)
     expect(document.documentElement.classList.contains('light')).toBe(false)
     expect(storedTheme()).toBe('oled')
+    expect(setTheme).toHaveBeenCalledWith('dark')
   })
 
   it('clears OLED when another theme is picked', () => {
