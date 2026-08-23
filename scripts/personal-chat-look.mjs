@@ -140,13 +140,17 @@ const READ = \`(() => {
   const content = document.querySelector('[data-personal-chat-content]')
   const current = document.querySelector('button[aria-current="page"]')
   const group = current?.closest('section')?.querySelector('[data-personal-history-group]')
+  const collapse = named('Hide chat list')
   return {
     plus: box(plus),
     plusOpacity: plus ? getComputedStyle(plus).opacity : null,
     composer: box(composer),
     composerFocused: composer === document.activeElement,
     history: box(history),
+    historyClass: history?.className ?? '',
     content: box(content),
+    collapse: box(collapse),
+    collapseOpacity: collapse ? getComputedStyle(collapse).opacity : null,
     threadHeader: Boolean(named('Mark done') || named('Back to chat')),
     historyText: history?.textContent ?? '',
     current: box(current),
@@ -166,6 +170,24 @@ app.whenReady().then(async () => {
     win.webContents.sendInputEvent({ type: 'mouseMove', x: plus.left + plus.width / 2, y: plus.top + plus.height / 2 })
     await wait(800)
     seen.hovered = await win.webContents.executeJavaScript(READ)
+    const collapse = seen.resting.collapse
+    win.webContents.sendInputEvent({
+      type: 'mouseMove',
+      x: collapse.left + collapse.width / 2,
+      y: collapse.top + collapse.height / 2
+    })
+    await wait(300)
+    seen.collapseHovered = await win.webContents.executeJavaScript(READ)
+    await win.webContents.executeJavaScript(
+      \`[...document.querySelectorAll('button')].find(button => button.getAttribute('aria-label') === 'Hide chat list').click()\`
+    )
+    await wait(300)
+    seen.collapsed = await win.webContents.executeJavaScript(READ)
+    await win.webContents.executeJavaScript(
+      \`[...document.querySelectorAll('button')].find(button => button.getAttribute('aria-label') === 'Show chat list').click()\`
+    )
+    await wait(300)
+    seen.reopened = await win.webContents.executeJavaScript(READ)
     await win.webContents.executeJavaScript(
       \`[...document.querySelectorAll('button')].find(button => button.textContent?.includes('Draft a dinner menu')).click()\`
     )
@@ -246,6 +268,7 @@ try {
   if (
     !seen.resting.history ||
     !seen.resting.content ||
+    !seen.resting.historyClass.includes('sidebar-pinned') ||
     seen.resting.history.width !== 300 ||
     seen.resting.history.left !== 260 ||
     seen.resting.content.left !== 560 ||
@@ -254,6 +277,24 @@ try {
     !seen.resting.historyText.includes('Compare two cameras')
   ) {
     throw new Error('personal chat history did not stand beside the conversation: ' + JSON.stringify(seen.resting))
+  }
+  if (
+    seen.resting.collapseOpacity !== '0' ||
+    seen.collapseHovered.collapseOpacity !== '1' ||
+    seen.collapsed.history.width !== 0 ||
+    seen.collapsed.content.left !== 260 ||
+    seen.reopened.history.width !== 300 ||
+    seen.reopened.content.left !== 560
+  ) {
+    throw new Error(
+      'personal chat list did not collapse and return: ' +
+        JSON.stringify({
+          resting: seen.resting,
+          hovered: seen.collapseHovered,
+          collapsed: seen.collapsed,
+          reopened: seen.reopened
+        })
+    )
   }
   if (
     !seen.active.current ||
