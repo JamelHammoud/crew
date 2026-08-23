@@ -210,6 +210,22 @@ describe('the file explorer', () => {
     expect(activeTab().line).toBe(7)
   })
 
+  it('finds text in the open file with Ctrl+F', async () => {
+    useBrowser.getState().openFile('src/app.ts')
+    render(createElement(BrowserPanel))
+    const editor = await screen.findByRole('textbox', { name: 'File contents' })
+
+    fireEvent.keyDown(editor, { key: 'f', ctrlKey: true })
+    const find = await screen.findByRole('textbox', { name: 'Find in this file' })
+    fireEvent.change(find, { target: { value: 'EXPORT' } })
+
+    expect(await screen.findByText('1/1')).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Next match' }).hasAttribute('disabled')).toBe(false)
+
+    fireEvent.keyDown(find, { key: 'Escape' })
+    await waitFor(() => expect(screen.queryByRole('textbox', { name: 'Find in this file' })).toBeNull())
+  })
+
   it('says so plainly when nothing matches', async () => {
     useBrowser.getState().openFiles()
     render(createElement(BrowserPanel))
