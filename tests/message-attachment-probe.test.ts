@@ -107,12 +107,16 @@ describe('a message carrying a picture and a file', () => {
   })
 
   it('copies a picture from its preview without opening it', () => {
-    const { getByLabelText, getByText } = draw([picture])
-    const preview = getByLabelText('Open balance.png')
     const parentMenu = vi.fn()
-    preview.parentElement!.addEventListener('contextmenu', parentMenu)
+    const { getByLabelText, getByText } = render(
+      createElement(
+        'div',
+        { onContextMenu: parentMenu },
+        createElement(MessageAttachments, { attachments: [picture] })
+      )
+    )
 
-    fireEvent.contextMenu(preview, { clientX: 44, clientY: 72 })
+    fireEvent.contextMenu(getByLabelText('Open balance.png'), { clientX: 44, clientY: 72 })
     fireEvent.click(getByText('Copy image'))
 
     expect(copyImage).toHaveBeenCalledWith(`${BASE}/attachments/a.png`)
