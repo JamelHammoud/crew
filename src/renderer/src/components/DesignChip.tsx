@@ -16,6 +16,7 @@ function DesignChip({ item }: { item: ThreadItem }) {
     <button
       type="button"
       disabled={!board}
+      aria-label={`${status} ${board?.name ?? boardId}`}
       onClick={() => board && openBoard(boardId)}
       className="group flex min-w-0 max-w-full items-center gap-2 pl-2 pr-3 py-1 rounded-full border border-ink-700 bg-ink-800/60 transition-all enabled:active:scale-[0.98] enabled:hover:border-ink-600 enabled:hover:bg-ink-700 disabled:cursor-default"
     >

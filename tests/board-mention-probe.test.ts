@@ -148,7 +148,7 @@ describe('a design API chip', () => {
         }
       })
     )
-    fireEvent.click(screen.getByRole('button', { name: 'Landing Read' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Read Landing' }))
     expect(useCrew.getState().designTarget).toBe('landing-1abc')
   })
 })
