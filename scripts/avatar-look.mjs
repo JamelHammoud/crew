@@ -54,8 +54,8 @@ app.disableHardwareAcceleration()
 app.whenReady().then(async () => {
   const win = new BrowserWindow({ width: 1180, height: 580, show: false, backgroundColor: '#0b0b0d' })
   await win.loadFile(path.join(__dirname, 'dist', 'index.html'))
-  const frames = ${JSON.stringify(Array.from({ length: 6 }, (_, index) => transition.replace(/\.png$/, `-${index}.png`)))}
-  const waits = [140, 140, 120, 140, 180, 260]
+  const frames = ${JSON.stringify(Array.from({ length: 8 }, (_, index) => transition.replace(/\.png$/, `-${index}.png`)))}
+  const waits = [140, 100, 80, 80, 80, 80, 100, 240]
   for (let index = 0; index < frames.length; index++) {
     await new Promise(resolve => setTimeout(resolve, waits[index]))
     fs.writeFileSync(frames[index], (await win.webContents.capturePage()).toPNG())
@@ -116,11 +116,11 @@ await new Promise((accept, reject) => {
   child.on('error', reject)
 })
 
-const frames = Array.from({ length: 6 }, (_, index) => transition.replace(/\.png$/, `-${index}.png`))
+const frames = Array.from({ length: 8 }, (_, index) => transition.replace(/\.png$/, `-${index}.png`))
 await new Promise((accept, reject) => {
   const child = spawn(
     'magick',
-    ['(', ...frames.slice(0, 3), '+append', ')', '(', ...frames.slice(3), '+append', ')', '-append', destination],
+    ['(', ...frames.slice(0, 4), '+append', ')', '(', ...frames.slice(4), '+append', ')', '-append', destination],
     { stdio: ['ignore', 'pipe', 'pipe'] }
   )
   let error = ''

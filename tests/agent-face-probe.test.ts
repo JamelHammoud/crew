@@ -127,6 +127,25 @@ describe('an agent face', () => {
     expect(object.querySelector('.agent-pet-eyes')).toBeNull()
   })
 
+  it('gives every activity a moving part inside its silhouette', () => {
+    const activities = [
+      'thinking',
+      'reading',
+      'searching',
+      'editing',
+      'designing',
+      'running',
+      'planning',
+      'communicating',
+      'acting'
+    ] as const
+
+    for (const activity of activities) {
+      expect(face({ activity }).querySelector(`[data-object="${activity}"] [data-part]`)).not.toBeNull()
+      cleanup()
+    }
+  })
+
   it('uses its generated field as the silhouette instead of a circular background', () => {
     const box = face({ size: 'xs' })
     const shape = box.querySelector('mask > path') as SVGPathElement
