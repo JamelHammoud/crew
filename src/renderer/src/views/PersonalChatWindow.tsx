@@ -158,7 +158,9 @@ export default function PersonalChatWindow() {
                 )
               })}
               {connection === 'online' && history.length === 0 && (
-                <p className="px-3 py-8 text-sm text-fg/45 text-center">{query ? 'No chats found.' : 'No chats yet.'}</p>
+                <p className="px-3 py-8 text-sm text-fg/45 text-center">
+                  {query ? 'No chats found.' : 'No chats yet.'}
+                </p>
               )}
             </div>
           </Popover>

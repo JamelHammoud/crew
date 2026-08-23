@@ -32,7 +32,13 @@ import { cleanCommands, commandsIn, commandTyped, type CommandName } from '../..
 import { aimOf } from '../../../shared/llm'
 import { useMessagePlugin } from '../state/messagePlugin'
 
-export default function Chat({ personal = false, onStart }: { personal?: boolean; onStart?: (threadId: string) => void }) {
+export default function Chat({
+  personal = false,
+  onStart
+}: {
+  personal?: boolean
+  onStart?: (threadId: string) => void
+}) {
   const events = useCrew(s => s.events)
   const selfId = useCrew(s => s.selfId)
   const threads = useCrew(s => s.threads)
@@ -144,7 +150,12 @@ export default function Chat({ personal = false, onStart }: { personal?: boolean
     const startId = personal ? globalThis.crypto.randomUUID() : undefined
     const targets =
       aimOf(text, agents, aimed) ??
-      (personal ? agents.filter(agent => agent.status !== 'offline').slice(0, 1).map(agent => agent.id) : undefined)
+      (personal
+        ? agents
+            .filter(agent => agent.status !== 'offline')
+            .slice(0, 1)
+            .map(agent => agent.id)
+        : undefined)
     sendChat(
       text,
       undefined,
@@ -278,9 +289,9 @@ export default function Chat({ personal = false, onStart }: { personal?: boolean
               <SlashMenu
                 matches={slash.matches}
                 activeIndex={slash.activeIndex}
-                  onPick={slash.pick}
-                  onHover={slash.setActive}
-                />
+                onPick={slash.pick}
+                onHover={slash.setActive}
+              />
             </Composer>
             <TypingLine />
           </div>

@@ -402,19 +402,19 @@ export default function ThreadView({
                     thread.ghost ? 'border-dashed' : ''
                   }`}
                 >
-                <div ref={setHeaderRow} className="flex items-center gap-3 px-3 pt-2.5">
-                  {!alone && (
-                    <Tooltip label={many ? 'Close' : 'Back to chat'}>
-                      <button
-                        onClick={() => closeThread(threadId)}
-                        aria-label={many ? 'Close' : 'Back to chat'}
-                        className="w-10 h-10 rounded-full bg-ink-800 text-fg-secondary flex items-center justify-center transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95 shrink-0"
-                      >
-                        {many ? <CloseGlyph className="w-5 h-5" /> : <ChevronLeftGlyph className="w-5 h-5" />}
-                      </button>
-                    </Tooltip>
-                  )}
-                  {/* Who the thread is with, and what it is about. The ask is
+                  <div ref={setHeaderRow} className="flex items-center gap-3 px-3 pt-2.5">
+                    {!alone && (
+                      <Tooltip label={many ? 'Close' : 'Back to chat'}>
+                        <button
+                          onClick={() => closeThread(threadId)}
+                          aria-label={many ? 'Close' : 'Back to chat'}
+                          className="w-10 h-10 rounded-full bg-ink-800 text-fg-secondary flex items-center justify-center transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95 shrink-0"
+                        >
+                          {many ? <CloseGlyph className="w-5 h-5" /> : <ChevronLeftGlyph className="w-5 h-5" />}
+                        </button>
+                      </Tooltip>
+                    )}
+                    {/* Who the thread is with, and what it is about. The ask is
                       the thread's own name for itself and the one thing this row
                       could not say, so it stands under the agent's name and
                       starts where it starts. Pressing it goes to the head of the
@@ -426,55 +426,62 @@ export default function ThreadView({
                       centered on the mark beside them by the leading alone. The
                       mark stands out here rather than inside the name, or line
                       one is 40 on its own and the row grows by the second. */}
-                  {showPet && <AgentIcon seed={thread.agentId} presence={agentPresence} activity={agentActivity} />}
-                  {/* A column of two rather than two lines in one box: an inline
+                    {showPet && <AgentIcon seed={thread.agentId} presence={agentPresence} activity={agentActivity} />}
+                    {/* A column of two rather than two lines in one box: an inline
                       box carries the strut of a line it has no text for, and the
                       few pixels a descender leaves under the name are what would
                       push the pair past the 40 the row is drawn at. */}
-                  <div className="min-w-0 flex-1 flex flex-col items-start">
-                    <MemberName id={thread.agentId} name={thread.agentLabel} className="min-w-0 max-w-full">
-                      <span className="block text-base font-bold text-fg truncate cursor-default">
-                        {thread.agentLabel}
-                      </span>
-                    </MemberName>
-                    {ask && nameWidth >= ASK_MIN_WIDTH && (
-                      <ThreadAsk ask={ask} whole={opening?.text} mentionRefs={opening?.mentionRefs} onJump={reachTop} />
-                    )}
-                  </div>
-                  <div ref={setHeaderStatus} className="ml-auto flex items-center gap-2 shrink-0">
-                    {/* Why the answers here are one line each. Without it the
+                    <div className="min-w-0 flex-1 flex flex-col items-start">
+                      <MemberName id={thread.agentId} name={thread.agentLabel} className="min-w-0 max-w-full">
+                        <span className="block text-base font-bold text-fg truncate cursor-default">
+                          {thread.agentLabel}
+                        </span>
+                      </MemberName>
+                      {ask && nameWidth >= ASK_MIN_WIDTH && (
+                        <ThreadAsk
+                          ask={ask}
+                          whole={opening?.text}
+                          mentionRefs={opening?.mentionRefs}
+                          onJump={reachTop}
+                        />
+                      )}
+                    </div>
+                    <div ref={setHeaderStatus} className="ml-auto flex items-center gap-2 shrink-0">
+                      {/* Why the answers here are one line each. Without it the
                         thread reads as an agent being terse for no reason. */}
-                    {state === 'working' ? (
-                      <>
-                        <Spinner size={16} className="text-fg" />
-                        {!tight && <span className="text-base font-semibold text-fg">Working</span>}
-                      </>
-                    ) : (
-                      <>
-                        <Tooltip label={THREAD_STATE_LABELS[state]} disabled={!tight}>
-                          <span className="flex items-center">
-                            {state === 'done' && <CheckGlyph className="w-5 h-5 text-fg" />}
-                            {state === 'ready' && <EyeGlyph className="w-5 h-5 text-fg" />}
-                            {state === 'failed' && <WarningGlyph className="w-5 h-5 text-danger" />}
-                            {state === 'stopped' && <StopGlyph className="w-5 h-5 text-fg-muted" />}
-                            {state === 'archived' && <ArchiveGlyph className="w-5 h-5 text-fg-muted" />}
-                          </span>
-                        </Tooltip>
-                        {!tight && (
-                          <span className={`text-base font-semibold ${state === 'failed' ? 'text-danger' : 'text-fg'}`}>
-                            {THREAD_STATE_LABELS[state]}
-                          </span>
-                        )}
-                        <button
-                          onClick={() => setThreadStatus(threadId, statusAction.to)}
-                          className="ml-1 h-10 px-4 rounded-full bg-ink-800 text-sm font-semibold text-fg-secondary transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95"
-                        >
-                          {statusAction.label}
-                        </button>
-                      </>
-                    )}
+                      {state === 'working' ? (
+                        <>
+                          <Spinner size={16} className="text-fg" />
+                          {!tight && <span className="text-base font-semibold text-fg">Working</span>}
+                        </>
+                      ) : (
+                        <>
+                          <Tooltip label={THREAD_STATE_LABELS[state]} disabled={!tight}>
+                            <span className="flex items-center">
+                              {state === 'done' && <CheckGlyph className="w-5 h-5 text-fg" />}
+                              {state === 'ready' && <EyeGlyph className="w-5 h-5 text-fg" />}
+                              {state === 'failed' && <WarningGlyph className="w-5 h-5 text-danger" />}
+                              {state === 'stopped' && <StopGlyph className="w-5 h-5 text-fg-muted" />}
+                              {state === 'archived' && <ArchiveGlyph className="w-5 h-5 text-fg-muted" />}
+                            </span>
+                          </Tooltip>
+                          {!tight && (
+                            <span
+                              className={`text-base font-semibold ${state === 'failed' ? 'text-danger' : 'text-fg'}`}
+                            >
+                              {THREAD_STATE_LABELS[state]}
+                            </span>
+                          )}
+                          <button
+                            onClick={() => setThreadStatus(threadId, statusAction.to)}
+                            className="ml-1 h-10 px-4 rounded-full bg-ink-800 text-sm font-semibold text-fg-secondary transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95"
+                          >
+                            {statusAction.label}
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </div>
-                </div>
                 </div>
               )}
               <div className="relative">
