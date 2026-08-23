@@ -140,6 +140,7 @@
   },
   "dependencies": {
     "electron-updater": "^6.8.9",
+    "flubber": "0.4.2",
     "koffi": "^3.1.2",
     "node-pty": "1.1.0",
     "rbush": "^3.0.1",
