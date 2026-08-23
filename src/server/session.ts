@@ -1027,7 +1027,8 @@ export class CrewSession {
             msg.replyTo,
             msg.commands,
             msg.forkId,
-            msg.usePlugin
+            msg.usePlugin,
+            msg.startId
           )
         }
         break
@@ -1307,7 +1308,8 @@ export class CrewSession {
     replyTargetId?: string,
     asked?: CommandName[],
     forkId?: string,
-    usePlugin?: string
+    usePlugin?: string,
+    startId?: string
   ): void {
     // A command rides beside the message rather than in it, so nothing is ever
     // cut out of what somebody wrote. The chat's commands open a thread, so
@@ -1376,7 +1378,8 @@ export class CrewSession {
           voice: talking,
           holding: holding || goal,
           goal,
-          plugin
+          plugin,
+          threadId: startId
         })
       }
       return
@@ -1461,7 +1464,8 @@ export class CrewSession {
         voice: talking,
         tickets: reporting,
         goal,
-        plugin
+        plugin,
+        threadId: startId
       })
     }
   }

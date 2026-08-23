@@ -285,7 +285,8 @@ interface CrewState {
     replyTo?: string,
     aimedAt?: string[],
     commands?: CommandName[],
-    usePlugin?: string
+    usePlugin?: string,
+    startId?: string
   ) => void
   createBoard: (name: string) => string
   renameBoard: (boardId: string, name: string) => void
@@ -1438,7 +1439,7 @@ export const useCrew = create<CrewState>((set, get) => {
     setAttachmentLimit: mb => {
       socket.send({ type: 'attachment.limit', mb })
     },
-    sendChat: (text, threadId, boardId, replyTo, aimedAt, commands, usePlugin) => {
+    sendChat: (text, threadId, boardId, replyTo, aimedAt, commands, usePlugin, startId) => {
       const key = threadId ?? boardId ?? CHAT_KEY
       const carried = get().pending[key] ?? []
       const attachments = carried.map(({ name, mime, data }) => ({ name, mime, data }))
@@ -1476,7 +1477,7 @@ export const useCrew = create<CrewState>((set, get) => {
         }))
         return
       }
-      socket.send({ type: 'chat.send', text, mentions, commands, attachments, replyTo, usePlugin })
+      socket.send({ type: 'chat.send', text, mentions, commands, attachments, replyTo, usePlugin, startId })
       set(state => ({ chatDraft: '', chatCommands: [], pending: { ...state.pending, [key]: [] } }))
     },
     createBoard: name => {

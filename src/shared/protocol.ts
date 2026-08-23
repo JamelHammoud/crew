@@ -112,6 +112,7 @@ export type ClientMessage =
       mentions: string[]
       commands?: CommandName[]
       threadId?: string
+      startId?: string
       attachments?: OutgoingAttachment[]
       boardId?: string
       replyTo?: string
