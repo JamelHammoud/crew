@@ -83,6 +83,7 @@ export class AppSession {
   private folder: string | null = null
   private place: string | null = null
   private written: SavedSession | null = null
+  private personal = false
   // What is being hosted here, kept so the listener can be moved between
   // loopback and the network without the session it is serving being remade.
   private hosted: {
@@ -374,9 +375,20 @@ export class AppSession {
     return this.live
   }
 
+  async startPersonal(base: string, name: string): Promise<CurrentSession> {
+    this.personal = true
+    const current = await this.startHost(base, name, { home: 'folder', share: false, sync: false })
+    const personal = { ...current, place: 'personal', folder: '', tracked: false, projectSync: false }
+    this.live = personal
+    this.folder = null
+    this.place = 'personal'
+    this.written = null
+    return personal
+  }
+
   private keep(session: SavedSession): void {
     this.written = session
-    this.savedStore()?.save(session)
+    if (!this.personal) this.savedStore()?.save(session)
   }
 
   private syncAll(): Promise<void> {
@@ -412,6 +424,7 @@ export class AppSession {
   // A project keeps the answers it was given, so opening it again from the list
   // is never a switch somebody has to set a second time.
   private rememberProject(): void {
+    if (this.personal) return
     const hosted = this.hosted
     const live = this.live
     if (!hosted || !live) return

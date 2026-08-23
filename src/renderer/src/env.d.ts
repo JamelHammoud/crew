@@ -82,6 +82,7 @@ declare global {
     resizeTray(height: number): void
     openWindow(): void
     openProjectWindow(key: string): Promise<boolean>
+    openPersonalChat(name: string): Promise<boolean>
     popOutThread(threadId: string, key?: string): Promise<void>
     setWindowPinned(pinned: boolean): Promise<boolean>
     closeTray(): void

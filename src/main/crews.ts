@@ -28,6 +28,9 @@ export class Crews {
   private agentsPath: string | null = null
   private sessionPath: string | null = null
   private projectsPath: string | null = null
+  private personalPath: string | null = null
+  private personal: AppSession | null = null
+  private personalViews = new Set<number>()
   private idle = new AppSession()
   private queue: Promise<void> = Promise.resolve()
   onTrouble: (message: string) => void = () => {}
@@ -43,6 +46,10 @@ export class Crews {
 
   setProjectsPath(at: string): void {
     this.projectsPath = at
+  }
+
+  setPersonalPath(at: string): void {
+    this.personalPath = at
   }
 
   setServersPath(at: string): void {
@@ -77,6 +84,7 @@ export class Crews {
   }
 
   inView(id: number): AppSession {
+    if (this.personalViews.has(id) && this.personal) return this.personal
     const key = this.view.get(id)
     return (key ? this.open.get(key) : null) ?? this.idle
   }
@@ -90,6 +98,7 @@ export class Crews {
   }
 
   current(id: number): CurrentSession | null {
+    if (this.personalViews.has(id)) return this.personal?.current() ?? null
     const held = this.view.get(id)
     if (held) return this.open.get(held)?.current() ?? null
     const [first] = this.open.keys()
@@ -109,6 +118,20 @@ export class Crews {
       const current = await session.startHost(folder, name, opts)
       this.hold(id, session)
       return current
+    })
+  }
+
+  async openPersonal(id: number, name: string): Promise<CurrentSession> {
+    return this.inTurn(async () => {
+      if (!this.personal?.current()) {
+        if (!this.personalPath) throw new Error('Personal chat storage is unavailable.')
+        const session = this.make()
+        await session.startPersonal(this.personalPath, name)
+        this.personal = session
+      }
+      this.view.delete(id)
+      this.personalViews.add(id)
+      return this.personal.current()!
     })
   }
 
@@ -196,12 +219,16 @@ export class Crews {
 
   forget(id: number): void {
     this.view.delete(id)
+    this.personalViews.delete(id)
   }
 
   async shutdownAll(): Promise<void> {
     const held = [...this.open.values()]
+    if (this.personal) held.push(this.personal)
     this.open.clear()
     this.view.clear()
+    this.personalViews.clear()
+    this.personal = null
     await Promise.all(held.map(session => session.shutdown()))
     await this.doors.shutdown()
   }

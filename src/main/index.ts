@@ -61,7 +61,7 @@ import type { LivePlace } from '../shared/places'
 import { popOutTarget, poppedKey } from '../shared/popOut'
 import { type NewAgent, type OpenOptions } from './session'
 import { Terminals, type TerminalSize } from './terminal'
-import { threadWindowHash } from '../shared/threadViews'
+import { PERSONAL_CHAT_HASH, threadWindowHash } from '../shared/threadViews'
 import { Updates } from './updates'
 import { runtimeStateDir } from './runtime-state'
 import { appMenuTemplate, closePutsAway, createThreadWindowOptions, createWindowOptions } from './window-options'
@@ -359,21 +359,22 @@ function warmTerminals(): void {
   }
 }
 
-function loadWindow(win: BrowserWindow, threadId?: string): void {
+function loadWindow(win: BrowserWindow, threadId?: string, personal = false): void {
   const page = path.join(dirname, '../renderer/index.html')
+  const hash = personal ? PERSONAL_CHAT_HASH : threadId ? threadWindowHash(threadId) : ''
   if (devUrl) {
-    void win.loadURL(threadId ? devUrl + threadWindowHash(threadId) : devUrl)
-  } else if (threadId) {
-    void win.loadFile(page, { hash: threadWindowHash(threadId).slice(1) })
+    void win.loadURL(devUrl + hash)
+  } else if (hash) {
+    void win.loadFile(page, { hash: hash.slice(1) })
   } else {
     void win.loadFile(page)
   }
 }
 
-function createWindow(threadId?: string, load = true): BrowserWindow {
+function createWindow(threadId?: string, load = true, personal = false): BrowserWindow {
   const preload = path.join(dirname, '../preload/preload.mjs')
   const win = new BrowserWindow(
-    threadId
+    threadId || personal
       ? createThreadWindowOptions(process.platform, preload, inspectable)
       : createWindowOptions(process.platform, preload, inspectable)
   )
@@ -417,7 +418,7 @@ function createWindow(threadId?: string, load = true): BrowserWindow {
   // put-away close it would be hidden rather than taken down, and the thread it
   // was popped out of would open nothing on the next press: a window nobody can
   // see is still a window standing on that thread.
-  if (!threadId) {
+  if (!threadId && !personal) {
     win.on('close', event => {
       if (!closePutsAway(process.platform, quitting)) return
       event.preventDefault()
@@ -437,7 +438,7 @@ function createWindow(threadId?: string, load = true): BrowserWindow {
   win.on('closed', () => {
     if (appWindows().length === 0) tray.update({ here: [], known: false })
   })
-  if (load) loadWindow(win, threadId)
+  if (load) loadWindow(win, threadId, personal)
   return win
 }
 
@@ -495,6 +496,7 @@ app.whenReady().then(() => {
   crews.setAgentsPath(path.join(stateDir, 'agents.json'))
   crews.setSessionPath(path.join(stateDir, 'session.json'))
   crews.setProjectsPath(path.join(stateDir, 'projects'))
+  crews.setPersonalPath(path.join(stateDir, 'personal'))
   crews.setServersPath(path.join(stateDir, 'model-servers.json'))
   setPluginOauthPath(path.join(stateDir, 'plugin-oauth.json'))
   crews.onTrouble = message => {
@@ -599,6 +601,17 @@ app.whenReady().then(() => {
       }
       loadWindow(win)
       warmTerminals()
+      return true
+    } catch (error) {
+      win.destroy()
+      throw error
+    }
+  })
+  ipcMain.handle('window:open-personal', async (_event, name: string) => {
+    const win = createWindow(undefined, false, true)
+    try {
+      await crews.openPersonal(win.webContents.id, name)
+      loadWindow(win, undefined, true)
       return true
     } catch (error) {
       win.destroy()

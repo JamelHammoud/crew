@@ -7,6 +7,7 @@ export function nearRight(x: number, right: number, reach = NEAR_RIGHT): boolean
 }
 
 const THREAD_HASH = '#thread='
+export const PERSONAL_CHAT_HASH = '#personal'
 
 export function threadWindowHash(threadId: string): string {
   return `${THREAD_HASH}${encodeURIComponent(threadId)}`
