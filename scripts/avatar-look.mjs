@@ -11,6 +11,7 @@ const destination = process.argv[2] ? path.resolve(process.argv[2]) : path.join(
 const transition = destination.replace(/\.png$/, '-transition.png')
 
 const probe = `
+import { useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import AgentIcon from ${JSON.stringify(path.join(root, 'src/renderer/src/components/AgentIcon'))}
 
@@ -18,16 +19,21 @@ const activities = ['idle', 'thinking', 'reading', 'searching', 'editing', 'desi
 const seeds = ['jamel/claude', 'ali/codex', 'jamel/kimi']
 
 function App() {
+  const [live, setLive] = useState(false)
+  useEffect(() => {
+    const timer = setTimeout(() => setLive(true), 200)
+    return () => clearTimeout(timer)
+  }, [])
   return (
     <main>
       <h1>Agent forms</h1>
       <div className="grid">
         {activities.map((activity, index) => (
           <section key={activity} data-cell={activity}>
-            <AgentIcon seed={seeds[index % seeds.length]} px={64} activity={activity} />
+            <AgentIcon seed={seeds[index % seeds.length]} px={64} activity={live ? activity : 'idle'} />
             <div className="small">
-              <AgentIcon seed={seeds[index % seeds.length]} size="sm" activity={activity} />
-              <AgentIcon seed={seeds[index % seeds.length]} size="xs" activity={activity} />
+              <AgentIcon seed={seeds[index % seeds.length]} size="sm" activity={live ? activity : 'idle'} />
+              <AgentIcon seed={seeds[index % seeds.length]} size="xs" activity={live ? activity : 'idle'} />
             </div>
             <span>{activity}</span>
           </section>
@@ -48,10 +54,12 @@ app.disableHardwareAcceleration()
 app.whenReady().then(async () => {
   const win = new BrowserWindow({ width: 1180, height: 580, show: false, backgroundColor: '#0b0b0d' })
   await win.loadFile(path.join(__dirname, 'dist', 'index.html'))
-  await new Promise(resolve => setTimeout(resolve, 190))
-  fs.writeFileSync(${JSON.stringify(transition)}, (await win.webContents.capturePage()).toPNG())
-  await new Promise(resolve => setTimeout(resolve, 850))
-  fs.writeFileSync(${JSON.stringify(destination)}, (await win.webContents.capturePage()).toPNG())
+  const frames = ${JSON.stringify(Array.from({ length: 6 }, (_, index) => transition.replace(/\.png$/, `-${index}.png`)))}
+  const waits = [140, 140, 120, 140, 180, 260]
+  for (let index = 0; index < frames.length; index++) {
+    await new Promise(resolve => setTimeout(resolve, waits[index]))
+    fs.writeFileSync(frames[index], (await win.webContents.capturePage()).toPNG())
+  }
   const evidence = await win.webContents.executeJavaScript(
     "Array.from(document.querySelectorAll('[data-cell]')).map(cell => ({ activity: cell.dataset.cell, object: !!cell.querySelector('.agent-activity-object'), eyes: cell.querySelectorAll('.agent-pet-eyes rect').length, masks: cell.querySelectorAll('mask').length, transform: getComputedStyle(cell.querySelector('.agent-activity-object') || cell.querySelector('.agent-pet-body')).transform }))"
   )
@@ -108,5 +116,18 @@ await new Promise((accept, reject) => {
   child.on('error', reject)
 })
 
+const frames = Array.from({ length: 6 }, (_, index) => transition.replace(/\.png$/, `-${index}.png`))
+await new Promise((accept, reject) => {
+  const child = spawn('magick', ['montage', ...frames, '-tile', '3x2', '-geometry', '590x290+4+4', destination], {
+    stdio: ['ignore', 'pipe', 'pipe']
+  })
+  let error = ''
+  child.stderr.on('data', chunk => (error += chunk))
+  child.on('exit', code => {
+    if (code !== 0) return reject(new Error(error || `ImageMagick exited ${code}`))
+    accept()
+  })
+  child.on('error', reject)
+})
+
 console.log(destination)
-console.log(transition)
