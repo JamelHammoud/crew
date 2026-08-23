@@ -5,6 +5,7 @@ import {
   ChevronDownGlyph,
   ChevronUpGlyph,
   PencilGlyph,
+  SendGlyph,
   TrashGlyph
 } from '../icons'
 import { useBrowser } from '../state/browser'
@@ -75,6 +76,7 @@ function QueueRow({
   last,
   onEdit,
   onRemove,
+  onSend,
   onMove
 }: {
   item: QueuedMessage
@@ -82,6 +84,7 @@ function QueueRow({
   last: boolean
   onEdit: () => void
   onRemove: () => void
+  onSend: () => void
   onMove: (offset: number) => void
 }) {
   return (
@@ -110,6 +113,16 @@ function QueueRow({
       {item.agentLabel && <Pill>{item.agentLabel}</Pill>}
         {item.self && (
           <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+            <Tooltip label="Send now">
+              <button
+                type="button"
+                onClick={onSend}
+                aria-label="Send queued message now"
+                className="flex h-7 w-7 items-center justify-center rounded-full text-fg-muted transition-colors hover:bg-fg/[0.08] hover:text-fg"
+              >
+                <SendGlyph className="h-3.5 w-3.5" />
+              </button>
+            </Tooltip>
             <Tooltip label="Move earlier">
               <button
                 type="button"
@@ -162,11 +175,13 @@ export default function QueueBar({
   items,
   onEdit,
   onRemove,
+  onSend,
   onMove
 }: {
   items: QueuedMessage[]
   onEdit: (promptId: string) => void
   onRemove: (promptId: string) => void
+  onSend: (promptId: string) => void
   onMove: (promptId: string, to: number) => void
 }) {
   const [open, setOpen] = useState(false)
@@ -196,6 +211,7 @@ export default function QueueBar({
               last={index === items.length - 1}
               onEdit={() => onEdit(item.promptId)}
               onRemove={() => onRemove(item.promptId)}
+              onSend={() => onSend(item.promptId)}
               onMove={offset => onMove(item.promptId, index + offset)}
             />
           ))}

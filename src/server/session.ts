@@ -1197,6 +1197,9 @@ export class CrewSession {
       case 'queue.remove':
         if (meta.role === 'ui') this.handleQueueRemove(member, msg.promptId)
         break
+      case 'queue.send':
+        if (meta.role === 'ui') this.handleQueueSend(member, msg.promptId)
+        break
       case 'queue.take':
         if (meta.role === 'ui') this.handleQueueTake(ws, member, msg.promptId)
         break
@@ -3869,6 +3872,26 @@ export class CrewSession {
       this.handleDeleteMessage(member, found.entry.messageId)
     }
     this.broadcastQueue(found.thread)
+  }
+
+  private handleQueueSend(member: Member, promptId: string): void {
+    const found = this.queuedEntry(promptId)
+    if (!found || found.entry.authorId !== member.id || !found.thread.running) return
+    const agent = this.agents.get(found.entry.agentId)
+    const runningAgentId = this.prompts.get(found.thread.running)?.agentId
+    if (!agent?.runner || !agent.steerable || runningAgentId !== agent.id) return
+    found.thread.queue = found.thread.queue.filter(item => item.promptId !== promptId)
+    this.broadcastQueue(found.thread)
+    this.emitThreadMessage(found.entry)
+    this.sendSteer(agent, found.thread.running, {
+      messageId: found.entry.messageId,
+      text: found.entry.text,
+      byName: found.entry.byName,
+      authorId: found.entry.authorId,
+      threadId: found.thread.id,
+      attachments: found.entry.attachments,
+      replyTo: found.entry.replyTo
+    })
   }
 
   private handleQueueTake(ws: WebSocket, member: Member, promptId: string): void {

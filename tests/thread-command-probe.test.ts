@@ -345,6 +345,7 @@ describe('queued message cards', () => {
     useCrew.setState({ httpBase: 'http://127.0.0.1:1234' })
     const edit = vi.fn()
     const move = vi.fn()
+    const send = vi.fn()
     render(
       createElement(QueueBar, {
         items: [
@@ -373,6 +374,7 @@ describe('queued message cards', () => {
         ],
         onEdit: edit,
         onRemove: vi.fn(),
+        onSend: send,
         onMove: move
       })
     )
@@ -382,6 +384,8 @@ describe('queued message cards', () => {
     expect(screen.getByText('Replying to Ali')).toBeTruthy()
     expect(screen.getByLabelText('Open room.png')).toBeTruthy()
 
+    fireEvent.click(screen.getAllByLabelText('Send queued message now')[0])
+    expect(send).toHaveBeenCalledWith('p1')
     fireEvent.click(screen.getAllByLabelText('Edit queued message')[0])
     expect(edit).toHaveBeenCalledWith('p1')
     fireEvent.click(screen.getAllByLabelText('Move queued message later')[0])

@@ -340,6 +340,7 @@ interface CrewState {
   deleteDoc: (page: string) => void
   editQueued: (promptId: string, text: string) => void
   removeQueued: (promptId: string) => void
+  sendQueued: (promptId: string) => void
   takeQueued: (promptId: string) => void
   moveQueued: (promptId: string, to: number) => void
   clearQueueComposed: (threadId: string) => void
@@ -1742,6 +1743,9 @@ export const useCrew = create<CrewState>((set, get) => {
     },
     removeQueued: promptId => {
       socket.send({ type: 'queue.remove', promptId })
+    },
+    sendQueued: promptId => {
+      socket.send({ type: 'queue.send', promptId })
     },
     takeQueued: promptId => {
       socket.send({ type: 'queue.take', promptId })

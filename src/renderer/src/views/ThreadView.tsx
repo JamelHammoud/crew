@@ -80,6 +80,7 @@ export default function ThreadView({
   const cancelPrompt = useCrew(s => s.cancelPrompt)
   const setThreadStatus = useCrew(s => s.setThreadStatus)
   const removeQueued = useCrew(s => s.removeQueued)
+  const sendQueued = useCrew(s => s.sendQueued)
   const takeQueued = useCrew(s => s.takeQueued)
   const moveQueued = useCrew(s => s.moveQueued)
   const queueComposed = useCrew(s => s.queueComposed[threadId])
@@ -378,6 +379,7 @@ export default function ThreadView({
                 items={queuedMessages}
                 onEdit={editQueuedMessage}
                 onRemove={removeQueued}
+                onSend={sendQueued}
                 onMove={moveQueued}
               />
               {replyTo && <ReplyPreview replyTo={replyTo} onCancel={() => setReplyTo(null)} />}

@@ -210,6 +210,7 @@ export type ClientMessage =
   | { type: 'game.score'; gameId: string; score: number }
   | { type: 'queue.edit'; promptId: string; text: string }
   | { type: 'queue.remove'; promptId: string }
+  | { type: 'queue.send'; promptId: string }
   | { type: 'queue.take'; promptId: string }
   | { type: 'queue.move'; promptId: string; to: number }
   | { type: 'prompt.cancel'; promptId: string }

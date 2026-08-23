@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { agentId } from '../src/shared/llm'
 import type { SessionEvent } from '../src/shared/events'
 import { Runner } from '../src/runner'
-import { makeFakeProvider } from './helpers/fake-provider'
+import { makeFakeProvider, makeSteerableProvider } from './helpers/fake-provider'
 import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
 import { testRunner } from './helpers/runner'
 
@@ -26,12 +26,12 @@ describe('queued messages', () => {
     await host.close()
   })
 
-  async function connectRunner(name: string, env: NodeJS.ProcessEnv = {}) {
+  async function connectRunner(name: string, env: NodeJS.ProcessEnv = {}, steerable = false) {
     const runner = testRunner({
       name,
       code: host.code,
       repoPath: host.repoPath,
-      providers: [makeFakeProvider(env)],
+      providers: [steerable ? makeSteerableProvider(env) : makeFakeProvider(env)],
       reconnectDelayMs: 100
     })
     runners.push(runner)
@@ -112,6 +112,34 @@ describe('queued messages', () => {
     await new Promise(r => setTimeout(r, 300))
     expect(ui.events.some(e => e.kind === 'agent.start' && e.promptId === item.promptId)).toBe(false)
     expect(ui.events.some(e => e.kind === 'message' && e.text === 'never mind')).toBe(false)
+  })
+
+  it('sends a queued message into the active turn now', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    await connectRunner('jamel', { FAKE_CLI_DELAY_MS: '900' }, true)
+    await ui.waitForEvent(e => e.kind === 'agent.online')
+
+    const steery = agentId('jamel', 'steery')
+    ui.chat('start @Steery', [steery])
+    const started = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Started
+    const active = await ui.waitForEvent(e => e.kind === 'agent.start' && e.threadId === started.threadId)
+    if (active.kind !== 'agent.start') throw new Error('expected agent.start')
+    await ui.waitFor(message => message.type === 'agent.step' && message.promptId === active.promptId)
+
+    ui.chat('send this now', [], started.threadId, ['queue'])
+    await waitUntil(() => queueOf(started.threadId).some(item => item.text === 'send this now'))
+    const item = queueOf(started.threadId).find(queued => queued.text === 'send this now')!
+    ui.send({ type: 'queue.send', promptId: item.promptId })
+
+    await waitUntil(() => queueOf(started.threadId).every(queued => queued.promptId !== item.promptId))
+    const route = await ui.waitForEvent(
+      event => event.kind === 'message.route' && event.messageId === item.promptId && event.mode === 'steered'
+    )
+    expect(route.kind === 'message.route' && route.promptId).toBe(active.promptId)
+    const ended = await ui.waitForEvent(event => event.kind === 'agent.end' && event.promptId === active.promptId)
+    expect(ended.kind === 'agent.end' && ended.text).toContain('steered:New message from sam: send this now')
+    expect(ui.events.filter(event => event.kind === 'agent.start')).toHaveLength(1)
   })
 
   it('returns the whole queued message to its author for editing', async () => {
