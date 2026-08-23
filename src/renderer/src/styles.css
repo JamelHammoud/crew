@@ -1025,7 +1025,8 @@ textarea:placeholder-shown {
 .agent-icon .agent-face-stage,
 .agent-icon .agent-pet-eyes,
 .agent-icon .agent-activity-stage,
-.agent-icon .agent-activity-object {
+.agent-icon .agent-activity-object,
+.agent-icon .agent-activity-object [data-part] {
   transform-box: fill-box;
   transform-origin: center;
   will-change: transform, opacity;
@@ -1097,7 +1098,7 @@ textarea:placeholder-shown {
     opacity: 1;
     transform: translate(0, 0) rotate(0) scale(1);
   }
-  20% {
+  22% {
     opacity: 1;
     transform: translate(-3%, 2%) rotate(-4deg) scale(1.05, 0.93);
   }
@@ -1105,7 +1106,7 @@ textarea:placeholder-shown {
     opacity: 1;
     transform: translate(1%, -2%) rotate(6deg) scale(0.88, 1.08);
   }
-  82%,
+  66%,
   100% {
     opacity: 0;
     transform: translate(0, 4%) rotate(14deg) scale(0.18, 0.5);
@@ -1114,19 +1115,23 @@ textarea:placeholder-shown {
 
 @keyframes agent-form-in {
   0%,
-  17% {
+  38% {
     opacity: 0;
     transform: translate(0, 4%) rotate(-14deg) scale(0.18, 0.5);
   }
-  38% {
-    opacity: 1;
-    transform: translate(2%, -5%) rotate(6deg) scale(0.72, 1.16);
+  44% {
+    opacity: 0.25;
+    transform: translate(1%, 1%) rotate(-8deg) scale(0.28, 0.62);
   }
-  60% {
+  58% {
+    opacity: 1;
+    transform: translate(2%, -5%) rotate(6deg) scale(0.78, 1.16);
+  }
+  72% {
     opacity: 1;
     transform: translate(-1%, 2%) rotate(-3deg) scale(1.07, 0.91);
   }
-  79% {
+  86% {
     opacity: 1;
     transform: translate(0, -1%) rotate(1deg) scale(0.98, 1.03);
   }
@@ -1174,6 +1179,44 @@ textarea:placeholder-shown {
   }
 }
 
+.agent-icon [data-part='thought'] {
+  animation: agent-thought-body 2.7s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+}
+
+.agent-icon [data-part='thought-tail-one'] {
+  animation: agent-thought-tail 2.7s cubic-bezier(0.45, 0, 0.2, 1) calc(var(--agent-delay, 0ms) - 90ms) infinite;
+}
+
+.agent-icon [data-part='thought-tail-two'] {
+  animation: agent-thought-tail 2.7s cubic-bezier(0.45, 0, 0.2, 1) calc(var(--agent-delay, 0ms) - 180ms) infinite;
+}
+
+@keyframes agent-thought-body {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(0.985, 1.015);
+  }
+  68% {
+    transform: scale(1.01, 0.99);
+  }
+}
+
+@keyframes agent-thought-tail {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  42% {
+    transform: translate(4%, -8%) scale(1.08);
+  }
+  68% {
+    transform: translate(-2%, 3%) scale(0.96);
+  }
+}
+
 @keyframes agent-reading {
   0%,
   100% {
@@ -1187,6 +1230,42 @@ textarea:placeholder-shown {
   }
   78% {
     transform: translateY(-1%) rotate(0.5deg) scale(1.005, 0.995);
+  }
+}
+
+.agent-icon [data-part='page-left'] {
+  transform-origin: right center;
+  animation: agent-page-left 3.4s cubic-bezier(0.45, 0, 0.25, 1) var(--agent-delay, 0ms) infinite;
+}
+
+.agent-icon [data-part='page-right'] {
+  transform-origin: left center;
+  animation: agent-page-right 3.4s cubic-bezier(0.45, 0, 0.25, 1) calc(var(--agent-delay, 0ms) - 120ms) infinite;
+}
+
+@keyframes agent-page-left {
+  0%,
+  100% {
+    transform: scaleX(1) rotate(0);
+  }
+  48% {
+    transform: scaleX(0.96) rotate(-1.5deg);
+  }
+  66% {
+    transform: scaleX(1.015) rotate(0.5deg);
+  }
+}
+
+@keyframes agent-page-right {
+  0%,
+  100% {
+    transform: scaleX(1) rotate(0);
+  }
+  46% {
+    transform: scaleX(0.955) rotate(1.5deg);
+  }
+  69% {
+    transform: scaleX(1.015) rotate(-0.5deg);
   }
 }
 
@@ -1241,6 +1320,42 @@ textarea:placeholder-shown {
   }
   88% {
     transform: translate(-1%, 0) rotate(-3deg) scale(1.01, 0.99);
+  }
+}
+
+.agent-icon [data-part='brush-handle'] {
+  transform-origin: 50% 78%;
+  animation: agent-brush-handle 1.55s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+}
+
+.agent-icon [data-part='brush-tip'] {
+  transform-origin: 58% 22%;
+  animation: agent-brush-tip 1.55s cubic-bezier(0.45, 0, 0.2, 1) calc(var(--agent-delay, 0ms) - 90ms) infinite;
+}
+
+@keyframes agent-brush-handle {
+  0%,
+  100% {
+    transform: rotate(-1deg) scaleY(1);
+  }
+  48% {
+    transform: rotate(2deg) scaleY(1.015);
+  }
+  70% {
+    transform: rotate(1deg) scaleY(0.99);
+  }
+}
+
+@keyframes agent-brush-tip {
+  0%,
+  100% {
+    transform: rotate(1deg) scale(1);
+  }
+  48% {
+    transform: rotate(-3deg) scale(1.03, 0.96);
+  }
+  70% {
+    transform: rotate(-1deg) scale(0.985, 1.025);
   }
 }
 

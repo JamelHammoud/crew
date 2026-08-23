@@ -7,17 +7,26 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
   if (activity === 'thinking') {
     return (
       <>
-        <path d="M18 20 C25 9 42 6 57 10 C74 7 90 18 91 34 C98 45 91 61 79 67 C71 80 51 83 39 76 C23 81 8 70 9 55 C2 43 7 28 18 20 Z" />
-        <circle cx="28" cy="85" r="7" />
-        <circle cx="14" cy="94" r="3.5" />
+        <path
+          data-part="thought"
+          d="M18 20 C25 9 42 6 57 10 C74 7 90 18 91 34 C98 45 91 61 79 67 C71 80 51 83 39 76 C23 81 8 70 9 55 C2 43 7 28 18 20 Z"
+        />
+        <circle data-part="thought-tail-one" cx="28" cy="85" r="7" />
+        <circle data-part="thought-tail-two" cx="14" cy="94" r="3.5" />
       </>
     )
   }
   if (activity === 'reading') {
     return (
       <>
-        <path d="M8 22 C20 17 34 19 47 28 L47 85 C34 76 21 74 8 79 C5 80 3 77 3 73 L3 29 C3 25 5 23 8 22 Z" />
-        <path d="M92 22 C80 17 66 19 53 28 L53 85 C66 76 79 74 92 79 C95 80 97 77 97 73 L97 29 C97 25 95 23 92 22 Z" />
+        <path
+          data-part="page-left"
+          d="M8 22 C20 17 34 19 47 28 L47 85 C34 76 21 74 8 79 C5 80 3 77 3 73 L3 29 C3 25 5 23 8 22 Z"
+        />
+        <path
+          data-part="page-right"
+          d="M92 22 C80 17 66 19 53 28 L53 85 C66 76 79 74 92 79 C95 80 97 77 97 73 L97 29 C97 25 95 23 92 22 Z"
+        />
       </>
     )
   }
@@ -41,8 +50,14 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
   if (activity === 'designing') {
     return (
       <>
-        <path d="M61 5 C69 3 77 8 80 16 C81 20 80 24 79 28 L65 65 C62 73 54 77 47 74 C40 71 37 64 40 56 L54 16 C55 11 57 7 61 5 Z" />
-        <path d="M38 66 C47 64 56 72 56 81 C56 89 49 93 36 97 C32 98 30 96 29 92 L25 81 C22 73 29 67 38 66 Z" />
+        <path
+          data-part="brush-handle"
+          d="M61 5 C69 3 77 8 80 16 C81 20 80 24 79 28 L65 65 C62 73 54 77 47 74 C40 71 37 64 40 56 L54 16 C55 11 57 7 61 5 Z"
+        />
+        <path
+          data-part="brush-tip"
+          d="M38 66 C47 64 56 72 56 81 C56 89 49 93 36 97 C32 98 30 96 29 92 L25 81 C22 73 29 67 38 66 Z"
+        />
       </>
     )
   }
