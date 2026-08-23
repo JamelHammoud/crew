@@ -63,7 +63,7 @@ import type { LivePlace } from '../shared/places'
 import { popOutTarget, poppedKey } from '../shared/popOut'
 import { type NewAgent, type OpenOptions } from './session'
 import { Terminals, type TerminalSize } from './terminal'
-import { PERSONAL_CHAT_HASH, threadWindowHash } from '../shared/threadViews'
+import { BROWSER_WINDOW_HASH, PERSONAL_CHAT_HASH, threadWindowHash } from '../shared/threadViews'
 import { Updates } from './updates'
 import { runtimeStateDir } from './runtime-state'
 import {
@@ -96,6 +96,7 @@ const playing = new Map<number, Media>()
 // is standing is brought forward rather than a second one opened onto the same
 // conversation.
 const popped = new Map<string, BrowserWindow>()
+const standaloneBrowsers = new Set<BrowserWindow>()
 // Whether this Crew was installed or is being run out of a checkout. It is the
 // one answer the icon, the dev tools and the updates all read, and nothing about
 // the path check is loosened for any of them.
@@ -367,9 +368,9 @@ function warmTerminals(): void {
   }
 }
 
-function loadWindow(win: BrowserWindow, threadId?: string, personal = false): void {
+function loadWindow(win: BrowserWindow, threadId?: string, personal = false, browser = false): void {
   const page = path.join(dirname, '../renderer/index.html')
-  const hash = personal ? PERSONAL_CHAT_HASH : threadId ? threadWindowHash(threadId) : ''
+  const hash = browser ? BROWSER_WINDOW_HASH : personal ? PERSONAL_CHAT_HASH : threadId ? threadWindowHash(threadId) : ''
   if (devUrl) {
     void win.loadURL(devUrl + hash)
   } else if (hash) {
@@ -379,7 +380,7 @@ function loadWindow(win: BrowserWindow, threadId?: string, personal = false): vo
   }
 }
 
-function createWindow(threadId?: string, load = true, personal = false): BrowserWindow {
+function createWindow(threadId?: string, load = true, personal = false, browser = false): BrowserWindow {
   const preload = path.join(dirname, '../preload/preload.mjs')
   const win = new BrowserWindow(
     personal
@@ -428,7 +429,7 @@ function createWindow(threadId?: string, load = true, personal = false): Browser
   // put-away close it would be hidden rather than taken down, and the thread it
   // was popped out of would open nothing on the next press: a window nobody can
   // see is still a window standing on that thread.
-  if (!threadId && !personal) {
+  if (!threadId && !personal && !browser) {
     win.on('close', event => {
       if (!closePutsAway(process.platform, quitting)) return
       event.preventDefault()
@@ -448,11 +449,16 @@ function createWindow(threadId?: string, load = true, personal = false): Browser
   win.on('closed', () => {
     if (appWindows().length === 0) tray.update({ here: [], known: false })
   })
-  if (load) loadWindow(win, threadId, personal)
+  if (browser) {
+    standaloneBrowsers.add(win)
+    win.on('closed', () => standaloneBrowsers.delete(win))
+  }
+  if (load) loadWindow(win, threadId, personal, browser)
   return win
 }
 
 function poppedOut(win: BrowserWindow): boolean {
+  if (standaloneBrowsers.has(win)) return true
   for (const one of popped.values()) if (one === win) return true
   return false
 }
@@ -604,9 +610,9 @@ app.whenReady().then(() => {
   ipcMain.handle('window:pop-browser-tab', (event, tab: BrowserTab) => {
     const place = crews.keyInView(event.sender.id)
     return openBrowserTabWindow(tab, place, {
-      create: () => createWindow(undefined, false),
+      create: () => createWindow(undefined, false, false, true),
       join: (id, target) => crews.switchTo(id, target),
-      load: win => loadWindow(win)
+      load: win => loadWindow(win, undefined, false, true)
     })
   })
   ipcMain.handle('window:open-project', async (_event, key: string) => {
