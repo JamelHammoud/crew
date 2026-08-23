@@ -337,14 +337,16 @@ export function FullPath({ path }: { path: string }) {
 export function UrlChip({ url }: { url: string }) {
   return (
     <Tooltip label={<FullPath path={url} />} className="max-w-full">
-      <button
-        type="button"
-        onClick={() => useBrowser.getState().showPage(url)}
+      <span
+        onClick={event => {
+          event.stopPropagation()
+          useBrowser.getState().showPage(url)
+        }}
         className="resource-chip"
       >
         <GlobeGlyph className="resource-chip-icon" />
         <span className="truncate">{new URL(url).host || url}</span>
-      </button>
+      </span>
     </Tooltip>
   )
 }

@@ -1,9 +1,8 @@
 import { memo, useState } from 'react'
 import { filePathOf, pageName } from '../../../shared/urls'
-import { useBrowser } from '../state/browser'
 import { FileChip, isPrivate, PrivateChip, UrlChip, useLocated } from './fileLinks'
 import { openShown, shownPaths } from './openShown'
-import { Chevron, FilePathLink, Label, rowClass, SUBJECT, SUBJECT_MONO } from './StepRow'
+import { Chevron, Label, rowClass, SUBJECT, SUBJECT_MONO } from './StepRow'
 import { sameShown, type Shown } from './thread'
 import type { ToolAction } from './toolActions'
 import { ShowGlyph } from './toolGlyphs'
@@ -38,8 +37,14 @@ function PageRow({ shown, linked }: { shown: Shown; linked?: boolean }) {
       <button onClick={press ?? undefined} className={rowClass(press !== null)}>
         <ShowGlyph className="w-[18px] h-[18px] shrink-0 text-fg" />
         <Label action={action} running={false} />
-        {title && <span className={SUBJECT}>{title}</span>}
-        {away ? <PrivateChip /> : where !== title && <span className={SUBJECT_MONO}>{where}</span>}
+        {title && (many || title !== where) && <span className={SUBJECT}>{title}</span>}
+        {away ? (
+          <PrivateChip />
+        ) : many ? (
+          where !== title && <span className={SUBJECT_MONO}>{where}</span>
+        ) : (
+          <ShownLink page={one} />
+        )}
         {many && <Chevron open={open} />}
       </button>
       {many && open && (
