@@ -84,7 +84,7 @@ export default function PersonalChatSidebar({
       aria-hidden={collapsed}
       className={`shrink-0 overflow-hidden transition-[width,border-color] duration-200 ${
         collapsed
-          ? 'w-0 border-r border-transparent'
+          ? 'w-0'
           : glass
             ? 'w-[300px] sidebar-pinned bg-ink-800 border-r border-[var(--glass-line)]'
             : 'w-[300px] bg-ink-900 border-r border-ink-700'
