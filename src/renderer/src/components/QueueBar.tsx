@@ -112,8 +112,8 @@ function QueueRow({
         </div>
       </div>
       {item.agentLabel && <Pill>{item.agentLabel}</Pill>}
-        {item.self && (
-          <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+      {item.self && (
+        <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
             {item.sendable && (
               <Tooltip label="Send now">
                 <button
@@ -168,8 +168,8 @@ function QueueRow({
                 <TrashGlyph className="h-3.5 w-3.5" />
               </button>
             </Tooltip>
-          </div>
-        )}
+        </div>
+      )}
     </div>
   )
 }
