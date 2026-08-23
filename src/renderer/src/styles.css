@@ -1233,31 +1233,31 @@ textarea:placeholder-shown {
 }
 
 .agent-icon [data-part^='thought-lobe'] {
-  animation: agent-thought-lobe 4.4s linear var(--agent-delay, 0ms) infinite;
+  animation: agent-thought-lobe 5.6s linear var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon [data-part='thought-lobe-two'] {
-  animation-delay: calc(var(--agent-delay, 0ms) - 629ms);
+  animation-delay: calc(var(--agent-delay, 0ms) - 800ms);
 }
 
 .agent-icon [data-part='thought-lobe-three'] {
-  animation-delay: calc(var(--agent-delay, 0ms) - 1257ms);
+  animation-delay: calc(var(--agent-delay, 0ms) - 1600ms);
 }
 
 .agent-icon [data-part='thought-lobe-four'] {
-  animation-delay: calc(var(--agent-delay, 0ms) - 1886ms);
+  animation-delay: calc(var(--agent-delay, 0ms) - 2400ms);
 }
 
 .agent-icon [data-part='thought-lobe-five'] {
-  animation-delay: calc(var(--agent-delay, 0ms) - 2514ms);
+  animation-delay: calc(var(--agent-delay, 0ms) - 3200ms);
 }
 
 .agent-icon [data-part='thought-lobe-six'] {
-  animation-delay: calc(var(--agent-delay, 0ms) - 3143ms);
+  animation-delay: calc(var(--agent-delay, 0ms) - 4000ms);
 }
 
 .agent-icon [data-part='thought-lobe-seven'] {
-  animation-delay: calc(var(--agent-delay, 0ms) - 3771ms);
+  animation-delay: calc(var(--agent-delay, 0ms) - 4800ms);
 }
 
 .agent-icon [data-part='thought-dot-one'] {
