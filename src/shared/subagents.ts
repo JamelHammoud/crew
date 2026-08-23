@@ -133,6 +133,7 @@ export interface SubagentReturn {
   name: string
   subject: string
   ok: boolean
+  stopped?: boolean
   ms: number
   text: string
 }
@@ -152,7 +153,9 @@ export function returnText(finished: readonly SubagentReturn[], stillOut: readon
   const lines = finished.map(one =>
     one.ok
       ? [`${one.name} finished after ${spell(one.ms)} and said:`, one.text.trim() || '(nothing)']
-      : [`${one.name} stopped after ${spell(one.ms)} without finishing:`, one.text.trim() || '(no reason given)']
+      : one.stopped
+        ? [`${one.name} stopped after ${spell(one.ms)} without finishing:`, one.text.trim() || '(no reason given)']
+        : [`${one.name} failed after ${spell(one.ms)}:`, one.text.trim() || '(no reason given)']
   )
   const out = lines.flatMap((pair, index) => (index === 0 ? pair : ['', ...pair]))
   if (stillOut.length > 0) {

@@ -2656,6 +2656,7 @@ export class CrewSession {
       name: thread.helper ?? thread.agentLabel,
       subject: thread.subject ?? thread.title,
       ok: ended.ok,
+      stopped: ended.stopped,
       ms: ended.ms,
       text
     }

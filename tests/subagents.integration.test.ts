@@ -35,14 +35,14 @@ describe('subagents', () => {
 
   // The parent talks and the helper works, so they are two different CLIs: one
   // that takes a message mid-run and one that answers quickly.
-  async function connectRunner(parentDelayMs = 3000, childDelayMs = 20): Promise<Runner> {
+  async function connectRunner(parentDelayMs = 3000, childDelayMs = 20, childFails = false): Promise<Runner> {
     const runner = testRunner({
       name: 'jamel',
       code: host.code,
       repoPath: host.repoPath,
       providers: [
         makeSteerableProvider({ FAKE_CLI_DELAY_MS: String(parentDelayMs) }),
-        makeFakeProvider({ FAKE_CLI_DELAY_MS: String(childDelayMs) })
+        makeFakeProvider({ FAKE_CLI_DELAY_MS: String(childDelayMs), FAKE_CLI_FAIL: childFails ? '1' : '0' })
       ],
       reconnectDelayMs: 100
     })
@@ -293,6 +293,80 @@ describe('subagents', () => {
     // Somebody else's run cannot reach it, however its id was come by.
     const trespass = await post(`/agents/${child}/say`, { promptId: 'not-a-run', text: 'hello' })
     expect(trespass.status).toBe(404)
+  })
+
+  it('lists nested helpers and runs a failed turn again', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    await connectRunner(9000, 20, true)
+    await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === fake)
+
+    const parent = await openParent(ui, steery)
+    const spawned = await post('/agents/spawn', {
+      promptId: parent.promptId,
+      name: 'Scout',
+      provider: 'fake',
+      subject: 'check once',
+      task: 'check it'
+    })
+    const child = spawned.body.threadId as string
+    const firstEnd = (await ui.waitForEvent(
+      e => e.kind === 'agent.end' && e.threadId === child && e.ok === false
+    )) as End
+    await ui.waitForEvent(e => e.kind === 'subagent.ended' && e.promptId === firstEnd.promptId)
+
+    const listed = await fetch(`${base}/agents?promptId=${parent.promptId}`).then(res => res.json())
+    expect(listed).toHaveLength(1)
+    expect(listed[0]).toMatchObject({ id: child, helper: 'Scout', state: 'failed', said: 'fake cli failed' })
+
+    const restarted = await post(`/agents/${child}/restart`, { promptId: parent.promptId })
+    expect(restarted.status).toBe(200)
+    const secondStart = (await ui.waitForEvent(
+      e => e.kind === 'agent.start' && e.threadId === child && e.promptId !== firstEnd.promptId
+    )) as Start
+    expect(secondStart.promptText).toBe('check it')
+    await ui.waitForEvent(e => e.kind === 'subagent.ended' && e.promptId === secondStart.promptId)
+  })
+
+  it('hands an interrupted helper back to its parent after the host returns', async () => {
+    const repoPath = host.repoPath
+    const firstUi = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(firstUi)
+    const firstRunner = await connectRunner(20, 9000)
+    await firstUi.waitForEvent(e => e.kind === 'agent.online' && e.agentId === fake)
+
+    const parent = await openParent(firstUi, steery)
+    const spawned = await post('/agents/spawn', {
+      promptId: parent.promptId,
+      name: 'Scout',
+      provider: 'fake',
+      subject: 'long check',
+      task: 'keep checking'
+    })
+    const child = spawned.body.threadId as string
+    await firstUi.waitForEvent(e => e.kind === 'agent.start' && e.threadId === child)
+    await firstUi.waitForEvent(e => e.kind === 'agent.end' && e.threadId === parent.threadId)
+
+    firstUi.close()
+    firstRunner.close()
+    await host.close()
+
+    host = await startHost(repoPath)
+    base = host.url.replace('ws://', 'http://').replace('/ws', '')
+    const secondUi = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(secondUi)
+    await connectRunner(20, 20)
+
+    const returned = (await secondUi.waitForEvent(
+      e => e.kind === 'agent.start' && e.threadId === parent.threadId && e.promptId !== parent.promptId,
+      15000
+    )) as Start
+    expect(returned.promptText).toContain('Scout failed after')
+    expect(returned.promptText).toContain('Interrupted by a restart')
+    await secondUi.waitForEvent(e => e.kind === 'agent.end' && e.promptId === returned.promptId)
+    expect(
+      host.session.snapshot().events.filter(e => e.kind === 'subagent.returned' && e.threadId === child)
+    ).toHaveLength(1)
   })
 
   it('comes back from a wait inside its bound rather than hanging on', async () => {

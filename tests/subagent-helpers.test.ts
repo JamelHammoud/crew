@@ -91,12 +91,17 @@ describe('what the parent reads when one comes home', () => {
 
   it('gathers a breath of them under one heading rather than three', () => {
     const said = returnText(
-      [one, { ...one, name: 'Auditor', text: 'Two failures.' }, { ...one, name: 'Critic', ok: false, text: 'Stopped' }],
+      [
+        one,
+        { ...one, name: 'Auditor', text: 'Two failures.' },
+        { ...one, name: 'Critic', ok: false, stopped: true, text: 'Stopped' }
+      ],
       []
     )
     expect(said).toContain('Scout finished')
     expect(said).toContain('Auditor finished')
     expect(said).toContain('Critic stopped after')
+    expect(returnText([{ ...one, ok: false, text: 'No connection.' }], [])).toContain('Scout failed after')
   })
 
   it('says something rather than nothing when a helper answered with nothing', () => {
