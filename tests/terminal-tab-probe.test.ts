@@ -61,11 +61,11 @@ const only = () => useBrowser.getState().tabs[0]!
 const screenText = (): string => document.querySelector('.xterm-rows')?.textContent ?? ''
 
 describe('opening something new in the side panel', () => {
-  it('asks whether it should be a web page or a terminal', () => {
+  it('asks whether it should be the web or a terminal', () => {
     render(createElement(BrowserPanel))
     newTab()
 
-    expect(within(menu()).getByText('Web page')).toBeTruthy()
+    expect(within(menu()).getByText('Web')).toBeTruthy()
     expect(within(menu()).getByText('Terminal')).toBeTruthy()
     expect(useBrowser.getState().tabs).toHaveLength(0)
   })
@@ -73,7 +73,7 @@ describe('opening something new in the side panel', () => {
   it('leaves a blank page waiting for an address', () => {
     render(createElement(BrowserPanel))
     newTab()
-    pick('Web page')
+    pick('Web')
 
     expect(only().kind).toBe('web')
     expect(only().url).toBe('')

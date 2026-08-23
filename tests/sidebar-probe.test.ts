@@ -202,6 +202,63 @@ describe('the sidebar', () => {
     await waitFor(() => expect(useSidebar.getState().peeking).toBe(false))
   })
 
+  it('holds every extra in the requested order', async () => {
+    render(Sidebar())
+    fireEvent.pointerEnter(screen.getByRole('button', { name: 'More' }).parentElement as HTMLElement)
+    const files = await screen.findByRole('button', { name: 'Files' })
+    const menu = files.closest('.glass') as HTMLElement
+    expect([...menu.querySelectorAll('button')].map(row => row.textContent)).toEqual([
+      'Files',
+      'Review',
+      'Terminal',
+      'Plugins',
+      'Scheduled',
+      'Toolbox',
+      'Web',
+      'Music',
+      'Games'
+    ])
+  })
+
+  it('pins a More item above More, keeps it across a mount, and removes it from the menu', async () => {
+    const first = render(Sidebar())
+    const more = screen.getByRole('button', { name: 'More' })
+    fireEvent.pointerEnter(more.parentElement as HTMLElement)
+    const files = await screen.findByRole('button', { name: 'Files' })
+    const moreMenu = files.closest('.glass') as HTMLElement
+    fireEvent.contextMenu(files, { clientX: 80, clientY: 120 })
+    fireEvent.click(await screen.findByRole('button', { name: 'Pin to sidebar' }))
+
+    await waitFor(() => expect([...moreMenu.querySelectorAll('button')].some(row => row.textContent === 'Files')).toBe(false))
+    expect(localStorage.getItem('crew.sidebar.pins')).toBe('["files"]')
+    first.unmount()
+
+    const { container } = render(Sidebar())
+    const nav = container.querySelector('nav[aria-label="Main navigation"]') as HTMLElement
+    const rows = [...nav.querySelectorAll('.group.relative > button')]
+    expect(rows.map(row => row.textContent)).toEqual(['Chat', 'Docs', 'Design', 'Tasks', 'Files', 'More'])
+  })
+
+  it('unpins a sidebar item from its right click menu', async () => {
+    localStorage.setItem('crew.sidebar.pins', '["files"]')
+    const { container } = render(Sidebar())
+    const files = screen.getByRole('button', { name: 'Files' })
+    fireEvent.contextMenu(files, { clientX: 80, clientY: 120 })
+    fireEvent.click(await screen.findByRole('button', { name: 'Unpin from sidebar' }))
+
+    const nav = container.querySelector('nav[aria-label="Main navigation"]') as HTMLElement
+    await waitFor(() =>
+      expect([...nav.querySelectorAll('.group.relative > button')].map(row => row.textContent)).toEqual([
+        'Chat',
+        'Docs',
+        'Design',
+        'Tasks',
+        'More'
+      ])
+    )
+    expect(localStorage.getItem('crew.sidebar.pins')).toBe('[]')
+  })
+
   it('holds the More menu up while the pointer crosses the gap to it', async () => {
     useSidebar.setState({ pinned: true })
     render(Sidebar())
@@ -273,15 +330,15 @@ describe('the sidebar', () => {
     expect(screen.getByRole('button', { name: 'More' }).getAttribute('aria-current')).toBe('page')
   })
 
-  it('opens the panel on Start from the Browser row in More', async () => {
+  it('opens a blank web tab from the Web row in More', async () => {
     render(Sidebar())
     const more = screen.getByRole('button', { name: 'More' })
     fireEvent.pointerEnter(more.parentElement as HTMLElement)
-    fireEvent.click(await screen.findByRole('button', { name: 'Browser' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Web' }))
 
     expect(useBrowser.getState().open).toBe(true)
-    expect(useBrowser.getState().tabs).toHaveLength(0)
-    await waitFor(() => expect(screen.queryByRole('button', { name: 'Browser' })).toBeNull())
+    expect(useBrowser.getState().tabs.map(tab => tab.kind)).toEqual(['web'])
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Web' })).toBeNull())
   })
 
   it('opens the toolbox off the More row and holds a hovered rail up while it stands', async () => {

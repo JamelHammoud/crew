@@ -59,7 +59,7 @@ describe('what an empty panel offers', () => {
     act(() => useBrowser.getState().togglePanel())
     const { getByText } = render(createElement(BrowserPanel))
 
-    for (const label of ['Web page', 'Terminal', 'Files', 'Review', 'Music', 'Games'])
+    for (const label of ['Web', 'Terminal', 'Files', 'Review', 'Music', 'Games'])
       expect(getByText(label)).not.toBeNull()
   })
 
