@@ -421,10 +421,11 @@ describe('the tab strip', () => {
     expect(order()).toEqual([third, first, second])
   })
 
-  it('hands a dragged tab to another Browser window at the aimed place', () => {
+  it('commits a native tab drop at the aimed place before the transfer returns', () => {
     openTwo()
     const [first, second] = order()
     const sourceTab = useBrowser.getState().tabs[0]
+    dropBrowserTab.mockReturnValueOnce(new Promise(() => undefined))
     const { container } = render(createElement(BrowserPanel))
     const items = laidOut(container)
     const values = new Map<string, string>()
