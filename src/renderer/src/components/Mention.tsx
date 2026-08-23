@@ -2,7 +2,14 @@ import { useMemo, type ReactNode } from 'react'
 import type { BoardMentionRef } from '../../../shared/design'
 import { docExcerpt, type DocMentionRef } from '../../../shared/docs'
 import type { AgentMentionRef, PooledAgent } from '../../../shared/llm'
-import { changedSettings, plainFields, relabelMentions, settingLabel, visibleSettingFields } from '../../../shared/llm'
+import {
+  changedSettings,
+  overallUsageWindow,
+  plainFields,
+  relabelMentions,
+  settingLabel,
+  visibleSettingFields
+} from '../../../shared/llm'
 import type { MemberInfo } from '../../../shared/protocol'
 import type { CrewRefKind } from '../../../shared/refs'
 import { FrameGlyph } from '../design/glyphs'
@@ -64,6 +71,8 @@ function AgentCardContent({ agent }: { agent: PooledAgent }) {
   const settings = shown
     .map(field => ({ label: field.label, value: settingLabel(field, agent.settings) }))
     .filter(row => row.value)
+  const usage = overallUsageWindow(agent.usage)
+  const details = usage ? [...settings, { label: 'Usage', value: `${Math.round(usage.percent)}%` }] : settings
   return (
     <>
       <CardHead
@@ -72,9 +81,9 @@ function AgentCardContent({ agent }: { agent: PooledAgent }) {
         badge={<ProviderMark provider={agent.provider} />}
         under={agent.ownerName}
       />
-      {settings.length > 0 && (
+      {details.length > 0 && (
         <CardRule className="space-y-1.5">
-          {settings.map(row => (
+          {details.map(row => (
             <div key={row.label} className="flex items-baseline justify-between gap-3 text-xs">
               <span className="shrink-0 text-fg/45">{row.label}</span>
               <span className="min-w-0 truncate text-fg/70">{row.value}</span>

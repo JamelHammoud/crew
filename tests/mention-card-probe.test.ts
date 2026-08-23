@@ -63,7 +63,7 @@ const events: SessionEvent[] = [
   }
 ]
 
-function boot(activePrompts: Record<string, string[]> = {}) {
+function boot(activePrompts: Record<string, string[]> = {}, agent: PooledAgent = BUBBLES) {
   useCrew.setState({
     connection: 'online',
     selfId: 'jamel',
@@ -72,7 +72,7 @@ function boot(activePrompts: Record<string, string[]> = {}) {
       { id: 'jamel', name: 'Jamel', connected: true },
       { id: 'ali', name: 'ALI', connected: true }
     ],
-    agents: [BUBBLES],
+    agents: [agent],
     activePrompts,
     events,
     docs: { main: { title: 'Main', text: '' } },
@@ -127,6 +127,34 @@ describe('the card behind an agent mention', () => {
     expect(card.textContent).toContain('Opus 5')
     expect(card.textContent).toContain('Thinking')
     expect(card.textContent).toContain('High')
+  })
+
+  it('shows the overall usage percentage when limits are available', () => {
+    boot({}, {
+      ...BUBBLES,
+      usage: {
+        provider: 'claude',
+        fetchedAt: Date.now(),
+        windows: [
+          { key: 'session', label: '5-hour limit', percent: 63 },
+          { key: 'weekly', label: 'Weekly limit', percent: 21 }
+        ]
+      }
+    })
+    const card = hover('@Bubbles')
+    expect(card.textContent).toContain('Usage')
+    expect(card.textContent).toContain('63%')
+    expect(card.textContent).not.toContain('21%')
+  })
+
+  it('leaves usage out when no limit is available', () => {
+    boot({}, {
+      ...BUBBLES,
+      usage: { provider: 'claude', fetchedAt: Date.now(), windows: [], error: 'Unavailable' }
+    })
+    const card = hover('@Bubbles')
+    expect(card.textContent).not.toContain('Usage')
+    expect(card.textContent).not.toContain('Unavailable')
   })
 
   // The one thing the card can say that the chip it stands off cannot.

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { AgentUsage, UsageWindow } from '../../../shared/llm'
+import { overallUsageWindow, type AgentUsage, type UsageWindow } from '../../../shared/llm'
 import { ChevronDownGlyph } from '../icons'
 import { useNow } from './useNow'
 
@@ -52,10 +52,7 @@ function WindowRow({ window, now }: { window: UsageWindow; now: number }) {
 export default function UsageFooter({ usage }: { usage: AgentUsage }) {
   const [open, setOpen] = useState(false)
   const now = useNow(open, 30000)
-  const hottest = usage.windows.reduce<UsageWindow | null>(
-    (max, window) => (!max || window.percent > max.percent ? window : max),
-    null
-  )
+  const hottest = overallUsageWindow(usage)
   const detail = [usage.accountLabel, usage.plan && `${usage.plan} plan`].filter(Boolean).join(' · ')
   const stamp =
     usage.asOf !== undefined ? `as of ${formatAgo(now - usage.asOf)}` : `updated ${formatAgo(now - usage.fetchedAt)}`

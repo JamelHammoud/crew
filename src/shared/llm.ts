@@ -179,6 +179,13 @@ export interface AgentUsage {
   error?: string
 }
 
+export function overallUsageWindow(usage: AgentUsage | undefined): UsageWindow | null {
+  return usage?.windows.reduce<UsageWindow | null>(
+    (max, window) => (!max || window.percent > max.percent ? window : max),
+    null
+  ) ?? null
+}
+
 export interface PooledAgent {
   id: string
   label: string
