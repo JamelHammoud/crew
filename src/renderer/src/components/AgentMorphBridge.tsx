@@ -40,7 +40,7 @@ export default function AgentMorphBridge({
     const starts = [source.body, ...source.features]
     const ends = [target.body, ...target.features]
     const mixers = starts.map((start, index) =>
-      interpolate(ring(start), ring(ends[index]), { maxSegmentLength: false })
+      interpolate(ring(start), ring(ends[index]), { maxSegmentLength: Number.POSITIVE_INFINITY })
     )
     const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
     if (reduced) {
