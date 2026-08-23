@@ -3,8 +3,13 @@ import { useEffect, type RefObject } from 'react'
 const EDGE = 1
 type Axis = 'horizontal' | 'vertical'
 
-export function useScrollFade(ref: RefObject<HTMLElement | null>, axis: Axis = 'vertical'): void {
+export function useScrollFade(
+  ref: RefObject<HTMLElement | null>,
+  axis: Axis = 'vertical',
+  enabled = true
+): void {
   useEffect(() => {
+    if (!enabled) return
     const el = ref.current
     if (!el) return
     let frame = 0
@@ -34,5 +39,5 @@ export function useScrollFade(ref: RefObject<HTMLElement | null>, axis: Axis = '
       box?.disconnect()
       rows.disconnect()
     }
-  }, [axis, ref])
+  }, [axis, enabled, ref])
 }

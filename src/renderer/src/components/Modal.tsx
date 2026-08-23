@@ -34,7 +34,7 @@ export default function Modal({
   children: ReactNode
 }) {
   const body = useRef<HTMLDivElement>(null)
-  useScrollFade(body)
+  useScrollFade(body, 'vertical', open)
 
   useEffect(() => {
     if (!open) return

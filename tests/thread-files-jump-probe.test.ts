@@ -6,10 +6,24 @@ import type { AgentStep } from '../src/shared/llm'
 import type { SessionEvent } from '../src/shared/events'
 import type { ThreadMeta } from '../src/renderer/src/state/store'
 
+const resize = new Map<Element, Set<() => void>>()
+
 class TestResizeObserver {
-  observe(): void {}
-  unobserve(): void {}
-  disconnect(): void {}
+  private readonly watched = new Set<Element>()
+  constructor(private readonly callback: ResizeObserverCallback) {}
+  observe(element: Element): void {
+    const run = () => this.callback([], this as unknown as ResizeObserver)
+    resize.set(element, new Set([...(resize.get(element) ?? []), run]))
+    this.watched.add(element)
+  }
+  unobserve(element: Element): void {
+    resize.delete(element)
+    this.watched.delete(element)
+  }
+  disconnect(): void {
+    for (const element of this.watched) resize.delete(element)
+    this.watched.clear()
+  }
 }
 
 global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
@@ -66,7 +80,10 @@ beforeEach(() => {
   })
 })
 
-afterEach(cleanup)
+afterEach(() => {
+  cleanup()
+  resize.clear()
+})
 
 // The scroller has no layout in here, so the numbers a scroll is read from are
 // written on by hand. Two scrolls: one to say where it was, one going up.
@@ -98,6 +115,36 @@ describe('what the run has changed, from the top of a thread', () => {
     expect(getByText('1 file')).not.toBeNull()
     expect(container.textContent).toContain('+7')
     expect(container.textContent).toContain('−2')
+  })
+
+  it('hides the file summary when it would overlap the way back down', () => {
+    const { container, getByText } = render(createElement(ThreadView, { threadId: THREAD }))
+    act(() => scrollUp(container))
+    const jump = getByText('Jump to bottom').closest('button') as HTMLButtonElement
+    const changed = getByText('1 file').closest('button') as HTMLButtonElement
+    const row = jump.parentElement as HTMLDivElement
+    Object.defineProperty(row, 'clientWidth', { value: 400, configurable: true })
+    Object.defineProperty(jump, 'offsetWidth', { value: 160, configurable: true })
+    Object.defineProperty(changed, 'offsetWidth', { value: 180, configurable: true })
+
+    act(() => resize.get(row)?.forEach(run => run()))
+
+    expect(changed.classList.contains('invisible')).toBe(true)
+  })
+
+  it('keeps the file summary when both controls have room', () => {
+    const { container, getByText } = render(createElement(ThreadView, { threadId: THREAD }))
+    act(() => scrollUp(container))
+    const jump = getByText('Jump to bottom').closest('button') as HTMLButtonElement
+    const changed = getByText('1 file').closest('button') as HTMLButtonElement
+    const row = jump.parentElement as HTMLDivElement
+    Object.defineProperty(row, 'clientWidth', { value: 660, configurable: true })
+    Object.defineProperty(jump, 'offsetWidth', { value: 160, configurable: true })
+    Object.defineProperty(changed, 'offsetWidth', { value: 180, configurable: true })
+
+    act(() => resize.get(row)?.forEach(run => run()))
+
+    expect(changed.classList.contains('invisible')).toBe(false)
   })
 
   // The counts move while the run does, or the pill is a number from whenever
