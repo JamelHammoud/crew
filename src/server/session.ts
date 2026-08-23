@@ -4709,10 +4709,7 @@ export class CrewSession {
     thread.queue = []
     if (run.stopped) return
     const said = run.ok ? text.trim() : ''
-    if (!said) {
-      if (run.ok) this.systemMessage(`${agent.label} had nothing to say.`)
-      return
-    }
+    if (!said) return
     this.emit({
       id: randomUUID(),
       ts: Date.now(),

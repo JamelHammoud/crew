@@ -241,14 +241,15 @@ describe('a line an agent posts in the chat', () => {
     expect(host.session.snapshot().schedules?.[0].lastThreadId).toBeUndefined()
   })
 
-  it('says when an answer is empty and leaves a failed post out of the chat', async () => {
+  it('leaves empty and failed posts out of the chat', async () => {
     const host = await open()
     const runner = await runnerOn(host, 'mac')
     const sam = await connectUi(host, 'sam')
 
     works(runner, '   ')
     sam.send({ type: 'chat.post', text: 'Say what changed this week' })
-    await waitUntil(() => messagesIn(host.session.snapshot().events).length === 1)
+    await waitUntil(() => runner.prompts.length === 1)
+    await waitUntil(() => host.session.snapshot().agents[0]?.status === 'idle')
 
     fails(runner, 'fake cli failed')
     sam.send({ type: 'chat.post', text: 'Say what changed again' })
@@ -257,11 +258,7 @@ describe('a line an agent posts in the chat', () => {
     await settle()
 
     const said = messagesIn(host.store.loadEvents())
-    expect(said).toHaveLength(1)
-    expect(said[0].authorId).toBe(SYSTEM_AUTHOR_ID)
-    expect(said[0].threadId).toBeUndefined()
-    expect(said[0].text).toBe('Fake had nothing to say.')
-    expect(said.some(one => one.authorId === agentId('mac', 'fake'))).toBe(false)
+    expect(said).toEqual([])
     expect(host.store.loadEvents().some(event => event.kind === 'thread.started')).toBe(false)
   })
 
