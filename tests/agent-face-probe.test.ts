@@ -17,6 +17,7 @@ import {
 } from '../src/renderer/src/components/art/pet'
 import { paletteFor } from '../src/shared/art'
 import { useCrew } from '../src/renderer/src/state/store'
+import { activityForStep } from '../src/renderer/src/components/agentActivity'
 
 const SEED = 'jamel/claude'
 const PHOTO = 'http://192.0.2.10:2739/attachments/me.png'
@@ -144,7 +145,7 @@ describe('an agent face', () => {
     const centers = eyes.map(eye => Number(eye.getAttribute('x')) + size.radius * 0.4)
     expect(centers[0]).toBeCloseTo((pet.eyeX - gap / 2) * 0.4, 8)
     expect(centers[1]).toBeCloseTo((pet.eyeX + gap / 2) * 0.4, 8)
-    expect(pet.eyeY).toBeLessThan(PET_GRID / 2)
+    expect(Math.abs(pet.eyeY - PET_GRID / 2)).toBeLessThan(4)
   })
 
   it('stands the cut-out eyes over the clipped field without an edge or shadow', () => {
@@ -262,5 +263,22 @@ describe('an agent face', () => {
     expect(box.querySelector('.agent-pet-drawing')).toBeNull()
     expect(box.querySelector('.agent-activity-object img')).not.toBeNull()
     expect(box.querySelector('.agent-activity-object canvas')).toBeNull()
+  })
+})
+
+describe('agent activity objects', () => {
+  const activity = (name: string) =>
+    activityForStep({ id: name, ts: 1, kind: 'tool', status: 'running', name })
+
+  it('routes live work to a recognizable object family', () => {
+    expect(activityForStep(undefined)).toBe('thinking')
+    expect(activity('Read')).toBe('reading')
+    expect(activity('Grep')).toBe('searching')
+    expect(activity('ApplyPatch')).toBe('editing')
+    expect(activity('generateImage')).toBe('designing')
+    expect(activity('Bash')).toBe('running')
+    expect(activity('UpdatePlan')).toBe('planning')
+    expect(activity('SendMessage')).toBe('communicating')
+    expect(activity('unknownTool')).toBe('acting')
   })
 })
