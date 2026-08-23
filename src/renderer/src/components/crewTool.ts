@@ -37,9 +37,11 @@ const callAt = (raw: string): CrewToolCall | null => {
 }
 
 export function crewToolCall(detail: string): CrewToolCall | null {
+  let design: CrewToolCall | null = null
   for (const found of detail.matchAll(URL)) {
     const call = callAt(found[0])
-    if (call) return call
+    if (call?.kind === 'hidden') return call
+    if (call) design = call
   }
-  return null
+  return design
 }
