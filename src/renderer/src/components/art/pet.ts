@@ -32,6 +32,8 @@ export const PET_SHAPE_KINDS = [
   'bean'
 ] as const
 
+export type PetShapeKind = (typeof PET_SHAPE_KINDS)[number]
+
 const PET_SHAPE_STREAM: readonly PetShapeKind[] = [
   'circle',
   'teardrop',
@@ -47,8 +49,6 @@ const PET_SHAPE_STREAM: readonly PetShapeKind[] = [
   'decagon',
   'bean'
 ]
-
-export type PetShapeKind = (typeof PET_SHAPE_KINDS)[number]
 
 export interface Pet {
   hue: number
