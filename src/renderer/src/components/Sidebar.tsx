@@ -4,6 +4,7 @@ import type { CrewHome } from '../../../shared/project'
 import { said } from '../api/said'
 import { playSound } from '../media/sounds'
 import { usePlaces } from '../state/places'
+import { usePrefs } from '../state/prefs'
 import { SIDEBAR_W, useSidebar } from '../state/sidebar'
 import { useCrew } from '../state/store'
 import { toast } from '../state/toast'
@@ -50,6 +51,7 @@ export default function Sidebar({
   const switchTo = useCrew(s => s.switchTo)
   const closePlace = useCrew(s => s.closePlace)
   const peek = useSidebar(s => s.peek)
+  const glass = usePrefs().glassSidebar
   const sidebarPins = useSidebarPins()
   const [busyKey, setBusyKey] = useState<string | null>(null)
   const order = useReorder((key, to) => move(key, to), {
@@ -192,9 +194,11 @@ export default function Sidebar({
     <aside
       style={{ width: SIDEBAR_W }}
       className={`h-full flex flex-col ${
-        overlay
+        glass && overlay
           ? `glass sidebar-glass rounded-r-card ${strong ? 'glass-strong' : ''}`
-          : 'sidebar-pinned bg-ink-800 border-r border-[var(--glass-line)]'
+          : glass
+            ? 'sidebar-pinned bg-ink-800 border-r border-[var(--glass-line)]'
+            : `bg-ink-900 border-r border-ink-700 ${overlay ? 'rounded-r-card' : ''}`
       }`}
     >
       <div className="app-drag h-[70px] shrink-0" />

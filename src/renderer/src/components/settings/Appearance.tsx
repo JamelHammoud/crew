@@ -126,6 +126,15 @@ export default function Appearance() {
           )
         })}
       </div>
+      <Section>
+        <Row label="Glass sidebar">
+          <Toggle
+            on={prefs.glassSidebar}
+            label="Glass sidebar"
+            onChange={on => setPref('glassSidebar', on)}
+          />
+        </Row>
+      </Section>
       <Section title="App icon">
         <div className="grid grid-cols-3 gap-3">
           {APP_ICONS.map(icon => (

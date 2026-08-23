@@ -4,18 +4,20 @@ import { useSyncExternalStore } from 'react'
 // whichever of these is on: this is what is drawn and nothing else. Both are
 // yours alone, they sit on this machine, and nothing about them is ever sent.
 export interface Prefs {
+  glassSidebar: boolean
   tokens: boolean
   cost: boolean
 }
 
 const KEY = 'crew.prefs'
-const DEFAULTS: Prefs = { tokens: true, cost: false }
+const DEFAULTS: Prefs = { glassSidebar: true, tokens: true, cost: false }
 const listeners = new Set<() => void>()
 
 function parse(raw: string | null): Prefs {
   try {
     const saved = raw ? JSON.parse(raw) : null
     return {
+      glassSidebar: typeof saved?.glassSidebar === 'boolean' ? saved.glassSidebar : DEFAULTS.glassSidebar,
       tokens: typeof saved?.tokens === 'boolean' ? saved.tokens : DEFAULTS.tokens,
       cost: typeof saved?.cost === 'boolean' ? saved.cost : DEFAULTS.cost
     }

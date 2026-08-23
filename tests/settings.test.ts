@@ -183,6 +183,16 @@ describe('the settings', () => {
     expect(screen.getByRole('button', { name: /OLED/ }).getAttribute('aria-pressed')).toBe('true')
   })
 
+  it('uses a glass sidebar by default and saves when it is turned off', () => {
+    show('appearance')
+    const glass = screen.getByRole('switch', { name: 'Glass sidebar' })
+    expect(glass.getAttribute('aria-checked')).toBe('true')
+
+    fireEvent.click(glass)
+    expect(glass.getAttribute('aria-checked')).toBe('false')
+    expect(prefs().glassSidebar).toBe(false)
+  })
+
   // The numbers are gathered whichever way these are set. All they decide is
   // what a working run draws, so the count is on and the price is off.
   it('shows a run its count by default and its price only when asked', () => {
@@ -194,7 +204,7 @@ describe('the settings', () => {
 
     fireEvent.click(price)
     fireEvent.click(count)
-    expect(prefs()).toEqual({ tokens: false, cost: true })
+    expect(prefs()).toEqual({ glassSidebar: true, tokens: false, cost: true })
   })
 
   // The size limit is the crew's, so the page says the number everyone is on

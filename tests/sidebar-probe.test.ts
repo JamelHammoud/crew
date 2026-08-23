@@ -109,6 +109,7 @@ window.crew = {
 } as unknown as CrewBridge
 
 const { usePlaces } = await import('../src/renderer/src/state/places')
+const { setPref } = await import('../src/renderer/src/state/prefs')
 const { PIN_MS, SIDEBAR_W, useSidebar } = await import('../src/renderer/src/state/sidebar')
 const { useCrew } = await import('../src/renderer/src/state/store')
 const { useBrowser } = await import('../src/renderer/src/state/browser')
@@ -177,6 +178,21 @@ describe('the sidebar', () => {
   it('wears its pinned surface when it expands beside the page', () => {
     const { container } = render(Sidebar())
     expect(container.querySelector('aside')?.className).toContain('sidebar-pinned')
+  })
+
+  it('wears the app background instead of glass when glass is turned off', () => {
+    setPref('glassSidebar', false)
+    const floating = render(Sidebar({ overlay: true, strong: true }))
+    const floatingSidebar = floating.container.querySelector('aside')
+    expect(floatingSidebar?.className).toContain('bg-ink-900')
+    expect(floatingSidebar?.className).toContain('rounded-r-card')
+    expect(floatingSidebar?.className).not.toContain('glass')
+    floating.unmount()
+
+    const pinned = render(Sidebar())
+    const pinnedSidebar = pinned.container.querySelector('aside')
+    expect(pinnedSidebar?.className).toContain('bg-ink-900')
+    expect(pinnedSidebar?.className).not.toContain('sidebar-pinned')
   })
 
   it('holds the three pages at its head, then the tasks, then More under them', () => {
