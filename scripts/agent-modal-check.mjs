@@ -147,20 +147,20 @@ app.whenReady().then(async () => {
   const result = await win.webContents.executeJavaScript(\`(async () => {
     const buttons = () => [...document.querySelectorAll('button')]
     const named = text => buttons().find(button => button.textContent.trim() === text)
-    const until = async read => {
+    const until = async (label, read) => {
       for (let attempt = 0; attempt < 100; attempt++) {
         const value = read()
         if (value) return value
         await new Promise(resolve => setTimeout(resolve, 20))
       }
-      throw new Error('The expected control did not appear')
+      throw new Error(label + ' did not appear; buttons: ' + buttons().map(button => button.textContent.trim()).join(', '))
     }
-    const add = await until(() => named('Add an agent')?.disabled === false && named('Add an agent'))
+    const add = await until('Add an agent', () => named('Add an agent')?.disabled === false && named('Add an agent'))
     add.click()
-    ;(await until(() => named('Provider'))).click()
-    ;(await until(() => named('Grok'))).click()
-    ;(await until(() => named('Advanced'))).click()
-    await until(() => document.querySelector('[role="dialog"][aria-label="Advanced"]'))
+    ;(await until('Provider', () => named('Provider'))).click()
+    ;(await until('Grok', () => named('Grok'))).click()
+    ;(await until('Advanced', () => named('Advanced'))).click()
+    await until('Advanced dialog', () => document.querySelector('[role="dialog"][aria-label="Advanced"]'))
     await new Promise(resolve => setTimeout(resolve, 300))
     const dialog = document.querySelector('[role="dialog"]')
     const page = dialog.querySelector(':scope > [data-modal-body]')
