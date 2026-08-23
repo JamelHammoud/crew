@@ -128,6 +128,7 @@ type BrowserState = {
   moveTab(id: string, to: number): void
   closeTab(id: string): void
   closeOthers(id: string): void
+  closeAfter(id: string): void
   closeAll(): void
   navigateTab(id: string, url: string): void
   navigateFile(id: string, path: string, line?: number | null): void
@@ -607,6 +608,21 @@ export const useBrowser = create<BrowserState>((write, get) => {
         return {
           tabs: [kept],
           activeTabId: kept.id,
+          closedPlans: remember(s.closedPlans, gone, 'plan'),
+          closedBoards: remember(s.closedBoards, gone, 'work')
+        }
+      })
+      settle()
+    },
+    closeAfter: id => {
+      set(s => {
+        const index = s.tabs.findIndex(t => t.id === id)
+        if (index < 0 || index === s.tabs.length - 1) return {}
+        const tabs = s.tabs.slice(0, index + 1)
+        const gone = s.tabs.slice(index + 1)
+        return {
+          tabs,
+          activeTabId: tabs.some(tab => tab.id === s.activeTabId) ? s.activeTabId : id,
           closedPlans: remember(s.closedPlans, gone, 'plan'),
           closedBoards: remember(s.closedBoards, gone, 'work')
         }
