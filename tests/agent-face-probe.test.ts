@@ -122,14 +122,14 @@ describe('an agent face', () => {
     }
   })
 
-  it('forms Designing as a rounded handle, brush tip and painted stroke', () => {
+  it('forms Designing as a soft palette with four clear wells', () => {
     const object = face({ activity: 'designing' }).querySelector('[data-object="designing"]') as HTMLElement
-    const pieces = object.querySelectorAll('mask path')
 
-    expect(pieces).toHaveLength(3)
-    expect(pieces[0].getAttribute('d')).toMatch(/^M66 5 C73 1/)
-    expect(pieces[1].getAttribute('d')).toMatch(/^M31 51 C43 47/)
-    expect(object.querySelector('[data-part="paint-stroke"]')).not.toBeNull()
+    expect(object.querySelector('[data-part="design-palette"]')?.getAttribute('d')).toMatch(/^M49 5 C75 5/)
+    expect(object.querySelectorAll('[data-part^="design-color-"]')).toHaveLength(3)
+    expect(object.querySelector('[data-part="design-thumb"]')).not.toBeNull()
+    expect(styles).toContain("[data-part='design-palette']")
+    expect(styles).toContain('@keyframes agent-design-color')
     expect(object.querySelector('.agent-pet-eyes')).toBeNull()
   })
 
@@ -153,12 +153,16 @@ describe('an agent face', () => {
     expect(keyframes).toContain('translateY(-4%)')
   })
 
-  it('builds Writing from a rounded card and drawn lines', () => {
+  it('builds Writing from a diagonal rounded pencil and drawn trail', () => {
     const object = face({ activity: 'editing' }).querySelector('[data-object="editing"]') as HTMLElement
 
-    expect(object.querySelector('[data-part="writing-card"]')).not.toBeNull()
-    expect(object.querySelectorAll('[data-part^="writing-line-"]')).toHaveLength(3)
-    expect(object.querySelector('[data-part="pencil"]')).toBeNull()
+    expect(object.querySelector('[data-part="writing-pencil"]')).not.toBeNull()
+    expect(object.querySelector('[data-part="writing-pencil-body"]')?.getAttribute('d')).toMatch(/^M15 81 L23 59/)
+    expect(object.querySelector('[data-part="writing-pencil-seam"]')).not.toBeNull()
+    expect(object.querySelector('[data-part="writing-pencil-point"]')).not.toBeNull()
+    expect(object.querySelector('[data-part="writing-trail"]')).not.toBeNull()
+    expect(styles).toContain('animation: agent-writing-pencil 3s')
+    expect(styles).toContain('animation: agent-writing-trail 3s')
   })
 
   it('builds Running from a rounded terminal, prompt and cursor without command dots', () => {
@@ -236,34 +240,36 @@ describe('an agent face', () => {
     expect(styles).not.toContain('@keyframes agent-search-glint')
   })
 
-  it('draws all three rows in Planning instead of leaving the last row still', () => {
+  it('draws Planning as a plain rounded checklist without a clipboard tab', () => {
     const object = face({ activity: 'planning' }).querySelector('[data-object="planning"]') as HTMLElement
 
-    expect(object.querySelectorAll('[data-part^="plan-row-"]')).toHaveLength(3)
-    expect(object.querySelectorAll('[data-part^="plan-check-"]')).toHaveLength(3)
-    expect(object.querySelectorAll('[data-part^="plan-line-"]')).toHaveLength(3)
-    expect(styles).toContain("[data-part='plan-check-three']")
-    expect(styles).toContain('animation: agent-plan-mark-three 3.6s')
+    expect(object.querySelector('[data-part="plan-board"]')?.getAttribute('rx')).toBe('22')
+    expect(object.querySelector('[data-part="plan-clip"]')).toBeNull()
+    expect(object.querySelectorAll('[data-part^="plan-check-"]')).toHaveLength(2)
+    expect(object.querySelectorAll('[data-part^="plan-line-"]')).toHaveLength(2)
+    expect(styles).toContain('animation: agent-plan-mark-one 3.2s')
+    expect(styles).toContain('animation: agent-plan-mark-two 3.2s')
   })
 
-  it('keeps Communicating readable as one bubble with a three-dot wave', () => {
+  it('keeps Communicating readable as one rounded bubble with a three-dot wave', () => {
     const object = face({ activity: 'communicating' }).querySelector('[data-object="communicating"]') as HTMLElement
 
     expect(object.querySelector('[data-part="message"]')).not.toBeNull()
     expect(object.querySelectorAll('[data-part^="message-dot-"]')).toHaveLength(3)
-    expect(object.querySelector('[data-part="message-two"]')).toBeNull()
+    expect(object.querySelector('[data-part="message-back"]')).toBeNull()
+    expect(object.querySelector('[data-part="message-front"]')).toBeNull()
     expect(styles).toContain("[data-part^='message-dot']")
     expect(styles).toContain('@keyframes agent-message-dot')
   })
 
-  it('turns the general action gear around a breathing center', () => {
+  it('makes general action a rounded bolt with two short impact sparks', () => {
     const object = face({ activity: 'acting' }).querySelector('[data-object="acting"]') as HTMLElement
 
-    expect(object.querySelector('[data-part="tool-gear"]')).not.toBeNull()
-    expect(object.querySelector('[data-part="tool-pulse"]')).not.toBeNull()
-    expect(styles).toContain("[data-part='tool-gear']")
-    expect(styles).toContain('animation: agent-tool-gear 3.8s linear')
-    expect(styles).toContain('animation: agent-tool-pulse 1.9s ease-in-out')
+    expect(object.querySelector('[data-part="action-bolt"]')?.getAttribute('d')).toMatch(/^M54 4 C59 3/)
+    expect(object.querySelectorAll('[data-part^="action-spark-"]')).toHaveLength(2)
+    expect(styles).toContain("[data-part='action-bolt']")
+    expect(styles).toContain('animation: agent-action-bolt 2.6s')
+    expect(styles).toContain('animation: agent-action-spark 2.6s')
   })
 
   it('gives every activity a moving part inside its silhouette', () => {

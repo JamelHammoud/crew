@@ -1663,7 +1663,7 @@ textarea:placeholder-shown {
 
 .agent-icon [data-part='plan-check-one'],
 .agent-icon [data-part='plan-line-one'] {
-  animation: agent-plan-mark-one 3.6s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
+  animation: agent-plan-mark-one 3.2s cubic-bezier(0.45, 0, 0.2, 1) var(--agent-delay, 0ms) infinite;
 }
 
 .agent-icon [data-part='plan-check-two'],
