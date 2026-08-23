@@ -55,7 +55,11 @@ function ThreadItems({
             ) : item.kind === 'design' && item.design ? (
               <DesignChip item={item} linked={follows(blocks[index - 1], block)} />
             ) : item.kind === 'page' && item.shown ? (
-              <PageRow shown={item.shown} agentId={item.helperSeed ?? item.agentId} linked={follows(blocks[index - 1], block)} />
+              <PageRow
+                shown={item.shown}
+                agentId={item.helperSeed ?? item.agentId}
+                linked={follows(blocks[index - 1], block)}
+              />
             ) : block.items.length > 1 ? (
               <StepGroup items={block.items} linked={follows(blocks[index - 1], block)} />
             ) : isStep(item) ? (

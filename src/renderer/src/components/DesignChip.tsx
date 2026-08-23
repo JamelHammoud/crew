@@ -36,7 +36,4 @@ function DesignChip({ item, linked }: { item: ThreadItem; linked?: boolean }) {
   )
 }
 
-export default memo(
-  DesignChip,
-  (before, after) => before.linked === after.linked && sameItem(before.item, after.item)
-)
+export default memo(DesignChip, (before, after) => before.linked === after.linked && sameItem(before.item, after.item))
