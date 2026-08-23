@@ -74,7 +74,10 @@ export default function ThreadView({
   const { events, steps } = useThreadRead(threadId)
   const selfId = useCrew(s => s.selfId)
   const thread = useCrew(s => s.threads[threadId])
-  const agentActivity = useCrew(s => activityForAgent(s.activePrompts[thread?.agentId ?? ''], s.steps))
+  const agentActivity = useCrew(s => {
+    const promptId = s.threadPrompts[threadId]
+    return activityForAgent(promptId ? [promptId] : undefined, s.steps)
+  })
   const activePromptId = useCrew(s => s.threadPrompts[threadId])
   const tokens = useCrew(s => (activePromptId ? (s.tokens[activePromptId] ?? 0) : 0))
   const cost = useCrew(s => (activePromptId ? s.costs[activePromptId] : undefined))
