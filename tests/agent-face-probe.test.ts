@@ -134,7 +134,7 @@ describe('an agent face', () => {
     const object = face({ activity: 'thinking' }).querySelector('[data-object="thinking"]') as HTMLElement
 
     expect(object.querySelector('[data-part="thought-cloud"]')).not.toBeNull()
-    expect(object.querySelectorAll('[data-part^="thought-lobe-"]')).toHaveLength(3)
+    expect(object.querySelectorAll('[data-part^="thought-lobe-"]')).toHaveLength(7)
     expect(object.querySelectorAll('[data-part^="thought-dot-"]')).toHaveLength(3)
     expect(object.querySelector('[data-part^="thought-tail-"]')).toBeNull()
   })
