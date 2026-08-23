@@ -140,11 +140,9 @@
   },
   "dependencies": {
     "electron-updater": "^6.8.9",
-    "flubber": "0.4.2",
     "koffi": "^3.1.2",
     "node-pty": "1.1.0",
     "rbush": "^3.0.1",
-    "svg-path-properties": "2.0.2",
     "uiohook-napi": "^1.5.4",
     "ws": "^8.18.0"
   },
@@ -165,7 +163,6 @@
     "@tiptap/extension-link": "3.29.2",
     "@tiptap/pm": "3.29.2",
     "@tiptap/starter-kit": "3.29.2",
-    "@types/flubber": "0.4.0",
     "@types/node": "^22.9.0",
     "@types/papaparse": "^5.5.2",
     "@types/rbush": "^3.0.0",
