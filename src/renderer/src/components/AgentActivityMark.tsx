@@ -60,20 +60,11 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
   if (activity === 'editing') {
     return (
       <>
-        <path
-          data-part="writing-stroke"
-          d="M10 88 C25 76 37 95 53 87 C66 80 77 84 92 89"
-          fill="none"
-          stroke="#fff"
-          strokeWidth="9"
-          strokeLinecap="round"
-        />
-        <g data-part="writing-pen">
-          <path d="M70 7 C76 2 84 3 89 8 L93 12 C98 17 98 25 93 30 L43 76 L22 81 L27 60 Z" />
-          <path d="M27 60 L43 76 L22 81 Z" fill="#000" />
-          <path d="M30 70 L34 74" fill="none" stroke="#fff" strokeWidth="8" strokeLinecap="round" />
-          <path d="M68 18 L84 34" fill="none" stroke="#000" strokeWidth="6" strokeLinecap="round" />
-        </g>
+        <rect data-part="writing-card" x="8" y="7" width="84" height="86" rx="27" />
+        <path data-part="writing-line-one" d="M25 32 H63" fill="none" stroke="#000" strokeWidth="8" strokeLinecap="round" />
+        <path data-part="writing-line-two" d="M25 51 H76" fill="none" stroke="#000" strokeWidth="8" strokeLinecap="round" />
+        <path data-part="writing-line-three" d="M25 70 H55" fill="none" stroke="#000" strokeWidth="8" strokeLinecap="round" />
+        <circle data-part="writing-caret" cx="68" cy="70" r="5" fill="#000" />
       </>
     )
   }
@@ -82,18 +73,18 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
       <>
         <path
           data-part="brush-handle"
-          d="M61 5 C69 3 77 8 80 16 C81 20 80 24 79 28 L65 65 C62 73 54 77 47 74 C40 71 37 64 40 56 L54 16 C55 11 57 7 61 5 Z"
+          d="M66 5 C73 1 82 4 86 11 C89 16 88 22 85 27 L61 60 C57 66 48 67 42 63 C36 59 35 50 40 44 L66 5 Z"
         />
         <path
           data-part="brush-tip"
-          d="M38 66 C47 64 56 72 56 81 C56 89 49 93 36 97 C32 98 30 96 29 92 L25 81 C22 73 29 67 38 66 Z"
+          d="M31 51 C43 47 58 56 60 69 C62 83 50 92 25 97 C17 99 12 92 16 85 C20 78 16 72 18 64 C19 58 24 54 31 51 Z"
         />
         <path
           data-part="paint-stroke"
-          d="M10 90 C17 80 27 81 34 89 C42 98 55 97 65 89 C74 82 83 83 92 88"
+          d="M9 88 C21 80 32 91 44 90 C57 89 64 79 76 82 C83 83 88 87 92 91"
           fill="none"
           stroke="#fff"
-          strokeWidth="8"
+          strokeWidth="10"
           strokeLinecap="round"
         />
       </>
@@ -102,10 +93,10 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
   if (activity === 'running') {
     return (
       <>
-        <rect data-part="terminal" x="5" y="13" width="90" height="74" rx="17" />
+        <rect data-part="terminal" x="4" y="17" width="92" height="66" rx="28" />
         <path
           data-part="terminal-prompt"
-          d="M23 35 L38 50 L23 65"
+          d="M23 35 L37 50 L23 65"
           fill="none"
           stroke="#000"
           strokeWidth="8"
@@ -114,15 +105,15 @@ function ActivityShape({ activity }: { activity: Exclude<AgentActivity, 'idle'> 
         />
         <path
           data-part="terminal-cursor"
-          d="M49 65 H60"
+          d="M50 61 H65"
           fill="none"
           stroke="#000"
           strokeWidth="8"
           strokeLinecap="round"
         />
-        <circle data-part="terminal-command-one" cx="50" cy="42" r="4" fill="#000" />
-        <circle data-part="terminal-command-two" cx="63" cy="42" r="4" fill="#000" />
-        <circle data-part="terminal-command-three" cx="76" cy="42" r="4" fill="#000" />
+        <circle data-part="terminal-command-one" cx="51" cy="42" r="4.5" fill="#000" />
+        <circle data-part="terminal-command-two" cx="65" cy="42" r="4.5" fill="#000" />
+        <circle data-part="terminal-command-three" cx="79" cy="42" r="4.5" fill="#000" />
       </>
     )
   }
