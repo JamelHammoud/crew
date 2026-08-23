@@ -104,7 +104,13 @@ app.whenReady().then(async () => {
     win.webContents.sendInputEvent({ type: 'keyUp', keyCode: 'Z', modifiers: ['meta', 'shift'] })
     await wait(100)
     const redone = await js(read)
-    console.log('CHECK ' + JSON.stringify({ before, scrolled, focused, typed, undone, redone }))
+    win.webContents.undo()
+    await wait(100)
+    const menuUndone = await js(read)
+    win.webContents.redo()
+    await wait(100)
+    const menuRedone = await js(read)
+    console.log('CHECK ' + JSON.stringify({ before, scrolled, focused, typed, undone, redone, menuUndone, menuRedone }))
   } catch (error) {
     console.log('CHECK ' + JSON.stringify({ failed: String(error && error.stack), logs }))
   }
@@ -166,9 +172,11 @@ try {
     problems.push(`typing moved the horizontal scroll from ${seen.focused.scrollLeft} to ${seen.typed.scrollLeft}`)
   if (seen.undone.value !== line) problems.push('one undo did not remove the typing run')
   if (!seen.redone.value.endsWith('abc')) problems.push('redo did not restore the typing run')
+  if (seen.menuUndone.value !== line) problems.push('the Edit menu did not undo the typing run')
+  if (!seen.menuRedone.value.endsWith('abc')) problems.push('the Edit menu did not redo the typing run')
   if (problems.length) throw new Error(problems.join('\n'))
   console.log(`File editor works in Electron. Gutter stayed at ${seen.before.gutter.left}px while code moved ${Math.round(seen.before.code.left - seen.scrolled.code.left)}px.`)
-  console.log('Typing stayed in place, one undo removed the run, and redo restored it.')
+  console.log('Typing stayed in place. Keyboard and Edit menu undo and redo both restored the full run.')
 } finally {
   await rm(dir, { recursive: true, force: true })
 }
