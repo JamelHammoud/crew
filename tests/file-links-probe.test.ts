@@ -799,6 +799,28 @@ describe('file view', () => {
 })
 
 describe('file editing', () => {
+  it('keeps the horizontal position while typing in a file with a long line', async () => {
+    window.crew = {
+      ...window.crew,
+      readFile: async (path: string) => ({ kind: 'file', path, text: `const long = '${'x'.repeat(500)}'`, truncated: false })
+    } as unknown as CrewBridge
+    useBrowser.getState().openFile('src/long.ts')
+    render(createElement(BrowserPanel))
+    const editor = (await screen.findByRole('textbox', { name: 'File contents' })) as HTMLTextAreaElement
+    const body = document.querySelector('.overflow-auto') as HTMLElement
+    const row = document.querySelector('[data-row="0"]') as HTMLElement
+    Object.defineProperty(body, 'clientWidth', { configurable: true, value: 400 })
+    Object.defineProperty(body, 'clientHeight', { configurable: true, value: 200 })
+    body.scrollLeft = 240
+    body.getBoundingClientRect = () => ({ top: 0, left: 0, width: 400, height: 200 }) as DOMRect
+    row.getBoundingClientRect = () =>
+      ({ top: 0, left: -body.scrollLeft, width: 1200, height: 20 }) as DOMRect
+    editor.setSelectionRange(260, 260)
+    fireEvent.change(editor, { target: { value: `${editor.value.slice(0, 260)}y${editor.value.slice(260)}` } })
+    await waitFor(() => expect(editor.value[260]).toBe('y'))
+    expect(body.scrollLeft).toBe(240)
+  })
+
   it('edits in place and saves through the bridge', async () => {
     const writes: Array<{ path: string; text: string }> = []
     const crew = window.crew as unknown as { writeFile(path: string, text: string): Promise<RepoFile> }
@@ -835,6 +857,34 @@ describe('file editing', () => {
       const colored = [...(last?.querySelectorAll('span[style]') ?? [])] as HTMLElement[]
       expect(colored.some(span => span.textContent === 'const' && span.style.color !== '')).toBe(true)
     })
+  })
+
+  it('indents and outdents selected lines', async () => {
+    useBrowser.getState().openFile('src/app.ts')
+    render(createElement(BrowserPanel))
+    await screen.findByText('const one = 1')
+    const editor = screen.getByRole('textbox', { name: 'File contents' }) as HTMLTextAreaElement
+    const end = editor.value.indexOf('\nconst three') + 1
+    editor.setSelectionRange(0, end)
+    fireEvent.keyDown(editor, { key: 'Tab' })
+    await waitFor(() => expect(editor.value).toContain('  const one = 1\n  const two = 2'))
+    expect([editor.selectionStart, editor.selectionEnd]).toEqual([2, end + 4])
+    fireEvent.keyDown(editor, { key: 'Tab', shiftKey: true })
+    await waitFor(() => expect(editor.value).toBe('const one = 1\nconst two = 2\nconst three = 3'))
+    expect([editor.selectionStart, editor.selectionEnd]).toEqual([0, end])
+  })
+
+  it('opens an indented brace pair on Enter', async () => {
+    useBrowser.getState().openFile('src/app.ts')
+    render(createElement(BrowserPanel))
+    await screen.findByText('const one = 1')
+    const editor = screen.getByRole('textbox', { name: 'File contents' }) as HTMLTextAreaElement
+    fireEvent.change(editor, { target: { value: '  if (ready) {}' } })
+    await waitFor(() => expect(editor.value).toBe('  if (ready) {}'))
+    editor.setSelectionRange(14, 14)
+    fireEvent.keyDown(editor, { key: 'Enter' })
+    await waitFor(() => expect(editor.value).toBe('  if (ready) {\n    \n  }'))
+    expect([editor.selectionStart, editor.selectionEnd]).toEqual([19, 19])
   })
 
   it('escape discards unsaved changes', async () => {

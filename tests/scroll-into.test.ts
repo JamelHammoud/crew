@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
-import { bringInto, centerIn, scrollerOf } from '../src/renderer/src/components/scrollInto'
+import { bringInto, bringIntoY, centerIn, scrollerOf } from '../src/renderer/src/components/scrollInto'
 
 const scroller = (overflow: string, w: number, h: number): HTMLElement => {
   const el = document.createElement('div')
@@ -65,6 +65,15 @@ describe('bringing something into the box it stands in', () => {
     const line = rowIn(page, 0, 100, 300, 20)
     centerIn(line, page)
     expect(page.scrollLeft).toBe(40)
+  })
+
+  it('follows a code row vertically without pulling its long edge into view', () => {
+    const page = scroller('auto', 300, 200)
+    page.scrollLeft = 120
+    const line = rowIn(page, 0, 260, 1200, 20)
+    bringIntoY(line, page)
+    expect(page.scrollTop).toBe(80)
+    expect(page.scrollLeft).toBe(120)
   })
 })
 
