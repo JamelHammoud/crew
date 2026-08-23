@@ -43,11 +43,13 @@ describe('the glass the expanded sidebar wears on macOS', () => {
     expect(opacity(rule('.mac.light .sidebar-pinned {'))).toBeLessThan(1)
   })
 
-  it('makes the OLED surface the clearest and most frosted', () => {
+  it('makes the OLED surface black glass with vivid blurred color behind it', () => {
     const oled = rule('.mac.oled .sidebar-pinned {')
     expect(opacity(oled)).toBeLessThan(opacity(rule('.mac .sidebar-pinned {')))
     expect(oled).toMatch(/backdrop-filter:\s*blur\(48px\)/)
-    expect(oled).toMatch(/brightness\(45%\)/)
+    expect(oled).toMatch(/saturate\(240%\)/)
+    expect(oled).toMatch(/contrast\(135%\)/)
+    expect(oled).not.toMatch(/brightness\(/)
   })
 })
 
