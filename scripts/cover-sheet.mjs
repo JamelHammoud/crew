@@ -27,8 +27,8 @@ import { coverFor } from '${where}/src/renderer/src/components/art/coverArt'
 import { coverArt } from '${where}/src/renderer/src/components/art/coverSeed'
 import { shapePath, subagentShape } from '${where}/src/renderer/src/components/art/subagentShape'
 import { paletteFor } from '${where}/src/shared/art'
-import { petOf, eyeGapAt, BODY, EYE_RADIUS, FIELD_LIGHT, PET_GRID } from '${where}/src/renderer/src/components/art/pet'
-window.CrewCovers = { musicItems, coverFor, coverArt, shapePath, subagentShape, paletteFor, petOf, eyeGapAt, BODY, EYE_RADIUS, FIELD_LIGHT, PET_GRID }
+import { petOf, eyeGapAt, EYE_WIDTH, EYE_HEIGHT, EYE_RADIUS, FIELD_LIGHT, PET_GRID } from '${where}/src/renderer/src/components/art/pet'
+window.CrewCovers = { musicItems, coverFor, coverArt, shapePath, subagentShape, paletteFor, petOf, eyeGapAt, EYE_WIDTH, EYE_HEIGHT, EYE_RADIUS, FIELD_LIGHT, PET_GRID }
 `
 
 const PAGE = `<!doctype html><html><body style="margin:0"><script src="covers.js"></script><script>
@@ -138,7 +138,7 @@ window.marks = () => {
   return { png: canvas.toDataURL('image/png'), kinds }
 }
 window.faces = () => {
-  const { coverFor, paletteFor, petOf, eyeGapAt, BODY, EYE_RADIUS, FIELD_LIGHT, PET_GRID } = window.CrewCovers
+  const { coverFor, paletteFor, petOf, eyeGapAt, EYE_WIDTH, EYE_HEIGHT, EYE_RADIUS, FIELD_LIGHT, PET_GRID } = window.CrewCovers
   const SIZES = [20, 28, 40, 48]
   const COLS = 8
   const ids = Array.from({ length: 48 }, (_, i) => 'every-' + i)
@@ -154,49 +154,35 @@ window.faces = () => {
   const draw = (id, x, y, box) => {
     const pet = petOf(id)
     const unit = box / PET_GRID
-    paint.save()
-    paint.beginPath()
-    paint.arc(x + box / 2, y + box / 2, box / 2, 0, Math.PI * 2)
-    paint.clip()
     const art = coverFor({ id, colors: paletteFor(id) })
-    paint.filter = 'brightness(' + FIELD_LIGHT + ')'
-    if (art) paint.drawImage(art, x, y, box, box)
-    else {
-      paint.fillStyle = '#777'
-      paint.fillRect(x, y, box, box)
-    }
-    paint.filter = 'none'
-    const room = Math.ceil(box * 0.3)
     const over = document.createElement('canvas')
-    over.width = box + room * 2
-    over.height = box + room * 2
-    const white = over.getContext('2d')
-    white.translate(room, room)
-    white.translate(50 * unit, 54 * unit)
-    white.rotate((pet.tilt * Math.PI) / 180)
-    white.translate(-50 * unit, -54 * unit)
-    white.translate(50 * unit, 53 * unit)
-    white.scale(BODY, BODY)
-    white.translate(-50 * unit, -53 * unit)
-    white.scale(unit, unit)
+    over.width = box
+    over.height = box
+    const face = over.getContext('2d')
+    face.save()
+    face.scale(unit, unit)
     const body = new Path2D(pet.body)
-    white.fillStyle = '#ffffff'
-    white.strokeStyle = '#ffffff'
-    white.lineWidth = 7
-    white.lineJoin = 'round'
-    white.lineCap = 'round'
-    white.fill(body)
-    white.stroke(body)
-    white.globalCompositeOperation = 'destination-out'
-    const gap = eyeGapAt(pet, box)
-    for (const side of [-1, 1]) {
-      white.beginPath()
-      white.arc(50 + (side * gap) / 2, pet.eyeY, EYE_RADIUS, 0, Math.PI * 2)
-      white.fill()
+    face.clip(body)
+    face.filter = 'brightness(' + FIELD_LIGHT + ')'
+    if (art) face.drawImage(art, 0, 0, PET_GRID, PET_GRID)
+    else {
+      face.fillStyle = '#777'
+      face.fillRect(0, 0, PET_GRID, PET_GRID)
     }
-    white.globalCompositeOperation = 'source-over'
-    paint.drawImage(over, x - room, y - room)
-    paint.restore()
+    face.restore()
+    face.save()
+    face.scale(unit, unit)
+    face.globalCompositeOperation = 'destination-out'
+    const gap = eyeGapAt(pet, box)
+    face.translate(pet.eyeX, pet.eyeY)
+    face.rotate((pet.tilt * Math.PI) / 180)
+    for (const side of [-1, 1]) {
+      face.beginPath()
+      face.roundRect((side * gap) / 2 - EYE_RADIUS, -EYE_HEIGHT / 2, EYE_WIDTH, EYE_HEIGHT, EYE_RADIUS)
+      face.fill()
+    }
+    face.restore()
+    paint.drawImage(over, x, y)
   }
   const sheet = (top, back, ink) => {
     paint.fillStyle = back
@@ -218,7 +204,7 @@ window.faces = () => {
   sheet(strip, '#f4f4f4', '#333')
   const bodies = {}
   for (const id of ids) {
-    const kind = petOf(id).body.includes(' L ') ? 'angular' : 'curved'
+    const kind = petOf(id).kind
     bodies[kind] = (bodies[kind] || 0) + 1
   }
   return { png: canvas.toDataURL('image/png'), bodies }
