@@ -504,7 +504,7 @@ describe('changed lines', () => {
     }
 
     try {
-      fireEvent.click(screen.getByText('panel.ts'))
+      fireEvent.click(document.querySelector('.resource-chip code') as HTMLElement)
       await waitFor(() => expect(seen.length).toBeGreaterThan(0))
       expect(seen.at(-1)).toEqual({ el: body, top: at * ROW - (PAGE - ROW) / 2 })
       expect(asked).toEqual([])
@@ -691,7 +691,7 @@ describe('steps and thinking', () => {
     expect(document.body.textContent).not.toContain(ROOT)
     fireEvent.click(link)
     expect(useBrowser.getState().tabs[0].path).toBe('src/app.ts')
-    expect(screen.getAllByText('src/app.ts').length).toBe(1)
+    expect(screen.getAllByText('app.ts')).toHaveLength(2)
   })
 
   it('opens a file named inside a command', async () => {
