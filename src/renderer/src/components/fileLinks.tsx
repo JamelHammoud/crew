@@ -1,7 +1,7 @@
 import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
 import { paletteFor } from '../../../shared/art'
 import type { PathLocation } from '../../../shared/files'
-import { FileGlyph, GlobeGlyph } from '../icons'
+import { FileGlyph, FolderGlyph, GlobeGlyph } from '../icons'
 import { useBrowser } from '../state/browser'
 import { EmojiText } from './Emoji'
 import { useFileMenu } from './fileMenu'
@@ -65,8 +65,8 @@ function locate(path: string): Promise<PathLocation> {
   let promise = pending.get(path)
   if (!promise) {
     const ask = window.crew?.locatePath
-    promise = (ask ? ask(path) : Promise.resolve<PathLocation>({ kind: 'local', exists: false }))
-      .catch((): PathLocation => ({ kind: 'local', exists: false }))
+    promise = (ask ? ask(path) : Promise.resolve<PathLocation>({ kind: 'local', exists: false, dir: false }))
+      .catch((): PathLocation => ({ kind: 'local', exists: false, dir: false }))
       .then(location => {
         located.set(path, { location, at: Date.now() })
         pending.delete(path)
@@ -99,6 +99,11 @@ export function openable(path: string): boolean {
 
 export function isPrivate(path: string): boolean {
   return locationOf(path)?.kind === 'private'
+}
+
+export function isFolder(path: string): boolean {
+  const location = locationOf(path)
+  return location !== null && location.kind !== 'private' && location.dir
 }
 
 export function labelFor(path: string, suffix: string, fallback: string): string {
@@ -205,7 +210,8 @@ function linkNode(doc: Document, path: string, line: number | null, label: strin
   anchor.dataset.path = targetFor(path)
   anchor.dataset.fullPath = path
   if (line !== null) anchor.dataset.line = String(line)
-  anchor.appendChild(FileGlyph.element(doc, 'resource-chip-icon'))
+  const Mark = isFolder(path) ? FolderGlyph : FileGlyph
+  anchor.appendChild(Mark.element(doc, 'resource-chip-icon'))
   const code = doc.createElement('code')
   code.textContent = shortFileLabel(path, label)
   anchor.appendChild(code)
@@ -219,7 +225,8 @@ function linkedAnchor(anchor: HTMLAnchorElement, ref: FileRef): void {
   if (ref.line !== null) anchor.dataset.line = String(ref.line)
   const content = anchor.ownerDocument.createElement('code')
   content.textContent = shortFileLabel(ref.path, ref.line === null ? ref.path : `${ref.path}:${ref.line}`)
-  anchor.replaceChildren(FileGlyph.element(anchor.ownerDocument, 'resource-chip-icon'), content)
+  const Mark = isFolder(ref.path) ? FolderGlyph : FileGlyph
+  anchor.replaceChildren(Mark.element(anchor.ownerDocument, 'resource-chip-icon'), content)
 }
 
 export function linkifyFiles(root: HTMLElement): string[] {
@@ -331,6 +338,7 @@ export function FileChip({
   diff?: string | null
 }) {
   const { onContextMenu, menu, menuOpen } = useFileMenu(targetFor(path), line)
+  const Mark = isFolder(path) ? FolderGlyph : FileGlyph
   return (
     <>
       <Tooltip label={<FullPath path={path} />} disabled={menuOpen} className="max-w-full align-middle">
@@ -342,7 +350,7 @@ export function FileChip({
           onContextMenu={onContextMenu}
           className="resource-chip"
         >
-          <FileGlyph className="resource-chip-icon" />
+          <Mark className="resource-chip-icon" />
           <code>{shortFileLabel(path, text)}</code>
         </span>
       </Tooltip>
@@ -378,7 +386,8 @@ export function shortFileLabel(path: string, text: string): string {
   const suffix = text.match(/:\d+(?::\d+)?$/)?.[0] ?? (text.endsWith('/') ? '/' : '')
   const locatedPath = locationOf(path)
   const shown = locatedPath?.kind === 'repo' ? locatedPath.path : path
-  const file = shown.replace(/[\\/]+$/, '').split(/[\\/]/).filter(Boolean).at(-1) ?? text
+  const named = shown === '.' && isFolder(path) ? path : shown
+  const file = named.replace(/[\\/]+$/, '').split(/[\\/]/).filter(Boolean).at(-1) ?? text
   return file + suffix
 }
 

@@ -1,7 +1,7 @@
 import { promises as fs } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import { personalPath, type PathLocation } from '../shared/files'
+import { personalPath, type PathLocation, type RepoPathKind } from '../shared/files'
 import { insideRoot, statRepoFile } from './files'
 
 const WINDOWS_PATH = /^(?:[A-Za-z]:[\\/]|\\\\)/
@@ -21,17 +21,17 @@ async function mirroredInRepo(root: string, absolute: string): Promise<string | 
   return null
 }
 
-async function onThisMachine(absolute: string): Promise<boolean> {
+async function onThisMachine(absolute: string): Promise<RepoPathKind> {
   try {
-    await fs.stat(absolute)
-    return true
+    return (await fs.stat(absolute)).isDirectory() ? 'dir' : 'file'
   } catch {
-    return false
+    return 'missing'
   }
 }
 
 async function repoLocation(root: string, relative: string): Promise<PathLocation> {
-  return { kind: 'repo', path: relative || '.', exists: (await statRepoFile(root, relative)) !== 'missing' }
+  const pathKind = await statRepoFile(root, relative)
+  return { kind: 'repo', path: relative || '.', exists: pathKind !== 'missing', dir: pathKind === 'dir' }
 }
 
 // A path written for a different operating system can never resolve here, so
@@ -42,12 +42,12 @@ function fromAnotherSystem(target: string): boolean {
 }
 
 const unfound = (target: string): PathLocation =>
-  personalPath(target) ? { kind: 'private' } : { kind: 'local', exists: false }
+  personalPath(target) ? { kind: 'private' } : { kind: 'local', exists: false, dir: false }
 
 async function elsewhere(base: string | null, target: string): Promise<PathLocation> {
   if (base) {
     const mirrored = await mirroredInRepo(base, target)
-    if (mirrored) return { kind: 'repo', path: mirrored, exists: true }
+    if (mirrored) return repoLocation(base, mirrored)
   }
   return unfound(target)
 }
@@ -61,19 +61,22 @@ export async function locatePath(root: string | null, target: string): Promise<P
   if (fromAnotherSystem(target)) return elsewhere(base, target)
   const raw = target.startsWith('~') ? path.join(home, target.slice(1)) : slashed(target)
   if (!path.isAbsolute(raw)) {
-    if (!base) return { kind: 'local', exists: false }
+    if (!base) return { kind: 'local', exists: false, dir: false }
     const inside = insideRoot(base, path.resolve(base, raw.replace(/^\.\//, '').replace(/\/+$/, '')))
-    return inside === null ? { kind: 'local', exists: false } : repoLocation(base, inside)
+    return inside === null ? { kind: 'local', exists: false, dir: false } : repoLocation(base, inside)
   }
   const absolute = path.resolve(raw)
   if (base) {
     const inside = insideRoot(base, absolute)
     if (inside !== null) return repoLocation(base, inside)
     const mirrored = await mirroredInRepo(base, absolute)
-    if (mirrored) return { kind: 'repo', path: mirrored, exists: true }
+    if (mirrored) return repoLocation(base, mirrored)
   }
-  if (await onThisMachine(absolute)) return { kind: 'local', exists: true }
+  const pathKind = await onThisMachine(absolute)
+  if (pathKind !== 'missing') return { kind: 'local', exists: true, dir: pathKind === 'dir' }
   // A file an agent is still writing belongs to this machine when the folder it
   // is going into is here, and calling that someone else's file would be a lie.
-  return (await onThisMachine(path.dirname(absolute))) ? { kind: 'local', exists: false } : unfound(absolute)
+  return (await onThisMachine(path.dirname(absolute))) !== 'missing'
+    ? { kind: 'local', exists: false, dir: false }
+    : unfound(absolute)
 }

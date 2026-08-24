@@ -15,8 +15,8 @@ export type RepoPathKind = 'file' | 'dir' | 'missing'
 // on this computer and are shown as written, and 'private' paths are on
 // someone else's computer, where nobody here can follow them.
 export type PathLocation =
-  | { kind: 'repo'; path: string; exists: boolean }
-  | { kind: 'local'; exists: boolean }
+  | { kind: 'repo'; path: string; exists: boolean; dir: boolean }
+  | { kind: 'local'; exists: boolean; dir: boolean }
   | { kind: 'private' }
 
 const slashed = (text: string): string => text.split('\\').join('/')
