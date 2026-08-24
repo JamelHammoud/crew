@@ -23,7 +23,7 @@ beforeEach(() => {
   useBrowser.setState({ tabs: [], activeTabId: null })
   window.crew = {
     readFile: async (path: string) => ({ kind: 'missing', path }),
-    locatePath: async (path: string): Promise<PathLocation> => ({ kind: 'repo', path, exists: REPO.has(path) }),
+    locatePath: async (path: string): Promise<PathLocation> => ({ kind: 'repo', path, exists: REPO.has(path), dir: false }),
     revealFile: async () => undefined,
     openExternal: async () => undefined
   } as unknown as CrewBridge

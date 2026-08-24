@@ -18,8 +18,8 @@ const front = () => tabs().find(tab => tab.id === useBrowser.getState().activeTa
 
 const locatePath = async (target: string): Promise<PathLocation> => {
   if (target.startsWith('/away/')) return { kind: 'private' }
-  if (target.startsWith('/here/')) return { kind: 'repo', path: target.slice('/here/'.length), exists: true }
-  return { kind: 'local', exists: false }
+  if (target.startsWith('/here/')) return { kind: 'repo', path: target.slice('/here/'.length), exists: true, dir: false }
+  return { kind: 'local', exists: false, dir: false }
 }
 
 beforeEach(() => {

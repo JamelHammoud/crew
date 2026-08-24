@@ -8,6 +8,7 @@ import FilesChanged from '../src/renderer/src/components/FilesChanged'
 import Markdown from '../src/renderer/src/components/Markdown'
 import StepRow from '../src/renderer/src/components/StepRow'
 import type { ThreadItem } from '../src/renderer/src/components/thread'
+import { FileGlyph, FolderGlyph } from '../src/renderer/src/icons'
 import { useBrowser } from '../src/renderer/src/state/browser'
 import type { PathLocation, RepoFile } from '../src/shared/files'
 import type { AgentStep, FileChange } from '../src/shared/llm'
@@ -74,25 +75,30 @@ const writeText = vi.fn<(text: string) => Promise<void>>(() => Promise.resolve()
 
 function locate(raw: string): PathLocation {
   const target = raw.split('\\').join('/')
+  const repoLocation = (path: string): PathLocation => {
+    const entry = repo[path === '.' ? '' : path]
+    return { kind: 'repo', path, exists: entry !== undefined, dir: entry?.kind === 'dir' }
+  }
+  if (target === ROOT) return repoLocation('.')
   if (/^[A-Za-z]:\//.test(target)) {
     const parts = target.split('/').filter(Boolean)
     for (let start = 0; start <= parts.length - 2; start++) {
       const relative = parts.slice(start).join('/')
-      if (relative in repo) return { kind: 'repo', path: relative, exists: true }
+      if (relative in repo) return repoLocation(relative)
     }
     return { kind: 'private' }
   }
-  if (!target.startsWith('/')) return { kind: 'repo', path: target, exists: target in repo }
+  if (!target.startsWith('/')) return repoLocation(target)
   if (target.startsWith(`${ROOT}/`)) {
     const relative = target.slice(ROOT.length + 1)
-    return { kind: 'repo', path: relative, exists: relative in repo }
+    return repoLocation(relative)
   }
   const parts = target.split('/').filter(Boolean)
   for (let start = 0; start <= parts.length - 2; start++) {
     const relative = parts.slice(start).join('/')
-    if (relative in repo) return { kind: 'repo', path: relative, exists: true }
+    if (relative in repo) return repoLocation(relative)
   }
-  return target in machine ? { kind: 'local', exists: true } : { kind: 'private' }
+  return target in machine ? { kind: 'local', exists: true, dir: false } : { kind: 'private' }
 }
 
 beforeEach(() => {

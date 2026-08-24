@@ -34,7 +34,7 @@ afterEach(() => {
 })
 
 const inRepo = (path: string, name: string): void => {
-  located[path] = { kind: 'repo', path: name, exists: true }
+  located[path] = { kind: 'repo', path: name, exists: true, dir: false }
 }
 
 const shownEvent = (extra: Record<string, unknown>): SessionEvent =>

@@ -8,7 +8,7 @@ import type { ThreadItem } from '../src/renderer/src/components/thread'
 
 const located: Record<string, PathLocation> = {}
 ;(window as unknown as { crew: unknown }).crew = {
-  locatePath: async (path: string): Promise<PathLocation> => located[path] ?? { kind: 'local', exists: false }
+  locatePath: async (path: string): Promise<PathLocation> => located[path] ?? { kind: 'local', exists: false, dir: false }
 }
 
 const { default: ChatMessage } = await import('../src/renderer/src/components/ChatMessage')
@@ -197,7 +197,7 @@ describe('the crew own marks inside markdown', () => {
   })
 
   it('still opens a file written in backticks', async () => {
-    located['src/a.ts'] = { kind: 'repo', path: 'src/a.ts', exists: true }
+    located['src/a.ts'] = { kind: 'repo', path: 'src/a.ts', exists: true, dir: false }
     const { container, rerender } = render(createElement(MessageText, { text: 'look at `src/a.ts`' }))
     await Promise.resolve()
     await Promise.resolve()
