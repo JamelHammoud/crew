@@ -72,6 +72,8 @@ const machine: Record<string, RepoFile> = {
 
 const ROOT = '/Users/me/code/crew'
 const writeText = vi.fn<(text: string) => Promise<void>>(() => Promise.resolve())
+const glyphLines = (root: Element): string[] =>
+  [...root.querySelectorAll('path')].map(path => path.getAttribute('d') ?? '')
 
 function locate(raw: string): PathLocation {
   const target = raw.split('\\').join('/')
@@ -184,6 +186,7 @@ describe('folder links', () => {
   it('opens the folder named in a message and shows what is in it', async () => {
     render(createElement(TextWithFileLinks, { text: 'have a look at src/renderer/ when you can' }))
     const chip = await screen.findByText('src/renderer/')
+    expect(glyphLines(chip.closest('.resource-chip') as Element)).toEqual(glyphLines(FolderGlyph.element(document)))
     fireEvent.click(chip)
     const tab = useBrowser.getState().tabs[0]
     expect(tab.kind).toBe('file')
@@ -209,6 +212,15 @@ describe('folder links', () => {
     fireEvent.click(chip)
     expect(useBrowser.getState().tabs[0].path).toBe('src/renderer')
   })
+
+  it('names the project folder when a link points at its root', async () => {
+    render(createElement(Markdown, { text: `Read [.](${ROOT}) first` }))
+    await waitFor(() => expect(document.querySelectorAll('a.file-link').length).toBe(1))
+    const link = document.querySelector('a.file-link') as HTMLAnchorElement
+    expect(link.textContent).toBe('crew')
+    expect(link.dataset.path).toBe('.')
+    expect(glyphLines(link)).toEqual(glyphLines(FolderGlyph.element(document)))
+  })
 })
 
 describe('markdown file links', () => {
@@ -217,6 +229,7 @@ describe('markdown file links', () => {
     await waitFor(() => expect(document.querySelectorAll('a.file-link').length).toBe(1))
     const link = document.querySelector('a.file-link') as HTMLAnchorElement
     expect(link.dataset.path).toBe('src/app.ts')
+    expect(glyphLines(link)).toEqual(glyphLines(FileGlyph.element(document)))
     fireEvent.click(link)
     const tab = useBrowser.getState().tabs[0]
     expect(tab.kind).toBe('file')
