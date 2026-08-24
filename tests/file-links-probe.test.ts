@@ -691,7 +691,7 @@ describe('steps and thinking', () => {
     expect(document.body.textContent).not.toContain(ROOT)
     fireEvent.click(link)
     expect(useBrowser.getState().tabs[0].path).toBe('src/app.ts')
-    expect(screen.getAllByText('app.ts')).toHaveLength(2)
+    expect(screen.getAllByText('app.ts')).toHaveLength(1)
   })
 
   it('opens a file named inside a command', async () => {
