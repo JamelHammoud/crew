@@ -185,7 +185,7 @@ describe('folder links', () => {
 
   it('opens the folder named in a message and shows what is in it', async () => {
     render(createElement(TextWithFileLinks, { text: 'have a look at src/renderer/ when you can' }))
-    const chip = await screen.findByText('src/renderer/')
+    const chip = await screen.findByText('renderer/')
     expect(glyphLines(chip.closest('.resource-chip') as Element)).toEqual(glyphLines(FolderGlyph.element(document)))
     fireEvent.click(chip)
     const tab = useBrowser.getState().tabs[0]
@@ -199,7 +199,7 @@ describe('folder links', () => {
     render(createElement(Markdown, { text: 'Everything moved into `src/renderer/` today' }))
     await waitFor(() => expect(document.querySelectorAll('a.file-link').length).toBe(1))
     const link = document.querySelector('a.file-link') as HTMLAnchorElement
-    expect(link.textContent).toBe('src/renderer/')
+    expect(link.textContent).toBe('renderer/')
     expect(link.dataset.path).toBe('src/renderer')
     fireEvent.click(link)
     expect(useBrowser.getState().tabs[0].path).toBe('src/renderer')
@@ -207,7 +207,7 @@ describe('folder links', () => {
 
   it('shortens a folder from another computer onto the one here', async () => {
     render(createElement(TextWithFileLinks, { text: 'wrote it into /Users/ali/projects/crew/src/renderer/ today' }))
-    const chip = await screen.findByText('src/renderer/')
+    const chip = await screen.findByText('renderer/')
     expect(document.body.textContent).not.toContain('/Users/ali')
     fireEvent.click(chip)
     expect(useBrowser.getState().tabs[0].path).toBe('src/renderer')
@@ -242,7 +242,7 @@ describe('markdown file links', () => {
     await waitFor(() => expect(document.querySelectorAll('a.file-link').length).toBe(1))
     const link = document.querySelector('a.file-link') as HTMLAnchorElement
     expect(link.dataset.path).toBe('src/app.ts')
-    expect(link.textContent).toBe('src/app.ts')
+    expect(link.textContent).toBe('app.ts')
   })
 
   it('opens relative markdown links as files and leaves web links alone', () => {
@@ -259,7 +259,7 @@ describe('markdown file links', () => {
     render(createElement(Markdown, { text: `Edited \`${ROOT}/src/app.ts:2\` today` }))
     await waitFor(() => expect(document.querySelectorAll('a.file-link').length).toBe(1))
     const link = document.querySelector('a.file-link') as HTMLAnchorElement
-    expect(link.textContent).toBe('src/app.ts:2')
+    expect(link.textContent).toBe('app.ts:2')
     expect(link.dataset.path).toBe('src/app.ts')
     fireEvent.click(link)
     expect(useBrowser.getState().tabs[0].line).toBe(2)
@@ -269,7 +269,7 @@ describe('markdown file links', () => {
     render(createElement(Markdown, { text: 'Look at /Users/ali/projects/crew/src/app.ts for the fix' }))
     await waitFor(() => expect(document.querySelectorAll('a.file-link').length).toBe(1))
     const link = document.querySelector('a.file-link') as HTMLAnchorElement
-    expect(link.textContent).toBe('src/app.ts')
+    expect(link.textContent).toBe('app.ts')
     expect(link.dataset.path).toBe('src/app.ts')
     expect(document.body.textContent).not.toContain('/Users/ali')
   })
@@ -312,7 +312,7 @@ describe('markdown tables', () => {
 describe('plain text file links', () => {
   it('renders chips for real files that open them', async () => {
     render(createElement(TextWithFileLinks, { text: 'undo/redo aside, please check src/app.ts:2 soon' }))
-    const chip = await screen.findByText('src/app.ts:2')
+    const chip = await screen.findByText('app.ts:2')
     expect(document.querySelectorAll('code').length).toBe(1)
     fireEvent.click(chip)
     const tab = useBrowser.getState().tabs[0]
@@ -322,7 +322,7 @@ describe('plain text file links', () => {
 
   it('shortens project paths and hides other computers', async () => {
     render(createElement(TextWithFileLinks, { text: `wrote ${ROOT}/src/app.ts and /Users/ali/Desktop/notes.md` }))
-    const chip = await screen.findByText('src/app.ts')
+    const chip = await screen.findByText('app.ts')
     fireEvent.click(chip)
     expect(useBrowser.getState().tabs[0].path).toBe('src/app.ts')
     await screen.findByText('Private file')
@@ -374,7 +374,7 @@ describe('changed file lists', () => {
   it('shortens a windows path from another computer and opens the file here', async () => {
     render(createElement(FilesChanged, { steps: [step('C:\\Users\\Ali Hammoud\\crew\\src\\app.ts')] }))
     fireEvent.click(screen.getByRole('button'))
-    const link = await screen.findByText('src/app.ts')
+    const link = await screen.findByText('app.ts')
     expect(document.body.textContent).not.toContain('C:\\Users')
     fireEvent.click(link)
     expect(useBrowser.getState().tabs[0].path).toBe('src/app.ts')
@@ -400,7 +400,7 @@ describe('changed file lists', () => {
       files: [{ path: `${ROOT}/src/app.ts`, added: 3, removed: 1 }]
     }
     render(createElement(StepRow, { item }))
-    await screen.findByText('src/app.ts')
+    await screen.findByText('app.ts')
     expect(document.body.textContent).not.toContain(ROOT)
   })
 })
@@ -446,7 +446,7 @@ describe('changed lines', () => {
 
   const openDiff = async (): Promise<void> => {
     render(createElement(StepRow, { item: toolItem([{ path: 'src/panel.ts', added: 3, removed: 3, diff: EDIT }]) }))
-    fireEvent.click(await screen.findByText('src/panel.ts'))
+    fireEvent.click(await screen.findByText('panel.ts'))
     render(createElement(BrowserPanel))
     await waitFor(() => expect(document.querySelectorAll('[data-gone]').length).toBe(2))
   }
@@ -458,7 +458,7 @@ describe('changed lines', () => {
 
   it('opens the file where the change landed and marks the lines that replaced it', async () => {
     render(createElement(StepRow, { item: toolItem([{ path: 'src/panel.ts', added: 3, removed: 3, diff: EDIT }]) }))
-    fireEvent.click(await screen.findByText('src/panel.ts'))
+    fireEvent.click(await screen.findByText('panel.ts'))
     expect(useBrowser.getState().tabs[0].diff).toBe(EDIT)
     render(createElement(BrowserPanel))
     await waitFor(() => expect(document.querySelectorAll('[data-line]').length).toBe(10))
@@ -504,7 +504,7 @@ describe('changed lines', () => {
     }
 
     try {
-      fireEvent.click(screen.getByText('src/panel.ts'))
+      fireEvent.click(screen.getByText('panel.ts'))
       await waitFor(() => expect(seen.length).toBeGreaterThan(0))
       expect(seen.at(-1)).toEqual({ el: body, top: at * ROW - (PAGE - ROW) / 2 })
       expect(asked).toEqual([])
@@ -635,7 +635,7 @@ describe('changed lines', () => {
     ]
     render(createElement(FilesChanged, { steps }))
     fireEvent.click(screen.getByRole('button'))
-    fireEvent.click(await screen.findByText('src/panel.ts'))
+    fireEvent.click(await screen.findByText('panel.ts'))
     render(createElement(BrowserPanel))
     await waitFor(() => expect(document.querySelectorAll('[data-line]').length).toBe(10))
     expect(marked()).toEqual(['6', '7', '10'])
@@ -644,7 +644,7 @@ describe('changed lines', () => {
   it('marks the lines that are still there when the rest moved on', async () => {
     const stale = ['+ export function other() {', '+   return 2', '+ }', '+ ', '+ export const gone = 0'].join('\n')
     render(createElement(StepRow, { item: toolItem([{ path: 'src/panel.ts', added: 5, removed: 0, diff: stale }]) }))
-    fireEvent.click(await screen.findByText('src/panel.ts'))
+    fireEvent.click(await screen.findByText('panel.ts'))
     render(createElement(BrowserPanel))
     await waitFor(() => expect(document.querySelectorAll('[data-line]').length).toBe(10))
     expect(marked()).toEqual(['6', '7', '8'])
@@ -657,7 +657,7 @@ describe('changed lines', () => {
       .map(line => `+ ${line}`)
       .join('\n')
     render(createElement(StepRow, { item: toolItem([{ path: 'src/panel.ts', added: 10, removed: 0, diff: whole }]) }))
-    fireEvent.click(await screen.findByText('src/panel.ts'))
+    fireEvent.click(await screen.findByText('panel.ts'))
     render(createElement(BrowserPanel))
     await waitFor(() => expect(document.querySelectorAll('[data-line]').length).toBe(10))
     expect(marked()).toEqual([])
@@ -665,7 +665,7 @@ describe('changed lines', () => {
 
   it('leaves a file named in prose unmarked', async () => {
     render(createElement(TextWithFileLinks, { text: 'have a look at src/panel.ts' }))
-    fireEvent.click(await screen.findByText('src/panel.ts'))
+    fireEvent.click(await screen.findByText('panel.ts'))
     expect(useBrowser.getState().tabs[0].diff).toBeNull()
     render(createElement(BrowserPanel))
     await waitFor(() => expect(document.querySelectorAll('[data-line]').length).toBe(10))
@@ -687,7 +687,7 @@ describe('steps and thinking', () => {
 
   it('opens a file an agent read from the step row', async () => {
     render(createElement(StepRow, { item: item({ name: 'Read', detail: `${ROOT}/src/app.ts` }) }))
-    const link = await screen.findByText('src/app.ts')
+    const link = await screen.findByText('app.ts')
     expect(document.body.textContent).not.toContain(ROOT)
     fireEvent.click(link)
     expect(useBrowser.getState().tabs[0].path).toBe('src/app.ts')
@@ -696,7 +696,7 @@ describe('steps and thinking', () => {
 
   it('opens a file named inside a command', async () => {
     render(createElement(StepRow, { item: item({ name: 'Bash', detail: 'yarn vitest run src/app.ts' }) }))
-    const link = await screen.findByText('src/app.ts')
+    const link = await screen.findByText('app.ts')
     fireEvent.click(link)
     expect(useBrowser.getState().tabs[0].path).toBe('src/app.ts')
   })
@@ -705,7 +705,7 @@ describe('steps and thinking', () => {
     const thought = 'Next I will read `src/app.ts:3` and then src/other.ts'
     render(createElement(StepRow, { item: item({ kind: 'thinking', text: thought }) }))
     fireEvent.click(screen.getByText('Thought'))
-    const link = await screen.findByText('src/app.ts:3')
+    const link = await screen.findByText('app.ts:3')
     expect(document.body.textContent).not.toContain('`')
     expect(document.body.textContent).toContain('src/other.ts')
     fireEvent.click(link)

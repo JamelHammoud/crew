@@ -203,7 +203,7 @@ describe('the crew own marks inside markdown', () => {
     await Promise.resolve()
     rerender(createElement(MessageText, { text: 'look at `src/a.ts`' }))
 
-    const chip = [...container.querySelectorAll('code')].find(el => el.textContent === 'src/a.ts')
+    const chip = [...container.querySelectorAll('code')].find(el => el.textContent === 'a.ts')
     expect(chip).toBeTruthy()
     fireEvent.click(chip as HTMLElement)
     expect(useBrowser.getState().tabs.at(-1)?.path).toBe('src/a.ts')
