@@ -22,7 +22,8 @@ describe('a path an agent mentioned', () => {
     expect(await locatePath(root, path.join(root, 'src', 'app.ts'))).toEqual({
       kind: 'repo',
       path: 'src/app.ts',
-      exists: true
+      exists: true,
+      dir: false
     })
   })
 
@@ -30,7 +31,8 @@ describe('a path an agent mentioned', () => {
     expect(await locatePath(root, '/Users/ali/projects/crew/src/app.ts')).toEqual({
       kind: 'repo',
       path: 'src/app.ts',
-      exists: true
+      exists: true,
+      dir: false
     })
   })
 
@@ -41,13 +43,18 @@ describe('a path an agent mentioned', () => {
 
   it('leaves an address a server answers on as it was written', async () => {
     for (const target of ['/agents/spawn', '/api/v1/sessions/prompts', '/users/12/posts', '/code-review/ultra']) {
-      expect(await locatePath(root, target)).toEqual({ kind: 'local', exists: false })
+      expect(await locatePath(root, target)).toEqual({ kind: 'local', exists: false, dir: false })
     }
   })
 
   it('leaves a folder nobody here has as it was written', async () => {
-    expect(await locatePath(root, '/opt/ali/tools')).toEqual({ kind: 'local', exists: false })
-    expect(await locatePath(root, '/Users/ali/Desktop')).toEqual({ kind: 'local', exists: false })
+    expect(await locatePath(root, '/opt/ali/tools')).toEqual({ kind: 'local', exists: false, dir: false })
+    expect(await locatePath(root, '/Users/ali/Desktop')).toEqual({ kind: 'local', exists: false, dir: false })
+  })
+
+  it('tells a project folder from a file', async () => {
+    expect(await locatePath(root, root)).toEqual({ kind: 'repo', path: '.', exists: true, dir: true })
+    expect(await locatePath(root, path.join(root, 'src'))).toEqual({ kind: 'repo', path: 'src', exists: true, dir: true })
   })
 })
 

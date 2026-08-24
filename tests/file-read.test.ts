@@ -250,15 +250,27 @@ describe('locatePath', () => {
     expect(await locatePath(root, path.join(root, 'src/app/main.ts'))).toEqual({
       kind: 'repo',
       path: 'src/app/main.ts',
-      exists: true
+      exists: true,
+      dir: false
     })
-    expect(await locatePath(root, 'src/app/main.ts')).toEqual({ kind: 'repo', path: 'src/app/main.ts', exists: true })
+    expect(await locatePath(root, 'src/app/main.ts')).toEqual({
+      kind: 'repo',
+      path: 'src/app/main.ts',
+      exists: true,
+      dir: false
+    })
     expect(await locatePath(root, path.join(root, 'src/gone.ts'))).toEqual({
       kind: 'repo',
       path: 'src/gone.ts',
-      exists: false
+      exists: false,
+      dir: false
     })
-    expect(await locatePath(root, 'Undo/redo')).toEqual({ kind: 'repo', path: 'Undo/redo', exists: false })
+    expect(await locatePath(root, 'Undo/redo')).toEqual({
+      kind: 'repo',
+      path: 'Undo/redo',
+      exists: false,
+      dir: false
+    })
   })
 
   it('matches the same file kept elsewhere on another computer', async () => {
@@ -266,7 +278,8 @@ describe('locatePath', () => {
     expect(await locatePath(root, '/Users/someone/code/crew/src/app/main.ts')).toEqual({
       kind: 'repo',
       path: 'src/app/main.ts',
-      exists: true
+      exists: true,
+      dir: false
     })
   })
 
@@ -281,17 +294,21 @@ describe('locatePath', () => {
     const root = makeRepo()
     const outside = tmpDir('outside')
     writeFileSync(path.join(outside, 'preview.mjs'), 'export const x = 1\n')
-    expect(await locatePath(root, os.homedir())).toEqual({ kind: 'local', exists: true })
-    expect(await locatePath(root, '~/')).toEqual({ kind: 'local', exists: true })
-    expect(await locatePath(root, '/usr/bin')).toEqual({ kind: 'local', exists: true })
-    expect(await locatePath(root, path.join(outside, 'preview.mjs'))).toEqual({ kind: 'local', exists: true })
-    expect(await locatePath(null, path.join(outside, 'preview.mjs'))).toEqual({ kind: 'local', exists: true })
+    expect(await locatePath(root, os.homedir())).toEqual({ kind: 'local', exists: true, dir: true })
+    expect(await locatePath(root, '~/')).toEqual({ kind: 'local', exists: true, dir: true })
+    expect(await locatePath(root, '/usr/bin')).toEqual({ kind: 'local', exists: true, dir: true })
+    expect(await locatePath(root, path.join(outside, 'preview.mjs'))).toEqual({ kind: 'local', exists: true, dir: false })
+    expect(await locatePath(null, path.join(outside, 'preview.mjs'))).toEqual({
+      kind: 'local',
+      exists: true,
+      dir: false
+    })
   })
 
   it('shows a full path that is nobody’s own file as it was written', async () => {
     const root = makeRepo()
-    expect(await locatePath(root, '/tmp/somebody-elses/preview.mjs')).toEqual({ kind: 'local', exists: false })
-    expect(await locatePath(root, 'D:\\shared\\build.log')).toEqual({ kind: 'local', exists: false })
+    expect(await locatePath(root, '/tmp/somebody-elses/preview.mjs')).toEqual({ kind: 'local', exists: false, dir: false })
+    expect(await locatePath(root, 'D:\\shared\\build.log')).toEqual({ kind: 'local', exists: false, dir: false })
   })
 
   it('matches a windows path onto the same file here', async () => {
@@ -299,12 +316,14 @@ describe('locatePath', () => {
     expect(await locatePath(root, 'C:\\Users\\Ali Hammoud\\crew\\src\\app\\main.ts')).toEqual({
       kind: 'repo',
       path: 'src/app/main.ts',
-      exists: true
+      exists: true,
+      dir: false
     })
     expect(await locatePath(root, 'src\\app\\main.ts')).toEqual({
       kind: 'repo',
       path: 'src/app/main.ts',
-      exists: true
+      exists: true,
+      dir: false
     })
   })
 
