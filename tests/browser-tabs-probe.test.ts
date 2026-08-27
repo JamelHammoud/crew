@@ -44,6 +44,13 @@ beforeEach(() => {
   dropBrowserTab.mockClear()
   window.crew = {
     warmTerminal: () => undefined,
+    openTerminal: () => undefined,
+    writeTerminal: () => undefined,
+    resizeTerminal: () => undefined,
+    closeTerminal: () => undefined,
+    onTerminalData: () => () => undefined,
+    onTerminalRunning: () => () => undefined,
+    onTerminalExit: () => () => undefined,
     popOutBrowserTab,
     beginBrowserTabDrag,
     dropBrowserTab
