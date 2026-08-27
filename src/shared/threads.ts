@@ -21,10 +21,9 @@ export const eventsOfThread = (events: SessionEvent[], threadId: string): Sessio
       : 'threadId' in event && event.threadId === threadId
   )
 
-const liveTitle = (title: string, agentLabel: string): string => {
-  const clean = stripMention(title, agentLabel) || 'Untitled'
-  return clean.charAt(0).toUpperCase() + clean.slice(1)
-}
+export const listTitle = (title: string): string => title.charAt(0).toUpperCase() + title.slice(1)
+
+const liveTitle = (title: string, agentLabel: string): string => listTitle(stripMention(title, agentLabel) || 'Untitled')
 
 const stirs = (event: SessionEvent): string | undefined => {
   switch (event.kind) {
