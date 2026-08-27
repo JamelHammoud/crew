@@ -29,7 +29,7 @@ export type BrowserTab = {
   // shell standing at its prompt is still the terminal somebody opened to run
   // something, so what it ran is what it goes on being called.
   running: string
-  ran: string
+  ran: string[]
   folder: string
   mime: string
   size: number

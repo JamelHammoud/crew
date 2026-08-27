@@ -5,6 +5,7 @@ import '@xterm/xterm/css/xterm.css'
 import { useEffect, useRef } from 'react'
 import { onMac } from '../state/platform'
 import { useTheme } from '../state/theme'
+import { ranAfter } from '../../../shared/terminalName'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import { terminalOptions, terminalTheme } from './terminalTheme'
 
@@ -69,7 +70,9 @@ export default function TerminalView({ tab, active }: { tab: BrowserTab; active:
     })
     const offRunning = window.crew.onTerminalRunning((id, command) => {
       if (id !== tab.id) return
-      useBrowser.getState().updateTab(tab.id, command ? { running: command, ran: command } : { running: '' })
+      const browser = useBrowser.getState()
+      const held = browser.tabs.find(one => one.id === tab.id)
+      browser.updateTab(tab.id, { running: command, ran: ranAfter(held?.ran ?? [], command) })
     })
     const offExit = window.crew.onTerminalExit(id => {
       if (id !== tab.id) return
