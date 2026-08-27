@@ -8,6 +8,7 @@ import Tooltip from '../components/Tooltip'
 import { ChevronLeftGlyph } from '../icons'
 import { usePlaces } from '../state/places'
 import { useCrew } from '../state/store'
+import { useWindowName } from '../state/windowName'
 import CrewAway from './home/CrewAway'
 import JoinLink from './home/JoinLink'
 import Places from './home/Places'
@@ -51,6 +52,8 @@ export default function Home() {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [busyKey, setBusyKey] = useState<string | null>(null)
+
+  useWindowName('')
 
   const load = () => {
     void usePlaces.getState().load()
