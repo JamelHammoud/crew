@@ -4,8 +4,10 @@ import { ChatGlyph, CloseGlyph, PanelLeftGlyph, PencilGlyph, PlusGlyph, SearchGl
 import { usePrefs } from '../state/prefs'
 import { useCrew, type ThreadMeta } from '../state/store'
 import { useFullScreen } from '../state/windowShape'
+import { activityForStep, type AgentActivity } from './agentActivity'
 import AgentIcon from './AgentIcon'
 import ScrollFade from './ScrollFade'
+import { describeStep } from './thread'
 import Tooltip from './Tooltip'
 import { formatShortDay, formatTime } from './time'
 import useScrollEdges from './useScrollEdges'
@@ -34,6 +36,8 @@ export default function PersonalChatSidebar({
   const full = useFullScreen()
   const events = useCrew(s => s.events)
   const threads = useCrew(s => s.threads)
+  const threadPrompts = useCrew(s => s.threadPrompts)
+  const steps = useCrew(s => s.steps)
   const renameThread = useCrew(s => s.renameThread)
   const scrollRef = useRef<HTMLDivElement>(null)
   const { edges } = useScrollEdges(scrollRef)
@@ -45,6 +49,14 @@ export default function PersonalChatSidebar({
     }
     return latest
   }, [events])
+  const working = useMemo(() => {
+    const live: Record<string, { activity: AgentActivity; said: string }> = {}
+    for (const [threadId, promptId] of Object.entries(threadPrompts)) {
+      const step = steps[promptId]?.at(-1)
+      live[threadId] = { activity: activityForStep(step), said: describeStep(step) }
+    }
+    return live
+  }, [steps, threadPrompts])
   const history = useMemo(() => {
     const searched = query.trim().toLowerCase()
     return Object.values(threads)
@@ -154,6 +166,7 @@ export default function PersonalChatSidebar({
                     {group.chats.map(one => {
                       const title = stripMention(one.title, one.agentLabel) || 'Untitled'
                       const at = activity[one.id] ?? one.startedAt ?? 0
+                      const live = working[one.id]
                       return (
                         <div key={one.id} className="group/history relative">
                           {editing === one.id ? (
@@ -180,7 +193,7 @@ export default function PersonalChatSidebar({
                               }`}
                             >
                               <span className="rounded-full">
-                                <AgentIcon seed={one.agentId} size="md" />
+                                <AgentIcon seed={one.agentId} size="md" activity={live?.activity} />
                               </span>
                               <span className="min-w-0 flex-1">
                                 <span
@@ -190,7 +203,11 @@ export default function PersonalChatSidebar({
                                 >
                                   {title}
                                 </span>
-                                <span className="block mt-0.5 text-xs text-fg/40 truncate">{one.agentLabel}</span>
+                                <span
+                                  className={`block mt-0.5 text-xs truncate ${live ? 'text-fg/70' : 'text-fg/40'}`}
+                                >
+                                  {live ? live.said : one.agentLabel}
+                                </span>
                               </span>
                             </button>
                           )}
