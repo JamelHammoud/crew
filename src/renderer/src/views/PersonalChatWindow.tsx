@@ -6,6 +6,8 @@ import Tooltip from '../components/Tooltip'
 import Toaster from '../components/Toaster'
 import { PanelLeftGlyph } from '../icons'
 import { useCrew } from '../state/store'
+import { useWindowName } from '../state/windowName'
+import { threadAsk } from '../components/thread'
 import { useFullScreen } from '../state/windowShape'
 import Chat from './Chat'
 import ThreadView from './ThreadView'
@@ -20,6 +22,9 @@ export default function PersonalChatWindow() {
   const readThread = useCrew(s => s.readThread)
   const deleteThread = useCrew(s => s.deleteThread)
   const thread = active ? threads[active] : undefined
+  const agents = useCrew(s => s.agents)
+
+  useWindowName(thread ? threadAsk(thread, agents) : '')
 
   useEffect(() => {
     if (active) readThread(active)
