@@ -1,17 +1,22 @@
 import { spawn, type IPty } from 'node-pty'
+import { execFile } from 'node:child_process'
 import { existsSync } from 'node:fs'
 import os from 'node:os'
+import { foregroundOn } from '../shared/terminalName'
 
 export type TerminalSize = { cols: number; rows: number }
 
 export type TerminalSink = {
   data(id: string, chunk: string): void
   exit(id: string): void
+  running(id: string, command: string): void
 }
 
 type Shell = { file: string; args: string[] }
 
 type Spare = { pty: IPty; folder: string; held: string; ended: boolean }
+
+type Live = { pty: IPty; tty: string; sink: TerminalSink; running: string }
 
 // The shell a terminal on this machine would open, started the way Terminal
 // and Windows Terminal start it: the login shell, so it reads the same
@@ -65,12 +70,35 @@ const HELD_LIMIT = 64 * 1024
 
 const SPARE_LIMIT = 2
 
+// What is running is read for every terminal at once, off one ps, and the next
+// read is armed once the last has settled rather than on a clock: a machine
+// that answers slowly would otherwise be handed a queue that only ever grows.
+const WATCH_MS = 1000
+
+// A command line has no ceiling and this one is read a second, so a pathological
+// one is cut here rather than carried into the window and written down.
+const PS_LIMIT = 256 * 1024
+
+// The pty's own slave device, which is what says which rows of ps are its own.
+// It is not in node-pty's typings and there is nothing on Windows it could be.
+const ttyOf = (pty: IPty): string => String((pty as unknown as { ptsName?: string }).ptsName ?? '')
+
+function readPs(): Promise<string> {
+  return new Promise(done => {
+    execFile('ps', ['-ao', 'tty=,stat=,pid=,args='], { maxBuffer: PS_LIMIT }, (error, out) =>
+      done(error ? '' : out)
+    )
+  })
+}
+
 const standing = (spare: Spare): boolean => !spare.ended && spare.held.length > 0
 
 export class Terminals {
-  private sessions = new Map<string, IPty>()
+  private sessions = new Map<string, Live>()
   private spares = new Map<string, Spare>()
   private lastSize: TerminalSize = FIRST_SIZE
+  private watching: NodeJS.Timeout | null = null
+  private reading = false
 
   warm(folder: string | null): void {
     const where = startingFolder(folder)
@@ -164,10 +192,11 @@ export class Terminals {
   }
 
   private hold(id: string, pty: IPty, sink: TerminalSink): void {
-    this.sessions.set(id, pty)
+    this.sessions.set(id, { pty, tty: ttyOf(pty), sink, running: '' })
+    this.watch()
     pty.onData(chunk => {
       const holder = this.sessions.get(id)
-      if (holder && holder !== pty) return
+      if (holder && holder.pty !== pty) return
       sink.data(id, chunk)
     })
     // A shell that was already closed is nobody's business when it finally
@@ -175,29 +204,58 @@ export class Terminals {
     // then, and taking the old one's word for it would strike the new one
     // off and leave a terminal that prints but never listens.
     pty.onExit(() => {
-      if (this.sessions.get(id) !== pty) return
+      if (this.sessions.get(id)?.pty !== pty) return
       this.sessions.delete(id)
       sink.exit(id)
     })
   }
 
+  // A terminal says what is going on in it, so the tab standing over five of
+  // them says five different things. Nothing is read while nothing is open, and
+  // a reading that has not moved is never sent.
+  private watch(): void {
+    if (this.watching || this.reading || this.sessions.size === 0) return
+    if (process.platform === 'win32') return
+    this.watching = setTimeout(() => {
+      this.watching = null
+      void this.read()
+    }, WATCH_MS)
+    this.watching.unref?.()
+  }
+
+  private async read(): Promise<void> {
+    if (this.sessions.size === 0) return
+    this.reading = true
+    const ps = await readPs()
+    this.reading = false
+    for (const [id, live] of this.sessions) {
+      const running = ps ? foregroundOn(ps, live.tty, live.pty.pid) : ''
+      if (running === live.running) continue
+      live.running = running
+      live.sink.running(id, running)
+    }
+    this.watch()
+  }
+
   write(id: string, data: string): void {
-    this.sessions.get(id)?.write(data)
+    this.sessions.get(id)?.pty.write(data)
   }
 
   resize(id: string, wanted: TerminalSize): void {
-    this.sessions.get(id)?.resize(size(wanted.cols), size(wanted.rows))
+    this.sessions.get(id)?.pty.resize(size(wanted.cols), size(wanted.rows))
   }
 
   close(id: string): void {
-    const pty = this.sessions.get(id)
-    if (!pty) return
+    const live = this.sessions.get(id)
+    if (!live) return
     this.sessions.delete(id)
-    pty.kill()
+    live.pty.kill()
   }
 
   closeAll(): void {
     for (const id of [...this.sessions.keys()]) this.close(id)
+    if (this.watching) clearTimeout(this.watching)
+    this.watching = null
     this.cool()
   }
 
