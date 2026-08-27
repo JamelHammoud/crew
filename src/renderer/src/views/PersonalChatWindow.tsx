@@ -25,9 +25,6 @@ export default function PersonalChatWindow() {
     if (active) readThread(active)
   }, [active, readThread])
 
-  // This window is reading that chat, and everything downstream asks the same
-  // question of the same field: what a page an agent shows opens in, what the
-  // panel holds, and what is already on the screen and so not worth a banner.
   useEffect(() => {
     useCrew.setState({ openThreadIds: active ? [active] : [], openThreadId: active })
   }, [active, connection])

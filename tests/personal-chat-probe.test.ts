@@ -252,9 +252,6 @@ describe('a personal chat window', () => {
     expect(screen.queryByPlaceholderText('Message')).toBeNull()
   })
 
-  // A link is opened by putting a tab in the panel, so a window with no panel
-  // in it is a link that quietly does nothing. This one draws the same panel
-  // the app does, and a page an agent shows lands in it too.
   it('opens a link in the panel it draws of its own', () => {
     render(createElement(PersonalChatWindow))
     expect(document.querySelector('[data-tab]')).toBeNull()
