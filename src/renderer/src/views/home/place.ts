@@ -50,7 +50,7 @@ export function placesOf(projects: RecentProject[], joins: RecentJoin[], names: 
     return {
       key,
       at: project.openedAt,
-      title: nickname ?? given,
+      title: placeTitle(key, project.folder, null, names),
       line: nickname ? folderPath(project.folder) : folderLine(project.folder),
       given,
       nickname,
@@ -65,7 +65,7 @@ export function placesOf(projects: RecentProject[], joins: RecentJoin[], names: 
     return {
       key,
       at: join.joinedAt,
-      title: nickname ?? given,
+      title: placeTitle(key, join.folder, join.link, names),
       line: nickname ? given : folderName(join.folder),
       given,
       nickname,
