@@ -2,6 +2,8 @@ import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import PersonalChatWindow from '../src/renderer/src/views/PersonalChatWindow'
+import { openHref } from '../src/renderer/src/components/fileLinks'
+import { useBrowser } from '../src/renderer/src/state/browser'
 import { setPref } from '../src/renderer/src/state/prefs'
 import { useCrew, type ThreadMeta } from '../src/renderer/src/state/store'
 import { setFullScreen } from '../src/renderer/src/state/windowShape'
@@ -67,7 +69,8 @@ beforeEach(() => {
     removeItem: (key: string) => values.delete(key),
     setItem: (key: string, value: string) => values.set(key, value)
   } satisfies Storage)
-  window.crew = { listFiles: async () => [] } as unknown as CrewBridge
+  window.crew = { listFiles: async () => [], warmTerminal: () => undefined } as unknown as CrewBridge
+  useBrowser.setState({ open: false, tabs: [], activeTabId: null, closedPlans: [], closedBoards: [] })
   setFullScreen(false)
   setPref('glassSidebar', true)
   useCrew.setState({
@@ -247,5 +250,47 @@ describe('a personal chat window', () => {
 
     expect(screen.getByPlaceholderText('Send a message or @ someone')).toBeTruthy()
     expect(screen.queryByPlaceholderText('Message')).toBeNull()
+  })
+
+  // A link is opened by putting a tab in the panel, so a window with no panel
+  // in it is a link that quietly does nothing. This one draws the same panel
+  // the app does, and a page an agent shows lands in it too.
+  it('opens a link in the panel it draws of its own', () => {
+    render(createElement(PersonalChatWindow))
+    expect(document.querySelector('[data-tab]')).toBeNull()
+
+    act(() => openHref('https://example.com/one'))
+
+    expect(useBrowser.getState().open).toBe(true)
+    expect(document.querySelector('[data-tab]')).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'New tab' })).toBeTruthy()
+  })
+
+  it('stands the way back once the panel is holding something, and not before', () => {
+    render(createElement(PersonalChatWindow))
+    const away = () => document.querySelector('[aria-label="Show panel"]')?.closest('[aria-hidden="true"]')
+    expect(away()).toBeTruthy()
+
+    act(() => openHref('https://example.com/one'))
+    act(() => useBrowser.getState().closePanel())
+    expect(away()).toBeNull()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Show panel' }))
+    expect(useBrowser.getState().open).toBe(true)
+  })
+
+  it('says which chat it is reading, so a page an agent shows opens here', () => {
+    const one = thread('one', 'Alpha question', 1)
+    useCrew.setState({ threads: { one }, events: [started(one)] })
+    render(createElement(PersonalChatWindow))
+    expect(useCrew.getState().openThreadIds).toEqual([])
+
+    fireEvent.click(screen.getByText('Alpha question'))
+    expect(useCrew.getState().openThreadIds).toEqual(['one'])
+    expect(useCrew.getState().openThreadId).toBe('one')
+
+    fireEvent.click(screen.getByRole('button', { name: 'New chat' }))
+    expect(useCrew.getState().openThreadIds).toEqual([])
+    expect(useCrew.getState().openThreadId).toBeNull()
   })
 })
