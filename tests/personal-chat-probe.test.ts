@@ -195,6 +195,33 @@ describe('a personal chat window', () => {
     expect(deleteThread).toHaveBeenCalledWith('one')
   })
 
+  it('says what the agent is doing on a chat that is working', () => {
+    const one = thread('one', 'Live chat', 1)
+    useCrew.setState({
+      threads: { one },
+      events: [started(one)],
+      threadPrompts: { one: 'prompt' },
+      steps: { prompt: [{ id: 'step', kind: 'tool', name: 'Bash', status: 'running', ts: 2 }] }
+    })
+    render(createElement(PersonalChatWindow))
+
+    const row = screen.getByText('Live chat').closest('button') as HTMLButtonElement
+    expect(screen.getByText('Running')).toBeTruthy()
+    expect(screen.queryByText('Fake')).toBeNull()
+    expect(row.querySelector('[data-activity="running"]')).toBeTruthy()
+
+    act(() => {
+      useCrew.setState({ steps: { prompt: [{ id: 'step', kind: 'thinking', status: 'running', ts: 3 }] } })
+    })
+    expect(screen.getByText('Thinking')).toBeTruthy()
+    expect(row.querySelector('[data-activity="thinking"]')).toBeTruthy()
+
+    act(() => useCrew.setState({ threadPrompts: {} }))
+    expect(screen.getByText('Fake')).toBeTruthy()
+    expect(screen.queryByText('Thinking')).toBeNull()
+    expect(row.querySelector('[data-activity="idle"]')).toBeTruthy()
+  })
+
   it('keeps a new chat selected while its start event is arriving', () => {
     const id = '00000000-0000-4000-8000-000000000001'
     const sendChat = vi.fn()
