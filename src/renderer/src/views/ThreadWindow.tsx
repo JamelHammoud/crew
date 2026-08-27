@@ -5,6 +5,8 @@ import Spinner from '../components/Spinner'
 import Toaster from '../components/Toaster'
 import { TOP_BAR_H } from '../components/TopBar'
 import { useCrew } from '../state/store'
+import { useWindowName } from '../state/windowName'
+import { threadAsk } from '../components/thread'
 import { threadIdInHash } from '../../../shared/threadViews'
 import ThreadView from './ThreadView'
 
@@ -15,6 +17,9 @@ export default function ThreadWindow() {
   const threadId = threadIdInHash(window.location.hash)
   const connection = useCrew(s => s.connection)
   const thread = useCrew(s => (threadId ? s.threads[threadId] : undefined))
+  const agents = useCrew(s => s.agents)
+
+  useWindowName(thread ? threadAsk(thread, agents) : '')
 
   // This window is reading that thread, and everything downstream asks the same
   // question of the same field: what a page an agent shows opens in, what the
