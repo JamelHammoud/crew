@@ -28,7 +28,7 @@ import { useReorder, type Reorder } from './useReorder'
 import { useScrollFade } from './useScrollFade'
 import AsideView from './AsideView'
 import AttachmentView from './attachment/AttachmentView'
-import BrowserTabMark, { browserTabLabel, showsImage } from './BrowserTabMark'
+import BrowserTabMark, { browserTabCard, browserTabLabel, showsImage } from './BrowserTabMark'
 import BrowserTabSwitcher from './BrowserTabSwitcher'
 import BrowserTabView, { viewFor } from './BrowserTabView'
 import BrowserFind, { BrowserFindButton } from './BrowserFind'
@@ -517,6 +517,8 @@ function TabPill({
   onDrag: (value: { token: string; id: string } | null) => void
 }) {
   const pillRef = useRef<HTMLButtonElement>(null)
+  const [name, setName] = useState<HTMLSpanElement | null>(null)
+  const [clipped, setClipped] = useState(false)
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
   const others = useBrowser(s => s.tabs.some(one => one.id !== tab.id && !one.pinned))
   const after = useBrowser(s => {
@@ -528,6 +530,17 @@ function TabPill({
   useEffect(() => {
     if (active && pillRef.current) bringInto(pillRef.current, strip.current, 'smooth')
   }, [active, strip])
+
+  const label = browserTabLabel(tab)
+
+  useEffect(() => {
+    if (!name) return
+    const measure = () => setClipped(name.scrollWidth > name.clientWidth + 1)
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(name)
+    return () => observer.disconnect()
+  }, [name, label])
 
   return (
     <>
@@ -573,8 +586,14 @@ function TabPill({
               : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
         }`}
       >
-        <BrowserTabMark tab={tab} />
-        <span className="truncate">{browserTabLabel(tab)}</span>
+        <HoverCard className="min-w-0" content={browserTabCard(tab, clipped)}>
+          <span className="flex min-w-0 items-center gap-1.5">
+            <BrowserTabMark tab={tab} />
+            <span ref={setName} className="truncate">
+              {label}
+            </span>
+          </span>
+        </HoverCard>
         {tab.pinned && <PinGlyph className="w-3 h-3 shrink-0 text-fg-faint" />}
         <span className="browser-tab-close pointer-events-none absolute inset-y-0 right-0 flex w-11 items-center justify-end rounded-r-full pr-1.5 opacity-0 transition-opacity group-hover:opacity-100">
           <span
