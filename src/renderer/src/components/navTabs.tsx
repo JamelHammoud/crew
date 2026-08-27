@@ -22,6 +22,9 @@ export const MoreIcon = MoreGlyph
 
 export const TAB_ICON = 'w-[18px] h-[18px]'
 
+export const tabLabel = (tab: Tab): string =>
+  [...TABS, ...MORE_TABS].find(one => one.id === tab)?.label ?? TABS[0].label
+
 export const inMore = (tab: Tab): boolean => MORE_TABS.some(one => one.id === tab)
 
 export const tabsShowing = (tab: Tab): TabRow[] =>
