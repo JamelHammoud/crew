@@ -25,6 +25,11 @@ export type BrowserTab = {
   line: number | null
   diff: string | null
   command: string | null
+  // What is running in a terminal right now, and the last thing that did. A
+  // shell standing at its prompt is still the terminal somebody opened to run
+  // something, so what it ran is what it goes on being called.
+  running: string
+  ran: string
   folder: string
   mime: string
   size: number

@@ -15,6 +15,7 @@ import {
   TerminalGlyph,
   TicketGlyph
 } from '../icons'
+import { terminalDetail, terminalLabel } from '../../../shared/terminalName'
 import { type BrowserTab } from '../state/browser'
 import { useCrew } from '../state/store'
 import { markFor } from './attachmentMark'
@@ -37,7 +38,7 @@ export function browserTabLabel(tab: BrowserTab): string {
   if (tab.kind === 'review') return 'Review'
   if (tab.kind === 'music') return 'Music'
   if (tab.kind === 'game') return gameFor(tab.game ?? '')?.name ?? 'Games'
-  if (tab.kind === 'terminal') return tab.title || 'Terminal'
+  if (tab.kind === 'terminal') return terminalLabel(tab)
   if (tab.kind === 'attachment') return tab.title || 'File'
   if (tab.kind === 'file') return tab.path.split('/').pop() || 'Files'
   if (showsImage(tab)) return tab.title || imageName(tab.initialUrl)
@@ -52,7 +53,7 @@ export function browserTabLabel(tab: BrowserTab): string {
 
 export function browserTabDetail(tab: BrowserTab): string {
   if (tab.kind === 'file') return tab.path
-  if (tab.kind === 'terminal') return tab.command || tab.folder
+  if (tab.kind === 'terminal') return terminalDetail(tab) || tab.folder
   if (tab.kind === 'attachment') return tab.initialUrl
   if (tab.kind === 'web' || tab.kind === 'image') return tab.url || tab.initialUrl
   return ''

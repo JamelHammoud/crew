@@ -105,6 +105,8 @@ function makeTab(url = ''): BrowserTab {
     line: null,
     diff: null,
     command: null,
+    running: '',
+    ran: '',
     folder: '',
     mime: '',
     size: 0,

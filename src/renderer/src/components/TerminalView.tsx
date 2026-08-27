@@ -67,6 +67,10 @@ export default function TerminalView({ tab, active }: { tab: BrowserTab; active:
     const offData = window.crew.onTerminalData((id, chunk) => {
       if (id === tab.id) term.write(chunk)
     })
+    const offRunning = window.crew.onTerminalRunning((id, command) => {
+      if (id !== tab.id) return
+      useBrowser.getState().updateTab(tab.id, command ? { running: command, ran: command } : { running: '' })
+    })
     const offExit = window.crew.onTerminalExit(id => {
       if (id !== tab.id) return
       term.options.cursorBlink = false
@@ -81,6 +85,7 @@ export default function TerminalView({ tab, active }: { tab: BrowserTab; active:
     return () => {
       observer?.disconnect()
       offData()
+      offRunning()
       offExit()
       window.crew.closeTerminal(tab.id)
       term.dispose()
