@@ -13,6 +13,7 @@ import { Store } from '../server/store'
 import { makeLink, parseLink, wsUrl } from '../shared/link'
 import { agentId, type AgentDef, type AgentSettings } from '../shared/llm'
 import { joinPlace, projectPlace, RESHAPES_THREADS } from '../shared/places'
+import { PERSONAL_PLACE } from '../shared/windowName'
 import { projectKey, readCrewRemote, writeCrewRemote, type CrewHome } from '../shared/project'
 import type { SessionEvent } from '../shared/events'
 import { activeThreads, type LiveThread } from '../shared/threads'
@@ -378,10 +379,10 @@ export class AppSession {
   async startPersonal(base: string, name: string): Promise<CurrentSession> {
     this.personal = true
     const current = await this.startHost(base, name, { home: 'folder', share: false, sync: false })
-    const personal = { ...current, place: 'personal', folder: '', tracked: false, projectSync: false }
+    const personal = { ...current, place: PERSONAL_PLACE, folder: '', tracked: false, projectSync: false }
     this.live = personal
     this.folder = null
-    this.place = 'personal'
+    this.place = PERSONAL_PLACE
     this.written = null
     return personal
   }
