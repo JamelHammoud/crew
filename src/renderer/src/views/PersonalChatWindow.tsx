@@ -7,7 +7,7 @@ import Toaster from '../components/Toaster'
 import { PanelLeftGlyph } from '../icons'
 import { useCrew } from '../state/store'
 import { useWindowName } from '../state/windowName'
-import { threadAsk } from '../components/thread'
+import { threadName } from '../components/thread'
 import { useFullScreen } from '../state/windowShape'
 import Chat from './Chat'
 import ThreadView from './ThreadView'
@@ -24,7 +24,7 @@ export default function PersonalChatWindow() {
   const thread = active ? threads[active] : undefined
   const agents = useCrew(s => s.agents)
 
-  useWindowName(thread ? threadAsk(thread, agents) : '')
+  useWindowName(thread ? threadName(thread, agents) : '')
 
   useEffect(() => {
     if (active) readThread(active)

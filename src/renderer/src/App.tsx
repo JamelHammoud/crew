@@ -21,7 +21,7 @@ import { useTasks } from './state/tasks'
 import { toast } from './state/toast'
 import { watchUpdates } from './state/update'
 import { useWindowName } from './state/windowName'
-import { threadAsk } from './components/thread'
+import { threadName } from './components/thread'
 import { bootSeen, rememberBoot } from './components/boot/seen'
 import Boot from './views/Boot'
 import Chat from './views/Chat'
@@ -81,7 +81,7 @@ function Session() {
   const agents = useCrew(s => s.agents)
   const focused = useCrew(s => (s.openThreadId ? s.threads[s.openThreadId] : undefined))
 
-  useWindowName((tab === 'chat' && focused ? threadAsk(focused, agents) : '') || tabLabel(tab))
+  useWindowName((tab === 'chat' && focused ? threadName(focused, agents) : '') || tabLabel(tab))
 
   useEffect(() => {
     if (docsTarget) setTab('docs')
