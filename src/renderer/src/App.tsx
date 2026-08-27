@@ -9,7 +9,7 @@ import TasksPanel from './components/TasksPanel'
 import Toaster from './components/Toaster'
 import ToolBuilder from './components/ToolBuilder'
 import TopBar from './components/TopBar'
-import type { Tab } from './components/navTabs'
+import { tabLabel, type Tab } from './components/navTabs'
 import VoiceScreen from './components/voice/VoiceScreen'
 import WindowCorner from './components/WindowCorner'
 import { lazy, Suspense } from 'react'
@@ -20,6 +20,8 @@ import { useCrew } from './state/store'
 import { useTasks } from './state/tasks'
 import { toast } from './state/toast'
 import { watchUpdates } from './state/update'
+import { useWindowName } from './state/windowName'
+import { threadAsk } from './components/thread'
 import { bootSeen, rememberBoot } from './components/boot/seen'
 import Boot from './views/Boot'
 import Chat from './views/Chat'
@@ -76,6 +78,10 @@ function Session() {
   const openAlertThread = useCrew(s => s.openAlertThread)
   const docsTarget = useCrew(s => s.docsTarget)
   const designTarget = useCrew(s => s.designTarget)
+  const agents = useCrew(s => s.agents)
+  const focused = useCrew(s => (s.openThreadId ? s.threads[s.openThreadId] : undefined))
+
+  useWindowName((tab === 'chat' && focused ? threadAsk(focused, agents) : '') || tabLabel(tab))
 
   useEffect(() => {
     if (docsTarget) setTab('docs')
