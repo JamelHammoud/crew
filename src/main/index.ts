@@ -870,6 +870,9 @@ app.whenReady().then(() => {
       },
       exit: opened => {
         if (!sender.isDestroyed()) sender.send('terminal:exit', opened)
+      },
+      running: (opened, command) => {
+        if (!sender.isDestroyed()) sender.send('terminal:running', opened, command)
       }
     })
   })

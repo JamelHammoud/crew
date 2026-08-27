@@ -102,6 +102,7 @@ declare global {
     resizeTerminal(id: string, size: { cols: number; rows: number }): void
     closeTerminal(id: string): void
     onTerminalData(listener: (id: string, chunk: string) => void): () => void
+    onTerminalRunning(listener: (id: string, command: string) => void): () => void
     onTerminalExit(listener: (id: string) => void): () => void
     onNotificationOpen(listener: (threadId: string, place: string | null) => void): () => void
     onOpenBrowserTab(listener: (tab: BrowserTab) => void): void

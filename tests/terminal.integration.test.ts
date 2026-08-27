@@ -20,7 +20,8 @@ function listener(): { sink: TerminalSink; text(): string; exits: string[] } {
       data: (_id, chunk) => {
         text += chunk
       },
-      exit: id => void exits.push(id)
+      exit: id => void exits.push(id),
+      running: () => undefined
     },
     text: () => text,
     exits

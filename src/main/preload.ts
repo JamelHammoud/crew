@@ -141,6 +141,13 @@ const bridge = {
       ipcRenderer.off('terminal:data', handler)
     }
   },
+  onTerminalRunning: (listener: (id: string, command: string) => void): (() => void) => {
+    const handler = (_event: IpcRendererEvent, id: string, command: string): void => listener(id, command)
+    ipcRenderer.on('terminal:running', handler)
+    return () => {
+      ipcRenderer.off('terminal:running', handler)
+    }
+  },
   onTerminalExit: (listener: (id: string) => void): (() => void) => {
     const handler = (_event: unknown, id: string) => listener(id)
     ipcRenderer.on('terminal:exit', handler)
