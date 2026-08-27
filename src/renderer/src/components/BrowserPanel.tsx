@@ -538,6 +538,7 @@ function TabPill({
     if (!name) return
     const measure = () => setClipped(name.scrollWidth > name.clientWidth + 1)
     measure()
+    if (typeof ResizeObserver === 'undefined') return
     const observer = new ResizeObserver(measure)
     observer.observe(name)
     return () => observer.disconnect()
