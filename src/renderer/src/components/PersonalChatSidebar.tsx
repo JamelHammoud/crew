@@ -203,9 +203,7 @@ export default function PersonalChatSidebar({
                                 >
                                   {title}
                                 </span>
-                                <span
-                                  className={`block mt-0.5 text-xs truncate ${live ? 'text-fg/70' : 'text-fg/40'}`}
-                                >
+                                <span className={`block mt-0.5 text-xs truncate ${live ? 'text-fg/70' : 'text-fg/40'}`}>
                                   {live ? live.said : one.agentLabel}
                                 </span>
                               </span>
