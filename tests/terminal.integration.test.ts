@@ -12,19 +12,26 @@ const unix = process.platform !== 'win32'
 // to read their profile before they say anything.
 if (unix) process.env['SHELL'] = '/bin/sh'
 
-function listener(): { sink: TerminalSink; text(): string; exits: string[] } {
+function listener(): {
+  sink: TerminalSink
+  text(): string
+  exits: string[]
+  runs: { id: string; command: string }[]
+} {
   let text = ''
   const exits: string[] = []
+  const runs: { id: string; command: string }[] = []
   return {
     sink: {
       data: (_id, chunk) => {
         text += chunk
       },
       exit: id => void exits.push(id),
-      running: () => undefined
+      running: (id, command) => void runs.push({ id, command })
     },
     text: () => text,
-    exits
+    exits,
+    runs
   }
 }
 
@@ -330,6 +337,22 @@ describe.skipIf(!unix)('a terminal tab', () => {
 
     made.closeAll()
     expect(made.ready()).toBe(false)
+  })
+
+  // Five terminals all called Terminal is five tabs nobody can tell apart, so
+  // each one says what is going on in it and goes quiet again when it is done.
+  it('says what is running in it, and in which of them', async () => {
+    const heard = listener()
+    const made = terminals()
+    made.open('tab-run', process.cwd(), { cols: 80, rows: 24 }, heard.sink)
+    made.open('tab-idle', process.cwd(), { cols: 80, rows: 24 }, heard.sink)
+    made.write('tab-run', 'sleep 4\r')
+
+    await until(() => heard.runs.some(one => one.command.startsWith('sleep')), 'the sleep to be seen')
+    expect(heard.runs.at(-1)).toEqual({ id: 'tab-run', command: 'sleep 4' })
+
+    await until(() => heard.runs.some(one => one.id === 'tab-run' && one.command === ''), 'the sleep to finish')
+    expect(heard.runs.every(one => one.id === 'tab-run')).toBe(true)
   })
 
   it('keeps two terminals apart', async () => {
