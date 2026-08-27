@@ -588,7 +588,7 @@ function TabPill({
               : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
         }`}
       >
-        <HoverCard className="min-w-0" content={browserTabCard(tab, clipped)}>
+        <HoverCard className="min-w-0" content={menuAt ? null : browserTabCard(tab, clipped)}>
           <span className="flex min-w-0 items-center gap-1.5">
             <BrowserTabMark tab={tab} />
             <span ref={setName} className="truncate">

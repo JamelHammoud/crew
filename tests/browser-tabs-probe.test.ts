@@ -750,11 +750,7 @@ describe('a tab opened by another Crew window', () => {
     useBrowser.getState().insertWindowTab(source, 1)
 
     const state = useBrowser.getState()
-    expect(state.tabs.map(one => one.url)).toEqual([
-      first!.url,
-      'https://example.com/moved',
-      second!.url
-    ])
+    expect(state.tabs.map(one => one.url)).toEqual([first!.url, 'https://example.com/moved', second!.url])
     expect(state.tabs[1]!.id).not.toBe(source.id)
     expect(state.activeTabId).toBe(state.tabs[1]!.id)
   })

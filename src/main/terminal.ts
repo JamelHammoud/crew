@@ -85,9 +85,7 @@ const ttyOf = (pty: IPty): string => String((pty as unknown as { ptsName?: strin
 
 function readPs(): Promise<string> {
   return new Promise(done => {
-    execFile('ps', ['-ao', 'tty=,stat=,pid=,args='], { maxBuffer: PS_LIMIT }, (error, out) =>
-      done(error ? '' : out)
-    )
+    execFile('ps', ['-ao', 'tty=,stat=,pid=,args='], { maxBuffer: PS_LIMIT }, (error, out) => done(error ? '' : out))
   })
 }
 
