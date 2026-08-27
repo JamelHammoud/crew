@@ -1,5 +1,6 @@
 import { parseLink } from '../../../../shared/link'
 import { joinPlace, projectPlace } from '../../../../shared/places'
+import { PERSONAL_NAME, PERSONAL_PLACE } from '../../../../shared/windowName'
 import type { RecentJoin, RecentProject } from '../../../../shared/recent'
 
 export interface Place {
@@ -73,4 +74,12 @@ export function placesOf(projects: RecentProject[], joins: RecentJoin[], names: 
     }
   })
   return [...fromProjects, ...fromJoins].sort((a, b) => b.at - a.at)
+}
+
+export function placeTitle(key: string, folder: string, link: string | null, names: Record<string, string>): string {
+  if (key === PERSONAL_PLACE) return PERSONAL_NAME
+  const nickname = names[key]
+  if (nickname) return nickname
+  if (link && key === joinPlace(link)) return serverName(link)
+  return folder ? folderName(folder) : ''
 }
