@@ -23,14 +23,11 @@ import HoverCard from './HoverCard'
 import { localizeDoc } from './images'
 import Markdown from './Markdown'
 import { tokenizeMentions, writtenRefs } from './mentionTokens'
+import CardRule from './CardRule'
 import Pill from './Pill'
 import ProviderMark from './ProviderMark'
 import Spinner from './Spinner'
 import SubagentMark from './SubagentMark'
-
-function CardRule({ className = '', children }: { className?: string; children: ReactNode }) {
-  return <div className={`-mx-3 mt-2.5 border-t border-fg/[0.06] px-3 pt-2.5 ${className}`}>{children}</div>
-}
 
 // A band across the foot of the card, on the card's own bottom corners, the way
 // the preview under a board is and the way the same band sits under an agent in
