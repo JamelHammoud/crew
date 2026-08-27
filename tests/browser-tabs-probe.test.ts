@@ -17,6 +17,7 @@ window.matchMedia = ((query: string) => ({
 
 const { boardOnScreen, DEFAULT_WIDTH, useBrowser } = await import('../src/renderer/src/state/browser')
 const BrowserPanel = (await import('../src/renderer/src/components/BrowserPanel')).default
+const { browserTabCard } = await import('../src/renderer/src/components/BrowserTabMark')
 
 const scrolled: { el: Element; left: number; top: number }[] = []
 const askedIntoView: Element[] = []
@@ -773,6 +774,48 @@ describe('a tab opened by another Crew window', () => {
 // A site's own mark is drawn where there is one and the globe stands in where
 // there is not, so a picture that never arrives has to read as the second of
 // those rather than as a hole in the row.
+describe('a terminal tab', () => {
+  it('says what is running in it rather than Terminal', () => {
+    useBrowser.getState().addTerminal()
+    useBrowser.getState().addTerminal()
+    const [one, two] = useBrowser.getState().tabs
+    const { container } = render(createElement(BrowserPanel))
+
+    expect(pillFor(container, one!.id)?.textContent).toContain('Terminal')
+
+    act(() => {
+      useBrowser.getState().updateTab(one!.id, { running: 'yarn dev', ran: ['yarn dev'] })
+    })
+
+    expect(pillFor(container, one!.id)?.textContent).toContain('yarn dev')
+    expect(pillFor(container, two!.id)?.textContent).toContain('Terminal')
+  })
+
+  it('goes on being called what it last ran once the prompt is back', () => {
+    useBrowser.getState().addTerminal()
+    const tab = useBrowser.getState().tabs[0]!
+    const { container } = render(createElement(BrowserPanel))
+
+    act(() => {
+      useBrowser.getState().updateTab(tab.id, { running: 'yarn build', ran: ['yarn build'] })
+    })
+    act(() => {
+      useBrowser.getState().updateTab(tab.id, { running: '' })
+    })
+
+    expect(pillFor(container, tab.id)?.textContent).toContain('yarn build')
+  })
+
+  it('stands a card up only where there is more than the pill is showing', () => {
+    useBrowser.getState().addTerminal()
+    const tab = useBrowser.getState().tabs[0]!
+
+    expect(browserTabCard({ ...tab, running: 'yarn dev', ran: ['yarn dev'] }, false)).toBeNull()
+    expect(browserTabCard({ ...tab, running: 'yarn dev', ran: ['yarn dev'] }, true)).not.toBeNull()
+    expect(browserTabCard({ ...tab, running: 'yarn dev', ran: ['yarn dev', 'git log'] }, false)).not.toBeNull()
+  })
+})
+
 describe('a tab wearing a favicon', () => {
   const faviconIn = (root: HTMLElement, id: string) => pillFor(root, id)!.querySelector('img')
 
