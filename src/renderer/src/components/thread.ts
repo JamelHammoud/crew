@@ -4,6 +4,7 @@ import type { DocMentionRef } from '../../../shared/docs'
 import type { MessageReply, SessionEvent } from '../../../shared/events'
 import type { AgentMentionRef, AgentStep, FileChange, PooledAgent } from '../../../shared/llm'
 import { relabelMentions, stripMention } from '../../../shared/llm'
+import { listTitle } from '../../../shared/threads'
 import { agentEndReactionTarget, agentStepReactionTarget, messageReactionTarget } from '../../../shared/reactions'
 import type { ThreadMeta } from '../state/store'
 import { shownPages } from '../../../shared/showPage'
@@ -146,6 +147,11 @@ export const threadAsk = (
   thread: Pick<ThreadMeta, 'title' | 'titleRefs' | 'agentLabel'>,
   agents: Array<Pick<PooledAgent, 'id' | 'label'>>
 ): string => stripMention(relabelMentions(thread.title, thread.titleRefs, agents), thread.agentLabel)
+
+export const threadName = (
+  thread: Pick<ThreadMeta, 'title' | 'titleRefs' | 'agentLabel'>,
+  agents: Array<Pick<PooledAgent, 'id' | 'label'>>
+): string => listTitle(threadAsk(thread, agents))
 
 export function lastEnd(
   threadId: string,
