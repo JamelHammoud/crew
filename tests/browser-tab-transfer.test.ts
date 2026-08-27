@@ -17,6 +17,8 @@ const tab = {
   line: null,
   diff: null,
   command: null,
+  running: '',
+  ran: '',
   folder: '',
   mime: '',
   size: 0,
