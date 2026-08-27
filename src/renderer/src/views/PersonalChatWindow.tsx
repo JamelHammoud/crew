@@ -1,5 +1,7 @@
 import { useEffect, useState, type CSSProperties } from 'react'
+import PanelToggle from '../components/PanelToggle'
 import PersonalChatSidebar from '../components/PersonalChatSidebar'
+import SidePanel from '../components/SidePanel'
 import Tooltip from '../components/Tooltip'
 import Toaster from '../components/Toaster'
 import { PanelLeftGlyph } from '../icons'
@@ -13,6 +15,7 @@ export default function PersonalChatWindow() {
   const [freshKey, setFreshKey] = useState(0)
   const [collapsed, setCollapsed] = useState(false)
   const full = useFullScreen()
+  const connection = useCrew(s => s.connection)
   const threads = useCrew(s => s.threads)
   const readThread = useCrew(s => s.readThread)
   const deleteThread = useCrew(s => s.deleteThread)
@@ -21,6 +24,13 @@ export default function PersonalChatWindow() {
   useEffect(() => {
     if (active) readThread(active)
   }, [active, readThread])
+
+  // This window is reading that chat, and everything downstream asks the same
+  // question of the same field: what a page an agent shows opens in, what the
+  // panel holds, and what is already on the screen and so not worth a banner.
+  useEffect(() => {
+    useCrew.setState({ openThreadIds: active ? [active] : [], openThreadId: active })
+  }, [active, connection])
 
   const fresh = () => {
     setActive(null)
@@ -63,12 +73,19 @@ export default function PersonalChatWindow() {
             </Tooltip>
           </div>
         )}
+        <div
+          data-personal-chat-panel-toggle
+          className="app-drag absolute top-0 right-0 z-40 h-[70px] pr-3 flex items-center"
+        >
+          <PanelToggle />
+        </div>
         {thread ? (
           <ThreadView threadId={thread.id} alone personal />
         ) : (
           <Chat key={freshKey} personal onStart={setActive} />
         )}
       </main>
+      <SidePanel />
       <Toaster />
     </div>
   )
