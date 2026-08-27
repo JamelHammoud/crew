@@ -395,6 +395,20 @@ A mark in the macOS menu bar, and a panel under it holding who is here: the peop
 - macOS will not hand out the highlight it draws behind a menu bar item unless the item is opening a native menu, and Electron dropped `setHighlightMode` in version 9. A panel of one's own does not get it.
 - A menu bar item is as wide as its image plus eight points either side, and as tall as the bar, which is 24 on a normal display and 33 or more on a notched Mac. The image is centred in that and never scales it, so nothing drawn into the artwork can line up with the item's own edges.
 
+## What a window is called
+
+The line in the dock's own menu, in the Window menu and under Mission Control. It is the project and then whatever that window is standing on: `device-os | Chat`, `device-os | The android build is failing on CI`, `device-os | Docs`.
+
+- Every window said Crew, because `index.html` carries `<title>Crew</title>` and nothing ever wrote another one. Five windows open is five rows of the same word with a tick beside one of them, and the one thing a person is doing there, picking the window they want, is the one thing the list cannot help with.
+- Nothing in main sets a title. Electron's own `page-title-updated` already moves the native title to whatever the page says, so `document.title` is the whole of it and there is no message to send and nothing to keep in step.
+- `windowName` in `src/shared/windowName.ts` is the rule, and the project comes first because it is what somebody is looking for. What the window is standing on is cut at `SHOWING_LIMIT`, since macOS truncates a long title through the middle and the middle is where the project stops being readable. A thread title is already capped at 80 by the host, which is twice what a dock menu will show.
+- The separator is a pipe. An em dash is what every other app reaches for here and the writing rule refuses it.
+- `placeTitle` in `views/home/place.ts` is what a place is called, and `placesOf` reads it too, so the word in the window list is the word on the row in the rail, a name somebody gave it included. A crew joined over a link is its address rather than the folder work happens in, which is what the rail already says, and a shared project stays on its own folder: the key is what tells the two apart, since `link` is set on a host that is sharing as well as on a guest.
+- A thread reads the way it reads in the rail rather than the way it reads inside itself, which is `threadName` beside `threadAsk`. `listTitle` is the one place the first letter is raised, so a list of windows and a list of threads never disagree about it.
+- The chat that belongs to this machine is `PERSONAL_PLACE`, which is written down once and read by both main and the naming. It has no folder and no link to be named after, so it is named outright.
+- Five windows and five callers: the app, the way in, a thread stood out on its own, the personal chat and a browser tab in a window of its own. Each one says what it is standing on and `useWindowName` says the rest, so nothing anywhere works the project out twice.
+- `tests/window-name.test.ts` holds the rule with no window in the room and `tests/window-name-probe.test.ts` renders the app and reads `document.title` back off it, since a hook nobody calls is a title that quietly never changes.
+
 ## Design boards
 
 Crew owns the board engine in `src/renderer/src/canvas`. It keeps the persisted record and snapshot format stable so existing boards, server messages, and agent operations need no migration.
