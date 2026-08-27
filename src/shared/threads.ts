@@ -23,7 +23,8 @@ export const eventsOfThread = (events: SessionEvent[], threadId: string): Sessio
 
 export const listTitle = (title: string): string => title.charAt(0).toUpperCase() + title.slice(1)
 
-const liveTitle = (title: string, agentLabel: string): string => listTitle(stripMention(title, agentLabel) || 'Untitled')
+const liveTitle = (title: string, agentLabel: string): string =>
+  listTitle(stripMention(title, agentLabel) || 'Untitled')
 
 const stirs = (event: SessionEvent): string | undefined => {
   switch (event.kind) {
