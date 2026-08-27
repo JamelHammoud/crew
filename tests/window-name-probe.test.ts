@@ -10,6 +10,17 @@ import type { PooledAgent } from '../src/shared/llm'
 import { NO_UPDATE } from '../src/shared/update'
 import { landed } from './helpers/boot'
 
+window.matchMedia = ((query: string) => ({
+  matches: false,
+  media: query,
+  onchange: null,
+  addListener: () => {},
+  removeListener: () => {},
+  addEventListener: () => {},
+  removeEventListener: () => {},
+  dispatchEvent: () => false
+})) as typeof window.matchMedia
+
 class TestResizeObserver {
   observe(): void {}
   unobserve(): void {}
