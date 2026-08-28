@@ -6,6 +6,7 @@ import type { SystemDetails } from '../shared/feedback'
 import type { OpenRequest } from '../shared/cli'
 import type { CommandDone, CommandState } from '../shared/crewCommand'
 import type { FileContentSearch, FileCopyPaths, PathLocation, RepoFile } from '../shared/files'
+import type { FileReplaceRequest, FileReplaceResult, FileSearchOptions } from '../shared/fileSearch'
 import type { MachineDir } from '../shared/machinePath'
 import type { MediaAccess, MediaKind, ScreenSource } from '../shared/media'
 import type { ModelServer } from '../shared/modelServers'
@@ -79,7 +80,8 @@ const bridge = {
   copyImage: (src: string): Promise<boolean> => ipcRenderer.invoke('clipboard:image', src),
   readFile: (path: string): Promise<RepoFile | null> => ipcRenderer.invoke('file:read', path),
   listFiles: (): Promise<string[]> => ipcRenderer.invoke('file:list'),
-  searchFiles: (query: string): Promise<FileContentSearch> => ipcRenderer.invoke('file:search', query),
+  searchFiles: (options: FileSearchOptions): Promise<FileContentSearch> => ipcRenderer.invoke('file:search', options),
+  replaceFiles: (request: FileReplaceRequest): Promise<FileReplaceResult> => ipcRenderer.invoke('file:replace', request),
   readDirs: (query: string): Promise<MachineDir[]> => ipcRenderer.invoke('file:dirs', query),
   writeFile: (path: string, text: string): Promise<RepoFile | null> => ipcRenderer.invoke('file:write', path, text),
   locatePath: (path: string): Promise<PathLocation> => ipcRenderer.invoke('file:locate', path),

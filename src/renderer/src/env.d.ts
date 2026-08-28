@@ -7,6 +7,7 @@ import type { SystemDetails } from '../../shared/feedback'
 import type { OpenRequest } from '../../shared/cli'
 import type { CommandDone, CommandState } from '../../shared/crewCommand'
 import type { FileContentSearch, FileCopyPaths, PathLocation, RepoFile } from '../../shared/files'
+import type { FileReplaceRequest, FileReplaceResult, FileSearchOptions } from '../../shared/fileSearch'
 import type { MachineDir } from '../../shared/machinePath'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../../shared/llm'
 import type { MediaAccess, MediaKind, ScreenSource } from '../../shared/media'
@@ -68,7 +69,8 @@ declare global {
     copyImage(src: string): Promise<boolean>
     readFile(path: string): Promise<RepoFile | null>
     listFiles(): Promise<string[]>
-    searchFiles(query: string): Promise<FileContentSearch>
+    searchFiles(options: FileSearchOptions): Promise<FileContentSearch>
+    replaceFiles(request: FileReplaceRequest): Promise<FileReplaceResult>
     readDirs(query: string): Promise<MachineDir[]>
     writeFile(path: string, text: string): Promise<RepoFile | null>
     locatePath(path: string): Promise<PathLocation>

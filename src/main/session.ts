@@ -41,6 +41,7 @@ import { SavedSessionStore } from './saved-session'
 import type { FileContentSearch, PathLocation, RepoFile } from '../shared/files'
 import type { MachineDir } from '../shared/machinePath'
 import { cleanMemberName } from '../shared/people'
+import type { FileReplaceRequest, FileReplaceResult, FileSearchOptions } from '../shared/fileSearch'
 
 export type { CurrentSession, OpenOptions, ProjectPlan } from '../shared/session'
 
@@ -214,8 +215,14 @@ export class AppSession {
     return this.folder ? listRepoFiles(this.folder) : []
   }
 
-  async searchFiles(query: string): Promise<FileContentSearch> {
-    return this.folder ? this.fileSearch.search(this.folder, query) : { matches: [], limited: false }
+  async searchFiles(options: FileSearchOptions): Promise<FileContentSearch> {
+    return this.folder ? this.fileSearch.search(this.folder, options) : { matches: [], limited: false, error: null }
+  }
+
+  async replaceFiles(request: FileReplaceRequest): Promise<FileReplaceResult> {
+    return this.folder
+      ? this.fileSearch.replace(this.folder, request)
+      : { files: 0, replacements: 0, failed: [], error: null }
   }
 
   async readDirs(query: string): Promise<MachineDir[]> {

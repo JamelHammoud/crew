@@ -77,6 +77,7 @@ import {
 import { showWhenReady } from './window-launch'
 import { installBrowserFindForHost } from './browser-find'
 import { pinWindow, windowShapeOf } from './window-pin'
+import type { FileReplaceRequest, FileSearchOptions } from '../shared/fileSearch'
 
 app.setName('Crew')
 app.commandLine.appendSwitch('disable-backgrounding-occluded-windows')
@@ -844,7 +845,12 @@ app.whenReady().then(() => {
     crews.inView(event.sender.id).readFile(target, mediaFor(event.sender))
   )
   ipcMain.handle('file:list', event => crews.inView(event.sender.id).listFiles())
-  ipcMain.handle('file:search', (event, query: string) => crews.inView(event.sender.id).searchFiles(query))
+  ipcMain.handle('file:search', (event, options: FileSearchOptions) =>
+    crews.inView(event.sender.id).searchFiles(options)
+  )
+  ipcMain.handle('file:replace', (event, request: FileReplaceRequest) =>
+    crews.inView(event.sender.id).replaceFiles(request)
+  )
   ipcMain.handle('file:dirs', (event, query: string) => crews.inView(event.sender.id).readDirs(query))
   ipcMain.handle('file:write', (event, target: string, text: string) =>
     crews.inView(event.sender.id).writeFile(target, text)
