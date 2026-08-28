@@ -11,11 +11,13 @@ interface MenuAt {
 export function FileMenu({
   path,
   line = null,
+  diff = null,
   at,
   onClose
 }: {
   path: string
   line?: number | null
+  diff?: string | null
   at: MenuAt | null
   onClose: () => void
 }) {
@@ -31,7 +33,7 @@ export function FileMenu({
         label="Open"
         onClick={() => {
           onClose()
-          useBrowser.getState().openFile(path, line)
+          useBrowser.getState().openFile(path, line, diff)
         }}
       />
       <MenuItem
@@ -39,7 +41,7 @@ export function FileMenu({
         label="Open in new window"
         onClick={() => {
           onClose()
-          void window.crew.popOutBrowserTab(makeFileTab(path, line))
+          void window.crew.popOutBrowserTab(makeFileTab(path, line, diff))
         }}
       />
       <MenuDivider />
@@ -53,7 +55,7 @@ export function FileMenu({
 // different shapes, in the folder listing and in the tree beside it, so what is
 // shared is the menu rather than the row: a handler for the button and the card
 // to stand beside it.
-export function useFileMenu(path: string, line: number | null = null): {
+export function useFileMenu(path: string, line: number | null = null, diff: string | null = null): {
   onContextMenu: (event: MouseEvent) => void
   menu: ReactNode
   menuOpen: boolean
@@ -66,7 +68,7 @@ export function useFileMenu(path: string, line: number | null = null): {
       event.stopPropagation()
       setAt({ x: event.clientX, y: event.clientY })
     },
-    menu: <FileMenu path={path} line={line} at={at} onClose={() => setAt(null)} />,
+    menu: <FileMenu path={path} line={line} diff={diff} at={at} onClose={() => setAt(null)} />,
     menuOpen: at !== null
   }
 }

@@ -125,8 +125,8 @@ function makeTab(url = ''): BrowserTab {
   }
 }
 
-export function makeFileTab(path: string, line: number | null = null): BrowserTab {
-  return { ...makeTab(), kind: 'file', path, line }
+export function makeFileTab(path: string, line: number | null = null, diff: string | null = null): BrowserTab {
+  return { ...makeTab(), kind: 'file', path, line, diff }
 }
 
 // Every folder on the way down to a file, so a tree opened beside one that is

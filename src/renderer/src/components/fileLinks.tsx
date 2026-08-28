@@ -337,7 +337,7 @@ export function FileChip({
   text: string
   diff?: string | null
 }) {
-  const { onContextMenu, menu, menuOpen } = useFileMenu(targetFor(path), line)
+  const { onContextMenu, menu, menuOpen } = useFileMenu(targetFor(path), line, diff)
   const Mark = isFolder(path) ? FolderGlyph : FileGlyph
   return (
     <>
@@ -406,7 +406,7 @@ export function FileTextLink({
   className?: string
   children: ReactNode
 }) {
-  const { onContextMenu, menu, menuOpen } = useFileMenu(targetFor(path), line)
+  const { onContextMenu, menu, menuOpen } = useFileMenu(targetFor(path), line, diff)
   return (
     <>
       <Tooltip label={<FullPath path={path} />} disabled={menuOpen} className="max-w-full align-middle">
