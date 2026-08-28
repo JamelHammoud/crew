@@ -71,16 +71,16 @@ app.whenReady().then(async () => {
       if (await js('Boolean(document.querySelector("[data-file-tree-width] [data-file=\\"src/renderer/view-59.ts\\"]"))')) break
       await wait(50)
     }
-    const before = await js(`(() => ({
+    const before = await js(\`(() => ({
       width: Number(document.querySelector('[data-file-tree-width]').getAttribute('data-file-tree-width')),
       more: Boolean(document.querySelector('[aria-label="More search options"]')),
       matchCase: document.body.textContent.includes('Match case'),
       replace: Boolean(document.querySelector('[aria-label="Replace"]')),
       include: Boolean(document.querySelector('[aria-label="Files to include"]'))
-    }))()`)
+    }))()\`)
     await js('document.querySelector(\'[aria-label="More search options"]\').click()')
     await wait(150)
-    const menu = await js(`(() => {
+    const menu = await js(\`(() => {
       const button = [...document.querySelectorAll('button')].find(one => one.textContent.trim() === 'Use regular expression')
       return {
         matchCase: document.body.textContent.includes('Match case'),
@@ -89,17 +89,17 @@ app.whenReady().then(async () => {
         regexMark: Boolean(button && button.querySelector('svg path, svg circle')),
         filters: document.body.textContent.includes('File filters')
       }
-    })()`)
+    })()\`)
     await writeFile(${JSON.stringify(menuImage)}, (await win.capturePage()).toPNG())
     await js('document.querySelector(\'[aria-label="More search options"]\').click()')
     await wait(100)
-    await js(`(() => {
+    await js(\`(() => {
       const scroller = document.querySelector('[data-file-tree-width] .overflow-auto')
       scroller.scrollTop = 520
       scroller.dispatchEvent(new Event('scroll', { bubbles: true }))
-    })()`)
+    })()\`)
     await wait(150)
-    const sticky = await js(`(() => {
+    const sticky = await js(\`(() => {
       const scroller = document.querySelector('[data-file-tree-width] .overflow-auto')
       const src = document.querySelector('[data-sticky-folder="src"]')
       const renderer = document.querySelector('[data-sticky-folder="src/renderer"]')
@@ -111,9 +111,9 @@ app.whenReady().then(async () => {
         rendererTop: round(renderer.getBoundingClientRect().top),
         rowHeight: round(src.getBoundingClientRect().height)
       }
-    })()`)
+    })()\`)
     await writeFile(${JSON.stringify(stickyImage)}, (await win.capturePage()).toPNG())
-    const resized = await js(`(async () => {
+    const resized = await js(\`(async () => {
       const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
       const tree = document.querySelector('[data-file-tree-width]')
       const handle = document.querySelector('[aria-label="Resize files"]')
@@ -131,7 +131,7 @@ app.whenReady().then(async () => {
       window.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, clientX: nextX }))
       await wait(250)
       return { dragged, reset: Number(tree.getAttribute('data-file-tree-width')) }
-    })()`)
+    })()\`)
     console.log('CHECK ' + JSON.stringify({ before, menu, sticky, resized }))
   } catch (error) {
     console.log('CHECK ' + JSON.stringify({ failed: String(error && error.stack), logs }))
