@@ -1,4 +1,6 @@
 import { promises as fs } from 'node:fs'
+import { randomUUID } from 'node:crypto'
+import path from 'node:path'
 import type { FileContentMatch, FileContentSearch } from '../shared/files'
 import {
   compileFileSearch,
@@ -10,12 +12,14 @@ import {
   type TextRange
 } from '../shared/fileSearch'
 import { listRepoFiles } from '../shared/repoFiles'
-import { resolveRepoPath } from './files'
+import { insideRoot, resolveRepoPath } from './files'
 
 const MAX_BYTES = 5 * 1024 * 1024
 const MAX_CACHE_BYTES = 64 * 1024 * 1024
 const MAX_TEXT = 240
 const BATCH = 20
+const MAX_REPLACEMENTS = 100000
+const UTF8 = new TextDecoder('utf-8', { fatal: true })
 
 type CachedFile = {
   mtimeMs: number
@@ -65,7 +69,7 @@ function contentMatches(
   if (!search.accepts(path)) return []
   const starts = lineStarts(text)
   return search
-    .find(text)
+    .find(text, limit)
     .slice(0, limit)
     .map(range => {
       const lineIndex = lineFor(starts, range.start)
@@ -106,6 +110,46 @@ function replacedText(text: string, ranges: TextRange[], request: FileReplaceReq
   return next
 }
 
+async function safeAbsolute(root: string, relative: string): Promise<string | null> {
+  const absolute = resolveRepoPath(root, relative)
+  if (!absolute) return null
+  const [realRoot, realTarget] = await Promise.all([fs.realpath(root).catch(() => null), fs.realpath(absolute).catch(() => null)])
+  if (!realRoot || !realTarget || insideRoot(realRoot, realTarget) === null) return null
+  return realTarget
+}
+
+async function writeAtomic(absolute: string, expected: string, text: string): Promise<boolean> {
+  const current = await fs.readFile(absolute).catch(() => null)
+  if (!current) return false
+  let decoded: string
+  try {
+    decoded = UTF8.decode(current)
+  } catch {
+    return false
+  }
+  if (decoded !== expected) return false
+  const stat = await fs.stat(absolute).catch(() => null)
+  if (!stat?.isFile()) return false
+  const temporary = path.join(path.dirname(absolute), `.${path.basename(absolute)}.crew-${randomUUID()}`)
+  let handle: Awaited<ReturnType<typeof fs.open>> | null = null
+  try {
+    handle = await fs.open(temporary, 'wx', stat.mode)
+    await handle.writeFile(text, 'utf8')
+    await handle.sync()
+    await handle.close()
+    handle = null
+    const latest = await fs.readFile(absolute).catch(() => null)
+    if (!latest || !latest.equals(current)) return false
+    await fs.rename(temporary, absolute)
+    return true
+  } catch {
+    return false
+  } finally {
+    await handle?.close().catch(() => undefined)
+    await fs.rm(temporary, { force: true }).catch(() => undefined)
+  }
+}
+
 export class FileSearch {
   private root = ''
   private cache = new Map<string, CachedFile>()
@@ -140,13 +184,13 @@ export class FileSearch {
     this.clear()
   }
 
-  private async read(root: string, relative: string): Promise<CachedFile | null> {
-    const absolute = resolveRepoPath(root, relative)
+  private async read(root: string, relative: string, fresh = false): Promise<CachedFile | null> {
+    const absolute = await safeAbsolute(root, relative)
     if (!absolute) return null
     const stat = await fs.stat(absolute).catch(() => null)
     if (!stat?.isFile()) return null
     const cached = this.cache.get(relative)
-    if (cached && cached.mtimeMs === stat.mtimeMs && cached.size === stat.size) {
+    if (!fresh && cached && cached.mtimeMs === stat.mtimeMs && cached.size === stat.size) {
       this.cache.delete(relative)
       this.cache.set(relative, cached)
       return cached
@@ -157,7 +201,14 @@ export class FileSearch {
       const buffer = Buffer.alloc(Math.min(stat.size, MAX_BYTES))
       const { bytesRead } = await handle.read(buffer, 0, buffer.length, 0)
       const bytes = buffer.subarray(0, bytesRead)
-      const text = bytes.subarray(0, 8000).includes(0) ? null : bytes.toString('utf8')
+      let text: string | null = null
+      if (!bytes.subarray(0, 8000).includes(0)) {
+        try {
+          text = UTF8.decode(bytes)
+        } catch {
+          text = null
+        }
+      }
       const entry: CachedFile = {
         mtimeMs: stat.mtimeMs,
         size: stat.size,
@@ -185,6 +236,7 @@ export class FileSearch {
       return { matches: [], limited: false, error: compiled.error }
     }
     this.prepare(root)
+    if (options.refresh) this.clear()
     const paths = await this.paths(root)
     const found: FileContentMatch[] = []
     let partial = false
@@ -209,26 +261,39 @@ export class FileSearch {
     }
     this.prepare(root)
     const paths = request.target ? [request.target.path] : await this.paths(root)
-    const failed: string[] = []
-    let files = 0
+    const plans: { path: string; absolute: string; text: string; ranges: TextRange[] }[] = []
     let replacements = 0
     for (const path of paths) {
       if (!compiled.search.accepts(path)) continue
-      const file = await this.read(root, path)
+      const file = await this.read(root, path, true)
       if (!file || file.text === null || file.partial) continue
-      const ranges = targetRange(request, path, file.text, compiled.search.find(file.text))
+      const ranges = targetRange(
+        request,
+        path,
+        file.text,
+        compiled.search.find(file.text, MAX_REPLACEMENTS + 1 - replacements)
+      )
       if (ranges.length === 0) continue
-      const absolute = resolveRepoPath(root, path)
+      replacements += ranges.length
+      if (replacements > MAX_REPLACEMENTS) {
+        return { files: 0, replacements: 0, failed: [], error: 'Too many replacements' }
+      }
+      const absolute = await safeAbsolute(root, path)
       if (!absolute) continue
-      try {
-        await fs.writeFile(absolute, replacedText(file.text, ranges, request), 'utf8')
-        this.forget(path)
+      plans.push({ path, absolute, text: file.text, ranges })
+    }
+    const failed: string[] = []
+    let files = 0
+    let written = 0
+    for (const plan of plans) {
+      if (await writeAtomic(plan.absolute, plan.text, replacedText(plan.text, plan.ranges, request))) {
+        this.forget(plan.path)
         files++
-        replacements += ranges.length
-      } catch {
-        failed.push(path)
+        written += plan.ranges.length
+      } else {
+        failed.push(plan.path)
       }
     }
-    return { files, replacements, failed, error: null }
+    return { files, replacements: written, failed, error: null }
   }
 }
