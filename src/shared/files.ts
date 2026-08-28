@@ -132,6 +132,8 @@ export interface FileMatch {
 export interface FileContentMatch {
   path: string
   line: number
+  column: number
+  endColumn: number
   text: string
   start: number
   end: number
@@ -140,6 +142,7 @@ export interface FileContentMatch {
 export interface FileContentSearch {
   matches: FileContentMatch[]
   limited: boolean
+  error: string | null
 }
 
 function scan(text: string, needle: string, from: number): number[] | null {
