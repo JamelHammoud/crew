@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { CrewSession } from '../src/server/session'
 import { Store } from '../src/server/store'
 import { ROOT_TEXT } from '../src/shared/docs'
 import { startHost, TestUi, tmpDir, waitUntil } from './helpers/session'
