@@ -1,4 +1,4 @@
-import { type KeyboardEvent } from 'react'
+import { type KeyboardEvent, type ReactNode } from 'react'
 import { CloseGlyph, SearchGlyph } from '../icons'
 import { useAutoFocus } from './useAutoFocus'
 
@@ -9,18 +9,22 @@ export default function SearchField({
   value,
   onChange,
   placeholder,
-  onKeyDown
+  onKeyDown,
+  actions,
+  search = true
 }: {
   value: string
   onChange: (value: string) => void
   placeholder: string
   onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void
+  actions?: ReactNode
+  search?: boolean
 }) {
   const ref = useAutoFocus<HTMLInputElement>()
 
   return (
     <div className="flex h-12 shrink-0 items-center gap-1.5 border-b border-fg/[0.06] px-2.5">
-      <SearchGlyph className="ml-1.5 h-4 w-4 shrink-0 text-fg/35" />
+      {search && <SearchGlyph className="ml-1.5 h-4 w-4 shrink-0 text-fg/35" />}
       <input
         ref={ref}
         value={value}
@@ -31,6 +35,7 @@ export default function SearchField({
         spellCheck={false}
         className="min-w-0 flex-1 bg-transparent text-sm text-fg outline-none placeholder:text-fg/35"
       />
+      {actions}
       {value.length > 0 && (
         <button type="button" onClick={() => onChange('')} aria-label="Clear search" className={`${QUIET} h-7 w-7`}>
           <CloseGlyph className="h-3.5 w-3.5" />
