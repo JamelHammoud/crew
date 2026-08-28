@@ -70,6 +70,7 @@ const focusAt = `(() => {
   const area = document.querySelector('textarea[aria-label="File contents"]')
   area.focus()
   area.setSelectionRange(${insertionAt}, ${insertionAt})
+  area.dispatchEvent(new Event('select', { bubbles: true }))
 })()`
 
 const ready = `Boolean(document.querySelector('textarea[aria-label="File contents"]'))`
