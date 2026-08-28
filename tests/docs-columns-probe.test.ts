@@ -92,8 +92,8 @@ describe('the list of pages in the rail', () => {
     const privateMark = container.querySelector('[aria-label="Private page"]')
     const ghostMark = container.querySelector('[aria-label="Ghost page"]')
 
-    expect(privateMark?.closest('.group\/page')?.textContent).toContain('Private notes')
-    expect(ghostMark?.closest('.group\/page')?.textContent).toContain('Passing note')
+    expect(privateMark?.closest('[draggable]')?.textContent).toContain('Private notes')
+    expect(ghostMark?.closest('[draggable]')?.textContent).toContain('Passing note')
     expect(container.textContent).not.toContain('Private page')
     expect(container.textContent).not.toContain('Ghost page')
   })
