@@ -48,7 +48,7 @@ type BrowserState = {
   openImage(src: string, name: string): void
   openAttachment(url: string, name: string, mime: string, size?: number): void
   openFile(path: string, line?: number | null, diff?: string | null): void
-  addFileTab(path: string, line?: number | null): void
+  addFileTab(path: string, line?: number | null, diff?: string | null): void
   openFiles(): void
   openMusic(): void
   openGame(): void
@@ -349,8 +349,8 @@ export const useBrowser = create<BrowserState>((write, get) => {
     // in place of it. It is a new tab every time, since that is what was asked
     // for: keeping the file already showing is half the reason to ask for one,
     // and a row that says new tab and does nothing is worse than a second tab.
-    addFileTab: (path, line = null) => {
-      const tab = makeFileTab(path, line)
+    addFileTab: (path, line = null, diff = null) => {
+      const tab = makeFileTab(path, line, diff)
       set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
     },
     openFiles: () => {
