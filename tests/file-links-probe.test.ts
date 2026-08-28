@@ -72,6 +72,9 @@ const machine: Record<string, RepoFile> = {
 
 const ROOT = '/Users/me/code/crew'
 const writeText = vi.fn<(text: string) => Promise<void>>(() => Promise.resolve())
+const popOutBrowserTab = vi.fn<(tab: ReturnType<typeof useBrowser.getState>['tabs'][number]) => Promise<boolean>>(
+  () => Promise.resolve(true)
+)
 const glyphLines = (root: Element): string[] =>
   [...root.querySelectorAll('path')].map(path => path.getAttribute('d') ?? '')
 
@@ -106,6 +109,7 @@ function locate(raw: string): PathLocation {
 beforeEach(() => {
   useBrowser.setState({ tabs: [], activeTabId: null })
   writeText.mockClear()
+  popOutBrowserTab.mockClear()
   Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } })
   window.crew = {
     readFile: async (path: string) => repo[path] ?? machine[path] ?? { kind: 'missing', path },
@@ -116,7 +120,8 @@ beforeEach(() => {
       relative: path.startsWith(`${ROOT}/`) ? path.slice(ROOT.length + 1) : path
     }),
     revealFile: async () => undefined,
-    openExternal: async () => undefined
+    openExternal: async () => undefined,
+    popOutBrowserTab
   } as unknown as CrewBridge
 })
 
@@ -473,6 +478,13 @@ describe('changed lines', () => {
     render(createElement(BrowserPanel))
     await waitFor(() => expect(taken()).toEqual(['export function old() {', '  return 1']))
     expect(marked()).toEqual(['6', '7'])
+  })
+
+  it('keeps the change when the edited file is opened in a new window', async () => {
+    render(createElement(StepRow, { item: toolItem([{ path: 'src/panel.ts', added: 3, removed: 3, diff: EDIT }]) }))
+    fireEvent.contextMenu(await screen.findByText('panel.ts'))
+    fireEvent.click(screen.getByText('Open in new window'))
+    expect(popOutBrowserTab).toHaveBeenCalledWith(expect.objectContaining({ path: 'src/panel.ts', diff: EDIT }))
   })
 
   // The body is the only box the file may move. Asking the page to bring the row
