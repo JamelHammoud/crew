@@ -28,7 +28,9 @@ const DOCS = {
   },
   'everything-9f2a': { title: "Everything I've added", text: 'A list of it.\n' },
   'handbook-a1b2': { title: 'This is a parent page', text: 'The parent.\n' },
-  'handbook-a1b2/setup-c3d4': { title: 'Setting up', text: '# Setting up\n\nHow to get going.\n' }
+  'handbook-a1b2/setup-c3d4': { title: 'Setting up', text: '# Setting up\n\nHow to get going.\n' },
+  'private-notes-1abc': { title: 'Private notes', text: 'Kept here.\n', scope: 'private' },
+  'passing-note-2abc': { title: 'Passing note', text: 'Gone with this window.\n', scope: 'ghost' }
 }
 
 function probeSource() {
@@ -145,6 +147,8 @@ const READ = \`(() => {
   }
   const litRow = document.querySelector('[data-docs-tree] [aria-current="page"]')
   const navRow = [...document.querySelectorAll('nav button')].find(b => (b.textContent || '').trim() === 'Docs')
+  const privateMark = document.querySelector('[aria-label="Private page"]')
+  const ghostMark = document.querySelector('[aria-label="Ghost page"]')
   return {
     rail: sel('[data-look-rail]'),
     tree: sel('[data-docs-tree]'),
@@ -155,6 +159,10 @@ const READ = \`(() => {
     litPaint: litRow ? getComputedStyle(litRow.parentElement).backgroundColor : null,
     railPaint: paint('[data-look-rail]'),
     firstRow: rowOf('Ideas'),
+    privateMark: box(privateMark),
+    privateRow: box(privateMark && privateMark.closest('[draggable]')),
+    ghostMark: box(ghostMark),
+    ghostRow: box(ghostMark && ghostMark.closest('[draggable]')),
     title: sel('input[placeholder="Untitled"]'),
     body: sel('.bn-editor'),
     trail: sel('[data-docs-trail]'),
@@ -240,6 +248,8 @@ try {
     console.log(`  rail ends at ${read.rail?.right}`)
     console.log(`  Docs row ${read.navRow?.height} tall, painted ${read.navPaint}`)
     console.log(`  a page row ${read.firstRow?.height} tall, ${read.firstRow?.left} to ${read.firstRow?.right}`)
+    console.log(`  private mark ${read.privateMark?.width} square in a ${read.privateRow?.height} tall row`)
+    console.log(`  ghost mark ${read.ghostMark?.width} square in a ${read.ghostRow?.height} tall row`)
     console.log(`  lit row paint ${read.litPaint}`)
     console.log(
       `  rule ${read.rule ? `${read.rule.left} to ${read.rule.right}` : 'none'} against the rail 0 to ${read.rail?.right}`
