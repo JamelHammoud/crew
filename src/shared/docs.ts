@@ -15,7 +15,10 @@ A few things you can do:
 export interface DocPage {
   title: string
   text: string
+  scope?: DocScope
 }
+
+export type DocScope = 'private' | 'ghost'
 
 export interface DocMentionRef {
   page: string

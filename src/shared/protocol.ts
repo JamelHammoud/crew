@@ -2,7 +2,7 @@ import type { Attachment, OutgoingAttachment } from './attachments'
 import type { CommandName } from './commands'
 import type { CustomEmoji } from './customEmoji'
 import type { DesignBoardMeta, DesignDocument, DesignPresence } from './design'
-import type { DocPage } from './docs'
+import type { DocPage, DocScope } from './docs'
 import type { MessageReply, SessionEvent, ThreadStatus, Todo } from './events'
 import type { GameScore } from './games'
 import type { HuddleRoom, HuddleSignal } from './huddle'
@@ -175,7 +175,7 @@ export type ClientMessage =
   // window's own storage and said again on every connect, the way the volume is
   // kept, except this one has to reach the host to be worth anything.
   | { type: 'subagent.prefs'; on: boolean; fan: number }
-  | { type: 'doc.update'; page: string; text: string; title?: string }
+  | { type: 'doc.update'; page: string; text: string; title?: string; scope?: DocScope }
   | { type: 'doc.title'; page: string; title: string }
   | { type: 'doc.retitle'; page: string; title: string }
   | { type: 'doc.rename'; from: string; to: string; title?: string }

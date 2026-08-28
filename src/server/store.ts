@@ -43,12 +43,15 @@ export class Store {
   constructor(base: string) {
     this.root = path.join(base, '.crew')
     fs.mkdirSync(path.join(this.root, 'docs'), { recursive: true })
+    fs.mkdirSync(path.join(this.root, 'private-docs'), { recursive: true })
     fs.mkdirSync(path.join(this.root, 'attachments'), { recursive: true })
     fs.mkdirSync(path.join(this.root, 'designs'), { recursive: true })
     fs.mkdirSync(path.join(this.root, 'music'), { recursive: true })
     fs.mkdirSync(path.join(this.root, 'emoji'), { recursive: true })
     const attributes = path.join(this.root, '.gitattributes')
     if (!fs.existsSync(attributes)) fs.writeFileSync(attributes, CREW_ATTRIBUTES)
+    const ignored = path.join(this.root, '.gitignore')
+    if (!fs.existsSync(ignored)) fs.writeFileSync(ignored, 'private-docs/\n')
   }
 
   saveAttachment(file: string, data: Buffer): void {
@@ -126,6 +129,16 @@ export class Store {
   }
 
   loadDocs(): Record<string, DocPage> {
+    return this.loadDocsFrom('docs')
+  }
+
+  loadPrivateDocs(): Record<string, DocPage> {
+    return Object.fromEntries(
+      Object.entries(this.loadDocsFrom('private-docs')).map(([page, doc]) => [page, { ...doc, scope: 'private' }])
+    )
+  }
+
+  private loadDocsFrom(folder: string): Record<string, DocPage> {
     const docs: Record<string, DocPage> = {}
     const walk = (dir: string, prefix: string) => {
       for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -138,13 +151,21 @@ export class Store {
         }
       }
     }
-    walk(path.join(this.root, 'docs'), '')
+    walk(path.join(this.root, folder), '')
     return docs
   }
 
   saveDoc(page: string, doc: DocPage): void {
+    this.saveDocTo('docs', page, doc)
+  }
+
+  savePrivateDoc(page: string, doc: DocPage): void {
+    this.saveDocTo('private-docs', page, doc)
+  }
+
+  private saveDocTo(folder: string, page: string, doc: DocPage): void {
     if (!PAGE_NAME.test(page)) throw new Error(`Bad page name: ${page}`)
-    const file = path.join(this.root, 'docs', `${page}.md`)
+    const file = path.join(this.root, folder, `${page}.md`)
     fs.mkdirSync(path.dirname(file), { recursive: true })
     this.writeAtomic(file, serializeDocFile(doc))
   }
@@ -172,16 +193,32 @@ export class Store {
   }
 
   deleteDoc(page: string): void {
+    this.deleteDocFrom('docs', page)
+  }
+
+  deletePrivateDoc(page: string): void {
+    this.deleteDocFrom('private-docs', page)
+  }
+
+  private deleteDocFrom(folder: string, page: string): void {
     if (!PAGE_NAME.test(page)) throw new Error(`Bad page name: ${page}`)
-    const docsDir = path.join(this.root, 'docs')
+    const docsDir = path.join(this.root, folder)
     fs.rmSync(path.join(docsDir, `${page}.md`), { force: true })
     fs.rmSync(path.join(docsDir, page), { recursive: true, force: true })
   }
 
   renameDoc(from: string, to: string): void {
+    this.renameDocIn('docs', from, to)
+  }
+
+  renamePrivateDoc(from: string, to: string): void {
+    this.renameDocIn('private-docs', from, to)
+  }
+
+  private renameDocIn(folder: string, from: string, to: string): void {
     if (!PAGE_NAME.test(from)) throw new Error(`Bad page name: ${from}`)
     if (!PAGE_NAME.test(to)) throw new Error(`Bad page name: ${to}`)
-    const docsDir = path.join(this.root, 'docs')
+    const docsDir = path.join(this.root, folder)
     const sourceFile = path.join(docsDir, `${from}.md`)
     const targetFile = path.join(docsDir, `${to}.md`)
     const sourceDir = path.join(docsDir, from)
