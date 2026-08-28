@@ -443,6 +443,26 @@ describe('the sidebar', () => {
     expect(screen.getByRole('button', { name: 'New page' }).className).toContain('pointer-events-auto')
   })
 
+  it.each([
+    ['New page', undefined],
+    ['New private page', 'private'],
+    ['New ghost page', 'ghost']
+  ] as const)('makes %s from the Docs context menu', (label, scope) => {
+    useCrew.setState({ docs: { main: { title: 'Welcome', text: '' } } })
+    const went: string[] = []
+    render(Sidebar({ onTab: tab => went.push(tab) }))
+
+    fireEvent.contextMenu(screen.getByRole('button', { name: 'Docs' }))
+    expect(screen.getByRole('button', { name: 'New page' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'New private page' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'New ghost page' })).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: label }))
+
+    const made = Object.entries(useCrew.getState().docs).find(([page]) => page !== 'main')
+    expect(made?.[1].scope).toBe(scope)
+    expect(went).toEqual(['docs'])
+  })
+
   it('goes to the page a row names and puts a hovered sidebar away with it', async () => {
     const went: string[] = []
     useSidebar.setState({ pinned: false, peeking: true })

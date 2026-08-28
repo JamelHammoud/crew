@@ -6,6 +6,60 @@ import { ROOT_TEXT } from '../src/shared/docs'
 import { startHost, TestUi, tmpDir, waitUntil } from './helpers/session'
 
 describe('doc pages', () => {
+  it('keeps a private page on this Crew host and out of git sync', async () => {
+    const repoPath = tmpDir('docs-private')
+    const host = await startHost(repoPath)
+    const mine = await TestUi.connect(host.url, 'sam', host.code)
+    const watcher = await TestUi.connect(host.url, 'ana', host.code)
+    let syncs = 0
+    host.session.onSyncNeeded = () => syncs++
+
+    mine.send({ type: 'doc.update', page: 'private-notes-1abc', text: 'Mine', title: 'Private notes', scope: 'private' })
+    await watcher.waitForEvent(e => e.kind === 'doc' && e.page === 'private-notes-1abc')
+    await waitUntil(() => host.store.loadPrivateDocs()['private-notes-1abc']?.text === 'Mine')
+
+    expect(host.store.loadDocs()['private-notes-1abc']).toBeUndefined()
+    expect(host.session.snapshot().docs['private-notes-1abc']).toEqual({
+      title: 'Private notes',
+      text: 'Mine',
+      scope: 'private'
+    })
+    expect(new Store(repoPath).loadPrivateDocs()['private-notes-1abc']?.text).toBe('Mine')
+    expect(fs.readFileSync(path.join(repoPath, '.crew', '.gitignore'), 'utf8')).toContain('private-docs/')
+    expect(syncs).toBe(0)
+
+    mine.close()
+    watcher.close()
+    await host.close()
+  })
+
+  it('keeps a ghost page in its window until that window closes', async () => {
+    const repoPath = tmpDir('docs-ghost')
+    const host = await startHost(repoPath)
+    const mine = await TestUi.connect(host.url, 'sam', host.code)
+    const watcher = await TestUi.connect(host.url, 'ana', host.code)
+
+    mine.send({ type: 'doc.update', page: 'passing-note-1abc', text: 'Gone soon', scope: 'ghost' })
+    await mine.waitForEvent(e => e.kind === 'doc' && e.page === 'passing-note-1abc')
+    await new Promise(resolve => setTimeout(resolve, 100))
+
+    expect(watcher.events.some(e => e.kind === 'doc' && e.page === 'passing-note-1abc')).toBe(false)
+    expect(host.session.snapshot().docs['passing-note-1abc']).toBeUndefined()
+    expect(host.store.loadDocs()['passing-note-1abc']).toBeUndefined()
+    expect(host.store.loadPrivateDocs()['passing-note-1abc']).toBeUndefined()
+
+    mine.close()
+    await mine.waitForClose()
+    const back = await TestUi.connect(host.url, 'sam', host.code)
+    back.send({ type: 'doc.update', page: 'passing-note-1abc', text: 'Kept now' })
+    await watcher.waitForEvent(e => e.kind === 'doc' && e.page === 'passing-note-1abc')
+    await waitUntil(() => host.store.loadDocs()['passing-note-1abc']?.text === 'Kept now')
+
+    back.close()
+    watcher.close()
+    await host.close()
+  })
+
   it('renames a page on disk and broadcasts the change', async () => {
     const repoPath = tmpDir('docs-rename')
     const host = await startHost(repoPath)
