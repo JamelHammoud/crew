@@ -61,6 +61,15 @@ export function absolutePathOf(root: string | null, target: string): string | nu
   return root ? resolveRepoPath(root, expanded) : null
 }
 
+export async function isThere(absolute: string): Promise<boolean> {
+  try {
+    await fs.stat(absolute)
+    return true
+  } catch {
+    return false
+  }
+}
+
 export function copyPaths(root: string | null, target: string): FileCopyPaths {
   const absolute = absolutePathOf(root, target)
   if (!absolute) return { absolute: target, relative: target }
