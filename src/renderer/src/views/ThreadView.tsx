@@ -494,6 +494,8 @@ export default function ThreadView({
                   onKeyDown={onKeyDown}
                   onSend={send}
                   onStop={activePromptId ? () => cancelPrompt(activePromptId) : undefined}
+                  commands={offered}
+                  onCommand={takeCommand}
                   sendLabel={
                     command === 'btw'
                       ? 'Ask'

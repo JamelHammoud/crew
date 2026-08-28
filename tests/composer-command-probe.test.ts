@@ -69,6 +69,24 @@ describe('commands in the composer', () => {
     expect(screen.getByLabelText('Remove Ghost')).toBeTruthy()
   })
 
+  it('applies a command from the plus menu without changing the message', () => {
+    const composer = open()
+
+    fireEvent.change(composer, { target: { value: 'tidy the readme' } })
+    fireEvent.click(screen.getByLabelText('Add to your message'))
+    fireEvent.click(screen.getByText('Commands'))
+
+    expect(screen.getByText('/plan')).toBeTruthy()
+    expect(screen.getByText('Get a plan first, then implement it')).toBeTruthy()
+    fireEvent.click(screen.getByText('/plan'))
+
+    expect(composer.value).toBe('tidy the readme')
+    expect(useCrew.getState().chatCommands).toEqual(['plan'])
+    expect(screen.getByLabelText('Remove Plan')).toBeTruthy()
+    expect(screen.queryByText('/plan')).toBeNull()
+    expect(document.activeElement).toBe(composer)
+  })
+
   it('offers a goal and sends it beside the work', () => {
     const sendChat = vi.fn()
     const composer = open(sendChat)

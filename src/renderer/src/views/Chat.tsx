@@ -267,6 +267,8 @@ export default function Chat({
               onSend={send}
               huddle={!personal}
               defaultAgent
+              commands={offered}
+              onCommand={takeCommand}
               ghost={ghost}
               replyTo={replyTo ?? undefined}
               onCancelReply={() => setReplyTo(null)}

@@ -1,4 +1,5 @@
 import { useMemo, useRef, type ReactNode, type RefObject } from 'react'
+import type { CommandName, SlashCommand } from '../../../shared/commands'
 import { pathRuns, type PathIndex } from '../../../shared/pathMention'
 import { ArrowUpGlyph, StopGlyph } from '../icons'
 import { useMachineFiles } from '../state/machineFiles'
@@ -164,6 +165,8 @@ export default function Composer({
   sendLabel = 'Send',
   huddle,
   defaultAgent,
+  commands,
+  onCommand,
   replyTo,
   onCancelReply,
   chips,
@@ -181,6 +184,8 @@ export default function Composer({
   sendLabel?: string
   huddle?: boolean
   defaultAgent?: boolean
+  commands?: readonly SlashCommand[]
+  onCommand?: (name: CommandName) => void
   replyTo?: ThreadItem
   onCancelReply?: () => void
   chips?: ReactNode
@@ -253,7 +258,9 @@ export default function Composer({
               attachmentKey={attachmentKey}
               huddle={huddle && !ghost}
               defaultAgent={defaultAgent}
+              commands={commands}
               inputRef={inputRef}
+              onCommand={onCommand}
               onSend={onSend}
             />
             <PluginChip where={attachmentKey} />

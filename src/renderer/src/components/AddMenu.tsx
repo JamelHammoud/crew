@@ -1,12 +1,14 @@
 import { useState, type RefObject } from 'react'
 import { attachmentBytes, MAX_ATTACHMENTS } from '../../../shared/attachments'
+import type { CommandName, SlashCommand } from '../../../shared/commands'
 import { resolvePlugins } from '../../../shared/plugins'
-import { GifGlyph, PlusGlyph, SignalGlyph, SparkGlyph, UploadGlyph } from '../icons'
+import { GifGlyph, PlusGlyph, PromptGlyph, SignalGlyph, SparkGlyph, UploadGlyph } from '../icons'
 import { useHuddle } from '../state/huddle'
 import { useMessagePlugin } from '../state/messagePlugin'
 import { useCrew } from '../state/store'
 import { locallyConnected, usePluginConnections } from '../state/pluginConnections'
 import { ATTACH_SIZES, PLUS_BUTTON, useFilePicker } from './Attachments'
+import CommandPicker from './CommandPicker'
 import DefaultAgentPicker from './DefaultAgentPicker'
 import GifPicker from './GifPicker'
 import PluginMark from './plugins/PluginMark'
@@ -15,15 +17,17 @@ import { MenuDivider, MenuItem, Popover } from './Popover'
 import ScreenSwap from './ScreenSwap'
 import Tooltip from './Tooltip'
 
-type Screen = 'menu' | 'gif' | 'agent'
+type Screen = 'menu' | 'gif' | 'agent' | 'commands'
 
-const DEPTH: Record<Screen, number> = { menu: 0, gif: 1, agent: 1 }
+const DEPTH: Record<Screen, number> = { menu: 0, gif: 1, agent: 1, commands: 1 }
 
 export default function AddMenu({
   attachmentKey,
   huddle,
   defaultAgent,
+  commands = [],
   inputRef,
+  onCommand,
   onSend
 }: {
   attachmentKey: string
@@ -31,7 +35,9 @@ export default function AddMenu({
   // Only the chat can stand an agent on its own composer. A thread already has
   // one, and a message in it goes there whatever anybody picked.
   defaultAgent?: boolean
+  commands?: readonly SlashCommand[]
   inputRef: RefObject<HTMLTextAreaElement>
+  onCommand?: (name: CommandName) => void
   onSend: () => void
 }) {
   const count = useCrew(s => (s.pending[attachmentKey] ?? []).length)
@@ -56,7 +62,9 @@ export default function AddMenu({
   const plugged = resolvePlugins(plugins).filter(plugin => locallyConnected(plugin, connectionIds))
   const picked = useMessagePlugin(s => s.picked[attachmentKey])
   const pickPlugin = useMessagePlugin(s => s.pick)
-  const choices = !full || plugged.length > 0 || aiming || calling
+  const hasCommands = commands.length > 0 && onCommand !== undefined
+  const firstGroup = !full || plugged.length > 0
+  const choices = firstGroup || aiming || hasCommands || calling
 
   const show = () => {
     setScreen('menu')
@@ -114,15 +122,18 @@ export default function AddMenu({
                   }}
                 />
               ))}
-              {aiming && (
+              {(aiming || hasCommands) && (
                 <>
-                  {!full && <MenuDivider />}
-                  <MenuItem icon={<SparkGlyph />} label="Agent" into onClick={() => setScreen('agent')} />
+                  {firstGroup && <MenuDivider />}
+                  {aiming && <MenuItem icon={<SparkGlyph />} label="Agent" into onClick={() => setScreen('agent')} />}
+                  {hasCommands && (
+                    <MenuItem icon={<PromptGlyph />} label="Commands" into onClick={() => setScreen('commands')} />
+                  )}
                 </>
               )}
               {calling && (
                 <>
-                  {(!full || aiming) && <MenuDivider />}
+                  {(firstGroup || aiming || hasCommands) && <MenuDivider />}
                   <MenuItem
                     icon={<SignalGlyph />}
                     label={live ? 'Join the huddle' : 'Huddle'}
@@ -137,6 +148,15 @@ export default function AddMenu({
           ) : screen === 'agent' ? (
             <DefaultAgentPicker
               onPick={() => {
+                setOpen(false)
+                inputRef.current?.focus()
+              }}
+            />
+          ) : screen === 'commands' ? (
+            <CommandPicker
+              commands={commands}
+              onPick={name => {
+                onCommand?.(name)
                 setOpen(false)
                 inputRef.current?.focus()
               }}
