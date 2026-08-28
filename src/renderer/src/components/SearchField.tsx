@@ -11,6 +11,7 @@ export default function SearchField({
   placeholder,
   onKeyDown,
   actions,
+  prefix,
   search = true,
   autoFocus = true,
   clearLabel = 'Clear search'
@@ -20,6 +21,7 @@ export default function SearchField({
   placeholder: string
   onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void
   actions?: ReactNode
+  prefix?: ReactNode
   search?: boolean
   autoFocus?: boolean
   clearLabel?: string
@@ -28,6 +30,7 @@ export default function SearchField({
 
   return (
     <div className="flex h-12 shrink-0 items-center gap-1.5 border-b border-fg/[0.06] px-2.5">
+      {prefix}
       {search && <SearchGlyph className="ml-1.5 h-4 w-4 shrink-0 text-fg/35" />}
       <input
         ref={ref}
