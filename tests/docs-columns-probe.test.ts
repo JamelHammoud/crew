@@ -94,6 +94,8 @@ describe('the list of pages in the rail', () => {
 
     expect(privateMark?.closest('[draggable]')?.textContent).toContain('Private notes')
     expect(ghostMark?.closest('[draggable]')?.textContent).toContain('Passing note')
+    expect(privateMark?.closest('[draggable]')?.querySelector('[aria-label="Add sub-page"]')?.compareDocumentPosition(privateMark) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(ghostMark?.closest('[draggable]')?.querySelector('[aria-label="Add sub-page"]')?.compareDocumentPosition(ghostMark) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
     expect(container.textContent).not.toContain('Private page')
     expect(container.textContent).not.toContain('Ghost page')
   })

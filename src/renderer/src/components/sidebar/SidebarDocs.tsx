@@ -128,6 +128,15 @@ export default function SidebarDocs({ open }: { open: boolean }) {
           >
             <EmojiText text={titleOf(node.slug) || 'Untitled'} />
           </button>
+          <Tooltip label="Add sub-page">
+            <button
+              onClick={() => addPage(node.slug)}
+              aria-label="Add sub-page"
+              className="h-6 w-6 -my-1 rounded-lg flex items-center justify-center text-fg/45 opacity-0 group-hover/page:opacity-100 focus-visible:opacity-100 hover:text-fg hover:bg-fg/[0.10] transition-opacity shrink-0"
+            >
+              <PlusGlyph className="w-4 h-4" />
+            </button>
+          </Tooltip>
           {docs[node.slug]?.scope === 'private' && (
             <Tooltip label="Private page">
               <span aria-label="Private page" className="h-4 w-4 flex items-center justify-center text-fg/35 shrink-0">
@@ -142,15 +151,6 @@ export default function SidebarDocs({ open }: { open: boolean }) {
               </span>
             </Tooltip>
           )}
-          <Tooltip label="Add sub-page">
-            <button
-              onClick={() => addPage(node.slug)}
-              aria-label="Add sub-page"
-              className="h-6 w-6 -my-1 rounded-lg flex items-center justify-center text-fg/45 opacity-0 group-hover/page:opacity-100 focus-visible:opacity-100 hover:text-fg hover:bg-fg/[0.10] transition-opacity shrink-0"
-            >
-              <PlusGlyph className="w-4 h-4" />
-            </button>
-          </Tooltip>
         </div>
         {shown && node.children.map(child => renderNode(child, depth + 1))}
       </div>
