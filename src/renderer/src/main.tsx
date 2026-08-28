@@ -11,6 +11,7 @@ import { useCrew } from './state/store'
 import { applyTheme, showTheme, storedTheme } from './state/theme'
 import { publishPresence } from './state/trayPresence'
 import { setFullScreen, setWindowPinned } from './state/windowShape'
+import { recoverMissingPreload } from './preloadRecovery'
 import ScribeWindow from './views/ScribeWindow'
 import ThreadWindow from './views/ThreadWindow'
 import PersonalChatWindow from './views/PersonalChatWindow'
@@ -18,6 +19,8 @@ import BrowserWindow from './views/BrowserWindow'
 import TrayPanel from './views/TrayPanel'
 import { BROWSER_WINDOW_HASH, PERSONAL_CHAT_HASH, threadIdInHash } from '../../shared/threadViews'
 import './styles.css'
+
+recoverMissingPreload(window)
 
 // One renderer, four windows. The app itself, a thread somebody popped out, the
 // panel under the menu bar, and the pill that stands over whatever you are

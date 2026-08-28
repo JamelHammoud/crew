@@ -6,8 +6,12 @@ import { useFileMenu } from './fileMenu'
 import ProjectSearch from './ProjectSearch'
 import { bringInto } from './scrollInto'
 import Skeleton from './Skeleton'
+import { useColumnResize } from './useColumnResize'
 
 const ROW_STEP = 29
+export const DEFAULT_FILE_TREE_WIDTH = 288
+export const MIN_FILE_TREE_WIDTH = 220
+export const MAX_FILE_TREE_WIDTH = 520
 const row = 'mb-px w-full h-7 pr-2 flex items-center gap-1.5 text-[13px] text-left transition-colors'
 const quiet = 'text-fg-secondary hover:bg-fg/[0.04] hover:text-fg'
 const picked = 'bg-fg/[0.06] text-fg'
@@ -124,11 +128,30 @@ function Branch({ tab, path, depth }: { tab: BrowserTab; path: string; depth: nu
 }
 
 export default function FileTree({ tab }: { tab: BrowserTab }) {
+  const [width, setWidth] = useState(DEFAULT_FILE_TREE_WIDTH)
+  const { dragging, startResize } = useColumnResize(
+    width,
+    asked => setWidth(Math.max(MIN_FILE_TREE_WIDTH, Math.min(MAX_FILE_TREE_WIDTH, asked))),
+    () => setWidth(DEFAULT_FILE_TREE_WIDTH)
+  )
+
   return (
-    <aside className="flex w-[42%] min-w-[220px] max-w-[340px] shrink-0 flex-col border-l border-ink-700">
+    <aside
+      data-file-tree-width={width}
+      style={{ width }}
+      className={`relative flex shrink-0 flex-col border-l border-ink-700 ${dragging ? '' : 'transition-[width] duration-200'}`}
+    >
+      <div
+        role="separator"
+        aria-label="Resize files"
+        aria-orientation="vertical"
+        onPointerDown={startResize}
+        className="absolute inset-y-0 left-0 z-10 w-1.5 cursor-col-resize transition-colors hover:bg-fg/10"
+      />
       <ProjectSearch tab={tab}>
         <Branch tab={tab} path="" depth={0} />
       </ProjectSearch>
+      {dragging && <div className="fixed inset-0 z-50 cursor-col-resize" />}
     </aside>
   )
 }
