@@ -321,7 +321,11 @@ describe('locatePath', () => {
     expect(await locatePath(root, os.homedir())).toEqual({ kind: 'local', exists: true, dir: true })
     expect(await locatePath(root, '~/')).toEqual({ kind: 'local', exists: true, dir: true })
     expect(await locatePath(root, '/usr/bin')).toEqual({ kind: 'local', exists: true, dir: true })
-    expect(await locatePath(root, path.join(outside, 'preview.mjs'))).toEqual({ kind: 'local', exists: true, dir: false })
+    expect(await locatePath(root, path.join(outside, 'preview.mjs'))).toEqual({
+      kind: 'local',
+      exists: true,
+      dir: false
+    })
     expect(await locatePath(null, path.join(outside, 'preview.mjs'))).toEqual({
       kind: 'local',
       exists: true,
@@ -331,7 +335,11 @@ describe('locatePath', () => {
 
   it('shows a full path that is nobody’s own file as it was written', async () => {
     const root = makeRepo()
-    expect(await locatePath(root, '/tmp/somebody-elses/preview.mjs')).toEqual({ kind: 'local', exists: false, dir: false })
+    expect(await locatePath(root, '/tmp/somebody-elses/preview.mjs')).toEqual({
+      kind: 'local',
+      exists: false,
+      dir: false
+    })
     expect(await locatePath(root, 'D:\\shared\\build.log')).toEqual({ kind: 'local', exists: false, dir: false })
   })
 
