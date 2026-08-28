@@ -145,6 +145,7 @@ export const codexParser = (): RunParser => {
       }
       const method = str(msg?.method)
       const notifiedThreadId = str(msg?.params?.threadId)
+      if (!threadId) threadId = str(msg?.result?.thread?.id)
       if (!threadId && method === 'turn/started') threadId = notifiedThreadId
       if (threadId && notifiedThreadId && notifiedThreadId !== threadId) return []
       return parseCodexLine(line)

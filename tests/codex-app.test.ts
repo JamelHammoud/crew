@@ -254,6 +254,7 @@ describe('what codex says while it works', () => {
 
   it('keeps child thread output out of the parent run', () => {
     const parse = codexParser().parse
+    expect(parse(reply(2, { thread: { id: 'parent' } }))).toEqual([])
     expect(parse(note('turn/started', { threadId: 'parent', turn: { id: 'parent-turn' } }))).toEqual([])
     expect(
       parse(
