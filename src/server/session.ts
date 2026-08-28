@@ -5365,6 +5365,11 @@ export class CrewSession {
       thread.queue = []
       if (thread.running) this.handleCancel(thread.running)
     }
+    for (const [page, owner] of this.ghostDocOwners) {
+      if (owner !== ws) continue
+      this.ghostDocOwners.delete(page)
+      this.docs.delete(page)
+    }
   }
 
   // Why something did not happen, to the one who asked for it. It is a moment

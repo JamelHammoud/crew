@@ -1,6 +1,6 @@
 import type { Attachment } from './attachments'
 import type { BoardMentionRef } from './design'
-import type { DocMentionRef } from './docs'
+import type { DocMentionRef, DocScope } from './docs'
 import type { AgentMentionRef, AgentSettings, AgentStep } from './llm'
 import type { MemberMentionRef } from './people'
 import type { CrewPlugin } from './plugins'
@@ -398,7 +398,7 @@ export type SessionEvent =
       page: string
       text: string
       title?: string
-      scope?: import('./docs').DocScope
+      scope?: DocScope
       byName: string
     }
   | { id: string; ts: number; kind: 'doc.titled'; page: string; title: string; byName: string }
