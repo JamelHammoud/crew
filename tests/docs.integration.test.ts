@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 import { CrewSession } from '../src/server/session'
 import { Store } from '../src/server/store'
 import { ROOT_TEXT } from '../src/shared/docs'
+import { runGit } from '../src/shared/git'
 import { startHost, TestUi, tmpDir, waitUntil } from './helpers/session'
 
 describe('doc pages', () => {
@@ -11,6 +12,7 @@ describe('doc pages', () => {
     const repoPath = tmpDir('docs-private')
     fs.mkdirSync(path.join(repoPath, '.crew'), { recursive: true })
     fs.writeFileSync(path.join(repoPath, '.crew', '.gitignore'), 'kept/\n')
+    expect((await runGit(['init'], repoPath)).code).toBe(0)
     const host = await startHost(repoPath)
     const mine = await TestUi.connect(host.url, 'sam', host.code)
     const watcher = await TestUi.connect(host.url, 'ana', host.code)
@@ -34,6 +36,7 @@ describe('doc pages', () => {
     expect(new Store(repoPath).loadPrivateDocs()['journal-1abc']?.text).toBe('Mine')
     expect(new CrewSession(host.store).snapshot().docs['journal-1abc']?.scope).toBe('private')
     expect(fs.readFileSync(path.join(repoPath, '.crew', '.gitignore'), 'utf8')).toBe('kept/\nprivate-docs/\n')
+    expect((await runGit(['check-ignore', '.crew/private-docs/journal-1abc.md'], repoPath)).code).toBe(0)
     expect(syncs).toBe(0)
 
     mine.close()

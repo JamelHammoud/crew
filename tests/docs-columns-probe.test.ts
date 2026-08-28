@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, render } from '@testing-library/react'
+import { cleanup, fireEvent, render } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, describe, expect, it } from 'vitest'
 
@@ -96,5 +96,18 @@ describe('the list of pages in the rail', () => {
     expect(ghostMark?.closest('[draggable]')?.textContent).toContain('Passing note')
     expect(container.textContent).not.toContain('Private page')
     expect(container.textContent).not.toContain('Ghost page')
+  })
+
+  it.each([
+    ['Private page', 'private-notes-1abc', 'private'],
+    ['Ghost page', 'passing-note-2abc', 'ghost']
+  ] as const)('gives a sub-page the lifetime of its %s parent', (mark, parent, scope) => {
+    stock('welcome')
+    const { container } = render(createElement(SidebarDocs, { open: true }))
+    const row = container.querySelector(`[aria-label="${mark}"]`)?.closest('[draggable]') as HTMLElement
+    fireEvent.click(row.querySelector('[aria-label="Add sub-page"]') as HTMLElement)
+
+    const made = Object.entries(useCrew.getState().docs).find(([page]) => page.startsWith(`${parent}/`))
+    expect(made?.[1].scope).toBe(scope)
   })
 })
