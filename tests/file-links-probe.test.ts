@@ -900,6 +900,24 @@ describe('file editing', () => {
     })
   })
 
+  it('keeps syntax color through the keystroke that changes a line', async () => {
+    useBrowser.getState().openFile('src/app.ts')
+    render(createElement(BrowserPanel))
+    await screen.findByText('const one = 1')
+    await waitFor(() => {
+      const keyword = [...(document.querySelector('[data-line="1"]')?.querySelectorAll('span[style]') ?? [])].find(
+        span => span.textContent === 'const'
+      ) as HTMLElement | undefined
+      expect(keyword?.style.color).not.toBe('')
+    })
+    const editor = screen.getByRole('textbox', { name: 'File contents' }) as HTMLTextAreaElement
+    fireEvent.change(editor, { target: { value: 'const ones = 1\nconst two = 2\nconst three = 3' } })
+    const keyword = [...(document.querySelector('[data-line="1"]')?.querySelectorAll('span[style]') ?? [])].find(
+      span => span.textContent === 'const'
+    ) as HTMLElement | undefined
+    expect(keyword?.style.color).not.toBe('')
+  })
+
   it('indents and outdents selected lines', async () => {
     useBrowser.getState().openFile('src/app.ts')
     render(createElement(BrowserPanel))
