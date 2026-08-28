@@ -59,6 +59,7 @@ export default function FileSearchControls({
   replaceOpen,
   detailsOpen,
   resultCount,
+  replaceCount,
   collapsed,
   replacing,
   onChange,
@@ -73,6 +74,7 @@ export default function FileSearchControls({
   replaceOpen: boolean
   detailsOpen: boolean
   resultCount: number
+  replaceCount: number
   collapsed: boolean
   replacing: boolean
   onChange: <K extends keyof FileSearchForm>(key: K, value: FileSearchForm[K]) => void
@@ -133,7 +135,7 @@ export default function FileSearchControls({
               <TextTool label="Preserve case" pressed={form.preserveCase} onClick={() => onChange('preserveCase', !form.preserveCase)}>
                 AB
               </TextTool>
-              <Tool label="Replace all" onClick={onReplaceAll} disabled={!form.query.trim() || resultCount === 0 || replacing}>
+              <Tool label="Replace all" onClick={onReplaceAll} disabled={!form.query.trim() || replaceCount === 0 || replacing}>
                 <PencilGlyph className="h-3.5 w-3.5" />
               </Tool>
             </>
