@@ -465,6 +465,16 @@ describe('changed lines', () => {
     expect(marked()).toEqual(['6', '7'])
   })
 
+  it('keeps the change when the edited file is opened from its menu', async () => {
+    render(createElement(StepRow, { item: toolItem([{ path: 'src/panel.ts', added: 3, removed: 3, diff: EDIT }]) }))
+    fireEvent.contextMenu(await screen.findByText('panel.ts'))
+    fireEvent.click(screen.getByText('Open'))
+    expect(useBrowser.getState().tabs[0].diff).toBe(EDIT)
+    render(createElement(BrowserPanel))
+    await waitFor(() => expect(taken()).toEqual(['export function old() {', '  return 1']))
+    expect(marked()).toEqual(['6', '7'])
+  })
+
   // The body is the only box the file may move. Asking the page to bring the row
   // in moves every scroller above it too, and the panel stands in two that show
   // no scrollbar, so what they lose can never be put back by hand.

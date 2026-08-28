@@ -453,10 +453,10 @@ describe('the sidebar', () => {
     render(Sidebar({ onTab: tab => went.push(tab) }))
 
     fireEvent.contextMenu(screen.getByRole('button', { name: 'Docs' }))
-    expect(screen.getByRole('button', { name: 'New page' })).toBeTruthy()
-    expect(screen.getByRole('button', { name: 'New private page' })).toBeTruthy()
-    expect(screen.getByRole('button', { name: 'New ghost page' })).toBeTruthy()
-    fireEvent.click(screen.getByRole('button', { name: label }))
+    const menu = screen.getByRole('button', { name: 'New private page' }).closest('.glass') as HTMLElement
+    const rows = [...menu.querySelectorAll('button')]
+    expect(rows.map(row => row.textContent)).toEqual(['New page', 'New private page', 'New ghost page'])
+    fireEvent.click(rows.find(row => row.textContent === label)!)
 
     const made = Object.entries(useCrew.getState().docs).find(([page]) => page !== 'main')
     expect(made?.[1].scope).toBe(scope)
