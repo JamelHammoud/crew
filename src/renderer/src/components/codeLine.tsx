@@ -109,7 +109,7 @@ export function useHighlight(path: string, rows: Row[], delay = 0): (row: Row) =
   const theme = useTheme()
   const [highlight, setHighlight] = useState<Highlighted | null>(null)
   const source = useMemo(() => docText(rows), [rows])
-  const immediate = useMemo(() => highlightLinesNow(path, source, theme), [path, source, theme])
+  const immediate = useMemo(() => (delay > 0 ? highlightLinesNow(path, source, theme) : null), [path, source, theme, delay])
 
   useEffect(() => setHighlight(null), [path, theme])
 
