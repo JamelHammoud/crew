@@ -42,9 +42,11 @@ const repo: Record<string, RepoFile> = {
 
 const listed = ['readme.md', 'src/app.ts', 'src/renderer/panel.tsx', 'tests/app.test.ts']
 const popOutBrowserTab = vi.fn().mockResolvedValue(true)
+const replaceFiles = vi.fn().mockResolvedValue({ files: 1, replacements: 1, failed: [], error: null })
 
 beforeEach(() => {
   popOutBrowserTab.mockClear()
+  replaceFiles.mockClear()
   useBrowser.setState({ tabs: [], activeTabId: null })
   Element.prototype.scrollIntoView = () => undefined
   Range.prototype.getBoundingClientRect = () =>
@@ -52,21 +54,25 @@ beforeEach(() => {
   window.crew = {
     readFile: async (path: string) => repo[path] ?? { kind: 'missing', path },
     listFiles: async () => listed,
-    searchFiles: async (query: string) => ({
+    searchFiles: async options => ({
       matches:
-        query.toLowerCase() === 'implementationdetail'
+        options.query.toLowerCase() === 'implementationdetail'
           ? [
               {
                 path: 'src/renderer/panel.tsx',
                 line: 7,
+                column: 7,
+                endColumn: 27,
                 text: 'const implementationDetail = true',
                 start: 6,
                 end: 26
               }
             ]
           : [],
-      limited: false
+      limited: false,
+      error: null
     }),
+    replaceFiles,
     writeFile: async () => null,
     revealFile: async () => undefined,
     openExternal: async () => undefined,
