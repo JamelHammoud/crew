@@ -4196,11 +4196,13 @@ export class CrewSession {
     this.broadcastQueue(found.thread)
   }
 
-  private handleDocRename(member: Member, from: string, to: string, title?: string): void {
-    if (from === to || from === ROOT_PAGE || !this.docs.has(from)) return
-    if (to === from || to.startsWith(`${from}/`)) return
+  private handleDocRename(ws: WebSocket, member: Member, from: string, to: string, title?: string): void {
+    const existing = this.docs.get(from)
+    if (from === to || from === ROOT_PAGE || !existing || !this.ownsGhostDoc(ws, from)) return
+    if (to === from || to.startsWith(`${from}/`) || this.docs.has(to)) return
     try {
-      this.store.renameDoc(from, to)
+      if (existing.scope === 'private') this.store.renamePrivateDoc(from, to)
+      else if (existing.scope === undefined) this.store.renameDoc(from, to)
     } catch {
       return
     }
@@ -4208,12 +4210,18 @@ export class CrewSession {
       if (page !== from && !page.startsWith(`${from}/`)) continue
       this.docs.delete(page)
       this.docs.set(to + page.slice(from.length), doc)
+      const owner = this.ghostDocOwners.get(page)
+      if (owner) {
+        this.ghostDocOwners.delete(page)
+        this.ghostDocOwners.set(to + page.slice(from.length), owner)
+      }
     }
     const moved = this.docs.get(to)
     if (title !== undefined && moved && moved.title !== title) {
       const doc: DocPage = { title, text: moved.text }
+      if (moved.scope) doc.scope = moved.scope
       try {
-        this.store.saveDoc(to, doc)
+        this.saveDoc(to, doc)
         this.docs.set(to, doc)
       } catch {
         title = moved.title
@@ -4226,17 +4234,18 @@ export class CrewSession {
       this.docTitles.set(to + page.slice(from.length), legacyTitle)
       titlesChanged = true
     }
-    if (title !== undefined && this.docTitles.delete(to)) titlesChanged = true
+    if (existing.scope === undefined && title !== undefined && this.docTitles.delete(to)) titlesChanged = true
     if (titlesChanged) this.store.saveTitles(Object.fromEntries(this.docTitles))
     this.docRenames.set(from, { to, ts: Date.now() })
     for (const [key, move] of this.docRenames) {
       if (Date.now() - move.ts > 10000) this.docRenames.delete(key)
     }
+    const owner = existing.scope === 'ghost' ? ws : undefined
     this.emit(
       { id: randomUUID(), ts: Date.now(), kind: 'doc.renamed', from, to, title, byName: member.name },
-      { persist: false }
+      { persist: false, to: owner }
     )
-    this.onSyncNeeded?.()
+    this.syncDoc(existing.scope)
   }
 
   private handleUsage(meta: ConnMeta, id: string, usage: AgentUsage): void {
