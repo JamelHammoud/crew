@@ -150,34 +150,37 @@ export default function FileSearchControls({
                   setMenu(false)
                 }}
               />
-              <MenuDivider />
-              <MenuItem
-                icon={<RefreshGlyph />}
-                label="Refresh search"
-                active={!form.query.trim()}
-                onClick={() => {
-                  if (form.query.trim()) onRefresh()
-                  setMenu(false)
-                }}
-              />
-              <MenuItem
-                icon={<ChevronUpGlyph />}
-                label={collapsed ? 'Show results' : 'Collapse results'}
-                active={resultCount === 0}
-                onClick={() => {
-                  if (resultCount > 0) onCollapse()
-                  setMenu(false)
-                }}
-              />
-              <MenuItem
-                icon={<CloseGlyph />}
-                label="Clear results"
-                active={!form.query.trim()}
-                onClick={() => {
-                  if (form.query.trim()) onClearResults()
-                  setMenu(false)
-                }}
-              />
+              {form.query.trim() && (
+                <>
+                  <MenuDivider />
+                  <MenuItem
+                    icon={<RefreshGlyph />}
+                    label="Refresh search"
+                    onClick={() => {
+                      onRefresh()
+                      setMenu(false)
+                    }}
+                  />
+                  {resultCount > 0 && (
+                    <MenuItem
+                      icon={<ChevronUpGlyph />}
+                      label={collapsed ? 'Show results' : 'Collapse results'}
+                      onClick={() => {
+                        onCollapse()
+                        setMenu(false)
+                      }}
+                    />
+                  )}
+                  <MenuItem
+                    icon={<CloseGlyph />}
+                    label="Clear results"
+                    onClick={() => {
+                      onClearResults()
+                      setMenu(false)
+                    }}
+                  />
+                </>
+              )}
             </Popover>
           </span>
         }
