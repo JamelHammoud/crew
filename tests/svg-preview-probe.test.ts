@@ -39,6 +39,15 @@ describe('reading an SVG as a picture or its contents', () => {
     expect(canPreview('art/logo.svg')).toBe(true)
   })
 
+  it('opens as a picture unless a source line was requested', () => {
+    useBrowser.getState().openFile('art/logo.svg')
+    expect(useBrowser.getState().tabs[0]!.preview).toBe(true)
+
+    useBrowser.setState({ tabs: [], activeTabId: null })
+    useBrowser.getState().openFile('art/logo.svg', 1)
+    expect(useBrowser.getState().tabs[0]!.preview).toBe(false)
+  })
+
   it('switches from code to the picture through its context menu', async () => {
     useBrowser.getState().openFile('art/logo.svg')
     useBrowser.getState().togglePreview(useBrowser.getState().activeTabId!)
