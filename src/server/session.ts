@@ -3201,6 +3201,11 @@ export class CrewSession {
     return this.docs.get(page)?.scope !== 'ghost' || (ws !== null && this.ghostDocOwners.get(page) === ws)
   }
 
+  private docParent(page: string): string | null {
+    const at = page.lastIndexOf('/')
+    return at < 0 ? null : page.slice(0, at)
+  }
+
   private saveDoc(page: string, doc: DocPage): void {
     if (doc.scope === 'ghost') return
     if (doc.scope === 'private') this.store.savePrivateDoc(page, doc)
@@ -3228,9 +3233,12 @@ export class CrewSession {
     page = this.followRenames(page)
     const existing = this.docs.get(page)
     if (existing && !this.ownsGhostDoc(ws, page)) return
-    const scope = existing?.scope ?? askedScope
+    const parent = this.docParent(page)
+    const parentDoc = parent ? this.docs.get(parent) : undefined
+    if (parent && parentDoc && !this.ownsGhostDoc(ws, parent)) return
+    if (!existing && parentDoc && askedScope !== undefined && askedScope !== parentDoc.scope) return
+    const scope = existing?.scope ?? parentDoc?.scope ?? askedScope
     if (scope === 'ghost' && ws === null) return
-    if (!existing && this.docs.has(page)) return
     const doc: DocPage = { title: title ?? existing?.title ?? fallbackTitle(page), text, scope }
     if (scope === 'ghost' && !existing && ws) this.ghostDocOwners.set(page, ws)
     try {
@@ -4201,6 +4209,9 @@ export class CrewSession {
     const existing = this.docs.get(from)
     if (from === to || from === ROOT_PAGE || !existing || !this.ownsGhostDoc(ws, from)) return
     if (to === from || to.startsWith(`${from}/`) || this.docs.has(to)) return
+    const parent = this.docParent(to)
+    const parentDoc = parent ? this.docs.get(parent) : undefined
+    if (parentDoc && (parentDoc.scope !== existing.scope || !this.ownsGhostDoc(ws, parent!))) return
     try {
       if (existing.scope === 'private') this.store.renamePrivateDoc(from, to)
       else if (existing.scope === undefined) this.store.renameDoc(from, to)

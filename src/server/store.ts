@@ -51,7 +51,10 @@ export class Store {
     const attributes = path.join(this.root, '.gitattributes')
     if (!fs.existsSync(attributes)) fs.writeFileSync(attributes, CREW_ATTRIBUTES)
     const ignored = path.join(this.root, '.gitignore')
-    if (!fs.existsSync(ignored)) fs.writeFileSync(ignored, 'private-docs/\n')
+    const ignoredText = fs.existsSync(ignored) ? fs.readFileSync(ignored, 'utf8') : ''
+    if (!ignoredText.split(/\r?\n/).includes('private-docs/')) {
+      fs.writeFileSync(ignored, `${ignoredText}${ignoredText && !ignoredText.endsWith('\n') ? '\n' : ''}private-docs/\n`)
+    }
   }
 
   saveAttachment(file: string, data: Buffer): void {
