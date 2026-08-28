@@ -9,8 +9,8 @@ import {
   type KeyboardEvent
 } from 'react'
 import { fileSize } from '../../../shared/attachments'
-import { canPreview, isHtml, type FileEntry, type RepoFile } from '../../../shared/files'
-import { CopyGlyph, DocGlyph, FileGlyph, FolderGlyph } from '../icons'
+import { canPreview, isHtml, isSvg, type FileEntry, type RepoFile } from '../../../shared/files'
+import { CopyGlyph, DocGlyph, FileGlyph, FolderGlyph, PhotoGlyph } from '../icons'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import { baselineOf } from './baseline'
 import CodeRows from './CodeRows'
@@ -140,6 +140,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
   const [saving, setSaving] = useState(false)
   const [saveFailed, setSaveFailed] = useState(false)
   const [activeRow, setActiveRow] = useState<number | null>(null)
+  const [readMenuAt, setReadMenuAt] = useState<{ x: number; y: number } | null>(null)
   const bodyRef = useRef<HTMLDivElement>(null)
   const areaRef = useRef<HTMLTextAreaElement>(null)
   const codeRef = useRef<HTMLDivElement>(null)
@@ -198,9 +199,14 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
   // in hand, so an edit made in the text is on the page as well.
   const reading = !!file && tab.preview && canPreview(tab.path)
   const asPage = reading && isHtml(tab.path)
+  const asVector = reading && isSvg(tab.path)
   const editable = writable && !reading
   const text = writable ? doc : (file?.text ?? '')
   const baseline = hidden || reading ? null : base
+  const vectorSrc = useMemo(
+    () => (asVector ? `data:image/svg+xml;utf8,${encodeURIComponent(text)}` : ''),
+    [asVector, text]
+  )
 
   const rows = useMemo(() => {
     if (!file) return []
@@ -465,7 +471,19 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
   }
 
   return (
-    <div className="absolute inset-0 bg-ink-900 flex" style={{ visibility: active ? 'visible' : 'hidden' }}>
+    <div
+      className="absolute inset-0 bg-ink-900 flex"
+      style={{ visibility: active ? 'visible' : 'hidden' }}
+      onContextMenu={
+        file && isSvg(tab.path)
+          ? event => {
+              event.preventDefault()
+              event.stopPropagation()
+              setReadMenuAt({ x: event.clientX, y: event.clientY })
+            }
+          : undefined
+      }
+    >
       <div className="relative flex-1 min-w-0">
         <div ref={bodyRef} className="absolute inset-0 overflow-auto">
           {!data && (
@@ -479,7 +497,10 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
             ) : (
               <DirRows tab={tab} path={data.path} entries={data.entries} />
             ))}
-          {file && reading && !asPage && <MarkdownView path={tab.path} text={text} partial={file.truncated || long} />}
+          {file && reading && !asPage && !asVector && (
+            <MarkdownView path={tab.path} text={text} partial={file.truncated || long} />
+          )}
+          {file && asVector && <ImageView src={vectorSrc} alt={tab.path} copyable={false} />}
           {file && !reading && (
             <div
               ref={codeRef}
@@ -588,6 +609,16 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
         )}
       </div>
       {tab.tree && <FileTree tab={tab} />}
+      <Popover open={readMenuAt !== null} onClose={() => setReadMenuAt(null)} at={readMenuAt ?? undefined}>
+        <MenuItem
+          icon={tab.preview ? <DocGlyph /> : <PhotoGlyph />}
+          label={tab.preview ? 'Show contents' : 'Show preview'}
+          onClick={() => {
+            setReadMenuAt(null)
+            useBrowser.getState().togglePreview(tab.id)
+          }}
+        />
+      </Popover>
     </div>
   )
 }

@@ -71,6 +71,7 @@ export function isImageUrl(url: string): boolean {
 
 const MARKDOWN_TYPES = new Set(['md', 'markdown', 'mdown', 'mkd'])
 const HTML_TYPES = new Set(['html', 'htm', 'xhtml'])
+const SVG_TYPES = new Set(['svg'])
 
 function extensionOf(name: string): string | null {
   const file = slashed(name).split('/').pop() ?? ''
@@ -118,10 +119,15 @@ export function isHtml(name: string): boolean {
   return extension ? HTML_TYPES.has(extension) : false
 }
 
+export function isSvg(name: string): boolean {
+  const extension = extensionOf(name)
+  return extension ? SVG_TYPES.has(extension) : false
+}
+
 // A file that is written to be read as a page as well as as text, so it is
 // offered both ways.
 export function canPreview(name: string): boolean {
-  return isMarkdown(name) || isHtml(name)
+  return isMarkdown(name) || isHtml(name) || isSvg(name)
 }
 
 export interface FileMatch {

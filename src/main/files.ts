@@ -107,7 +107,7 @@ async function readAt(label: string, absolute: string, media?: MediaHost): Promi
   if (stat.isDirectory()) return listDir(label, absolute)
   if (!stat.isFile()) return { kind: 'missing', path: label }
   const type = imageType(absolute)
-  if (type) return readImage(label, absolute, stat.size, type)
+  if (type && type !== 'image/svg+xml') return readImage(label, absolute, stat.size, type)
   if (media) {
     const playable = mediaType(absolute)
     if (playable)
