@@ -272,7 +272,7 @@ export function MenuItem({
       </span>
       {hint && <span className="text-xs text-fg/40 tabular-nums shrink-0">{hint}</span>}
       {checked && <CheckGlyph className="w-4 h-4 shrink-0 text-fg" />}
-      {into && <ChevronRightGlyph className="w-3.5 h-3.5 shrink-0 text-fg/40" />}
+      {into && <ChevronRightGlyph className="w-3.5 h-3.5 shrink-0 translate-x-1 text-fg/40" />}
     </button>
   )
 }
