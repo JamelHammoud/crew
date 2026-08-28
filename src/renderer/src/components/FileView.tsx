@@ -121,7 +121,7 @@ function DirRows({ tab, path, entries }: { tab: BrowserTab; path: string; entrie
     return <Empty icon={<FolderGlyph className="w-8 h-8 text-fg-faint" />} label="This folder is empty" />
   }
   return (
-    <div className="py-2">
+    <div data-directory-contents={path} className="py-2">
       {entries.map(entry => (
         <DirRow key={entry.name} tab={tab} path={path ? `${path}/${entry.name}` : entry.name} entry={entry} />
       ))}
@@ -492,7 +492,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
             </div>
           )}
           {data?.kind === 'dir' &&
-            (tab.tree ? (
+            (tab.tree && data.path === '' ? (
               <Empty icon={<FolderGlyph className="w-8 h-8 text-fg-faint" />} label="Pick a file from the project" />
             ) : (
               <DirRows tab={tab} path={data.path} entries={data.entries} />

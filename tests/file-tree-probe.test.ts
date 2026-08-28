@@ -219,7 +219,13 @@ describe('the file explorer', () => {
     fireEvent.click(result)
 
     expect(activeTab().path).toBe('src/renderer')
-    expect(await screen.findByText('panel.tsx')).toBeTruthy()
+    const contents = await waitFor(() => {
+      const found = document.querySelector('[data-directory-contents="src/renderer"]')
+      expect(found).toBeTruthy()
+      return found as HTMLElement
+    })
+    expect(contents.textContent).toContain('panel.tsx')
+    expect(screen.queryByText('Pick a file from the project')).toBeNull()
   })
 
   it('picks out the letters that matched', async () => {
