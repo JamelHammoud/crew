@@ -11,7 +11,9 @@ export default function SearchField({
   placeholder,
   onKeyDown,
   actions,
-  search = true
+  search = true,
+  autoFocus = true,
+  clearLabel = 'Clear search'
 }: {
   value: string
   onChange: (value: string) => void
@@ -19,8 +21,10 @@ export default function SearchField({
   onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void
   actions?: ReactNode
   search?: boolean
+  autoFocus?: boolean
+  clearLabel?: string
 }) {
-  const ref = useAutoFocus<HTMLInputElement>()
+  const ref = useAutoFocus<HTMLInputElement>(autoFocus)
 
   return (
     <div className="flex h-12 shrink-0 items-center gap-1.5 border-b border-fg/[0.06] px-2.5">
@@ -37,7 +41,7 @@ export default function SearchField({
       />
       {actions}
       {value.length > 0 && (
-        <button type="button" onClick={() => onChange('')} aria-label="Clear search" className={`${QUIET} h-7 w-7`}>
+        <button type="button" onClick={() => onChange('')} aria-label={clearLabel} className={`${QUIET} h-7 w-7`}>
           <CloseGlyph className="h-3.5 w-3.5" />
         </button>
       )}

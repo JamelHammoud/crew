@@ -2,10 +2,11 @@ import { useEffect, useRef, type RefObject } from 'react'
 
 const TRIES = 10
 
-export function useAutoFocus<T extends HTMLElement>(): RefObject<T> {
+export function useAutoFocus<T extends HTMLElement>(enabled = true): RefObject<T> {
   const ref = useRef<T>(null)
 
   useEffect(() => {
+    if (!enabled) return
     let frame = 0
     let left = TRIES
     const take = () => {
@@ -16,7 +17,7 @@ export function useAutoFocus<T extends HTMLElement>(): RefObject<T> {
     }
     take()
     return () => cancelAnimationFrame(frame)
-  }, [])
+  }, [enabled])
 
   return ref
 }

@@ -18,9 +18,10 @@ export default function CodeRows({
 }) {
   const tokensFor = useHighlight(path, rows, dirty ? 150 : 0)
 
-  const lineNumber = (text: string | number, tone: string, tint?: string) => (
+  const lineNumber = (text: string | number, tone: string, tint?: string, active = false) => (
     <span
       data-code-gutter
+      data-active={active ? '' : undefined}
       style={{ minWidth: `calc(2rem + ${gutter})`, backgroundColor: tint }}
       className={`sticky left-0 z-10 shrink-0 box-border px-4 text-right select-none bg-ink-900 ${tone}`}
     >
@@ -57,14 +58,15 @@ export default function CodeRows({
           >
             {lineNumber(
               row.line,
-              `tabular-nums ${row.changed || marked ? 'text-fg' : 'text-fg-faint'}`,
+              `tabular-nums ${row.changed || marked || activeRow === index ? 'text-fg' : 'text-fg-faint'}`,
               row.changed
                 ? 'color-mix(in srgb, var(--color-positive) 10%, var(--color-ink-900))'
                 : marked
                   ? 'color-mix(in srgb, var(--color-fg) 7%, var(--color-ink-900))'
                   : activeRow === index
                     ? 'color-mix(in srgb, var(--color-fg) 3.5%, var(--color-ink-900))'
-                    : undefined
+                    : undefined,
+              activeRow === index
             )}
             <span data-code-text className="whitespace-pre text-fg-secondary pr-4">
               <LineText row={row} tokens={tokensFor(row)} tint="bg-positive/25" />
