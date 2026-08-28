@@ -1,10 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  LANGUAGE_NAMES,
-  THEME_NAMES,
-  highlightLines,
-  languageFor
-} from '../src/renderer/src/components/highlight'
+import { LANGUAGE_NAMES, THEME_NAMES, highlightLines, languageFor } from '../src/renderer/src/components/highlight'
 
 describe('code highlighting', () => {
   it('uses the syntax palettes inherited by VS Code Modern', () => {
@@ -46,7 +41,10 @@ describe('code highlighting', () => {
       expect(highlighted, path).not.toBeNull()
       const colors = new Set(highlighted?.byLine.flatMap(line => line.map(token => token.color).filter(Boolean)))
       expect(colors.size, path).toBeGreaterThan(2)
-      expect([...colors].map(color => color?.toUpperCase()), path).toContain(expected)
+      expect(
+        [...colors].map(color => color?.toUpperCase()),
+        path
+      ).toContain(expected)
     }
   }, 20000)
 })

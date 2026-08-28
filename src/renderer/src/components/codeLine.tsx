@@ -45,10 +45,7 @@ export function carryTokens(text: string, tokens: ThemedToken[]): ThemedToken[] 
   const shortest = Math.min(before.length, text.length)
   while (prefix < shortest && before[prefix] === text[prefix]) prefix += 1
   let suffix = 0
-  while (
-    suffix < shortest - prefix &&
-    before[before.length - suffix - 1] === text[text.length - suffix - 1]
-  ) {
+  while (suffix < shortest - prefix && before[before.length - suffix - 1] === text[text.length - suffix - 1]) {
     suffix += 1
   }
   const left = tokenSlice(tokens, 0, prefix, 0)
@@ -109,7 +106,10 @@ export function useHighlight(path: string, rows: Row[], delay = 0): (row: Row) =
   const theme = useTheme()
   const [highlight, setHighlight] = useState<Highlighted | null>(null)
   const source = useMemo(() => docText(rows), [rows])
-  const immediate = useMemo(() => (delay > 0 ? highlightLinesNow(path, source, theme) : null), [path, source, theme, delay])
+  const immediate = useMemo(
+    () => (delay > 0 ? highlightLinesNow(path, source, theme) : null),
+    [path, source, theme, delay]
+  )
 
   useEffect(() => setHighlight(null), [path, theme])
 

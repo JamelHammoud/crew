@@ -35,11 +35,7 @@ export default function CodeRows({
         if (row.line === null) {
           return (
             <div key={index} data-row={index} data-gone className="flex bg-danger/10">
-              {lineNumber(
-                '−',
-                'text-danger/60',
-                'color-mix(in srgb, var(--color-danger) 10%, var(--color-ink-900))'
-              )}
+              {lineNumber('−', 'text-danger/60', 'color-mix(in srgb, var(--color-danger) 10%, var(--color-ink-900))')}
               <span className="whitespace-pre text-fg-muted pr-4">
                 <LineText row={row} tokens={undefined} tint="bg-danger/25" />
               </span>
