@@ -22,7 +22,8 @@ import {
   ROOT_TEXT,
   ROOT_TITLE,
   type DocMentionRef,
-  type DocPage
+  type DocPage,
+  type DocScope
 } from '../shared/docs'
 import { stripDocTableMarks } from '../shared/docTables'
 import { boardMentionsOf, crewRefs, docMentionsOf, refsIn, type CrewRef } from '../shared/refs'
@@ -452,6 +453,7 @@ export class CrewSession {
   private wakes = new Map<string, number>()
   private events: SessionEvent[] = []
   private docs = new Map<string, DocPage>()
+  private ghostDocOwners = new Map<string, WebSocket>()
   private designs = new Map<string, DesignBoard>()
   private designCursorTimers = new Map<string, NodeJS.Timeout[]>()
   // Who is writing right now, keyed by the connection writing it, so two windows
@@ -900,6 +902,7 @@ export class CrewSession {
       this.holdSubagentReturn(thread, event, end.text ?? end.error ?? '')
     }
     for (const [page, doc] of Object.entries(store.loadDocs())) this.docs.set(page, doc)
+    for (const [page, doc] of Object.entries(store.loadPrivateDocs())) this.docs.set(page, doc)
     if (!this.docs.has(ROOT_PAGE)) {
       const welcome: DocPage = { title: ROOT_TITLE, text: ROOT_TEXT }
       this.docs.set(ROOT_PAGE, welcome)
@@ -953,7 +956,7 @@ export class CrewSession {
     return said.length > TICKET_HISTORY_LIMIT ? said.slice(said.length - TICKET_HISTORY_LIMIT) : said
   }
 
-  snapshot(): SessionSnapshot {
+  snapshot(ws?: WebSocket): SessionSnapshot {
     const recent = olderEvents(this.events, undefined, SNAPSHOT_EVENT_LIMIT)
     return {
       code: this.code,
@@ -973,7 +976,9 @@ export class CrewSession {
       ),
       moreEvents: recent.more,
       tickets: this.ticketHistory(),
-      docs: Object.fromEntries(this.docs),
+      docs: Object.fromEntries(
+        [...this.docs].filter(([page, doc]) => doc.scope !== 'ghost' || this.ghostDocOwners.get(page) === ws)
+      ),
       queues: Object.fromEntries(
         [...this.threads.values()]
           .filter(thread => thread.queue.length > 0 && !thread.ghost)
@@ -1001,7 +1006,7 @@ export class CrewSession {
     const wasOffline = member.connections.size === 0
     member.connections.add(ws)
     this.meta.set(ws, { role: msg.role, memberKey: member.name.toLowerCase(), agentIds: [] })
-    this.send(ws, { type: 'welcome', selfId: member.id, snapshot: this.snapshot() })
+    this.send(ws, { type: 'welcome', selfId: member.id, snapshot: this.snapshot(ws) })
     // Typing is too short lived to ride in the snapshot and too quiet to reach a
     // window on its own: a ping only broadcasts when it changes something, so a
     // window that arrives mid-sentence is told once and hears the rest.
@@ -1157,19 +1162,19 @@ export class CrewSession {
         if (meta.role === 'ui') member.helpers = cleanPrefs(msg)
         break
       case 'doc.update':
-        if (meta.role === 'ui') this.handleDoc(member, msg.page, msg.text, msg.title)
+        if (meta.role === 'ui') this.handleDoc(ws, member, msg.page, msg.text, msg.title, msg.scope)
         break
       case 'doc.retitle':
-        if (meta.role === 'ui') this.handleDocRetitle(member, msg.page, msg.title)
+        if (meta.role === 'ui') this.handleDocRetitle(ws, member, msg.page, msg.title)
         break
       case 'doc.title':
-        if (meta.role === 'ui') this.handleDocTitle(member, msg.page, msg.title)
+        if (meta.role === 'ui') this.handleDocTitle(ws, member, msg.page, msg.title)
         break
       case 'doc.rename':
-        if (meta.role === 'ui') this.handleDocRename(member, msg.from, msg.to, msg.title)
+        if (meta.role === 'ui') this.handleDocRename(ws, member, msg.from, msg.to, msg.title)
         break
       case 'doc.delete':
-        if (meta.role === 'ui') this.handleDocDelete(member, msg.page)
+        if (meta.role === 'ui') this.handleDocDelete(ws, member, msg.page)
         break
       case 'design.create':
         if (meta.role === 'ui') this.handleDesignCreate(msg.boardId, msg.name)
