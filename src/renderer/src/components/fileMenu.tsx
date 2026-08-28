@@ -30,10 +30,10 @@ export function FileMenu({
     <Popover open={at !== null} onClose={onClose} at={at ?? undefined}>
       <MenuItem
         icon={<FileGlyph />}
-        label="Open"
+        label="Open in a new tab"
         onClick={() => {
           onClose()
-          useBrowser.getState().openFile(path, line, diff)
+          useBrowser.getState().addFileTab(path, line, diff)
         }}
       />
       <MenuItem
