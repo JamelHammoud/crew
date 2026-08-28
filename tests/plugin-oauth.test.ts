@@ -247,17 +247,13 @@ describe('plugin OAuth on the machine running the agent', () => {
     expect(authorizations).toBe(0)
   })
 
-  it('says how to start the local Figma server', async () => {
-    const saved: CrewPlugin = {
-      ...installPlugin(offerOf('figma')!, '00000000-0000-4000-8000-000000000006'),
-      id: 'figma',
-      by: 'Ali',
-      ts: 1
-    }
-    const fetcher = (() => Promise.reject(new TypeError('fetch failed'))) as typeof fetch
-    await expect(connectPlugin(resolvePlugin(saved), { fetcher })).rejects.toThrow(
-      'Open a Figma file in Dev Mode and turn on its MCP server, then try again.'
-    )
+  it('signs in to the remote Figma server with its protected resource scope', async () => {
+    resourceScopes = ['mcp:connect']
+    const figma = installed('figma', '00000000-0000-4000-8000-000000000006')
+    await expect(connectPlugin(figma, { open })).resolves.toBeUndefined()
+    expect(authorizedScope).toBe('mcp:connect')
+    expect(pluginConnected(figma)).toBe(true)
+    await expect(browserAnswers[0].then(response => response.text())).resolves.toContain('Figma is connected to Crew')
   })
 
   it('clears the old credential schema once', () => {

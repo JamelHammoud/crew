@@ -733,15 +733,8 @@ export async function connectPlugin(plugin: ConnectedPlugin, deps: PluginOauthDe
   }
   if (plugin.transport === 'http') {
     if (!plugin.url) throw new Error(`${plugin.label} has no MCP address.`)
-    try {
-      const names = await tools(plugin.url, undefined, deps.fetcher ?? fetch)
-      verifyTools(plugin, names)
-    } catch (cause) {
-      if (plugin.name === 'figma' && cause instanceof TypeError) {
-        throw new Error('Open a Figma file in Dev Mode and turn on its MCP server, then try again.')
-      }
-      throw cause
-    }
+    const names = await tools(plugin.url, undefined, deps.fetcher ?? fetch)
+    verifyTools(plugin, names)
   }
   remember(plugin)
 }

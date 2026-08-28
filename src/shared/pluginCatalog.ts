@@ -53,12 +53,12 @@ export const PLUGIN_CATALOG: readonly PluginCatalogEntry[] = [
     id: 'figma',
     name: 'figma',
     label: 'Figma',
-    blurb: 'Read whatever is open in the desktop app',
+    blurb: 'Read and write Figma files',
     group: 'Design',
-    authentication: 'none',
-    allowedOrigins: ['http://127.0.0.1:3845'],
-    documentationUrl: 'https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Dev-Mode-MCP-Server',
-    transport: { kind: 'http', protocol: 'streamable-http', url: 'http://127.0.0.1:3845/mcp' },
+    authentication: 'oauth',
+    allowedOrigins: ['https://mcp.figma.com', 'https://api.figma.com', 'https://www.figma.com'],
+    documentationUrl: 'https://developers.figma.com/docs/figma-mcp-server/',
+    transport: { kind: 'http', protocol: 'streamable-http', url: 'https://mcp.figma.com/mcp' },
     launch: none
   },
   {

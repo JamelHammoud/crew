@@ -224,7 +224,7 @@ describe('the plugins store', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Open Figma' }))
     expect(useBrowser.getState().tabs).toEqual([
       expect.objectContaining({
-        initialUrl: 'https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Dev-Mode-MCP-Server'
+        initialUrl: 'https://developers.figma.com/docs/figma-mcp-server/'
       })
     ])
   })
@@ -240,7 +240,7 @@ describe('the plugins store', () => {
 
   it('says what a row does under its name', () => {
     plugins()
-    expect(rowFor('Figma').textContent).toContain('Read whatever is open in the desktop app')
+    expect(rowFor('Figma').textContent).toContain('Read and write Figma files')
   })
 
   it('ends the list on the way to one of your own', () => {

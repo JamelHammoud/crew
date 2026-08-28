@@ -78,7 +78,7 @@ describe('the config the crew plugins become', () => {
     const run = open([FIGMA], 'file', 'prompt-1')!
     expect(run.file.startsWith(tmpdir())).toBe(true)
     expect(JSON.parse(readFileSync(run.file, 'utf8'))).toEqual({
-      mcpServers: { figma: { type: 'http', url: 'http://127.0.0.1:3845/mcp' } }
+      mcpServers: { figma: { type: 'http', url: 'https://mcp.figma.com/mcp' } }
     })
   })
 
@@ -127,7 +127,7 @@ describe('the config the crew plugins become', () => {
   it('writes no file for a CLI that is handed its servers inline', () => {
     const run = open([FIGMA], 'inline', 'prompt-5')!
     expect(run.file).toBe('')
-    expect(run.servers).toEqual({ figma: { type: 'http', url: 'http://127.0.0.1:3845/mcp' } })
+    expect(run.servers).toEqual({ figma: { type: 'http', url: 'https://mcp.figma.com/mcp' } })
   })
 
   it('hands nothing to a CLI that takes none', () => {
@@ -292,7 +292,7 @@ describe('what the spawned command really gets', () => {
       { mcp }
     )
     expect(said).toContain(`"--mcp-config","${mcp.file}"`)
-    expect(said).toContain('READ {"mcpServers":{"figma":{"type":"http","url":"http://127.0.0.1:3845/mcp"}}}')
+    expect(said).toContain('READ {"mcpServers":{"figma":{"type":"http","url":"https://mcp.figma.com/mcp"}}}')
   }, 20000)
 
   it('hands the real codex overrides', async () => {
@@ -301,7 +301,7 @@ describe('what the spawned command really gets', () => {
       echo(options => codexArgs('go', reader(), options)),
       { mcp }
     )
-    expect(said).toContain('mcp_servers.figma={url=\\"http://127.0.0.1:3845/mcp\\"}')
+    expect(said).toContain('mcp_servers.figma={url=\\"https://mcp.figma.com/mcp\\"}')
   }, 20000)
 
   it('hands no mcp flag at all when the crew has no plugins', async () => {
@@ -400,7 +400,7 @@ describe('a run that carries the crew plugins', () => {
     const { held, done } = await drive('file', [FIGMA])
     const file = held[0].options.mcp!.file
     expect(existsSync(file)).toBe(true)
-    expect(JSON.parse(readFileSync(file, 'utf8')).mcpServers.figma.url).toBe('http://127.0.0.1:3845/mcp')
+    expect(JSON.parse(readFileSync(file, 'utf8')).mcpServers.figma.url).toBe('https://mcp.figma.com/mcp')
     await done()
     expect(existsSync(file)).toBe(false)
   }, 20000)
