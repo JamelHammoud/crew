@@ -1,4 +1,4 @@
-import { canPreview } from '../../../shared/files'
+import { canPreview, isSvg } from '../../../shared/files'
 import type { BrowserTab } from '../../../shared/browserTab'
 import { offerForAppUrl, pluginOwnsUrl, resolvePlugin, type PluginReference } from '../../../shared/plugins'
 import { create } from 'zustand'
@@ -126,7 +126,7 @@ function makeTab(url = ''): BrowserTab {
 }
 
 export function makeFileTab(path: string, line: number | null = null, diff: string | null = null): BrowserTab {
-  return { ...makeTab(), kind: 'file', path, line, diff }
+  return { ...makeTab(), kind: 'file', path, line, diff, preview: isSvg(path) && line === null && diff === null }
 }
 
 // Every folder on the way down to a file, so a tree opened beside one that is
@@ -331,18 +331,29 @@ export const useBrowser = create<BrowserState>((write, get) => {
       if (existing) {
         set(s => ({
           activeTabId: existing.id,
-          tabs: s.tabs.map(t => (t.id === existing.id ? { ...t, line, diff, generation: t.generation + 1 } : t))
+          tabs: s.tabs.map(t =>
+            t.id === existing.id
+              ? {
+                  ...t,
+                  line,
+                  diff,
+                  preview: isSvg(path) && (line !== null || diff !== null) ? false : t.preview,
+                  generation: t.generation + 1
+                }
+              : t
+          )
         }))
         return
       }
       const active = tabs.find(t => t.id === activeTabId)
       if (active && active.kind === 'web' && !active.initialUrl) {
+        const file = makeFileTab(path, line, diff)
         set(s => ({
-          tabs: s.tabs.map(t => (t.id === active.id ? { ...t, kind: 'file' as const, path, line, diff } : t))
+          tabs: s.tabs.map(t => (t.id === active.id ? { ...t, ...file, id: t.id } : t))
         }))
         return
       }
-      const tab = { ...makeTab(), kind: 'file' as const, path, line, diff }
+      const tab = makeFileTab(path, line, diff)
       set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
     },
     // A file in a tab of its own, beside the one it was picked from rather than
@@ -692,8 +703,18 @@ export const useBrowser = create<BrowserState>((write, get) => {
       set(s => ({
         tabs: s.tabs.map(t => {
           if (t.id !== id) return t
-          if (t.path === path) return { ...t, line, open: reveal(t.open, path) }
-          return { ...t, path, line, open: reveal(t.open, path), diff: null, back: [...t.back, t.path], forward: [] }
+          if (t.path === path)
+            return { ...t, line, preview: isSvg(path) && line !== null ? false : t.preview, open: reveal(t.open, path) }
+          return {
+            ...t,
+            path,
+            line,
+            preview: isSvg(path) ? line === null : t.preview,
+            open: reveal(t.open, path),
+            diff: null,
+            back: [...t.back, t.path],
+            forward: []
+          }
         })
       })),
     fileBack: id =>

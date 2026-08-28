@@ -41,6 +41,7 @@ describe('reading an SVG as a picture or its contents', () => {
 
   it('switches from code to the picture through its context menu', async () => {
     useBrowser.getState().openFile('art/logo.svg')
+    useBrowser.getState().togglePreview(useBrowser.getState().activeTabId!)
     render(createElement(BrowserPanel))
     const contents = await screen.findByLabelText('File contents')
 
@@ -55,7 +56,6 @@ describe('reading an SVG as a picture or its contents', () => {
   it('switches from the picture back to its contents through its context menu', async () => {
     useBrowser.getState().openFile('art/logo.svg')
     render(createElement(BrowserPanel))
-    fireEvent.click(await screen.findByLabelText('Show preview'))
     const picture = await screen.findByAltText('art/logo.svg')
 
     fireEvent.contextMenu(picture, { clientX: 150, clientY: 110 })
@@ -68,6 +68,7 @@ describe('reading an SVG as a picture or its contents', () => {
   it('previews unsaved SVG edits', async () => {
     useBrowser.getState().openFile('art/logo.svg')
     render(createElement(BrowserPanel))
+    fireEvent.click(await screen.findByLabelText('Show contents'))
     const contents = await screen.findByLabelText('File contents')
     const edited = '<svg viewBox="0 0 20 20"><rect width="20" height="20"/></svg>\n'
 
