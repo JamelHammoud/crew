@@ -105,6 +105,24 @@ describe('commands in a thread', () => {
     expect(screen.queryByText('/ghost')).toBeNull()
   })
 
+  it('applies an available thread command from the plus menu', () => {
+    const composer = open({ mid: true })
+
+    fireEvent.change(composer, { target: { value: 'and the changelog' } })
+    fireEvent.click(screen.getByLabelText('Add to your message'))
+    fireEvent.click(screen.getByText('Commands'))
+
+    expect(screen.getByText('/steer')).toBeTruthy()
+    expect(screen.getByText('/queue')).toBeTruthy()
+    expect(screen.queryByText('/plan')).toBeNull()
+    fireEvent.click(screen.getByText('/queue'))
+
+    expect(composer.value).toBe('and the changelog')
+    expect(useCrew.getState().threadCommands['thread-1']).toEqual(['queue'])
+    expect(screen.getByLabelText('Remove Queue')).toBeTruthy()
+    expect(document.activeElement).toBe(composer)
+  })
+
   it('sends a goal beside the next turn', () => {
     const sendChat = vi.fn()
     const composer = open({ sendChat })
