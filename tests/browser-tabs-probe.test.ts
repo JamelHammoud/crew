@@ -269,7 +269,7 @@ describe('the tab strip', () => {
 
     const row = document.querySelector(`[data-tab-result="${active}"]`) as HTMLElement
     const close = row.querySelector('[aria-label^="Close "]') as HTMLElement
-    const check = row.querySelector('[data-active-tab-mark]') as SVGElement
+    const check = row.querySelector('[data-active-tab-mark]') as HTMLElement
     expect(close.className).toContain('absolute')
     expect(close.className).toContain('right-1.5')
     expect(check.classList.contains('group-hover:opacity-0')).toBe(true)
