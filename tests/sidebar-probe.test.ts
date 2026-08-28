@@ -66,6 +66,8 @@ const LINK = 'crew://192.0.2.10:2739/a1b2c3'
 const asked: string[] = []
 const joined: Array<[string, string, string]> = []
 const openedWindows: string[] = []
+const revealed: string[] = []
+let reveals = true
 let picked: string | null = null
 let live: LivePlace[] = []
 let joins: RecentJoin[] = []
@@ -101,6 +103,7 @@ window.crew = {
     return Promise.resolve(sessionFor(folder))
   },
   openProjectWindow: (key: string) => (openedWindows.push(key), Promise.resolve(true)),
+  revealFile: (target: string) => (revealed.push(target), Promise.resolve(reveals)),
   pickFolder: () => Promise.resolve(picked),
   cloneRepo: () => Promise.resolve(null),
   projectPlan: () => Promise.resolve({ known: true, home: 'folder', crewRemote: null, crewHere: true }),
@@ -669,6 +672,28 @@ describe('the sidebar', () => {
     expect(action.querySelector('path[d="m8 16 8-8"]')).toBeTruthy()
     fireEvent.click(action)
     expect(openedWindows).toEqual([`project:${ONE}`])
+  })
+
+  it('shows a project in the folder it really sits in', async () => {
+    revealed.length = 0
+    render(Sidebar())
+    fireEvent.contextMenu(screen.getByText('one'))
+    await act(async () => {
+      fireEvent.click(await screen.findByRole('button', { name: 'Show in folder' }))
+    })
+    expect(revealed).toEqual([ONE])
+  })
+
+  it('says so rather than doing nothing when the folder has gone', async () => {
+    revealed.length = 0
+    reveals = false
+    render(Sidebar())
+    fireEvent.contextMenu(screen.getByText('one'))
+    await act(async () => {
+      fireEvent.click(await screen.findByRole('button', { name: 'Show in folder' }))
+    })
+    reveals = true
+    expect(await screen.findByText('That folder is not there any more')).toBeTruthy()
   })
 
   it('copies the link off a crew somebody was invited to, from the row it stands on', async () => {
