@@ -30,6 +30,9 @@ export interface FileReplaceResult {
 export interface TextRange {
   start: number
   end: number
+  text: string
+  groups: (string | undefined)[]
+  named: Record<string, string> | null
 }
 
 export interface CompiledFileSearch {
@@ -150,7 +153,15 @@ export function compileFileSearch(options: FileSearchOptions): { search: Compile
           const start = match.index
           const end = start + match[0].length
           const whole = !options.wholeWord || (!wordAt(text, start - 1) && !wordAt(text, end))
-          if (whole) ranges.push({ start, end })
+          if (whole) {
+            ranges.push({
+              start,
+              end,
+              text: match[0],
+              groups: match.slice(1),
+              named: match.groups ? { ...match.groups } : null
+            })
+          }
           if (match[0].length === 0) expression.lastIndex++
         }
         return ranges
@@ -160,11 +171,21 @@ export function compileFileSearch(options: FileSearchOptions): { search: Compile
   }
 }
 
-export function replacementFor(replacement: string, found: string, preserveCase: boolean): string {
-  if (!preserveCase || !found) return replacement
-  if (found === found.toLocaleUpperCase()) return replacement.toLocaleUpperCase()
-  if (found === found.toLocaleLowerCase()) return replacement.toLocaleLowerCase()
-  const title = found[0]?.toLocaleUpperCase() + found.slice(1).toLocaleLowerCase()
-  if (found === title) return replacement[0]?.toLocaleUpperCase() + replacement.slice(1).toLocaleLowerCase()
-  return replacement
+function expandedReplacement(replacement: string, range: TextRange): string {
+  return replacement.replace(/\$(\$|&|\d{1,2}|<[^>]+>)/g, (token, key: string) => {
+    if (key === '$') return '$'
+    if (key === '&') return range.text
+    if (/^\d+$/.test(key)) return range.groups[Number(key) - 1] ?? token
+    return range.named?.[key.slice(1, -1)] ?? token
+  })
+}
+
+export function replacementFor(replacement: string, range: TextRange, preserveCase: boolean): string {
+  const expanded = expandedReplacement(replacement, range)
+  if (!preserveCase || !range.text) return expanded
+  if (range.text === range.text.toLocaleUpperCase()) return expanded.toLocaleUpperCase()
+  if (range.text === range.text.toLocaleLowerCase()) return expanded.toLocaleLowerCase()
+  const title = range.text[0]?.toLocaleUpperCase() + range.text.slice(1).toLocaleLowerCase()
+  if (range.text === title) return expanded[0]?.toLocaleUpperCase() + expanded.slice(1).toLocaleLowerCase()
+  return expanded
 }
