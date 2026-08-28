@@ -1470,7 +1470,7 @@ export class CrewSession {
         mentions,
         mentionRefs: this.agentRefs(mentions, trimmed),
         memberMentionRefs: this.memberRefs(trimmed),
-        ...this.refsOf(trimmed, ws),
+        ...this.refsOf(trimmed, hidden ? ws : undefined),
         attachments,
         replyTo
       })
@@ -2920,7 +2920,7 @@ export class CrewSession {
     if (event.authorId !== member.id || event.threadId) return
     const trimmed = text.trim()
     if (!trimmed || trimmed === event.text) return
-    const { docMentions, boardMentions } = this.refsOf(trimmed, ws)
+    const { docMentions, boardMentions } = this.refsOf(trimmed)
     const mentionRefs = this.agentRefs([], trimmed)
     const memberMentionRefs = this.memberRefs(trimmed)
     event.text = trimmed
@@ -4097,7 +4097,7 @@ export class CrewSession {
     const found = this.queuedEntry(promptId)
     const trimmed = text.trim()
     if (!found || !trimmed || found.entry.authorId !== member.id) return
-    const { docMentions, boardMentions } = this.refsOf(trimmed, ws)
+    const { docMentions, boardMentions } = this.refsOf(trimmed, this.ghostOf(found.thread.id)?.ws ?? undefined)
     for (const entry of found.thread.queue) {
       if (entry.messageId === found.entry.messageId) {
         entry.text = trimmed
@@ -4495,7 +4495,7 @@ export class CrewSession {
       authorId: member.id,
       threadId,
       mentions: route?.mentions ?? [agent.id],
-      ...this.refsOf(text),
+      ...this.refsOf(text, this.ghostOf(threadId)?.ws ?? undefined),
       attachments,
       messageId: route?.messageId ?? randomUUID(),
       replyTo: route?.replyTo,
@@ -4609,7 +4609,7 @@ export class CrewSession {
       authorId: steer.authorId ?? '',
       threadId: steer.threadId,
       mentions: [agent.id],
-      ...this.refsOf(steer.text),
+      ...this.refsOf(steer.text, this.ghostOf(steer.threadId)?.ws ?? undefined),
       attachments: steer.attachments,
       messageId: steer.messageId,
       replyTo: steer.replyTo,
