@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import BrowserPanel from '../src/renderer/src/components/BrowserPanel'
 import { useBrowser } from '../src/renderer/src/state/browser'
 import type { RepoFile } from '../src/shared/files'
+import type { FileReplaceRequest, FileSearchOptions } from '../src/shared/fileSearch'
 
 if (!Element.prototype.getAnimations) {
   Element.prototype.getAnimations = () => []
@@ -43,10 +44,29 @@ const repo: Record<string, RepoFile> = {
 const listed = ['readme.md', 'src/app.ts', 'src/renderer/panel.tsx', 'tests/app.test.ts']
 const popOutBrowserTab = vi.fn().mockResolvedValue(true)
 const replaceFiles = vi.fn().mockResolvedValue({ files: 1, replacements: 1, failed: [], error: null })
+const searchFiles = vi.fn(async (options: FileSearchOptions) => ({
+  matches:
+    options.query.toLowerCase() === 'implementationdetail'
+      ? [
+          {
+            path: 'src/renderer/panel.tsx',
+            line: 7,
+            column: 7,
+            endColumn: 27,
+            text: 'const implementationDetail = true',
+            start: 6,
+            end: 26
+          }
+        ]
+      : [],
+  limited: false,
+  error: null
+}))
 
 beforeEach(() => {
   popOutBrowserTab.mockClear()
   replaceFiles.mockClear()
+  searchFiles.mockClear()
   useBrowser.setState({ tabs: [], activeTabId: null })
   Element.prototype.scrollIntoView = () => undefined
   Range.prototype.getBoundingClientRect = () =>
@@ -54,24 +74,7 @@ beforeEach(() => {
   window.crew = {
     readFile: async (path: string) => repo[path] ?? { kind: 'missing', path },
     listFiles: async () => listed,
-    searchFiles: async options => ({
-      matches:
-        options.query.toLowerCase() === 'implementationdetail'
-          ? [
-              {
-                path: 'src/renderer/panel.tsx',
-                line: 7,
-                column: 7,
-                endColumn: 27,
-                text: 'const implementationDetail = true',
-                start: 6,
-                end: 26
-              }
-            ]
-          : [],
-      limited: false,
-      error: null
-    }),
+    searchFiles,
     replaceFiles,
     writeFile: async () => null,
     revealFile: async () => undefined,
