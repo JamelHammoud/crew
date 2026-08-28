@@ -218,7 +218,9 @@ if (!seen.menuRows.includes('Commands')) throw new Error('Commands was not in th
 if (!seen.commandRows.some(row => row.startsWith('/plan'))) throw new Error('/plan was not in Commands')
 if (!seen.commandRows.some(row => row.startsWith('/ghost'))) throw new Error('/ghost was not in Commands')
 if (seen.pickedCommands.join(',') !== 'plan') throw new Error('/plan was not applied')
-if (seen.chevrons.some(row => row.gap < 12 || row.gap > 14)) throw new Error('a chevron was not optically aligned')
+if (seen.chevrons.some(row => row.gap < 12 || row.gap > 14)) {
+  throw new Error(`a chevron was not optically aligned: ${JSON.stringify(seen.chevrons)}`)
+}
 
 console.log(
   `\nthe rows        ${seen.menu.width} x ${seen.menu.height}, bottom at ${seen.menu.bottom}, left at ${seen.menu.left}`
