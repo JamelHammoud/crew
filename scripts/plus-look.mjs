@@ -134,7 +134,7 @@ app.whenReady().then(async () => {
 	    said.menuRows = await win.webContents.executeJavaScript(\`[...document.querySelectorAll('.glass.fixed button')].map(b => b.textContent)\`)
 	    said.chevrons = await win.webContents.executeJavaScript(\`['Agent', 'Commands'].map(label => {
       const row = [...document.querySelectorAll('.glass.fixed button')].find(button => button.textContent === label)
-      const mark = row.querySelector('svg path')
+      const mark = [...row.querySelectorAll('svg path')].at(-1)
       return { label, gap: Math.round((row.getBoundingClientRect().right - mark.getBoundingClientRect().right) * 10) / 10 }
     })\`)
 	    said.commandFrames = await win.webContents.executeJavaScript(WATCH('Commands'))
