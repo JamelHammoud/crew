@@ -976,9 +976,7 @@ export class CrewSession {
       ),
       moreEvents: recent.more,
       tickets: this.ticketHistory(),
-      docs: Object.fromEntries(
-        [...this.docs].filter(([page, doc]) => doc.scope !== 'ghost' || this.ghostDocOwners.get(page) === ws)
-      ),
+      docs: this.visibleDocs(ws),
       queues: Object.fromEntries(
         [...this.threads.values()]
           .filter(thread => thread.queue.length > 0 && !thread.ghost)
@@ -1059,7 +1057,7 @@ export class CrewSession {
         if (meta.role === 'ui') this.handleDeleteMessage(member, msg.messageId)
         break
       case 'chat.edit':
-        if (meta.role === 'ui') this.handleEditMessage(member, msg.messageId, msg.text)
+        if (meta.role === 'ui') this.handleEditMessage(ws, member, msg.messageId, msg.text)
         break
       case 'chat.react':
         if (meta.role === 'ui') this.handleReaction(ws, member, msg.targetId, msg.emoji)
@@ -1257,7 +1255,7 @@ export class CrewSession {
         if (meta.role === 'ui') this.handleGameScore(member, msg.gameId, msg.score)
         break
       case 'queue.edit':
-        if (meta.role === 'ui') this.handleQueueEdit(member, msg.promptId, msg.text)
+        if (meta.role === 'ui') this.handleQueueEdit(ws, member, msg.promptId, msg.text)
         break
       case 'queue.remove':
         if (meta.role === 'ui') this.handleQueueRemove(member, msg.promptId)
@@ -1472,7 +1470,7 @@ export class CrewSession {
         mentions,
         mentionRefs: this.agentRefs(mentions, trimmed),
         memberMentionRefs: this.memberRefs(trimmed),
-        ...this.refsOf(trimmed),
+        ...this.refsOf(trimmed, ws),
         attachments,
         replyTo
       })
@@ -2823,13 +2821,19 @@ export class CrewSession {
     })
   }
 
-  private refsOf(text: string): { docMentions: DocMentionRef[]; boardMentions: BoardMentionRef[] } {
-    const refs = this.crewRefsIn(text)
+  private visibleDocs(ws?: WebSocket): Record<string, DocPage> {
+    return Object.fromEntries(
+      [...this.docs].filter(([page, doc]) => doc.scope !== 'ghost' || this.ghostDocOwners.get(page) === ws)
+    )
+  }
+
+  private refsOf(text: string, ws?: WebSocket): { docMentions: DocMentionRef[]; boardMentions: BoardMentionRef[] } {
+    const refs = this.crewRefsIn(text, ws)
     return { docMentions: docMentionsOf(refs), boardMentions: boardMentionsOf(refs) }
   }
 
-  private crewRefsIn(text: string): CrewRef[] {
-    return refsIn(text, crewRefs(Object.fromEntries(this.docs), this.boardList()))
+  private crewRefsIn(text: string, ws?: WebSocket): CrewRef[] {
+    return refsIn(text, crewRefs(this.visibleDocs(ws), this.boardList()))
   }
 
   private memberRefs(text: string) {
@@ -2910,13 +2914,13 @@ export class CrewSession {
     this.onSyncNeeded?.()
   }
 
-  private handleEditMessage(member: Member, messageId: string, text: string): void {
+  private handleEditMessage(ws: WebSocket, member: Member, messageId: string, text: string): void {
     const event = this.events.find(e => e.kind === 'message' && e.id === messageId)
     if (!event || event.kind !== 'message') return
     if (event.authorId !== member.id || event.threadId) return
     const trimmed = text.trim()
     if (!trimmed || trimmed === event.text) return
-    const { docMentions, boardMentions } = this.refsOf(trimmed)
+    const { docMentions, boardMentions } = this.refsOf(trimmed, ws)
     const mentionRefs = this.agentRefs([], trimmed)
     const memberMentionRefs = this.memberRefs(trimmed)
     event.text = trimmed
@@ -4089,11 +4093,11 @@ export class CrewSession {
     return null
   }
 
-  private handleQueueEdit(member: Member, promptId: string, text: string): void {
+  private handleQueueEdit(ws: WebSocket, member: Member, promptId: string, text: string): void {
     const found = this.queuedEntry(promptId)
     const trimmed = text.trim()
     if (!found || !trimmed || found.entry.authorId !== member.id) return
-    const { docMentions, boardMentions } = this.refsOf(trimmed)
+    const { docMentions, boardMentions } = this.refsOf(trimmed, ws)
     for (const entry of found.thread.queue) {
       if (entry.messageId === found.entry.messageId) {
         entry.text = trimmed
