@@ -135,6 +135,22 @@ describe('the file explorer', () => {
     expect(screen.getByText('app.ts')).toBeTruthy()
   })
 
+  it('pins every open ancestor at its own row while its branch is on screen', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    fireEvent.click(await screen.findByText('src'))
+    fireEvent.click(await screen.findByText('renderer'))
+
+    const src = document.querySelector('[data-sticky-folder="src"]') as HTMLElement
+    const renderer = document.querySelector('[data-sticky-folder="src/renderer"]') as HTMLElement
+    const branch = document.querySelector('[data-folder-branch="src"]') as HTMLElement
+
+    expect(src.className).toContain('sticky')
+    expect(src.style.top).toBe('0px')
+    expect(renderer.style.top).toBe('29px')
+    expect(branch.contains(renderer)).toBe(true)
+  })
+
   it('shows a file the moment it is picked, keeping the tree as it was', async () => {
     useBrowser.getState().openFiles()
     render(createElement(BrowserPanel))
@@ -222,6 +238,111 @@ describe('the file explorer', () => {
 
     expect(activeTab().path).toBe('src/renderer/panel.tsx')
     expect(activeTab().line).toBe(7)
+  })
+
+  it('hands every search option to the project search', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    fireEvent.change(await screen.findByLabelText('Search files'), { target: { value: 'implementationDetail' } })
+    fireEvent.click(screen.getByLabelText('Match case'))
+    fireEvent.click(screen.getByLabelText('Match whole word'))
+    fireEvent.click(screen.getByLabelText('Use regular expression'))
+    fireEvent.click(screen.getByText('More filters'))
+    fireEvent.change(screen.getByLabelText('Files to include'), { target: { value: 'src/**' } })
+    fireEvent.change(screen.getByLabelText('Files to exclude'), { target: { value: '**/*.test.ts' } })
+
+    await waitFor(() => {
+      const request = searchFiles.mock.calls.at(-1)?.[0]
+      expect(request).toMatchObject({
+        query: 'implementationDetail',
+        matchCase: true,
+        wholeWord: true,
+        regex: true,
+        include: 'src/**',
+        exclude: '**/*.test.ts'
+      })
+    })
+  })
+
+  it('filters file names with the same include and exclude fields', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    fireEvent.change(await screen.findByLabelText('Search files'), { target: { value: 'app' } })
+    await waitFor(() => expect(rowFor('src/app.ts')).toBeTruthy())
+    expect(rowFor('tests/app.test.ts')).toBeTruthy()
+
+    fireEvent.click(screen.getByText('More filters'))
+    fireEvent.change(screen.getByLabelText('Files to include'), { target: { value: 'tests/**' } })
+    await waitFor(() => expect(rowFor('src/app.ts')).toBeNull())
+    expect(rowFor('tests/app.test.ts')).toBeTruthy()
+
+    fireEvent.change(screen.getByLabelText('Files to exclude'), { target: { value: 'tests/**' } })
+    await waitFor(() => expect(rowFor('tests/app.test.ts')).toBeNull())
+  })
+
+  it('reports an invalid expression before any result is opened', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    fireEvent.change(await screen.findByLabelText('Search files'), { target: { value: '(' } })
+    fireEvent.click(screen.getByLabelText('Use regular expression'))
+
+    expect(await screen.findByText(/Invalid regular expression/)).toBeTruthy()
+    expect(document.querySelector('[data-content-file]')).toBeNull()
+  })
+
+  it('clears, refreshes, and collapses a result set without losing the query', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    const input = await screen.findByLabelText('Search files')
+    fireEvent.change(input, { target: { value: 'implementationDetail' } })
+    await waitFor(() => expect(document.querySelector('[data-content-file]')).toBeTruthy())
+
+    fireEvent.click(screen.getByLabelText('Collapse results'))
+    expect(document.querySelector('[data-content-file]')).toBeNull()
+    fireEvent.click(screen.getByLabelText('Show results'))
+    expect(document.querySelector('[data-content-file]')).toBeTruthy()
+
+    fireEvent.click(screen.getByLabelText('Clear results'))
+    expect((input as HTMLInputElement).value).toBe('implementationDetail')
+    expect(document.querySelector('[data-content-file]')).toBeNull()
+
+    fireEvent.click(screen.getByLabelText('Refresh search'))
+    await waitFor(() => expect(document.querySelector('[data-content-file]')).toBeTruthy())
+    expect(searchFiles.mock.calls.at(-1)?.[0].refresh).toBe(true)
+  })
+
+  it('replaces one exact match from its fixed action', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    fireEvent.click(screen.getByLabelText('Show replace'))
+    fireEvent.change(await screen.findByLabelText('Search files'), { target: { value: 'implementationDetail' } })
+    fireEvent.change(screen.getByLabelText('Replace'), { target: { value: 'implementation' } })
+    await waitFor(() => expect(screen.getByLabelText('Replace this match')).toBeTruthy())
+
+    fireEvent.click(screen.getByLabelText('Replace this match'))
+
+    await waitFor(() => expect(replaceFiles).toHaveBeenCalledOnce())
+    const request = replaceFiles.mock.calls[0]![0] as FileReplaceRequest
+    expect(request).toMatchObject({
+      query: 'implementationDetail',
+      replacement: 'implementation',
+      target: { path: 'src/renderer/panel.tsx', line: 7, column: 7, endColumn: 27 }
+    })
+  })
+
+  it('replaces every content match with preserve case enabled', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    fireEvent.click(screen.getByLabelText('Show replace'))
+    fireEvent.change(await screen.findByLabelText('Search files'), { target: { value: 'implementationDetail' } })
+    fireEvent.change(screen.getByLabelText('Replace'), { target: { value: 'implementation' } })
+    fireEvent.click(screen.getByLabelText('Preserve case'))
+    await waitFor(() => expect(screen.getByLabelText('Replace all').hasAttribute('disabled')).toBe(false))
+
+    fireEvent.click(screen.getByLabelText('Replace all'))
+
+    await waitFor(() => expect(replaceFiles).toHaveBeenCalledOnce())
+    expect(replaceFiles.mock.calls[0]![0]).toMatchObject({ preserveCase: true, target: undefined })
   })
 
   it('finds text in the open file with Ctrl+F', async () => {
