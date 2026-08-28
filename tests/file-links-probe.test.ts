@@ -473,7 +473,7 @@ describe('changed lines', () => {
   it('keeps the change when the edited file is opened from its menu', async () => {
     render(createElement(StepRow, { item: toolItem([{ path: 'src/panel.ts', added: 3, removed: 3, diff: EDIT }]) }))
     fireEvent.contextMenu(await screen.findByText('panel.ts'))
-    fireEvent.click(screen.getByText('Open'))
+    fireEvent.click(screen.getByText('Open in a new tab'))
     expect(useBrowser.getState().tabs[0].diff).toBe(EDIT)
     render(createElement(BrowserPanel))
     await waitFor(() => expect(taken()).toEqual(['export function old() {', '  return 1']))
