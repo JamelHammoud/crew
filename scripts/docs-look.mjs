@@ -248,8 +248,12 @@ try {
     console.log(`  rail ends at ${read.rail?.right}`)
     console.log(`  Docs row ${read.navRow?.height} tall, painted ${read.navPaint}`)
     console.log(`  a page row ${read.firstRow?.height} tall, ${read.firstRow?.left} to ${read.firstRow?.right}`)
-    console.log(`  private mark ${read.privateMark?.width} square in a ${read.privateRow?.height} tall row`)
-    console.log(`  ghost mark ${read.ghostMark?.width} square in a ${read.ghostRow?.height} tall row`)
+    console.log(
+      `  private mark ${read.privateMark?.width} square, ending at ${read.privateMark?.right} in a row ending at ${read.privateRow?.right}`
+    )
+    console.log(
+      `  ghost mark ${read.ghostMark?.width} square, ending at ${read.ghostMark?.right} in a row ending at ${read.ghostRow?.right}`
+    )
     console.log(`  lit row paint ${read.litPaint}`)
     console.log(
       `  rule ${read.rule ? `${read.rule.left} to ${read.rule.right}` : 'none'} against the rail 0 to ${read.rail?.right}`
