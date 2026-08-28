@@ -32,7 +32,9 @@ const stock = (page: string): void => {
     docs: {
       welcome: { title: 'Welcome', text: 'Hello' },
       'handbook-a1b2': { title: 'The handbook', text: 'The parent' },
-      'handbook-a1b2/setup-c3d4': { title: 'Setting up', text: 'How to get going' }
+      'handbook-a1b2/setup-c3d4': { title: 'Setting up', text: 'How to get going' },
+      'private-notes-1abc': { title: 'Private notes', text: '', scope: 'private' },
+      'passing-note-2abc': { title: 'Passing note', text: '', scope: 'ghost' }
     },
     docsTarget: page
   })
@@ -82,5 +84,17 @@ describe('the list of pages in the rail', () => {
     expect(lit.textContent).toContain('Welcome')
     expect(lit.parentElement!.className).toContain('bg-fg/[0.10]')
     expect(list.innerHTML).not.toContain('bg-ink-800')
+  })
+
+  it('marks private and ghost pages without putting the scope in their names', () => {
+    stock('welcome')
+    const { container } = render(createElement(SidebarDocs, { open: true }))
+    const privateMark = container.querySelector('[aria-label="Private page"]')
+    const ghostMark = container.querySelector('[aria-label="Ghost page"]')
+
+    expect(privateMark?.closest('.group\/page')?.textContent).toContain('Private notes')
+    expect(ghostMark?.closest('.group\/page')?.textContent).toContain('Passing note')
+    expect(container.textContent).not.toContain('Private page')
+    expect(container.textContent).not.toContain('Ghost page')
   })
 })

@@ -1,6 +1,6 @@
 import { useEffect, useState, type DragEvent } from 'react'
 import { fallbackTitle, ROOT_PAGE, splitPageCode } from '../../../../shared/docs'
-import { ChevronRightGlyph, PlusGlyph, TrashGlyph } from '../../icons'
+import { ChevronRightGlyph, GhostGlyph, LockGlyph, PlusGlyph, TrashGlyph } from '../../icons'
 import { useDocs } from '../../state/docs'
 import { useCrew } from '../../state/store'
 import { createDocPage, freshSlug } from '../doc/docsPages'
@@ -128,6 +128,20 @@ export default function SidebarDocs({ open }: { open: boolean }) {
           >
             <EmojiText text={titleOf(node.slug) || 'Untitled'} />
           </button>
+          {docs[node.slug]?.scope === 'private' && (
+            <Tooltip label="Private page">
+              <span aria-label="Private page" className="h-4 w-4 flex items-center justify-center text-fg/35 shrink-0">
+                <LockGlyph className="h-3.5 w-3.5" />
+              </span>
+            </Tooltip>
+          )}
+          {docs[node.slug]?.scope === 'ghost' && (
+            <Tooltip label="Ghost page">
+              <span aria-label="Ghost page" className="h-4 w-4 flex items-center justify-center text-fg/35 shrink-0">
+                <GhostGlyph className="h-3.5 w-3.5" />
+              </span>
+            </Tooltip>
+          )}
           <Tooltip label="Add sub-page">
             <button
               onClick={() => addPage(node.slug)}
