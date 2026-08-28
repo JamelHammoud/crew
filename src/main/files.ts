@@ -102,11 +102,27 @@ async function readTextFile(label: string, absolute: string, size: number): Prom
   }
 }
 
+async function readSvg(label: string, absolute: string, size: number): Promise<RepoFile> {
+  if (size <= MAX_BYTES) return readTextFile(label, absolute, size)
+  if (size > MAX_IMAGE_BYTES) return { kind: 'binary', path: label, size }
+  const bytes = await fs.readFile(absolute)
+  const text = bytes.subarray(0, MAX_BYTES)
+  if (text.subarray(0, 8000).includes(0)) return { kind: 'binary', path: label, size }
+  return {
+    kind: 'file',
+    path: label,
+    text: text.toString('utf8'),
+    truncated: true,
+    preview: `data:image/svg+xml;base64,${bytes.toString('base64')}`
+  }
+}
+
 async function readAt(label: string, absolute: string, media?: MediaHost): Promise<RepoFile> {
   const stat = await fs.stat(absolute)
   if (stat.isDirectory()) return listDir(label, absolute)
   if (!stat.isFile()) return { kind: 'missing', path: label }
   const type = imageType(absolute)
+  if (type === 'image/svg+xml') return readSvg(label, absolute, stat.size)
   if (type && type !== 'image/svg+xml') return readImage(label, absolute, stat.size, type)
   if (media) {
     const playable = mediaType(absolute)

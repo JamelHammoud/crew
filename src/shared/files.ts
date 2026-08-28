@@ -199,7 +199,7 @@ export function markRuns(text: string, hits: number[]): { text: string; hit: boo
 }
 
 export type RepoFile =
-  | { kind: 'file'; path: string; text: string; truncated: boolean }
+  | { kind: 'file'; path: string; text: string; truncated: boolean; preview?: string }
   | { kind: 'dir'; path: string; entries: FileEntry[] }
   | { kind: 'image'; path: string; url: string; size: number }
   | { kind: 'media'; path: string; url: string; size: number; type: string; video: boolean }

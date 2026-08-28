@@ -91,6 +91,20 @@ describe('readRepoFile', () => {
     expect(result).toEqual({ kind: 'file', path: 'logo.svg', text: markup, truncated: false })
   })
 
+  it('keeps a complete preview for an SVG larger than the editor limit', async () => {
+    const root = makeRepo()
+    const markup = `<svg viewBox="0 0 10 10">${' '.repeat(600 * 1024)}<circle cx="5" cy="5" r="4"/></svg>`
+    writeFileSync(path.join(root, 'large.svg'), markup)
+
+    const result = await readRepoFile(root, 'large.svg')
+
+    expect(result.kind).toBe('file')
+    if (result.kind !== 'file') return
+    expect(result.truncated).toBe(true)
+    expect(result.text.length).toBe(512 * 1024)
+    expect(Buffer.from(result.preview!.split(',')[1]!, 'base64').toString('utf8')).toBe(markup)
+  })
+
   it('marks other binary files instead of returning garbage', async () => {
     const root = makeRepo()
     writeFileSync(path.join(root, 'app.bin'), Buffer.from([0x00, 0x01, 0x02]))

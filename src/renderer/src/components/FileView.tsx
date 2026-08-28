@@ -204,8 +204,8 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
   const text = writable ? doc : (file?.text ?? '')
   const baseline = hidden || reading ? null : base
   const vectorSrc = useMemo(
-    () => (asVector ? `data:image/svg+xml;utf8,${encodeURIComponent(text)}` : ''),
-    [asVector, text]
+    () => (asVector ? (file?.preview ?? `data:image/svg+xml;utf8,${encodeURIComponent(text)}`) : ''),
+    [asVector, file?.preview, text]
   )
 
   const rows = useMemo(() => {
