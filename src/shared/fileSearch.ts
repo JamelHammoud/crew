@@ -127,6 +127,14 @@ function patternList(value: string): RegExp[] {
   return splitPatterns(value).map(glob)
 }
 
+export function filePathAccepted(path: string, include: string, exclude: string): boolean {
+  const included = patternList(include)
+  const excluded = patternList(exclude)
+  const normalized = path.replace(/\\/g, '/')
+  return (included.length === 0 || included.some(rule => rule.test(normalized))) &&
+    !excluded.some(rule => rule.test(normalized))
+}
+
 export function compileFileSearch(options: FileSearchOptions): { search: CompiledFileSearch | null; error: string | null } {
   const query = options.query.slice(0, 200)
   if (!query) return { search: null, error: null }
@@ -137,14 +145,10 @@ export function compileFileSearch(options: FileSearchOptions): { search: Compile
   } catch (error) {
     return { search: null, error: error instanceof Error ? error.message : 'Invalid expression' }
   }
-  const included = patternList(options.include)
-  const excluded = patternList(options.exclude)
   return {
     search: {
       accepts(path) {
-        const normalized = path.replace(/\\/g, '/')
-        return (included.length === 0 || included.some(rule => rule.test(normalized))) &&
-          !excluded.some(rule => rule.test(normalized))
+        return filePathAccepted(path, options.include, options.exclude)
       },
       find(text) {
         const ranges: TextRange[] = []
