@@ -57,6 +57,9 @@ describe('doc pages', () => {
     expect(host.session.snapshot().docs['passing-note-2abc']).toBeUndefined()
     expect(host.store.loadDocs()['passing-note-2abc']).toBeUndefined()
     expect(host.store.loadPrivateDocs()['passing-note-2abc']).toBeUndefined()
+    mine.chat('see #Passing note')
+    const shared = await watcher.waitForEvent(e => e.kind === 'message' && e.text === 'see #Passing note')
+    expect(shared.kind === 'message' ? (shared.docMentions ?? []) : []).toEqual([])
 
     mine.close()
     await mine.waitForClose()
