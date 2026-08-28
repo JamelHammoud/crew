@@ -3165,7 +3165,8 @@ export class CrewSession {
       taken.add(code)
       const to = `${from}-${code}`
       try {
-        this.store.renameDoc(from, to)
+        if (this.docs.get(from)?.scope === 'private') this.store.renamePrivateDoc(from, to)
+        else this.store.renameDoc(from, to)
       } catch {
         continue
       }
@@ -3196,75 +3197,115 @@ export class CrewSession {
     return page
   }
 
-  private handleDoc(member: Member, page: string, text: string, title?: string): void {
+  private ownsGhostDoc(ws: WebSocket, page: string): boolean {
+    return this.docs.get(page)?.scope !== 'ghost' || this.ghostDocOwners.get(page) === ws
+  }
+
+  private saveDoc(page: string, doc: DocPage): void {
+    if (doc.scope === 'ghost') return
+    if (doc.scope === 'private') this.store.savePrivateDoc(page, doc)
+    else this.store.saveDoc(page, doc)
+  }
+
+  private syncDoc(scope: DocScope | undefined): void {
+    if (scope === undefined) this.onSyncNeeded?.()
+  }
+
+  private sendDocEvent(event: SessionEvent, page: string, scope: DocScope | undefined): void {
+    const to = scope === 'ghost' ? this.ghostDocOwners.get(page) : undefined
+    this.emit(event, { persist: false, to })
+    this.syncDoc(scope)
+  }
+
+  private handleDoc(
+    ws: WebSocket,
+    member: Member,
+    page: string,
+    text: string,
+    title?: string,
+    askedScope?: DocScope
+  ): void {
     page = this.followRenames(page)
-    const doc: DocPage = { title: title ?? this.docs.get(page)?.title ?? fallbackTitle(page), text }
+    const existing = this.docs.get(page)
+    if (existing && !this.ownsGhostDoc(ws, page)) return
+    const scope = existing?.scope ?? askedScope
+    if (!existing && this.docs.has(page)) return
+    const doc: DocPage = { title: title ?? existing?.title ?? fallbackTitle(page), text, scope }
+    if (scope === 'ghost' && !existing) this.ghostDocOwners.set(page, ws)
     try {
-      this.store.saveDoc(page, doc)
+      this.saveDoc(page, doc)
     } catch {
+      if (!existing) this.ghostDocOwners.delete(page)
       return
     }
     this.docs.set(page, doc)
-    if (title !== undefined && this.docTitles.delete(page)) {
+    if (scope === undefined && title !== undefined && this.docTitles.delete(page)) {
       this.store.saveTitles(Object.fromEntries(this.docTitles))
     }
-    this.emit(
-      { id: randomUUID(), ts: Date.now(), kind: 'doc', page, text, title: doc.title, byName: member.name },
-      { persist: false }
+    this.sendDocEvent(
+      { id: randomUUID(), ts: Date.now(), kind: 'doc', page, text, title: doc.title, scope, byName: member.name },
+      page,
+      scope
     )
-    this.onSyncNeeded?.()
   }
 
-  private handleDocRetitle(member: Member, page: string, title: string): void {
+  private handleDocRetitle(ws: WebSocket, member: Member, page: string, title: string): void {
     page = this.followRenames(page)
     const existing = this.docs.get(page)
-    if (!existing || existing.title === title) return
-    const doc: DocPage = { title, text: existing.text }
+    if (!existing || !this.ownsGhostDoc(ws, page) || existing.title === title) return
+    const doc: DocPage = { ...existing, title }
     try {
-      this.store.saveDoc(page, doc)
+      this.saveDoc(page, doc)
     } catch {
       return
     }
     this.docs.set(page, doc)
-    if (this.docTitles.delete(page)) this.store.saveTitles(Object.fromEntries(this.docTitles))
-    this.emit(
-      { id: randomUUID(), ts: Date.now(), kind: 'doc', page, text: doc.text, title, byName: member.name },
-      { persist: false }
+    if (doc.scope === undefined && this.docTitles.delete(page)) this.store.saveTitles(Object.fromEntries(this.docTitles))
+    this.sendDocEvent(
+      { id: randomUUID(), ts: Date.now(), kind: 'doc', page, text: doc.text, title, scope: doc.scope, byName: member.name },
+      page,
+      doc.scope
     )
-    this.onSyncNeeded?.()
   }
 
-  private handleDocTitle(member: Member, page: string, title: string): void {
+  private handleDocTitle(ws: WebSocket, member: Member, page: string, title: string): void {
     page = this.followRenames(page)
     const existing = this.docs.get(page)
-    if (!existing) return
+    if (!existing || !this.ownsGhostDoc(ws, page)) return
     const clean = title.replace(/\s+/g, ' ').trim().slice(0, TITLE_LIMIT)
-    const doc: DocPage = { title: clean || fallbackTitle(page), text: existing.text }
+    const doc: DocPage = { ...existing, title: clean || fallbackTitle(page) }
     try {
-      this.store.saveDoc(page, doc)
+      this.saveDoc(page, doc)
     } catch {
       return
     }
     this.docs.set(page, doc)
-    if (clean) this.docTitles.set(page, clean)
-    else this.docTitles.delete(page)
-    this.store.saveTitles(Object.fromEntries(this.docTitles))
-    this.emit(
+    if (doc.scope === undefined) {
+      if (clean) this.docTitles.set(page, clean)
+      else this.docTitles.delete(page)
+      this.store.saveTitles(Object.fromEntries(this.docTitles))
+    }
+    this.sendDocEvent(
       { id: randomUUID(), ts: Date.now(), kind: 'doc.titled', page, title: clean, byName: member.name },
-      { persist: false }
+      page,
+      doc.scope
     )
-    this.onSyncNeeded?.()
   }
 
-  private handleDocDelete(member: Member, page: string): void {
-    if (page === ROOT_PAGE || !this.docs.has(page)) return
+  private handleDocDelete(ws: WebSocket, member: Member, page: string): void {
+    const existing = this.docs.get(page)
+    if (page === ROOT_PAGE || !existing || !this.ownsGhostDoc(ws, page)) return
     try {
-      this.store.deleteDoc(page)
+      if (existing.scope === 'private') this.store.deletePrivateDoc(page)
+      else if (existing.scope === undefined) this.store.deleteDoc(page)
     } catch {
       return
     }
     for (const key of [...this.docs.keys()]) {
-      if (key === page || key.startsWith(`${page}/`)) this.docs.delete(key)
+      if (key === page || key.startsWith(`${page}/`)) {
+        this.docs.delete(key)
+        this.ghostDocOwners.delete(key)
+      }
     }
     let titlesChanged = false
     for (const key of [...this.docTitles.keys()]) {
@@ -3274,8 +3315,12 @@ export class CrewSession {
       }
     }
     if (titlesChanged) this.store.saveTitles(Object.fromEntries(this.docTitles))
-    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'doc.deleted', page, byName: member.name }, { persist: false })
-    this.onSyncNeeded?.()
+    const to = existing.scope === 'ghost' ? ws : undefined
+    this.emit(
+      { id: randomUUID(), ts: Date.now(), kind: 'doc.deleted', page, byName: member.name },
+      { persist: false, to }
+    )
+    this.syncDoc(existing.scope)
   }
 
   private boardList(): DesignBoardMeta[] {
