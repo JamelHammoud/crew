@@ -470,6 +470,10 @@ try {
     console.error('the huge thread was never seeded')
     bad = true
   }
+  if (huge.drawn > LONG + 20) {
+    console.error(`the growing thread kept ${huge.drawn} rows mounted`)
+    bad = true
+  }
   if (cost > 1) {
     console.error(
       `a thread of ${LONG} rows costs ${cost}ms a keystroke, which is a composer that drags as a thread grows`
