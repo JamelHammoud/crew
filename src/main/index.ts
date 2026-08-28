@@ -31,6 +31,7 @@ import { pluginForConnection, type PluginConnectionInput, type PluginConnectionR
 import { copyImage } from './clipboard'
 import { installContextMenu } from './context-menu'
 import type { Present } from '../shared/presence'
+import { isThere } from './files'
 import { fromSource } from './from-source'
 import { appIcon, type IconTheme } from './icon'
 import { CrewTray } from './tray'
@@ -864,9 +865,13 @@ app.whenReady().then(() => {
     return absolute === null ? null : previewsFor(event.sender).show(id, absolute, text)
   })
   ipcMain.handle('preview:drop', (event, id: string) => previews.get(event.sender.id)?.drop(id))
-  ipcMain.handle('file:reveal', (event, target: string) => {
+  // Whether it really opened. A folder somebody has moved or thrown away is
+  // still a row in the rail, and showing it silently does nothing at all.
+  ipcMain.handle('file:reveal', async (event, target: string) => {
     const absolute = crews.inView(event.sender.id).resolveFile(target)
-    if (absolute) shell.showItemInFolder(absolute)
+    if (!absolute || !(await isThere(absolute))) return false
+    shell.showItemInFolder(absolute)
+    return true
   })
   ipcMain.on('terminal:open', (event, id: string, wanted: TerminalSize) => {
     const sender = event.sender
