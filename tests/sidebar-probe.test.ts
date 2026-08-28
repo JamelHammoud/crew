@@ -124,6 +124,8 @@ const TopBar = (await import('../src/renderer/src/components/TopBar')).default
 const WindowCorner = (await import('../src/renderer/src/components/WindowCorner')).default
 const { FolderGlyph, GlobeGlyph } = await import('../src/renderer/src/icons')
 const { REACH_MS } = await import('../src/renderer/src/components/useHoverMenu')
+const Toaster = (await import('../src/renderer/src/components/Toaster')).default
+const { clearToasts } = await import('../src/renderer/src/state/toast')
 
 const rest = (ms: number) => new Promise(done => setTimeout(done, ms))
 
@@ -687,7 +689,9 @@ describe('the sidebar', () => {
   it('says so rather than doing nothing when the folder has gone', async () => {
     revealed.length = 0
     reveals = false
+    clearToasts()
     render(Sidebar())
+    render(createElement(Toaster))
     fireEvent.contextMenu(screen.getByText('one'))
     await act(async () => {
       fireEvent.click(await screen.findByRole('button', { name: 'Show in folder' }))
