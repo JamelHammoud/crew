@@ -91,11 +91,15 @@ describe('the list of pages in the rail', () => {
     const { container } = render(createElement(SidebarDocs, { open: true }))
     const privateMark = container.querySelector('[aria-label="Private page"]')
     const ghostMark = container.querySelector('[aria-label="Ghost page"]')
+    const addStandsBefore = (mark: Element | null) => {
+      const add = mark?.closest('[draggable]')?.querySelector('[aria-label="Add sub-page"]')
+      return Boolean(add && mark && add.compareDocumentPosition(mark) & Node.DOCUMENT_POSITION_FOLLOWING)
+    }
 
     expect(privateMark?.closest('[draggable]')?.textContent).toContain('Private notes')
     expect(ghostMark?.closest('[draggable]')?.textContent).toContain('Passing note')
-    expect(privateMark?.closest('[draggable]')?.querySelector('[aria-label="Add sub-page"]')?.compareDocumentPosition(privateMark) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
-    expect(ghostMark?.closest('[draggable]')?.querySelector('[aria-label="Add sub-page"]')?.compareDocumentPosition(ghostMark) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(addStandsBefore(privateMark)).toBe(true)
+    expect(addStandsBefore(ghostMark)).toBe(true)
     expect(container.textContent).not.toContain('Private page')
     expect(container.textContent).not.toContain('Ghost page')
   })
