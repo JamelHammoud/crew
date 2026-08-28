@@ -160,13 +160,7 @@ const extensions: Record<string, string> = {
 const filenames: Record<string, string> = {
   dockerfile: 'docker',
   makefile: 'make',
-  cmakelists: 'cmake',
-  'cmakelists.txt': 'cmake',
-  '.env': 'dotenv',
-  '.env.local': 'dotenv',
-  '.env.development': 'dotenv',
-  '.env.production': 'dotenv',
-  '.env.test': 'dotenv'
+  'cmakelists.txt': 'cmake'
 }
 
 export const LANGUAGE_NAMES: Record<string, string> = {
@@ -235,6 +229,9 @@ export function languageFor(path: string): string | null {
   const name = (path.split('/').pop() ?? '').toLowerCase()
   const byName = filenames[name]
   if (byName) return byName
+  if (name.startsWith('dockerfile.')) return 'docker'
+  if (name.startsWith('makefile.')) return 'make'
+  if (name === '.env' || name.startsWith('.env.')) return 'dotenv'
   const ext = name.includes('.') ? (name.split('.').pop() ?? '') : ''
   return extensions[ext] ?? null
 }

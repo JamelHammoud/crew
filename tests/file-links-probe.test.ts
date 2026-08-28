@@ -992,8 +992,14 @@ describe('file editing', () => {
     editor.setSelectionRange(at, at)
     fireEvent.select(editor)
     await waitFor(() => expect(document.querySelector('[data-row="1"]')?.className).toContain('bg-fg/[0.035]'))
+    const gutter = document.querySelector('[data-row="1"] [data-code-gutter]')
+    expect(gutter?.getAttribute('data-active')).toBe('')
+    expect(gutter?.classList.contains('text-fg')).toBe(true)
+    expect(gutter?.classList.contains('text-fg-faint')).toBe(false)
     fireEvent.blur(editor)
     await waitFor(() => expect(document.querySelector('[data-row="1"]')?.className).not.toContain('bg-fg/[0.035]'))
+    expect(gutter?.hasAttribute('data-active')).toBe(false)
+    expect(gutter?.classList.contains('text-fg-faint')).toBe(true)
   })
 
   it('escape discards unsaved changes', async () => {

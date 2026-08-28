@@ -5,6 +5,7 @@ export interface FileSearchOptions {
   regex: boolean
   include: string
   exclude: string
+  refresh?: boolean
 }
 
 export interface FileReplaceTarget {
@@ -36,7 +37,7 @@ export interface TextRange {
 }
 
 export interface CompiledFileSearch {
-  find(text: string): TextRange[]
+  find(text: string, limit?: number): TextRange[]
   accepts(path: string): boolean
 }
 
@@ -127,12 +128,27 @@ function patternList(value: string): RegExp[] {
   return splitPatterns(value).map(glob)
 }
 
-export function filePathAccepted(path: string, include: string, exclude: string): boolean {
-  const included = patternList(include)
-  const excluded = patternList(exclude)
-  const normalized = path.replace(/\\/g, '/')
-  return (included.length === 0 || included.some(rule => rule.test(normalized))) &&
-    !excluded.some(rule => rule.test(normalized))
+export function compileFileFilter(include: string, exclude: string): {
+  accepts: (path: string) => boolean
+  error: string | null
+} {
+  try {
+    const included = patternList(include)
+    const excluded = patternList(exclude)
+    return {
+      accepts(path) {
+        const normalized = path.replace(/\\/g, '/')
+        return (included.length === 0 || included.some(rule => rule.test(normalized))) &&
+          !excluded.some(rule => rule.test(normalized))
+      },
+      error: null
+    }
+  } catch (error) {
+    return {
+      accepts: () => false,
+      error: error instanceof Error ? error.message : 'Invalid file pattern'
+    }
+  }
 }
 
 export function compileFileSearch(options: FileSearchOptions): { search: CompiledFileSearch | null; error: string | null } {
@@ -145,12 +161,14 @@ export function compileFileSearch(options: FileSearchOptions): { search: Compile
   } catch (error) {
     return { search: null, error: error instanceof Error ? error.message : 'Invalid expression' }
   }
+  const filter = compileFileFilter(options.include, options.exclude)
+  if (filter.error) return { search: null, error: filter.error }
   return {
     search: {
       accepts(path) {
-        return filePathAccepted(path, options.include, options.exclude)
+        return filter.accepts(path)
       },
-      find(text) {
+      find(text, limit = Number.POSITIVE_INFINITY) {
         const ranges: TextRange[] = []
         expression.lastIndex = 0
         for (let match = expression.exec(text); match; match = expression.exec(text)) {
@@ -166,7 +184,8 @@ export function compileFileSearch(options: FileSearchOptions): { search: Compile
               named: match.groups ? { ...match.groups } : null
             })
           }
-          if (match[0].length === 0) expression.lastIndex++
+          if (ranges.length >= limit) break
+          if (match[0].length === 0) expression.lastIndex += (text.codePointAt(expression.lastIndex) ?? 0) > 0xffff ? 2 : 1
         }
         return ranges
       }
