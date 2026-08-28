@@ -15,6 +15,31 @@ const reply = (id: number, result: unknown) => JSON.stringify({ jsonrpc: '2.0', 
 
 const parsed = (method: string, params: unknown): ParsedOutput[] => parseCodexLine(note(method, params))
 
+const subagentApp = [
+  "const readline = require('node:readline')",
+  "const send = body => process.stdout.write(JSON.stringify({ jsonrpc: '2.0', ...body }) + '\\n')",
+  "readline.createInterface({ input: process.stdin }).on('line', line => {",
+  '  const message = JSON.parse(line)',
+  "  if (message.method === 'initialize') return send({ id: message.id, result: {} })",
+  "  if (message.method === 'thread/start') return send({ id: message.id, result: { thread: { id: 'parent' } } })",
+  "  if (message.method !== 'turn/start') return",
+  "  send({ id: message.id, result: { turn: { id: 'parent-turn', status: 'inProgress' } } })",
+  "  send({ method: 'turn/started', params: { threadId: 'parent', turn: { id: 'parent-turn' } } })",
+  "  send({ method: 'turn/started', params: { threadId: 'child', turn: { id: 'child-turn' } } })",
+  "  send({ method: 'item/started', params: { threadId: 'child', turnId: 'child-turn', item: { type: 'agentMessage', id: 'child-message', text: '', phase: 'final_answer' } } })",
+  "  send({ method: 'item/agentMessage/delta', params: { threadId: 'child', turnId: 'child-turn', itemId: 'child-message', delta: 'CHILD FINISHED' } })",
+  "  send({ method: 'item/completed', params: { threadId: 'child', turnId: 'child-turn', item: { type: 'agentMessage', id: 'child-message', text: 'CHILD FINISHED', phase: 'final_answer' } } })",
+  "  send({ method: 'turn/completed', params: { threadId: 'child', turn: { id: 'child-turn', status: 'completed' } } })",
+  '  setTimeout(() => {',
+  "    send({ method: 'item/started', params: { threadId: 'parent', turnId: 'parent-turn', item: { type: 'agentMessage', id: 'parent-message', text: '', phase: 'final_answer' } } })",
+  "    send({ method: 'item/agentMessage/delta', params: { threadId: 'parent', turnId: 'parent-turn', itemId: 'parent-message', delta: 'PARENT FINISHED' } })",
+  "    send({ method: 'item/completed', params: { threadId: 'parent', turnId: 'parent-turn', item: { type: 'agentMessage', id: 'parent-message', text: 'PARENT FINISHED', phase: 'final_answer' } } })",
+  "    send({ method: 'turn/completed', params: { threadId: 'parent', turn: { id: 'parent-turn', status: 'completed' } } })",
+  '  }, 1100)',
+  '})',
+  'process.stdin.on(\'end\', () => process.exit(0))'
+].join('\n')
+
 const walk = (dialog: ReturnType<typeof codexDialog>) => {
   const sent = [...dialog.begin()]
   sent.push(...dialog.answer(reply(1, { userAgent: 'crew' })))
@@ -124,6 +149,25 @@ describe('the codex handshake', () => {
       JSON.stringify({ jsonrpc: '2.0', id: 8, method: 'account/chatgptAuthTokens/refresh', params: {} })
     )
     expect(JSON.parse(other[0]).error.code).toBe(-32601)
+  })
+
+  it('waits for the parent after a child finishes', async () => {
+    const provider = makeCliProvider({
+      name: 'codexfake',
+      label: 'Codex',
+      command: process.execPath,
+      args: () => ['-e', subagentApp],
+      makeParser: codexParser,
+      dialog: codexDialog
+    })
+    const words: string[] = []
+    const run = provider.start('go', process.cwd(), {
+      onStep: step => {
+        if (step.kind === 'text' && step.text) words.push(step.text)
+      }
+    })
+    await expect(run.done).resolves.toEqual({ text: 'PARENT FINISHED' })
+    expect(words.join('')).toBe('PARENT FINISHED')
   })
 })
 
