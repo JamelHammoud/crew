@@ -1,5 +1,5 @@
 import { memo, useCallback, useRef, useState, type CSSProperties } from 'react'
-import { LinkGlyph, PencilGlyph, PopOutGlyph, TrashGlyph, XCircleGlyph } from '../../icons'
+import { FolderGlyph, LinkGlyph, PencilGlyph, PopOutGlyph, TrashGlyph, XCircleGlyph } from '../../icons'
 import { toast } from '../../state/toast'
 import Spinner from '../Spinner'
 import { MenuItem, Popover } from '../Popover'
@@ -30,6 +30,8 @@ function PlaceGroup({
   const rows = useRef<HTMLDivElement | null>(null)
   useScrollFade(rows)
   const scrolls = threads.length > THREADS_SHOWN
+
+  const folder = place.project?.folder ?? place.join?.folder ?? ''
 
   const openThread = useCallback((threadId: string) => onOpenThread(place, threadId, false), [onOpenThread, place])
   const openThreadToRight = useCallback(
@@ -93,6 +95,18 @@ function PlaceGroup({
             onOpenWindow(place)
           }}
         />
+        {folder && (
+          <MenuItem
+            icon={<FolderGlyph className="w-4 h-4" />}
+            label="Show in folder"
+            onClick={() => {
+              setMenuAt(null)
+              void window.crew.revealFile(folder).then(opened => {
+                if (!opened) toast.fail('That folder is not there any more', { key: 'show-folder' })
+              })
+            }}
+          />
+        )}
         <MenuItem
           icon={<PencilGlyph className="w-4 h-4" />}
           label="Rename"
