@@ -279,10 +279,24 @@ export default function BrowserPanel({ standalone = false }: { standalone?: bool
           </button>
           <FileCrumbs tab={active} />
           {canPreview(active.path) && (
-            <Tooltip label={active.preview && isSvg(active.path) ? 'Show contents' : active.preview ? 'Hide preview' : 'Show preview'}>
+            <Tooltip
+              label={
+                active.preview && isSvg(active.path)
+                  ? 'Show contents'
+                  : active.preview
+                    ? 'Hide preview'
+                    : 'Show preview'
+              }
+            >
               <button
                 onClick={() => useBrowser.getState().togglePreview(active.id)}
-                aria-label={active.preview && isSvg(active.path) ? 'Show contents' : active.preview ? 'Hide preview' : 'Show preview'}
+                aria-label={
+                  active.preview && isSvg(active.path)
+                    ? 'Show contents'
+                    : active.preview
+                      ? 'Hide preview'
+                      : 'Show preview'
+                }
                 aria-pressed={active.preview}
                 className={`${iconButton} ${active.preview ? 'text-fg bg-fg/[0.06]' : ''}`}
               >

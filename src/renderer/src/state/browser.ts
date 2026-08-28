@@ -350,7 +350,14 @@ export const useBrowser = create<BrowserState>((write, get) => {
         set(s => ({
           tabs: s.tabs.map(t =>
             t.id === active.id
-              ? { ...t, kind: 'file' as const, path, line, diff, preview: isSvg(path) && line === null && diff === null }
+              ? {
+                  ...t,
+                  kind: 'file' as const,
+                  path,
+                  line,
+                  diff,
+                  preview: isSvg(path) && line === null && diff === null
+                }
               : t
           )
         }))
