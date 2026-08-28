@@ -6,7 +6,7 @@ class PreloadTarget extends EventTarget {
 }
 
 describe('renderer preload recovery', () => {
-  it('cancels a failed dynamic import and reloads onto one build', () => {
+  it('cancels a failed dynamic import and reloads the window', () => {
     const target = new PreloadTarget()
     const stop = recoverMissingPreload(target)
     const failed = new Event('vite:preloadError', { cancelable: true })
