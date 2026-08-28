@@ -213,4 +213,18 @@ describe('what a long thread draws at all', () => {
     expect(oldestDrawn()).toBe(oldest)
     expect(said(STEPS)).toBe(true)
   })
+
+  it('keeps its drawn tail bounded while new steps land at the foot', () => {
+    const firstSteps = steps.slice(0, 600)
+    openThread(firstSteps)
+    const first = rows()
+
+    act(() => {
+      useCrew.setState({ steps: { [PROMPT]: steps } })
+    })
+
+    expect(rows()).toBeLessThanOrEqual(first)
+    expect(said(firstSteps.length - 1)).toBe(false)
+    expect(said(STEPS - 1)).toBe(true)
+  })
 })

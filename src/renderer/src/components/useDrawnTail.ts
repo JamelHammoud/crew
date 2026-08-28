@@ -12,7 +12,8 @@ export interface DrawnTail {
 export function useDrawnTail(
   count: number,
   page: number,
-  scrollRef: React.RefObject<HTMLDivElement | null>
+  scrollRef: React.RefObject<HTMLDivElement | null>,
+  preserveFrom = false
 ): DrawnTail {
   const [held, setHeld] = useState(page)
   const [seen, setSeen] = useState(count)
@@ -20,7 +21,10 @@ export function useDrawnTail(
 
   if (seen !== count) {
     setSeen(count)
-    if (count > seen) setHeld(before => before + (count - seen))
+    if (count > seen) {
+      if (preserveFrom) setHeld(before => before + (count - seen))
+      else setHeld(before => Math.min(before, page))
+    }
   }
 
   const from = Math.max(0, count - held)

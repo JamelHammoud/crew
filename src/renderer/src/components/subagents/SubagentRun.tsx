@@ -52,7 +52,7 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
   const steerable = useCrew(state => state.agents.find(one => one.id === thread?.agentId)?.steerable === true)
 
   const scrollRef = useRef<HTMLDivElement>(null)
-  const { onScroll, follow, jumpToBottom } = useStickToBottom(scrollRef, `subagent:${threadId}`)
+  const { scrolledUp, onScroll, follow, jumpToBottom } = useStickToBottom(scrollRef, `subagent:${threadId}`)
   const { edges } = useScrollEdges(scrollRef)
   const inputRef = useAutoResize(text, COMPOSER_MAX)
 
@@ -65,7 +65,7 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
     () => buildThread(threadEvents, steps, selfId, agents, as),
     [threadEvents, steps, selfId, agents, as]
   )
-  const tail = useDrawnTail(items.length, HELPER_PAGE, scrollRef)
+  const tail = useDrawnTail(items.length, HELPER_PAGE, scrollRef, scrolledUp)
   const drawn = useMemo(() => (tail.from === 0 ? items : items.slice(tail.from)), [items, tail.from])
   const tailScroll = tail.onScroll
   const scrolled = useCallback(() => {
