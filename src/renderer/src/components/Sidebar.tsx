@@ -21,6 +21,7 @@ import SidebarDocs from './sidebar/SidebarDocs'
 import SidebarMore from './sidebar/SidebarMore'
 import SidebarPinnedItem from './sidebar/SidebarPinnedItem'
 import SidebarTasks from './sidebar/SidebarTasks'
+import { useDocsMenu } from './sidebar/docsMenu'
 import { SIDEBAR_ITEMS } from './sidebar/sidebarItems'
 import { NO_THREADS } from './sidebar/placeItems'
 import { useReorder } from './useReorder'
@@ -164,6 +165,15 @@ export default function Sidebar({
     createDocPage('')
   }, [goToTab])
 
+  const newScopedPage = useCallback(
+    (scope?: 'private' | 'ghost') => {
+      goToTab('docs')
+      createDocPage('', scope)
+    },
+    [goToTab]
+  )
+  const docsMenu = useDocsMenu(newScopedPage)
+
   const newChat = useCallback(() => {
     void window.crew.openPersonalChat(name).catch(err => {
       toast.fail(said(err), { key: 'open-personal-chat' })
@@ -218,6 +228,7 @@ export default function Sidebar({
                 lit={tab === one.id && one.id !== 'docs'}
                 current={tab === one.id}
                 expanded={one.id === 'docs' ? tab === 'docs' : undefined}
+                menu={one.id === 'docs'}
                 after={
                   one.id === 'chat' ? (
                     <NewChat onClick={newChat} />
@@ -226,6 +237,7 @@ export default function Sidebar({
                   ) : undefined
                 }
                 onClick={() => goToTab(one.id)}
+                onContextMenu={one.id === 'docs' ? docsMenu.onContextMenu : undefined}
               />
               {one.id === 'docs' && <SidebarDocs open={tab === 'docs'} />}
             </div>
@@ -236,6 +248,7 @@ export default function Sidebar({
           ))}
           <SidebarMore tab={tab} onTab={goToTab} />
         </nav>
+        {docsMenu.menu}
         <div className="group pl-2 pt-5 pb-2.5 flex items-center justify-between">
           <h2 className="text-xs font-medium text-fg/45">Projects</h2>
           <NewPlace busy={busyKey !== null} onOpen={addPlace} />

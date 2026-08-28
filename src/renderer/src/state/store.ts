@@ -340,7 +340,7 @@ interface CrewState {
   restartSubagent: (threadId: string) => void
   postScore: (gameId: string, score: number) => void
   cancelPrompt: (promptId: string) => void
-  updateDoc: (page: string, text: string, title?: string) => void
+  updateDoc: (page: string, text: string, title?: string, scope?: DocPage['scope']) => void
   retitleDoc: (page: string, title: string) => void
   renameDoc: (from: string, to: string, title?: string) => void
   deleteDoc: (page: string) => void
@@ -755,7 +755,8 @@ export const useCrew = create<CrewState>((set, get) => {
         }
         case 'doc': {
           const title = event.title ?? state.docs[event.page]?.title ?? fallbackTitle(event.page)
-          return { events, docs: { ...state.docs, [event.page]: { title, text: event.text } } }
+          const scope = event.scope ?? state.docs[event.page]?.scope
+          return { events, docs: { ...state.docs, [event.page]: { title, text: event.text, scope } } }
         }
         case 'doc.titled': {
           const doc = state.docs[event.page]
@@ -1725,12 +1726,13 @@ export const useCrew = create<CrewState>((set, get) => {
     cancelPrompt: promptId => {
       socket.send({ type: 'prompt.cancel', promptId })
     },
-    updateDoc: (page, text, title) => {
+    updateDoc: (page, text, title, scope) => {
       set(state => {
         const kept = title ?? state.docs[page]?.title ?? fallbackTitle(page)
-        return { docs: { ...state.docs, [page]: { title: kept, text } } }
+        const keptScope = state.docs[page]?.scope ?? scope
+        return { docs: { ...state.docs, [page]: { title: kept, text, scope: keptScope } } }
       })
-      socket.send({ type: 'doc.update', page, text, title })
+      socket.send({ type: 'doc.update', page, text, title, scope })
     },
     retitleDoc: (page, title) => {
       set(state =>

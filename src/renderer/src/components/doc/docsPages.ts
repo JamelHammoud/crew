@@ -1,4 +1,4 @@
-import { pageCode, pageCodeOf, pageSlug } from '../../../../shared/docs'
+import { pageCode, pageCodeOf, pageSlug, type DocScope } from '../../../../shared/docs'
 import { useDocs } from '../../state/docs'
 import { useCrew } from '../../state/store'
 
@@ -9,10 +9,10 @@ export function freshSlug(docs: Record<string, unknown>, parent: string, base: s
   return pageSlug(parent, base, code)
 }
 
-export function createDocPage(parent: string): string {
+export function createDocPage(parent: string, scope?: DocScope): string {
   const { docs, updateDoc } = useCrew.getState()
   const slug = freshSlug(docs, parent, 'untitled')
-  updateDoc(slug, '', '')
+  updateDoc(slug, '', '', parent ? docs[parent]?.scope : scope)
   useDocs.getState().open(slug, true)
   return slug
 }

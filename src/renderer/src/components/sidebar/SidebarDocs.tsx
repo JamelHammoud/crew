@@ -40,6 +40,7 @@ export default function SidebarDocs({ open }: { open: boolean }) {
   const canDrop = (target: string): boolean => {
     if (!dragged || dragged === ROOT_PAGE) return false
     if (target === dragged || target.startsWith(`${dragged}/`)) return false
+    if (target && docs[target]?.scope !== docs[dragged]?.scope) return false
     return parentOf(dragged) !== target
   }
 
