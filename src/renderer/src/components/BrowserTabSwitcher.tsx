@@ -19,7 +19,12 @@ export default function BrowserTabSwitcher({ tabs, activeTabId }: { tabs: Browse
   }, [query, tabs])
 
   useEffect(() => {
-    setCursor(Math.max(0, found.findIndex(tab => tab.id === activeTabId)))
+    setCursor(
+      Math.max(
+        0,
+        found.findIndex(tab => tab.id === activeTabId)
+      )
+    )
   }, [activeTabId, found, open])
 
   useEffect(() => {
@@ -33,7 +38,10 @@ export default function BrowserTabSwitcher({ tabs, activeTabId }: { tabs: Browse
       }
       if (event.key !== 'Tab' || !event.ctrlKey || tabs.length < 2) return
       event.preventDefault()
-      const at = Math.max(0, tabs.findIndex(tab => tab.id === activeTabId))
+      const at = Math.max(
+        0,
+        tabs.findIndex(tab => tab.id === activeTabId)
+      )
       const by = event.shiftKey ? -1 : 1
       const next = (at + by + tabs.length) % tabs.length
       setOpen(false)
