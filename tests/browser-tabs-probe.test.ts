@@ -246,6 +246,35 @@ describe('the tab strip', () => {
     expect(queryByText('First page')).toBeTruthy()
   })
 
+  it('scrolls the tab results without carrying the search field', () => {
+    openThree()
+    const { getByRole } = render(createElement(BrowserPanel))
+
+    fireEvent.click(getByRole('button', { name: 'Search tabs' }))
+
+    const field = getByRole('textbox', { name: 'Search tabs' })
+    const results = document.querySelector('[data-tab-results]') as HTMLElement
+    const popover = results.parentElement?.parentElement as HTMLElement
+    expect(results.className).toContain('overflow-y-auto')
+    expect(results.contains(field)).toBe(false)
+    expect(popover.style.overflowY).toBe('hidden')
+  })
+
+  it('overlays the hidden close action on the active mark', () => {
+    openTwo()
+    const active = useBrowser.getState().activeTabId
+    const { getByRole } = render(createElement(BrowserPanel))
+
+    fireEvent.click(getByRole('button', { name: 'Search tabs' }))
+
+    const row = document.querySelector(`[data-tab-result="${active}"]`) as HTMLElement
+    const close = row.querySelector('[aria-label^="Close "]') as HTMLElement
+    const check = row.querySelector('svg')?.parentElement?.querySelectorAll('svg').item(1) as SVGElement
+    expect(close.className).toContain('absolute')
+    expect(close.className).toContain('right-1.5')
+    expect(check.classList.contains('group-hover:opacity-0')).toBe(true)
+  })
+
   it('closes tab search when its button is pressed again', () => {
     openTwo()
     const { getByRole, queryByRole } = render(createElement(BrowserPanel))

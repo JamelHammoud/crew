@@ -78,54 +78,67 @@ export default function BrowserTabSwitcher({ tabs, activeTabId }: { tabs: Browse
           <MenuGlyph className="w-4 h-4" />
         </button>
       </Tooltip>
-      <Popover open={open} onClose={() => setOpen(false)} flush maxHeight={440} className="w-80 max-w-[calc(100vw-16px)]">
-        <SearchField value={query} onChange={setQuery} onKeyDown={onSearchKeys} placeholder="Search tabs" />
-        <div className="p-1.5">
-          {found.map((tab, index) => {
-            const detail = browserTabDetail(tab)
-            const label = browserTabLabel(tab)
-            return (
-              <div
-                key={tab.id}
-                data-tab-result={tab.id}
-                data-highlighted={index === cursor ? '' : undefined}
-                className="group relative flex min-w-0 items-center gap-2.5 rounded-xl px-3 py-2 text-fg/70 transition-colors hover:bg-fg/5 data-highlighted:bg-fg/5"
-                onPointerEnter={() => setCursor(index)}
-                onClick={() => choose(tab)}
-              >
-                <button
-                  onClick={event => {
-                    event.stopPropagation()
-                    choose(tab)
-                  }}
-                  aria-label={`Open ${label}`}
-                  className="absolute inset-0 rounded-xl active:scale-[0.99]"
-                />
-                <span className="pointer-events-none relative flex min-w-0 flex-1 items-center gap-2.5 text-left">
-                  <span className="flex h-4 w-4 shrink-0 items-center justify-center">
-                    <BrowserTabMark tab={tab} />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm text-fg">{label}</span>
-                    {detail && detail !== label && <span className="mt-0.5 block truncate text-xs text-fg/40">{detail}</span>}
-                  </span>
-                  {tab.id === activeTabId && <CheckGlyph className="h-4 w-4 shrink-0 text-fg" />}
-                </span>
-                <button
-                  onClick={event => {
-                    event.stopPropagation()
-                    useBrowser.getState().closeTab(tab.id)
-                    if (tabs.length === 2) setOpen(false)
-                  }}
-                  aria-label={`Close ${label}`}
-                  className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-fg/40 opacity-0 transition-[background-color,color,opacity,transform] hover:bg-fg/10 hover:text-fg group-hover:opacity-100 focus:opacity-100 active:scale-90"
+      <Popover
+        open={open}
+        onClose={() => setOpen(false)}
+        flush
+        maxHeight={440}
+        scroll={false}
+        className="w-80 max-w-[calc(100vw-16px)]"
+      >
+        <div className="flex max-h-[inherit] flex-col overflow-hidden">
+          <SearchField value={query} onChange={setQuery} onKeyDown={onSearchKeys} placeholder="Search tabs" />
+          <div data-tab-results className="overflow-y-auto p-1.5">
+            {found.map((tab, index) => {
+              const detail = browserTabDetail(tab)
+              const label = browserTabLabel(tab)
+              return (
+                <div
+                  key={tab.id}
+                  data-tab-result={tab.id}
+                  data-highlighted={index === cursor ? '' : undefined}
+                  className="group relative flex min-w-0 items-center rounded-xl px-3 py-2 text-fg/70 transition-colors hover:bg-fg/5 data-highlighted:bg-fg/5"
+                  onPointerEnter={() => setCursor(index)}
+                  onClick={() => choose(tab)}
                 >
-                  <CloseGlyph className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            )
-          })}
-          {found.length === 0 && <div className="px-3 py-8 text-center text-sm text-fg/45">No tabs found</div>}
+                  <button
+                    onClick={event => {
+                      event.stopPropagation()
+                      choose(tab)
+                    }}
+                    aria-label={`Open ${label}`}
+                    className="absolute inset-0 rounded-xl active:scale-[0.99]"
+                  />
+                  <span className="pointer-events-none relative flex min-w-0 flex-1 items-center gap-2.5 text-left">
+                    <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                      <BrowserTabMark tab={tab} />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm text-fg">{label}</span>
+                      {detail && detail !== label && (
+                        <span className="mt-0.5 block truncate text-xs text-fg/40">{detail}</span>
+                      )}
+                    </span>
+                    {tab.id === activeTabId && (
+                      <CheckGlyph className="h-4 w-4 shrink-0 text-fg transition-opacity group-hover:opacity-0 group-focus-within:opacity-0" />
+                    )}
+                  </span>
+                  <button
+                    onClick={event => {
+                      event.stopPropagation()
+                      useBrowser.getState().closeTab(tab.id)
+                      if (tabs.length === 2) setOpen(false)
+                    }}
+                    aria-label={`Close ${label}`}
+                    className="absolute right-1.5 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-fg/40 opacity-0 transition-[background-color,color,opacity,transform] hover:bg-fg/10 hover:text-fg group-hover:opacity-100 focus:opacity-100 active:scale-90"
+                  >
+                    <CloseGlyph className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              )
+            })}
+            {found.length === 0 && <div className="px-3 py-8 text-center text-sm text-fg/45">No tabs found</div>}
+          </div>
         </div>
       </Popover>
     </span>

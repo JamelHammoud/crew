@@ -37,6 +37,7 @@ export function Popover({
   anchor,
   flush,
   maxHeight,
+  scroll = true,
   className = '',
   children
 }: {
@@ -48,6 +49,7 @@ export function Popover({
   anchor?: { current: HTMLElement | null }
   flush?: boolean
   maxHeight?: number
+  scroll?: boolean
   className?: string
   children: ReactNode
 }) {
@@ -172,7 +174,7 @@ export function Popover({
   const style: CSSProperties | null = spot && {
     ...spot,
     maxHeight: Math.min(maxHeight ?? Infinity, window.innerHeight - 16),
-    overflowY: 'auto',
+    overflowY: scroll ? 'auto' : 'hidden',
     overflowX: 'hidden'
   }
 
