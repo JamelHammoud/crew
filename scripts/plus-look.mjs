@@ -132,13 +132,18 @@ app.whenReady().then(async () => {
     await wait(400)
 	    said.menu = await win.webContents.executeJavaScript(BOX)
 	    said.menuRows = await win.webContents.executeJavaScript(\`[...document.querySelectorAll('.glass.fixed button')].map(b => b.textContent)\`)
+	    said.chevrons = await win.webContents.executeJavaScript(\`['Agent', 'Commands'].map(label => {
+      const row = [...document.querySelectorAll('.glass.fixed button')].find(button => button.textContent === label)
+      const mark = row.querySelector('svg path')
+      return { label, gap: Math.round((row.getBoundingClientRect().right - mark.getBoundingClientRect().right) * 10) / 10 }
+    })\`)
 	    said.commandFrames = await win.webContents.executeJavaScript(WATCH('Commands'))
     await wait(300)
     said.commands = await win.webContents.executeJavaScript(BOX)
-    said.commandRows = await win.webContents.executeJavaScript(`[...document.querySelectorAll('.glass.fixed button')].map(b => b.textContent)`)
+    said.commandRows = await win.webContents.executeJavaScript(\`[...document.querySelectorAll('.glass.fixed button')].map(b => b.textContent)\`)
     await win.webContents.executeJavaScript(PRESS('/plan'))
     await wait(300)
-    said.pickedCommands = await win.webContents.executeJavaScript(`globalThis.pickedCommands`)
+    said.pickedCommands = await win.webContents.executeJavaScript(\`globalThis.pickedCommands\`)
     await win.webContents.executeJavaScript(PRESS('Add to your message'))
     await wait(400)
 	    said.frames = await win.webContents.executeJavaScript(WATCH('Agent'))
@@ -213,6 +218,7 @@ if (!seen.menuRows.includes('Commands')) throw new Error('Commands was not in th
 if (!seen.commandRows.some(row => row.startsWith('/plan'))) throw new Error('/plan was not in Commands')
 if (!seen.commandRows.some(row => row.startsWith('/ghost'))) throw new Error('/ghost was not in Commands')
 if (seen.pickedCommands.join(',') !== 'plan') throw new Error('/plan was not applied')
+if (seen.chevrons.some(row => row.gap < 12 || row.gap > 14)) throw new Error('a chevron was not optically aligned')
 
 console.log(
   `\nthe rows        ${seen.menu.width} x ${seen.menu.height}, bottom at ${seen.menu.bottom}, left at ${seen.menu.left}`
@@ -227,6 +233,7 @@ console.log(`what moves      ${seen.agents.box}`)
 console.log(`corner          ${seen.agents.radius}`)
 console.log(`rows in it      ${JSON.stringify(seen.rows)}`)
 console.log(`composer rows  ${JSON.stringify(seen.menuRows)}`)
+console.log(`chevrons      ${JSON.stringify(seen.chevrons)}`)
 console.log(`command rows   ${JSON.stringify(seen.commandRows)}`)
 console.log(`picked         ${JSON.stringify(seen.pickedCommands)}`)
 
