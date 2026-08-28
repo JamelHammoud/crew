@@ -220,6 +220,12 @@ describe('what a long thread draws at all', () => {
     const first = rows()
 
     act(() => {
+      const el = scroller()
+      el.scrollTop = el.scrollHeight
+      fireEvent.scroll(el)
+    })
+
+    act(() => {
       useCrew.setState({ steps: { [PROMPT]: steps } })
     })
 
