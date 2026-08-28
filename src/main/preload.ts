@@ -89,7 +89,7 @@ const bridge = {
   previewHtml: (id: string, path: string, text: string | null): Promise<string | null> =>
     ipcRenderer.invoke('preview:html', id, path, text),
   dropPreview: (id: string): Promise<void> => ipcRenderer.invoke('preview:drop', id),
-  revealFile: (path: string): Promise<void> => ipcRenderer.invoke('file:reveal', path),
+  revealFile: (path: string): Promise<boolean> => ipcRenderer.invoke('file:reveal', path),
   setBadge: (count: number): Promise<void> => ipcRenderer.invoke('app:badge', count),
   publishPresence: (here: Present[]): void => ipcRenderer.send('presence:publish', here),
   onPresence: (listener: (snapshot: PresenceSnapshot) => void): (() => void) => {

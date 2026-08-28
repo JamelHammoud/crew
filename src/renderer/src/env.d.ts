@@ -77,7 +77,7 @@ declare global {
     copyPaths(path: string): Promise<FileCopyPaths>
     previewHtml(id: string, path: string, text: string | null): Promise<string | null>
     dropPreview(id: string): Promise<void>
-    revealFile(path: string): Promise<void>
+    revealFile(path: string): Promise<boolean>
     setBadge(count: number): Promise<void>
     publishPresence(here: Present[]): void
     onPresence(listener: (snapshot: PresenceSnapshot) => void): () => void
