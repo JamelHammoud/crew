@@ -19,8 +19,11 @@ function probeSource() {
 import { createRoot } from ${JSON.stringify(resolve('react-dom/client'))}
 	import AddMenu from ${from('components/AddMenu.tsx')}
 	import { useCrew } from ${from('state/store.ts')}
+	import { commandsIn } from ${JSON.stringify(path.join(root, 'src/shared/commands.ts'))}
 	import { installPlugin } from ${JSON.stringify(path.join(root, 'src/shared/plugins.ts'))}
 import './probe.css'
+
+globalThis.pickedCommands = []
 
 const agent = (id, label) => ({
   id,
@@ -56,7 +59,14 @@ function Page() {
       React.createElement(
         'div',
         { className: 'flex items-center gap-2' },
-	        React.createElement(AddMenu, { attachmentKey: 'chat', defaultAgent: true, inputRef: React.createRef(), onSend: () => {} })
+	        React.createElement(AddMenu, {
+	          attachmentKey: 'chat',
+	          defaultAgent: true,
+	          commands: commandsIn('chat'),
+	          inputRef: React.createRef(),
+	          onCommand: name => globalThis.pickedCommands.push(name),
+	          onSend: () => {}
+	        })
       )
     )
   )
@@ -122,6 +132,15 @@ app.whenReady().then(async () => {
     await wait(400)
 	    said.menu = await win.webContents.executeJavaScript(BOX)
 	    said.menuRows = await win.webContents.executeJavaScript(\`[...document.querySelectorAll('.glass.fixed button')].map(b => b.textContent)\`)
+	    said.commandFrames = await win.webContents.executeJavaScript(WATCH('Commands'))
+    await wait(300)
+    said.commands = await win.webContents.executeJavaScript(BOX)
+    said.commandRows = await win.webContents.executeJavaScript(`[...document.querySelectorAll('.glass.fixed button')].map(b => b.textContent)`)
+    await win.webContents.executeJavaScript(PRESS('/plan'))
+    await wait(300)
+    said.pickedCommands = await win.webContents.executeJavaScript(`globalThis.pickedCommands`)
+    await win.webContents.executeJavaScript(PRESS('Add to your message'))
+    await wait(400)
 	    said.frames = await win.webContents.executeJavaScript(WATCH('Agent'))
     await wait(300)
     said.agents = await win.webContents.executeJavaScript(BOX)
@@ -190,6 +209,10 @@ if (!seen.menuRows.includes('Frontpages')) throw new Error('Frontpages was not i
 if (seen.menuRows.indexOf('Frontpages') <= seen.menuRows.indexOf('Pick a GIF')) {
   throw new Error('Frontpages did not stand under Pick a GIF')
 }
+if (!seen.menuRows.includes('Commands')) throw new Error('Commands was not in the composer menu')
+if (!seen.commandRows.some(row => row.startsWith('/plan'))) throw new Error('/plan was not in Commands')
+if (!seen.commandRows.some(row => row.startsWith('/ghost'))) throw new Error('/ghost was not in Commands')
+if (seen.pickedCommands.join(',') !== 'plan') throw new Error('/plan was not applied')
 
 console.log(
   `\nthe rows        ${seen.menu.width} x ${seen.menu.height}, bottom at ${seen.menu.bottom}, left at ${seen.menu.left}`
@@ -197,10 +220,15 @@ console.log(
 console.log(
   `the faces       ${seen.agents.width} x ${seen.agents.height}, bottom at ${seen.agents.bottom}, left at ${seen.agents.left}`
 )
+console.log(
+  `the commands    ${seen.commands.width} x ${seen.commands.height}, bottom at ${seen.commands.bottom}, left at ${seen.commands.left}`
+)
 console.log(`what moves      ${seen.agents.box}`)
 console.log(`corner          ${seen.agents.radius}`)
 console.log(`rows in it      ${JSON.stringify(seen.rows)}`)
 console.log(`composer rows  ${JSON.stringify(seen.menuRows)}`)
+console.log(`command rows   ${JSON.stringify(seen.commandRows)}`)
+console.log(`picked         ${JSON.stringify(seen.pickedCommands)}`)
 
 console.log(
   `the GIFs        ${seen.gif.width} x ${seen.gif.height}, bottom at ${seen.gif.bottom}, left at ${seen.gif.left}`
@@ -225,4 +253,5 @@ function movement(say, frames) {
 }
 
 movement('to the faces', seen.frames)
+movement('to the commands', seen.commandFrames)
 movement('to the GIFs', seen.gifFrames)
