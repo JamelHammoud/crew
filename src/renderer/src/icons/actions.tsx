@@ -41,6 +41,13 @@ export const SearchGlyph = glyph(
   </>
 )
 
+export const RegexGlyph = glyph(
+  <>
+    <circle cx="4" cy="12" r="1.5" fill="currentColor" stroke="none" />
+    <path d="M15.5 4.5v15M9.5 8.25l12 7.5M21.5 8.25l-12 7.5" />
+  </>
+)
+
 // Copying and duplicating are the one idea, so they are the one drawing. The
 // sheet behind is an open corner rather than a second closed box: two full
 // rectangles cross twice and the crossing is all you see at 16px.

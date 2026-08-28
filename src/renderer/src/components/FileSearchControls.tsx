@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react'
-import { ChevronUpGlyph, CloseGlyph, MoreGlyph, PencilGlyph, RefreshGlyph } from '../icons'
+import { ChevronUpGlyph, CloseGlyph, MoreGlyph, PencilGlyph, RefreshGlyph, RegexGlyph } from '../icons'
 import { MenuDivider, MenuItem, Popover } from './Popover'
 import SearchField from './SearchField'
 import Tooltip from './Tooltip'
@@ -127,7 +127,7 @@ export default function FileSearchControls({
                 onClick={() => onChange('wholeWord', !form.wholeWord)}
               />
               <MenuItem
-                icon={<TextMark>.*</TextMark>}
+                icon={<RegexGlyph />}
                 label="Use regular expression"
                 checked={form.regex}
                 onClick={() => onChange('regex', !form.regex)}
