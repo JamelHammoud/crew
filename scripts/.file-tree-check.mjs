@@ -57,6 +57,7 @@ createRoot(document.getElementById('root')).render(React.createElement(Probe))
 const main = `const { app, BrowserWindow } = require('electron')
 const { writeFile } = require('node:fs/promises')
 const path = require('node:path')
+app.setPath('userData', path.join(__dirname, 'profile'))
 app.disableHardwareAcceleration()
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -171,12 +172,18 @@ const run = dir =>
     const child = spawn(electron, [path.join(dir, 'main.cjs')], { stdio: ['ignore', 'pipe', 'pipe'] })
     let output = ''
     child.stdout.on('data', chunk => (output += chunk))
+    child.stderr.on('data', chunk => (output += chunk))
     child.on('error', reject)
     child.on('exit', () => {
+      clearTimeout(timeout)
       const row = output.split('\n').find(value => value.startsWith('CHECK '))
-      if (!row) reject(new Error('the file tree check said nothing'))
+      if (!row) reject(new Error(`the file tree check said nothing\n${output}`))
       else resolve(JSON.parse(row.slice(6)))
     })
+    const timeout = setTimeout(() => {
+      child.kill('SIGTERM')
+      reject(new Error(`the file tree check timed out\n${output}`))
+    }, 20000)
   })
 
 const dir = await stage()
