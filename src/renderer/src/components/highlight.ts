@@ -6,6 +6,7 @@ import type { Theme } from '../state/theme'
 export type { ThemedToken }
 
 const MAX_CHARS = 200_000
+const IMMEDIATE_CHARS = 40_000
 
 export const THEME_NAMES: Record<Theme, string> = {
   dark: 'dark-plus',
@@ -237,6 +238,7 @@ export function languageFor(path: string): string | null {
 }
 
 let corePromise: Promise<HighlighterCore> | null = null
+let loadedCore: HighlighterCore | null = null
 const loading = new Map<string, Promise<void>>()
 
 const CACHE_CHARS = 4_000_000
@@ -280,6 +282,9 @@ function core(): Promise<HighlighterCore> {
     themes: [import('@shikijs/themes/dark-plus'), import('@shikijs/themes/light-plus')],
     langs: [],
     engine: createJavaScriptRegexEngine({ forgiving: true })
+  }).then(highlighter => {
+    loadedCore = highlighter
+    return highlighter
   })
   return corePromise
 }
@@ -319,6 +324,19 @@ export async function highlightLines(path: string, text: string, theme: Theme): 
   try {
     const highlighter = await withLanguage(lang)
     return keep(shelved, text, highlighter.codeToTokensBase(text, { lang, theme: THEME_NAMES[theme] }))
+  } catch {
+    return null
+  }
+}
+
+export function highlightLinesNow(path: string, text: string, theme: Theme): Highlighted | null {
+  const lang = languageFor(path)
+  if (!lang || text.length > IMMEDIATE_CHARS || !loadedCore?.getLoadedLanguages().includes(lang)) return null
+  const shelved = shelf(lang, theme)
+  const known = shelved.get(text)
+  if (known) return known
+  try {
+    return keep(shelved, text, loadedCore.codeToTokensBase(text, { lang, theme: THEME_NAMES[theme] }))
   } catch {
     return null
   }

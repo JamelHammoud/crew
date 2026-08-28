@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTheme } from '../state/theme'
 import { docText, type Row, type Span } from './diffRows'
-import { highlightLines, type Highlighted, type ThemedToken } from './highlight'
+import { highlightLines, highlightLinesNow, type Highlighted, type ThemedToken } from './highlight'
 
 interface Piece {
   text: string
@@ -57,6 +57,7 @@ export function useHighlight(path: string, rows: Row[], delay = 0): (row: Row) =
   const theme = useTheme()
   const [highlight, setHighlight] = useState<Highlighted | null>(null)
   const source = useMemo(() => docText(rows), [rows])
+  const immediate = useMemo(() => highlightLinesNow(path, source, theme), [path, source, theme])
 
   useEffect(() => setHighlight(null), [path, theme])
 
@@ -76,8 +77,9 @@ export function useHighlight(path: string, rows: Row[], delay = 0): (row: Row) =
   }, [path, source, theme, delay])
 
   return (row: Row) => {
-    if (row.line === null || !highlight) return undefined
+    const painted = immediate ?? highlight
+    if (row.line === null || !painted) return undefined
     const at = row.line - 1
-    return highlight.lines[at] === row.text ? highlight.byLine[at] : undefined
+    return painted.lines[at] === row.text ? painted.byLine[at] : undefined
   }
 }

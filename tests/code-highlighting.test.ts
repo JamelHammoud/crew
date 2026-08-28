@@ -36,17 +36,17 @@ describe('code highlighting', () => {
 
   it('draws distinct VS Code colors for HTML, CSS, and Python', async () => {
     const samples = [
-      ['page.html', '<main class="crew">Hello</main>'],
-      ['style.css', '.crew { color: white; display: grid; }'],
-      ['agent.py', 'def greet(name):\n    return f"Hello {name}"']
+      ['page.html', '<main class="crew">Hello</main>', '#569CD6'],
+      ['style.css', '.crew { color: white; display: grid; }', '#D7BA7D'],
+      ['agent.py', 'def greet(name):\n    return f"Hello {name}"', '#C586C0']
     ] as const
 
-    for (const [path, source] of samples) {
+    for (const [path, source, expected] of samples) {
       const highlighted = await highlightLines(path, source, 'dark')
       expect(highlighted, path).not.toBeNull()
       const colors = new Set(highlighted?.byLine.flatMap(line => line.map(token => token.color).filter(Boolean)))
       expect(colors.size, path).toBeGreaterThan(2)
-      expect(colors.has('#569CD6') || colors.has('#569cd6'), path).toBe(true)
+      expect([...colors].map(color => color?.toUpperCase()), path).toContain(expected)
     }
   }, 20000)
 })
