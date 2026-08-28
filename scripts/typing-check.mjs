@@ -437,17 +437,20 @@ const dir = await stage()
 try {
   const seen = await run(await compile(dir))
   if (seen.failed) throw new Error(seen.failed)
-  const [short, long, contained] = seen.results
+  const [short, long, contained, huge] = seen.results
   console.log(
     `${OLD ? 'the hook as it was, reading twice' : 'the hook as it is, reading once'}, ${LINE.length} characters typed ${PASSES} times over`
   )
   say(short)
   say(long)
   say(contained)
+  say(huge)
 
   const cost = Number((long.sync.median - short.sync.median).toFixed(3))
   const left = Number((contained.sync.median - short.sync.median).toFixed(3))
+  const hugeCost = Number((huge.sync.median - short.sync.median).toFixed(3))
   console.log(`\n  the rows cost ${cost}ms a keystroke, and ${left}ms of that is left with the scroller contained`)
+  console.log(`  ${HUGE} rows cost ${hugeCost}ms a keystroke`)
   console.log(`  reads a keystroke ${seen.perKey}`)
   console.log(`  ${JSON.stringify(seen.ways)}`)
   console.log(
@@ -463,6 +466,10 @@ try {
     console.error('the long thread was never seeded')
     bad = true
   }
+  if (huge.rows !== HUGE) {
+    console.error('the huge thread was never seeded')
+    bad = true
+  }
   if (cost > 1) {
     console.error(
       `a thread of ${LONG} rows costs ${cost}ms a keystroke, which is a composer that drags as a thread grows`
@@ -471,6 +478,10 @@ try {
   }
   if (long.sync.p95 > 4) {
     console.error(`a keystroke reached ${long.sync.p95}ms at the 95th`)
+    bad = true
+  }
+  if (hugeCost > 1 || huge.sync.p95 > 4) {
+    console.error(`a thread of ${HUGE} rows reached ${huge.sync.p95}ms at the 95th`)
     bad = true
   }
 } catch (error) {
