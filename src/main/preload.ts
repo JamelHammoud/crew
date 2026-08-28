@@ -81,7 +81,8 @@ const bridge = {
   readFile: (path: string): Promise<RepoFile | null> => ipcRenderer.invoke('file:read', path),
   listFiles: (): Promise<string[]> => ipcRenderer.invoke('file:list'),
   searchFiles: (options: FileSearchOptions): Promise<FileContentSearch> => ipcRenderer.invoke('file:search', options),
-  replaceFiles: (request: FileReplaceRequest): Promise<FileReplaceResult> => ipcRenderer.invoke('file:replace', request),
+  replaceFiles: (request: FileReplaceRequest): Promise<FileReplaceResult> =>
+    ipcRenderer.invoke('file:replace', request),
   readDirs: (query: string): Promise<MachineDir[]> => ipcRenderer.invoke('file:dirs', query),
   writeFile: (path: string, text: string): Promise<RepoFile | null> => ipcRenderer.invoke('file:write', path, text),
   locatePath: (path: string): Promise<PathLocation> => ipcRenderer.invoke('file:locate', path),

@@ -256,7 +256,9 @@ describe('the sidebar', () => {
     fireEvent.contextMenu(files, { clientX: 80, clientY: 120 })
     fireEvent.click(await screen.findByRole('button', { name: 'Pin to sidebar' }))
 
-    await waitFor(() => expect([...moreMenu.querySelectorAll('button')].some(row => row.textContent === 'Files')).toBe(false))
+    await waitFor(() =>
+      expect([...moreMenu.querySelectorAll('button')].some(row => row.textContent === 'Files')).toBe(false)
+    )
     expect(localStorage.getItem('crew.sidebar.pins')).toBe('["files"]')
     first.unmount()
 
