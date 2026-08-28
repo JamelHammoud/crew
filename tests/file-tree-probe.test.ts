@@ -105,6 +105,35 @@ describe('the file explorer', () => {
     expect(screen.getByText('Pick a file from the project')).toBeTruthy()
   })
 
+  it('keeps search options out of the default view', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+
+    await screen.findByText('src')
+    expect(screen.getByLabelText('More search options')).toBeTruthy()
+    expect(screen.queryByText('Match case')).toBeNull()
+    expect(screen.queryByLabelText('Replace')).toBeNull()
+    expect(screen.queryByLabelText('Files to include')).toBeNull()
+  })
+
+  it('resizes the files column and resets it with the Browser gesture', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    await screen.findByText('src')
+    const handle = screen.getByRole('separator', { name: 'Resize files' })
+    const tree = document.querySelector('[data-file-tree-width]') as HTMLElement
+
+    fireEvent.pointerDown(handle, { clientX: 300, timeStamp: 1000 })
+    fireEvent.pointerMove(window, { clientX: 250, timeStamp: 1010 })
+    fireEvent.pointerUp(window, { clientX: 250, timeStamp: 1020 })
+    expect(tree.getAttribute('data-file-tree-width')).toBe('338')
+
+    fireEvent.pointerDown(handle, { clientX: 250, timeStamp: 2000 })
+    fireEvent.pointerUp(window, { clientX: 250, timeStamp: 2010 })
+    fireEvent.pointerDown(handle, { clientX: 250, timeStamp: 2200 })
+    expect(tree.getAttribute('data-file-tree-width')).toBe('288')
+  })
+
   it('never shows the tree and the folder listing at once', async () => {
     useBrowser.getState().openFiles()
     render(createElement(BrowserPanel))
@@ -244,10 +273,11 @@ describe('the file explorer', () => {
     useBrowser.getState().openFiles()
     render(createElement(BrowserPanel))
     fireEvent.change(await screen.findByLabelText('Search files'), { target: { value: 'implementationDetail' } })
-    fireEvent.click(screen.getByLabelText('Match case'))
-    fireEvent.click(screen.getByLabelText('Match whole word'))
-    fireEvent.click(screen.getByLabelText('Use regular expression'))
-    fireEvent.click(screen.getByText('More filters'))
+    fireEvent.click(screen.getByLabelText('More search options'))
+    fireEvent.click(screen.getByText('Match case'))
+    fireEvent.click(screen.getByText('Match whole word'))
+    fireEvent.click(screen.getByText('Use regular expression'))
+    fireEvent.click(screen.getByText('File filters'))
     fireEvent.change(screen.getByLabelText('Files to include'), { target: { value: 'src/**' } })
     fireEvent.change(screen.getByLabelText('Files to exclude'), { target: { value: '**/*.test.ts' } })
 
@@ -271,7 +301,8 @@ describe('the file explorer', () => {
     await waitFor(() => expect(rowFor('src/app.ts')).toBeTruthy())
     expect(rowFor('tests/app.test.ts')).toBeTruthy()
 
-    fireEvent.click(screen.getByText('More filters'))
+    fireEvent.click(screen.getByLabelText('More search options'))
+    fireEvent.click(screen.getByText('File filters'))
     fireEvent.change(screen.getByLabelText('Files to include'), { target: { value: 'tests/**' } })
     await waitFor(() => expect(rowFor('src/app.ts')).toBeNull())
     expect(rowFor('tests/app.test.ts')).toBeTruthy()
@@ -284,7 +315,8 @@ describe('the file explorer', () => {
     useBrowser.getState().openFiles()
     render(createElement(BrowserPanel))
     fireEvent.change(await screen.findByLabelText('Search files'), { target: { value: '(' } })
-    fireEvent.click(screen.getByLabelText('Use regular expression'))
+    fireEvent.click(screen.getByLabelText('More search options'))
+    fireEvent.click(screen.getByText('Use regular expression'))
 
     expect(await screen.findByText(/Invalid regular expression/)).toBeTruthy()
     expect(document.querySelector('[data-content-file]')).toBeNull()
@@ -297,16 +329,20 @@ describe('the file explorer', () => {
     fireEvent.change(input, { target: { value: 'implementationDetail' } })
     await waitFor(() => expect(document.querySelector('[data-content-file]')).toBeTruthy())
 
-    fireEvent.click(screen.getByLabelText('Collapse results'))
+    fireEvent.click(screen.getByLabelText('More search options'))
+    fireEvent.click(screen.getByText('Collapse results'))
     expect(document.querySelector('[data-content-file]')).toBeNull()
-    fireEvent.click(screen.getByLabelText('Show results'))
+    fireEvent.click(screen.getByLabelText('More search options'))
+    fireEvent.click(screen.getByText('Show results'))
     expect(document.querySelector('[data-content-file]')).toBeTruthy()
 
-    fireEvent.click(screen.getByLabelText('Clear results'))
+    fireEvent.click(screen.getByLabelText('More search options'))
+    fireEvent.click(screen.getByText('Clear results'))
     expect((input as HTMLInputElement).value).toBe('implementationDetail')
     expect(document.querySelector('[data-content-file]')).toBeNull()
 
-    fireEvent.click(screen.getByLabelText('Refresh search'))
+    fireEvent.click(screen.getByLabelText('More search options'))
+    fireEvent.click(screen.getByText('Refresh search'))
     await waitFor(() => expect(document.querySelector('[data-content-file]')).toBeTruthy())
     expect(searchFiles.mock.calls.at(-1)?.[0].refresh).toBe(true)
   })
@@ -314,7 +350,8 @@ describe('the file explorer', () => {
   it('replaces one exact match from its fixed action', async () => {
     useBrowser.getState().openFiles()
     render(createElement(BrowserPanel))
-    fireEvent.click(screen.getByLabelText('Show replace'))
+    fireEvent.click(screen.getByLabelText('More search options'))
+    fireEvent.click(screen.getByText('Replace'))
     fireEvent.change(await screen.findByLabelText('Search files'), { target: { value: 'implementationDetail' } })
     fireEvent.change(screen.getByLabelText('Replace'), { target: { value: 'implementation' } })
     await waitFor(() => expect(screen.getByLabelText('Replace this match')).toBeTruthy())
@@ -333,10 +370,12 @@ describe('the file explorer', () => {
   it('replaces every content match with preserve case enabled', async () => {
     useBrowser.getState().openFiles()
     render(createElement(BrowserPanel))
-    fireEvent.click(screen.getByLabelText('Show replace'))
+    fireEvent.click(screen.getByLabelText('More search options'))
+    fireEvent.click(screen.getByText('Replace'))
     fireEvent.change(await screen.findByLabelText('Search files'), { target: { value: 'implementationDetail' } })
     fireEvent.change(screen.getByLabelText('Replace'), { target: { value: 'implementation' } })
-    fireEvent.click(screen.getByLabelText('Preserve case'))
+    fireEvent.click(screen.getByLabelText('More search options'))
+    fireEvent.click(screen.getByText('Preserve case'))
     await waitFor(() => expect(screen.getByLabelText('Replace all').hasAttribute('disabled')).toBe(false))
 
     fireEvent.click(screen.getByLabelText('Replace all'))
