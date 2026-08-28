@@ -95,8 +95,13 @@ function globSource(pattern: string): string {
     }
     if (char === '*') {
       if (braced[at + 1] === '*') {
-        source += '.*'
-        at++
+        if (braced[at + 2] === '/') {
+          source += '(?:.*/)?'
+          at += 2
+        } else {
+          source += '.*'
+          at++
+        }
       } else source += '[^/]*'
       continue
     }
