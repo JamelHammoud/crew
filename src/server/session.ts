@@ -1057,7 +1057,7 @@ export class CrewSession {
         if (meta.role === 'ui') this.handleDeleteMessage(member, msg.messageId)
         break
       case 'chat.edit':
-        if (meta.role === 'ui') this.handleEditMessage(ws, member, msg.messageId, msg.text)
+        if (meta.role === 'ui') this.handleEditMessage(member, msg.messageId, msg.text)
         break
       case 'chat.react':
         if (meta.role === 'ui') this.handleReaction(ws, member, msg.targetId, msg.emoji)
@@ -1255,7 +1255,7 @@ export class CrewSession {
         if (meta.role === 'ui') this.handleGameScore(member, msg.gameId, msg.score)
         break
       case 'queue.edit':
-        if (meta.role === 'ui') this.handleQueueEdit(ws, member, msg.promptId, msg.text)
+        if (meta.role === 'ui') this.handleQueueEdit(member, msg.promptId, msg.text)
         break
       case 'queue.remove':
         if (meta.role === 'ui') this.handleQueueRemove(member, msg.promptId)
@@ -2914,7 +2914,7 @@ export class CrewSession {
     this.onSyncNeeded?.()
   }
 
-  private handleEditMessage(ws: WebSocket, member: Member, messageId: string, text: string): void {
+  private handleEditMessage(member: Member, messageId: string, text: string): void {
     const event = this.events.find(e => e.kind === 'message' && e.id === messageId)
     if (!event || event.kind !== 'message') return
     if (event.authorId !== member.id || event.threadId) return
@@ -4093,7 +4093,7 @@ export class CrewSession {
     return null
   }
 
-  private handleQueueEdit(ws: WebSocket, member: Member, promptId: string, text: string): void {
+  private handleQueueEdit(member: Member, promptId: string, text: string): void {
     const found = this.queuedEntry(promptId)
     const trimmed = text.trim()
     if (!found || !trimmed || found.entry.authorId !== member.id) return
