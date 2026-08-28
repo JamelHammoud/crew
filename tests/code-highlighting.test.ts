@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { carryTokens } from '../src/renderer/src/components/codeLine'
 import { LANGUAGE_NAMES, THEME_NAMES, highlightLines, languageFor } from '../src/renderer/src/components/highlight'
 
 describe('code highlighting', () => {
@@ -47,4 +48,16 @@ describe('code highlighting', () => {
       ).toContain(expected)
     }
   }, 20000)
+
+  it('keeps the current token colors while a deferred pass catches up', () => {
+    const carried = carryTokens('const agents = 12', [
+      { content: 'const', color: '#569CD6', offset: 0 },
+      { content: ' agent', color: '#9CDCFE', offset: 5 },
+      { content: ' = ', color: '#D4D4D4', offset: 11 },
+      { content: '12', color: '#B5CEA8', offset: 14 }
+    ])
+    expect(carried.map(token => token.content).join('')).toBe('const agents = 12')
+    expect(carried.find(token => token.content === 'const')?.color).toBe('#569CD6')
+    expect(carried.at(-1)?.color).toBe('#B5CEA8')
+  })
 })
