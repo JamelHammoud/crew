@@ -59,6 +59,8 @@ const read = `(() => {
     editorScrollWidth: area.scrollWidth,
     editorClientWidth: area.clientWidth,
     codeText: code.textContent,
+    syntaxColors: [...code.querySelectorAll('span[style]')].map(span => span.style.color).filter(Boolean),
+    activeGutter: gutter.hasAttribute('data-active'),
     value: area.value,
     selection: [area.selectionStart, area.selectionEnd]
   }
@@ -194,11 +196,13 @@ try {
   if (seen.scrolled.gutter.left !== seen.before.gutter.left) problems.push('the line numbers moved with the file')
   if (seen.scrolled.code.left >= seen.before.code.left - 800)
     problems.push('the code did not move under the line numbers')
+  if (!seen.focused.activeGutter) problems.push('the active line number did not highlight')
   if (seen.typed.value !== edited) problems.push('typing did not reach the right place in the file')
   for (const [index, frame] of seen.frames.entries()) {
     const expected = line.slice(0, insertionAt) + typedText.slice(0, index + 1) + line.slice(insertionAt)
     if (frame.value !== expected) problems.push(`the editor value diverged after character ${index + 1}`)
     if (frame.codeText !== expected) problems.push(`the painted line diverged after character ${index + 1}`)
+    if (frame.syntaxColors.length === 0) problems.push(`syntax color disappeared after character ${index + 1}`)
     if (frame.selection[0] !== insertionAt + index + 1 || frame.selection[1] !== insertionAt + index + 1)
       problems.push(`the caret moved to the wrong character after character ${index + 1}`)
     if (frame.editorScrollLeft !== 0) problems.push(`the hidden editor scrolled after character ${index + 1}`)
