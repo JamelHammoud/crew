@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type MouseEvent } from 'react'
+import { useEffect, useMemo, useState, type MouseEvent, type ReactNode } from 'react'
 import { matchFiles, type FileContentMatch, type FileMatch } from '../../../shared/files'
 import { compileFileFilter, compileFileSearch, type FileReplaceTarget } from '../../../shared/fileSearch'
 import { ChevronRightGlyph, FileGlyph, FolderGlyph, PencilGlyph } from '../icons'
@@ -229,7 +229,7 @@ function Heading({ children }: { children: string }) {
   return <p className="px-3 pb-1 pt-2 text-[11px] font-medium uppercase tracking-wide text-fg-faint">{children}</p>
 }
 
-export default function ProjectSearch({ tab }: { tab: BrowserTab }) {
+export default function ProjectSearch({ tab, children }: { tab: BrowserTab; children: ReactNode }) {
   const [form, setForm] = useState(initial)
   const [replaceOpen, setReplaceOpen] = useState(false)
   const [detailsOpen, setDetailsOpen] = useState(false)
@@ -332,10 +332,11 @@ export default function ProjectSearch({ tab }: { tab: BrowserTab }) {
         onReplaceAll={() => void replace()}
       />
       <div className="min-h-0 flex-1 overflow-auto pb-2">
-        {!paths && <Loading />}
+        {!form.query.trim() && children}
+        {form.query.trim() && !paths && <Loading />}
         {error && <p className="select-text px-3 py-5 text-center text-xs text-danger">{error}</p>}
         {!error && content.failed && <p className="px-3 py-5 text-center text-xs text-danger">Could not search files</p>}
-        {!error && !content.failed && !cleared && (
+        {!error && !content.failed && !cleared && form.query.trim() && (
           <>
             {names.length > 0 && <Heading>Files and folders</Heading>}
             {!collapsed && names.map(match => <PathMatch key={match.path} tab={tab} match={match} dir={folders.has(match.path)} />)}
