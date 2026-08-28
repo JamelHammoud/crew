@@ -347,9 +347,12 @@ export const useBrowser = create<BrowserState>((write, get) => {
       }
       const active = tabs.find(t => t.id === activeTabId)
       if (active && active.kind === 'web' && !active.initialUrl) {
-        const file = makeFileTab(path, line, diff)
         set(s => ({
-          tabs: s.tabs.map(t => (t.id === active.id ? { ...t, ...file, id: t.id } : t))
+          tabs: s.tabs.map(t =>
+            t.id === active.id
+              ? { ...t, kind: 'file' as const, path, line, diff, preview: isSvg(path) && line === null && diff === null }
+              : t
+          )
         }))
         return
       }
