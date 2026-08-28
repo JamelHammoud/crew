@@ -219,6 +219,7 @@ try {
   console.log(
     `File editor works in Electron. Gutter stayed at ${seen.before.gutter.left}px while code moved ${Math.round(seen.before.code.left - seen.scrolled.code.left)}px.`
   )
+  console.log('Syntax color stayed on through every typing frame, and the active line number highlighted on focus.')
   console.log('Typing stayed in place. Keyboard and Edit menu undo and redo both restored the full run.')
 } finally {
   await rm(dir, { recursive: true, force: true })
