@@ -2145,7 +2145,7 @@ export class CrewSession {
       const page = this.followRenames(action.page)
       const doc = this.docs.get(page)
       if (!doc) return undefined
-      this.handleDoc(member, page, doc.text ? `${doc.text.replace(/\s*$/, '')}\n\n${action.text}` : action.text)
+      this.handleDoc(null, member, page, doc.text ? `${doc.text.replace(/\s*$/, '')}\n\n${action.text}` : action.text)
       return undefined
     }
     if (action.kind === 'chain') {
@@ -3197,8 +3197,8 @@ export class CrewSession {
     return page
   }
 
-  private ownsGhostDoc(ws: WebSocket, page: string): boolean {
-    return this.docs.get(page)?.scope !== 'ghost' || this.ghostDocOwners.get(page) === ws
+  private ownsGhostDoc(ws: WebSocket | null, page: string): boolean {
+    return this.docs.get(page)?.scope !== 'ghost' || (ws !== null && this.ghostDocOwners.get(page) === ws)
   }
 
   private saveDoc(page: string, doc: DocPage): void {
@@ -3218,7 +3218,7 @@ export class CrewSession {
   }
 
   private handleDoc(
-    ws: WebSocket,
+    ws: WebSocket | null,
     member: Member,
     page: string,
     text: string,
@@ -3229,9 +3229,10 @@ export class CrewSession {
     const existing = this.docs.get(page)
     if (existing && !this.ownsGhostDoc(ws, page)) return
     const scope = existing?.scope ?? askedScope
+    if (scope === 'ghost' && ws === null) return
     if (!existing && this.docs.has(page)) return
     const doc: DocPage = { title: title ?? existing?.title ?? fallbackTitle(page), text, scope }
-    if (scope === 'ghost' && !existing) this.ghostDocOwners.set(page, ws)
+    if (scope === 'ghost' && !existing && ws) this.ghostDocOwners.set(page, ws)
     try {
       this.saveDoc(page, doc)
     } catch {
