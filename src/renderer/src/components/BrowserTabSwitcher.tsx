@@ -128,7 +128,10 @@ export default function BrowserTabSwitcher({ tabs, activeTabId }: { tabs: Browse
                       )}
                     </span>
                     {tab.id === activeTabId && (
-                      <CheckGlyph className="h-4 w-4 shrink-0 text-fg transition-opacity group-hover:opacity-0 group-focus-within:opacity-0" />
+                      <CheckGlyph
+                        data-active-tab-mark
+                        className="h-4 w-4 shrink-0 text-fg transition-opacity group-hover:opacity-0 group-focus-within:opacity-0"
+                      />
                     )}
                   </span>
                   <button
