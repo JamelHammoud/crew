@@ -692,8 +692,8 @@ export const useBrowser = create<BrowserState>((write, get) => {
       set(s => ({
         tabs: s.tabs.map(t => {
           if (t.id !== id) return t
-          if (t.path === path) return { ...t, line }
-          return { ...t, path, line, diff: null, back: [...t.back, t.path], forward: [] }
+          if (t.path === path) return { ...t, line, open: reveal(t.open, path) }
+          return { ...t, path, line, open: reveal(t.open, path), diff: null, back: [...t.back, t.path], forward: [] }
         })
       })),
     fileBack: id =>
