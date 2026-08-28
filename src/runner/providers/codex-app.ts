@@ -33,6 +33,17 @@ export function codexDialog(prompt: string, cwd: string, get: SettingReader, opt
   let threadId = ''
   let turnId = ''
 
+  const belongsToThread = (params: any): boolean => {
+    const notifiedThreadId = str(params?.threadId)
+    return !notifiedThreadId || notifiedThreadId === threadId
+  }
+
+  const belongsToTurn = (params: any): boolean => {
+    if (!belongsToThread(params)) return false
+    const notifiedTurnId = str(params?.turn?.id)
+    return !notifiedTurnId || !turnId || notifiedTurnId === turnId
+  }
+
   const ask = (stage: Stage, method: string, params: unknown): string => {
     const id = ++next
     pending.set(id, stage)
@@ -94,8 +105,10 @@ export function codexDialog(prompt: string, cwd: string, get: SettingReader, opt
       }
       if (typeof msg?.method === 'string') {
         if (msg.id !== undefined && msg.id !== null) return served(msg.id, msg.method)
-        if (msg.method === 'turn/started') turnId = str(msg.params?.turn?.id) || turnId
-        if (msg.method === 'turn/completed') turnId = ''
+        if (msg.method === 'turn/started' && belongsToThread(msg.params)) {
+          turnId = str(msg.params?.turn?.id) || turnId
+        }
+        if (msg.method === 'turn/completed' && belongsToTurn(msg.params)) turnId = ''
         return []
       }
       const stage = typeof msg?.id === 'number' ? pending.get(msg.id) : undefined

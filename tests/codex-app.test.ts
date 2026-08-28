@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { codexDialog } from '../src/runner/providers/codex-app'
 import { commandTool, codexFile } from '../src/runner/providers/codex-items'
-import { parseCodexLine } from '../src/runner/providers/codex'
+import { codexParser, parseCodexLine } from '../src/runner/providers/codex'
 import { makeCliProvider } from '../src/runner/providers/cli'
 import type { ParsedOutput } from '../src/runner/providers/types'
 
@@ -99,6 +99,21 @@ describe('the codex handshake', () => {
     expect(JSON.parse(dialog.steer('now') as string).params.expectedTurnId).toBe('turn-9')
   })
 
+  it('keeps the parent turn open when a child turn completes', () => {
+    const dialog = codexDialog('go', '/repo', reader())
+    walk(dialog)
+    dialog.answer(
+      note('turn/completed', {
+        threadId: 'thread-child',
+        turn: { id: 'turn-child', status: 'completed' }
+      })
+    )
+    expect(JSON.parse(dialog.steer('keep going') as string).params).toMatchObject({
+      threadId: 'thread-1',
+      expectedTurnId: 'turn-1'
+    })
+  })
+
   it('accepts an approval and refuses a request it cannot answer', () => {
     const dialog = codexDialog('go', '/repo', reader())
     const approval = dialog.answer(
@@ -191,6 +206,35 @@ describe('what codex says while it works', () => {
     expect(parsed('turn/completed', { turn: { status: 'completed' } })).toEqual([{ turnEnd: true }])
     const failed = parsed('turn/completed', { turn: { status: 'failed', error: { message: 'Ran out of context.' } } })
     expect(failed).toEqual([{ turnEnd: true }, { error: 'Ran out of context.' }])
+  })
+
+  it('keeps child thread output out of the parent run', () => {
+    const parse = codexParser().parse
+    expect(parse(note('turn/started', { threadId: 'parent', turn: { id: 'parent-turn' } }))).toEqual([])
+    expect(
+      parse(
+        note('item/agentMessage/delta', {
+          threadId: 'child',
+          turnId: 'child-turn',
+          delta: 'CHILD FINISHED'
+        })
+      )
+    ).toEqual([])
+    expect(
+      parse(note('turn/completed', { threadId: 'child', turn: { id: 'child-turn', status: 'completed' } }))
+    ).toEqual([])
+    expect(
+      parse(
+        note('item/agentMessage/delta', {
+          threadId: 'parent',
+          turnId: 'parent-turn',
+          delta: 'PARENT FINISHED'
+        })
+      )
+    ).toEqual([{ textDelta: { index: 0, text: 'PARENT FINISHED' } }])
+    expect(
+      parse(note('turn/completed', { threadId: 'parent', turn: { id: 'parent-turn', status: 'completed' } }))
+    ).toEqual([{ turnEnd: true }])
   })
 
   it('holds its tongue about a failure it is about to retry', () => {

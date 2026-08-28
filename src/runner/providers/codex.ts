@@ -7,7 +7,7 @@ import { itemActivity } from './codex-items'
 import { activityDetail, stepTodos } from './detail'
 import { usageFrom } from './tokens'
 import { codexUsage } from './usage'
-import type { OutputParser, ParsedOutput, Provider, RunOptions } from './types'
+import type { OutputParser, ParsedOutput, Provider, RunOptions, RunParser } from './types'
 
 const TEXT = 0
 const PLAN_ID = 'plan'
@@ -133,6 +133,25 @@ export const parseCodexLine: OutputParser = line => {
   }
 }
 
+export const codexParser = (): RunParser => {
+  let threadId = ''
+  return {
+    parse: line => {
+      let msg: any
+      try {
+        msg = JSON.parse(line)
+      } catch {
+        return []
+      }
+      const method = str(msg?.method)
+      const notifiedThreadId = str(msg?.params?.threadId)
+      if (!threadId && method === 'turn/started') threadId = notifiedThreadId
+      if (threadId && notifiedThreadId && notifiedThreadId !== threadId) return []
+      return parseCodexLine(line)
+    }
+  }
+}
+
 const SEARCH = [
   { value: '', label: 'Default' },
   { value: 'live', label: 'Live' },
@@ -228,7 +247,7 @@ export const codexProvider: Provider = makeCliProvider({
   command: 'codex',
   fields: codexFields,
   args: codexArgs,
-  parser: parseCodexLine,
+  makeParser: codexParser,
   dialog: codexDialog,
   mcp: 'inline',
   usage: codexUsage,
