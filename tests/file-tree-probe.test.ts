@@ -354,9 +354,9 @@ describe('the file explorer', () => {
     fireEvent.click(screen.getByText('Replace'))
     fireEvent.change(await screen.findByLabelText('Search files'), { target: { value: 'implementationDetail' } })
     fireEvent.change(screen.getByLabelText('Replace'), { target: { value: 'implementation' } })
-    await waitFor(() => expect(screen.getByLabelText('Replace this match')).toBeTruthy())
+    await waitFor(() => expect(screen.getByLabelText('Replace match on line 7')).toBeTruthy())
 
-    fireEvent.click(screen.getByLabelText('Replace this match'))
+    fireEvent.click(screen.getByLabelText('Replace match on line 7'))
 
     await waitFor(() => expect(replaceFiles).toHaveBeenCalledOnce())
     const request = replaceFiles.mock.calls[0]![0] as FileReplaceRequest
