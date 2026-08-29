@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { projectPlace } from '../../../shared/places'
 import type { CrewHome } from '../../../shared/project'
 import { said } from '../api/said'
-import { playSound } from '../media/sounds'
+import { playSound, type SoundName } from '../media/sounds'
 import { usePlaces } from '../state/places'
 import { usePrefs } from '../state/prefs'
 import { SIDEBAR_W, useSidebar } from '../state/sidebar'
@@ -29,6 +29,14 @@ import { useScrollFade } from './useScrollFade'
 import { useSidebarPins } from '../state/sidebarPins'
 
 const EMPTY_THREADS: string[] = []
+const TAB_SOUND: Record<Tab, SoundName> = {
+  chat: 'tab.chat',
+  docs: 'tab.docs',
+  design: 'tab.design',
+  plugins: 'tab.plugins',
+  scheduled: 'tab.scheduled',
+  mail: 'tab.docs'
+}
 
 export default function Sidebar({
   overlay,
@@ -154,7 +162,7 @@ export default function Sidebar({
   const goToTab = useCallback(
     (next: Tab) => {
       peek(false)
-      if (next !== tab) playSound(`tab.${next}`)
+      if (next !== tab) playSound(TAB_SOUND[next])
       onTab(next)
     },
     [onTab, peek, tab]
