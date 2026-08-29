@@ -1,7 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { randomUUID } from 'node:crypto'
-import { DatabaseSync, type SQLInputValue } from 'node:sqlite'
+import { createRequire } from 'node:module'
+import type { DatabaseSync as Database, SQLInputValue } from 'node:sqlite'
 import {
   MAIL_LABEL_TYPES,
   MAIL_PARTICIPANT_ROLES,
@@ -37,6 +38,8 @@ import {
 } from '../../shared/mail'
 
 type Row = Record<string, string | number | bigint | null>
+
+const { DatabaseSync } = createRequire(import.meta.url)('node:sqlite') as typeof import('node:sqlite')
 
 interface PageCursor {
   accountId: string
@@ -102,7 +105,7 @@ function decodeCursor(value: string | null | undefined, accountId: string): Page
 
 export class MailDatabase {
   readonly file: string
-  private readonly database: DatabaseSync
+  private readonly database: Database
 
   constructor(stateDirectory: string, private readonly clock: () => number = Date.now) {
     const directory = path.resolve(stateDirectory)

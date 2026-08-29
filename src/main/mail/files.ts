@@ -34,7 +34,10 @@ export class MailFileStore {
   readonly directory: string
 
   constructor(stateDirectory: string) {
-    this.directory = path.resolve(stateDirectory, 'attachments')
+    const state = path.resolve(stateDirectory)
+    fs.mkdirSync(state, { recursive: true, mode: DIRECTORY_MODE })
+    const canonicalState = fs.realpathSync(state)
+    this.directory = path.join(canonicalState, 'attachments')
   }
 
   create(account: string, contents: Uint8Array): string {
