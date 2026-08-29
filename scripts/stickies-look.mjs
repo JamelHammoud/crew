@@ -73,6 +73,7 @@ const READ = \`(() => {
   const stickyEditor = document.querySelector('[data-sticky-editor]')
   const editorPage = document.querySelector('.sticky-editor-page')
   const body = document.querySelector('.doc .bn-editor')
+  const dragRegion = document.querySelector('[data-stickies-drag-region]')
   return {
     sidebar: box(document.querySelector('[data-sticky-sidebar]')),
     rowBoxes: rows.map(box),
@@ -86,9 +87,11 @@ const READ = \`(() => {
       viewport: { width: window.innerWidth, height: window.innerHeight },
       titleSize: title ? getComputedStyle(title).fontSize : null,
       bodySize: body ? getComputedStyle(body).fontSize : null,
-      bodyInset: body ? getComputedStyle(body).paddingLeft : null,
-      topInset: editorPage ? getComputedStyle(editorPage).paddingTop : null
+    bodyInset: body ? getComputedStyle(body).paddingLeft : null,
+    topInset: editorPage ? getComputedStyle(editorPage).paddingTop : null
     } : null,
+    dragRegion: box(dragRegion),
+    dragRegionStyle: dragRegion ? getComputedStyle(dragRegion).getPropertyValue('-webkit-app-region') : null,
     createCalls: window.stickyCreateCalls(),
     offset: rows[0]?.dataset.offset ?? null,
     action: box(action),
@@ -165,6 +168,16 @@ try {
     })
     child.on('error', reject)
   })
+  if (
+    !seen.initial.dragRegion ||
+    seen.initial.dragRegion.left !== seen.initial.sidebar.right ||
+    seen.initial.dragRegion.right !== 1080 ||
+    seen.initial.dragRegion.top !== 0 ||
+    seen.initial.dragRegion.height !== 70 ||
+    seen.initial.dragRegionStyle !== 'drag'
+  ) {
+    throw new Error('the sticky editor top was not a full drag region: ' + JSON.stringify(seen.initial))
+  }
   console.log(JSON.stringify({ ...seen, shot, compactShot }, null, 2))
 } finally {
   await rm(dir, { recursive: true, force: true })

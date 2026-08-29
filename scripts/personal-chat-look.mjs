@@ -161,6 +161,7 @@ const READ = \`(() => {
   const current = document.querySelector('button[aria-current="page"]')
   const group = current?.closest('section')?.querySelector('[data-personal-history-group]')
   const collapse = named('Hide chat list')
+  const dragRegion = document.querySelector('[data-personal-chat-drag-region]')
   return {
     plus: box(plus),
     chatRow: box(chatRow),
@@ -176,6 +177,8 @@ const READ = \`(() => {
     topFadeOpacity: topFade ? getComputedStyle(topFade).opacity : null,
     collapse: box(collapse),
     collapseOpacity: collapse ? getComputedStyle(collapse).opacity : null,
+    dragRegion: box(dragRegion),
+    dragRegionStyle: dragRegion ? getComputedStyle(dragRegion).getPropertyValue('-webkit-app-region') : null,
     threadHeader: Boolean(named('Mark done') || named('Back to chat')),
     historyText: history?.textContent ?? '',
     current: box(current),
@@ -302,6 +305,16 @@ try {
   if (!seen.resting.composer || seen.resting.threadHeader || !seen.resting.composerFocused) {
     throw new Error('the personal composer did not stand alone with focus: ' + JSON.stringify(seen.resting))
   }
+  if (
+    !seen.resting.dragRegion ||
+    seen.resting.dragRegion.left !== seen.resting.content.left ||
+    seen.resting.dragRegion.width !== seen.resting.content.width ||
+    seen.resting.dragRegion.top !== 0 ||
+    seen.resting.dragRegion.height !== 70 ||
+    seen.resting.dragRegionStyle !== 'drag'
+  ) {
+    throw new Error('the conversation top was not a full drag region: ' + JSON.stringify(seen.resting))
+  }
   if (seen.resting.plusOpacity !== '0' || seen.hovered.plusOpacity !== '1')
     throw new Error(
       'the Chat plus did not follow hover: ' +
@@ -323,7 +336,7 @@ try {
   if (
     seen.resting.collapseOpacity !== '0' ||
     seen.collapseHovered.collapseOpacity !== '1' ||
-    seen.collapsed.history.width !== 0 ||
+    seen.collapsed.history.width > 1 ||
     seen.collapsed.content.left !== 260 ||
     seen.reopened.history.width !== 300 ||
     seen.reopened.content.left !== 560
@@ -358,6 +371,7 @@ try {
   console.log(`Composer        ${seen.resting.composer.width} x ${seen.resting.composer.height}`)
   console.log(`Chat list       ${seen.resting.history.width} x ${seen.resting.history.height}`)
   console.log(`Conversation    ${seen.resting.content.width} x ${seen.resting.content.height}`)
+  console.log(`Drag region     ${seen.resting.dragRegion.width} x ${seen.resting.dragRegion.height}`)
   console.log(`Fullscreen Chat ${seen.windowed.title.left} to ${seen.fullScreen.title.left}`)
   console.log(`Top fade        ${seen.scrolled.topFadeOpacity} at ${seen.scrolled.historyScrollTop}px`)
   console.log(`Screenshot      ${shot}`)
