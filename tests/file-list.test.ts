@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { createRepoEntry, listRepoFiles } from '../src/main/files'
+import { createRepoEntry, listRepoFiles, moveRepoEntry } from '../src/main/files'
 import { markRuns, matchFiles } from '../src/shared/files'
 import { runGit } from '../src/shared/git'
 import { tmpDir } from './helpers/session'
@@ -82,6 +82,59 @@ describe('createRepoEntry', () => {
       message: 'Choose a name inside this project'
     })
     expect(existsSync(path.join(outside, 'escaped.txt'))).toBe(false)
+  })
+})
+
+describe('moveRepoEntry', () => {
+  it('moves files and whole folders without changing their names', async () => {
+    const root = tmpDir('move-entry')
+    write(root, 'src/app.ts', 'keep me')
+    write(root, 'src/components/button.tsx', 'button')
+    mkdirSync(path.join(root, 'tests'))
+
+    expect(await moveRepoEntry(root, 'src/app.ts', 'tests')).toEqual({ ok: true, path: 'tests/app.ts' })
+    expect(readFileSync(path.join(root, 'tests/app.ts'), 'utf8')).toBe('keep me')
+    expect(existsSync(path.join(root, 'src/app.ts'))).toBe(false)
+
+    expect(await moveRepoEntry(root, 'src/components', 'tests')).toEqual({ ok: true, path: 'tests/components' })
+    expect(readFileSync(path.join(root, 'tests/components/button.tsx'), 'utf8')).toBe('button')
+    expect(existsSync(path.join(root, 'src/components'))).toBe(false)
+  })
+
+  it('never replaces an item already in the destination', async () => {
+    const root = tmpDir('move-existing')
+    write(root, 'src/notes.md', 'source')
+    write(root, 'archive/notes.md', 'destination')
+
+    expect(await moveRepoEntry(root, 'src/notes.md', 'archive')).toEqual({
+      ok: false,
+      message: 'That name is already in use there'
+    })
+    expect(readFileSync(path.join(root, 'src/notes.md'), 'utf8')).toBe('source')
+    expect(readFileSync(path.join(root, 'archive/notes.md'), 'utf8')).toBe('destination')
+  })
+
+  it('refuses traversal, symlink escapes, and a folder moved into itself', async () => {
+    const root = tmpDir('move-root')
+    const outside = tmpDir('move-outside')
+    write(root, 'src/nested/app.ts', 'inside')
+    write(outside, 'outside.md', 'outside')
+    symlinkSync(outside, path.join(root, 'outside'))
+
+    expect(await moveRepoEntry(root, '../outside.md', 'src')).toEqual({
+      ok: false,
+      message: 'Choose a place inside this project'
+    })
+    expect(await moveRepoEntry(root, 'src/nested/app.ts', 'outside')).toEqual({
+      ok: false,
+      message: 'Choose a place inside this project'
+    })
+    expect(await moveRepoEntry(root, 'src', 'src/nested')).toEqual({
+      ok: false,
+      message: 'A folder cannot contain itself'
+    })
+    expect(readFileSync(path.join(root, 'src/nested/app.ts'), 'utf8')).toBe('inside')
+    expect(readFileSync(path.join(outside, 'outside.md'), 'utf8')).toBe('outside')
   })
 })
 

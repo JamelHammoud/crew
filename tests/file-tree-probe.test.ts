@@ -44,6 +44,10 @@ const repo: Record<string, RepoFile> = {
 const listed = ['readme.md', 'src/app.ts', 'src/renderer/panel.tsx', 'tests/app.test.ts']
 const popOutBrowserTab = vi.fn().mockResolvedValue(true)
 const createEntry = vi.fn(async (path: string): Promise<RepoEntryCreateResult> => ({ ok: true, path }))
+const moveEntry = vi.fn(async (source: string, parent: string) => ({
+  ok: true as const,
+  path: parent ? `${parent}/${source.split('/').pop()}` : source.split('/').pop()!
+}))
 const replaceFiles = vi.fn().mockResolvedValue({ files: 1, replacements: 1, failed: [], error: null })
 const searchFiles = vi.fn(async (options: FileSearchOptions) => ({
   matches:
@@ -68,6 +72,11 @@ beforeEach(() => {
   popOutBrowserTab.mockClear()
   createEntry.mockClear()
   createEntry.mockImplementation(async (path: string) => ({ ok: true as const, path }))
+  moveEntry.mockClear()
+  moveEntry.mockImplementation(async (source: string, parent: string) => ({
+    ok: true as const,
+    path: parent ? `${parent}/${source.split('/').pop()}` : source.split('/').pop()!
+  }))
   replaceFiles.mockClear()
   searchFiles.mockClear()
   useBrowser.setState({ tabs: [], activeTabId: null })
@@ -78,6 +87,7 @@ beforeEach(() => {
     readFile: async (path: string) => repo[path] ?? { kind: 'missing', path },
     listFiles: async () => listed,
     createEntry,
+    moveEntry,
     searchFiles,
     replaceFiles,
     writeFile: async () => null,
@@ -96,6 +106,14 @@ const activeTab = () => {
 }
 
 const rowFor = (path: string) => document.querySelector(`[data-file="${path}"]`) as HTMLElement | null
+
+const transfer = () => ({
+  effectAllowed: 'none',
+  dropEffect: 'none',
+  setData: vi.fn(),
+  getData: vi.fn(() => ''),
+  types: []
+})
 
 describe('the file explorer', () => {
   it('opens on the project with the tree standing beside it', async () => {
@@ -181,6 +199,60 @@ describe('the file explorer', () => {
     fireEvent.submit(input.closest('form')!)
 
     await waitFor(() => expect(createEntry).toHaveBeenCalledWith('src', 'folder'))
+  })
+
+  it('drags a file into another folder and follows its new path', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    fireEvent.click(await screen.findByText('src'))
+    const source = await waitFor(() => rowFor('src/app.ts')!)
+    fireEvent.click(source)
+    const target = document.querySelector('[data-folder="tests"]') as HTMLElement
+    const dataTransfer = transfer()
+
+    fireEvent.dragStart(source, { dataTransfer })
+    fireEvent.dragOver(target, { dataTransfer })
+    expect(target.className).toContain('ring-fg/20')
+    fireEvent.drop(target, { dataTransfer })
+
+    await waitFor(() => expect(moveEntry).toHaveBeenCalledWith('src/app.ts', 'tests'))
+    expect(activeTab().path).toBe('tests/app.ts')
+    expect(activeTab().open).toContain('tests')
+    expect(activeTab().generation).toBe(1)
+  })
+
+  it('moves a folder to the root and rebases every path under it', async () => {
+    useBrowser.getState().openFile('src/renderer/panel.tsx')
+    useBrowser.getState().toggleTree(activeTab().id)
+    render(createElement(BrowserPanel))
+    const source = await waitFor(() => document.querySelector('[data-folder="src/renderer"]') as HTMLElement)
+    const root = document.querySelector('[data-file-branch=""]') as HTMLElement
+    const dataTransfer = transfer()
+
+    fireEvent.dragStart(source, { dataTransfer })
+    fireEvent.dragOver(root, { dataTransfer })
+    fireEvent.drop(root, { dataTransfer })
+
+    await waitFor(() => expect(moveEntry).toHaveBeenCalledWith('src/renderer', ''))
+    expect(activeTab().path).toBe('renderer/panel.tsx')
+    expect(activeTab().open).toContain('renderer')
+    expect(activeTab().open).not.toContain('src/renderer')
+  })
+
+  it('does not offer a folder or its current parent as a drop target', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    fireEvent.click(await screen.findByText('src'))
+    const source = await waitFor(() => rowFor('src/app.ts')!)
+    const target = document.querySelector('[data-folder="src"]') as HTMLElement
+    const dataTransfer = transfer()
+
+    fireEvent.dragStart(source, { dataTransfer })
+    fireEvent.dragOver(target, { dataTransfer })
+    fireEvent.drop(target, { dataTransfer })
+
+    expect(moveEntry).not.toHaveBeenCalled()
+    expect(target.className).not.toContain('ring-fg/20')
   })
 
   it('keeps search options out of the default view', async () => {
