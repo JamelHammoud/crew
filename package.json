@@ -118,6 +118,7 @@
     "thread-card-look": "node scripts/thread-card-look.mjs",
     "plus-look": "node scripts/plus-look.mjs",
     "composer-look": "node scripts/composer-look.mjs",
+    "queue-look": "node scripts/queue-look.mjs",
     "personal-chat-look": "node scripts/personal-chat-look.mjs",
     "board-perf": "node scripts/board-perf.mjs",
     "snap-check": "node scripts/snap-check.mjs",
