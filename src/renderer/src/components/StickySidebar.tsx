@@ -96,13 +96,13 @@ function StickyRow({ sticky, active, onOpen }: { sticky: Sticky; active: boolean
   const preview = stickyPreview(sticky)
 
   return (
-    <SwipeActionRow onDelete={() => void deleteSticky(sticky.id)}>
+    <SwipeActionRow className="-mx-3" onDelete={() => void deleteSticky(sticky.id)}>
       <div
         onContextMenu={event => {
           event.preventDefault()
           setAt({ x: event.clientX, y: event.clientY })
         }}
-        className="relative"
+        className="relative px-3"
       >
         <button
           onClick={onOpen}

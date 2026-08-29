@@ -181,8 +181,12 @@ export default function SwipeActionRow({ children, className = '', onDelete }: S
           event.stopPropagation()
           ignoreClick.current = false
         }}
-        className={`relative z-10 min-w-0 bg-inherit ${moving ? '' : 'transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]'}`}
-        style={{ touchAction: 'pan-y', transform: `translateX(${-offset}px)` }}
+        className={`relative z-10 min-w-0 ${moving ? '' : 'transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]'}`}
+        style={{
+          background: 'var(--swipe-surface, var(--color-ink-900))',
+          touchAction: 'pan-y',
+          transform: `translateX(${-offset}px)`
+        }}
       >
         {children}
       </div>
