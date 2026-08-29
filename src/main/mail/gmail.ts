@@ -325,8 +325,16 @@ interface ImapClient {
   mailboxOpen(path: string): Promise<unknown>
   mailboxCreate(path: string): Promise<{ path: string; created: boolean; mailboxId?: string }>
   mailboxSubscribe(path: string): Promise<boolean>
-  fetchAll(range: string | number[], query: Record<string, boolean>, options?: { uid?: boolean }): Promise<ImapFetchMessage[]>
-  fetchOne(range: number, query: Record<string, boolean>, options?: { uid?: boolean }): Promise<ImapFetchMessage | false>
+  fetchAll(
+    range: string | number[],
+    query: Record<string, boolean>,
+    options?: { uid?: boolean }
+  ): Promise<ImapFetchMessage[]>
+  fetchOne(
+    range: number,
+    query: Record<string, boolean>,
+    options?: { uid?: boolean }
+  ): Promise<ImapFetchMessage | false>
   search(query: Record<string, unknown>, options?: { uid?: boolean }): Promise<number[] | false>
   messageMove(range: number | number[], destination: string, options?: { uid?: boolean }): Promise<unknown>
   messageDelete(range: number | number[], options?: { uid?: boolean }): Promise<boolean>
@@ -418,10 +426,10 @@ function defaultDependencies(): GmailTransportDependencies {
   }
 
   return {
-    createImap: (options) => new imapflow.ImapFlow(options),
-    createSmtp: (options) => nodemailer.createTransport(options as unknown as Record<string, unknown>),
-    parseMime: (source) => mailparser.simpleParser(source),
-    composeMime: async (message) => {
+    createImap: options => new imapflow.ImapFlow(options),
+    createSmtp: options => nodemailer.createTransport(options as unknown as Record<string, unknown>),
+    parseMime: source => mailparser.simpleParser(source),
+    composeMime: async message => {
       const transport = nodemailer.createTransport({
         streamTransport: true,
         buffer: true,
@@ -494,10 +502,12 @@ export function gmailSmtpConnectionOptions(options: GmailTransportOptions): Gmai
 }
 
 function addresses(value?: GmailAddress[]): GmailAddress[] {
-  return value?.map((entry) => ({
-    ...(entry.name ? { name: entry.name } : {}),
-    ...(entry.address ? { address: entry.address } : {})
-  })) ?? []
+  return (
+    value?.map(entry => ({
+      ...(entry.name ? { name: entry.name } : {}),
+      ...(entry.address ? { address: entry.address } : {})
+    })) ?? []
+  )
 }
 
 function hasAttachment(value?: ImapBodyStructure): boolean {
@@ -585,7 +595,12 @@ function searchObject(query: GmailSearchQuery | string): Record<string, unknown>
     ...(query.gmailMessageId ? { emailId: query.gmailMessageId } : {}),
     ...(query.gmailThreadId ? { threadId: query.gmailThreadId } : {}),
     ...(query.labels?.length || query.withoutLabels?.length
-      ? { labels: { ...(query.labels?.length ? { has: query.labels } : {}), ...(query.withoutLabels?.length ? { not: query.withoutLabels } : {}) } }
+      ? {
+          labels: {
+            ...(query.labels?.length ? { has: query.labels } : {}),
+            ...(query.withoutLabels?.length ? { not: query.withoutLabels } : {})
+          }
+        }
       : {})
   }
 }
@@ -593,7 +608,9 @@ function searchObject(query: GmailSearchQuery | string): Record<string, unknown>
 function outgoingAddress(value?: string | GmailAddress | Array<string | GmailAddress>): unknown {
   if (!value) return undefined
   const map = (entry: string | GmailAddress): string | GmailAddress =>
-    typeof entry === 'string' ? entry : { ...(entry.name ? { name: entry.name } : {}), ...(entry.address ? { address: entry.address } : {}) }
+    typeof entry === 'string'
+      ? entry
+      : { ...(entry.name ? { name: entry.name } : {}), ...(entry.address ? { address: entry.address } : {}) }
   return Array.isArray(value) ? value.map(map) : map(value)
 }
 
@@ -612,13 +629,14 @@ function outgoingMessage(user: string, message: GmailOutgoingMessage): Record<st
     ...(message.messageId ? { messageId: message.messageId } : {}),
     ...(message.date ? { date: message.date } : {}),
     ...(message.headers ? { headers: message.headers } : {}),
-    ...(message.attachments?.length ? { attachments: message.attachments.map((entry) => ({ ...entry })) } : {})
+    ...(message.attachments?.length ? { attachments: message.attachments.map(entry => ({ ...entry })) } : {})
   }
 }
 
 function recipient(value: unknown): string {
   if (typeof value === 'string') return value
-  if (value && typeof value === 'object' && 'address' in value && typeof value.address === 'string') return value.address
+  if (value && typeof value === 'object' && 'address' in value && typeof value.address === 'string')
+    return value.address
   return String(value)
 }
 
@@ -699,7 +717,7 @@ export class GmailTransport {
   async listMailboxes(refresh = true): Promise<GmailMailbox[]> {
     await this.ready()
     if (refresh) this.mailboxes = await this.loadMailboxes(this.imap)
-    return this.mailboxes.map((mailbox) => ({ ...mailbox, flags: [...mailbox.flags] }))
+    return this.mailboxes.map(mailbox => ({ ...mailbox, flags: [...mailbox.flags] }))
   }
 
   async createMailbox(path: string, subscribe = true): Promise<{ path: string; created: boolean; mailboxId?: string }> {
@@ -715,7 +733,7 @@ export class GmailTransport {
   }
 
   async search(mailbox: string, query: GmailSearchQuery | string): Promise<number[]> {
-    return await this.withMailbox(mailbox, async (client) => {
+    return await this.withMailbox(mailbox, async client => {
       try {
         return (await client.search(searchObject(query), { uid: true })) || []
       } catch {
@@ -725,7 +743,7 @@ export class GmailTransport {
   }
 
   async fetchSummaries(mailbox: string, options: GmailFetchOptions = {}): Promise<GmailMessageSummary[]> {
-    return await this.withMailbox(mailbox, async (client) => {
+    return await this.withMailbox(mailbox, async client => {
       let range: string | number[]
       if (options.uids) {
         if (options.uids.length === 0) return []
@@ -767,7 +785,7 @@ export class GmailTransport {
   }
 
   async fetchBody(mailbox: string, uid: number): Promise<GmailMessageBody> {
-    return await this.withMailbox(mailbox, async (client) => {
+    return await this.withMailbox(mailbox, async client => {
       let message: ImapFetchMessage | false
       try {
         message = await client.fetchOne(
@@ -803,13 +821,13 @@ export class GmailTransport {
         text: parsed.text ?? '',
         ...(typeof parsed.html === 'string' ? { html: parsed.html } : {}),
         ...(parsed.textAsHtml ? { textAsHtml: parsed.textAsHtml } : {}),
-        headers: parsed.headerLines?.map((entry) => ({ key: entry.key, line: entry.line })) ?? [],
+        headers: parsed.headerLines?.map(entry => ({ key: entry.key, line: entry.line })) ?? [],
         references: Array.isArray(parsed.references)
           ? [...parsed.references]
           : parsed.references
             ? [parsed.references]
             : [],
-        attachments: parsedAttachments.map((entry) => ({
+        attachments: parsedAttachments.map(entry => ({
           ...(entry.filename ? { filename: entry.filename } : {}),
           contentType: entry.contentType ?? 'application/octet-stream',
           ...(entry.contentDisposition ? { contentDisposition: entry.contentDisposition } : {}),
@@ -889,11 +907,7 @@ export class GmailTransport {
     }
   }
 
-  async replaceDraft(
-    uid: number,
-    message: GmailOutgoingMessage,
-    mailbox?: string
-  ): Promise<GmailDraftResult> {
+  async replaceDraft(uid: number, message: GmailOutgoingMessage, mailbox?: string): Promise<GmailDraftResult> {
     await this.ready()
     const destination = mailbox ?? this.specialUsePath('\\Drafts')
     let source: Buffer
@@ -902,7 +916,7 @@ export class GmailTransport {
     } catch {
       throw new GmailTransportError('DRAFT_OPERATION_FAILED', 'The draft could not be composed.')
     }
-    return await this.withMailbox(destination, async (client) => {
+    return await this.withMailbox(destination, async client => {
       try {
         const result = await client.append(destination, source, ['\\Draft'], message.date)
         if (!result) throw new Error('append failed')
@@ -929,9 +943,9 @@ export class GmailTransport {
   }
 
   private bindImap(client: ImapClient): void {
-    client.on('exists', (data) => this.change('exists', data, client))
-    client.on('expunge', (data) => this.change('expunge', data, client))
-    client.on('flags', (data) => this.change('flags', data, client))
+    client.on('exists', data => this.change('exists', data, client))
+    client.on('expunge', data => this.change('expunge', data, client))
+    client.on('flags', data => this.change('flags', data, client))
     client.on('error', () => this.options.onError?.({ source: 'imap', code: 'IMAP_OPERATION_FAILED' }))
     client.on('close', () => {
       if (!this.accepted || this.closing || client !== this.imap) return
@@ -1010,10 +1024,10 @@ export class GmailTransport {
   }
 
   private specialUsePath(specialUse: string): string {
-    const exact = this.mailboxes.find((entry) => entry.specialUse?.toLowerCase() === specialUse.toLowerCase())
+    const exact = this.mailboxes.find(entry => entry.specialUse?.toLowerCase() === specialUse.toLowerCase())
     if (exact) return exact.path
     const names = specialUseFallbacks[specialUse] ?? []
-    const fallback = this.mailboxes.find((entry) => names.includes(entry.path.toLowerCase()))
+    const fallback = this.mailboxes.find(entry => names.includes(entry.path.toLowerCase()))
     if (fallback) return fallback.path
     throw new GmailTransportError('MAILBOX_NOT_FOUND', 'The required Gmail mailbox was not found.')
   }
@@ -1034,7 +1048,7 @@ export class GmailTransport {
 
   private async moveToSpecialUse(mailbox: string, uids: number | number[], specialUse: string): Promise<void> {
     const destination = this.specialUsePath(specialUse)
-    await this.withMailbox(mailbox, async (client) => {
+    await this.withMailbox(mailbox, async client => {
       try {
         await client.messageMove(uids, destination, { uid: true })
       } catch {
@@ -1044,7 +1058,7 @@ export class GmailTransport {
   }
 
   private async changeFlags(mailbox: string, uids: number | number[], flags: string[], add: boolean): Promise<void> {
-    await this.withMailbox(mailbox, async (client) => {
+    await this.withMailbox(mailbox, async client => {
       try {
         if (add) await client.messageFlagsAdd(uids, flags, { uid: true })
         else await client.messageFlagsRemove(uids, flags, { uid: true })
@@ -1060,7 +1074,7 @@ export class GmailTransport {
     labels: string[],
     action: 'add' | 'remove' | 'set'
   ): Promise<void> {
-    await this.withMailbox(mailbox, async (client) => {
+    await this.withMailbox(mailbox, async client => {
       try {
         if (action === 'add') await client.messageFlagsAdd(uids, labels, { uid: true, useLabels: true })
         if (action === 'remove') await client.messageFlagsRemove(uids, labels, { uid: true, useLabels: true })

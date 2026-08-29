@@ -230,7 +230,7 @@ describe('Gmail account validation', () => {
   it('returns discovered special-use mailboxes from a validation pass', async () => {
     const { dependencies, imap, smtp } = harness()
     const result = await validateGmailAccount({ auth }, dependencies)
-    expect(result.mailboxes.map((entry) => entry.specialUse)).toContain('\\Drafts')
+    expect(result.mailboxes.map(entry => entry.specialUse)).toContain('\\Drafts')
     expect(result.mailboxes[0]).toMatchObject({
       path: 'INBOX',
       messages: 4,
@@ -407,10 +407,7 @@ describe('Gmail SMTP and drafts', () => {
     const { dependencies } = harness([first, second])
     const onDisconnect = vi.fn()
     const onReconnect = vi.fn()
-    const transport = await createGmailTransport(
-      { auth, reconnectDelayMs: 0, onDisconnect, onReconnect },
-      dependencies
-    )
+    const transport = await createGmailTransport({ auth, reconnectDelayMs: 0, onDisconnect, onReconnect }, dependencies)
     await transport.watch('INBOX')
     first.usable = false
     first.emit('close')
