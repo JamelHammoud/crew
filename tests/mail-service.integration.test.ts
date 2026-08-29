@@ -86,6 +86,9 @@ describe('the Gmail loopback fixture', () => {
       flags: true,
       labels: true,
       threadId: true,
+      bodyStructure: true,
+      internalDate: true,
+      size: true,
       source: true
     })
     const workMail = await work.fetchAll('1:*', { uid: true, envelope: true, flags: true, labels: true, source: true })
