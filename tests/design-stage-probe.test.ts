@@ -147,7 +147,11 @@ describe('the design stage', () => {
     window.dispatchEvent(event)
     await Promise.resolve()
     expect(event.defaultPrevented).toBe(true)
-    expect(pasteImages).toHaveBeenCalledWith(made.editor, [file], '')
+    expect(pasteImages).toHaveBeenCalledWith(
+      expect.objectContaining({ getSelectedShapes: made.editor.getSelectedShapes }),
+      [file],
+      ''
+    )
   })
 
   it('waits for the clipboard before choosing between a copied shape and an image', () => {
