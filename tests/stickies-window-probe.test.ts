@@ -69,7 +69,7 @@ describe('stickies window', () => {
 
     expect(compact).toContain('container-type: inline-size')
     expect(compact).toContain('--sticky-editor-inset: clamp(10px, 8.7cqw, 54px)')
-    expect(compact).toContain('padding-top: clamp(40px, 9dvh, 64px)')
+    expect(compact).toContain('padding-top: clamp(64px, 12cqw, 76px)')
     expect(compact).toContain('font-size: clamp(18px, 5.16cqw, 32px)')
     expect(compact).toContain('font-size: clamp(13px, 2.58cqw, 16px)')
     expect(compact).toContain('.mac .sticky-editor-compact .sticky-editor-page')

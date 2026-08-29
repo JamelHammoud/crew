@@ -2149,7 +2149,7 @@ textarea:placeholder-shown {
 }
 
 .mac .sticky-editor-compact .sticky-editor-page {
-  padding-top: clamp(40px, 9dvh, 64px);
+  padding-top: clamp(64px, 12cqw, 76px);
 }
 
 .sticky-editor-compact .sticky-editor-title {
