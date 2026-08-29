@@ -359,7 +359,7 @@ describe('commands in a thread', () => {
 describe('queued message cards', () => {
   afterEach(cleanup)
 
-  it('keeps the message shape and exposes editing and ordering', () => {
+  it('keeps the message shape and collects its actions into one menu', () => {
     useCrew.setState({ httpBase: 'http://127.0.0.1:1234' })
     const edit = vi.fn()
     const move = vi.fn()
@@ -403,13 +403,75 @@ describe('queued message cards', () => {
     expect(screen.getByText('Replying to Ali')).toBeTruthy()
     expect(screen.getByLabelText('Open room.png')).toBeTruthy()
 
-    fireEvent.click(screen.getAllByLabelText('Send queued message now')[0])
+    fireEvent.click(screen.getAllByLabelText('More for queued message')[0])
+    fireEvent.click(screen.getByText('Send now'))
     expect(send).toHaveBeenCalledWith('p1')
-    fireEvent.click(screen.getAllByLabelText('Edit queued message')[0])
+    fireEvent.click(screen.getAllByLabelText('More for queued message')[0])
+    fireEvent.click(screen.getByText('Edit in composer'))
     expect(edit).toHaveBeenCalledWith('p1')
-    fireEvent.click(screen.getAllByLabelText('Move queued message later')[0])
+    expect(screen.queryByLabelText('Move queued message later')).toBeNull()
+    expect(screen.queryByLabelText('Move queued message earlier')).toBeNull()
+  })
+
+  it('reorders messages by dragging their rows', () => {
+    const move = vi.fn()
+    const { container } = render(
+      createElement(QueueBar, {
+        items: [
+          { promptId: 'p1', author: 'Jamel', self: true, sendable: true, text: 'first' },
+          { promptId: 'p2', author: 'Jamel', self: true, sendable: true, text: 'second' }
+        ],
+        onEdit: vi.fn(),
+        onRemove: vi.fn(),
+        onSend: vi.fn(),
+        onMove: move
+      })
+    )
+
+    fireEvent.click(screen.getByText('2 messages queued'))
+    const strip = container.querySelector('.overflow-y-auto') as HTMLElement
+    const rows = [...container.querySelectorAll<HTMLElement>('[data-reorder]')]
+    strip.getBoundingClientRect = () => ({ top: 0, left: 0, width: 600, height: 200 }) as DOMRect
+    rows.forEach((row, index) => {
+      row.getBoundingClientRect = () => ({ top: 8 + index * 48, left: 0, width: 600, height: 40 }) as DOMRect
+    })
+
+    fireEvent.pointerDown(rows[0]!.firstElementChild!.firstElementChild!, {
+      button: 0,
+      clientX: 80,
+      clientY: 20
+    })
+    fireEvent.pointerMove(window, { clientX: 80, clientY: 75 })
+    fireEvent.pointerUp(window)
+
     expect(move).toHaveBeenCalledWith('p1', 1)
-    fireEvent.click(screen.getAllByLabelText('Move queued message earlier')[1])
-    expect(move).toHaveBeenCalledWith('p2', 0)
+  })
+
+  it('previews the full message on hover', async () => {
+    vi.useFakeTimers()
+    render(
+      createElement(QueueBar, {
+        items: [
+          {
+            promptId: 'p1',
+            author: 'Jamel',
+            self: true,
+            sendable: true,
+            text: 'first line\nsecond line that stays intact'
+          }
+        ],
+        onEdit: vi.fn(),
+        onRemove: vi.fn(),
+        onSend: vi.fn(),
+        onMove: vi.fn()
+      })
+    )
+
+    fireEvent.click(screen.getByText('1 message queued'))
+    fireEvent.mouseEnter(screen.getByText('first line second line that stays intact'))
+    await vi.advanceTimersByTimeAsync(300)
+
+    expect(screen.getByText((_, element) => element?.textContent === 'first line\nsecond line that stays intact')).toBeTruthy()
+    vi.useRealTimers()
   })
 })
