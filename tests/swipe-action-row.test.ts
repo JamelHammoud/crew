@@ -14,8 +14,11 @@ function row(onDelete = vi.fn(), onPress = vi.fn()) {
   const view = render(
     createElement(
       SwipeActionRow,
-      { onDelete, className: 'rounded-xl' },
-      createElement('button', { type: 'button', onClick: onPress }, 'One row')
+      {
+        onDelete,
+        className: 'rounded-xl',
+        children: createElement('button', { type: 'button', onClick: onPress }, 'One row')
+      }
     )
   )
   const root = view.container.querySelector('[data-swipe-action-row]') as HTMLDivElement
