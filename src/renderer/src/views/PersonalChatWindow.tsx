@@ -57,6 +57,10 @@ export default function PersonalChatWindow() {
         style={{ '--page-rest': '56px' } as CSSProperties}
         className="flex-1 min-w-0 relative"
       >
+        <div
+          data-personal-chat-drag-region
+          className="app-drag pointer-events-none absolute inset-x-0 top-0 z-30 h-[70px]"
+        />
         {collapsed && (
           <div
             data-personal-chat-collapsed-header

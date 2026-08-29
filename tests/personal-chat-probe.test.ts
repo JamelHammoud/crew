@@ -114,6 +114,17 @@ describe('a personal chat window', () => {
     expect(screen.queryByText('Ask Crew')).toBeNull()
   })
 
+  it('keeps the top of the conversation available for moving the window', () => {
+    render(createElement(PersonalChatWindow))
+
+    const dragRegion = document.querySelector('[data-personal-chat-drag-region]')
+    expect(dragRegion?.classList.contains('app-drag')).toBe(true)
+    expect(dragRegion?.classList.contains('inset-x-0')).toBe(true)
+    expect(dragRegion?.classList.contains('h-[70px]')).toBe(true)
+    expect(dragRegion?.classList.contains('pointer-events-none')).toBe(true)
+    expect(document.querySelector('[data-personal-chat-panel-toggle]')?.classList.contains('z-40')).toBe(true)
+  })
+
   it('follows the glass sidebar setting', () => {
     render(createElement(PersonalChatWindow))
     const sidebar = document.querySelector('[data-personal-history]')

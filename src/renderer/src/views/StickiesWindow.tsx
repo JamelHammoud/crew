@@ -146,6 +146,10 @@ export default function StickiesWindow() {
         onCollapse={() => setCollapsed(true)}
       />
       <main className="flex-1 min-w-0 relative">
+        <div
+          data-stickies-drag-region
+          className="app-drag pointer-events-none absolute inset-x-0 top-0 z-30 h-[70px]"
+        />
         {collapsed && (
           <div className="app-drag absolute top-0 left-0 z-40 h-[70px] pl-[92px] flex items-center">
             <Tooltip label="Show sticky list">

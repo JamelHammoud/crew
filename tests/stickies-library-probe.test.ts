@@ -51,6 +51,16 @@ afterEach(() => {
 })
 
 describe('the Stickies library', () => {
+  it('keeps the top of the editor available for moving the window', () => {
+    const view = render(createElement(StickiesWindow))
+
+    const dragRegion = view.container.querySelector('[data-stickies-drag-region]')
+    expect(dragRegion?.classList.contains('app-drag')).toBe(true)
+    expect(dragRegion?.classList.contains('inset-x-0')).toBe(true)
+    expect(dragRegion?.classList.contains('h-[70px]')).toBe(true)
+    expect(dragRegion?.classList.contains('pointer-events-none')).toBe(true)
+  })
+
   it('switches from the fresh draft to a saved sticky when its row is clicked', () => {
     const view = render(createElement(StickiesWindow))
 
