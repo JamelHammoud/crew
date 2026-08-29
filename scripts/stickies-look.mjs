@@ -115,7 +115,7 @@ app.whenReady().then(async () => {
     seen.swiped = await win.webContents.executeJavaScript(READ)
     const [width, height] = win.getContentSize()
     fs.writeFileSync(${JSON.stringify(shot)}, (await win.webContents.capturePage({ x: 0, y: 0, width, height })).toPNG())
-    win.setContentSize(160, 120)
+    win.setContentSize(100, 80)
     await win.loadFile(path.join(__dirname, 'dist/index.html'), { query: { single: '1' } })
     await wait(1400)
     seen.compact = await win.webContents.executeJavaScript(READ)
