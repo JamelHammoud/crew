@@ -435,6 +435,7 @@ describe('queued message cards', () => {
     rows.forEach((row, index) => {
       row.getBoundingClientRect = () => ({ top: 8 + index * 48, left: 0, width: 600, height: 40 }) as DOMRect
     })
+    screen.debug(rows[0])
 
     fireEvent.pointerDown(rows[0]!.firstElementChild!.firstElementChild!, {
       button: 0,
