@@ -634,11 +634,11 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
       event.dataTransfer.effectAllowed = 'copyMove'
       event.dataTransfer.setData(FILE_ENTRY_DRAG, JSON.stringify(sources))
       event.dataTransfer.setData(BROWSER_TAB_DRAG, token)
-      window.crew.beginFileTabDrag(token, makeFileTab(path))
       setSelected(new Set(sources))
       anchor.current = path
       setDragged(sources)
       setCreating(null)
+      window.crew.beginFileTabDrag?.(token, makeFileTab(path))
     },
     end: () => {
       stopExpanding()
