@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { PinGlyph } from '../../icons'
+import { PinGlyph, PopOutGlyph } from '../../icons'
 import { playSound } from '../../media/sounds'
 import { useSidebar } from '../../state/sidebar'
 import { setSidebarPinned, useSidebarPins } from '../../state/sidebarPins'
@@ -8,7 +8,7 @@ import Toolbox from '../Toolbox'
 import { useHoverMenu, type Spot } from '../useHoverMenu'
 import { MoreIcon, TAB_ICON, type Tab } from '../navTabs'
 import NavRow from './NavRow'
-import { openSidebarItem } from './sidebarItemAction'
+import { openSidebarItem, openSidebarItemWindow, sidebarItemOpensWindow } from './sidebarItemAction'
 import { itemTab, SIDEBAR_ITEMS, type SidebarItem } from './sidebarItems'
 
 function MoreItem({
@@ -44,6 +44,20 @@ function MoreItem({
         }}
       />
       <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined} className="min-w-40">
+        {sidebarItemOpensWindow(item.id) && (
+          <>
+            <MenuItem
+              icon={<PopOutGlyph />}
+              label="Open in new window"
+              onClick={() => {
+                setMenuAt(null)
+                close()
+                openSidebarItemWindow(item.id)
+              }}
+            />
+            <MenuDivider />
+          </>
+        )}
         <MenuItem
           icon={<PinGlyph />}
           label="Pin to sidebar"

@@ -89,7 +89,7 @@ type BrowserState = {
 
 let seq = 0
 
-function makeTab(url = ''): BrowserTab {
+export function makeTab(url = ''): BrowserTab {
   seq += 1
   return {
     id: `tab-${seq}`,

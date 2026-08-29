@@ -66,6 +66,7 @@ const LINK = 'crew://192.0.2.10:2739/a1b2c3'
 const asked: string[] = []
 const joined: Array<[string, string, string]> = []
 const openedWindows: string[] = []
+const poppedTabs: BrowserTab[] = []
 const revealed: string[] = []
 let reveals = true
 let picked: string | null = null
@@ -103,6 +104,7 @@ window.crew = {
     return Promise.resolve(sessionFor(folder))
   },
   openProjectWindow: (key: string) => (openedWindows.push(key), Promise.resolve(true)),
+  popOutBrowserTab: (tab: BrowserTab) => (poppedTabs.push(tab), Promise.resolve(true)),
   revealFile: (target: string) => (revealed.push(target), Promise.resolve(reveals)),
   pickFolder: () => Promise.resolve(picked),
   cloneRepo: () => Promise.resolve(null),
@@ -146,6 +148,7 @@ beforeEach(async () => {
   asked.length = 0
   joined.length = 0
   openedWindows.length = 0
+  poppedTabs.length = 0
   picked = null
   live = []
   joins = []
@@ -302,6 +305,48 @@ describe('the sidebar', () => {
       ])
     )
     expect(localStorage.getItem('crew.sidebar.pins')).toBe('[]')
+  })
+
+  it('opens Files, Review, Terminal, and Web in new windows from More', async () => {
+    const expected = [
+      ['Files', { kind: 'file', tree: true }],
+      ['Review', { kind: 'review' }],
+      ['Terminal', { kind: 'terminal', folder: ONE }],
+      ['Web', { kind: 'web', initialUrl: '' }]
+    ] as const
+
+    for (const [label, tab] of expected) {
+      const view = render(Sidebar())
+      fireEvent.pointerEnter(screen.getByRole('button', { name: 'More' }).parentElement as HTMLElement)
+      const row = await screen.findByRole('button', { name: label })
+      fireEvent.contextMenu(row, { clientX: 80, clientY: 120 })
+      fireEvent.click(await screen.findByRole('button', { name: 'Open in new window' }))
+      expect(poppedTabs.at(-1)).toMatchObject(tab)
+      view.unmount()
+    }
+
+    expect(poppedTabs).toHaveLength(4)
+    expect(useBrowser.getState().tabs).toHaveLength(0)
+  })
+
+  it('opens Files, Review, Terminal, and Web in new windows from pinned rows', async () => {
+    localStorage.setItem('crew.sidebar.pins', '["files","review","terminal","web"]')
+    render(Sidebar())
+    const expected = [
+      ['Files', { kind: 'file', tree: true }],
+      ['Review', { kind: 'review' }],
+      ['Terminal', { kind: 'terminal', folder: ONE }],
+      ['Web', { kind: 'web', initialUrl: '' }]
+    ] as const
+
+    for (const [label, tab] of expected) {
+      fireEvent.contextMenu(screen.getByRole('button', { name: label }), { clientX: 80, clientY: 120 })
+      fireEvent.click(await screen.findByRole('button', { name: 'Open in new window' }))
+      expect(poppedTabs.at(-1)).toMatchObject(tab)
+    }
+
+    expect(poppedTabs).toHaveLength(4)
+    expect(useBrowser.getState().tabs).toHaveLength(0)
   })
 
   it('holds the More menu up while the pointer crosses the gap to it', async () => {
