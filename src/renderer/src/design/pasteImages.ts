@@ -64,7 +64,7 @@ export async function pasteImages(
     editor.markHistoryStoppingPoint('paste image')
     images.forEach(({ file, size, src }, index) => {
       const asset = AssetRecordType.create({
-        id: `asset:${crypto.randomUUID()}`,
+        id: `asset:${crypto.randomUUID()}` as TLAsset['id'],
         type: 'image',
         props: {
           w: size.w,

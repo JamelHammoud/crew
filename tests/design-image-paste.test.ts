@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createTLStore, defaultBindingUtils, Editor } from '../src/renderer/src/canvas'
 import { designShapeUtils } from '../src/renderer/src/design/shapeUtils'

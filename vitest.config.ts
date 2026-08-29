@@ -4,6 +4,7 @@ export default defineConfig({
   test: {
     include: ['tests/**/*.test.ts'],
     environmentMatchGlobs: [
+      ['**/design-image-paste.test.ts', 'jsdom'],
       ['**/personal-chat-probe.test.ts', 'jsdom'],
       ['**/subagent-message-probe.test.ts', 'jsdom']
     ],

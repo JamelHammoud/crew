@@ -7,8 +7,11 @@ import { nodeDefaults } from '../src/shared/designNode'
 import { fakeBoard, type FakeShape } from './helpers/design-editor'
 import { installLocalStorage } from './helpers/local-storage'
 
+const pasteImages = vi.hoisted(() => vi.fn(async () => []))
+
 vi.mock('../src/renderer/src/components/DesignCanvas', () => ({ default: () => null }))
 vi.mock('../src/renderer/src/components/DesignToolbar', () => ({ default: () => null }))
+vi.mock('../src/renderer/src/design/pasteImages', () => ({ pasteImages }))
 
 class TestResizeObserver {
   observe(): void {}
@@ -84,7 +87,10 @@ function rightClick(container: HTMLElement) {
 
 describe('the design stage', () => {
   afterEach(cleanup)
-  beforeEach(() => storage.clear())
+  beforeEach(() => {
+    storage.clear()
+    pasteImages.mockClear()
+  })
 
   it('opens the right click menu where the pointer is', () => {
     const { container } = boot()
@@ -131,6 +137,28 @@ describe('the design stage', () => {
     const { made } = boot()
     fireEvent.keyDown(window, { key: 'L', metaKey: true, shiftKey: true })
     expect(made.calls).toContain('toggleLock(shape:a)')
+  })
+
+  it('hands an image on the clipboard to the board', async () => {
+    const { made } = boot()
+    const file = new File(['pixels'], 'room.png', { type: 'image/png' })
+    const event = new Event('paste', { bubbles: true, cancelable: true })
+    Object.defineProperty(event, 'clipboardData', { value: { files: [file] } })
+    window.dispatchEvent(event)
+    await Promise.resolve()
+    expect(event.defaultPrevented).toBe(true)
+    expect(pasteImages).toHaveBeenCalledWith(made.editor, [file], '')
+  })
+
+  it('waits for the clipboard before choosing between a copied shape and an image', () => {
+    const { made } = boot()
+    fireEvent.keyDown(window, { key: 'c', metaKey: true })
+    fireEvent.keyDown(window, { key: 'v', metaKey: true })
+    expect(made.calls).not.toContain('paste()')
+    const event = new Event('paste', { bubbles: true, cancelable: true })
+    Object.defineProperty(event, 'clipboardData', { value: { files: [] } })
+    window.dispatchEvent(event)
+    expect(made.calls).toContain('paste()')
   })
 
   it('deletes on the delete key', () => {
