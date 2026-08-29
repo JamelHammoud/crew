@@ -48,7 +48,13 @@ describe('stickies window', () => {
       ['default', 'yellow', 'pink', 'blue', 'green', 'purple'].map(color => stickyColorValue(color as Sticky['color']))
     ).toEqual(['var(--color-ink-700)', '#e9c46a', '#ef8f8f', '#78aee8', '#6fc7ad', '#d394df'])
     expect(stickyEditorBackground('default')).toBe('var(--color-ink-900)')
-    expect(stickyEditorBackground('blue')).toBe('color-mix(in srgb, var(--color-ink-900) 94%, #78aee8)')
+    expect(STICKY_COLORS.slice(1).map(stickyEditorBackground)).toEqual([
+      'color-mix(in srgb, var(--color-ink-900) 82%, #e9c46a)',
+      'color-mix(in srgb, var(--color-ink-900) 82%, #ef8f8f)',
+      'color-mix(in srgb, var(--color-ink-900) 82%, #78aee8)',
+      'color-mix(in srgb, var(--color-ink-900) 82%, #6fc7ad)',
+      'color-mix(in srgb, var(--color-ink-900) 82%, #d394df)'
+    ])
   })
 
   it('mounts a fresh draft immediately and focuses its body across two frames', () => {

@@ -31,7 +31,7 @@ export function stickyColorValue(color: StickyColor): string {
 
 export function stickyEditorBackground(color: StickyColor): string {
   if (color === 'default') return 'var(--color-ink-900)'
-  return `color-mix(in srgb, var(--color-ink-900) 94%, ${stickyColorValue(color)})`
+  return `color-mix(in srgb, var(--color-ink-900) 82%, ${stickyColorValue(color)})`
 }
 
 export function stickyLabel(sticky: Sticky): string {
