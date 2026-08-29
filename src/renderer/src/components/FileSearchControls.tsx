@@ -1,5 +1,14 @@
 import { useState, type ReactNode } from 'react'
-import { ChevronUpGlyph, CloseGlyph, MoreGlyph, PencilGlyph, RefreshGlyph, RegexGlyph } from '../icons'
+import {
+  ChevronUpGlyph,
+  CloseGlyph,
+  FileGlyph,
+  FolderGlyph,
+  MoreGlyph,
+  PencilGlyph,
+  RefreshGlyph,
+  RegexGlyph
+} from '../icons'
 import { MenuDivider, MenuItem, Popover } from './Popover'
 import SearchField from './SearchField'
 import Tooltip from './Tooltip'
@@ -65,7 +74,9 @@ export default function FileSearchControls({
   onRefresh,
   onClearResults,
   onCollapse,
-  onReplaceAll
+  onReplaceAll,
+  onNewFile,
+  onNewFolder
 }: {
   form: FileSearchForm
   replaceOpen: boolean
@@ -81,6 +92,8 @@ export default function FileSearchControls({
   onClearResults: () => void
   onCollapse: () => void
   onReplaceAll: () => void
+  onNewFile?: () => void
+  onNewFolder?: () => void
 }) {
   const [menu, setMenu] = useState(false)
 
@@ -92,6 +105,16 @@ export default function FileSearchControls({
         placeholder="Search files"
         actions={
           <span className="relative flex shrink-0">
+            {!form.query && onNewFile && (
+              <Tool label="New file" onClick={onNewFile}>
+                <FileGlyph className="h-4 w-4" />
+              </Tool>
+            )}
+            {!form.query && onNewFolder && (
+              <Tool label="New folder" onClick={onNewFolder}>
+                <FolderGlyph className="h-4 w-4" />
+              </Tool>
+            )}
             <Tooltip label="More search options" disabled={menu}>
               <button
                 type="button"

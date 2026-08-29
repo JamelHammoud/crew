@@ -1,5 +1,5 @@
 import { useState, type MouseEvent, type ReactNode } from 'react'
-import { CopyGlyph, FileGlyph, PopOutGlyph } from '../icons'
+import { CopyGlyph, FileGlyph, FolderGlyph, PopOutGlyph } from '../icons'
 import { makeFileTab, useBrowser } from '../state/browser'
 import { MenuDivider, MenuItem, Popover } from './Popover'
 
@@ -13,13 +13,17 @@ export function FileMenu({
   line = null,
   diff = null,
   at,
-  onClose
+  onClose,
+  onNewFile,
+  onNewFolder
 }: {
   path: string
   line?: number | null
   diff?: string | null
   at: MenuAt | null
   onClose: () => void
+  onNewFile?: () => void
+  onNewFolder?: () => void
 }) {
   const copy = (kind: 'relative' | 'absolute'): void => {
     onClose()
@@ -28,6 +32,27 @@ export function FileMenu({
 
   return (
     <Popover open={at !== null} onClose={onClose} at={at ?? undefined}>
+      {onNewFile && onNewFolder && (
+        <>
+          <MenuItem
+            icon={<FileGlyph />}
+            label="New file"
+            onClick={() => {
+              onClose()
+              onNewFile()
+            }}
+          />
+          <MenuItem
+            icon={<FolderGlyph />}
+            label="New folder"
+            onClick={() => {
+              onClose()
+              onNewFolder()
+            }}
+          />
+          <MenuDivider />
+        </>
+      )}
       <MenuItem
         icon={<FileGlyph />}
         label="Open in a new tab"
@@ -55,7 +80,12 @@ export function FileMenu({
 // different shapes, in the folder listing and in the tree beside it, so what is
 // shared is the menu rather than the row: a handler for the button and the card
 // to stand beside it.
-export function useFileMenu(path: string, line: number | null = null, diff: string | null = null): {
+export function useFileMenu(
+  path: string,
+  line: number | null = null,
+  diff: string | null = null,
+  create?: { file: () => void; folder: () => void }
+): {
   onContextMenu: (event: MouseEvent) => void
   menu: ReactNode
   menuOpen: boolean
@@ -68,7 +98,17 @@ export function useFileMenu(path: string, line: number | null = null, diff: stri
       event.stopPropagation()
       setAt({ x: event.clientX, y: event.clientY })
     },
-    menu: <FileMenu path={path} line={line} diff={diff} at={at} onClose={() => setAt(null)} />,
+    menu: (
+      <FileMenu
+        path={path}
+        line={line}
+        diff={diff}
+        at={at}
+        onClose={() => setAt(null)}
+        onNewFile={create?.file}
+        onNewFolder={create?.folder}
+      />
+    ),
     menuOpen: at !== null
   }
 }

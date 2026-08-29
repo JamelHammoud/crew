@@ -229,7 +229,17 @@ function Heading({ children }: { children: string }) {
   return <p className="px-3 pb-1 pt-2 text-[11px] font-medium uppercase tracking-wide text-fg-faint">{children}</p>
 }
 
-export default function ProjectSearch({ tab, children }: { tab: BrowserTab; children: ReactNode }) {
+export default function ProjectSearch({
+  tab,
+  children,
+  onNewFile,
+  onNewFolder
+}: {
+  tab: BrowserTab
+  children: ReactNode
+  onNewFile?: () => void
+  onNewFolder?: () => void
+}) {
   const [form, setForm] = useState(initial)
   const [replaceOpen, setReplaceOpen] = useState(false)
   const [detailsOpen, setDetailsOpen] = useState(false)
@@ -330,6 +340,8 @@ export default function ProjectSearch({ tab, children }: { tab: BrowserTab; chil
         onClearResults={() => setCleared(true)}
         onCollapse={() => setCollapsed(value => !value)}
         onReplaceAll={() => void replace()}
+        onNewFile={onNewFile}
+        onNewFolder={onNewFolder}
       />
       <div className="min-h-0 flex-1 overflow-auto pb-2">
         {!form.query.trim() && children}
