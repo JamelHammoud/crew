@@ -363,6 +363,7 @@ describe('queued message cards', () => {
     useCrew.setState({ httpBase: 'http://127.0.0.1:1234' })
     const edit = vi.fn()
     const move = vi.fn()
+    const remove = vi.fn()
     const send = vi.fn()
     render(
       createElement(QueueBar, {
@@ -392,7 +393,7 @@ describe('queued message cards', () => {
           { promptId: 'p2', author: 'Jamel', self: true, sendable: true, text: 'after that' }
         ],
         onEdit: edit,
-        onRemove: vi.fn(),
+        onRemove: remove,
         onSend: send,
         onMove: move
       })
@@ -410,7 +411,8 @@ describe('queued message cards', () => {
     fireEvent.click(screen.getByText('Edit in composer'))
     expect(edit).toHaveBeenCalledWith('p1')
     fireEvent.contextMenu(screen.getByText('after that'), { clientX: 240, clientY: 180 })
-    expect(screen.getByText('Remove from queue')).toBeTruthy()
+    fireEvent.click(screen.getByText('Remove from queue'))
+    expect(remove).toHaveBeenCalledWith('p2')
     expect(screen.queryByLabelText('Move queued message later')).toBeNull()
     expect(screen.queryByLabelText('Move queued message earlier')).toBeNull()
   })
@@ -442,7 +444,7 @@ describe('queued message cards', () => {
       clientX: 80,
       clientY: 20
     })
-    fireEvent.pointerMove(window, { clientX: 80, clientY: 75 })
+    fireEvent.pointerMove(window, { clientX: 80, clientY: 120 })
     expect(document.body.style.cursor).toBe('grabbing')
     fireEvent.pointerUp(window)
 

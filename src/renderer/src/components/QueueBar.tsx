@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { attachmentUrl, isImageType, type Attachment } from '../../../shared/attachments'
 import type { MessageReply } from '../../../shared/events'
 import { ChevronDownGlyph, MoreGlyph, PencilGlyph, SendGlyph, TrashGlyph } from '../icons'
