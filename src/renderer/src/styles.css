@@ -318,6 +318,10 @@ body {
   background: transparent;
 }
 
+#root.sidebar-window-glass {
+  background: transparent;
+}
+
 /* The dictation pill stands over whatever app is being typed into, so its window
    has no shell of its own. The glass it is drawn on is the whole of it, and a
    surface behind that glass would be Crew's own colour rather than the colour of

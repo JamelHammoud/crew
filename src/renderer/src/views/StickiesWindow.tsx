@@ -3,6 +3,7 @@ import { STICKY_COLORS, type Sticky } from '../../../shared/stickies'
 import { stickyIdInHash } from '../../../shared/threadViews'
 import StickyEditor from '../components/StickyEditor'
 import StickySidebar, { stickyColorValue, stickyLabel } from '../components/StickySidebar'
+import useSidebarWindowGlass from '../components/useSidebarWindowGlass'
 import Spinner from '../components/Spinner'
 import Tooltip from '../components/Tooltip'
 import { MenuDivider, MenuItem, Popover } from '../components/Popover'
@@ -105,6 +106,7 @@ export default function StickiesWindow() {
   const [active, setActive] = useState<string | null>(() => draft?.id ?? null)
   const [fresh, setFresh] = useState<string | null>(() => draft?.id ?? null)
   const [collapsed, setCollapsed] = useState(false)
+  const glass = useSidebarWindowGlass()
   const individual = individualId ? stickies.find(sticky => sticky.id === individualId) : undefined
   const current = active ? (draft?.id === active ? draft : stickies.find(sticky => sticky.id === active)) : undefined
 
@@ -132,7 +134,7 @@ export default function StickiesWindow() {
   }
 
   return (
-    <div data-stickies-library className="h-full relative flex bg-ink-900">
+    <div data-stickies-library className={`h-full relative flex ${glass ? 'bg-transparent' : 'bg-ink-900'}`}>
       <StickySidebar
         stickies={stickies}
         active={active}
@@ -145,7 +147,7 @@ export default function StickiesWindow() {
         onNew={add}
         onCollapse={() => setCollapsed(true)}
       />
-      <main className="flex-1 min-w-0 relative">
+      <main className="flex-1 min-w-0 relative bg-ink-900">
         <div
           data-stickies-drag-region
           className="app-drag pointer-events-none absolute inset-x-0 top-0 z-30 h-[70px]"

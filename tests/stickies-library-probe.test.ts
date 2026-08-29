@@ -35,7 +35,7 @@ vi.mock('../src/renderer/src/components/StickyEditor', () => ({
 }))
 
 vi.mock('../src/renderer/src/state/windowName', () => ({ useWindowName: vi.fn() }))
-vi.mock('../src/renderer/src/state/prefs', () => ({ usePrefs: () => ({ glassSidebar: false }) }))
+vi.mock('../src/renderer/src/state/prefs', () => ({ usePrefs: () => ({ glassSidebar: true }) }))
 vi.mock('../src/renderer/src/state/windowShape', () => ({ useFullScreen: () => false }))
 
 const { default: StickiesWindow } = await import('../src/renderer/src/views/StickiesWindow')
@@ -51,6 +51,14 @@ afterEach(() => {
 })
 
 describe('the Stickies library', () => {
+  it('leaves the window clear behind its glass list', () => {
+    const view = render(createElement(StickiesWindow))
+
+    expect(view.container.querySelector('[data-stickies-library]')?.classList.contains('bg-transparent')).toBe(true)
+    expect(view.container.querySelector('main')?.classList.contains('bg-ink-900')).toBe(true)
+    expect(document.getElementById('root')?.classList.contains('sidebar-window-glass')).toBe(true)
+  })
+
   it('keeps the top of the editor available for moving the window', () => {
     const view = render(createElement(StickiesWindow))
 
@@ -84,7 +92,7 @@ describe('the Stickies library', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Show sticky list' }))
     expect(sidebar.classList.contains('w-[300px]')).toBe(true)
-    expect(sidebar.classList.contains('border-ink-700')).toBe(true)
+    expect(sidebar.classList.contains('border-[var(--glass-line)]')).toBe(true)
     expect(sidebar.classList.contains('border-transparent')).toBe(false)
   })
 

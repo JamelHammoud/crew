@@ -8,6 +8,7 @@ import { PanelLeftGlyph } from '../icons'
 import { useCrew } from '../state/store'
 import { useWindowName } from '../state/windowName'
 import { threadName } from '../components/thread'
+import useSidebarWindowGlass from '../components/useSidebarWindowGlass'
 import { useFullScreen } from '../state/windowShape'
 import Chat from './Chat'
 import ThreadView from './ThreadView'
@@ -16,6 +17,7 @@ export default function PersonalChatWindow() {
   const [active, setActive] = useState<string | null>(null)
   const [freshKey, setFreshKey] = useState(0)
   const [collapsed, setCollapsed] = useState(false)
+  const glass = useSidebarWindowGlass()
   const full = useFullScreen()
   const connection = useCrew(s => s.connection)
   const threads = useCrew(s => s.threads)
@@ -40,7 +42,7 @@ export default function PersonalChatWindow() {
   }
 
   return (
-    <div className="h-full relative flex bg-ink-900">
+    <div className={`h-full relative flex ${glass ? 'bg-transparent' : 'bg-ink-900'}`}>
       <PersonalChatSidebar
         active={active}
         onOpen={setActive}
@@ -55,7 +57,7 @@ export default function PersonalChatWindow() {
       <main
         data-personal-chat-content
         style={{ '--page-rest': '56px' } as CSSProperties}
-        className="flex-1 min-w-0 relative"
+        className="flex-1 min-w-0 relative bg-ink-900"
       >
         <div
           data-personal-chat-drag-region

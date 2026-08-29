@@ -337,7 +337,7 @@ try {
     seen.resting.collapseOpacity !== '0' ||
     seen.collapseHovered.collapseOpacity !== '1' ||
     seen.collapsed.history.width > 1 ||
-    seen.collapsed.content.left !== 260 ||
+    seen.collapsed.content.left !== seen.collapsed.history.left + seen.collapsed.history.width ||
     seen.reopened.history.width !== 300 ||
     seen.reopened.content.left !== 560
   ) {

@@ -129,10 +129,13 @@ describe('a personal chat window', () => {
     render(createElement(PersonalChatWindow))
     const sidebar = document.querySelector('[data-personal-history]')
     expect(sidebar?.classList.contains('sidebar-pinned')).toBe(true)
+    expect(document.getElementById('root')?.classList.contains('sidebar-window-glass')).toBe(true)
+    expect(document.querySelector('[data-personal-chat-content]')?.classList.contains('bg-ink-900')).toBe(true)
 
     act(() => setPref('glassSidebar', false))
     expect(sidebar?.classList.contains('sidebar-pinned')).toBe(false)
     expect(sidebar?.classList.contains('bg-ink-900')).toBe(true)
+    expect(document.getElementById('root')?.classList.contains('sidebar-window-glass')).toBe(false)
   })
 
   it('shows a top fade after the chat list scrolls', () => {

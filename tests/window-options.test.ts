@@ -180,6 +180,11 @@ describe('personal chat window options', () => {
       expect(personal.webPreferences).toEqual(thread.webPreferences)
     }
   })
+
+  it('opens the macOS material behind its glass sidebar', () => {
+    expect(createPersonalChatWindowOptions('darwin', 'preload.mjs', false).vibrancy).toBe('under-window')
+    expect(createPersonalChatWindowOptions('win32', 'preload.mjs', false).vibrancy).toBeUndefined()
+  })
 })
 
 describe('Stickies window options', () => {
@@ -212,6 +217,12 @@ describe('Stickies window options', () => {
       expect(single.transparent).toBe(library.transparent)
       expect(single.webPreferences).toEqual(library.webPreferences)
     }
+  })
+
+  it('opens the macOS material behind the library sidebar only', () => {
+    expect(createStickiesWindowOptions('darwin', 'preload.mjs', false, false).vibrancy).toBe('under-window')
+    expect(createStickiesWindowOptions('darwin', 'preload.mjs', false, true).vibrancy).toBeUndefined()
+    expect(createStickiesWindowOptions('win32', 'preload.mjs', false, false).vibrancy).toBeUndefined()
   })
 })
 

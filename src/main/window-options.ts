@@ -153,7 +153,8 @@ export function createPersonalChatWindowOptions(
     minWidth: 760,
     minHeight: 520,
     show: false,
-    ...windowShell(platform, preload, devTools)
+    ...windowShell(platform, preload, devTools),
+    ...(platform === 'darwin' ? { vibrancy: 'under-window' as const } : {})
   }
 }
 
@@ -169,7 +170,8 @@ export function createStickiesWindowOptions(
     minWidth: single ? 100 : 700,
     minHeight: single ? 80 : 500,
     show: false,
-    ...windowShell(platform, preload, devTools)
+    ...windowShell(platform, preload, devTools),
+    ...(platform === 'darwin' && !single ? { vibrancy: 'under-window' as const } : {})
   }
 }
 
