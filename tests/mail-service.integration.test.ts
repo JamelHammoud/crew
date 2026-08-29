@@ -2,10 +2,12 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { ImapFlow } from 'imapflow'
 import nodemailer from 'nodemailer'
 import { simpleParser } from 'mailparser'
+import { GmailTransport } from '../src/main/mail/gmail'
 import { startGmailImapServer, type GmailLoopbackServer } from './helpers/gmail-imap-server'
 
 const openServers: GmailLoopbackServer[] = []
 const openClients: ImapFlow[] = []
+const openTransports: GmailTransport[] = []
 
 const message = (subject: string, from: string, labels = ['INBOX']) => ({
   from,
@@ -49,11 +51,26 @@ async function connect(server: GmailLoopbackServer, accountId: string): Promise<
 }
 
 afterEach(async () => {
+  for (const transport of openTransports.splice(0)) await transport.close().catch(() => {})
   for (const client of openClients.splice(0)) {
     if (client.usable) await client.logout().catch(() => {})
   }
   for (const server of openServers.splice(0)) await server.close()
 })
+
+async function transport(server: GmailLoopbackServer, accountId: string, overrides: Record<string, unknown> = {}) {
+  const account = server.accounts.get(accountId)!
+  const mail = new GmailTransport({
+    auth: { user: account.email, pass: account.password },
+    imap: { host: '127.0.0.1', port: server.imapPort, secure: false, startTLS: false },
+    smtp: { host: '127.0.0.1', port: server.smtpPort, secure: false, startTLS: false },
+    connectionTimeoutMs: 2_000,
+    ...overrides
+  })
+  await mail.connect()
+  openTransports.push(mail)
+  return mail
+}
 
 describe('the Gmail loopback fixture', () => {
   it('keeps two accounts separate while both are read into one view', async () => {
@@ -162,5 +179,108 @@ describe('the Gmail loopback fixture', () => {
     expect(parsed.inReplyTo).toBe('<dinner@example.com>')
     expect(parsed.attachments[0].filename).toBe('menu.txt')
     expect(parsed.attachments[0].content.toString()).toBe('pasta')
+  })
+})
+
+describe('Gmail transport over loopback', () => {
+  it('loads each account, searches remotely, and fetches complete message bodies', async () => {
+    const server = await fixture()
+    const personal = await transport(server, 'personal')
+    const work = await transport(server, 'work')
+
+    const [personalMailboxes, personalInbox, workInbox] = await Promise.all([
+      personal.listMailboxes(),
+      personal.fetchSummaries('INBOX', { limit: 20 }),
+      work.fetchSummaries('INBOX', { limit: 20 })
+    ])
+    expect(personalMailboxes.find(mailbox => mailbox.specialUse === '\\Inbox')?.path).toBe('INBOX')
+    expect(personalInbox.map(one => one.subject)).toEqual(['Crew receipt', 'Dinner this weekend'])
+    expect(workInbox.map(one => one.subject)).toEqual(['Release checklist'])
+    expect(personalInbox.every(one => one.gmailMessageId && one.gmailThreadId)).toBe(true)
+
+    const matches = await personal.search('INBOX', 'from:ali@example.com is:unread')
+    expect(matches).toHaveLength(1)
+    const body = await personal.fetchBody('INBOX', matches[0])
+    expect(body.text).toContain('Dinner this weekend in plain text')
+    expect(body.html).toContain('Dinner this weekend in HTML')
+  })
+
+  it('applies read, star, label, archive, spam, and trash changes to the remote account', async () => {
+    const server = await fixture()
+    const mail = await transport(server, 'personal')
+    const [dinner, receipt] = await mail.fetchSummaries('INBOX', { limit: 20 })
+    const target = dinner.subject === 'Dinner this weekend' ? dinner : receipt
+    const other = target === dinner ? receipt : dinner
+
+    await mail.setRead('INBOX', target.uid, true)
+    await mail.setStarred('INBOX', target.uid, true)
+    await mail.addLabels('INBOX', target.uid, ['Friends'])
+    let changed = await mail.fetchSummaries('INBOX', { uids: [target.uid] })
+    expect(changed[0]).toMatchObject({ read: true, starred: true })
+    expect(changed[0].labels).toContain('Friends')
+
+    await mail.archive('INBOX', target.uid)
+    await mail.spam('INBOX', other.uid)
+    expect(server.mailbox('personal', 'INBOX').map(one => one.uid)).toEqual([])
+    expect(server.mailbox('personal', '[Gmail]/Spam').map(one => one.uid)).toContain(other.uid)
+
+    await mail.trash('[Gmail]/Spam', other.uid)
+    expect(server.mailbox('personal', '[Gmail]/Spam').map(one => one.uid)).not.toContain(other.uid)
+    expect(server.mailbox('personal', '[Gmail]/Trash').map(one => one.uid)).toContain(other.uid)
+  })
+
+  it('saves and replaces a reply draft, then sends it with its attachment', async () => {
+    const server = await fixture()
+    const mail = await transport(server, 'personal')
+    const first = await mail.appendDraft({
+      to: 'ali@example.com',
+      subject: 'Re: Dinner this weekend',
+      text: 'Friday could work.',
+      inReplyTo: '<dinner@example.com>',
+      references: ['<dinner@example.com>']
+    })
+    const replacement = await mail.replaceDraft(first.uid!, {
+      to: 'ali@example.com',
+      subject: 'Re: Dinner this weekend',
+      text: 'Saturday works.',
+      inReplyTo: '<dinner@example.com>',
+      references: ['<dinner@example.com>']
+    })
+
+    expect(replacement.uid).not.toBe(first.uid)
+    expect(server.mailbox('personal', '[Gmail]/Drafts').filter(one => !one.flags.has('\\Deleted'))).toHaveLength(1)
+
+    const sent = await mail.send({
+      to: 'ali@example.com',
+      subject: 'Re: Dinner this weekend',
+      text: 'Saturday works.',
+      inReplyTo: '<dinner@example.com>',
+      references: ['<dinner@example.com>'],
+      attachments: [{ filename: 'menu.txt', content: 'pasta', contentType: 'text/plain' }]
+    })
+    expect(sent.accepted).toEqual(['ali@example.com'])
+    const parsed = await simpleParser(server.smtpMessages.at(-1)!.raw)
+    expect(parsed.text).toContain('Saturday works.')
+    expect(parsed.attachments[0].filename).toBe('menu.txt')
+  })
+
+  it('reports live mail and restores its watched mailbox after reconnecting', async () => {
+    const server = await fixture()
+    const changes: string[] = []
+    const reconnects: number[] = []
+    const mail = await transport(server, 'personal', {
+      reconnectDelayMs: 5,
+      reconnectMaxDelayMs: 10,
+      onChange: (event: { type: string }) => changes.push(event.type),
+      onReconnect: (attempt: number) => reconnects.push(attempt)
+    })
+    await mail.watch('INBOX')
+    server.deliver('personal', message('Live service mail', 'Lee <lee@example.com>'))
+    await expect.poll(() => changes).toContain('exists')
+
+    server.disconnectImap('personal')
+    await expect.poll(() => reconnects.length).toBe(1)
+    const summaries = await mail.fetchSummaries('INBOX', { search: 'subject:"Live service mail"' })
+    expect(summaries.map(one => one.subject)).toEqual(['Live service mail'])
   })
 })
