@@ -1,7 +1,14 @@
-import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
+  type ReactNode
+} from 'react'
 import { TrashGlyph } from '../icons'
 
-const ACTION_WIDTH = 64
+const ACTION_WIDTH = 56
 const DIRECTION_SLOP = 6
 const OPEN_AT = ACTION_WIDTH / 2
 const FLICK_SPEED = 0.35
@@ -164,7 +171,7 @@ export default function SwipeActionRow({ children, className = '', onDelete }: S
         tabIndex={offset === 0 ? -1 : 0}
         onClick={deleteRow}
         style={{ opacity: Math.min(1, offset / 12) }}
-        className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-danger text-white transition-[background-color,opacity,transform] duration-150 hover:bg-danger/90 active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-fg/40"
+        className="absolute right-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-danger text-white transition-[background-color,opacity,transform] duration-150 hover:bg-danger/90 active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-fg/40"
       >
         <TrashGlyph className="h-4 w-4" />
       </button>
@@ -183,10 +190,11 @@ export default function SwipeActionRow({ children, className = '', onDelete }: S
         }}
         className={`relative z-10 min-w-0 ${moving ? '' : 'transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]'}`}
         style={{
+          '--swipe-progress': offset / ACTION_WIDTH,
           background: 'var(--swipe-surface, var(--color-ink-900))',
           touchAction: 'pan-y',
           transform: `translateX(${-offset}px)`
-        }}
+        } as CSSProperties}
       >
         {children}
       </div>
