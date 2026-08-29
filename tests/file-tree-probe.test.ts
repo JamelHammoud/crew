@@ -168,6 +168,21 @@ describe('the file explorer', () => {
     expect(createEntry).not.toHaveBeenCalled()
   })
 
+  it('creates the first entry in an empty project', async () => {
+    window.crew.readFile = async (path: string) =>
+      path ? { kind: 'missing', path } : { kind: 'dir', path: '', entries: [] }
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    await screen.findByText('Open a project to see its files')
+
+    fireEvent.click(screen.getByLabelText('New folder'))
+    const input = screen.getByLabelText('New folder name')
+    fireEvent.change(input, { target: { value: 'src' } })
+    fireEvent.submit(input.closest('form')!)
+
+    await waitFor(() => expect(createEntry).toHaveBeenCalledWith('src', 'folder'))
+  })
+
   it('keeps search options out of the default view', async () => {
     useBrowser.getState().openFiles()
     render(createElement(BrowserPanel))

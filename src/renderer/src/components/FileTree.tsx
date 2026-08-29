@@ -202,9 +202,9 @@ function CreateRow({
         onKeyDown={keyDown}
         onBlur={onCancel}
         aria-label={draft.kind === 'file' ? 'New file name' : 'New folder name'}
-        disabled={saving}
+        readOnly={saving}
         spellCheck={false}
-        className="h-6 min-w-0 flex-1 rounded-md border border-fg/20 bg-ink-800 px-1.5 text-[13px] text-fg outline-none focus:border-fg/45 disabled:opacity-50"
+        className="h-6 min-w-0 flex-1 rounded-md border border-fg/20 bg-ink-800 px-1.5 text-[13px] text-fg outline-none focus:border-fg/45 read-only:opacity-50"
       />
     </form>
   )
@@ -230,7 +230,7 @@ function Branch({
   const entries = useEntries(path, tab.generation)
 
   if (!entries) return <Loading depth={depth} />
-  if (entries.length === 0 && depth === 0) {
+  if (entries.length === 0 && depth === 0 && creating?.parent !== path) {
     return <p className="px-3 py-6 text-center text-[13px] text-fg-faint">Open a project to see its files</p>
   }
   return (
