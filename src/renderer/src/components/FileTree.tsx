@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type DragEvent, type FormEvent, type KeyboardEvent, type MouseEvent } from 'react'
-import type { FileEntry, RepoEntryKind } from '../../../shared/files'
+import type { FileEntry, RepoEntryKind, RepoEntryTransferMode } from '../../../shared/files'
 import { ChevronRightGlyph, FileGlyph, FolderGlyph } from '../icons'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import { toast } from '../state/toast'
@@ -41,13 +41,25 @@ interface EntryDraft {
 }
 
 interface FileMove {
-  dragged: string | null
+  dragged: string[]
   dropTarget: string | null
   start: (event: DragEvent<HTMLElement>, path: string) => void
   end: () => void
   over: (event: DragEvent<HTMLElement>, parent: string) => void
   leave: (event: DragEvent<HTMLElement>, parent: string) => void
   drop: (event: DragEvent<HTMLElement>, parent: string) => void
+}
+
+interface FileSelection {
+  selected: Set<string>
+  cut: Set<string>
+  pick: (event: MouseEvent, path: string, activate: () => void) => void
+  context: (path: string) => void
+}
+
+interface FileClipboard {
+  sources: string[]
+  mode: RepoEntryTransferMode
 }
 
 const carriesFiles = (event: DragEvent<HTMLElement>): boolean =>
@@ -64,9 +76,14 @@ function droppedPaths(files: FileList): string[] {
   })
 }
 
-function openFile(tab: BrowserTab, path: string, event: MouseEvent): void {
-  if (event.shiftKey) useBrowser.getState().addFileTab(path)
-  else useBrowser.getState().navigateFile(tab.id, path)
+const parentOf = (target: string): string => (target.includes('/') ? target.slice(0, target.lastIndexOf('/')) : '')
+
+function transferSelection(paths: string[]): string[] {
+  const sorted = [...new Set(paths)].sort((a, b) => {
+    const depth = a.split('/').length - b.split('/').length
+    return depth || a.localeCompare(b)
+  })
+  return sorted.filter(path => !sorted.some(parent => parent !== path && path.startsWith(`${parent}/`)))
 }
 
 function Loading({ depth }: { depth: number }) {
@@ -107,6 +124,7 @@ function Folder({
   depth,
   creating,
   move,
+  selection,
   onCreate,
   onCreated,
   onCancel
@@ -117,6 +135,7 @@ function Folder({
   depth: number
   creating: EntryDraft | null
   move: FileMove
+  selection: FileSelection
   onCreate: (parent: string, kind: RepoEntryKind) => void
   onCreated: (path: string, kind: RepoEntryKind) => void
   onCancel: () => void
@@ -135,19 +154,26 @@ function Folder({
         onDragOver={event => move.over(event, path)}
         onDragLeave={event => move.leave(event, path)}
         onDrop={event => move.drop(event, path)}
-        onClick={() => useBrowser.getState().toggleFolder(tab.id, path)}
-        onContextMenu={onContextMenu}
+        onClick={event => selection.pick(event, path, () => useBrowser.getState().toggleFolder(tab.id, path))}
+        onContextMenu={event => {
+          selection.context(path)
+          onContextMenu(event)
+        }}
         data-folder={path}
+        data-file-entry={path}
+        data-entry-dir="true"
         data-sticky-folder={open ? path : undefined}
+        role="treeitem"
+        aria-selected={selection.selected.has(path)}
         aria-expanded={open}
         style={{
           paddingLeft: indent(depth),
           top: open ? depth * ROW_STEP : undefined,
           zIndex: open ? tab.open.length - depth : undefined
         }}
-        className={`${row} ${quiet} ${
+        className={`${row} ${selection.selected.has(path) ? picked : quiet} ${
           move.dropTarget === path ? 'bg-fg/[0.08] text-fg ring-1 ring-inset ring-fg/20' : ''
-        } ${move.dragged === path ? 'opacity-45' : ''} ${
+        } ${move.dragged.includes(path) || selection.cut.has(path) ? 'opacity-45' : ''} ${
           open
             ? "sticky bg-ink-900 after:absolute after:inset-x-0 after:-bottom-px after:h-px after:bg-ink-900 after:content-['']"
             : ''
@@ -165,6 +191,7 @@ function Folder({
           depth={depth + 1}
           creating={creating}
           move={move}
+          selection={selection}
           onCreate={onCreate}
           onCreated={onCreated}
           onCancel={onCancel}
@@ -181,7 +208,8 @@ function Leaf({
   name,
   depth,
   parent,
-  move
+  move,
+  selection
 }: {
   tab: BrowserTab
   path: string
@@ -189,6 +217,7 @@ function Leaf({
   depth: number
   parent: string
   move: FileMove
+  selection: FileSelection
 }) {
   const ref = useRef<HTMLButtonElement>(null)
   const showing = tab.path === path
@@ -208,11 +237,20 @@ function Leaf({
         onDragOver={event => move.over(event, parent)}
         onDragLeave={event => move.leave(event, parent)}
         onDrop={event => move.drop(event, parent)}
-        onClick={event => openFile(tab, path, event)}
-        onContextMenu={onContextMenu}
+        onClick={event => selection.pick(event, path, () => useBrowser.getState().navigateFile(tab.id, path))}
+        onContextMenu={event => {
+          selection.context(path)
+          onContextMenu(event)
+        }}
         data-file={path}
+        data-file-entry={path}
+        data-entry-dir="false"
+        role="treeitem"
+        aria-selected={selection.selected.has(path)}
         style={{ paddingLeft: indent(depth) }}
-        className={`${row} ${showing ? picked : quiet} ${move.dragged === path ? 'opacity-45' : ''}`}
+        className={`${row} ${selection.selected.has(path) || showing ? picked : quiet} ${
+          move.dragged.includes(path) || selection.cut.has(path) ? 'opacity-45' : ''
+        }`}
       >
         <FileGlyph className="h-3.5 w-3.5 shrink-0 text-fg-faint" />
         <span className="truncate">{name}</span>
@@ -294,6 +332,7 @@ function Branch({
   depth,
   creating,
   move,
+  selection,
   onCreate,
   onCreated,
   onCancel
@@ -303,6 +342,7 @@ function Branch({
   depth: number
   creating: EntryDraft | null
   move: FileMove
+  selection: FileSelection
   onCreate: (parent: string, kind: RepoEntryKind) => void
   onCreated: (path: string, kind: RepoEntryKind) => void
   onCancel: () => void
@@ -314,6 +354,7 @@ function Branch({
   return (
     <div
       data-file-branch={path}
+      role={depth === 0 ? 'tree' : 'group'}
       onDragOver={depth === 0 ? event => move.over(event, '') : undefined}
       onDragLeave={depth === 0 ? event => move.leave(event, '') : undefined}
       onDrop={depth === 0 ? event => move.drop(event, '') : undefined}
@@ -335,14 +376,24 @@ function Branch({
                 path={child}
                 name={entry.name}
                 depth={depth}
-                creating={creating}
-                move={move}
+            creating={creating}
+            move={move}
+            selection={selection}
                 onCreate={onCreate}
                 onCreated={onCreated}
                 onCancel={onCancel}
               />
             ) : (
-              <Leaf key={child} tab={tab} path={child} name={entry.name} depth={depth} parent={path} move={move} />
+          <Leaf
+            key={child}
+            tab={tab}
+            path={child}
+            name={entry.name}
+            depth={depth}
+            parent={path}
+            move={move}
+            selection={selection}
+          />
             )
           })}
         </>
