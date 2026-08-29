@@ -343,7 +343,7 @@ export default function ProjectSearch({
         onNewFile={onNewFile}
         onNewFolder={onNewFolder}
       />
-      <div className="min-h-0 flex-1 overflow-auto pb-2">
+      <div data-file-scroll className="min-h-0 flex-1 overflow-auto pb-2">
         {!form.query.trim() && children}
         {form.query.trim() && !paths && <Loading />}
         {error && <p className="select-text px-3 py-5 text-center text-xs text-danger">{error}</p>}

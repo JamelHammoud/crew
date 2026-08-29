@@ -3,7 +3,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { act, createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import BrowserPanel from '../src/renderer/src/components/BrowserPanel'
-import { FILE_DROP_EXPAND_MS } from '../src/renderer/src/components/FileTree'
+import { FILE_DROP_EXPAND_MS, fileDropScrollSpeed } from '../src/renderer/src/components/FileTree'
 import { useBrowser } from '../src/renderer/src/state/browser'
 import type { RepoEntryCreateResult, RepoFile } from '../src/shared/files'
 import type { FileReplaceRequest, FileSearchOptions } from '../src/shared/fileSearch'
@@ -117,6 +117,16 @@ const transfer = () => ({
   setData: vi.fn(),
   getData: vi.fn(() => ''),
   types: []
+})
+
+describe('file drag scrolling', () => {
+  it('accelerates toward either edge and stops through the middle', () => {
+    expect(fileDropScrollSpeed(100, 100, 500)).toBe(-32)
+    expect(fileDropScrollSpeed(142, 100, 500)).toBe(-16)
+    expect(fileDropScrollSpeed(300, 100, 500)).toBe(0)
+    expect(fileDropScrollSpeed(458, 100, 500)).toBe(16)
+    expect(fileDropScrollSpeed(500, 100, 500)).toBe(32)
+  })
 })
 
 describe('the file explorer', () => {
@@ -301,6 +311,38 @@ describe('the file explorer', () => {
     act(() => vi.advanceTimersByTime(FILE_DROP_EXPAND_MS))
 
     expect(target.getAttribute('aria-expanded')).toBe('false')
+  })
+
+  it('keeps scrolling each frame while a dragged file rests at the edge', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    const source = await waitFor(() => {
+      const found = rowFor('readme.md')
+      expect(found).toBeTruthy()
+      return found!
+    })
+    const target = document.querySelector('[data-folder="src"]') as HTMLElement
+    const host = document.querySelector('[data-file-scroll]') as HTMLElement
+    host.getBoundingClientRect = () =>
+      ({ top: 100, bottom: 500, left: 0, right: 280, width: 280, height: 400, x: 0, y: 100, toJSON: () => ({}) })
+    const frames: FrameRequestCallback[] = []
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => {
+      frames.push(callback)
+      return frames.length
+    })
+    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => undefined)
+    const dataTransfer = transfer()
+
+    fireEvent.dragStart(source, { dataTransfer })
+    fireEvent.dragOver(target, { dataTransfer, clientY: 495 })
+    expect(frames).toHaveLength(1)
+    act(() => frames.shift()!(0))
+    const first = host.scrollTop
+    expect(first).toBeGreaterThan(25)
+    act(() => frames.shift()!(16))
+    expect(host.scrollTop).toBeGreaterThan(first + 25)
+    fireEvent.dragEnd(source, { dataTransfer })
+    expect(window.cancelAnimationFrame).toHaveBeenCalled()
   })
 
   it('keeps search options out of the default view', async () => {

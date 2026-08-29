@@ -20,6 +20,8 @@ import { useColumnResize } from './useColumnResize'
 
 const ROW_STEP = 29
 export const FILE_DROP_EXPAND_MS = 700
+const FILE_DROP_SCROLL_EDGE = 84
+const FILE_DROP_SCROLL_MAX = 32
 export const DEFAULT_FILE_TREE_WIDTH = 288
 export const MIN_FILE_TREE_WIDTH = 220
 export const MAX_FILE_TREE_WIDTH = 520
@@ -28,6 +30,18 @@ const quiet = 'text-fg-secondary hover:bg-fg/[0.04] hover:text-fg'
 const picked = 'bg-fg/[0.06] text-fg'
 
 const indent = (depth: number): string => `${8 + depth * 14}px`
+
+export function fileDropScrollSpeed(pointer: number, top: number, bottom: number): number {
+  const fromTop = pointer - top
+  const fromBottom = bottom - pointer
+  if (fromTop <= fromBottom && fromTop < FILE_DROP_SCROLL_EDGE) {
+    return -FILE_DROP_SCROLL_MAX * Math.min(1, Math.max(0, 1 - fromTop / FILE_DROP_SCROLL_EDGE))
+  }
+  if (fromBottom < FILE_DROP_SCROLL_EDGE) {
+    return FILE_DROP_SCROLL_MAX * Math.min(1, Math.max(0, 1 - fromBottom / FILE_DROP_SCROLL_EDGE))
+  }
+  return 0
+}
 
 interface EntryDraft {
   parent: string
@@ -322,6 +336,7 @@ function Branch({
 }
 
 export default function FileTree({ tab }: { tab: BrowserTab }) {
+  const tree = useRef<HTMLElement>(null)
   const [width, setWidth] = useState(DEFAULT_FILE_TREE_WIDTH)
   const [creating, setCreating] = useState<EntryDraft | null>(null)
   const [dragged, setDragged] = useState<string | null>(null)
@@ -329,6 +344,8 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
   const moving = useRef(false)
   const expandTimer = useRef<number | null>(null)
   const expanding = useRef<string | null>(null)
+  const scrollFrame = useRef<number | null>(null)
+  const scrollPointer = useRef<number | null>(null)
   const { dragging, startResize } = useColumnResize(
     width,
     asked => setWidth(Math.max(MIN_FILE_TREE_WIDTH, Math.min(MAX_FILE_TREE_WIDTH, asked))),
@@ -371,6 +388,33 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
     }, FILE_DROP_EXPAND_MS)
   }
 
+  const stopDragScroll = (): void => {
+    if (scrollFrame.current !== null) window.cancelAnimationFrame(scrollFrame.current)
+    scrollFrame.current = null
+    scrollPointer.current = null
+  }
+
+  const dragScrollFrame = (): void => {
+    const host = tree.current?.querySelector<HTMLElement>('[data-file-scroll]')
+    if (!host || scrollPointer.current === null) {
+      stopDragScroll()
+      return
+    }
+    const bounds = host.getBoundingClientRect()
+    const speed = fileDropScrollSpeed(scrollPointer.current, bounds.top, bounds.bottom)
+    if (speed === 0) {
+      stopDragScroll()
+      return
+    }
+    host.scrollTop += speed
+    scrollFrame.current = window.requestAnimationFrame(dragScrollFrame)
+  }
+
+  const dragScroll = (clientY: number): void => {
+    scrollPointer.current = clientY
+    if (scrollFrame.current === null) scrollFrame.current = window.requestAnimationFrame(dragScrollFrame)
+  }
+
   const move: FileMove = {
     dragged,
     dropTarget,
@@ -382,6 +426,7 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
     },
     end: () => {
       stopExpanding()
+      stopDragScroll()
       if (!moving.current) setDragged(null)
       setDropTarget(null)
     },
@@ -408,6 +453,7 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
       const source = dragged
       if (!source || !canDrop(parent)) return
       stopExpanding()
+      stopDragScroll()
       moving.current = true
       setDropTarget(null)
       void window.crew
@@ -432,8 +478,17 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
 
   return (
     <aside
+      ref={tree}
       data-file-tree-width={width}
       style={{ width }}
+      onDragOverCapture={event => {
+        if (!dragged) return
+        event.preventDefault()
+        dragScroll(event.clientY)
+      }}
+      onDragLeave={event => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) stopDragScroll()
+      }}
       className={`relative flex shrink-0 flex-col border-l border-ink-700 ${dragging ? '' : 'transition-[width] duration-200'}`}
     >
       <div
