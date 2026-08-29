@@ -189,6 +189,27 @@ describe('forking a thread', () => {
     expect(later.text).not.toContain('never mind, do the licence')
   })
 
+  it('leaves an unfinished parent request behind', async () => {
+    const sam = await connectUi('sam')
+    await connectRunner('sam', false, { FAKE_CLI_DELAY_MS: '200' })
+    await sam.waitForEvent(e => e.kind === 'agent.online')
+
+    const thread = await threadWith(sam, '@Fake settle the release notes', [samsFake])
+    sam.chat('replace every settings screen', [], thread.threadId)
+    await sam.waitForEvent(
+      e => e.kind === 'agent.start' && e.threadId === thread.threadId && e.promptText === 'replace every settings screen'
+    )
+
+    const carried = await forked(sam, 'only fix the empty state', thread.threadId)
+    const answer = (await sam.waitForEvent(
+      e => e.kind === 'agent.end' && e.threadId === carried.threadId
+    )) as Ended
+
+    expect(answer.text).toContain('settle the release notes')
+    expect(answer.text).toContain('only fix the empty state')
+    expect(answer.text).not.toContain('replace every settings screen')
+  })
+
   it('takes the agent it is handed, and the thread’s own where none is', async () => {
     const sam = await connectUi('sam')
     await connectRunner('sam', false)

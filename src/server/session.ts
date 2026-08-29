@@ -4646,6 +4646,7 @@ export class CrewSession {
       agentId: agent.id,
       agentLabel: agent.label,
       promptText: next.text,
+      messageId: next.messageId,
       byName: next.byName,
       threadId: thread.id,
       reactionIds: reactions.length > 0 ? reactions.map(reaction => reaction.id) : undefined
@@ -4842,6 +4843,43 @@ export class CrewSession {
       .slice(-CONTEXT_EVENT_LIMIT)
   }
 
+  private forkThreadContext(
+    threadId: string,
+    until: number
+  ): Array<Extract<SessionEvent, { kind: 'message' | 'agent.end' }>> {
+    const events = this.eventsOf(threadId)
+    const ended = new Set(
+      events
+        .filter(event => event.kind === 'agent.end' && event.threadId === threadId && event.ts <= until)
+        .map(event => event.promptId)
+    )
+    const unfinished = new Set(
+      events
+        .filter(
+          event =>
+            event.kind === 'agent.start' &&
+            event.threadId === threadId &&
+            event.ts <= until &&
+            !ended.has(event.promptId)
+        )
+        .map(event => event.promptId)
+    )
+    const omitted = new Set(
+      events
+        .filter(
+          event =>
+            (event.kind === 'agent.start' && unfinished.has(event.promptId) && event.messageId !== undefined) ||
+            (event.kind === 'message.route' &&
+              event.threadId === threadId &&
+              event.ts <= until &&
+              unfinished.has(event.promptId))
+        )
+        .map(event => (event.kind === 'agent.start' ? event.messageId : event.messageId))
+        .filter((messageId): messageId is string => messageId !== undefined)
+    )
+    return this.threadContext(threadId, until).filter(event => event.kind !== 'message' || !omitted.has(event.id))
+  }
+
   // What a fork carries in from the thread it came from, and from whatever that
   // one came from. Each link is read up to the moment the fork under it was made,
   // so a fork of a fork reads the whole line it came down and none of what any of
@@ -4854,7 +4892,7 @@ export class CrewSession {
       chain.unshift({ threadId: from, until: at.forkedAt ?? Infinity })
       at = this.threads.get(from)
     }
-    return chain.flatMap(link => this.threadContext(link.threadId, link.until)).slice(-CONTEXT_EVENT_LIMIT)
+    return chain.flatMap(link => this.forkThreadContext(link.threadId, link.until)).slice(-CONTEXT_EVENT_LIMIT)
   }
 
   private transcriptOf(context: Array<Extract<SessionEvent, { kind: 'message' | 'agent.end' }>>): string {

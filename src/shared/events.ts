@@ -346,6 +346,7 @@ export type SessionEvent =
       agentId: string
       agentLabel: string
       promptText: string
+      messageId?: string
       byName: string
       threadId?: string
       reactionIds?: string[]
