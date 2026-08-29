@@ -9,6 +9,7 @@ export type BrowserTabTransferContents = {
 type HeldTab = {
   source: BrowserTabTransferContents
   tab: BrowserTab
+  copy: boolean
   expires: ReturnType<typeof setTimeout>
 }
 
@@ -17,12 +18,12 @@ export class BrowserTabTransfers {
 
   constructor(private placeFor: (id: number) => string | null) {}
 
-  begin(source: BrowserTabTransferContents, token: string, tab: BrowserTab): boolean {
+  begin(source: BrowserTabTransferContents, token: string, tab: BrowserTab, copy = false): boolean {
     if (!token || token.length > 200 || source.isDestroyed()) return false
     const existing = this.held.get(token)
     if (existing) clearTimeout(existing.expires)
     const expires = setTimeout(() => this.held.delete(token), 60_000)
-    this.held.set(token, { source, tab, expires })
+    this.held.set(token, { source, tab, copy, expires })
     return true
   }
 
@@ -35,12 +36,12 @@ export class BrowserTabTransfers {
     const sourcePlace = this.placeFor(transfer.source.id)
     if (!sourcePlace || sourcePlace !== this.placeFor(target.id)) return false
     const index = Number.isFinite(to) ? Math.max(0, Math.floor(to)) : 0
-    if (transfer.source.id === target.id) {
+    if (transfer.source.id === target.id && !transfer.copy) {
       target.send('browser:move-tab', transfer.tab.id, index)
       return true
     }
     target.send('browser:insert-tab', transfer.tab, index)
-    transfer.source.send('browser:remove-tab', transfer.tab.id)
+    if (!transfer.copy) transfer.source.send('browser:remove-tab', transfer.tab.id)
     return true
   }
 }

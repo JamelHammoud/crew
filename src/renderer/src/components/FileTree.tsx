@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type DragEvent, type FormEvent, type KeyboardEvent, type MouseEvent } from 'react'
 import type { FileEntry, RepoEntryKind, RepoEntryTransferMode } from '../../../shared/files'
+import { BROWSER_TAB_DRAG, FILE_ENTRY_DRAG } from '../../../shared/browserDrag'
 import { ChevronRightGlyph, FileGlyph, FolderGlyph } from '../icons'
-import { useBrowser, type BrowserTab } from '../state/browser'
+import { makeFileTab, useBrowser, type BrowserTab } from '../state/browser'
 import { toast } from '../state/toast'
 import { useFileMenu } from './fileMenu'
 import ProjectSearch from './ProjectSearch'
@@ -632,8 +633,11 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
     dropTarget,
     start: (event, path) => {
       const sources = transferSelection(selected.has(path) ? [...selected] : [path])
+      const token = crypto.randomUUID()
       event.dataTransfer.effectAllowed = 'move'
-      event.dataTransfer.setData('application/x-crew-file-entry', JSON.stringify(sources))
+      event.dataTransfer.setData(FILE_ENTRY_DRAG, JSON.stringify(sources))
+      event.dataTransfer.setData(BROWSER_TAB_DRAG, token)
+      window.crew.beginFileTabDrag(token, makeFileTab(path))
       setSelected(new Set(sources))
       anchor.current = path
       setDragged(sources)

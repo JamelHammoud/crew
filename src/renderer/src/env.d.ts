@@ -109,6 +109,7 @@ declare global {
     popOutThread(threadId: string, key?: string): Promise<void>
     popOutBrowserTab(tab: BrowserTab): Promise<boolean>
     beginBrowserTabDrag(token: string, tab: BrowserTab): boolean
+    beginFileTabDrag(token: string, tab: BrowserTab): boolean
     dropBrowserTab(token: string, to: number): Promise<boolean>
     closeBrowserWindow(): void
     setWindowPinned(pinned: boolean): Promise<boolean>

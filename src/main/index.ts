@@ -630,6 +630,9 @@ app.whenReady().then(() => {
   ipcMain.on('browser:drag-tab', (event, token: string, tab: BrowserTab) => {
     event.returnValue = browserTabTransfers.begin(event.sender, token, tab)
   })
+  ipcMain.on('browser:drag-file-tab', (event, token: string, tab: BrowserTab) => {
+    event.returnValue = browserTabTransfers.begin(event.sender, token, tab, true)
+  })
   ipcMain.handle('browser:drop-tab', (event, token: string, to: number) =>
     browserTabTransfers.drop(event.sender, token, to)
   )

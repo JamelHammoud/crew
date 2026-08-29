@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useRef, useState, type DragEvent, type KeyboardEvent } from 'react'
 import { canPreview, isSvg } from '../../../shared/files'
+import { BROWSER_TAB_DRAG, FILE_ENTRY_DRAG } from '../../../shared/browserDrag'
 import { normalizeUrl } from '../../../shared/urls'
 import {
   ArrowLeftGlyph,
@@ -47,7 +48,6 @@ import TerminalView from './TerminalView'
 import Tooltip from './Tooltip'
 export { showsImage } from './BrowserTabMark'
 
-const BROWSER_TAB_DRAG = 'application/x-crew-browser-tab'
 const TAB_SCROLL_EDGE = 56
 const TAB_SCROLL_STEP = 12
 
@@ -163,7 +163,7 @@ export default function BrowserPanel({ standalone = false }: { standalone?: bool
           onDragOver={(event: DragEvent<HTMLDivElement>) => {
             if (!event.dataTransfer.types.includes(BROWSER_TAB_DRAG)) return
             event.preventDefault()
-            event.dataTransfer.dropEffect = 'move'
+            event.dataTransfer.dropEffect = event.dataTransfer.types.includes(FILE_ENTRY_DRAG) ? 'copy' : 'move'
             scrollTabStrip(event.currentTarget, event.clientX)
             const at = tabDropIndex(event.currentTarget, event.clientX)
             setTabDrop({ at, left: tabDropLeft(event.currentTarget, at) })
