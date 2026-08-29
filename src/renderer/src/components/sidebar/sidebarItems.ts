@@ -6,6 +6,7 @@ import {
   CompassGlyph,
   FolderGlyph,
   GlobeGlyph,
+  StickyGlyph,
   TerminalGlyph,
   ToolboxGlyph
 } from '../../icons'
@@ -26,6 +27,7 @@ export const SIDEBAR_ITEMS: readonly SidebarItem[] = [
   { id: 'plugins', label: 'Plugins', Icon: AtGlyph },
   { id: 'scheduled', label: 'Scheduled', Icon: ClockGlyph },
   { id: 'toolbox', label: 'Toolbox', Icon: ToolboxGlyph },
+  { id: 'stickies', label: 'Stickies', Icon: StickyGlyph },
   { id: 'browser', label: 'Browser', Icon: CompassGlyph }
 ]
 

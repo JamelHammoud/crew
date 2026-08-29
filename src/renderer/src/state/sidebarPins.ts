@@ -8,6 +8,7 @@ export const SIDEBAR_ITEM_IDS = [
   'plugins',
   'scheduled',
   'toolbox',
+  'stickies',
   'browser'
 ] as const
 

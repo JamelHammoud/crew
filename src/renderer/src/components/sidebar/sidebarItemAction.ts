@@ -3,13 +3,17 @@ import type { SidebarItemId } from '../../state/sidebarPins'
 import { useCrew } from '../../state/store'
 import type { Tab } from '../navTabs'
 
-const WINDOW_ITEMS: readonly SidebarItemId[] = ['files', 'review', 'terminal', 'web']
+const WINDOW_ITEMS: readonly SidebarItemId[] = ['files', 'review', 'terminal', 'web', 'stickies']
 
 export function sidebarItemOpensWindow(id: SidebarItemId): boolean {
   return WINDOW_ITEMS.includes(id)
 }
 
 export function openSidebarItemWindow(id: SidebarItemId): void {
+  if (id === 'stickies') {
+    void window.crew.openStickies()
+    return
+  }
   const base = makeTab()
   const tab =
     id === 'files'
@@ -31,6 +35,10 @@ export function openSidebarItem(id: SidebarItemId, onTab: (tab: Tab) => void, on
   }
   if (id === 'toolbox') {
     onToolbox()
+    return
+  }
+  if (id === 'stickies') {
+    void window.crew.openStickies()
     return
   }
   const browser = useBrowser.getState()

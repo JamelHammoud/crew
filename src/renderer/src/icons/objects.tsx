@@ -168,6 +168,13 @@ export const ToolboxGlyph = glyph(
   </>
 )
 
+export const StickyGlyph = glyph(
+  <>
+    <path d="M5.5 3.5h13a2 2 0 0 1 2 2V14l-6.5 6.5H5.5a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2Z" />
+    <path d="M14 20.5V16a2 2 0 0 1 2-2h4.5" />
+  </>
+)
+
 // A server somebody stood up themselves, which is the one thing a provider with
 // no logo of its own ever is. Two bays rather than three: a rack is read off the
 // repetition rather than off the count, and three outlined bays at 16 close
