@@ -45,6 +45,7 @@ const repo: Record<string, RepoFile> = {
 const listed = ['readme.md', 'src/app.ts', 'src/renderer/panel.tsx', 'tests/app.test.ts']
 const popOutBrowserTab = vi.fn().mockResolvedValue(true)
 const beginFileTabDrag = vi.fn(() => true)
+const dropBrowserTab = vi.fn().mockResolvedValue(true)
 const createEntry = vi.fn(async (path: string): Promise<RepoEntryCreateResult> => ({ ok: true, path }))
 const moveEntry = vi.fn(async (source: string, parent: string) => ({
   ok: true as const,
@@ -85,6 +86,7 @@ const searchFiles = vi.fn(async (options: FileSearchOptions) => ({
 beforeEach(() => {
   popOutBrowserTab.mockClear()
   beginFileTabDrag.mockClear()
+  dropBrowserTab.mockClear()
   createEntry.mockClear()
   createEntry.mockImplementation(async (path: string) => ({ ok: true as const, path }))
   moveEntry.mockClear()
@@ -124,6 +126,7 @@ beforeEach(() => {
     moveEntry,
     transferEntries,
     beginFileTabDrag,
+    dropBrowserTab,
     filePath,
     importEntries,
     searchFiles,
@@ -272,6 +275,93 @@ describe('the file explorer', () => {
     expect(activeTab().path).toBe('tests/app.ts')
     expect(activeTab().open).toContain('tests')
     expect(activeTab().generation).toBe(1)
+  })
+
+  it('selects the visible range without opening the second item', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    fireEvent.click(await screen.findByText('src'))
+    const source = await waitFor(() => rowFor('src/app.ts')!)
+    fireEvent.click(source)
+
+    fireEvent.click(rowFor('readme.md')!, { shiftKey: true })
+
+    expect(source.getAttribute('aria-selected')).toBe('true')
+    expect(document.querySelector('[data-folder="tests"]')?.getAttribute('aria-selected')).toBe('true')
+    expect(rowFor('readme.md')?.getAttribute('aria-selected')).toBe('true')
+    expect(document.querySelector('[data-folder="src/renderer"]')?.getAttribute('aria-selected')).toBe('false')
+    expect(activeTab().path).toBe('src/app.ts')
+  })
+
+  it('drags every selected item as one move', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    fireEvent.click(await screen.findByText('src'))
+    const app = await waitFor(() => rowFor('src/app.ts')!)
+    fireEvent.click(app)
+    fireEvent.click(rowFor('readme.md')!, { metaKey: true })
+    const target = document.querySelector('[data-folder="src/renderer"]') as HTMLElement
+    const dataTransfer = transfer()
+
+    fireEvent.dragStart(app, { dataTransfer })
+    fireEvent.dragOver(target, { dataTransfer })
+    fireEvent.drop(target, { dataTransfer })
+
+    await waitFor(() =>
+      expect(transferEntries).toHaveBeenCalledWith(['src/app.ts', 'readme.md'], 'src/renderer', 'move')
+    )
+  })
+
+  it('copies and cuts a selection for paste into another folder', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    fireEvent.click(await screen.findByText('src'))
+    const app = await waitFor(() => rowFor('src/app.ts')!)
+    const tests = document.querySelector('[data-folder="tests"]') as HTMLElement
+    fireEvent.click(app)
+    fireEvent.keyDown(app, { key: 'c', metaKey: true })
+    fireEvent.click(tests)
+    fireEvent.keyDown(tests, { key: 'v', metaKey: true })
+
+    await waitFor(() => expect(transferEntries).toHaveBeenCalledWith(['src/app.ts'], 'tests', 'copy'))
+
+    transferEntries.mockClear()
+    fireEvent.click(app)
+    fireEvent.keyDown(app, { key: 'x', metaKey: true })
+    expect(app.className).toContain('opacity-45')
+    fireEvent.click(tests)
+    fireEvent.keyDown(tests, { key: 'v', metaKey: true })
+
+    await waitFor(() => expect(transferEntries).toHaveBeenCalledWith(['src/app.ts'], 'tests', 'move'))
+  })
+
+  it('hands a dragged file to the tab strip as a new tab', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    const source = await waitFor(() => rowFor('readme.md')!)
+    const strip = document.querySelector('[data-tab]')!.parentElement as HTMLElement
+    const values = new Map<string, string>()
+    const dataTransfer = {
+      effectAllowed: 'none',
+      dropEffect: 'none',
+      types: [] as string[],
+      files: [],
+      setData(type: string, value: string) {
+        values.set(type, value)
+        if (!this.types.includes(type)) this.types.push(type)
+      },
+      getData: (type: string) => values.get(type) ?? ''
+    }
+
+    fireEvent.dragStart(source, { dataTransfer })
+    fireEvent.dragOver(strip, { dataTransfer })
+
+    expect(dataTransfer.dropEffect).toBe('copy')
+    expect(beginFileTabDrag).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ path: 'readme.md' }))
+
+    fireEvent.drop(strip, { dataTransfer })
+
+    await waitFor(() => expect(dropBrowserTab).toHaveBeenCalledWith(expect.any(String), expect.any(Number)))
   })
 
   it('moves a folder to the root and rebases every path under it', async () => {
