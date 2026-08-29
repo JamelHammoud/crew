@@ -105,6 +105,7 @@ describe('the full screen browser', () => {
     expect(takeover.classList.contains('fixed')).toBe(true)
     expect(takeover.classList.contains('inset-0')).toBe(true)
     expect(takeover.classList.contains('app-no-drag')).toBe(true)
+    expect(takeover.querySelector('header')?.classList.contains('app-drag')).toBe(true)
     expect(takeover.querySelector('.cursor-col-resize')).toBeNull()
     expect(screen.getByRole('button', { name: 'Exit full screen' })).toBeTruthy()
 
