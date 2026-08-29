@@ -33,7 +33,12 @@ const meta = (status: ThreadMeta['status']): Record<string, ThreadMeta> => ({
 const HERE = 'project:/work/crew'
 const AWAY = 'project:/work/site'
 
-const thread: LiveThread = { id: 'thread-2', title: 'Draw the footer', working: false }
+const thread: LiveThread = {
+  id: 'thread-2',
+  title: 'Draw the footer',
+  working: false,
+  preview: 'Draw the footer with the whole opening message'
+}
 
 const row = (open: boolean, here = true, placeKey = HERE): void => {
   render(createElement(ThreadRow, { thread, open, here, placeKey, onOpen, onOpenToRight }))

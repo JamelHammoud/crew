@@ -17,17 +17,14 @@ function ThreadRow({ thread, open, here, placeKey, onOpen, onOpenToRight }: Thre
   return (
     <>
       <HoverCard
-        width={360}
+        width={380}
         delay={2000}
         side="right"
         className="!block min-w-0 w-full"
         content={
-          <div className="max-h-[300px] overflow-y-auto overscroll-contain select-text">
-            <div className="mb-1 truncate text-sm font-semibold text-fg/70">{thread.preview.author}</div>
-            <div className="whitespace-pre-wrap break-words text-sm leading-[1.6] text-fg/70">
-              <EmojiText text={thread.preview.text} quiet />
-            </div>
-          </div>
+          <span className="block max-h-[300px] overflow-y-auto overscroll-contain whitespace-pre-wrap break-words text-sm leading-[1.6] text-fg/70 select-text">
+            <EmojiText text={thread.preview} quiet />
+          </span>
         }
       >
         <button

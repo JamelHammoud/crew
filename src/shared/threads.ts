@@ -5,10 +5,7 @@ export interface LiveThread {
   id: string
   title: string
   working: boolean
-  preview: {
-    author: string
-    text: string
-  }
+  preview: string
 }
 
 // Which events a thread is built from. Almost every one of them names the
@@ -44,7 +41,7 @@ const stirs = (event: SessionEvent): string | undefined => {
 export function activeThreads(events: SessionEvent[], working: (threadId: string) => boolean): LiveThread[] {
   const open = new Map<
     string,
-    { title: string; agentLabel: string; at: number; preview: LiveThread['preview'] }
+    { title: string; agentLabel: string; at: number; preview: string; asked: boolean }
   >()
   const messages = new Map<string, Extract<SessionEvent, { kind: 'message' }>>()
   for (const event of events) {
@@ -58,7 +55,8 @@ export function activeThreads(events: SessionEvent[], working: (threadId: string
           title: event.title,
           agentLabel: event.agentLabel,
           at: event.ts,
-          preview: { author: event.byName, text: event.title }
+          preview: event.title,
+          asked: false
         })
         break
       case 'thread.archived':
@@ -79,24 +77,18 @@ export function activeThreads(events: SessionEvent[], working: (threadId: string
       case 'agent.start': {
         if (!event.threadId) break
         const thread = open.get(event.threadId)
-        if (thread) thread.preview = { author: event.byName, text: event.promptText }
-        break
-      }
-      case 'agent.end': {
-        if (!event.threadId) break
-        const thread = open.get(event.threadId)
-        const text = event.ok ? event.text?.trim() : event.error?.trim()
-        if (thread && text) thread.preview = { author: event.agentLabel, text }
+        if (thread && !thread.asked) {
+          thread.preview = event.promptText
+          thread.asked = true
+        }
         break
       }
       case 'message.route': {
         const thread = open.get(event.threadId)
         const message = messages.get(event.messageId)
-        if (thread && message) {
-          thread.preview = {
-            author: message.authorName,
-            text: message.text.trim() || (message.attachments?.length ? 'Attachments' : thread.preview.text)
-          }
+        if (thread && message && !thread.asked) {
+          thread.preview = message.text.trim() || (message.attachments?.length ? 'Attachments' : thread.preview)
+          thread.asked = true
         }
         break
       }

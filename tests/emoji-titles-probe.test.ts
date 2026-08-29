@@ -19,7 +19,7 @@ const HEART = '❤️'
 
 const SHEET: CustomEmoji[] = [{ id: 'e1', name: 'shipit', file: 'a.gif', by: 'Jamel', ts: 1 }]
 
-const live = (title: string): LiveThread => ({ id: 't1', title, working: false })
+const live = (title: string): LiveThread => ({ id: 't1', title, working: false, preview: title })
 
 const thread = (title: string): ThreadMeta => ({
   id: 't1',

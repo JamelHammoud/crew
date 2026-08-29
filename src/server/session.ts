@@ -413,7 +413,6 @@ const THREAD_EVENT_KINDS = new Set<SessionEvent['kind']>([
   'thread.renamed',
   'thread.deleted',
   'agent.start',
-  'agent.end',
   'message.route'
 ])
 

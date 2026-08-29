@@ -47,8 +47,7 @@ export const sameLiveThread = (a: LiveThread, b: LiveThread): boolean =>
   a.id === b.id &&
   a.title === b.title &&
   a.working === b.working &&
-  a.preview.author === b.preview.author &&
-  a.preview.text === b.preview.text
+  a.preview === b.preview
 
 export const sameLiveThreads = (a: LiveThread[], b: LiveThread[]): boolean =>
   a === b || (a.length === b.length && a.every((thread, index) => sameLiveThread(thread, b[index])))

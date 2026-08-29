@@ -62,6 +62,7 @@ const threadsOf = (index: number, working = false): LiveThread[] =>
   Array.from({ length: PER_PLACE }, (_, row) => ({
     id: `${keyOf(index)}/thread-${row}`,
     title: `the ${row}th piece in place ${index}`,
+    preview: `the ${row}th piece in place ${index}`,
     working: working && row === 0
   }))
 
