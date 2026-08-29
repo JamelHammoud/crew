@@ -11,6 +11,7 @@ import type {
   PathLocation,
   RepoEntryCreateResult,
   RepoEntryKind,
+  RepoEntryMoveResult,
   RepoFile
 } from '../shared/files'
 import type { FileReplaceRequest, FileReplaceResult, FileSearchOptions } from '../shared/fileSearch'
@@ -89,6 +90,8 @@ const bridge = {
   listFiles: (): Promise<string[]> => ipcRenderer.invoke('file:list'),
   createEntry: (path: string, kind: RepoEntryKind): Promise<RepoEntryCreateResult> =>
     ipcRenderer.invoke('file:create', path, kind),
+  moveEntry: (source: string, parent: string): Promise<RepoEntryMoveResult> =>
+    ipcRenderer.invoke('file:move', source, parent),
   searchFiles: (options: FileSearchOptions): Promise<FileContentSearch> => ipcRenderer.invoke('file:search', options),
   replaceFiles: (request: FileReplaceRequest): Promise<FileReplaceResult> =>
     ipcRenderer.invoke('file:replace', request),

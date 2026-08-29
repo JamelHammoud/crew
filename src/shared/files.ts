@@ -16,6 +16,10 @@ export type RepoEntryCreateResult =
   | { ok: true; path: string }
   | { ok: false; message: string }
 
+export type RepoEntryMoveResult =
+  | { ok: true; path: string }
+  | { ok: false; message: string }
+
 // Where a path an agent mentioned lives, from this machine's point of view.
 // 'repo' paths are shown relative to the project, 'local' paths are elsewhere
 // on this computer and are shown as written, and 'private' paths are on

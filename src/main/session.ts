@@ -28,6 +28,7 @@ import {
   copyPaths,
   createRepoEntry,
   listRepoFiles,
+  moveRepoEntry,
   readLocalFile,
   readMachineDirs,
   readRepoFile,
@@ -44,6 +45,7 @@ import type {
   PathLocation,
   RepoEntryCreateResult,
   RepoEntryKind,
+  RepoEntryMoveResult,
   RepoFile
 } from '../shared/files'
 import type { MachineDir } from '../shared/machinePath'
@@ -225,6 +227,12 @@ export class AppSession {
   async createEntry(target: string, kind: RepoEntryKind): Promise<RepoEntryCreateResult> {
     return this.folder
       ? createRepoEntry(this.folder, target, kind)
+      : { ok: false, message: 'Open a project first' }
+  }
+
+  async moveEntry(source: string, parent: string): Promise<RepoEntryMoveResult> {
+    return this.folder
+      ? moveRepoEntry(this.folder, source, parent)
       : { ok: false, message: 'Open a project first' }
   }
 

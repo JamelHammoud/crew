@@ -849,6 +849,9 @@ app.whenReady().then(() => {
   ipcMain.handle('file:create', (event, target: string, kind: 'file' | 'folder') =>
     crews.inView(event.sender.id).createEntry(target, kind)
   )
+  ipcMain.handle('file:move', (event, source: string, parent: string) =>
+    crews.inView(event.sender.id).moveEntry(source, parent)
+  )
   ipcMain.handle('file:search', (event, options: FileSearchOptions) =>
     crews.inView(event.sender.id).searchFiles(options)
   )

@@ -9,6 +9,7 @@ import {
   type RepoFile,
   type RepoEntryCreateResult,
   type RepoEntryKind,
+  type RepoEntryMoveResult,
   type RepoPathKind
 } from '../shared/files'
 import type { MachineDir } from '../shared/machinePath'
@@ -263,6 +264,46 @@ export async function createRepoEntry(
     if (code === 'EEXIST') return { ok: false, message: 'That name is already in use' }
     if (code === 'ENOENT' || code === 'ENOTDIR') return { ok: false, message: 'That folder is no longer there' }
     return { ok: false, message: `Could not create that ${kind}` }
+  }
+}
+
+export async function moveRepoEntry(root: string, source: string, parent: string): Promise<RepoEntryMoveResult> {
+  const sourceRelative = trimPath(source)
+  const parentRelative = trimPath(parent)
+  const sourceAbsolute = resolveRepoPath(root, sourceRelative)
+  const parentAbsolute = resolveRepoPath(root, parentRelative)
+  if (!sourceRelative || !sourceAbsolute || !parentAbsolute) {
+    return { ok: false, message: 'Choose a place inside this project' }
+  }
+  try {
+    const realRoot = await fs.realpath(root)
+    const realSourceParent = await fs.realpath(path.dirname(sourceAbsolute))
+    const realParent = await fs.realpath(parentAbsolute)
+    if (insideRoot(realRoot, realSourceParent) === null || insideRoot(realRoot, realParent) === null) {
+      return { ok: false, message: 'Choose a place inside this project' }
+    }
+    const parentStat = await fs.stat(realParent)
+    if (!parentStat.isDirectory()) return { ok: false, message: 'Drop it onto a folder' }
+    const from = path.join(realSourceParent, path.basename(sourceAbsolute))
+    const sourceStat = await fs.lstat(from)
+    if (sourceStat.isDirectory()) {
+      const realSource = await fs.realpath(from)
+      if (insideRoot(realSource, realParent) !== null) {
+        return { ok: false, message: 'A folder cannot contain itself' }
+      }
+    }
+    const destination = path.join(realParent, path.basename(from))
+    const same = CASELESS ? from.toLowerCase() === destination.toLowerCase() : from === destination
+    if (same) return { ok: false, message: 'That item is already there' }
+    if (await isThere(destination)) return { ok: false, message: 'That name is already in use there' }
+    await fs.rename(from, destination)
+    return { ok: true, path: repoRelative(root, destination) }
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code
+    if (code === 'EEXIST' || code === 'ENOTEMPTY') return { ok: false, message: 'That name is already in use there' }
+    if (code === 'ENOENT' || code === 'ENOTDIR') return { ok: false, message: 'That item is no longer there' }
+    if (code === 'EINVAL') return { ok: false, message: 'A folder cannot contain itself' }
+    return { ok: false, message: 'Could not move that item' }
   }
 }
 

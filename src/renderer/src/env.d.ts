@@ -12,6 +12,7 @@ import type {
   PathLocation,
   RepoEntryCreateResult,
   RepoEntryKind,
+  RepoEntryMoveResult,
   RepoFile
 } from '../../shared/files'
 import type { FileReplaceRequest, FileReplaceResult, FileSearchOptions } from '../../shared/fileSearch'
@@ -77,6 +78,7 @@ declare global {
     readFile(path: string): Promise<RepoFile | null>
     listFiles(): Promise<string[]>
     createEntry(path: string, kind: RepoEntryKind): Promise<RepoEntryCreateResult>
+    moveEntry(source: string, parent: string): Promise<RepoEntryMoveResult>
     searchFiles(options: FileSearchOptions): Promise<FileContentSearch>
     replaceFiles(request: FileReplaceRequest): Promise<FileReplaceResult>
     readDirs(query: string): Promise<MachineDir[]>
