@@ -11,6 +11,7 @@ import type {
   FileCopyPaths,
   PathLocation,
   RepoEntryCreateResult,
+  RepoEntryImportResult,
   RepoEntryKind,
   RepoEntryMoveResult,
   RepoFile
@@ -79,6 +80,8 @@ declare global {
     listFiles(): Promise<string[]>
     createEntry(path: string, kind: RepoEntryKind): Promise<RepoEntryCreateResult>
     moveEntry(source: string, parent: string): Promise<RepoEntryMoveResult>
+    filePath(file: File): string
+    importEntries(sources: string[], parent: string): Promise<RepoEntryImportResult>
     searchFiles(options: FileSearchOptions): Promise<FileContentSearch>
     replaceFiles(request: FileReplaceRequest): Promise<FileReplaceResult>
     readDirs(query: string): Promise<MachineDir[]>

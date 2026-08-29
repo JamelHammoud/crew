@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { attachmentBytes, attachmentMbLabel, isImageType } from '../../../shared/attachments'
 import type { Editor, TLShape } from '../canvas'
-import { commandForKey, type CommandContext } from '../design/commands'
+import { commandForKey, runCommand, type CommandContext } from '../design/commands'
+import { keyIsTheBoards } from '../design/designKeys'
+import { pasteImages } from '../design/pasteImages'
+import { useCrew } from '../state/store'
+import { toast } from '../state/toast'
 import DesignAskBar from './DesignAskBar'
 import DesignCanvas from './DesignCanvas'
 import DesignContextMenu, { useContextMenu } from './DesignContextMenu'
@@ -26,6 +31,8 @@ export default function DesignStage({
 }) {
   const [asking, setAsking] = useState(false)
   const { spot, close } = useContextMenu(editor)
+  const httpBase = useCrew(state => state.httpBase)
+  const attachmentMb = useCrew(state => state.attachmentMb)
 
   const ask = useCallback(() => setAsking(true), [])
   const stopAsking = useCallback(() => setAsking(false), [])
@@ -40,6 +47,7 @@ export default function DesignStage({
     const onKeyDown = (event: KeyboardEvent) => {
       const command = commandForKey(event, ctx)
       if (!command) return
+      if (command.id === 'paste') return
       event.preventDefault()
       event.stopPropagation()
       command.run(ctx)
@@ -47,6 +55,31 @@ export default function DesignStage({
     window.addEventListener('keydown', onKeyDown, true)
     return () => window.removeEventListener('keydown', onKeyDown, true)
   }, [ctx])
+
+  useEffect(() => {
+    if (!ctx) return
+    const onPaste = (event: ClipboardEvent) => {
+      if (!keyIsTheBoards(event.target) || ctx.editor.getEditingShapeId()) return
+      const images = [...(event.clipboardData?.files ?? [])].filter(file => isImageType(file.type))
+      if (images.length === 0) {
+        runCommand('paste', ctx)
+        return
+      }
+      event.preventDefault()
+      event.stopPropagation()
+      const limit = attachmentBytes(attachmentMb)
+      const accepted = images.filter(file => file.size <= limit)
+      if (accepted.length !== images.length) {
+        toast.fail(`Images can be up to ${attachmentMbLabel(attachmentMb)}`, { key: 'design-image-size' })
+      }
+      if (accepted.length === 0) return
+      void pasteImages(ctx.editor, accepted, httpBase).catch(() => {
+        toast.fail('Crew could not paste that image', { key: 'design-image-paste' })
+      })
+    }
+    window.addEventListener('paste', onPaste, true)
+    return () => window.removeEventListener('paste', onPaste, true)
+  }, [ctx, httpBase, attachmentMb])
 
   useEffect(() => setAsking(false), [boardId])
 

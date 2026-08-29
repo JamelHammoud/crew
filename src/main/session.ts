@@ -27,6 +27,7 @@ import {
   absolutePathOf,
   copyPaths,
   createRepoEntry,
+  importRepoEntries,
   listRepoFiles,
   moveRepoEntry,
   readLocalFile,
@@ -44,6 +45,7 @@ import type {
   FileContentSearch,
   PathLocation,
   RepoEntryCreateResult,
+  RepoEntryImportResult,
   RepoEntryKind,
   RepoEntryMoveResult,
   RepoFile
@@ -230,6 +232,12 @@ export class AppSession {
 
   async moveEntry(source: string, parent: string): Promise<RepoEntryMoveResult> {
     return this.folder ? moveRepoEntry(this.folder, source, parent) : { ok: false, message: 'Open a project first' }
+  }
+
+  async importEntries(sources: string[], parent: string): Promise<RepoEntryImportResult> {
+    return this.folder
+      ? importRepoEntries(this.folder, sources, parent)
+      : { ok: false, message: 'Open a project first' }
   }
 
   async searchFiles(options: FileSearchOptions): Promise<FileContentSearch> {

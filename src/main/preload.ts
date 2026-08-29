@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from 'electron'
+import { contextBridge, ipcRenderer, webUtils } from 'electron'
 import type { AgentAlert } from '../shared/alerts'
 import type { AppIconId } from '../shared/appIcon'
 import type { BrowserTab } from '../shared/browserTab'
@@ -10,6 +10,7 @@ import type {
   FileCopyPaths,
   PathLocation,
   RepoEntryCreateResult,
+  RepoEntryImportResult,
   RepoEntryKind,
   RepoEntryMoveResult,
   RepoFile
@@ -92,6 +93,9 @@ const bridge = {
     ipcRenderer.invoke('file:create', path, kind),
   moveEntry: (source: string, parent: string): Promise<RepoEntryMoveResult> =>
     ipcRenderer.invoke('file:move', source, parent),
+  filePath: (file: File): string => webUtils.getPathForFile(file),
+  importEntries: (sources: string[], parent: string): Promise<RepoEntryImportResult> =>
+    ipcRenderer.invoke('file:import', sources, parent),
   searchFiles: (options: FileSearchOptions): Promise<FileContentSearch> => ipcRenderer.invoke('file:search', options),
   replaceFiles: (request: FileReplaceRequest): Promise<FileReplaceResult> =>
     ipcRenderer.invoke('file:replace', request),
