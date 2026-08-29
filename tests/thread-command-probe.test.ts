@@ -478,7 +478,7 @@ describe('queued message cards', () => {
     const full = () =>
       screen.queryByText((_, element) => element?.textContent === 'first line\nsecond line that stays intact')
     expect(full()).toBeTruthy()
-    fireEvent.pointerDown(screen.getByText('first line second line that stays intact'), {
+    fireEvent.pointerDown(document.querySelector('[data-reorder] .text-fg-secondary')!, {
       button: 0,
       clientX: 80,
       clientY: 80
