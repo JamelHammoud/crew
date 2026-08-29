@@ -43,6 +43,7 @@ const repo: Record<string, RepoFile> = {
 
 const listed = ['readme.md', 'src/app.ts', 'src/renderer/panel.tsx', 'tests/app.test.ts']
 const popOutBrowserTab = vi.fn().mockResolvedValue(true)
+const createEntry = vi.fn(async (path: string) => ({ ok: true as const, path }))
 const replaceFiles = vi.fn().mockResolvedValue({ files: 1, replacements: 1, failed: [], error: null })
 const searchFiles = vi.fn(async (options: FileSearchOptions) => ({
   matches:
@@ -65,6 +66,8 @@ const searchFiles = vi.fn(async (options: FileSearchOptions) => ({
 
 beforeEach(() => {
   popOutBrowserTab.mockClear()
+  createEntry.mockClear()
+  createEntry.mockImplementation(async (path: string) => ({ ok: true as const, path }))
   replaceFiles.mockClear()
   searchFiles.mockClear()
   useBrowser.setState({ tabs: [], activeTabId: null })
@@ -74,6 +77,7 @@ beforeEach(() => {
   window.crew = {
     readFile: async (path: string) => repo[path] ?? { kind: 'missing', path },
     listFiles: async () => listed,
+    createEntry,
     searchFiles,
     replaceFiles,
     writeFile: async () => null,
@@ -103,6 +107,65 @@ describe('the file explorer', () => {
     expect(await screen.findByText('src')).toBeTruthy()
     expect(screen.getByText('readme.md')).toBeTruthy()
     expect(screen.getByText('Pick a file from the project')).toBeTruthy()
+  })
+
+  it('creates a file from the visible Files actions and opens it', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    await screen.findByText('src')
+
+    expect(screen.getByLabelText('New file')).toBeTruthy()
+    expect(screen.getByLabelText('New folder')).toBeTruthy()
+    fireEvent.click(screen.getByLabelText('New file'))
+    const input = screen.getByLabelText('New file name')
+    fireEvent.change(input, { target: { value: 'notes.md' } })
+    fireEvent.submit(input.closest('form')!)
+
+    await waitFor(() => expect(createEntry).toHaveBeenCalledWith('notes.md', 'file'))
+    expect(activeTab().path).toBe('notes.md')
+    expect(activeTab().generation).toBe(1)
+  })
+
+  it('creates inside a folder from its context menu', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    const src = await screen.findByText('src')
+
+    fireEvent.contextMenu(src, { clientX: 40, clientY: 50 })
+    fireEvent.click(screen.getByText('New folder'))
+    const input = await screen.findByLabelText('New folder name')
+    fireEvent.change(input, { target: { value: 'components' } })
+    fireEvent.submit(input.closest('form')!)
+
+    await waitFor(() => expect(createEntry).toHaveBeenCalledWith('src/components', 'folder'))
+    expect(activeTab().open).toContain('src')
+  })
+
+  it('keeps the name field open when the entry could not be created', async () => {
+    createEntry.mockResolvedValueOnce({ ok: false, message: 'That name is already in use' })
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    await screen.findByText('src')
+
+    fireEvent.click(screen.getByLabelText('New file'))
+    const input = screen.getByLabelText('New file name')
+    fireEvent.change(input, { target: { value: 'readme.md' } })
+    fireEvent.submit(input.closest('form')!)
+
+    await waitFor(() => expect(createEntry).toHaveBeenCalledWith('readme.md', 'file'))
+    expect(screen.getByLabelText('New file name')).toBeTruthy()
+  })
+
+  it('cancels a new entry with Escape', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    await screen.findByText('src')
+
+    fireEvent.click(screen.getByLabelText('New folder'))
+    fireEvent.keyDown(screen.getByLabelText('New folder name'), { key: 'Escape' })
+
+    expect(screen.queryByLabelText('New folder name')).toBeNull()
+    expect(createEntry).not.toHaveBeenCalled()
   })
 
   it('keeps search options out of the default view', async () => {

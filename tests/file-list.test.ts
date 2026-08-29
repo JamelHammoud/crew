@@ -1,7 +1,7 @@
-import { mkdirSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { listRepoFiles } from '../src/main/files'
+import { createRepoEntry, listRepoFiles } from '../src/main/files'
 import { markRuns, matchFiles } from '../src/shared/files'
 import { runGit } from '../src/shared/git'
 import { tmpDir } from './helpers/session'
@@ -43,6 +43,45 @@ describe('listRepoFiles', () => {
     write(root, 'src/app.ts', 'x\n')
     write(root, 'node_modules/left/index.js', 'y\n')
     expect(await listRepoFiles(root)).toEqual(['notes.md', 'src/app.ts'])
+  })
+})
+
+describe('createRepoEntry', () => {
+  it('creates empty files and folders inside the project', async () => {
+    const root = tmpDir('create-entry')
+    mkdirSync(path.join(root, 'src'))
+
+    expect(await createRepoEntry(root, 'src/new.ts', 'file')).toEqual({ ok: true, path: 'src/new.ts' })
+    expect(readFileSync(path.join(root, 'src/new.ts'), 'utf8')).toBe('')
+    expect(await createRepoEntry(root, 'src/components', 'folder')).toEqual({ ok: true, path: 'src/components' })
+    expect(existsSync(path.join(root, 'src/components'))).toBe(true)
+  })
+
+  it('never replaces an entry that is already there', async () => {
+    const root = tmpDir('create-existing')
+    write(root, 'notes.md', 'keep me')
+
+    expect(await createRepoEntry(root, 'notes.md', 'file')).toEqual({
+      ok: false,
+      message: 'That name is already in use'
+    })
+    expect(readFileSync(path.join(root, 'notes.md'), 'utf8')).toBe('keep me')
+  })
+
+  it('refuses paths outside the project, including folders reached through a symlink', async () => {
+    const root = tmpDir('create-root')
+    const outside = tmpDir('create-outside')
+    symlinkSync(outside, path.join(root, 'outside'))
+
+    expect(await createRepoEntry(root, '../escaped.txt', 'file')).toEqual({
+      ok: false,
+      message: 'Choose a name inside this project'
+    })
+    expect(await createRepoEntry(root, 'outside/escaped.txt', 'file')).toEqual({
+      ok: false,
+      message: 'Choose a name inside this project'
+    })
+    expect(existsSync(path.join(outside, 'escaped.txt'))).toBe(false)
   })
 })
 
