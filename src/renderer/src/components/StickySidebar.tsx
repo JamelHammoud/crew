@@ -12,7 +12,7 @@ import Tooltip from './Tooltip'
 import { formatShortDay } from './time'
 import useScrollEdges from './useScrollEdges'
 
-const COLOR_VALUES = ['#e9c46a', '#ef8f8f', '#78aee8', '#6fc7ad', '#d394df']
+const COLOR_VALUES = ['var(--color-ink-700)', '#e9c46a', '#ef8f8f', '#78aee8', '#6fc7ad', '#d394df']
 
 export function stickyColorValue(color: StickyColor): string {
   const at = STICKY_COLORS.indexOf(color)
@@ -20,6 +20,7 @@ export function stickyColorValue(color: StickyColor): string {
 }
 
 export function stickyEditorBackground(color: StickyColor): string {
+  if (color === 'default') return 'var(--color-ink-900)'
   return `color-mix(in srgb, var(--color-ink-900) 94%, ${stickyColorValue(color)})`
 }
 

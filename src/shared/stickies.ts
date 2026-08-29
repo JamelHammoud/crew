@@ -1,4 +1,4 @@
-export const STICKY_COLORS = ['yellow', 'pink', 'blue', 'green', 'purple'] as const
+export const STICKY_COLORS = ['default', 'yellow', 'pink', 'blue', 'green', 'purple'] as const
 
 export type StickyColor = (typeof STICKY_COLORS)[number]
 

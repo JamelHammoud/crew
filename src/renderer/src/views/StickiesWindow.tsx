@@ -66,7 +66,7 @@ function stickyDraft(): Sticky {
   return {
     id: `draft:${crypto.randomUUID()}`,
     body: '',
-    color: STICKY_COLORS[0],
+    color: 'default',
     pinned: false,
     createdAt: now,
     updatedAt: now

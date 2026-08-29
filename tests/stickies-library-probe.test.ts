@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Sticky } from '../src/shared/stickies'
@@ -60,5 +60,19 @@ describe('the Stickies library', () => {
     expect(row.className).toContain('min-h-14')
     fireEvent.click(row)
     expect(view.container.querySelector('[data-editor-id]')?.getAttribute('data-editor-id')).toBe('second')
+  })
+
+  it('opens the individual sticky actions from its background without a header', async () => {
+    window.location.hash = '#sticky=first'
+    const view = render(createElement(StickiesWindow))
+
+    const windowBackground = view.container.querySelector('[data-sticky-window]') as HTMLElement
+    expect(windowBackground).not.toBeNull()
+    expect(windowBackground.querySelector('header')).toBeNull()
+    fireEvent.contextMenu(windowBackground, { clientX: 180, clientY: 160 })
+
+    await waitFor(() => expect(screen.getByText('Keep on top')).toBeTruthy())
+    expect(screen.getByText('Default')).toBeTruthy()
+    expect(screen.getByText('Delete sticky')).toBeTruthy()
   })
 })

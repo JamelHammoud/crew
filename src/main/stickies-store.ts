@@ -96,7 +96,7 @@ export class StickyStore {
       id: randomUUID(),
       ...(title ? { title } : {}),
       body: input.body,
-      color: input.color ?? 'yellow',
+      color: input.color ?? 'default',
       pinned: input.pinned ?? false,
       createdAt: now,
       updatedAt: now
