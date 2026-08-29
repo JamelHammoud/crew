@@ -368,7 +368,7 @@ export default function ThreadView({
                 <div className="space-y-3">
                   <RunEnded end={ended} />
                   {thread.mode === 'plan' && thread.plan && (
-                    <RunAction label="Implement plan" onClick={() => implementPlan(threadId)} />
+                    <RunAction label="Implement plan" onClick={() => implementPlan(threadId)} solid />
                   )}
                 </div>
               )

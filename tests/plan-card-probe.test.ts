@@ -199,6 +199,8 @@ describe('plans in the app', () => {
     render(createElement(ThreadView, { threadId: 'thread-1' }))
     const action = screen.getByRole('button', { name: 'Implement plan' })
     expect(action.parentElement?.className).toContain('pl-14')
+    expect(action.className).toContain('bg-fg')
+    expect(action.className).toContain('text-ink-900')
 
     fireEvent.click(action)
     expect(implementPlan).toHaveBeenCalledWith('thread-1')
