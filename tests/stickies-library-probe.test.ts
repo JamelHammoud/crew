@@ -41,12 +41,16 @@ vi.mock('../src/renderer/src/state/windowShape', () => ({ useFullScreen: () => f
 const { default: StickiesWindow } = await import('../src/renderer/src/views/StickiesWindow')
 
 beforeEach(() => {
+  const root = document.createElement('div')
+  root.id = 'root'
+  document.body.appendChild(root)
   window.location.hash = '#stickies'
   vi.stubGlobal('crypto', { randomUUID: () => 'draft-one' })
 })
 
 afterEach(() => {
   cleanup()
+  document.getElementById('root')?.remove()
   vi.unstubAllGlobals()
 })
 

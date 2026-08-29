@@ -56,6 +56,9 @@ const renameThread = vi.fn()
 const deleteThread = vi.fn()
 
 beforeEach(() => {
+  const root = document.createElement('div')
+  root.id = 'root'
+  document.body.appendChild(root)
   renameThread.mockClear()
   deleteThread.mockClear()
   const values = new Map<string, string>()
@@ -98,6 +101,7 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup()
+  document.getElementById('root')?.remove()
   vi.restoreAllMocks()
   vi.unstubAllGlobals()
 })
