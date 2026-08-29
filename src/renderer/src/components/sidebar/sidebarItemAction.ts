@@ -13,6 +13,7 @@ export function openSidebarItem(id: SidebarItemId, onTab: (tab: Tab) => void, on
     return
   }
   const browser = useBrowser.getState()
+  browser.openPanel()
   if (id === 'files') browser.openFiles()
   else if (id === 'review') browser.openReview()
   else if (id === 'terminal') browser.addTerminal(undefined, useCrew.getState().folder)

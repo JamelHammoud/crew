@@ -247,6 +247,22 @@ describe('the sidebar', () => {
     expect(divider.className).toContain('-mx-1.5')
   })
 
+  it('opens the browser when Files is already selected in a collapsed panel', async () => {
+    act(() => {
+      useBrowser.getState().openFiles()
+      useBrowser.getState().closePanel()
+    })
+    const active = useBrowser.getState().activeTabId
+    render(Sidebar())
+
+    fireEvent.pointerEnter(screen.getByRole('button', { name: 'More' }).parentElement as HTMLElement)
+    fireEvent.click(await screen.findByRole('button', { name: 'Files' }))
+
+    expect(useBrowser.getState().open).toBe(true)
+    expect(useBrowser.getState().activeTabId).toBe(active)
+    expect(useBrowser.getState().tabs).toHaveLength(1)
+  })
+
   it('pins a More item above More, keeps it across a mount, and removes it from the menu', async () => {
     const first = render(Sidebar())
     const more = screen.getByRole('button', { name: 'More' })

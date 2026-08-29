@@ -14,6 +14,8 @@ import type {
   RepoEntryImportResult,
   RepoEntryKind,
   RepoEntryMoveResult,
+  RepoEntryTransferMode,
+  RepoEntryTransferResult,
   RepoFile
 } from '../../shared/files'
 import type { FileReplaceRequest, FileReplaceResult, FileSearchOptions } from '../../shared/fileSearch'
@@ -80,6 +82,11 @@ declare global {
     listFiles(): Promise<string[]>
     createEntry(path: string, kind: RepoEntryKind): Promise<RepoEntryCreateResult>
     moveEntry(source: string, parent: string): Promise<RepoEntryMoveResult>
+    transferEntries(
+      sources: string[],
+      parent: string,
+      mode: RepoEntryTransferMode
+    ): Promise<RepoEntryTransferResult>
     filePath(file: File): string
     importEntries(sources: string[], parent: string): Promise<RepoEntryImportResult>
     searchFiles(options: FileSearchOptions): Promise<FileContentSearch>

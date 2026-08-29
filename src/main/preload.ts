@@ -13,6 +13,8 @@ import type {
   RepoEntryImportResult,
   RepoEntryKind,
   RepoEntryMoveResult,
+  RepoEntryTransferMode,
+  RepoEntryTransferResult,
   RepoFile
 } from '../shared/files'
 import type { FileReplaceRequest, FileReplaceResult, FileSearchOptions } from '../shared/fileSearch'
@@ -93,6 +95,11 @@ const bridge = {
     ipcRenderer.invoke('file:create', path, kind),
   moveEntry: (source: string, parent: string): Promise<RepoEntryMoveResult> =>
     ipcRenderer.invoke('file:move', source, parent),
+  transferEntries: (
+    sources: string[],
+    parent: string,
+    mode: RepoEntryTransferMode
+  ): Promise<RepoEntryTransferResult> => ipcRenderer.invoke('file:transfer', sources, parent, mode),
   filePath: (file: File): string => webUtils.getPathForFile(file),
   importEntries: (sources: string[], parent: string): Promise<RepoEntryImportResult> =>
     ipcRenderer.invoke('file:import', sources, parent),

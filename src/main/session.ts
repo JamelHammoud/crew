@@ -30,6 +30,7 @@ import {
   importRepoEntries,
   listRepoFiles,
   moveRepoEntry,
+  transferRepoEntries,
   readLocalFile,
   readMachineDirs,
   readRepoFile,
@@ -48,6 +49,8 @@ import type {
   RepoEntryImportResult,
   RepoEntryKind,
   RepoEntryMoveResult,
+  RepoEntryTransferMode,
+  RepoEntryTransferResult,
   RepoFile
 } from '../shared/files'
 import type { MachineDir } from '../shared/machinePath'
@@ -232,6 +235,16 @@ export class AppSession {
 
   async moveEntry(source: string, parent: string): Promise<RepoEntryMoveResult> {
     return this.folder ? moveRepoEntry(this.folder, source, parent) : { ok: false, message: 'Open a project first' }
+  }
+
+  async transferEntries(
+    sources: string[],
+    parent: string,
+    mode: RepoEntryTransferMode
+  ): Promise<RepoEntryTransferResult> {
+    return this.folder
+      ? transferRepoEntries(this.folder, sources, parent, mode)
+      : { ok: false, message: 'Open a project first' }
   }
 
   async importEntries(sources: string[], parent: string): Promise<RepoEntryImportResult> {

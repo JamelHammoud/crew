@@ -852,6 +852,9 @@ app.whenReady().then(() => {
   ipcMain.handle('file:move', (event, source: string, parent: string) =>
     crews.inView(event.sender.id).moveEntry(source, parent)
   )
+  ipcMain.handle('file:transfer', (event, sources: string[], parent: string, mode: 'copy' | 'move') =>
+    crews.inView(event.sender.id).transferEntries(sources, parent, mode)
+  )
   ipcMain.handle('file:import', (event, sources: string[], parent: string) =>
     crews.inView(event.sender.id).importEntries(sources, parent)
   )
