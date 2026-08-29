@@ -18,6 +18,7 @@ import {
   type MailAccount,
   type MailAccountInput,
   type MailAttachment,
+  type MailAttachmentInput,
   type MailDraft,
   type MailDraftInput,
   type MailLabel,
@@ -915,7 +916,6 @@ export class MailDatabase {
         updated_at INTEGER NOT NULL,
         PRIMARY KEY(account_id, id),
         FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE,
-        FOREIGN KEY(account_id, reply_to_message_id) REFERENCES messages(account_id, id) ON DELETE SET NULL,
         UNIQUE(account_id, provider_draft_id)
       ) STRICT;
 

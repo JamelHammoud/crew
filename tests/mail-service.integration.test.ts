@@ -78,7 +78,7 @@ describe('the Gmail loopback fixture', () => {
     const personal = await connect(server, 'personal')
     const work = await connect(server, 'work')
 
-    await personal.mailboxOpen('INBOX')
+    const lock = await personal.getMailboxLock('INBOX')
     await work.mailboxOpen('INBOX')
     const personalMail = await personal.fetchAll('1:*', {
       uid: true,
@@ -99,6 +99,7 @@ describe('the Gmail loopback fixture', () => {
     expect(personalMail[0].emailId).toMatch(/^\d+$/)
     expect(personalMail[0].threadId).toMatch(/^\d+$/)
     expect((await simpleParser(personalMail[0].source!)).html).toContain('Dinner this weekend')
+    lock.release()
   })
 
   it('supports incremental fetches, Gmail search, flags, labels, and mailbox moves', async () => {
