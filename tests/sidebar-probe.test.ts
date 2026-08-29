@@ -3,6 +3,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-libra
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Tab } from '../src/renderer/src/components/navTabs'
+import type { BrowserTab } from '../src/shared/browserTab'
 import type { LivePlace } from '../src/shared/places'
 import type { RecentJoin } from '../src/shared/recent'
 import type { CurrentSession } from '../src/shared/session'
