@@ -74,9 +74,7 @@ describe('Home places', () => {
 
     await waitFor(() => expect(start).toHaveBeenCalledWith('/work/repo', 'Jamel', { share: undefined }))
     expect(connect).toHaveBeenCalledWith(session)
-    expect(useBrowser.getState().tabs).toEqual([
-      expect.objectContaining({ kind: 'file', path: 'src/main.ts' })
-    ])
+    expect(useBrowser.getState().tabs).toEqual([expect.objectContaining({ kind: 'file', path: 'src/main.ts' })])
     expect(useBrowser.getState().open).toBe(true)
   })
 

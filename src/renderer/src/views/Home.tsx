@@ -76,14 +76,7 @@ export default function Home() {
     return true
   }
 
-  const open = async (
-    target: string,
-    key: string,
-    who: string,
-    opts?: OpenOptions,
-    fetch = false,
-    file?: string
-  ) => {
+  const open = async (target: string, key: string, who: string, opts?: OpenOptions, fetch = false, file?: string) => {
     setBusy(true)
     setBusyKey(key)
     setError('')
@@ -224,7 +217,14 @@ export default function Home() {
         <WhereTo
           busy={busy}
           onPick={home =>
-            void open(asking.folder, `project:${asking.folder}`, name.trim(), { home, share: asking.share }, false, asking.file)
+            void open(
+              asking.folder,
+              `project:${asking.folder}`,
+              name.trim(),
+              { home, share: asking.share },
+              false,
+              asking.file
+            )
           }
         />
       )
@@ -236,7 +236,14 @@ export default function Home() {
           busy={busy}
           onRetry={() => void open(away.folder, key, name.trim(), { share: away.share }, true, away.file)}
           onOwn={() =>
-            void open(away.folder, key, name.trim(), { home: 'private', own: true, share: away.share }, false, away.file)
+            void open(
+              away.folder,
+              key,
+              name.trim(),
+              { home: 'private', own: true, share: away.share },
+              false,
+              away.file
+            )
           }
         />
       )

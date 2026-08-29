@@ -543,12 +543,13 @@ app.whenReady().then(async () => {
   crews.onLive = places => tellLive(places)
   scribe.remember(path.join(app.getPath('userData'), 'scribe-spot.json'))
   said.remember(path.join(app.getPath('userData'), 'scribe-said.json'))
-  resumed = launchOpening || finderOpens.waiting
-    ? Promise.resolve(null)
-    : crews.resume().then(() => {
-        sharing()
-        warmTerminals()
-      })
+  resumed =
+    launchOpening || finderOpens.waiting
+      ? Promise.resolve(null)
+      : crews.resume().then(() => {
+          sharing()
+          warmTerminals()
+        })
   ipcMain.handle('cli:opening', event => {
     const asked = openingWindows.get(event.sender.id) ?? null
     openingWindows.delete(event.sender.id)
