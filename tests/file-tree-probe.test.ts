@@ -4,7 +4,7 @@ import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import BrowserPanel from '../src/renderer/src/components/BrowserPanel'
 import { useBrowser } from '../src/renderer/src/state/browser'
-import type { RepoFile } from '../src/shared/files'
+import type { RepoEntryCreateResult, RepoFile } from '../src/shared/files'
 import type { FileReplaceRequest, FileSearchOptions } from '../src/shared/fileSearch'
 
 if (!Element.prototype.getAnimations) {
@@ -43,7 +43,7 @@ const repo: Record<string, RepoFile> = {
 
 const listed = ['readme.md', 'src/app.ts', 'src/renderer/panel.tsx', 'tests/app.test.ts']
 const popOutBrowserTab = vi.fn().mockResolvedValue(true)
-const createEntry = vi.fn(async (path: string) => ({ ok: true as const, path }))
+const createEntry = vi.fn(async (path: string): Promise<RepoEntryCreateResult> => ({ ok: true, path }))
 const replaceFiles = vi.fn().mockResolvedValue({ files: 1, replacements: 1, failed: [], error: null })
 const searchFiles = vi.fn(async (options: FileSearchOptions) => ({
   matches:
