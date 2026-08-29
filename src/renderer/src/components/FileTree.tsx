@@ -406,7 +406,12 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
       stopDragScroll()
       return
     }
+    const before = host.scrollTop
     host.scrollTop += speed
+    if (host.scrollTop === before) {
+      stopDragScroll()
+      return
+    }
     scrollFrame.current = window.requestAnimationFrame(dragScrollFrame)
   }
 
@@ -414,6 +419,14 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
     scrollPointer.current = clientY
     if (scrollFrame.current === null) scrollFrame.current = window.requestAnimationFrame(dragScrollFrame)
   }
+
+  useEffect(
+    () => () => {
+      if (expandTimer.current !== null) window.clearTimeout(expandTimer.current)
+      if (scrollFrame.current !== null) window.cancelAnimationFrame(scrollFrame.current)
+    },
+    []
+  )
 
   const move: FileMove = {
     dragged,
