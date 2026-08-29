@@ -17,6 +17,7 @@ const bridge = {
   onTrayTheme: vi.fn(() => () => {}),
   resizeTray: vi.fn(),
   openWindow: vi.fn(),
+  openStickies: vi.fn(() => Promise.resolve(true)),
   closeTray: vi.fn()
 }
 
@@ -61,7 +62,7 @@ describe('tray panel', () => {
 
     expect(screen.queryByText('Online')).toBeNull()
     expect(screen.queryByText('Working')).toBeNull()
-    expect(screen.queryByRole('button')).toBeNull()
+    expect(screen.getByRole('button', { name: 'New sticky' })).toBeTruthy()
   })
 
   it('says to open the app when no window is there to ask', () => {
@@ -69,7 +70,7 @@ describe('tray panel', () => {
 
     expect(screen.queryByText('Online')).toBeNull()
     expect(screen.queryByText('Working')).toBeNull()
-    expect(screen.queryByRole('button')).toBeNull()
+    expect(screen.getByRole('button', { name: 'New sticky' })).toBeTruthy()
   })
 
   it('lists the people online and the agents working', () => {
@@ -92,6 +93,16 @@ describe('tray panel', () => {
     show({ sharing: true, known: true, waiting: 3 })
 
     expect(screen.getByText('Review 3 tasks')).toBeTruthy()
+  })
+
+  it('puts a new sticky directly under review work and opens a blank sticky window', () => {
+    show({ sharing: true, known: true, waiting: 3 })
+
+    const rows = screen.getAllByRole('button')
+    expect(rows.slice(0, 2).map(row => row.textContent)).toEqual(['Review 3 tasks', 'New sticky'])
+
+    fireEvent.click(screen.getByRole('button', { name: 'New sticky' }))
+    expect(bridge.openStickies).toHaveBeenCalledTimes(1)
   })
 
   it('names a single task in the singular and keeps the exact count', () => {

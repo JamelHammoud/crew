@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactElement } from 'react'
 import { emptyPresence, type PresenceSnapshot } from '../../../shared/presence'
 import { MenuDivider, MenuItem } from '../components/Popover'
 import PresenceList from '../components/PresenceList'
-import { CheckCircleGlyph } from '../icons'
+import { CheckCircleGlyph, StickyGlyph } from '../icons'
 import { showTheme } from '../state/theme'
 
 const LIST = 388
@@ -57,7 +57,8 @@ export default function TrayPanel(): ReactElement {
           onClick={() => window.crew.openWindow()}
         />
       )}
-      {waiting > 0 && hasPresence && <MenuDivider />}
+      <MenuItem icon={<StickyGlyph />} label="New sticky" onClick={() => void window.crew.openStickies()} />
+      {hasPresence && <MenuDivider />}
       {hasPresence && (
         <div className="-mx-1.5 overflow-x-hidden overflow-y-auto px-1.5" style={{ maxHeight: LIST }}>
           <Here state={state} />

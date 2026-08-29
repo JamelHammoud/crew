@@ -4,7 +4,6 @@ import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { panelSpot } from '../src/main/tray-position'
 import { TRAY_HEIGHT, TRAY_ICON, TRAY_WIDTH } from '../src/main/tray-png'
-import { trayHasContents } from '../src/main/tray'
 import { badgeText, emptyPresence, presenceTooltip, presentNow } from '../src/shared/presence'
 import type { AgentStatus, PooledAgent } from '../src/shared/llm'
 import type { MemberInfo } from '../src/shared/protocol'
@@ -141,18 +140,6 @@ describe('what the menu bar says', () => {
     expect(presenceTooltip({ ...state, sharing: true })).toBe('Crew')
     expect(presenceTooltip({ ...state, sharing: true, waiting: 1 })).toBe('Crew: 1 task needs review')
     expect(presenceTooltip({ ...state, sharing: true, waiting: 4 })).toBe('Crew: 4 tasks need review')
-  })
-})
-
-describe('what a press opens', () => {
-  it('opens the app when the panel has nothing to show', () => {
-    expect(trayHasContents(emptyPresence())).toBe(false)
-    expect(trayHasContents({ ...emptyPresence(), sharing: true })).toBe(false)
-  })
-
-  it('opens the panel for review work or live presence', () => {
-    expect(trayHasContents({ ...emptyPresence(), waiting: 1 })).toBe(true)
-    expect(trayHasContents({ ...emptyPresence(), sharing: true, known: true })).toBe(true)
   })
 })
 
