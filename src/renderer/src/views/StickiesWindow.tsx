@@ -8,7 +8,6 @@ import Tooltip from '../components/Tooltip'
 import { PanelLeftGlyph, PinGlyph } from '../icons'
 import { updateSticky, useStickies, useStickiesLoaded } from '../state/stickies'
 import { useWindowName } from '../state/windowName'
-import { setWindowPinned, useWindowPinned } from '../state/windowShape'
 
 function ColorChoices({ sticky }: { sticky: Sticky }) {
   return (
@@ -49,8 +48,6 @@ function MissingSticky({ loaded }: { loaded: boolean }) {
 }
 
 function SingleSticky({ sticky, loaded }: { sticky?: Sticky; loaded: boolean }) {
-  const pinned = useWindowPinned()
-
   return (
     <div data-sticky-window className="h-full relative bg-ink-900">
       <header className="app-drag absolute z-40 top-0 inset-x-0 h-[54px] pl-[88px] pr-3 flex items-center border-b border-ink-700 bg-ink-900/90 backdrop-blur-xl">
@@ -58,13 +55,13 @@ function SingleSticky({ sticky, loaded }: { sticky?: Sticky; loaded: boolean }) 
           {sticky ? stickyLabel(sticky) : 'Sticky'}
         </span>
         {sticky && <ColorChoices sticky={sticky} />}
-        <Tooltip label={pinned ? 'Stop keeping on top' : 'Keep on top'}>
+        <Tooltip label={sticky?.pinned ? 'Stop keeping on top' : 'Keep on top'}>
           <button
-            onClick={() => void window.crew.setWindowPinned(!pinned).then(setWindowPinned)}
-            aria-label={pinned ? 'Stop keeping on top' : 'Keep on top'}
-            aria-pressed={pinned}
+            onClick={() => sticky && void updateSticky(sticky.id, { pinned: !sticky.pinned })}
+            aria-label={sticky?.pinned ? 'Stop keeping on top' : 'Keep on top'}
+            aria-pressed={sticky?.pinned ?? false}
             className={`app-no-drag ml-1 w-8 h-8 rounded-full flex items-center justify-center transition-[color,background-color,transform] active:scale-95 ${
-              pinned ? 'text-fg bg-fg/[0.08]' : 'text-fg/45 hover:text-fg hover:bg-fg/[0.05]'
+              sticky?.pinned ? 'text-fg bg-fg/[0.08]' : 'text-fg/45 hover:text-fg hover:bg-fg/[0.05]'
             }`}
           >
             <PinGlyph className="w-4 h-4" />
