@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { createRepoEntry, listRepoFiles, moveRepoEntry } from '../src/main/files'
+import { createRepoEntry, importRepoEntries, listRepoFiles, moveRepoEntry } from '../src/main/files'
 import { markRuns, matchFiles } from '../src/shared/files'
 import { runGit } from '../src/shared/git'
 import { tmpDir } from './helpers/session'
@@ -148,6 +148,59 @@ describe('moveRepoEntry', () => {
     })
     expect(readFileSync(path.join(root, 'src/nested/app.ts'), 'utf8')).toBe('inside')
     expect(readFileSync(path.join(outside, 'outside.md'), 'utf8')).toBe('outside')
+  })
+})
+
+describe('importRepoEntries', () => {
+  it('copies files and whole folders into a project folder', async () => {
+    const root = tmpDir('import-entry')
+    const outside = tmpDir('import-source')
+    mkdirSync(path.join(root, 'src'))
+    write(outside, 'notes.md', 'keep me')
+    write(outside, 'assets/logo.txt', 'logo')
+
+    expect(
+      await importRepoEntries(root, [path.join(outside, 'notes.md'), path.join(outside, 'assets')], 'src')
+    ).toEqual({ ok: true, paths: ['src/notes.md', 'src/assets'] })
+    expect(readFileSync(path.join(root, 'src/notes.md'), 'utf8')).toBe('keep me')
+    expect(readFileSync(path.join(root, 'src/assets/logo.txt'), 'utf8')).toBe('logo')
+    expect(readFileSync(path.join(outside, 'notes.md'), 'utf8')).toBe('keep me')
+    expect(readFileSync(path.join(outside, 'assets/logo.txt'), 'utf8')).toBe('logo')
+  })
+
+  it('checks every destination before copying any item', async () => {
+    const root = tmpDir('import-existing')
+    const outside = tmpDir('import-existing-source')
+    write(root, 'src/notes.md', 'destination')
+    write(outside, 'notes.md', 'source')
+    write(outside, 'fresh.md', 'fresh')
+
+    expect(
+      await importRepoEntries(root, [path.join(outside, 'fresh.md'), path.join(outside, 'notes.md')], 'src')
+    ).toEqual({ ok: false, message: 'That name is already in use there' })
+    expect(existsSync(path.join(root, 'src/fresh.md'))).toBe(false)
+    expect(readFileSync(path.join(root, 'src/notes.md'), 'utf8')).toBe('destination')
+  })
+
+  it('refuses unsafe destinations and a folder copied into itself', async () => {
+    const root = tmpDir('import-root')
+    const outside = tmpDir('import-outside')
+    write(root, 'src/nested/app.ts', 'inside')
+    write(outside, 'outside.md', 'outside')
+    symlinkSync(outside, path.join(root, 'outside'))
+
+    expect(await importRepoEntries(root, [path.join(outside, 'outside.md')], 'outside')).toEqual({
+      ok: false,
+      message: 'Choose a folder in this project'
+    })
+    expect(await importRepoEntries(root, [path.join(root, 'src')], 'src/nested')).toEqual({
+      ok: false,
+      message: 'A folder cannot be copied into itself'
+    })
+    expect(await importRepoEntries(root, ['outside.md'], '')).toEqual({
+      ok: false,
+      message: 'That item is no longer there'
+    })
   })
 })
 

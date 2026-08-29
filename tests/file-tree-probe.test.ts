@@ -49,6 +49,11 @@ const moveEntry = vi.fn(async (source: string, parent: string) => ({
   ok: true as const,
   path: parent ? `${parent}/${source.split('/').pop()}` : source.split('/').pop()!
 }))
+const filePath = vi.fn((file: File) => `/outside/${file.name}`)
+const importEntries = vi.fn(async (sources: string[], parent: string) => ({
+  ok: true as const,
+  paths: sources.map(source => (parent ? `${parent}/${source.split('/').pop()}` : source.split('/').pop()!))
+}))
 const replaceFiles = vi.fn().mockResolvedValue({ files: 1, replacements: 1, failed: [], error: null })
 const searchFiles = vi.fn(async (options: FileSearchOptions) => ({
   matches:
@@ -78,6 +83,8 @@ beforeEach(() => {
     ok: true as const,
     path: parent ? `${parent}/${source.split('/').pop()}` : source.split('/').pop()!
   }))
+  filePath.mockClear()
+  importEntries.mockClear()
   replaceFiles.mockClear()
   searchFiles.mockClear()
   useBrowser.setState({ tabs: [], activeTabId: null })
@@ -98,6 +105,8 @@ beforeEach(() => {
     listFiles: async () => listed,
     createEntry,
     moveEntry,
+    filePath,
+    importEntries,
     searchFiles,
     replaceFiles,
     writeFile: async () => null,
@@ -120,12 +129,13 @@ const activeTab = () => {
 
 const rowFor = (path: string) => document.querySelector(`[data-file="${path}"]`) as HTMLElement | null
 
-const transfer = () => ({
+const transfer = (files: File[] = [], types: string[] = []) => ({
   effectAllowed: 'none',
   dropEffect: 'none',
   setData: vi.fn(),
   getData: vi.fn(() => ''),
-  types: []
+  files,
+  types
 })
 
 describe('file drag scrolling', () => {
@@ -262,6 +272,55 @@ describe('the file explorer', () => {
     expect(activeTab().path).toBe('renderer/panel.tsx')
     expect(activeTab().open).toContain('renderer')
     expect(activeTab().open).not.toContain('src/renderer')
+  })
+
+  it('copies Finder files and folders into the folder under the pointer', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    await screen.findByText('src')
+    const target = document.querySelector('[data-folder="tests"]') as HTMLElement
+    const dataTransfer = transfer([new File(['notes'], 'notes.md'), new File(['folder'], 'assets')], ['Files'])
+
+    fireEvent.dragOver(target, { dataTransfer })
+    expect(dataTransfer.dropEffect).toBe('copy')
+    expect(target.className).toContain('ring-fg/20')
+    fireEvent.drop(target, { dataTransfer })
+
+    await waitFor(() => expect(importEntries).toHaveBeenCalledWith(['/outside/notes.md', '/outside/assets'], 'tests'))
+    expect(moveEntry).not.toHaveBeenCalled()
+    expect(activeTab().open).toContain('tests')
+    expect(activeTab().generation).toBe(1)
+  })
+
+  it('copies a Finder item to the project root when it lands on open Files space', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    await screen.findByText('src')
+    const root = document.querySelector('[data-file-branch=""]') as HTMLElement
+    const dataTransfer = transfer([new File(['plan'], 'plan.md')], ['Files'])
+
+    fireEvent.dragOver(root, { dataTransfer })
+    fireEvent.drop(root, { dataTransfer })
+
+    await waitFor(() => expect(importEntries).toHaveBeenCalledWith(['/outside/plan.md'], ''))
+    expect(activeTab().generation).toBe(1)
+  })
+
+  it('copies a Finder item beside the file row it lands on', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    fireEvent.click(await screen.findByText('src'))
+    const target = await waitFor(() => {
+      const found = rowFor('src/app.ts')
+      expect(found).toBeTruthy()
+      return found!
+    })
+    const dataTransfer = transfer([new File(['types'], 'types.ts')], ['Files'])
+
+    fireEvent.dragOver(target, { dataTransfer })
+    fireEvent.drop(target, { dataTransfer })
+
+    await waitFor(() => expect(importEntries).toHaveBeenCalledWith(['/outside/types.ts'], 'src'))
   })
 
   it('does not offer a folder or its current parent as a drop target', async () => {

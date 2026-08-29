@@ -67,7 +67,7 @@ export function absolutePathOf(root: string | null, target: string): string | nu
 
 export async function isThere(absolute: string): Promise<boolean> {
   try {
-    await fs.stat(absolute)
+    await fs.lstat(absolute)
     return true
   } catch {
     return false
