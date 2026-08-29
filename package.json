@@ -322,6 +322,7 @@
     "dmg-check": "node scripts/dmg-check.mjs",
     "icons": "node scripts/icon-sheet.mjs",
     "mark-check": "node scripts/mark-check.mjs",
+    "mail-look": "node scripts/mail-look.mjs",
     "covers": "node scripts/cover-sheet.mjs",
     "postinstall": "node scripts/ensure-electron.mjs && node scripts/ensure-pty.mjs && node scripts/name-electron.mjs"
   },
