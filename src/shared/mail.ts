@@ -13,6 +13,7 @@ export interface MailAccount {
   provider: MailProvider
   email: string
   displayName: string
+  signature: string
   syncEnabled: boolean
   lastSyncedAt: number | null
   createdAt: number
@@ -24,6 +25,7 @@ export interface MailAccountInput {
   provider: MailProvider
   email: string
   displayName?: string
+  signature?: string
   syncEnabled?: boolean
 }
 
@@ -291,6 +293,9 @@ export function parseMailAccountInput(value: unknown): MailAccountInput {
     email,
     ...(optionalText(input.displayName, 'Mail account display name') !== undefined
       ? { displayName: optionalText(input.displayName, 'Mail account display name') }
+      : {}),
+    ...(optionalText(input.signature, 'Mail account signature') !== undefined
+      ? { signature: optionalText(input.signature, 'Mail account signature') }
       : {}),
     ...(optionalBoolean(input.syncEnabled, 'Mail account sync enabled') !== undefined
       ? { syncEnabled: optionalBoolean(input.syncEnabled, 'Mail account sync enabled') }

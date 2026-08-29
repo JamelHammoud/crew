@@ -125,15 +125,16 @@ export class MailDatabase {
     const input = parseMailAccountInput(value)
     const now = this.clock()
     this.database.prepare(`
-      INSERT INTO accounts (id, provider, email, display_name, sync_enabled, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO accounts (id, provider, email, display_name, signature, sync_enabled, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(id) DO UPDATE SET
         provider = excluded.provider,
         email = excluded.email,
         display_name = excluded.display_name,
+        signature = excluded.signature,
         sync_enabled = excluded.sync_enabled,
         updated_at = excluded.updated_at
-    `).run(input.id, input.provider, input.email, input.displayName ?? '', input.syncEnabled === false ? 0 : 1, now, now)
+    `).run(input.id, input.provider, input.email, input.displayName ?? '', input.signature ?? '', input.syncEnabled === false ? 0 : 1, now, now)
     return this.getAccount(input.id) as MailAccount
   }
 
@@ -642,6 +643,7 @@ export class MailDatabase {
       provider: String(row.provider) as MailAccount['provider'],
       email: String(row.email),
       displayName: String(row.display_name),
+      signature: String(row.signature),
       syncEnabled: boolean(row.sync_enabled),
       lastSyncedAt: nullableNumber(row.last_synced_at),
       createdAt: number(row.created_at),
@@ -811,6 +813,7 @@ export class MailDatabase {
         provider TEXT NOT NULL CHECK (provider IN (${MAIL_PROVIDERS.map(value => `'${value}'`).join(', ')})),
         email TEXT NOT NULL COLLATE NOCASE,
         display_name TEXT NOT NULL,
+        signature TEXT NOT NULL DEFAULT '',
         sync_enabled INTEGER NOT NULL CHECK (sync_enabled IN (0, 1)),
         last_synced_at INTEGER,
         created_at INTEGER NOT NULL,
@@ -1008,5 +1011,9 @@ export class MailDatabase {
         DELETE FROM messages_fts WHERE account_id = old.account_id AND message_id = old.id;
       END;
     `)
+    const columns = this.database.prepare('PRAGMA table_info(accounts)').all() as Row[]
+    if (!columns.some(column => String(column.name) === 'signature')) {
+      this.database.exec("ALTER TABLE accounts ADD COLUMN signature TEXT NOT NULL DEFAULT ''")
+    }
   }
 }
