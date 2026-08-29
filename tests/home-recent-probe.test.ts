@@ -3,6 +3,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useCrew } from '../src/renderer/src/state/store'
+import { useBrowser } from '../src/renderer/src/state/browser'
 import Home from '../src/renderer/src/views/Home'
 import type { RecentJoin } from '../src/shared/recent'
 import { installLocalStorage } from './helpers/local-storage'
@@ -32,6 +33,7 @@ describe('Home places', () => {
     storage.setItem('crew.name', 'Jamel')
     Element.prototype.getAnimations = vi.fn().mockReturnValue([])
     useCrew.setState({ connection: 'home', connect: vi.fn() })
+    useBrowser.setState({ tabs: [], activeTabId: null, open: false })
   })
 
   afterEach(() => {
@@ -48,6 +50,34 @@ describe('Home places', () => {
     expect(screen.queryByRole('button', { name: /192\.0\.2\.10/ })).toBeNull()
     expect(screen.getByRole('button', { name: /Open a folder/ })).toBeTruthy()
     expect(screen.getByRole('button', { name: /Join with a link/ })).toBeTruthy()
+  })
+
+  it('opens the file Finder handed over after its project', async () => {
+    installBridge([])
+    const session = { folder: '/work/repo', name: 'Jamel' }
+    const start = vi.fn().mockResolvedValue(session)
+    const connect = vi.fn()
+    useCrew.setState({ connection: 'home', connect })
+    Object.assign(window.crew, {
+      opening: vi.fn().mockResolvedValue({ folder: '/work/repo', file: 'src/main.ts' }),
+      projectPlan: vi.fn().mockResolvedValue({
+        home: 'private',
+        tracked: true,
+        known: true,
+        crewRemote: null,
+        crewHere: false
+      }),
+      start
+    })
+
+    render(createElement(Home))
+
+    await waitFor(() => expect(start).toHaveBeenCalledWith('/work/repo', 'Jamel', { share: undefined }))
+    expect(connect).toHaveBeenCalledWith(session)
+    expect(useBrowser.getState().tabs).toEqual([
+      expect.objectContaining({ kind: 'file', path: 'src/main.ts' })
+    ])
+    expect(useBrowser.getState().open).toBe(true)
   })
 
   // Nothing can be opened without a name to open it under, so an empty one is
