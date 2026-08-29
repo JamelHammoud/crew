@@ -5,6 +5,10 @@ export interface LiveThread {
   id: string
   title: string
   working: boolean
+  preview: {
+    author: string
+    text: string
+  }
 }
 
 // Which events a thread is built from. Almost every one of them names the
@@ -38,12 +42,24 @@ const stirs = (event: SessionEvent): string | undefined => {
 }
 
 export function activeThreads(events: SessionEvent[], working: (threadId: string) => boolean): LiveThread[] {
-  const open = new Map<string, { title: string; agentLabel: string; at: number }>()
+  const open = new Map<
+    string,
+    { title: string; agentLabel: string; at: number; preview: LiveThread['preview'] }
+  >()
+  const messages = new Map<string, Extract<SessionEvent, { kind: 'message' }>>()
   for (const event of events) {
     switch (event.kind) {
+      case 'message':
+        messages.set(event.id, event)
+        break
       case 'thread.started':
         if (event.parentThreadId || event.aside) break
-        open.set(event.threadId, { title: event.title, agentLabel: event.agentLabel, at: event.ts })
+        open.set(event.threadId, {
+          title: event.title,
+          agentLabel: event.agentLabel,
+          at: event.ts,
+          preview: { author: event.byName, text: event.title }
+        })
         break
       case 'thread.archived':
         open.delete(event.threadId)
@@ -60,6 +76,30 @@ export function activeThreads(events: SessionEvent[], working: (threadId: string
       case 'thread.deleted':
         open.delete(event.threadId)
         break
+      case 'agent.start': {
+        if (!event.threadId) break
+        const thread = open.get(event.threadId)
+        if (thread) thread.preview = { author: event.byName, text: event.promptText }
+        break
+      }
+      case 'agent.end': {
+        if (!event.threadId) break
+        const thread = open.get(event.threadId)
+        const text = event.ok ? event.text?.trim() : event.error?.trim()
+        if (thread && text) thread.preview = { author: event.agentLabel, text }
+        break
+      }
+      case 'message.route': {
+        const thread = open.get(event.threadId)
+        const message = messages.get(event.messageId)
+        if (thread && message) {
+          thread.preview = {
+            author: message.authorName,
+            text: message.text.trim() || (message.attachments?.length ? 'Attachments' : thread.preview.text)
+          }
+        }
+        break
+      }
     }
     const stirred = stirs(event)
     const thread = stirred ? open.get(stirred) : undefined
@@ -67,5 +107,10 @@ export function activeThreads(events: SessionEvent[], working: (threadId: string
   }
   return [...open]
     .sort(([, a], [, b]) => b.at - a.at)
-    .map(([id, thread]) => ({ id, title: liveTitle(thread.title, thread.agentLabel), working: working(id) }))
+    .map(([id, thread]) => ({
+      id,
+      title: liveTitle(thread.title, thread.agentLabel),
+      working: working(id),
+      preview: thread.preview
+    }))
 }

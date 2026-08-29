@@ -21,12 +21,16 @@ function within(rect: DOMRect | undefined, x: number, y: number, pad: number): b
 export default function HoverCard({
   content,
   width = CARD_WIDTH,
+  delay = 300,
+  side = 'vertical',
   hug,
   className = '',
   children
 }: {
   content: ReactNode
   width?: number
+  delay?: number
+  side?: 'vertical' | 'right'
   // A card as wide as what it holds, up to the width, rather than pinned at it.
   // A card that holds rows to line up or a picture to fill it wants the whole
   // width every time, and one that holds a face and a name is a hand's width of
@@ -107,7 +111,7 @@ export default function HoverCard({
       if (active && active.hide !== hide) active.hide()
       active = { anchor: () => anchorRef.current, hide }
       setRect(next)
-    }, 300)
+    }, delay)
   }
 
   const cancel = () => {
@@ -119,6 +123,13 @@ export default function HoverCard({
   const style = ((): CSSProperties | null => {
     if (!rect) return null
     if (!size) return { left: 0, top: 0, ...box, visibility: 'hidden' }
+    if (side === 'right') {
+      let left = rect.right + 8
+      if (left + size.w > window.innerWidth - 8) left = rect.left - size.w - 8
+      left = Math.max(8, Math.min(left, window.innerWidth - size.w - 8))
+      const top = Math.max(8, Math.min(rect.top, window.innerHeight - size.h - 8))
+      return { left, top, ...box }
+    }
     const left = Math.max(8, Math.min(rect.left, window.innerWidth - size.w - 8))
     let top = rect.top - 8 - size.h
     if (top < 8) top = rect.bottom + 8
