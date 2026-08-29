@@ -6,6 +6,7 @@ import {
   createPanelOptions,
   createPersonalChatWindowOptions,
   createScribeOptions,
+  createStickiesWindowOptions,
   createThreadWindowOptions,
   createWindowOptions
 } from '../src/main/window-options'
@@ -177,6 +178,30 @@ describe('personal chat window options', () => {
       expect(personal.titleBarStyle).toBe(thread.titleBarStyle)
       expect(personal.transparent).toBe(thread.transparent)
       expect(personal.webPreferences).toEqual(thread.webPreferences)
+    }
+  })
+})
+
+describe('Stickies window options', () => {
+  it('gives the library room for its list and editor', () => {
+    const library = createStickiesWindowOptions('darwin', 'preload.mjs', true, false)
+    const single = createStickiesWindowOptions('darwin', 'preload.mjs', true, true)
+
+    expect(library.width ?? 0).toBeGreaterThan(single.width ?? 0)
+    expect(library.minWidth ?? 0).toBeGreaterThan(single.minWidth ?? 0)
+    expect(library.show).toBe(false)
+    expect(single.show).toBe(false)
+  })
+
+  it('wears the same native shell in both forms', () => {
+    for (const platform of ['darwin', 'win32'] as const) {
+      const library = createStickiesWindowOptions(platform, 'preload.mjs', false, false)
+      const single = createStickiesWindowOptions(platform, 'preload.mjs', false, true)
+
+      expect(library.titleBarStyle).toBe('hiddenInset')
+      expect(single.titleBarStyle).toBe(library.titleBarStyle)
+      expect(single.transparent).toBe(library.transparent)
+      expect(single.webPreferences).toEqual(library.webPreferences)
     }
   })
 })

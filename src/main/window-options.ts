@@ -157,6 +157,22 @@ export function createPersonalChatWindowOptions(
   }
 }
 
+export function createStickiesWindowOptions(
+  platform: NodeJS.Platform,
+  preload: string,
+  devTools: boolean,
+  single: boolean
+): BrowserWindowConstructorOptions {
+  return {
+    width: single ? 620 : 1080,
+    height: single ? 720 : 780,
+    minWidth: single ? 360 : 700,
+    minHeight: single ? 360 : 500,
+    show: false,
+    ...windowShell(platform, preload, devTools)
+  }
+}
+
 function editMenuItem(command: 'undo' | 'redo', isMac: boolean): MenuItemConstructorOptions {
   const key = command === 'undo' ? 'Z' : isMac ? 'Shift+Z' : 'Y'
   const modifier = isMac ? 'Cmd' : 'Ctrl'

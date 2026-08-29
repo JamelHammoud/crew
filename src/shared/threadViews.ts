@@ -9,6 +9,8 @@ export function nearRight(x: number, right: number, reach = NEAR_RIGHT): boolean
 const THREAD_HASH = '#thread='
 export const PERSONAL_CHAT_HASH = '#personal'
 export const BROWSER_WINDOW_HASH = '#browser'
+export const STICKIES_HASH = '#stickies'
+const STICKY_HASH = '#sticky='
 
 export function threadWindowHash(threadId: string): string {
   return `${THREAD_HASH}${encodeURIComponent(threadId)}`
@@ -17,6 +19,16 @@ export function threadWindowHash(threadId: string): string {
 export function threadIdInHash(hash: string): string | null {
   if (!hash.startsWith(THREAD_HASH)) return null
   const id = decodeURIComponent(hash.slice(THREAD_HASH.length)).trim()
+  return id ? id : null
+}
+
+export function stickyWindowHash(stickyId: string): string {
+  return `${STICKY_HASH}${encodeURIComponent(stickyId)}`
+}
+
+export function stickyIdInHash(hash: string): string | null {
+  if (!hash.startsWith(STICKY_HASH)) return null
+  const id = decodeURIComponent(hash.slice(STICKY_HASH.length)).trim()
   return id ? id : null
 }
 
