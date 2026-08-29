@@ -56,8 +56,8 @@ export const RedoGlyph = glyph(
 
 export const ReplyGlyph = glyph(
   <>
-    <path d="m10 4-6 6 6 6" />
-    <path d="M4 10h8a8 10 0 0 1 8 10" />
+    <path d="m9.5 4-7 6 7 6" />
+    <path d="M2.5 10H12a9.5 10 0 0 1 9.5 10" />
   </>
 )
 
@@ -71,8 +71,8 @@ export const ReplyAllGlyph = glyph(
 
 export const ForwardGlyph = glyph(
   <>
-    <path d="m14 4 6 6-6 6" />
-    <path d="M20 10h-8a8 10 0 0 0-8 10" />
+    <path d="m14.5 4 7 6-7 6" />
+    <path d="M21.5 10H12a9.5 10 0 0 0-9.5 10" />
   </>
 )
 
