@@ -124,25 +124,11 @@ export default function SidebarMore({ tab, onTab }: { tab: Tab; onTab: (tab: Tab
         <Popover open onClose={menu.close} at={menu.at} anchor={rowRef} flush className="min-w-44">
           <div className="p-1.5" onPointerEnter={menu.hold} onPointerLeave={menu.leave}>
             {panelItems.map(item => (
-              <MoreItem
-                key={item.id}
-                item={item}
-                tab={tab}
-                close={menu.close}
-                onTab={onTab}
-                onToolbox={openToolbox}
-              />
+              <MoreItem key={item.id} item={item} tab={tab} close={menu.close} onTab={onTab} onToolbox={openToolbox} />
             ))}
             {panelItems.length > 0 && crewItems.length > 0 && <MenuDivider />}
             {crewItems.map(item => (
-              <MoreItem
-                key={item.id}
-                item={item}
-                tab={tab}
-                close={menu.close}
-                onTab={onTab}
-                onToolbox={openToolbox}
-              />
+              <MoreItem key={item.id} item={item} tab={tab} close={menu.close} onTab={onTab} onToolbox={openToolbox} />
             ))}
           </div>
         </Popover>
