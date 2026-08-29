@@ -443,6 +443,7 @@ describe('queued message cards', () => {
       clientY: 20
     })
     fireEvent.pointerMove(window, { clientX: 80, clientY: 75 })
+    expect(document.body.style.cursor).toBe('grabbing')
     fireEvent.pointerUp(window)
 
     expect(move).toHaveBeenCalledWith('p1', 1)
