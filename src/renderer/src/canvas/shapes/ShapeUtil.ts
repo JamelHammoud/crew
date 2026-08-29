@@ -27,6 +27,7 @@ export interface ShapeEditor {
   getErasingShapeIds?(): CrewShapeId[]
   getCurrentPageState?(): { focusedGroupId: CrewShapeId | null; hintingShapeIds: CrewShapeId[] }
   getAsset?(id: string): CrewAsset | undefined
+  resolveAssetUrl?(source: string): string
   getBindingsFromShape?(id: CrewShapeId, type?: CrewBindingType): CrewBinding[]
   getShape?(id: CrewShapeId): CrewShape | undefined
   getShapeGeometry?(shapeOrId: CrewShape | CrewShapeId): Geometry2d

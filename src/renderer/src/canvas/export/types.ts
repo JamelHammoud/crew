@@ -16,6 +16,7 @@ export interface SnapshotSvgOptions {
   background?: boolean | string
   darkMode?: boolean
   preserveAspectRatio?: string
+  resolveAssetUrl?: (source: string) => string
 }
 
 export interface SnapshotSvgResult {
@@ -52,6 +53,7 @@ export interface ImageExportOptions {
   darkMode?: boolean
   preserveAspectRatio?: string
   quality?: number
+  resolveAssetUrl?: (source: string) => string
 }
 
 export interface ClipboardExportEditor {

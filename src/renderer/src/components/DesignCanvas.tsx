@@ -26,6 +26,7 @@ import {
   showCursor
 } from '../design/cursors'
 import { busyAgents } from '../design/busyAgents'
+import { resolveDesignAssetSource } from '../design/assetSource'
 import { applyDesignDefaults } from '../design/defaults'
 import { DesignNodeTool } from '../design/DesignNodeTool'
 import SelectionOverlay from '../design/SelectionOverlay'
@@ -60,6 +61,7 @@ export default function DesignCanvas({
   const initDesign = useCrew(s => s.initDesign)
   const applyDesign = useCrew(s => s.applyDesign)
   const sendDesignPresence = useCrew(s => s.sendDesignPresence)
+  const httpBase = useCrew(s => s.httpBase)
   const selfId = useCrew(s => s.selfId)
   const [editor, setEditor] = useState<Editor | null>(null)
   const [ready, setReady] = useState(false)
@@ -69,6 +71,13 @@ export default function DesignCanvas({
   const editorRef = useRef<Editor | null>(null)
   editorRef.current = editor
   const lastSpot = useRef<Record<string, DesignPresence>>({})
+  const httpBaseRef = useRef(httpBase)
+  httpBaseRef.current = httpBase
+
+  const canvasOptions = useMemo(
+    () => ({ resolveAssetUrl: (source: string) => resolveDesignAssetSource(httpBaseRef.current, source) }),
+    []
+  )
 
   const store = useMemo(
     () => createTLStore({ shapeUtils: designShapeUtils, bindingUtils: defaultBindingUtils }),
@@ -295,7 +304,7 @@ export default function DesignCanvas({
         } as CSSProperties
       }
     >
-      <CrewCanvas store={store} shapeUtils={designShapeUtils} tools={tools} onMount={onMount} />
+      <CrewCanvas store={store} shapeUtils={designShapeUtils} tools={tools} options={canvasOptions} onMount={onMount} />
       <SelectionOverlay editor={editor} asking={asking} />
       <RemoteCursors editor={editor} boardId={boardId} live={cursors} held={lastSpot} />
       {!ready && (

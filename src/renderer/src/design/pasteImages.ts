@@ -1,6 +1,7 @@
 import type { Editor, TLShapeId } from '../canvas'
 import { AssetRecordType, createShapeId, type TLAsset } from '../canvas/schema'
-import { uploadImage } from '../components/images'
+import { uploadImageFile } from '../components/images'
+import { designAssetSource } from './assetSource'
 
 interface ImageSize {
   w: number
@@ -50,12 +51,12 @@ export async function pasteImages(
 ): Promise<TLShapeId[]> {
   if (files.length === 0) return []
   const sizeOf = dependencies.readSize ?? readImageSize
-  const save = dependencies.upload ?? uploadImage
+  const save = dependencies.upload ?? uploadImageFile
   const images = await Promise.all(
     files.map(async file => {
-      const [size, src] = await Promise.all([sizeOf(file), save(httpBase, file)])
+      const [size, saved] = await Promise.all([sizeOf(file), save(httpBase, file)])
       if (size.w < 1 || size.h < 1) throw new Error('Could not read image')
-      return { file, size, src }
+      return { file, size, src: designAssetSource(saved) }
     })
   )
   const center = editor.getViewportPageCenter()

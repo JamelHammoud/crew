@@ -56,7 +56,8 @@ export class ImageShapeUtil extends BaseBoxShapeUtil<ImageShape> {
 
   component(shape: ImageShape): ReactNode {
     const asset = shape.props.assetId ? this.editor.getAsset?.(shape.props.assetId) : undefined
-    const source = asset?.type === 'image' ? asset.props.src : null
+    const rawSource = asset?.type === 'image' ? asset.props.src : null
+    const source = rawSource ? (this.editor.resolveAssetUrl?.(rawSource) ?? rawSource) : null
     const crop = shape.props.crop
     const left = crop ? crop.topLeft.x * 100 : 0
     const top = crop ? crop.topLeft.y * 100 : 0

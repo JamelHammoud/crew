@@ -200,7 +200,12 @@ export function snapshotToSvgResult(
   const roots = rootsFor(store, options)
   if (roots.length === 0) return null
   const defs = new Map<string, string>()
-  const context: ShapeRenderContext = { store, defs, darkMode: options.darkMode === true }
+  const context: ShapeRenderContext = {
+    store,
+    defs,
+    darkMode: options.darkMode === true,
+    resolveAssetUrl: options.resolveAssetUrl
+  }
   const matrices = new Map<string, Matrix>()
   const rendered = roots
     .map(shape =>

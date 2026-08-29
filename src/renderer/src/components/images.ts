@@ -29,7 +29,7 @@ export function imagesFrom(items: FileList | File[] | null | undefined, limit: n
   return filesFrom(items, limit).filter(file => isImageType(file.type))
 }
 
-export async function uploadImage(httpBase: string, file: File): Promise<string> {
+export async function uploadImageFile(httpBase: string, file: File): Promise<string> {
   const res = await fetch(`${httpBase}/attachments`, {
     method: 'POST',
     headers: {
@@ -40,7 +40,11 @@ export async function uploadImage(httpBase: string, file: File): Promise<string>
   })
   if (!res.ok) throw new Error(`Upload failed (${res.status})`)
   const saved = (await res.json()) as { file: string }
-  return `${httpBase}/attachments/${saved.file}`
+  return saved.file
+}
+
+export async function uploadImage(httpBase: string, file: File): Promise<string> {
+  return `${httpBase}/attachments/${await uploadImageFile(httpBase, file)}`
 }
 
 const ATTACH_MARK = '](attachments/'

@@ -100,6 +100,7 @@ export interface TLEditorOptions {
     setUserPreferences?: (next: TLUserPreferences) => void
   }
   options?: {
+    resolveAssetUrl?: (source: string) => string
     camera?: {
       zoomMin?: number
       zoomMax?: number

@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createTLStore, defaultBindingUtils, Editor } from '../src/renderer/src/canvas'
 import { designShapeUtils } from '../src/renderer/src/design/shapeUtils'
 import { pasteImages, readImageSize } from '../src/renderer/src/design/pasteImages'
+import { resolveDesignAssetSource } from '../src/renderer/src/design/assetSource'
 
 const editors: Editor[] = []
 
@@ -25,7 +26,7 @@ describe('images pasted into Design', () => {
   it('uploads the file and creates a selected image at the viewport center', async () => {
     const editor = board()
     const file = new File(['pixels'], 'room.png', { type: 'image/png' })
-    const upload = vi.fn(async () => 'http://127.0.0.1:7331/attachments/room.png')
+    const upload = vi.fn(async () => 'room.png')
 
     const [id] = await pasteImages(editor, [file], 'http://127.0.0.1:7331', {
       readSize: async () => ({ w: 320, h: 180 }),
@@ -43,10 +44,13 @@ describe('images pasted into Design', () => {
         h: 180,
         name: 'room.png',
         mimeType: 'image/png',
-        src: 'http://127.0.0.1:7331/attachments/room.png'
+        src: 'asset:room.png'
       }
     })
     expect(editor.getSelectedShapeIds()).toEqual([id])
+    expect(resolveDesignAssetSource('http://127.0.0.1:9000', asset.props.src!)).toBe(
+      'http://127.0.0.1:9000/attachments/room.png'
+    )
   })
 
   it('reads browser image dimensions and releases the bitmap', async () => {

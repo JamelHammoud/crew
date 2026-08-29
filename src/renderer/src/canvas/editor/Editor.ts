@@ -613,6 +613,11 @@ export class Editor {
     return record?.typeName === 'asset' ? record : undefined
   }
 
+  resolveAssetUrl(source: string): string {
+    const resolve = this.options.resolveAssetUrl
+    return typeof resolve === 'function' ? resolve(source) : source
+  }
+
   getBinding(id: TLBindingId): TLBinding | undefined {
     return this.bindings.get(id)
   }
@@ -1328,6 +1333,7 @@ export class Editor {
       background: options.background,
       darkMode: options.darkMode ?? this.getColorMode() === 'dark',
       preserveAspectRatio: options.preserveAspectRatio
+      ,resolveAssetUrl: options.resolveAssetUrl ?? (source => this.resolveAssetUrl(source))
     })
     if (!result) return undefined
     return { svg: result.svg, width: result.width, height: result.height }

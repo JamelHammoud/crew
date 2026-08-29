@@ -9,6 +9,7 @@ export interface ShapeRenderContext {
   store: ExportStore
   defs: Map<string, string>
   darkMode: boolean
+  resolveAssetUrl?: (source: string) => string
 }
 
 export interface ShapeBody {
@@ -458,7 +459,8 @@ function assetSource(shape: ExportShape, ctx: ShapeRenderContext): string {
   const assetId = typeof shape.props.assetId === 'string' ? shape.props.assetId : ''
   const asset = ctx.store.assets.get(assetId)
   const source = asset?.props.src ?? shape.props.url
-  return typeof source === 'string' ? source : ''
+  if (typeof source !== 'string') return ''
+  return ctx.resolveAssetUrl?.(source) ?? source
 }
 
 function renderImageLike(shape: ExportShape, ctx: ShapeRenderContext, video: boolean): ShapeBody {
