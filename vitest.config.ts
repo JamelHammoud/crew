@@ -7,6 +7,7 @@ export default defineConfig({
       ['**/design-image-paste.test.ts', 'jsdom'],
       ['**/personal-chat-probe.test.ts', 'jsdom'],
       ['**/sticky-editor-probe.test.ts', 'jsdom'],
+      ['**/stickies-library-probe.test.ts', 'jsdom'],
       ['**/subagent-message-probe.test.ts', 'jsdom']
     ],
     env: { NODE_ENV: 'test' },
