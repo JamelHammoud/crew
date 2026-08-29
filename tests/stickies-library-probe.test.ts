@@ -55,6 +55,7 @@ describe('the Stickies library', () => {
     const view = render(createElement(StickiesWindow))
 
     expect(view.container.querySelector('[data-editor-id]')?.getAttribute('data-editor-id')).toBe('draft:draft-one')
+    expect(screen.getByRole('button', { name: /First sticky/ }).className).toContain('min-h-14')
     const row = screen.getByRole('button', { name: /Second sticky/ })
     expect(row.className).toContain('min-h-14')
     fireEvent.click(row)
