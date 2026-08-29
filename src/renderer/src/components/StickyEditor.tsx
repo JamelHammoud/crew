@@ -4,6 +4,8 @@ import { createSticky, stickyCreateInput, stickyHasContent, updateSticky } from 
 import DocEditor, { type DocEditorHandle } from './DocEditor'
 import { stickyEditorBackground } from './StickySidebar'
 
+export { stickyEditorBackground } from './StickySidebar'
+
 export function stickyImageDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
