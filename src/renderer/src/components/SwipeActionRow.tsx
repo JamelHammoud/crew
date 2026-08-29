@@ -170,8 +170,8 @@ export default function SwipeActionRow({ children, className = '', onDelete }: S
         aria-label="Delete"
         tabIndex={offset === 0 ? -1 : 0}
         onClick={deleteRow}
-        style={{ opacity: Math.min(1, offset / 12) }}
-        className="absolute right-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-danger text-white transition-[background-color,opacity,transform] duration-150 hover:bg-danger/90 active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-fg/40"
+        style={{ clipPath: `inset(0 0 0 ${Math.max(0, ACTION_WIDTH - offset)}px)` }}
+        className="absolute right-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-danger text-white transition-[background-color,clip-path,transform] duration-150 hover:bg-danger/90 active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-fg/40"
       >
         <TrashGlyph className="h-4 w-4" />
       </button>
@@ -191,7 +191,6 @@ export default function SwipeActionRow({ children, className = '', onDelete }: S
         className={`relative z-10 min-w-0 ${moving ? '' : 'transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]'}`}
         style={{
           '--swipe-progress': offset / ACTION_WIDTH,
-          background: 'var(--swipe-surface, var(--color-ink-900))',
           touchAction: 'pan-y',
           transform: `translateX(${-offset}px)`
         } as CSSProperties}
