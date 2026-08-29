@@ -65,13 +65,20 @@ import type { LivePlace } from '../shared/places'
 import { popOutTarget, poppedKey } from '../shared/popOut'
 import { type NewAgent, type OpenOptions } from './session'
 import { Terminals, type TerminalSize } from './terminal'
-import { BROWSER_WINDOW_HASH, PERSONAL_CHAT_HASH, threadWindowHash } from '../shared/threadViews'
+import {
+  BROWSER_WINDOW_HASH,
+  PERSONAL_CHAT_HASH,
+  STICKIES_HASH,
+  stickyWindowHash,
+  threadWindowHash
+} from '../shared/threadViews'
 import { Updates } from './updates'
 import { runtimeStateDir } from './runtime-state'
 import {
   appMenuTemplate,
   closePutsAway,
   createPersonalChatWindowOptions,
+  createStickiesWindowOptions,
   createThreadWindowOptions,
   createWindowOptions
 } from './window-options'
@@ -80,6 +87,8 @@ import { installBrowserFindForHost } from './browser-find'
 import { FinderOpens } from './finder-open'
 import { pinWindow, windowShapeOf } from './window-pin'
 import type { FileReplaceRequest, FileSearchOptions } from '../shared/fileSearch'
+import type { CreateStickyInput, UpdateStickyInput } from '../shared/stickies'
+import { StickyStore } from './stickies-store'
 
 app.setName('Crew')
 app.commandLine.appendSwitch('disable-backgrounding-occluded-windows')
@@ -97,6 +106,9 @@ const crews = new Crews()
 const terminals = new Map<number, Terminals>()
 const previews = new Map<number, Previews>()
 const playing = new Map<number, Media>()
+const stickies = new StickyStore(stateDir)
+const stickiesWindows = new Set<BrowserWindow>()
+const stickyWindows = new Map<string, BrowserWindow>()
 // One window a thread. Asked for a thread that already has one, the window that
 // is standing is brought forward rather than a second one opened onto the same
 // conversation.
