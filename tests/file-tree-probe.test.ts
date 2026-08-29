@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { createElement } from 'react'
+import { act, createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import BrowserPanel from '../src/renderer/src/components/BrowserPanel'
+import { FILE_DROP_EXPAND_MS } from '../src/renderer/src/components/FileTree'
 import { useBrowser } from '../src/renderer/src/state/browser'
 import type { RepoEntryCreateResult, RepoFile } from '../src/shared/files'
 import type { FileReplaceRequest, FileSearchOptions } from '../src/shared/fileSearch'
@@ -98,7 +99,10 @@ beforeEach(() => {
   } as unknown as CrewBridge
 })
 
-afterEach(() => cleanup())
+afterEach(() => {
+  cleanup()
+  vi.useRealTimers()
+})
 
 const activeTab = () => {
   const { tabs, activeTabId } = useBrowser.getState()
@@ -256,6 +260,47 @@ describe('the file explorer', () => {
 
     expect(moveEntry).not.toHaveBeenCalled()
     expect(target.className).not.toContain('ring-fg/20')
+  })
+
+  it('opens a closed folder after the dragged item rests over it', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    const source = await waitFor(() => {
+      const found = rowFor('readme.md')
+      expect(found).toBeTruthy()
+      return found!
+    })
+    const target = document.querySelector('[data-folder="src"]') as HTMLElement
+    const dataTransfer = transfer()
+    vi.useFakeTimers()
+
+    fireEvent.dragStart(source, { dataTransfer })
+    fireEvent.dragOver(target, { dataTransfer })
+    act(() => vi.advanceTimersByTime(FILE_DROP_EXPAND_MS - 1))
+    expect(target.getAttribute('aria-expanded')).toBe('false')
+    act(() => vi.advanceTimersByTime(1))
+    expect(target.getAttribute('aria-expanded')).toBe('true')
+  })
+
+  it('leaves a closed folder shut when the drag moves away before the pause ends', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    const source = await waitFor(() => {
+      const found = rowFor('readme.md')
+      expect(found).toBeTruthy()
+      return found!
+    })
+    const target = document.querySelector('[data-folder="src"]') as HTMLElement
+    const elsewhere = document.querySelector('[data-folder="tests"]') as HTMLElement
+    const dataTransfer = transfer()
+    vi.useFakeTimers()
+
+    fireEvent.dragStart(source, { dataTransfer })
+    fireEvent.dragOver(target, { dataTransfer })
+    fireEvent.dragLeave(target, { dataTransfer, relatedTarget: elsewhere })
+    act(() => vi.advanceTimersByTime(FILE_DROP_EXPAND_MS))
+
+    expect(target.getAttribute('aria-expanded')).toBe('false')
   })
 
   it('keeps search options out of the default view', async () => {

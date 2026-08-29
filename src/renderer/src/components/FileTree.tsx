@@ -19,6 +19,7 @@ import { useAutoFocus } from './useAutoFocus'
 import { useColumnResize } from './useColumnResize'
 
 const ROW_STEP = 29
+export const FILE_DROP_EXPAND_MS = 700
 export const DEFAULT_FILE_TREE_WIDTH = 288
 export const MIN_FILE_TREE_WIDTH = 220
 export const MAX_FILE_TREE_WIDTH = 520
@@ -326,6 +327,8 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
   const [dragged, setDragged] = useState<string | null>(null)
   const [dropTarget, setDropTarget] = useState<string | null>(null)
   const moving = useRef(false)
+  const expandTimer = useRef<number | null>(null)
+  const expanding = useRef<string | null>(null)
   const { dragging, startResize } = useColumnResize(
     width,
     asked => setWidth(Math.max(MIN_FILE_TREE_WIDTH, Math.min(MAX_FILE_TREE_WIDTH, asked))),
@@ -351,6 +354,23 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
     return true
   }
 
+  const stopExpanding = (): void => {
+    if (expandTimer.current !== null) window.clearTimeout(expandTimer.current)
+    expandTimer.current = null
+    expanding.current = null
+  }
+
+  const expandAfterPause = (parent: string): void => {
+    if (!parent || tab.open.includes(parent) || expanding.current === parent) return
+    stopExpanding()
+    expanding.current = parent
+    expandTimer.current = window.setTimeout(() => {
+      if (expanding.current === parent) useBrowser.getState().toggleFolder(tab.id, parent)
+      expandTimer.current = null
+      expanding.current = null
+    }, FILE_DROP_EXPAND_MS)
+  }
+
   const move: FileMove = {
     dragged,
     dropTarget,
@@ -361,6 +381,7 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
       setCreating(null)
     },
     end: () => {
+      stopExpanding()
       if (!moving.current) setDragged(null)
       setDropTarget(null)
     },
@@ -373,10 +394,12 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
       event.preventDefault()
       event.dataTransfer.dropEffect = 'move'
       setDropTarget(parent)
+      expandAfterPause(parent)
     },
     leave: (event, parent) => {
       event.stopPropagation()
       if (event.currentTarget.contains(event.relatedTarget as Node | null)) return
+      if (dropTarget === parent) stopExpanding()
       if (dropTarget === parent) setDropTarget(null)
     },
     drop: (event, parent) => {
@@ -384,6 +407,7 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
       event.stopPropagation()
       const source = dragged
       if (!source || !canDrop(parent)) return
+      stopExpanding()
       moving.current = true
       setDropTarget(null)
       void window.crew
