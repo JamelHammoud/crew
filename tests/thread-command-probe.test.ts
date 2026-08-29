@@ -475,7 +475,9 @@ describe('queued message cards', () => {
     fireEvent.mouseEnter(screen.getByText('first line second line that stays intact'))
     await vi.advanceTimersByTimeAsync(300)
 
-    expect(screen.getByText((_, element) => element?.textContent === 'first line\nsecond line that stays intact')).toBeTruthy()
+    expect(
+      screen.getByText((_, element) => element?.textContent === 'first line\nsecond line that stays intact')
+    ).toBeTruthy()
     vi.useRealTimers()
   })
 })

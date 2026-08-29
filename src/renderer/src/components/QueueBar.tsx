@@ -152,10 +152,7 @@ function QueueRow({
         </div>
         {item.agentLabel && <Pill>{item.agentLabel}</Pill>}
         {item.self && (
-          <span
-            className="relative flex h-7 w-7 shrink-0"
-            onPointerDown={event => event.stopPropagation()}
-          >
+          <span className="relative flex h-7 w-7 shrink-0" onPointerDown={event => event.stopPropagation()}>
             <Tooltip label="More" disabled={menu !== null}>
               <button
                 type="button"
