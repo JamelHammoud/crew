@@ -10,6 +10,7 @@ const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
 const resolve = createRequire(path.join(root, 'package.json')).resolve
 const shot = path.join(tmpdir(), 'crew-stickies-look.png')
+const compactShot = path.join(tmpdir(), 'crew-sticky-compact-look.png')
 
 function probeSource() {
   const from = file => JSON.stringify(path.join(root, 'src/renderer/src', file))
@@ -25,7 +26,7 @@ let stickies = [
 ]
 let createCalls = 0
 const listeners = new Set()
-window.location.hash = '#stickies'
+window.location.hash = new URLSearchParams(window.location.search).has('single') ? '#sticky=first' : '#stickies'
 window.crew = {
   listStickies: async () => stickies,
   createSticky: async input => {
@@ -69,6 +70,9 @@ const READ = \`(() => {
   const surface = rows[0]?.querySelector('[data-swipe-surface]')
   const title = document.querySelector('input[aria-label="Sticky title"]')
   const editable = document.querySelector('.doc [contenteditable="true"]')
+  const stickyEditor = document.querySelector('[data-sticky-editor]')
+  const editorPage = document.querySelector('.sticky-editor-page')
+  const body = document.querySelector('.doc .bn-editor')
   return {
     sidebar: box(document.querySelector('[data-sticky-sidebar]')),
     rowBoxes: rows.map(box),
@@ -77,6 +81,14 @@ const READ = \`(() => {
     title: title?.value ?? null,
     titlePlaceholderColor: title ? getComputedStyle(title, '::placeholder').color : null,
     editorFocused: Boolean(editable && (editable === document.activeElement || editable.contains(document.activeElement))),
+    compact: stickyEditor ? {
+      marked: stickyEditor.hasAttribute('data-compact'),
+      viewport: { width: window.innerWidth, height: window.innerHeight },
+      titleSize: title ? getComputedStyle(title).fontSize : null,
+      bodySize: body ? getComputedStyle(body).fontSize : null,
+      bodyInset: body ? getComputedStyle(body).paddingLeft : null,
+      topInset: editorPage ? getComputedStyle(editorPage).paddingTop : null
+    } : null,
     createCalls: window.stickyCreateCalls(),
     offset: rows[0]?.dataset.offset ?? null,
     action: box(action),
@@ -103,6 +115,12 @@ app.whenReady().then(async () => {
     seen.swiped = await win.webContents.executeJavaScript(READ)
     const [width, height] = win.getContentSize()
     fs.writeFileSync(${JSON.stringify(shot)}, (await win.webContents.capturePage({ x: 0, y: 0, width, height })).toPNG())
+    win.setContentSize(160, 120)
+    await win.loadFile(path.join(__dirname, 'dist/index.html'), { query: { single: '1' } })
+    await wait(1400)
+    seen.compact = await win.webContents.executeJavaScript(READ)
+    const [compactWidth, compactHeight] = win.getContentSize()
+    fs.writeFileSync(${JSON.stringify(compactShot)}, (await win.webContents.capturePage({ x: 0, y: 0, width: compactWidth, height: compactHeight })).toPNG())
   } catch (error) {
     seen.failed = String(error && error.stack)
   }
@@ -147,7 +165,7 @@ try {
     })
     child.on('error', reject)
   })
-  console.log(JSON.stringify({ ...seen, shot }, null, 2))
+  console.log(JSON.stringify({ ...seen, shot, compactShot }, null, 2))
 } finally {
   await rm(dir, { recursive: true, force: true })
 }
