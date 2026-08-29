@@ -113,7 +113,7 @@ describe('mail attachment storage', () => {
     fs.symlinkSync(outsideFile, storedPath)
 
     expect(() => files.read('account', storageKey)).toThrow()
-    expect(() => files.exists('account', storageKey)).toThrow('Mail attachment storage directory is unsafe')
+    expect(() => files.exists('account', storageKey)).toThrow('Mail attachment file is unsafe')
     expect(fs.readFileSync(outsideFile, 'utf8')).toBe('outside')
   })
 })

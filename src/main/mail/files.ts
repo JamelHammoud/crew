@@ -80,7 +80,8 @@ export class MailFileStore {
       realDirectory(this.directory)
       realDirectory(path.dirname(file))
       const stat = fs.lstatSync(file)
-      return stat.isFile() && !stat.isSymbolicLink()
+      if (!stat.isFile() || stat.isSymbolicLink()) throw new Error('Mail attachment file is unsafe')
+      return true
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === 'ENOENT') return false
       throw error
