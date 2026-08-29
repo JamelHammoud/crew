@@ -250,7 +250,9 @@ describe('Gmail transport over loopback', () => {
     })
 
     expect(replacement.uid).not.toBe(first.uid)
-    expect(server.mailbox('personal', '[Gmail]/Drafts').filter(one => !one.flags.has('\\Deleted'))).toHaveLength(1)
+    expect(
+      server.mailbox('personal', '[Gmail]/Drafts').map(one => ({ uid: one.uid, flags: [...one.flags] }))
+    ).toEqual([{ uid: replacement.uid, flags: ['\\Draft'] }])
 
     const sent = await mail.send({
       to: 'ali@example.com',

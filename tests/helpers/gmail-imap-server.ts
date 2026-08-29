@@ -96,6 +96,7 @@ const SYSTEM_LABELS = ['INBOX', '[Gmail]/All Mail', '[Gmail]/Drafts', '[Gmail]/S
 const quoted = (value: string): string => `"${value.replaceAll('\\', '\\\\').replaceAll('"', '\\"')}"`
 const normalizeLabel = (label: string): string => {
   const clean = label.replace(/^"|"$/g, '')
+  if (clean.toLowerCase() === '\\inbox') return 'INBOX'
   if (clean.toUpperCase() === 'INBOX') return 'INBOX'
   const system = SYSTEM_LABELS.find(one => one.toLowerCase() === clean.toLowerCase())
   return system ?? clean
