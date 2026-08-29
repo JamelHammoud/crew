@@ -98,3 +98,15 @@ describe('a new sticky editor', () => {
     expect(stickyEditorBackground('purple')).toContain('#d394df')
   })
 })
+
+describe('a saved sticky editor', () => {
+  it('removes the title when the field is cleared', async () => {
+    render(createElement(StickyEditor, { sticky: { ...draft(), id: 'saved', title: 'Shopping' } }))
+
+    const title = screen.getByRole('textbox', { name: 'Sticky title' })
+    fireEvent.change(title, { target: { value: '' } })
+    fireEvent.blur(title)
+
+    await waitFor(() => expect(calls.update).toHaveBeenCalledWith('saved', { title: '' }))
+  })
+})

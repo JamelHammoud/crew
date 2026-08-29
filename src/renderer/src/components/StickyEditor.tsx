@@ -78,7 +78,7 @@ export default function StickyEditor({
   const saveTitle = () => {
     const next = title.trim()
     setTitle(next)
-    if (next !== (sticky.title ?? '')) void persist({ title: next || undefined })
+    if (next !== (sticky.title ?? '')) void persist({ title: next })
   }
 
   const focusBody = () => {
