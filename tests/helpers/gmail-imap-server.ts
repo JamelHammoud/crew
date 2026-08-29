@@ -76,6 +76,7 @@ type ImapSession = {
   idleTag: string | null
   literal: { line: string; length: number; plus: boolean } | null
   authMechanism: string | null
+  authTag: string | null
   closed: boolean
 }
 
@@ -354,6 +355,7 @@ export class GmailLoopbackServer {
       idleTag: null,
       literal: null,
       authMechanism: null,
+      authTag: null,
       closed: false
     }
     this.imapSessions.add(session)
@@ -398,17 +400,19 @@ export class GmailLoopbackServer {
   private imapLine(session: ImapSession, line: string, literal?: Buffer): void {
     if (session.authMechanism) {
       const mechanism = session.authMechanism
+      const authTag = session.authTag ?? '*'
       session.authMechanism = null
+      session.authTag = null
       const decoded = Buffer.from(line, 'base64').toString()
       const user = mechanism === 'XOAUTH2' ? decoded.match(/user=([^\x01]+)/)?.[1] : decoded.split('\0').at(-2)
       const secret = mechanism === 'XOAUTH2' ? decoded.match(/auth=Bearer ([^\x01]+)/)?.[1] : decoded.split('\0').at(-1)
       const account = [...this.accounts.values()].find(
         one => one.email === user?.toLowerCase() && (one.accessToken === secret || one.password === secret)
       )
-      if (!account) session.socket.write(`NO Authentication failed${CRLF}`)
+      if (!account) session.socket.write(`${authTag} NO Authentication failed${CRLF}`)
       else {
         session.account = account
-        session.socket.write(`OK AUTHENTICATE completed${CRLF}`)
+        session.socket.write(`${authTag} OK AUTHENTICATE completed${CRLF}`)
       }
       return
     }
@@ -450,6 +454,7 @@ export class GmailLoopbackServer {
       const [mechanism, encoded] = atoms(args)
       if (!encoded) {
         session.authMechanism = mechanism.toUpperCase()
+        session.authTag = tag
         session.socket.write(`+ ${CRLF}`)
         return
       }
