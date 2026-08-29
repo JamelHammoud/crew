@@ -82,8 +82,7 @@ function QueueRow({
   onRemove: () => void
   onSend: () => void
 }) {
-  const [menu, setMenu] = useState(false)
-  const more = useRef<HTMLSpanElement>(null)
+  const [menu, setMenu] = useState<'button' | { x: number; y: number } | null>(null)
   const line = item.text.replace(/\s+/g, ' ').trim()
   const preview = (
     <div className="max-h-[min(26rem,calc(100vh-4rem))] overflow-y-auto overscroll-contain select-text">
@@ -118,6 +117,14 @@ function QueueRow({
     <HoverCard content={preview} width={360} className="!block min-w-0">
       <div
         onPointerDown={item.self ? take : undefined}
+        onContextMenu={
+          item.self
+            ? event => {
+                event.preventDefault()
+                setMenu({ x: event.clientX, y: event.clientY })
+              }
+            : undefined
+        }
         className={`group flex min-w-0 items-center gap-2 rounded-xl bg-ink-800 px-3 py-2 transition-colors hover:bg-ink-700/70 ${
           item.self ? 'cursor-grab active:cursor-grabbing' : ''
         }`}
@@ -146,27 +153,32 @@ function QueueRow({
         {item.agentLabel && <Pill>{item.agentLabel}</Pill>}
         {item.self && (
           <span
-            ref={more}
             className="relative flex h-7 w-7 shrink-0"
             onPointerDown={event => event.stopPropagation()}
           >
-            <Tooltip label="More" disabled={menu}>
+            <Tooltip label="More" disabled={menu !== null}>
               <button
                 type="button"
-                onClick={() => setMenu(open => !open)}
+                onClick={() => setMenu(open => (open === 'button' ? null : 'button'))}
                 aria-label="More for queued message"
-                aria-expanded={menu}
+                aria-expanded={menu !== null}
                 className="flex h-7 w-7 items-center justify-center rounded-full text-fg-muted opacity-0 transition-[color,background-color,opacity] hover:bg-fg/[0.08] hover:text-fg group-hover:opacity-100 group-focus-within:opacity-100"
               >
                 <MoreGlyph className="h-4 w-4" />
               </button>
             </Tooltip>
-            <Popover open={menu} onClose={() => setMenu(false)} anchor={more} side="top" className="min-w-44">
+            <Popover
+              open={menu !== null}
+              onClose={() => setMenu(null)}
+              at={typeof menu === 'object' ? menu : undefined}
+              side="top"
+              className="min-w-44"
+            >
               <MenuItem
                 icon={<PencilGlyph />}
                 label="Edit in composer"
                 onClick={() => {
-                  setMenu(false)
+                  setMenu(null)
                   onEdit()
                 }}
               />
@@ -175,7 +187,7 @@ function QueueRow({
                   icon={<SendGlyph />}
                   label="Send now"
                   onClick={() => {
-                    setMenu(false)
+                    setMenu(null)
                     onSend()
                   }}
                 />
@@ -185,7 +197,7 @@ function QueueRow({
                 label="Remove from queue"
                 danger
                 onClick={() => {
-                  setMenu(false)
+                  setMenu(null)
                   onRemove()
                 }}
               />

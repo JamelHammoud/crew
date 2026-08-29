@@ -409,6 +409,8 @@ describe('queued message cards', () => {
     fireEvent.click(screen.getAllByLabelText('More for queued message')[0])
     fireEvent.click(screen.getByText('Edit in composer'))
     expect(edit).toHaveBeenCalledWith('p1')
+    fireEvent.contextMenu(screen.getByText('after that'), { clientX: 240, clientY: 180 })
+    expect(screen.getByText('Remove from queue')).toBeTruthy()
     expect(screen.queryByLabelText('Move queued message later')).toBeNull()
     expect(screen.queryByLabelText('Move queued message earlier')).toBeNull()
   })
@@ -435,8 +437,6 @@ describe('queued message cards', () => {
     rows.forEach((row, index) => {
       row.getBoundingClientRect = () => ({ top: 8 + index * 48, left: 0, width: 600, height: 40 }) as DOMRect
     })
-    screen.debug(rows[0])
-
     fireEvent.pointerDown(rows[0]!.firstElementChild!.firstElementChild!, {
       button: 0,
       clientX: 80,
