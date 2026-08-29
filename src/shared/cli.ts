@@ -2,6 +2,7 @@ import type { CrewHome } from './project'
 
 export interface OpenRequest {
   folder: string
+  file?: string
   name?: string
   home?: CrewHome
   share?: boolean
@@ -20,6 +21,8 @@ export function cleanOpenRequest(input: unknown): OpenRequest | null {
   const folder = text(raw.folder)
   if (!folder) return null
   const request: OpenRequest = { folder }
+  const file = text(raw.file)
+  if (file && !file.startsWith('/') && !file.split(/[\\/]/).includes('..')) request.file = file
   const name = text(raw.name)
   if (name) request.name = name
   if (raw.home === 'folder' || raw.home === 'private') request.home = raw.home

@@ -77,9 +77,11 @@ describe('what the command hands the app', () => {
   })
 
   it('keeps only what it knows', () => {
-    expect(cleanOpenRequest({ folder: '/work/api', home: 'somewhere', share: 'yes', name: '  ' })).toEqual({
-      folder: '/work/api'
-    })
+    expect(
+      cleanOpenRequest({ folder: '/work/api', file: 'src/main.ts', home: 'somewhere', share: 'yes', name: '  ' })
+    ).toEqual({ folder: '/work/api', file: 'src/main.ts' })
+    expect(cleanOpenRequest({ folder: '/work/api', file: '../other/secret' })).toEqual({ folder: '/work/api' })
+    expect(cleanOpenRequest({ folder: '/work/api', file: '/other/secret' })).toEqual({ folder: '/work/api' })
     expect(cleanOpenRequest(null)).toBeNull()
     expect(cleanOpenRequest({ folder: '   ' })).toBeNull()
   })

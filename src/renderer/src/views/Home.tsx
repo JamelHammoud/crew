@@ -7,6 +7,7 @@ import ScreenSwap from '../components/ScreenSwap'
 import Tooltip from '../components/Tooltip'
 import { ChevronLeftGlyph } from '../icons'
 import { usePlaces } from '../state/places'
+import { useBrowser } from '../state/browser'
 import { useCrew } from '../state/store'
 import { useWindowName } from '../state/windowName'
 import CrewAway from './home/CrewAway'
@@ -44,8 +45,8 @@ export default function Home() {
   const [screen, setScreen] = useState<Screen>(known ? 'places' : 'name')
   // Only the very first time is there nowhere to go back to.
   const [first, setFirst] = useState(!known)
-  const [asking, setAsking] = useState<{ folder: string; share?: boolean } | null>(null)
-  const [away, setAway] = useState<{ folder: string; share?: boolean } | null>(null)
+  const [asking, setAsking] = useState<{ folder: string; file?: string; share?: boolean } | null>(null)
+  const [away, setAway] = useState<{ folder: string; file?: string; share?: boolean } | null>(null)
   // What `crew` in a terminal asked for, held while a name is asked for, since
   // nothing can be opened without one.
   const [asked, setAsked] = useState<OpenRequest | null>(null)
@@ -75,16 +76,24 @@ export default function Home() {
     return true
   }
 
-  const open = async (target: string, key: string, who: string, opts?: OpenOptions, fetch = false) => {
+  const open = async (
+    target: string,
+    key: string,
+    who: string,
+    opts?: OpenOptions,
+    fetch = false,
+    file?: string
+  ) => {
     setBusy(true)
     setBusyKey(key)
     setError('')
     try {
       localStorage.setItem('crew.folder', target)
       connect(await window.crew.start(target, keep(who), opts))
+      if (file) useBrowser.getState().openFile(file)
     } catch (err) {
       if (fetch) {
-        setAway({ folder: target, share: opts?.share })
+        setAway({ folder: target, file, share: opts?.share })
         setScreen('away')
       } else {
         setError(said(err))
@@ -129,10 +138,10 @@ export default function Home() {
     const key = `project:${request.folder}`
     const plan = await window.crew.projectPlan(request.folder).catch(() => null)
     if (request.home) {
-      return open(request.folder, key, who, { home: request.home, share: request.share }, fetching(plan))
+      return open(request.folder, key, who, { home: request.home, share: request.share }, fetching(plan), request.file)
     }
-    if (plan?.known) return open(request.folder, key, who, { share: request.share }, fetching(plan))
-    setAsking({ folder: request.folder, share: request.share })
+    if (plan?.known) return open(request.folder, key, who, { share: request.share }, fetching(plan), request.file)
+    setAsking({ folder: request.folder, file: request.file, share: request.share })
     setScreen('where')
   }
 
@@ -215,7 +224,7 @@ export default function Home() {
         <WhereTo
           busy={busy}
           onPick={home =>
-            void open(asking.folder, `project:${asking.folder}`, name.trim(), { home, share: asking.share })
+            void open(asking.folder, `project:${asking.folder}`, name.trim(), { home, share: asking.share }, false, asking.file)
           }
         />
       )
@@ -225,8 +234,10 @@ export default function Home() {
       return (
         <CrewAway
           busy={busy}
-          onRetry={() => void open(away.folder, key, name.trim(), { share: away.share }, true)}
-          onOwn={() => void open(away.folder, key, name.trim(), { home: 'private', own: true, share: away.share })}
+          onRetry={() => void open(away.folder, key, name.trim(), { share: away.share }, true, away.file)}
+          onOwn={() =>
+            void open(away.folder, key, name.trim(), { home: 'private', own: true, share: away.share }, false, away.file)
+          }
         />
       )
     }

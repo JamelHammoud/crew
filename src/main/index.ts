@@ -77,6 +77,7 @@ import {
 } from './window-options'
 import { showWhenReady } from './window-launch'
 import { installBrowserFindForHost } from './browser-find'
+import { FinderOpens } from './finder-open'
 import { pinWindow, windowShapeOf } from './window-pin'
 import type { FileReplaceRequest, FileSearchOptions } from '../shared/fileSearch'
 
@@ -235,7 +236,9 @@ let quitting = false
 // What `crew` in a terminal asked for, read once and handed over once. A window
 // launched for a folder opens that folder rather than the session the app was
 // last in, so the last session is not resumed on top of it.
-let opening = openRequestOf(process.argv)
+const launchOpening = openRequestOf(process.argv)
+const openingWindows = new Map<number, NonNullable<ReturnType<typeof openRequestOf>>>()
+const finderOpens = new FinderOpens(request => openOpeningWindow(request))
 let command = new CrewCommand(null)
 let resumed: Promise<unknown> = Promise.resolve()
 let iconTheme: IconTheme = 'dark'
@@ -391,6 +394,13 @@ function loadWindow(win: BrowserWindow, threadId?: string, personal = false, bro
   }
 }
 
+function openOpeningWindow(request: NonNullable<ReturnType<typeof openRequestOf>>): BrowserWindow {
+  const win = createWindow(undefined, false)
+  openingWindows.set(win.webContents.id, request)
+  loadWindow(win)
+  return win
+}
+
 function createWindow(threadId?: string, load = true, personal = false, browser = false): BrowserWindow {
   const preload = path.join(dirname, '../preload/preload.mjs')
   const win = new BrowserWindow(
@@ -533,15 +543,15 @@ app.whenReady().then(() => {
   crews.onLive = places => tellLive(places)
   scribe.remember(path.join(app.getPath('userData'), 'scribe-spot.json'))
   said.remember(path.join(app.getPath('userData'), 'scribe-said.json'))
-  resumed = opening
+  resumed = launchOpening || finderOpens.waiting
     ? Promise.resolve(null)
     : crews.resume().then(() => {
         sharing()
         warmTerminals()
       })
-  ipcMain.handle('cli:opening', () => {
-    const asked = opening
-    opening = null
+  ipcMain.handle('cli:opening', event => {
+    const asked = openingWindows.get(event.sender.id) ?? null
+    openingWindows.delete(event.sender.id)
     return asked
   })
   ipcMain.handle('folder:pick', async () => {
@@ -907,13 +917,20 @@ app.whenReady().then(() => {
     terminalsFor(event.sender).resize(id, wanted)
   )
   ipcMain.on('terminal:close', (event, id: string) => terminalsFor(event.sender).close(id))
-  createWindow()
+  if (launchOpening) openOpeningWindow(launchOpening)
+  const finderCount = await finderOpens.start()
+  if (!launchOpening && finderCount === 0) createWindow()
   // The window put away by a close is still there, so the dock has to bring that
   // one back rather than ask whether there is one at all. `openWindow` opens a
   // window when there is none, which is the other way in here.
   app.on('activate', () => {
     openWindow()
   })
+})
+
+app.on('open-file', (event, target) => {
+  event.preventDefault()
+  finderOpens.add(target)
 })
 
 // Closing the window while in a session keeps the app alive so the crew can
