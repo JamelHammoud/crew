@@ -406,8 +406,11 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
   const tree = useRef<HTMLElement>(null)
   const [width, setWidth] = useState(DEFAULT_FILE_TREE_WIDTH)
   const [creating, setCreating] = useState<EntryDraft | null>(null)
-  const [dragged, setDragged] = useState<string | null>(null)
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [clipboard, setClipboard] = useState<FileClipboard | null>(null)
+  const [dragged, setDragged] = useState<string[]>([])
   const [dropTarget, setDropTarget] = useState<string | null>(null)
+  const anchor = useRef<string | null>(null)
   const moving = useRef(false)
   const expandTimer = useRef<number | null>(null)
   const expanding = useRef<string | null>(null)
@@ -430,12 +433,140 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
     if (kind === 'file') useBrowser.getState().navigateFile(tab.id, path)
   }
 
+  const visiblePaths = (): string[] =>
+    Array.from(tree.current?.querySelectorAll<HTMLElement>('[data-file-entry]') ?? []).map(
+      entry => entry.dataset.fileEntry!
+    )
+
+  const selection: FileSelection = {
+    selected,
+    cut: new Set(clipboard?.mode === 'move' ? clipboard.sources : []),
+    pick: (event, path, activate) => {
+      if (event.shiftKey && anchor.current) {
+        const paths = visiblePaths()
+        const from = paths.indexOf(anchor.current)
+        const to = paths.indexOf(path)
+        if (from !== -1 && to !== -1) {
+          const first = Math.min(from, to)
+          const last = Math.max(from, to)
+          setSelected(new Set(paths.slice(first, last + 1)))
+          return
+        }
+      }
+      if (event.metaKey || event.ctrlKey) {
+        setSelected(current => {
+          const next = new Set(current)
+          if (next.has(path)) next.delete(path)
+          else next.add(path)
+          return next
+        })
+        anchor.current = path
+        return
+      }
+      setSelected(new Set([path]))
+      anchor.current = path
+      activate()
+    },
+    context: path => {
+      if (selected.has(path)) return
+      setSelected(new Set([path]))
+      anchor.current = path
+    }
+  }
+
+  const selectionParent = (): string => {
+    const entries = Array.from(tree.current?.querySelectorAll<HTMLElement>('[data-file-entry]') ?? []).filter(entry =>
+      selected.has(entry.dataset.fileEntry!)
+    )
+    if (
+      clipboard &&
+      selected.size === clipboard.sources.length &&
+      clipboard.sources.every(source => selected.has(source))
+    ) {
+      const parents = new Set(clipboard.sources.map(parentOf))
+      return parents.size === 1 ? [...parents][0]! : ''
+    }
+    if (entries.length === 1 && entries[0]?.dataset.entryDir === 'true') return entries[0].dataset.fileEntry!
+    const parents = new Set(entries.map(entry => parentOf(entry.dataset.fileEntry!)))
+    return parents.size === 1 ? [...parents][0]! : ''
+  }
+
+  const finishTransfer = (
+    result: Awaited<ReturnType<CrewBridge['transferEntries']>>,
+    mode: RepoEntryTransferMode,
+    parent: string
+  ): void => {
+    if (!result.ok) {
+      toast.fail(result.message)
+      return
+    }
+    if (mode === 'move') {
+      for (const entry of result.entries) useBrowser.getState().moveFilePaths(entry.source, entry.path)
+      setClipboard(null)
+    } else {
+      useBrowser.getState().reloadTab(tab.id)
+    }
+    const paths = result.entries.map(entry => entry.path)
+    setSelected(new Set(paths))
+    anchor.current = paths.at(-1) ?? null
+    if (
+      parent &&
+      !useBrowser
+        .getState()
+        .tabs.find(one => one.id === tab.id)
+        ?.open.includes(parent)
+    ) {
+      useBrowser.getState().toggleFolder(tab.id, parent)
+    }
+  }
+
+  const paste = (parent: string): void => {
+    if (!clipboard || moving.current) return
+    moving.current = true
+    void window.crew
+      .transferEntries(clipboard.sources, parent, clipboard.mode)
+      .then(result => finishTransfer(result, clipboard.mode, parent))
+      .catch(() => toast.fail(`Could not ${clipboard.mode} those items`))
+      .finally(() => {
+        moving.current = false
+      })
+  }
+
+  const keyDown = (event: KeyboardEvent<HTMLElement>): void => {
+    const target = event.target as HTMLElement
+    if (target.matches('input, textarea, [contenteditable="true"]')) return
+    const command = (event.metaKey || event.ctrlKey) && !event.altKey
+    const key = event.key.toLowerCase()
+    if (command && (key === 'c' || key === 'x') && selected.size > 0) {
+      event.preventDefault()
+      const sources = transferSelection([...selected])
+      setClipboard({ sources, mode: key === 'x' ? 'move' : 'copy' })
+      void navigator.clipboard?.writeText(sources.join('\n')).catch(() => undefined)
+      return
+    }
+    if (command && key === 'v' && clipboard) {
+      event.preventDefault()
+      paste(selectionParent())
+      return
+    }
+    if (command && key === 'a') {
+      event.preventDefault()
+      const paths = visiblePaths()
+      setSelected(new Set(paths))
+      anchor.current = paths.at(0) ?? null
+      return
+    }
+    if (event.key === 'Escape' && selected.size > 0) {
+      setSelected(new Set())
+      anchor.current = null
+    }
+  }
+
   const canDrop = (event: DragEvent<HTMLElement>, parent: string): boolean => {
     if (moving.current) return false
-    if (!dragged) return carriesFiles(event)
-    const currentParent = dragged.includes('/') ? dragged.slice(0, dragged.lastIndexOf('/')) : ''
-    if (currentParent === parent) return false
-    if (parent === dragged || parent.startsWith(`${dragged}/`)) return false
+    if (dragged.length === 0) return carriesFiles(event)
+    if (dragged.every(source => parentOf(source) === parent)) return false
+    if (dragged.some(source => parent === source || parent.startsWith(`${source}/`))) return false
     return true
   }
 
@@ -500,15 +631,18 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
     dragged,
     dropTarget,
     start: (event, path) => {
+      const sources = transferSelection(selected.has(path) ? [...selected] : [path])
       event.dataTransfer.effectAllowed = 'move'
-      event.dataTransfer.setData('application/x-crew-file-entry', path)
-      setDragged(path)
+      event.dataTransfer.setData('application/x-crew-file-entry', JSON.stringify(sources))
+      setSelected(new Set(sources))
+      anchor.current = path
+      setDragged(sources)
       setCreating(null)
     },
     end: () => {
       stopExpanding()
       stopDragScroll()
-      if (!moving.current) setDragged(null)
+      if (!moving.current) setDragged([])
       setDropTarget(null)
     },
     over: (event, parent) => {
@@ -518,7 +652,7 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
         return
       }
       event.preventDefault()
-      event.dataTransfer.dropEffect = dragged ? 'move' : 'copy'
+      event.dataTransfer.dropEffect = dragged.length > 0 ? 'move' : 'copy'
       setDropTarget(parent)
       expandAfterPause(parent)
     },
@@ -531,23 +665,29 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
     drop: (event, parent) => {
       event.preventDefault()
       event.stopPropagation()
-      const source = dragged
+      const sources = dragged
       if (!canDrop(event, parent)) return
-      const sources = source ? [] : droppedPaths(event.dataTransfer.files)
-      if (!source && sources.length === 0) return
+      const imports = sources.length > 0 ? [] : droppedPaths(event.dataTransfer.files)
+      if (sources.length === 0 && imports.length === 0) return
       stopExpanding()
       stopDragScroll()
       moving.current = true
       setDropTarget(null)
-      const operation = source ? window.crew.moveEntry(source, parent) : window.crew.importEntries(sources, parent)
+      const operation =
+        sources.length > 0
+          ? window.crew.transferEntries(sources, parent, 'move')
+          : window.crew.importEntries(imports, parent)
       void operation
         .then(result => {
           if (!result.ok) {
             toast.fail(result.message)
             return
           }
-          if (source && 'path' in result) useBrowser.getState().moveFilePaths(source, result.path)
-          else useBrowser.getState().reloadTab(tab.id)
+          if ('entries' in result) {
+            finishTransfer(result, 'move', parent)
+            return
+          }
+          useBrowser.getState().reloadTab(tab.id)
           if (
             parent &&
             !useBrowser
@@ -558,10 +698,10 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
             useBrowser.getState().toggleFolder(tab.id, parent)
           }
         })
-        .catch(() => toast.fail(source ? 'Could not move that item' : 'Could not copy that item'))
+        .catch(() => toast.fail(sources.length > 0 ? 'Could not move those items' : 'Could not copy those items'))
         .finally(() => {
           moving.current = false
-          setDragged(null)
+          setDragged([])
         })
     }
   }
@@ -569,10 +709,12 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
   return (
     <aside
       ref={tree}
+      tabIndex={-1}
+      onKeyDown={keyDown}
       data-file-tree-width={width}
       style={{ width }}
       onDragOverCapture={event => {
-        if (!dragged && !carriesFiles(event)) return
+        if (dragged.length === 0 && !carriesFiles(event)) return
         event.preventDefault()
         dragScroll(event.clientY)
       }}
@@ -598,6 +740,7 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
           depth={0}
           creating={creating}
           move={move}
+          selection={selection}
           onCreate={startCreate}
           onCreated={created}
           onCancel={() => setCreating(null)}
