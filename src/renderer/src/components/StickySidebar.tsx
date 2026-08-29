@@ -14,7 +14,7 @@ import {
 import { usePrefs } from '../state/prefs'
 import { deleteSticky, updateSticky } from '../state/stickies'
 import { useFullScreen } from '../state/windowShape'
-import { collapsibleSidebarClass } from './collapsibleSidebar'
+import { collapsibleSidebarClass, collapsibleSidebarSearchClass } from './collapsibleSidebar'
 import { MenuDivider, MenuItem, Popover } from './Popover'
 import ScrollFade from './ScrollFade'
 import SwipeActionRow from './SwipeActionRow'
@@ -230,7 +230,7 @@ export default function StickySidebar({
           </Tooltip>
         </header>
         <div className="px-3 pb-4">
-          <div className="h-10 rounded-full bg-ink-700 flex items-center gap-2 px-3 transition-shadow duration-150 focus-within:shadow-[inset_0_0_0_1px_rgb(255_255_255/0.10)] light:focus-within:shadow-[inset_0_0_0_1px_rgb(0_0_0/0.12)]">
+          <div data-sticky-search className={collapsibleSidebarSearchClass(glass)}>
             <SearchGlyph className="w-4 h-4 shrink-0 text-fg/35" />
             <input
               value={query}

@@ -6,7 +6,7 @@ import { useCrew, type ThreadMeta } from '../state/store'
 import { useFullScreen } from '../state/windowShape'
 import { activityForStep, type AgentActivity } from './agentActivity'
 import AgentIcon from './AgentIcon'
-import { collapsibleSidebarClass } from './collapsibleSidebar'
+import { collapsibleSidebarClass, collapsibleSidebarSearchClass } from './collapsibleSidebar'
 import ScrollFade from './ScrollFade'
 import { describeStep } from './thread'
 import Tooltip from './Tooltip'
@@ -129,7 +129,7 @@ export default function PersonalChatSidebar({
         </header>
 
         <div className="px-3 pb-4">
-          <div className="h-10 rounded-full bg-ink-700 flex items-center gap-2 px-3 transition-shadow duration-150 focus-within:shadow-[inset_0_0_0_1px_rgb(255_255_255/0.10)] light:focus-within:shadow-[inset_0_0_0_1px_rgb(0_0_0/0.12)]">
+          <div data-personal-chat-search className={collapsibleSidebarSearchClass(glass)}>
             <SearchGlyph className="w-4 h-4 shrink-0 text-fg/35" />
             <input
               value={query}
