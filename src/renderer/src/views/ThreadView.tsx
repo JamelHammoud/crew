@@ -14,6 +14,7 @@ import QueueBar, { type QueuedMessage } from '../components/QueueBar'
 import { SlashMenu, useSlashCommands } from '../components/SlashCommands'
 import { usePresence } from '../components/presence'
 import ReplyPreview from '../components/ReplyPreview'
+import RunAction from '../components/RunAction'
 import RunEnded from '../components/RunEnded'
 import RunStatus from '../components/RunStatus'
 import Spinner from '../components/Spinner'
@@ -84,6 +85,7 @@ export default function ThreadView({
   const tokens = useCrew(s => (activePromptId ? (s.tokens[activePromptId] ?? 0) : 0))
   const cost = useCrew(s => (activePromptId ? s.costs[activePromptId] : undefined))
   const sendChat = useCrew(s => s.sendChat)
+  const implementPlan = useCrew(s => s.implementPlan)
   const cancelPrompt = useCrew(s => s.cancelPrompt)
   const setThreadStatus = useCrew(s => s.setThreadStatus)
   const removeQueued = useCrew(s => s.removeQueued)
@@ -362,7 +364,14 @@ export default function ThreadView({
             {activePromptId && startedAt ? (
               <RunStatus startedAt={startedAt} tokens={tokens} cost={cost} steps={steps[activePromptId] ?? []} />
             ) : (
-              ended && <RunEnded end={ended} />
+              ended && (
+                <div className="space-y-3">
+                  <RunEnded end={ended} />
+                  {thread.mode === 'plan' && thread.plan && (
+                    <RunAction label="Implement plan" onClick={() => implementPlan(threadId)} />
+                  )}
+                </div>
+              )
             )}
             {!personal && <FilesChanged steps={threadSteps} agentId={thread.agentId} />}
           </div>

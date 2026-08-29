@@ -2,6 +2,7 @@ import { useCallback, useLayoutEffect, useMemo, useRef } from 'react'
 import { pendingCount, useCrew } from '../../state/store'
 import Composer, { COMPOSER_MAX } from '../Composer'
 import FilesChanged from '../FilesChanged'
+import RunAction from '../RunAction'
 import RunEnded from '../RunEnded'
 import RunStatus from '../RunStatus'
 import ScrollFade from '../ScrollFade'
@@ -107,15 +108,7 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
               <div className="space-y-3">
                 <RunEnded end={ended} />
                 {(state === 'failed' || state === 'stopped') && (
-                  <div className="pl-14">
-                    <button
-                      type="button"
-                      onClick={() => restartSubagent(threadId)}
-                      className="h-8 px-3 rounded-full border border-ink-700 text-sm text-fg-secondary transition-colors hover:border-ink-600 hover:bg-fg/[0.04] hover:text-fg active:scale-[0.98]"
-                    >
-                      Try again
-                    </button>
-                  </div>
+                  <RunAction label="Try again" onClick={() => restartSubagent(threadId)} />
                 )}
               </div>
             ) : null}

@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import App from '../src/renderer/src/App'
+import ThreadView from '../src/renderer/src/views/ThreadView'
 import { useCrew } from '../src/renderer/src/state/store'
 import type { SessionEvent } from '../src/shared/events'
 import type { PooledAgent } from '../src/shared/llm'
@@ -137,6 +138,70 @@ describe('plans in the app', () => {
 
     expect(fade.className).toContain('opacity-100')
     expect(panel.querySelector('.bg-gradient-to-t')?.className).toContain('opacity-100')
+  })
+
+  it('offers to implement a completed plan below its message in the thread', () => {
+    const implementPlan = vi.fn()
+    useCrew.setState({
+      ...online,
+      implementPlan,
+      events: [
+        events[0],
+        {
+          id: 'message-1',
+          ts: 2,
+          kind: 'message',
+          authorId: 'ali',
+          authorName: 'ALI',
+          text: '@Claude rename the tabs',
+          mentions: [agent.id],
+          threadId: 'thread-1'
+        },
+        {
+          id: 'agent-start',
+          ts: 3,
+          kind: 'agent.start',
+          promptId: 'prompt-1',
+          agentId: agent.id,
+          agentLabel: agent.label,
+          promptText: 'rename the tabs',
+          byName: 'ALI',
+          threadId: 'thread-1'
+        },
+        {
+          id: 'agent-end',
+          ts: 4,
+          kind: 'agent.end',
+          promptId: 'prompt-1',
+          agentId: agent.id,
+          agentLabel: agent.label,
+          ok: true,
+          text: PLAN,
+          threadId: 'thread-1',
+          ms: 1200
+        },
+        events[1]
+      ],
+      threads: {
+        'thread-1': {
+          id: 'thread-1',
+          agentId: agent.id,
+          agentLabel: agent.label,
+          title: '@Claude rename the tabs',
+          createdBy: 'ALI',
+          status: 'open',
+          mode: 'plan',
+          plan: PLAN
+        }
+      }
+    })
+
+    render(createElement(ThreadView, { threadId: 'thread-1' }))
+    const action = screen.getByRole('button', { name: 'Implement plan' })
+    expect(action.parentElement?.className).toContain('pl-14')
+
+    fireEvent.click(action)
+    expect(implementPlan).toHaveBeenCalledWith('thread-1')
   })
 
   it('offers /plan from the composer, and lifts it out of the box', () => {
