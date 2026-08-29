@@ -16,8 +16,15 @@ import ScribeWindow from './views/ScribeWindow'
 import ThreadWindow from './views/ThreadWindow'
 import PersonalChatWindow from './views/PersonalChatWindow'
 import BrowserWindow from './views/BrowserWindow'
+import StickiesWindow from './views/StickiesWindow'
 import TrayPanel from './views/TrayPanel'
-import { BROWSER_WINDOW_HASH, PERSONAL_CHAT_HASH, threadIdInHash } from '../../shared/threadViews'
+import {
+  BROWSER_WINDOW_HASH,
+  PERSONAL_CHAT_HASH,
+  STICKIES_HASH,
+  stickyIdInHash,
+  threadIdInHash
+} from '../../shared/threadViews'
 import './styles.css'
 
 recoverMissingPreload(window)
@@ -31,13 +38,15 @@ const WINDOWS: Record<string, () => JSX.Element> = {
   '#tray': TrayPanel,
   '#scribe': ScribeWindow,
   [PERSONAL_CHAT_HASH]: PersonalChatWindow,
-  [BROWSER_WINDOW_HASH]: BrowserWindow
+  [BROWSER_WINDOW_HASH]: BrowserWindow,
+  [STICKIES_HASH]: StickiesWindow
 }
 
 const hash = window.location.hash
 const popped = threadIdInHash(hash) !== null
-const Aside = popped ? ThreadWindow : (WINDOWS[hash] ?? null)
-const joins = Aside === null || popped || hash === PERSONAL_CHAT_HASH || hash === BROWSER_WINDOW_HASH
+const sticky = stickyIdInHash(hash) !== null
+const Aside = popped ? ThreadWindow : sticky ? StickiesWindow : (WINDOWS[hash] ?? null)
+const joins = Aside === null || popped || sticky || hash === PERSONAL_CHAT_HASH || hash === BROWSER_WINDOW_HASH || hash === STICKIES_HASH
 const root = document.getElementById('root')!
 
 if (joins) root.classList.add('native-shell')
@@ -51,7 +60,7 @@ if (hash === '#scribe') root.classList.add('bare')
 
 if (joins) {
   watchShift()
-  void useCrew.getState().boot()
+  if (!sticky && hash !== STICKIES_HASH) void useCrew.getState().boot()
   window.crew.onWindowShape(shape => {
     root.classList.toggle('square', shape.square)
     setFullScreen(shape.full)
