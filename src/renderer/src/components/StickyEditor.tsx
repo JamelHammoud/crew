@@ -3,6 +3,15 @@ import type { Sticky, UpdateStickyInput } from '../../../shared/stickies'
 import { createSticky, updateSticky } from '../state/stickies'
 import DocEditor, { type DocEditorHandle } from './DocEditor'
 
+export function stickyImageDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => (typeof reader.result === 'string' ? resolve(reader.result) : reject(new Error('Image could not be read')))
+    reader.onerror = () => reject(reader.error ?? new Error('Image could not be read'))
+    reader.readAsDataURL(file)
+  })
+}
+
 export default function StickyEditor({
   sticky,
   fresh = false,
@@ -89,7 +98,13 @@ export default function StickyEditor({
             className="w-full bg-transparent text-[32px] leading-tight font-semibold tracking-[-0.02em] text-fg placeholder:text-fg-faint outline-none"
           />
         </div>
-        <DocEditor key={sticky.id} ref={editorRef} text={sticky.body} onChange={body => void persist({ body })} />
+        <DocEditor
+          key={sticky.id}
+          ref={editorRef}
+          text={sticky.body}
+          onChange={body => void persist({ body })}
+          uploadFile={stickyImageDataUrl}
+        />
       </div>
     </div>
   )

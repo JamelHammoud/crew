@@ -8,7 +8,7 @@ import SwipeActionRow from './SwipeActionRow'
 import Tooltip from './Tooltip'
 import { formatShortDay } from './time'
 
-const COLOR_VALUES = ['#e9c46a', '#ef8f8f', '#d394df', '#78aee8', '#6fc7ad', '#d19a6c']
+const COLOR_VALUES = ['#e9c46a', '#ef8f8f', '#78aee8', '#6fc7ad', '#d394df']
 
 export function stickyColorValue(color: StickyColor): string {
   const at = STICKY_COLORS.indexOf(color)
