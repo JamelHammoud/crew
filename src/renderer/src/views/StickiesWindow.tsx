@@ -47,6 +47,18 @@ function MissingSticky({ loaded }: { loaded: boolean }) {
   )
 }
 
+function stickyDraft(): Sticky {
+  const now = Date.now()
+  return {
+    id: `draft:${crypto.randomUUID()}`,
+    body: '',
+    color: STICKY_COLORS[0],
+    pinned: false,
+    createdAt: now,
+    updatedAt: now
+  }
+}
+
 function SingleSticky({ sticky, loaded }: { sticky?: Sticky; loaded: boolean }) {
   return (
     <div data-sticky-window className="h-full relative bg-ink-900">
@@ -79,33 +91,29 @@ export default function StickiesWindow() {
   const individualId = stickyIdInHash(window.location.hash)
   const stickies = useStickies()
   const loaded = useStickiesLoaded()
-  const [active, setActive] = useState<string | null>(null)
-  const [fresh, setFresh] = useState<string | null>(null)
-  const [draft, setDraft] = useState<Sticky | null>(null)
+  const [draft, setDraft] = useState<Sticky | null>(() => stickyDraft())
+  const [active, setActive] = useState<string | null>(() => draft?.id ?? null)
+  const [fresh, setFresh] = useState<string | null>(() => draft?.id ?? null)
   const [collapsed, setCollapsed] = useState(false)
   const individual = individualId ? stickies.find(sticky => sticky.id === individualId) : undefined
   const current = active ? (draft?.id === active ? draft : stickies.find(sticky => sticky.id === active)) : undefined
 
   useEffect(() => {
-    if (individualId || !loaded) return
+    if (individualId) return
     if (draft?.id === active) return
-    if (!active || !stickies.some(sticky => sticky.id === active)) setActive(stickies[0]?.id ?? null)
-  }, [active, draft, individualId, loaded, stickies])
+    if (active && stickies.some(sticky => sticky.id === active)) return
+    const next = stickyDraft()
+    setDraft(next)
+    setActive(next.id)
+    setFresh(next.id)
+  }, [active, draft, individualId, stickies])
 
   useWindowName(individualId ? (individual ? stickyLabel(individual) : 'Sticky') : current ? stickyLabel(current) : 'Stickies')
 
   if (individualId) return <SingleSticky sticky={individual} loaded={loaded} />
 
   const add = () => {
-    const now = Date.now()
-    const sticky: Sticky = {
-      id: `draft:${crypto.randomUUID()}`,
-      body: '',
-      color: STICKY_COLORS[0],
-      pinned: false,
-      createdAt: now,
-      updatedAt: now
-    }
+    const sticky = stickyDraft()
     setDraft(sticky)
     setActive(sticky.id)
     setFresh(sticky.id)
@@ -139,7 +147,7 @@ export default function StickiesWindow() {
             </Tooltip>
           </div>
         )}
-        {current ? (
+        {current && (
           <StickyEditor
             sticky={current}
             fresh={fresh === current.id}
@@ -150,20 +158,6 @@ export default function StickiesWindow() {
               setActive(created.id)
             }}
           />
-        ) : loaded ? (
-          <div className="h-full flex flex-col items-center justify-center gap-4 text-center px-8">
-            <p className="text-sm text-fg/45">Keep a thought close.</p>
-            <button
-              onClick={add}
-              className="h-9 px-4 rounded-full bg-fg text-ink-900 text-sm font-semibold transition-[background-color,transform] hover:bg-fg/90 active:scale-95"
-            >
-              New sticky
-            </button>
-          </div>
-        ) : (
-          <div className="h-full flex items-center justify-center">
-            <Spinner size={20} />
-          </div>
         )}
       </main>
     </div>
