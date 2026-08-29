@@ -88,10 +88,18 @@ describe('SwipeActionRow', () => {
   })
 
   it('leaves an ordinary row click intact', () => {
-    const { onPress } = row()
+    const { onPress, surface } = row()
+    const capture = vi.fn()
+    const release = vi.fn()
+    surface.setPointerCapture = capture
+    surface.releasePointerCapture = release
 
+    fireEvent.pointerDown(surface, { button: 0, isPrimary: true, pointerId: 10, clientX: 50, clientY: 10 })
+    fireEvent.pointerUp(surface, { pointerId: 10, clientX: 50, clientY: 10 })
     fireEvent.click(screen.getByRole('button', { name: 'One row' }))
 
+    expect(capture).not.toHaveBeenCalled()
+    expect(release).not.toHaveBeenCalled()
     expect(onPress).toHaveBeenCalledTimes(1)
   })
 

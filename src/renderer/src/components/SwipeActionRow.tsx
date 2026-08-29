@@ -94,7 +94,6 @@ export default function SwipeActionRow({ children, className = '', onDelete }: S
       lastTime: performance.now(),
       speed: 0
     }
-    event.currentTarget.setPointerCapture?.(event.pointerId)
   }
 
   const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -106,10 +105,10 @@ export default function SwipeActionRow({ children, className = '', onDelete }: S
       if (Math.max(Math.abs(x), Math.abs(y)) < DIRECTION_SLOP) return
       if (Math.abs(y) > Math.abs(x)) {
         drag.current = null
-        event.currentTarget.releasePointerCapture?.(event.pointerId)
         return
       }
       held.axis = 'horizontal'
+      event.currentTarget.setPointerCapture?.(event.pointerId)
       setMoving(true)
     }
     event.preventDefault()
@@ -126,8 +125,8 @@ export default function SwipeActionRow({ children, className = '', onDelete }: S
     const held = drag.current
     if (!held) return
     drag.current = null
-    event.currentTarget.releasePointerCapture?.(event.pointerId)
     if (held.axis !== 'horizontal') return
+    event.currentTarget.releasePointerCapture?.(event.pointerId)
     suppressNextClick()
     if (cancelled) return settle(held.fromOffset >= OPEN_AT)
     if (Math.abs(held.speed) > FLICK_SPEED) return settle(held.speed > 0)
