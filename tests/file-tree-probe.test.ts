@@ -291,14 +291,21 @@ describe('the file explorer', () => {
     })
     const target = document.querySelector('[data-folder="src"]') as HTMLElement
     const dataTransfer = transfer()
-    vi.useFakeTimers()
+    let expand: TimerHandler | null = null
+    const timer = vi.spyOn(window, 'setTimeout').mockImplementation((handler: TimerHandler) => {
+      expand = handler
+      return 1
+    })
 
     fireEvent.dragStart(source, { dataTransfer })
     fireEvent.dragOver(target, { dataTransfer })
-    act(() => vi.advanceTimersByTime(FILE_DROP_EXPAND_MS - 1))
+    expect(timer).toHaveBeenCalledWith(expect.any(Function), FILE_DROP_EXPAND_MS)
     expect(target.getAttribute('aria-expanded')).toBe('false')
-    act(() => vi.advanceTimersByTime(1))
+    act(() => {
+      if (typeof expand === 'function') expand()
+    })
     expect(target.getAttribute('aria-expanded')).toBe('true')
+    timer.mockRestore()
   })
 
   it('leaves a closed folder shut when the drag moves away before the pause ends', async () => {
@@ -312,14 +319,24 @@ describe('the file explorer', () => {
     const target = document.querySelector('[data-folder="src"]') as HTMLElement
     const elsewhere = document.querySelector('[data-folder="tests"]') as HTMLElement
     const dataTransfer = transfer()
-    vi.useFakeTimers()
+    let expand: TimerHandler | null = null
+    const timer = vi.spyOn(window, 'setTimeout').mockImplementation((handler: TimerHandler) => {
+      expand = handler
+      return 1
+    })
+    const clear = vi.spyOn(window, 'clearTimeout').mockImplementation(() => undefined)
 
     fireEvent.dragStart(source, { dataTransfer })
     fireEvent.dragOver(target, { dataTransfer })
     fireEvent.dragLeave(target, { dataTransfer, relatedTarget: elsewhere })
-    act(() => vi.advanceTimersByTime(FILE_DROP_EXPAND_MS))
+    expect(clear).toHaveBeenCalledWith(1)
+    act(() => {
+      if (typeof expand === 'function') expand()
+    })
 
     expect(target.getAttribute('aria-expanded')).toBe('false')
+    timer.mockRestore()
+    clear.mockRestore()
   })
 
   it('keeps scrolling each frame while a dragged file rests at the edge', async () => {

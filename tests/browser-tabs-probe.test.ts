@@ -147,6 +147,18 @@ describe('the tab strip', () => {
     expect(row.className).toContain('pl-4')
   })
 
+  it('moves the window from the gaps without taking pointer input from a tab', () => {
+    openTwo()
+    const { container } = render(createElement(BrowserPanel))
+    const row = rowOf(container) as HTMLElement
+    const tabs = Array.from(container.querySelectorAll<HTMLElement>('[data-tab]'))
+
+    expect(row.className).toContain('app-drag')
+    expect(row.className).not.toContain('app-no-drag')
+    expect(tabs).toHaveLength(2)
+    expect(tabs.every(tab => tab.classList.contains('app-no-drag'))).toBe(true)
+  })
+
   it('brings a newly opened tab into view', () => {
     laidOutRow()
     openFour()

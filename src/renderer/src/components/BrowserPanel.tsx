@@ -181,7 +181,7 @@ export default function BrowserPanel({ standalone = false }: { standalone?: bool
             setTabDrop(null)
             void window.crew.dropBrowserTab(token, to)
           }}
-          className="scroll-fade-x app-no-drag relative -ml-4 pl-4 flex-1 min-w-0 flex items-center gap-1.5 overflow-x-auto overflow-y-hidden no-scrollbar"
+          className="scroll-fade-x app-drag relative -ml-4 pl-4 flex-1 min-w-0 flex items-center gap-1.5 overflow-x-auto overflow-y-hidden no-scrollbar"
         >
           {tabs.length === 0 && <StartPill />}
           {tabs.map(tab => (
@@ -594,7 +594,7 @@ function TabPill({
         }}
         // Everything but where a pill stands is transitioned, since where it
         // stands is written by the drag itself and has to keep up with a pointer.
-        className={`browser-tab group relative flex items-center gap-1.5 h-9 px-3 rounded-full text-sm font-medium max-w-[180px] shrink-0 transition-[color,background-color,scale] duration-150 active:scale-95 ${
+        className={`browser-tab app-no-drag group relative flex items-center gap-1.5 h-9 px-3 rounded-full text-sm font-medium max-w-[180px] shrink-0 transition-[color,background-color,scale] duration-150 active:scale-95 ${
           active
             ? 'bg-ink-800 text-fg'
             : menuAt
