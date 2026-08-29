@@ -75,6 +75,7 @@ type ImapSession = {
   selected: string | null
   idleTag: string | null
   literal: { line: string; length: number; plus: boolean } | null
+  authMechanism: string | null
   closed: boolean
 }
 
@@ -345,7 +346,16 @@ export class GmailLoopbackServer {
   }
 
   private acceptImap(socket: Socket): void {
-    const session: ImapSession = { socket, buffer: Buffer.alloc(0), account: null, selected: null, idleTag: null, literal: null, closed: false }
+    const session: ImapSession = {
+      socket,
+      buffer: Buffer.alloc(0),
+      account: null,
+      selected: null,
+      idleTag: null,
+      literal: null,
+      authMechanism: null,
+      closed: false
+    }
     this.imapSessions.add(session)
     socket.setNoDelay(true)
     socket.write(`* OK [CAPABILITY IMAP4rev1 IDLE NAMESPACE UIDPLUS MOVE CONDSTORE ENABLE X-GM-EXT-1 SPECIAL-USE LITERAL+] Crew Gmail fixture ready${CRLF}`)
@@ -386,6 +396,22 @@ export class GmailLoopbackServer {
   }
 
   private imapLine(session: ImapSession, line: string, literal?: Buffer): void {
+    if (session.authMechanism) {
+      const mechanism = session.authMechanism
+      session.authMechanism = null
+      const decoded = Buffer.from(line, 'base64').toString()
+      const user = mechanism === 'XOAUTH2' ? decoded.match(/user=([^\x01]+)/)?.[1] : decoded.split('\0').at(-2)
+      const secret = mechanism === 'XOAUTH2' ? decoded.match(/auth=Bearer ([^\x01]+)/)?.[1] : decoded.split('\0').at(-1)
+      const account = [...this.accounts.values()].find(
+        one => one.email === user?.toLowerCase() && (one.accessToken === secret || one.password === secret)
+      )
+      if (!account) session.socket.write(`NO Authentication failed${CRLF}`)
+      else {
+        session.account = account
+        session.socket.write(`OK AUTHENTICATE completed${CRLF}`)
+      }
+      return
+    }
     if (session.idleTag && line.toUpperCase() === 'DONE') {
       const tag = session.idleTag
       session.idleTag = null
@@ -423,6 +449,7 @@ export class GmailLoopbackServer {
     if (command === 'AUTHENTICATE') {
       const [mechanism, encoded] = atoms(args)
       if (!encoded) {
+        session.authMechanism = mechanism.toUpperCase()
         session.socket.write(`+ ${CRLF}`)
         return
       }
