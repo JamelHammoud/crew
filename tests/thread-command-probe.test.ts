@@ -475,7 +475,8 @@ describe('queued message cards', () => {
     fireEvent.mouseEnter(screen.getByText('first line second line that stays intact'))
     await vi.advanceTimersByTimeAsync(300)
 
-    const full = () => screen.queryByText((_, element) => element?.textContent === 'first line\nsecond line that stays intact')
+    const full = () =>
+      screen.queryByText((_, element) => element?.textContent === 'first line\nsecond line that stays intact')
     expect(full()).toBeTruthy()
     fireEvent.pointerDown(screen.getByText('first line second line that stays intact'), {
       button: 0,
