@@ -44,10 +44,18 @@ const repo: Record<string, RepoFile> = {
 
 const listed = ['readme.md', 'src/app.ts', 'src/renderer/panel.tsx', 'tests/app.test.ts']
 const popOutBrowserTab = vi.fn().mockResolvedValue(true)
+const beginFileTabDrag = vi.fn(() => true)
 const createEntry = vi.fn(async (path: string): Promise<RepoEntryCreateResult> => ({ ok: true, path }))
 const moveEntry = vi.fn(async (source: string, parent: string) => ({
   ok: true as const,
   path: parent ? `${parent}/${source.split('/').pop()}` : source.split('/').pop()!
+}))
+const transferEntries = vi.fn(async (sources: string[], parent: string) => ({
+  ok: true as const,
+  entries: sources.map(source => ({
+    source,
+    path: parent ? `${parent}/${source.split('/').pop()}` : source.split('/').pop()!
+  }))
 }))
 const filePath = vi.fn((file: File) => `/outside/${file.name}`)
 const importEntries = vi.fn(async (sources: string[], parent: string) => ({
@@ -76,12 +84,21 @@ const searchFiles = vi.fn(async (options: FileSearchOptions) => ({
 
 beforeEach(() => {
   popOutBrowserTab.mockClear()
+  beginFileTabDrag.mockClear()
   createEntry.mockClear()
   createEntry.mockImplementation(async (path: string) => ({ ok: true as const, path }))
   moveEntry.mockClear()
   moveEntry.mockImplementation(async (source: string, parent: string) => ({
     ok: true as const,
     path: parent ? `${parent}/${source.split('/').pop()}` : source.split('/').pop()!
+  }))
+  transferEntries.mockClear()
+  transferEntries.mockImplementation(async (sources: string[], parent: string) => ({
+    ok: true as const,
+    entries: sources.map(source => ({
+      source,
+      path: parent ? `${parent}/${source.split('/').pop()}` : source.split('/').pop()!
+    }))
   }))
   filePath.mockClear()
   importEntries.mockClear()
@@ -105,6 +122,8 @@ beforeEach(() => {
     listFiles: async () => listed,
     createEntry,
     moveEntry,
+    transferEntries,
+    beginFileTabDrag,
     filePath,
     importEntries,
     searchFiles,
@@ -249,7 +268,7 @@ describe('the file explorer', () => {
     expect(target.className).toContain('ring-fg/20')
     fireEvent.drop(target, { dataTransfer })
 
-    await waitFor(() => expect(moveEntry).toHaveBeenCalledWith('src/app.ts', 'tests'))
+    await waitFor(() => expect(transferEntries).toHaveBeenCalledWith(['src/app.ts'], 'tests', 'move'))
     expect(activeTab().path).toBe('tests/app.ts')
     expect(activeTab().open).toContain('tests')
     expect(activeTab().generation).toBe(1)
@@ -268,7 +287,7 @@ describe('the file explorer', () => {
     fireEvent.dragOver(root, { dataTransfer })
     fireEvent.drop(root, { dataTransfer })
 
-    await waitFor(() => expect(moveEntry).toHaveBeenCalledWith('src/renderer', ''))
+    await waitFor(() => expect(transferEntries).toHaveBeenCalledWith(['src/renderer'], '', 'move'))
     expect(activeTab().path).toBe('renderer/panel.tsx')
     expect(activeTab().open).toContain('renderer')
     expect(activeTab().open).not.toContain('src/renderer')
@@ -287,7 +306,7 @@ describe('the file explorer', () => {
     fireEvent.drop(target, { dataTransfer })
 
     await waitFor(() => expect(importEntries).toHaveBeenCalledWith(['/outside/notes.md', '/outside/assets'], 'tests'))
-    expect(moveEntry).not.toHaveBeenCalled()
+    expect(transferEntries).not.toHaveBeenCalled()
     expect(activeTab().open).toContain('tests')
     expect(activeTab().generation).toBe(1)
   })
