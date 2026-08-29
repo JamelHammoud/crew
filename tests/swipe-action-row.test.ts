@@ -98,6 +98,12 @@ describe('SwipeActionRow', () => {
     expect(root.dataset.offset).toBe('0')
   })
 
+  it('keeps the delete action invisible while the row is closed', () => {
+    row()
+
+    expect(screen.getByRole('button', { name: 'Delete' }).style.opacity).toBe('0')
+  })
+
   it('closes an open action with Escape', () => {
     const { root } = row()
     fireEvent.focus(screen.getByRole('button', { name: 'Delete' }))
