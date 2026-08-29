@@ -9,6 +9,11 @@ interface MenuAt {
   y: number
 }
 
+interface FileMenuOptions {
+  create?: { file: () => void; folder: () => void }
+  showInFolder?: boolean
+}
+
 export function FileMenu({
   path,
   line = null,
@@ -99,8 +104,7 @@ export function useFileMenu(
   path: string,
   line: number | null = null,
   diff: string | null = null,
-  create?: { file: () => void; folder: () => void },
-  showInFolder = false
+  options: FileMenuOptions = {}
 ): {
   onContextMenu: (event: MouseEvent) => void
   menu: ReactNode
@@ -121,9 +125,9 @@ export function useFileMenu(
         diff={diff}
         at={at}
         onClose={() => setAt(null)}
-        onNewFile={create?.file}
-        onNewFolder={create?.folder}
-        showInFolder={showInFolder}
+        onNewFile={options.create?.file}
+        onNewFolder={options.create?.folder}
+        showInFolder={options.showInFolder}
       />
     ),
     menuOpen: at !== null

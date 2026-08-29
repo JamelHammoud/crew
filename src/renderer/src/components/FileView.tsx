@@ -94,7 +94,7 @@ export function FileCrumbs({ tab }: { tab: BrowserTab }) {
 }
 
 function DirRow({ tab, path, entry }: { tab: BrowserTab; path: string; entry: FileEntry }) {
-  const { onContextMenu, menu } = useFileMenu(path, null, null, undefined, true)
+  const { onContextMenu, menu } = useFileMenu(path, null, null, { showInFolder: true })
   return (
     <>
       <button
