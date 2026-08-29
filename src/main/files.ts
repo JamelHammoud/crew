@@ -8,6 +8,7 @@ import {
   type FileEntry,
   type RepoFile,
   type RepoEntryCreateResult,
+  type RepoEntryImportResult,
   type RepoEntryKind,
   type RepoEntryMoveResult,
   type RepoPathKind
