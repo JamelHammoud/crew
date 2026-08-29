@@ -93,7 +93,11 @@ function Folder({
         data-folder={path}
         data-sticky-folder={open ? path : undefined}
         aria-expanded={open}
-        style={{ paddingLeft: indent(depth), top: open ? depth * ROW_STEP : undefined, zIndex: open ? 10 + depth : undefined }}
+        style={{
+          paddingLeft: indent(depth),
+          top: open ? depth * ROW_STEP : undefined,
+          zIndex: open ? tab.open.length - depth : undefined
+        }}
         className={`${row} ${quiet} ${open ? 'sticky bg-ink-900' : ''}`}
       >
         <ChevronRightGlyph

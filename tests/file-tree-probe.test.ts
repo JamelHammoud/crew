@@ -240,6 +240,7 @@ describe('the file explorer', () => {
     expect(src.className).toContain('sticky')
     expect(src.style.top).toBe('0px')
     expect(renderer.style.top).toBe('29px')
+    expect(Number(src.style.zIndex)).toBeGreaterThan(Number(renderer.style.zIndex))
     expect(branch.contains(renderer)).toBe(true)
   })
 
