@@ -11,6 +11,8 @@ import {
   type RepoEntryImportResult,
   type RepoEntryKind,
   type RepoEntryMoveResult,
+  type RepoEntryTransferMode,
+  type RepoEntryTransferResult,
   type RepoPathKind
 } from '../shared/files'
 import type { MachineDir } from '../shared/machinePath'
