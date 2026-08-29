@@ -316,7 +316,7 @@ interface ImapClient {
   usable: boolean
   authenticated: string | boolean
   capabilities: Map<string, boolean | number>
-  mailbox: { path: string } | false
+  mailbox: { path: string; exists: number } | false
   connect(): Promise<void>
   logout(): Promise<void>
   close(): void
@@ -736,7 +736,9 @@ export class GmailTransport {
         range = options.limit ? matches.slice(-options.limit) : matches
       } else {
         const limit = Math.max(1, Math.floor(options.limit ?? 50))
-        range = `*:-${limit}`
+        const exists = client.mailbox ? client.mailbox.exists : 0
+        if (exists === 0) return []
+        range = `${Math.max(1, exists - limit + 1)}:*`
       }
       try {
         const messages = await client.fetchAll(

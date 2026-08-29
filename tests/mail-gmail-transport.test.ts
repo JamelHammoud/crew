@@ -58,7 +58,7 @@ function fakeImap() {
     usable: false,
     authenticated: false as string | boolean,
     capabilities: new Map<string, boolean | number>([['X-GM-EXT-1', true]]),
-    mailbox: false as false | { path: string },
+    mailbox: false as false | { path: string; exists: number },
     connect: vi.fn(async () => {
       value.usable = true
       value.authenticated = auth.user
@@ -72,11 +72,11 @@ function fakeImap() {
     }),
     list: vi.fn(async () => mailboxes),
     getMailboxLock: vi.fn(async (path: string) => {
-      value.mailbox = { path }
+      value.mailbox = { path, exists: 4 }
       return { release: vi.fn() }
     }),
     mailboxOpen: vi.fn(async (path: string) => {
-      value.mailbox = { path }
+      value.mailbox = { path, exists: 4 }
       return {}
     }),
     mailboxCreate: vi.fn(async (path: string) => ({ path, created: true, mailboxId: 'box-1' })),
@@ -253,6 +253,14 @@ describe('Gmail account validation', () => {
 })
 
 describe('Gmail IMAP behavior', () => {
+  it('uses a valid sequence range for the latest messages', async () => {
+    const { dependencies, imap } = harness()
+    const transport = await createGmailTransport({ auth }, dependencies)
+    await transport.fetchSummaries('INBOX', { limit: 2 })
+    expect(imap.fetchAll).toHaveBeenCalledWith('3:*', expect.any(Object), { uid: false })
+    await transport.close()
+  })
+
   it('fetches Gmail summary fields and parses complete MIME bodies', async () => {
     const { dependencies, imap, parseMime } = harness()
     const transport = await createGmailTransport({ auth }, dependencies)
