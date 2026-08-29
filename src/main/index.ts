@@ -510,7 +510,7 @@ function openThreadIn(win: BrowserWindow, threadId: string, place: string | null
   else send()
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   serveMediaScheme()
   applyIcon(iconTheme, chosenIcon)
   installMenu()
