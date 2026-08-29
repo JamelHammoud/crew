@@ -419,7 +419,7 @@ function defaultDependencies(): GmailTransportDependencies {
 
   return {
     createImap: (options) => new imapflow.ImapFlow(options),
-    createSmtp: (options) => nodemailer.createTransport(options),
+    createSmtp: (options) => nodemailer.createTransport(options as unknown as Record<string, unknown>),
     parseMime: (source) => mailparser.simpleParser(source),
     composeMime: async (message) => {
       const transport = nodemailer.createTransport({
