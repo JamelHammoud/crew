@@ -6,7 +6,7 @@ import StickySidebar, { stickyColorValue, stickyLabel } from '../components/Stic
 import Spinner from '../components/Spinner'
 import Tooltip from '../components/Tooltip'
 import { PanelLeftGlyph, PinGlyph } from '../icons'
-import { createSticky, updateSticky, useStickies, useStickiesLoaded } from '../state/stickies'
+import { updateSticky, useStickies, useStickiesLoaded } from '../state/stickies'
 import { useWindowName } from '../state/windowName'
 import { setWindowPinned, useWindowPinned } from '../state/windowShape'
 
@@ -50,7 +50,6 @@ function MissingSticky({ loaded }: { loaded: boolean }) {
 
 function SingleSticky({ sticky, loaded }: { sticky?: Sticky; loaded: boolean }) {
   const pinned = useWindowPinned()
-  useWindowName(sticky ? stickyLabel(sticky) : 'Sticky')
 
   return (
     <div data-sticky-window className="h-full relative bg-ink-900">
@@ -72,7 +71,9 @@ function SingleSticky({ sticky, loaded }: { sticky?: Sticky; loaded: boolean }) 
           </button>
         </Tooltip>
       </header>
-      <div className="h-full pt-[54px]">{sticky ? <StickyEditor sticky={sticky} /> : <MissingSticky loaded={loaded} />}</div>
+      <div className="h-full pt-[54px]">
+        {sticky ? <StickyEditor sticky={sticky} compact /> : <MissingSticky loaded={loaded} />}
+      </div>
     </div>
   )
 }
@@ -83,21 +84,32 @@ export default function StickiesWindow() {
   const loaded = useStickiesLoaded()
   const [active, setActive] = useState<string | null>(null)
   const [fresh, setFresh] = useState<string | null>(null)
+  const [draft, setDraft] = useState<Sticky | null>(null)
   const [collapsed, setCollapsed] = useState(false)
   const individual = individualId ? stickies.find(sticky => sticky.id === individualId) : undefined
-  const current = active ? stickies.find(sticky => sticky.id === active) : undefined
+  const current = active ? (draft?.id === active ? draft : stickies.find(sticky => sticky.id === active)) : undefined
 
   useEffect(() => {
     if (individualId || !loaded) return
+    if (draft?.id === active) return
     if (!active || !stickies.some(sticky => sticky.id === active)) setActive(stickies[0]?.id ?? null)
-  }, [active, individualId, loaded, stickies])
+  }, [active, draft, individualId, loaded, stickies])
 
-  useWindowName(individualId ? '' : current ? stickyLabel(current) : 'Stickies')
+  useWindowName(individualId ? (individual ? stickyLabel(individual) : 'Sticky') : current ? stickyLabel(current) : 'Stickies')
 
   if (individualId) return <SingleSticky sticky={individual} loaded={loaded} />
 
-  const add = async () => {
-    const sticky = await createSticky()
+  const add = () => {
+    const now = Date.now()
+    const sticky: Sticky = {
+      id: `draft:${crypto.randomUUID()}`,
+      body: '',
+      color: STICKY_COLORS[0],
+      pinned: false,
+      createdAt: now,
+      updatedAt: now
+    }
+    setDraft(sticky)
     setActive(sticky.id)
     setFresh(sticky.id)
   }
@@ -109,10 +121,11 @@ export default function StickiesWindow() {
         active={active}
         collapsed={collapsed}
         onOpen={id => {
+          setDraft(null)
           setActive(id)
           setFresh(null)
         }}
-        onNew={() => void add()}
+        onNew={add}
         onCollapse={() => setCollapsed(true)}
       />
       <main className="flex-1 min-w-0 relative">
@@ -130,12 +143,21 @@ export default function StickiesWindow() {
           </div>
         )}
         {current ? (
-          <StickyEditor sticky={current} fresh={fresh === current.id} />
+          <StickyEditor
+            sticky={current}
+            fresh={fresh === current.id}
+            draft={current.id === draft?.id}
+            onCreated={created => {
+              setDraft(null)
+              setFresh(null)
+              setActive(created.id)
+            }}
+          />
         ) : loaded ? (
           <div className="h-full flex flex-col items-center justify-center gap-4 text-center px-8">
             <p className="text-sm text-fg/45">Keep a thought close.</p>
             <button
-              onClick={() => void add()}
+              onClick={add}
               className="h-9 px-4 rounded-full bg-fg text-ink-900 text-sm font-semibold transition-[background-color,transform] hover:bg-fg/90 active:scale-95"
             >
               New sticky
