@@ -1,37 +1,51 @@
 import { useEffect, useState } from 'react'
-import { STICKY_COLORS, type Sticky, type StickyColor } from '../../../shared/stickies'
+import { STICKY_COLORS, type Sticky } from '../../../shared/stickies'
 import { stickyIdInHash } from '../../../shared/threadViews'
 import StickyEditor from '../components/StickyEditor'
 import StickySidebar, { stickyColorValue, stickyLabel } from '../components/StickySidebar'
 import Spinner from '../components/Spinner'
 import Tooltip from '../components/Tooltip'
-import { PanelLeftGlyph, PinGlyph } from '../icons'
-import { updateSticky, useStickies, useStickiesLoaded } from '../state/stickies'
+import { MenuDivider, MenuItem, Popover } from '../components/Popover'
+import { PanelLeftGlyph, PinGlyph, TrashGlyph } from '../icons'
+import { deleteSticky, updateSticky, useStickies, useStickiesLoaded } from '../state/stickies'
 import { useWindowName } from '../state/windowName'
 
-function ColorChoices({ sticky }: { sticky: Sticky }) {
+function StickyWindowMenu({ sticky, close }: { sticky: Sticky; close: () => void }) {
+  const take = (action: () => void) => {
+    close()
+    action()
+  }
+
   return (
-    <div className="app-no-drag flex items-center gap-1" aria-label="Sticky color">
+    <>
+      <MenuItem
+        icon={<PinGlyph />}
+        label={sticky.pinned ? 'Stop keeping on top' : 'Keep on top'}
+        onClick={() => take(() => void updateSticky(sticky.id, { pinned: !sticky.pinned }))}
+      />
+      <MenuDivider />
       {STICKY_COLORS.map(color => (
-        <Tooltip key={color} label={color[0].toUpperCase() + color.slice(1)}>
-          <button
-            onClick={() => void updateSticky(sticky.id, { color })}
-            aria-label={`${color} sticky`}
-            aria-pressed={sticky.color === color}
-            className={`w-7 h-7 rounded-full flex items-center justify-center transition-[background-color,transform] active:scale-95 ${
-              sticky.color === color ? 'bg-fg/[0.08]' : 'hover:bg-fg/[0.05]'
-            }`}
-          >
+        <MenuItem
+          key={color}
+          icon={
             <span
-              className={`w-3 h-3 rounded-full ring-1 ring-inset ${
-                sticky.color === color ? 'ring-fg/40' : 'ring-fg/10'
-              }`}
-              style={{ backgroundColor: stickyColorValue(color as StickyColor) }}
+              className="block w-3.5 h-3.5 rounded-full ring-1 ring-inset ring-fg/10"
+              style={{ backgroundColor: stickyColorValue(color) }}
             />
-          </button>
-        </Tooltip>
+          }
+          label={color[0].toUpperCase() + color.slice(1)}
+          checked={sticky.color === color}
+          onClick={() => take(() => void updateSticky(sticky.id, { color }))}
+        />
       ))}
-    </div>
+      <MenuDivider />
+      <MenuItem
+        icon={<TrashGlyph />}
+        label="Delete sticky"
+        danger
+        onClick={() => take(() => void deleteSticky(sticky.id))}
+      />
+    </>
   )
 }
 
@@ -60,29 +74,25 @@ function stickyDraft(): Sticky {
 }
 
 function SingleSticky({ sticky, loaded }: { sticky?: Sticky; loaded: boolean }) {
+  const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
+
   return (
-    <div data-sticky-window className="h-full relative bg-ink-900">
-      <header className="app-drag absolute z-40 top-0 inset-x-0 h-[54px] pl-[88px] pr-3 flex items-center border-b border-ink-700 bg-ink-900/90 backdrop-blur-xl">
-        <span className="min-w-0 flex-1 truncate text-sm font-medium text-fg/70">
-          {sticky ? stickyLabel(sticky) : 'Sticky'}
-        </span>
-        {sticky && <ColorChoices sticky={sticky} />}
-        <Tooltip label={sticky?.pinned ? 'Stop keeping on top' : 'Keep on top'}>
-          <button
-            onClick={() => sticky && void updateSticky(sticky.id, { pinned: !sticky.pinned })}
-            aria-label={sticky?.pinned ? 'Stop keeping on top' : 'Keep on top'}
-            aria-pressed={sticky?.pinned ?? false}
-            className={`app-no-drag ml-1 w-8 h-8 rounded-full flex items-center justify-center transition-[color,background-color,transform] active:scale-95 ${
-              sticky?.pinned ? 'text-fg bg-fg/[0.08]' : 'text-fg/45 hover:text-fg hover:bg-fg/[0.05]'
-            }`}
-          >
-            <PinGlyph className="w-4 h-4" />
-          </button>
-        </Tooltip>
-      </header>
-      <div className="h-full pt-[54px]">
-        {sticky ? <StickyEditor sticky={sticky} compact /> : <MissingSticky loaded={loaded} />}
-      </div>
+    <div
+      data-sticky-window
+      onContextMenu={event => {
+        if (!sticky) return
+        const target = event.target as HTMLElement
+        if (target.closest('input, textarea, [contenteditable="true"], a, button')) return
+        event.preventDefault()
+        setMenuAt({ x: event.clientX, y: event.clientY })
+      }}
+      className="h-full relative bg-ink-900"
+    >
+      <div className="app-drag absolute z-40 top-0 inset-x-0 h-10 pointer-events-none" />
+      {sticky ? <StickyEditor sticky={sticky} compact /> : <MissingSticky loaded={loaded} />}
+      <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined} className="min-w-52">
+        {sticky && <StickyWindowMenu sticky={sticky} close={() => setMenuAt(null)} />}
+      </Popover>
     </div>
   )
 }
