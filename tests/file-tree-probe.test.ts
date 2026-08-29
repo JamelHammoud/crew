@@ -253,6 +253,7 @@ describe('the file explorer', () => {
     const branch = document.querySelector('[data-folder-branch="src"]') as HTMLElement
 
     expect(src.className).toContain('sticky')
+    expect(src.className).toContain('after:-bottom-px')
     expect(src.style.top).toBe('0px')
     expect(renderer.style.top).toBe('29px')
     expect(Number(src.style.zIndex)).toBeGreaterThan(Number(renderer.style.zIndex))

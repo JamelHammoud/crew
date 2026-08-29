@@ -98,7 +98,7 @@ function Folder({
           top: open ? depth * ROW_STEP : undefined,
           zIndex: open ? tab.open.length - depth : undefined
         }}
-        className={`${row} ${quiet} ${open ? 'sticky bg-ink-900' : ''}`}
+        className={`${row} ${quiet} ${open ? "sticky bg-ink-900 after:absolute after:inset-x-0 after:-bottom-px after:h-px after:bg-ink-900 after:content-['']" : ''}`}
       >
         <ChevronRightGlyph
           className={`h-3.5 w-3.5 shrink-0 text-fg-muted transition-transform duration-150 ${open ? 'rotate-90' : ''}`}
