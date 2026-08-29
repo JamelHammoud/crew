@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, createEvent, fireEvent, render, screen } from '@testing-library/react'
+import { act, cleanup, createEvent, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import ThreadRow from '../src/renderer/src/components/sidebar/ThreadRow'
@@ -165,6 +165,60 @@ describe('the right click on a thread in the rail', () => {
     expect(rows()).toEqual([])
     expect(said()).not.toContain('Copy thread ID')
     held.mockRestore()
+  })
+})
+
+describe('the opening message over a thread in the rail', () => {
+  const hover = () => {
+    render(createElement(ThreadRow, { thread, open: false, here: true, placeKey: HERE, onOpen, onOpenToRight }))
+    const anchor = screen.getByRole('button', { name: thread.title }).parentElement as HTMLElement
+    vi.spyOn(anchor, 'getBoundingClientRect').mockReturnValue({
+      x: 20,
+      y: 40,
+      left: 20,
+      top: 40,
+      right: 250,
+      bottom: 70,
+      width: 230,
+      height: 30,
+      toJSON: () => ({})
+    })
+    fireEvent.mouseEnter(anchor)
+    return anchor
+  }
+
+  it('stands to the right after 900 milliseconds with the whole message in a scrolling box', () => {
+    vi.useFakeTimers()
+    try {
+      hover()
+
+      act(() => vi.advanceTimersByTime(899))
+      expect(screen.queryByText(thread.preview!)).toBeNull()
+
+      act(() => vi.advanceTimersByTime(1))
+      const message = screen.getByText(thread.preview!)
+      const preview = message.closest('.glass') as HTMLElement
+      expect(preview.style.width).toBe('380px')
+      expect(preview.style.left).toBe('258px')
+      expect(message.className).toContain('max-h-[300px]')
+      expect(message.className).toContain('overflow-y-auto')
+      expect(message.className).toContain('whitespace-pre-wrap')
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('does not stand after the pointer leaves during the wait', () => {
+    vi.useFakeTimers()
+    try {
+      const anchor = hover()
+      fireEvent.mouseLeave(anchor)
+
+      act(() => vi.advanceTimersByTime(900))
+      expect(screen.queryByText(thread.preview!)).toBeNull()
+    } finally {
+      vi.useRealTimers()
+    }
   })
 })
 

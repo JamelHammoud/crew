@@ -18,7 +18,7 @@ function ThreadRow({ thread, open, here, placeKey, onOpen, onOpenToRight }: Thre
     <>
       <HoverCard
         width={380}
-        delay={2000}
+        delay={900}
         side="right"
         className="!block min-w-0 w-full"
         content={
