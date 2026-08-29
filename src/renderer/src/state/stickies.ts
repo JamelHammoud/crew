@@ -32,6 +32,10 @@ export function stickyCreateInput(sticky: Sticky, patch: UpdateStickyInput): Cre
   }
 }
 
+export function stickyHasContent(input: CreateStickyInput): boolean {
+  return Boolean(input.title?.trim() || input.body.trim())
+}
+
 export async function refreshStickies(): Promise<void> {
   const next = await window.crew.listStickies()
   replace(next)

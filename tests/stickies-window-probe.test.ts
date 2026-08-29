@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import type { Sticky } from '../src/shared/stickies'
 import { stickyEditorBackground, stickyColorValue, stickyLabel, stickyPreview } from '../src/renderer/src/components/StickySidebar'
-import { stickyCreateInput } from '../src/renderer/src/state/stickies'
+import { stickyCreateInput, stickyHasContent } from '../src/renderer/src/state/stickies'
 
 const draft: Sticky = {
   id: 'draft:one',
@@ -15,12 +15,20 @@ const draft: Sticky = {
 
 describe('stickies window', () => {
   it('includes a body-first edit in lazy creation', () => {
-    expect(stickyCreateInput(draft, { body: '# First line' })).toEqual({
+    const input = stickyCreateInput(draft, { body: '# First line' })
+
+    expect(input).toEqual({
       title: undefined,
       body: '# First line',
       color: 'yellow',
       pinned: false
     })
+    expect(stickyHasContent(input)).toBe(true)
+  })
+
+  it('does not create a sticky from an empty editor initialization', () => {
+    expect(stickyHasContent(stickyCreateInput(draft, { body: '' }))).toBe(false)
+    expect(stickyHasContent(stickyCreateInput(draft, { title: '  ', body: '\n  ' }))).toBe(false)
   })
 
   it('uses the first written line when the optional title is empty', () => {

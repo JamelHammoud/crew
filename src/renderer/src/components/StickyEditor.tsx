@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Sticky, UpdateStickyInput } from '../../../shared/stickies'
-import { createSticky, stickyCreateInput, updateSticky } from '../state/stickies'
+import { createSticky, stickyCreateInput, stickyHasContent, updateSticky } from '../state/stickies'
 import DocEditor, { type DocEditorHandle } from './DocEditor'
 import { stickyEditorBackground } from './StickySidebar'
 
@@ -51,7 +51,9 @@ export default function StickyEditor({
       await updateSticky(created.id, patch)
       return
     }
-    creating.current = createSticky(stickyCreateInput(sticky, patch))
+    const input = stickyCreateInput(sticky, patch)
+    if (!stickyHasContent(input)) return
+    creating.current = createSticky(input)
     const created = await creating.current
     createdId.current = created.id
     onCreated?.(created)

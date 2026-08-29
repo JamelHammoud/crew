@@ -161,10 +161,10 @@ export default function SwipeActionRow({ children, className = '', onDelete }: S
       <button
         type="button"
         aria-label="Delete"
-        onFocus={() => settle(true)}
+        tabIndex={offset === 0 ? -1 : 0}
         onClick={deleteRow}
         style={{ opacity: Math.min(1, offset / 12) }}
-        className="absolute inset-y-0 right-0 flex w-16 items-center justify-center bg-danger/15 text-danger transition-[background-color,opacity,transform] duration-150 hover:bg-danger/25 active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-danger/40"
+        className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-danger text-white transition-[background-color,opacity,transform] duration-150 hover:bg-danger/90 active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-fg/40"
       >
         <TrashGlyph className="h-4 w-4" />
       </button>

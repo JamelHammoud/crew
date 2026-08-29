@@ -87,12 +87,13 @@ describe('SwipeActionRow', () => {
     expect(root.dataset.offset).toBe('0')
   })
 
-  it('opens for keyboard focus and calls onDelete from the labelled Crew action', () => {
+  it('calls onDelete from the labelled Crew action after it is revealed', () => {
     const { onDelete, root } = row()
     const action = screen.getByRole('button', { name: 'Delete' })
     expect(action.querySelector('svg')).toBeTruthy()
-    fireEvent.focus(action)
+    fireEvent.wheel(root, { deltaX: 64, deltaY: 0 })
     expect(root.dataset.open).toBe('')
+    expect(action.tabIndex).toBe(0)
     fireEvent.click(action)
     expect(onDelete).toHaveBeenCalledTimes(1)
     expect(root.dataset.offset).toBe('0')
@@ -101,12 +102,17 @@ describe('SwipeActionRow', () => {
   it('keeps the delete action invisible while the row is closed', () => {
     row()
 
-    expect(screen.getByRole('button', { name: 'Delete' }).style.opacity).toBe('0')
+    const action = screen.getByRole('button', { name: 'Delete' })
+    expect(action.style.opacity).toBe('0')
+    expect(action.tabIndex).toBe(-1)
+    expect(action.className).toContain('rounded-full')
+    expect(action.className).toContain('h-10')
+    expect(action.className).toContain('w-10')
   })
 
   it('closes an open action with Escape', () => {
     const { root } = row()
-    fireEvent.focus(screen.getByRole('button', { name: 'Delete' }))
+    fireEvent.wheel(root, { deltaX: 64, deltaY: 0 })
     fireEvent.keyDown(root, { key: 'Escape' })
     expect(root.dataset.offset).toBe('0')
   })
