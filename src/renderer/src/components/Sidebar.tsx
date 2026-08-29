@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { projectPlace } from '../../../shared/places'
 import type { CrewHome } from '../../../shared/project'
 import { said } from '../api/said'
-import { playSound, type SoundName } from '../media/sounds'
+import { playSound } from '../media/sounds'
 import { usePlaces } from '../state/places'
 import { usePrefs } from '../state/prefs'
 import { SIDEBAR_W, useSidebar } from '../state/sidebar'
@@ -10,7 +10,7 @@ import { useCrew } from '../state/store'
 import { toast } from '../state/toast'
 import type { Place } from '../views/home/place'
 import { createDocPage } from './doc/docsPages'
-import { TABS, TAB_ICON, type Tab } from './navTabs'
+import { TABS, TAB_ICON, TAB_SOUND, type Tab } from './navTabs'
 import NavRow from './sidebar/NavRow'
 import NewChat from './sidebar/NewChat'
 import NewPage from './sidebar/NewPage'
@@ -29,15 +29,6 @@ import { useScrollFade } from './useScrollFade'
 import { useSidebarPins } from '../state/sidebarPins'
 
 const EMPTY_THREADS: string[] = []
-const TAB_SOUND: Record<Tab, SoundName> = {
-  chat: 'tab.chat',
-  docs: 'tab.docs',
-  design: 'tab.design',
-  plugins: 'tab.plugins',
-  scheduled: 'tab.scheduled',
-  mail: 'tab.docs'
-}
-
 export default function Sidebar({
   overlay,
   strong,
