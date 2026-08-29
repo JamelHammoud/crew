@@ -190,7 +190,7 @@ export default function SwipeActionRow({ children, className = '', onDelete }: S
         }}
         className={`relative z-10 min-w-0 ${moving ? '' : 'transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]'}`}
         style={{
-          '--swipe-inset': `${12 * (1 - offset / ACTION_WIDTH)}px`,
+          '--swipe-inset': `${6 + 6 * (1 - offset / ACTION_WIDTH)}px`,
           '--swipe-progress': offset / ACTION_WIDTH,
           touchAction: 'pan-y',
           transform: `translateX(${-offset}px)`

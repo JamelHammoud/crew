@@ -96,7 +96,7 @@ function StickyRow({ sticky, active, onOpen }: { sticky: Sticky; active: boolean
   const preview = stickyPreview(sticky)
 
   return (
-    <SwipeActionRow className="-mx-3" onDelete={() => void deleteSticky(sticky.id)}>
+    <SwipeActionRow className="-ml-3 w-[calc(100%+24px)]" onDelete={() => void deleteSticky(sticky.id)}>
       <div
         onContextMenu={event => {
           event.preventDefault()

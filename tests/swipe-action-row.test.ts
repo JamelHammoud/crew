@@ -102,6 +102,9 @@ describe('SwipeActionRow', () => {
     fireEvent.wheel(root, { deltaX: 56, deltaY: 0 })
     expect(root.dataset.open).toBe('')
     expect(action.tabIndex).toBe(0)
+    expect((root.querySelector('[data-swipe-surface]') as HTMLDivElement).style.getPropertyValue('--swipe-inset')).toBe(
+      '6px'
+    )
     fireEvent.click(action)
     expect(onDelete).toHaveBeenCalledTimes(1)
     expect(root.dataset.offset).toBe('0')
