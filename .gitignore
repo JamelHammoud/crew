@@ -1,6 +1,7 @@
 node_modules/
 out/
 dist/
+dist-open-with/
 .crew/
 .yarn/
 .DS_Store
