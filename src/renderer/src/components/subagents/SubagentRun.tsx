@@ -106,10 +106,10 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
               />
             ) : ended ? (
               <div className="space-y-3">
-                <RunEnded end={ended} />
                 {(state === 'failed' || state === 'stopped') && (
                   <RunAction label="Try again" onClick={() => restartSubagent(threadId)} />
                 )}
+                <RunEnded end={ended} />
               </div>
             ) : null}
             <FilesChanged steps={threadSteps} agentId={thread.agentId} />

@@ -86,6 +86,7 @@ export default function ThreadView({
   const cost = useCrew(s => (activePromptId ? s.costs[activePromptId] : undefined))
   const sendChat = useCrew(s => s.sendChat)
   const implementPlan = useCrew(s => s.implementPlan)
+  const retryThread = useCrew(s => s.retryThread)
   const cancelPrompt = useCrew(s => s.cancelPrompt)
   const setThreadStatus = useCrew(s => s.setThreadStatus)
   const removeQueued = useCrew(s => s.removeQueued)
@@ -366,10 +367,13 @@ export default function ThreadView({
             ) : (
               ended && (
                 <div className="space-y-3">
-                  <RunEnded end={ended} />
                   {thread.mode === 'plan' && thread.plan && (
                     <RunAction label="Implement plan" onClick={() => implementPlan(threadId)} solid />
                   )}
+                  {(state === 'failed' || state === 'stopped') && (
+                    <RunAction label="Try again" onClick={() => retryThread(threadId)} />
+                  )}
+                  <RunEnded end={ended} />
                 </div>
               )
             )}

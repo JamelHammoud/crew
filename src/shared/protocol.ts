@@ -140,6 +140,7 @@ export type ClientMessage =
   | { type: 'thread.status'; threadId: string; status: ThreadStatus }
   | { type: 'thread.rename'; threadId: string; title: string }
   | { type: 'thread.delete'; threadId: string }
+  | { type: 'thread.retry'; threadId: string }
   | { type: 'plan.implement'; threadId: string }
   | { type: 'todo.add'; text: string; agentId?: string }
   | { type: 'todo.edit'; todoId: string; text: string; agentId?: string }

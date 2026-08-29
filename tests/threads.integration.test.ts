@@ -67,6 +67,29 @@ describe('threads', () => {
     expect(seed && seed.kind === 'message' ? seed.text : '').toContain('build the thing')
   })
 
+  it('runs a failed thread again without repeating its message', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    await connectRunner('jamel', { FAKE_CLI_FAIL: '1' })
+    await ui.waitForEvent(e => e.kind === 'agent.online')
+
+    ui.chat('tidy the readme @Fake', [fake])
+    const thread = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Started
+    const first = (await ui.waitForEvent(
+      e => e.kind === 'agent.start' && e.threadId === thread.threadId
+    )) as Extract<SessionEvent, { kind: 'agent.start' }>
+    await ui.waitForEvent(e => e.kind === 'agent.end' && e.promptId === first.promptId && !e.ok)
+
+    ui.send({ type: 'thread.retry', threadId: thread.threadId })
+    const retried = (await ui.waitForEvent(
+      e => e.kind === 'agent.start' && e.threadId === thread.threadId && e.promptId !== first.promptId
+    )) as Extract<SessionEvent, { kind: 'agent.start' }>
+    expect(retried.promptText).toBe(first.promptText)
+    await ui.waitForEvent(e => e.kind === 'agent.end' && e.promptId === retried.promptId)
+
+    expect(ui.events.filter(e => e.kind === 'message' && e.threadId === thread.threadId)).toHaveLength(1)
+  })
+
   it('mentioning the same agent twice opens two separate threads', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)

@@ -126,7 +126,9 @@ describe('a helper thread in the panel', () => {
     })
 
     render(createElement(SubagentRun, { threadId: CHILD }))
-    fireEvent.click(screen.getByRole('button', { name: 'Try again' }))
+    const action = screen.getByRole('button', { name: 'Try again' })
+    expect(action.compareDocumentPosition(screen.getByText('1s')) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    fireEvent.click(action)
     expect(restart).toHaveBeenCalledWith(CHILD)
   })
 })

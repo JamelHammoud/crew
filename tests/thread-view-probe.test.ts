@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { createElement } from 'react'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import App from '../src/renderer/src/App'
 import { THREAD_STATE_LABELS } from '../src/renderer/src/components/thread'
 import { useCrew } from '../src/renderer/src/state/store'
@@ -71,12 +71,14 @@ const events: SessionEvent[] = [
     agentLabel: agent.label,
     ok: false,
     error: 'Claude exited with code 1',
-    threadId: 'thread-1'
+    threadId: 'thread-1',
+    ms: 1200
   }
 ]
 
 describe('thread navigation', () => {
   it('opens a completed agent thread without crashing the renderer', () => {
+    const retryThread = vi.fn()
     useCrew.setState({
       connection: 'online',
       selfId: 'ali',
@@ -101,7 +103,8 @@ describe('thread navigation', () => {
       steps: {},
       tokens: {},
       pending: {},
-      openThreadId: null
+      openThreadId: null,
+      retryThread
     })
 
     render(createElement(App))
@@ -111,6 +114,10 @@ describe('thread navigation', () => {
     expect(screen.getByLabelText('Back to chat')).toBeTruthy()
     expect(screen.getByPlaceholderText('Send a message or @ someone')).toBeTruthy()
     expect(screen.getByText('Claude exited with code 1')).toBeTruthy()
+    const retry = screen.getByRole('button', { name: 'Try again' })
+    expect(retry.compareDocumentPosition(screen.getByText('1s')) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    fireEvent.click(retry)
+    expect(retryThread).toHaveBeenCalledWith('thread-1')
 
     fireEvent.click(screen.getAllByLabelText('Reply').at(-1)!)
     expect(screen.getByText('Replying to Claude 2')).toBeTruthy()

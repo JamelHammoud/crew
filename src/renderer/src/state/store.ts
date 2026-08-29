@@ -309,6 +309,7 @@ interface CrewState {
   setThreadStatus: (threadId: string, status: ThreadStatus) => void
   renameThread: (threadId: string, title: string) => void
   deleteThread: (threadId: string) => void
+  retryThread: (threadId: string) => void
   implementPlan: (threadId: string) => void
   postChat: (text: string, agentId?: string) => void
   addTodo: (text: string, agentId?: string) => void
@@ -1547,6 +1548,9 @@ export const useCrew = create<CrewState>((set, get) => {
     },
     deleteThread: threadId => {
       socket.send({ type: 'thread.delete', threadId })
+    },
+    retryThread: threadId => {
+      socket.send({ type: 'thread.retry', threadId })
     },
     implementPlan: threadId => {
       socket.send({ type: 'plan.implement', threadId })

@@ -1157,6 +1157,10 @@ export class CrewSession {
         if (meta.role === 'ui' && !this.hiddenFrom(ws, msg.threadId) && !this.restartSubagent(msg.threadId))
           this.refuse('That helper cannot be run again.', ws, msg.threadId)
         break
+      case 'thread.retry':
+        if (meta.role === 'ui' && !this.hiddenFrom(ws, msg.threadId) && !this.retryThread(member, msg.threadId))
+          this.refuse('That thread cannot be run again.', ws, msg.threadId)
+        break
       case 'subagent.prefs':
         if (meta.role === 'ui') member.helpers = cleanPrefs(msg)
         break
@@ -2564,6 +2568,33 @@ export class CrewSession {
       messageId: randomUUID(),
       mentions: [agent.id]
     })
+    return true
+  }
+
+  private retryThread(member: Member, threadId: string): boolean {
+    const thread = this.threads.get(threadId)
+    if (!thread || thread.parentThreadId || this.subagentRunning(thread)) return false
+    const events = this.eventsOf(threadId)
+    const end = [...events]
+      .reverse()
+      .find(
+        (event): event is Extract<SessionEvent, { kind: 'agent.end' }> =>
+          event.kind === 'agent.end' && event.threadId === threadId
+      )
+    if (!end || end.ok) return false
+    const startIndex = events.findIndex(event => event.kind === 'agent.start' && event.promptId === end.promptId)
+    const start = events[startIndex]
+    if (!start || start.kind !== 'agent.start' || !start.promptText.trim()) return false
+    const agent = this.agents.get(thread.agentId)
+    if (!agent || (!agent.runner && !agent.dropTimer)) return false
+    const messageId =
+      start.messageId ??
+      [...events]
+        .slice(0, startIndex)
+        .reverse()
+        .find(event => event.kind === 'message')?.id ??
+      randomUUID()
+    this.enqueuePrompt(agent, member, start.promptText, threadId, [], { messageId, mentions: [agent.id] })
     return true
   }
 
