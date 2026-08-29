@@ -60,6 +60,8 @@ describe('the Stickies library', () => {
 
     expect(view.container.querySelector('[data-stickies-library]')?.classList.contains('bg-transparent')).toBe(true)
     expect(view.container.querySelector('main')?.classList.contains('bg-ink-900')).toBe(true)
+    expect(view.container.querySelector('[data-sticky-search]')?.classList.contains('bg-fg/[0.06]')).toBe(true)
+    expect(view.container.querySelector('[data-sticky-search]')?.classList.contains('bg-ink-700')).toBe(false)
     expect(document.getElementById('root')?.classList.contains('sidebar-window-glass')).toBe(true)
   })
 

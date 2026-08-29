@@ -132,13 +132,18 @@ describe('a personal chat window', () => {
   it('follows the glass sidebar setting', () => {
     render(createElement(PersonalChatWindow))
     const sidebar = document.querySelector('[data-personal-history]')
+    const search = document.querySelector('[data-personal-chat-search]')
     expect(sidebar?.classList.contains('sidebar-pinned')).toBe(true)
+    expect(search?.classList.contains('bg-fg/[0.06]')).toBe(true)
+    expect(search?.classList.contains('bg-ink-700')).toBe(false)
     expect(document.getElementById('root')?.classList.contains('sidebar-window-glass')).toBe(true)
     expect(document.querySelector('[data-personal-chat-content]')?.classList.contains('bg-ink-900')).toBe(true)
 
     act(() => setPref('glassSidebar', false))
     expect(sidebar?.classList.contains('sidebar-pinned')).toBe(false)
     expect(sidebar?.classList.contains('bg-ink-900')).toBe(true)
+    expect(search?.classList.contains('bg-fg/[0.06]')).toBe(false)
+    expect(search?.classList.contains('bg-ink-700')).toBe(true)
     expect(document.getElementById('root')?.classList.contains('sidebar-window-glass')).toBe(false)
   })
 
