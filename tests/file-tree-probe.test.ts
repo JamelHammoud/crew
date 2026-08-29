@@ -296,7 +296,7 @@ describe('the file explorer', () => {
     useBrowser.getState().openFiles()
     render(createElement(BrowserPanel))
     await screen.findByText('src')
-    const root = document.querySelector('[data-file-branch=""]') as HTMLElement
+    const root = document.querySelector('[data-file-tree-width]') as HTMLElement
     const dataTransfer = transfer([new File(['plan'], 'plan.md')], ['Files'])
 
     fireEvent.dragOver(root, { dataTransfer })
@@ -304,6 +304,20 @@ describe('the file explorer', () => {
 
     await waitFor(() => expect(importEntries).toHaveBeenCalledWith(['/outside/plan.md'], ''))
     expect(activeTab().generation).toBe(1)
+  })
+
+  it('keeps an empty project available as a Finder dropzone', async () => {
+    window.crew.readFile = async (path: string) =>
+      path ? { kind: 'missing', path } : { kind: 'dir', path: '', entries: [] }
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    const empty = await screen.findByText('Open a project to see its files')
+    const dataTransfer = transfer([new File(['first'], 'first.md')], ['Files'])
+
+    fireEvent.dragOver(empty, { dataTransfer })
+    fireEvent.drop(empty, { dataTransfer })
+
+    await waitFor(() => expect(importEntries).toHaveBeenCalledWith(['/outside/first.md'], ''))
   })
 
   it('copies a Finder item beside the file row it lands on', async () => {

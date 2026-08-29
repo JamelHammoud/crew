@@ -310,9 +310,7 @@ function Branch({
   const entries = useEntries(path, tab.generation)
 
   if (!entries) return <Loading depth={depth} />
-  if (entries.length === 0 && depth === 0 && creating?.parent !== path) {
-    return <p className="px-3 py-6 text-center text-[13px] text-fg-faint">Open a project to see its files</p>
-  }
+  const empty = entries.length === 0 && depth === 0 && creating?.parent !== path
   return (
     <div
       data-file-branch={path}
@@ -321,28 +319,34 @@ function Branch({
       onDrop={depth === 0 ? event => move.drop(event, '') : undefined}
       className={`${depth === 0 ? 'min-h-full' : ''} ${move.dropTarget === '' ? 'bg-fg/[0.025]' : ''}`}
     >
-      {creating?.parent === path && (
-        <CreateRow draft={creating} depth={depth} onCreated={onCreated} onCancel={onCancel} />
+      {empty ? (
+        <p className="px-3 py-6 text-center text-[13px] text-fg-faint">Open a project to see its files</p>
+      ) : (
+        <>
+          {creating?.parent === path && (
+            <CreateRow draft={creating} depth={depth} onCreated={onCreated} onCancel={onCancel} />
+          )}
+          {entries.map(entry => {
+            const child = path ? `${path}/${entry.name}` : entry.name
+            return entry.dir ? (
+              <Folder
+                key={child}
+                tab={tab}
+                path={child}
+                name={entry.name}
+                depth={depth}
+                creating={creating}
+                move={move}
+                onCreate={onCreate}
+                onCreated={onCreated}
+                onCancel={onCancel}
+              />
+            ) : (
+              <Leaf key={child} tab={tab} path={child} name={entry.name} depth={depth} parent={path} move={move} />
+            )
+          })}
+        </>
       )}
-      {entries.map(entry => {
-        const child = path ? `${path}/${entry.name}` : entry.name
-        return entry.dir ? (
-          <Folder
-            key={child}
-            tab={tab}
-            path={child}
-            name={entry.name}
-            depth={depth}
-            creating={creating}
-            move={move}
-            onCreate={onCreate}
-            onCreated={onCreated}
-            onCancel={onCancel}
-          />
-        ) : (
-          <Leaf key={child} tab={tab} path={child} name={entry.name} depth={depth} parent={path} move={move} />
-        )
-      })}
     </div>
   )
 }
@@ -521,9 +525,12 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
         event.preventDefault()
         dragScroll(event.clientY)
       }}
+      onDragOver={event => move.over(event, '')}
       onDragLeave={event => {
         if (!event.currentTarget.contains(event.relatedTarget as Node | null)) stopDragScroll()
+        move.leave(event, '')
       }}
+      onDrop={event => move.drop(event, '')}
       className={`relative flex shrink-0 flex-col border-l border-ink-700 ${dragging ? '' : 'transition-[width] duration-200'}`}
     >
       <div
