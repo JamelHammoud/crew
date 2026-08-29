@@ -388,15 +388,26 @@ function warmTerminals(): void {
   }
 }
 
-function loadWindow(win: BrowserWindow, threadId?: string, personal = false, browser = false): void {
+function loadWindow(
+  win: BrowserWindow,
+  threadId?: string,
+  personal = false,
+  browser = false,
+  stickyId?: string | null
+): void {
   const page = path.join(dirname, '../renderer/index.html')
-  const hash = browser
-    ? BROWSER_WINDOW_HASH
-    : personal
-      ? PERSONAL_CHAT_HASH
-      : threadId
-        ? threadWindowHash(threadId)
-        : ''
+  const hash =
+    stickyId !== undefined
+      ? stickyId === null
+        ? STICKIES_HASH
+        : stickyWindowHash(stickyId)
+      : browser
+        ? BROWSER_WINDOW_HASH
+        : personal
+          ? PERSONAL_CHAT_HASH
+          : threadId
+            ? threadWindowHash(threadId)
+            : ''
   if (devUrl) {
     void win.loadURL(devUrl + hash)
   } else if (hash) {
@@ -413,16 +424,24 @@ function openOpeningWindow(request: NonNullable<ReturnType<typeof openRequestOf>
   return win
 }
 
-function createWindow(threadId?: string, load = true, personal = false, browser = false): BrowserWindow {
+function createWindow(
+  threadId?: string,
+  load = true,
+  personal = false,
+  browser = false,
+  stickyId?: string | null
+): BrowserWindow {
   const preload = path.join(dirname, '../preload/preload.mjs')
   const win = new BrowserWindow(
-    personal
-      ? createPersonalChatWindowOptions(process.platform, preload, inspectable)
-      : threadId
-        ? createThreadWindowOptions(process.platform, preload, inspectable)
-        : createWindowOptions(process.platform, preload, inspectable)
+    stickyId !== undefined
+      ? createStickiesWindowOptions(process.platform, preload, inspectable, stickyId !== null)
+      : personal
+        ? createPersonalChatWindowOptions(process.platform, preload, inspectable)
+        : threadId
+          ? createThreadWindowOptions(process.platform, preload, inspectable)
+          : createWindowOptions(process.platform, preload, inspectable)
   )
-  if (personal) showWhenReady(win)
+  if (personal || stickyId !== undefined) showWhenReady(win)
   if (process.platform !== 'darwin') win.setIcon(appIcon(iconTheme, chosenIcon))
   const isAppUrl = (url: string) => url.startsWith('file://') || (devUrl ? url.startsWith(devUrl) : false)
   win.webContents.on('will-navigate', (event, url) => {
@@ -463,7 +482,7 @@ function createWindow(threadId?: string, load = true, personal = false, browser 
   // put-away close it would be hidden rather than taken down, and the thread it
   // was popped out of would open nothing on the next press: a window nobody can
   // see is still a window standing on that thread.
-  if (!threadId && !personal && !browser) {
+  if (!threadId && !personal && !browser && stickyId === undefined) {
     win.on('close', event => {
       if (!closePutsAway(process.platform, quitting)) return
       event.preventDefault()
@@ -487,12 +506,21 @@ function createWindow(threadId?: string, load = true, personal = false, browser 
     standaloneBrowsers.add(win)
     win.on('closed', () => standaloneBrowsers.delete(win))
   }
-  if (load) loadWindow(win, threadId, personal, browser)
+  if (stickyId !== undefined) {
+    stickiesWindows.add(win)
+    if (stickyId !== null) stickyWindows.set(stickyId, win)
+    win.on('closed', () => {
+      stickiesWindows.delete(win)
+      if (stickyId !== null && stickyWindows.get(stickyId) === win) stickyWindows.delete(stickyId)
+    })
+  }
+  if (load) loadWindow(win, threadId, personal, browser, stickyId)
   return win
 }
 
 function poppedOut(win: BrowserWindow): boolean {
   if (standaloneBrowsers.has(win)) return true
+  if (stickiesWindows.has(win)) return true
   for (const one of popped.values()) if (one === win) return true
   return false
 }
