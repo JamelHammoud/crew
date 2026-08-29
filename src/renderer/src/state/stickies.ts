@@ -1,5 +1,5 @@
 import { useEffect, useSyncExternalStore } from 'react'
-import type { Sticky, StickyPatch } from '../../../shared/stickies'
+import type { CreateStickyInput, Sticky, UpdateStickyInput } from '../../../shared/stickies'
 
 const listeners = new Set<() => void>()
 let snapshot: Sticky[] = []
@@ -42,17 +42,17 @@ export function startStickies(): Promise<void> {
   return loading
 }
 
-export async function createSticky(): Promise<Sticky> {
-  const sticky = await window.crew.createSticky()
+export async function createSticky(input: CreateStickyInput): Promise<Sticky> {
+  const sticky = await window.crew.createSticky(input)
   upsert(sticky)
   return sticky
 }
 
-export async function updateSticky(id: string, patch: StickyPatch): Promise<Sticky> {
+export async function updateSticky(id: string, patch: UpdateStickyInput): Promise<Sticky | null> {
   const current = snapshot.find(one => one.id === id)
   if (current) upsert({ ...current, ...patch })
   const sticky = await window.crew.updateSticky(id, patch)
-  upsert(sticky)
+  if (sticky) upsert(sticky)
   return sticky
 }
 

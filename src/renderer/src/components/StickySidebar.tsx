@@ -16,7 +16,7 @@ export function stickyColorValue(color: StickyColor): string {
 }
 
 export function stickyLabel(sticky: Sticky): string {
-  const title = sticky.title.trim()
+  const title = sticky.title?.trim() ?? ''
   if (title) return title
   const line = sticky.body
     .split('\n')
@@ -30,7 +30,7 @@ export function stickyPreview(sticky: Sticky): string {
     .split('\n')
     .map(part => part.replace(/^\s*(?:#{1,6}|[-*+]>?|\d+\.)\s*/, '').replace(/[*_`~[\]]/g, '').trim())
     .filter(Boolean)
-    .slice(sticky.title.trim() ? 0 : 1)
+    .slice(sticky.title?.trim() ? 0 : 1)
     .join(' ')
 }
 
@@ -88,7 +88,7 @@ function StickyRow({ sticky, active, onOpen }: { sticky: Sticky; active: boolean
   const preview = stickyPreview(sticky)
 
   return (
-    <SwipeActionRow label={`Delete ${label}`} onAction={() => void deleteSticky(sticky.id)} action={<TrashGlyph />}>
+    <SwipeActionRow onDelete={() => void deleteSticky(sticky.id)}>
       <div
         onContextMenu={event => {
           event.preventDefault()
