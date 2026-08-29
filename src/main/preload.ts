@@ -29,6 +29,7 @@ import type { RepoActionResult, RepoChange, RepoCommand, RepoStatus, RepoWork } 
 import type { RecentJoin, RecentProject } from '../shared/recent'
 import type { ScribeKeyState, ScribeSettings } from '../shared/scribe'
 import type { Said } from '../shared/scribeSaid'
+import type { CreateStickyInput, Sticky, UpdateStickyInput } from '../shared/stickies'
 import type { UpdateState } from '../shared/update'
 import type { CurrentSession, OpenOptions, ProjectPlan } from './session'
 import type { TerminalSize } from './terminal'
@@ -134,6 +135,20 @@ const bridge = {
   openWindow: (): void => ipcRenderer.send('tray:open'),
   openProjectWindow: (key: string): Promise<boolean> => ipcRenderer.invoke('window:open-project', key),
   openPersonalChat: (name: string): Promise<boolean> => ipcRenderer.invoke('window:open-personal', name),
+  openStickies: (): Promise<boolean> => ipcRenderer.invoke('window:open-stickies'),
+  openSticky: (id: string): Promise<boolean> => ipcRenderer.invoke('window:open-sticky', id),
+  listStickies: (): Promise<Sticky[]> => ipcRenderer.invoke('stickies:list'),
+  createSticky: (input: CreateStickyInput): Promise<Sticky> => ipcRenderer.invoke('stickies:create', input),
+  updateSticky: (id: string, patch: UpdateStickyInput): Promise<Sticky | null> =>
+    ipcRenderer.invoke('stickies:update', id, patch),
+  deleteSticky: (id: string): Promise<boolean> => ipcRenderer.invoke('stickies:delete', id),
+  onStickiesChanged: (listener: (stickies: Sticky[]) => void): (() => void) => {
+    const handler = (_event: unknown, stickies: Sticky[]) => listener(stickies)
+    ipcRenderer.on('stickies:changed', handler)
+    return () => {
+      ipcRenderer.off('stickies:changed', handler)
+    }
+  },
   closeTray: (): void => ipcRenderer.send('tray:hide'),
   popOutThread: (threadId: string, key?: string): Promise<void> =>
     ipcRenderer.invoke('window:pop-thread', threadId, key),

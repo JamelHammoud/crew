@@ -30,6 +30,7 @@ import type { RepoActionResult, RepoChange, RepoCommand, RepoStatus, RepoWork } 
 import type { RecentJoin, RecentProject } from '../../shared/recent'
 import type { ScribeKeyState, ScribeSettings } from '../../shared/scribe'
 import type { Said } from '../../shared/scribeSaid'
+import type { CreateStickyInput, Sticky, UpdateStickyInput } from '../../shared/stickies'
 import type { CurrentSession, OpenOptions, ProjectPlan } from '../../shared/session'
 import type { UpdateState } from '../../shared/update'
 
@@ -106,6 +107,13 @@ declare global {
     openWindow(): void
     openProjectWindow(key: string): Promise<boolean>
     openPersonalChat(name: string): Promise<boolean>
+    openStickies(): Promise<boolean>
+    openSticky(id: string): Promise<boolean>
+    listStickies(): Promise<Sticky[]>
+    createSticky(input: CreateStickyInput): Promise<Sticky>
+    updateSticky(id: string, patch: UpdateStickyInput): Promise<Sticky | null>
+    deleteSticky(id: string): Promise<boolean>
+    onStickiesChanged(listener: (stickies: Sticky[]) => void): () => void
     popOutThread(threadId: string, key?: string): Promise<void>
     popOutBrowserTab(tab: BrowserTab): Promise<boolean>
     beginBrowserTabDrag(token: string, tab: BrowserTab): boolean
