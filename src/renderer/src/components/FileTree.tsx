@@ -80,11 +80,8 @@ function droppedPaths(files: FileList): string[] {
 const parentOf = (target: string): string => (target.includes('/') ? target.slice(0, target.lastIndexOf('/')) : '')
 
 function transferSelection(paths: string[]): string[] {
-  const sorted = [...new Set(paths)].sort((a, b) => {
-    const depth = a.split('/').length - b.split('/').length
-    return depth || a.localeCompare(b)
-  })
-  return sorted.filter(path => !sorted.some(parent => parent !== path && path.startsWith(`${parent}/`)))
+  const unique = [...new Set(paths)]
+  return unique.filter(path => !unique.some(parent => parent !== path && path.startsWith(`${parent}/`)))
 }
 
 function Loading({ depth }: { depth: number }) {
@@ -634,7 +631,7 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
     start: (event, path) => {
       const sources = transferSelection(selected.has(path) ? [...selected] : [path])
       const token = crypto.randomUUID()
-      event.dataTransfer.effectAllowed = 'move'
+      event.dataTransfer.effectAllowed = 'copyMove'
       event.dataTransfer.setData(FILE_ENTRY_DRAG, JSON.stringify(sources))
       event.dataTransfer.setData(BROWSER_TAB_DRAG, token)
       window.crew.beginFileTabDrag(token, makeFileTab(path))
