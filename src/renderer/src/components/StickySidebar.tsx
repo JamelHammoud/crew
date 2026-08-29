@@ -19,6 +19,10 @@ export function stickyColorValue(color: StickyColor): string {
   return COLOR_VALUES[at < 0 ? 0 : at % COLOR_VALUES.length]
 }
 
+export function stickyEditorBackground(color: StickyColor): string {
+  return `color-mix(in srgb, var(--color-ink-900) 94%, ${stickyColorValue(color)})`
+}
+
 export function stickyLabel(sticky: Sticky): string {
   const title = sticky.title?.trim() ?? ''
   if (title) return title

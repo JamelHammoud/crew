@@ -25,7 +25,12 @@ vi.mock('../src/renderer/src/components/DocEditor', async () => {
       flush: vi.fn(),
       discard: vi.fn()
     }))
-    return React.createElement('button', { type: 'button', onClick: () => onChange('First line') }, 'Write body')
+    return React.createElement(
+      'div',
+      null,
+      React.createElement('button', { type: 'button', onClick: () => onChange('') }, 'Initialize body'),
+      React.createElement('button', { type: 'button', onClick: () => onChange('First line') }, 'Write body')
+    )
   })
   return { default: DocEditor }
 })
@@ -78,6 +83,14 @@ describe('a new sticky editor', () => {
         pinned: false
       })
     )
+  })
+
+  it('does not save an empty editor initialization', () => {
+    render(createElement(StickyEditor, { sticky: draft(), draft: true, fresh: true }))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Initialize body' }))
+
+    expect(calls.create).not.toHaveBeenCalled()
   })
 
   it('tints the editor surface with the chosen sticky color', () => {

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Sticky, UpdateStickyInput } from '../../../shared/stickies'
-import { createSticky, updateSticky } from '../state/stickies'
+import { createSticky, stickyCreateInput, updateSticky } from '../state/stickies'
 import DocEditor, { type DocEditorHandle } from './DocEditor'
-import { stickyColorValue } from './StickySidebar'
+import { stickyEditorBackground } from './StickySidebar'
 
 export function stickyImageDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -11,10 +11,6 @@ export function stickyImageDataUrl(file: File): Promise<string> {
     reader.onerror = () => reject(reader.error ?? new Error('Image could not be read'))
     reader.readAsDataURL(file)
   })
-}
-
-export function stickyEditorBackground(color: Sticky['color']): string {
-  return `color-mix(in srgb, var(--color-ink-900) 94%, ${stickyColorValue(color)})`
 }
 
 export default function StickyEditor({
@@ -55,14 +51,7 @@ export default function StickyEditor({
       await updateSticky(created.id, patch)
       return
     }
-    const nextTitle = 'title' in patch ? patch.title : sticky.title
-    const nextBody = 'body' in patch ? (patch.body ?? '') : sticky.body
-    creating.current = createSticky({
-      title: nextTitle?.trim() || undefined,
-      body: nextBody,
-      color: sticky.color,
-      pinned: sticky.pinned
-    })
+    creating.current = createSticky(stickyCreateInput(sticky, patch))
     const created = await creating.current
     createdId.current = created.id
     onCreated?.(created)
