@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
-import type { Sticky } from '../src/shared/stickies'
+import { STICKY_COLORS, type Sticky } from '../src/shared/stickies'
 import { stickyCreateInput, stickyHasContent } from '../src/renderer/src/components/StickyEditor'
 import {
   stickyEditorBackground,
