@@ -86,6 +86,25 @@ export const LinkGlyph = glyph(
   </>
 )
 
+export const AttachmentGlyph = glyph(
+  <path d="m15.75 7.25-7.5 7.5a3.25 3.25 0 0 0 4.6 4.6l7-7a5.5 5.5 0 0 0-7.8-7.8l-7.5 7.5a7.75 7.75 0 0 0 10.95 10.95l5.25-5.25" />
+)
+
+export const SpamGlyph = glyph(
+  <>
+    <path d="M8.25 2.75h7.5l5.5 5.5v7.5l-5.5 5.5h-7.5l-5.5-5.5v-7.5Z" />
+    <path d="M12 7.25v6" />
+    <circle cx="12" cy="17" r="1.25" fill="currentColor" stroke="none" />
+  </>
+)
+
+export const LabelGlyph = glyph(
+  <>
+    <path d="M3 6.75A2.25 2.25 0 0 1 5.25 4.5h8.5l7.75 7.5-7.75 7.5h-8.5A2.25 2.25 0 0 1 3 17.25Z" />
+    <circle cx="7.25" cy="12" r="1.5" />
+  </>
+)
+
 export const EyedropperGlyph = glyph(
   <>
     <path d="M15.7 3.6a3.3 3.3 0 0 1 4.6 4.6l-2.3 2.3-4.6-4.6Z" />

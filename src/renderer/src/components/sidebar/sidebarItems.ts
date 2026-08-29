@@ -6,6 +6,7 @@ import {
   CompassGlyph,
   FolderGlyph,
   GlobeGlyph,
+  MailGlyph,
   StickyGlyph,
   TerminalGlyph,
   ToolboxGlyph
@@ -28,10 +29,11 @@ export const SIDEBAR_ITEMS: readonly SidebarItem[] = [
   { id: 'scheduled', label: 'Scheduled', Icon: ClockGlyph },
   { id: 'toolbox', label: 'Toolbox', Icon: ToolboxGlyph },
   { id: 'stickies', label: 'Stickies', Icon: StickyGlyph },
-  { id: 'browser', label: 'Browser', Icon: CompassGlyph }
+  { id: 'browser', label: 'Browser', Icon: CompassGlyph },
+  { id: 'mail', label: 'Mail', Icon: MailGlyph }
 ]
 
 export function itemTab(id: SidebarItemId): Tab | null {
-  if (id === 'plugins' || id === 'scheduled') return id
+  if (id === 'plugins' || id === 'scheduled' || id === 'mail') return id
   return null
 }

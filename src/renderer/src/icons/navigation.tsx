@@ -54,6 +54,28 @@ export const RedoGlyph = glyph(
   </>
 )
 
+export const ReplyGlyph = glyph(
+  <>
+    <path d="m10 4-6 6 6 6" />
+    <path d="M4 10h8a8 10 0 0 1 8 10" />
+  </>
+)
+
+export const ReplyAllGlyph = glyph(
+  <>
+    <path d="m10 4-6 6 6 6" />
+    <path d="m14 4-6 6 6 6" />
+    <path d="M8 10h4a8 10 0 0 1 8 10" />
+  </>
+)
+
+export const ForwardGlyph = glyph(
+  <>
+    <path d="m14 4 6 6-6 6" />
+    <path d="M20 10h-8a8 10 0 0 0-8 10" />
+  </>
+)
+
 export const ExternalLinkGlyph = glyph(
   <>
     <path d="M19 13.5v5A2.5 2.5 0 0 1 16.5 21h-11A2.5 2.5 0 0 1 3 18.5v-11A2.5 2.5 0 0 1 5.5 5h5" />

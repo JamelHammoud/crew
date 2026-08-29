@@ -26,6 +26,28 @@ export const FolderGlyph = glyph(
   <path d="M3 17.5V6.75A2 2 0 0 1 5 4.75h3.4a2 2 0 0 1 1.45.6l1.2 1.3a2 2 0 0 0 1.45.6H19a2 2 0 0 1 2 2v8.25a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />
 )
 
+const MAIL_BODY = { x: 2.5, y: 4.5, width: 19, height: 15, rx: 2.5 }
+const MAIL_FLAP = 'm3.25 6.5 7.25 5.5a2.5 2.5 0 0 0 3 0l7.25-5.5'
+
+export const MailGlyph = glyph(
+  <>
+    <rect {...MAIL_BODY} />
+    <path d={MAIL_FLAP} />
+  </>
+)
+
+export const UnreadGlyph = glyph(
+  <>
+    <rect {...MAIL_BODY} />
+    <path d={MAIL_FLAP} />
+    <circle cx="18" cy="7.5" r="1.5" fill="currentColor" stroke="none" />
+  </>
+)
+
+export const InboxGlyph = glyph(
+  <path d="M5 4.5h14a2.5 2.5 0 0 1 2.5 2.5v10a2.5 2.5 0 0 1-2.5 2.5h-3.25l-1.5-2.75h-4.5l-1.5 2.75H5A2.5 2.5 0 0 1 2.5 17V7A2.5 2.5 0 0 1 5 4.5Z" />
+)
+
 const CRATE_LID = { x: 3.5, y: 4, width: 17, height: 4.5, rx: 1.75 }
 const CRATE_BODY = 'M5.25 8.5V18A2 2 0 0 0 7.25 20h9.5a2 2 0 0 0 2-2V8.5'
 

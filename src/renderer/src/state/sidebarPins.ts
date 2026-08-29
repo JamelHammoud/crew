@@ -9,7 +9,8 @@ export const SIDEBAR_ITEM_IDS = [
   'scheduled',
   'toolbox',
   'stickies',
-  'browser'
+  'browser',
+  'mail'
 ] as const
 
 export type SidebarItemId = (typeof SIDEBAR_ITEM_IDS)[number]

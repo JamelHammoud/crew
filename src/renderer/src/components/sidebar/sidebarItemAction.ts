@@ -29,7 +29,7 @@ export function openSidebarItemWindow(id: SidebarItemId): void {
 }
 
 export function openSidebarItem(id: SidebarItemId, onTab: (tab: Tab) => void, onToolbox: () => void): void {
-  if (id === 'plugins' || id === 'scheduled') {
+  if (id === 'plugins' || id === 'scheduled' || id === 'mail') {
     onTab(id)
     return
   }

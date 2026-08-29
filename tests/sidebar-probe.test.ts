@@ -243,7 +243,9 @@ describe('the sidebar', () => {
       'Plugins',
       'Scheduled',
       'Toolbox',
-      'Browser'
+      'Stickies',
+      'Browser',
+      'Mail'
     ])
     const divider = menu.querySelector('.h-px') as HTMLElement
     expect(divider.previousElementSibling?.textContent).toBe('Web')
@@ -265,6 +267,32 @@ describe('the sidebar', () => {
     expect(useBrowser.getState().open).toBe(true)
     expect(useBrowser.getState().activeTabId).toBe(active)
     expect(useBrowser.getState().tabs).toHaveLength(1)
+  })
+
+  it('opens Mail as a page without opening the browser panel', async () => {
+    const went: Tab[] = []
+    render(Sidebar({ onTab: tab => went.push(tab) }))
+
+    fireEvent.pointerEnter(screen.getByRole('button', { name: 'More' }).parentElement as HTMLElement)
+    fireEvent.click(await screen.findByRole('button', { name: 'Mail' }))
+
+    expect(went).toEqual(['mail'])
+    expect(useBrowser.getState().open).toBe(false)
+    expect(useBrowser.getState().tabs).toHaveLength(0)
+  })
+
+  it('opens pinned Mail as a page and keeps prior saved pins ahead of it', () => {
+    localStorage.setItem('crew.sidebar.pins', '["browser","files","mail"]')
+    const went: Tab[] = []
+    const { container } = render(Sidebar({ onTab: tab => went.push(tab) }))
+    const nav = container.querySelector('nav[aria-label="Main navigation"]') as HTMLElement
+    const rows = [...nav.querySelectorAll('.group.relative > button')]
+
+    expect(rows.map(row => row.textContent)).toEqual(['Chat', 'Docs', 'Design', 'Tasks', 'Files', 'Browser', 'Mail', 'More'])
+    fireEvent.click(screen.getByRole('button', { name: 'Mail' }))
+
+    expect(went).toEqual(['mail'])
+    expect(useBrowser.getState().open).toBe(false)
   })
 
   it('pins a More item above More, keeps it across a mount, and removes it from the menu', async () => {
