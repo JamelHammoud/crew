@@ -5,7 +5,14 @@ import type { BrowserTab } from '../shared/browserTab'
 import type { SystemDetails } from '../shared/feedback'
 import type { OpenRequest } from '../shared/cli'
 import type { CommandDone, CommandState } from '../shared/crewCommand'
-import type { FileContentSearch, FileCopyPaths, PathLocation, RepoFile } from '../shared/files'
+import type {
+  FileContentSearch,
+  FileCopyPaths,
+  PathLocation,
+  RepoEntryCreateResult,
+  RepoEntryKind,
+  RepoFile
+} from '../shared/files'
 import type { FileReplaceRequest, FileReplaceResult, FileSearchOptions } from '../shared/fileSearch'
 import type { MachineDir } from '../shared/machinePath'
 import type { MediaAccess, MediaKind, ScreenSource } from '../shared/media'
@@ -80,6 +87,8 @@ const bridge = {
   copyImage: (src: string): Promise<boolean> => ipcRenderer.invoke('clipboard:image', src),
   readFile: (path: string): Promise<RepoFile | null> => ipcRenderer.invoke('file:read', path),
   listFiles: (): Promise<string[]> => ipcRenderer.invoke('file:list'),
+  createEntry: (path: string, kind: RepoEntryKind): Promise<RepoEntryCreateResult> =>
+    ipcRenderer.invoke('file:create', path, kind),
   searchFiles: (options: FileSearchOptions): Promise<FileContentSearch> => ipcRenderer.invoke('file:search', options),
   replaceFiles: (request: FileReplaceRequest): Promise<FileReplaceResult> =>
     ipcRenderer.invoke('file:replace', request),

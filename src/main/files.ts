@@ -7,6 +7,8 @@ import {
   type FileCopyPaths,
   type FileEntry,
   type RepoFile,
+  type RepoEntryCreateResult,
+  type RepoEntryKind,
   type RepoPathKind
 } from '../shared/files'
 import type { MachineDir } from '../shared/machinePath'
@@ -233,6 +235,35 @@ export async function writeRepoFile(root: string, target: string, text: string):
   const absolute = resolveRepoPath(root, target)
   if (!absolute) return null
   return (await writeAt(absolute, text)) ? readRepoFile(root, target) : null
+}
+
+export async function createRepoEntry(
+  root: string,
+  target: string,
+  kind: RepoEntryKind
+): Promise<RepoEntryCreateResult> {
+  const relative = trimPath(target)
+  const absolute = resolveRepoPath(root, relative)
+  if (!relative || !absolute || (kind !== 'file' && kind !== 'folder')) {
+    return { ok: false, message: 'Choose a name inside this project' }
+  }
+  try {
+    const realRoot = await fs.realpath(root)
+    const realParent = await fs.realpath(path.dirname(absolute))
+    if (insideRoot(realRoot, realParent) === null) return { ok: false, message: 'Choose a name inside this project' }
+    const destination = path.join(realParent, path.basename(absolute))
+    if (kind === 'folder') await fs.mkdir(destination)
+    else {
+      const handle = await fs.open(destination, 'wx')
+      await handle.close()
+    }
+    return { ok: true, path: relative }
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code
+    if (code === 'EEXIST') return { ok: false, message: 'That name is already in use' }
+    if (code === 'ENOENT' || code === 'ENOTDIR') return { ok: false, message: 'That folder is no longer there' }
+    return { ok: false, message: `Could not create that ${kind}` }
+  }
 }
 
 export async function writeLocalFile(target: string, text: string): Promise<RepoFile | null> {

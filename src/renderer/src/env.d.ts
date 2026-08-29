@@ -6,7 +6,14 @@ import type { BrowserTab } from '../../shared/browserTab'
 import type { SystemDetails } from '../../shared/feedback'
 import type { OpenRequest } from '../../shared/cli'
 import type { CommandDone, CommandState } from '../../shared/crewCommand'
-import type { FileContentSearch, FileCopyPaths, PathLocation, RepoFile } from '../../shared/files'
+import type {
+  FileContentSearch,
+  FileCopyPaths,
+  PathLocation,
+  RepoEntryCreateResult,
+  RepoEntryKind,
+  RepoFile
+} from '../../shared/files'
 import type { FileReplaceRequest, FileReplaceResult, FileSearchOptions } from '../../shared/fileSearch'
 import type { MachineDir } from '../../shared/machinePath'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../../shared/llm'
@@ -69,6 +76,7 @@ declare global {
     copyImage(src: string): Promise<boolean>
     readFile(path: string): Promise<RepoFile | null>
     listFiles(): Promise<string[]>
+    createEntry(path: string, kind: RepoEntryKind): Promise<RepoEntryCreateResult>
     searchFiles(options: FileSearchOptions): Promise<FileContentSearch>
     replaceFiles(request: FileReplaceRequest): Promise<FileReplaceResult>
     readDirs(query: string): Promise<MachineDir[]>

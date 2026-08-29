@@ -26,6 +26,7 @@ import type { SavedSession } from './saved-session'
 import {
   absolutePathOf,
   copyPaths,
+  createRepoEntry,
   listRepoFiles,
   readLocalFile,
   readMachineDirs,
@@ -38,7 +39,13 @@ import {
 import { FileSearch } from './fileSearch'
 import { locatePath } from './locate'
 import { SavedSessionStore } from './saved-session'
-import type { FileContentSearch, PathLocation, RepoFile } from '../shared/files'
+import type {
+  FileContentSearch,
+  PathLocation,
+  RepoEntryCreateResult,
+  RepoEntryKind,
+  RepoFile
+} from '../shared/files'
 import type { MachineDir } from '../shared/machinePath'
 import { cleanMemberName } from '../shared/people'
 import type { FileReplaceRequest, FileReplaceResult, FileSearchOptions } from '../shared/fileSearch'
@@ -213,6 +220,12 @@ export class AppSession {
 
   async listFiles(): Promise<string[]> {
     return this.folder ? listRepoFiles(this.folder) : []
+  }
+
+  async createEntry(target: string, kind: RepoEntryKind): Promise<RepoEntryCreateResult> {
+    return this.folder
+      ? createRepoEntry(this.folder, target, kind)
+      : { ok: false, message: 'Open a project first' }
   }
 
   async searchFiles(options: FileSearchOptions): Promise<FileContentSearch> {
