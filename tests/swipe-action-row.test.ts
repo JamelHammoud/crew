@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, createEvent, fireEvent, render, screen } from '@testing-library/react'
+import { act, cleanup, createEvent, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import SwipeActionRow from '../src/renderer/src/components/SwipeActionRow'
@@ -71,7 +71,7 @@ describe('SwipeActionRow', () => {
     const gesture = createEvent.wheel(root, { deltaX: 44, deltaY: 2, cancelable: true })
     fireEvent(root, gesture)
     expect(root.dataset.offset).toBe('44')
-    vi.advanceTimersByTime(120)
+    act(() => vi.advanceTimersByTime(120))
     expect(root.dataset.offset).toBe('64')
     expect(root.dataset.open).toBe('')
   })
