@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, createEvent, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import SwipeActionRow from '../src/renderer/src/components/SwipeActionRow'
 
@@ -67,7 +67,9 @@ describe('SwipeActionRow', () => {
   it('opens from a horizontal trackpad wheel gesture', () => {
     vi.useFakeTimers()
     const { root } = row()
-    expect(fireEvent.wheel(root, { deltaX: 44, deltaY: 2 })).toBe(false)
+    const gesture = createEvent.wheel(root, { deltaX: 44, deltaY: 2, cancelable: true })
+    fireEvent(root, gesture)
+    expect(gesture.defaultPrevented).toBe(true)
     expect(root.dataset.offset).toBe('44')
     vi.advanceTimersByTime(120)
     expect(root.dataset.offset).toBe('64')
@@ -76,7 +78,9 @@ describe('SwipeActionRow', () => {
 
   it('does not take a vertical wheel gesture', () => {
     const { root } = row()
-    expect(fireEvent.wheel(root, { deltaX: 3, deltaY: 30 })).toBe(true)
+    const gesture = createEvent.wheel(root, { deltaX: 3, deltaY: 30, cancelable: true })
+    fireEvent(root, gesture)
+    expect(gesture.defaultPrevented).toBe(false)
     expect(root.dataset.offset).toBe('0')
   })
 
