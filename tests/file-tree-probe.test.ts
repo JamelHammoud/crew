@@ -369,7 +369,7 @@ describe('the file explorer', () => {
     fireEvent.dragOver(target, { dataTransfer })
     fireEvent.drop(target, { dataTransfer })
 
-    expect(moveEntry).not.toHaveBeenCalled()
+    expect(transferEntries).not.toHaveBeenCalled()
     expect(target.className).not.toContain('ring-fg/20')
   })
 
