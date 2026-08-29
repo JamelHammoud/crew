@@ -63,7 +63,14 @@ describe('the Gmail loopback fixture', () => {
 
     await personal.mailboxOpen('INBOX')
     await work.mailboxOpen('INBOX')
-    const personalMail = await personal.fetchAll('1:*', { uid: true, envelope: true, flags: true, labels: true, source: true })
+    const personalMail = await personal.fetchAll('1:*', {
+      uid: true,
+      envelope: true,
+      flags: true,
+      labels: true,
+      threadId: true,
+      source: true
+    })
     const workMail = await work.fetchAll('1:*', { uid: true, envelope: true, flags: true, labels: true, source: true })
 
     expect(personalMail.map(one => one.envelope?.subject)).toEqual(['Dinner this weekend', 'Crew receipt'])
