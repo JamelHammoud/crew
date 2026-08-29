@@ -225,15 +225,11 @@ export class AppSession {
   }
 
   async createEntry(target: string, kind: RepoEntryKind): Promise<RepoEntryCreateResult> {
-    return this.folder
-      ? createRepoEntry(this.folder, target, kind)
-      : { ok: false, message: 'Open a project first' }
+    return this.folder ? createRepoEntry(this.folder, target, kind) : { ok: false, message: 'Open a project first' }
   }
 
   async moveEntry(source: string, parent: string): Promise<RepoEntryMoveResult> {
-    return this.folder
-      ? moveRepoEntry(this.folder, source, parent)
-      : { ok: false, message: 'Open a project first' }
+    return this.folder ? moveRepoEntry(this.folder, source, parent) : { ok: false, message: 'Open a project first' }
   }
 
   async searchFiles(options: FileSearchOptions): Promise<FileContentSearch> {

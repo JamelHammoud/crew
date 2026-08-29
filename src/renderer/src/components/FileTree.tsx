@@ -1,12 +1,4 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-  type DragEvent,
-  type FormEvent,
-  type KeyboardEvent,
-  type MouseEvent
-} from 'react'
+import { useEffect, useRef, useState, type DragEvent, type FormEvent, type KeyboardEvent, type MouseEvent } from 'react'
 import type { FileEntry, RepoEntryKind } from '../../../shared/files'
 import { ChevronRightGlyph, FileGlyph, FolderGlyph } from '../icons'
 import { useBrowser, type BrowserTab } from '../state/browser'
@@ -142,7 +134,9 @@ function Folder({
         className={`${row} ${quiet} ${
           move.dropTarget === path ? 'bg-fg/[0.08] text-fg ring-1 ring-inset ring-fg/20' : ''
         } ${move.dragged === path ? 'opacity-45' : ''} ${
-          open ? "sticky bg-ink-900 after:absolute after:inset-x-0 after:-bottom-px after:h-px after:bg-ink-900 after:content-['']" : ''
+          open
+            ? "sticky bg-ink-900 after:absolute after:inset-x-0 after:-bottom-px after:h-px after:bg-ink-900 after:content-['']"
+            : ''
         }`}
       >
         <ChevronRightGlyph
@@ -258,7 +252,11 @@ function CreateRow({
   }
 
   return (
-    <form onSubmit={event => void submit(event)} className="mb-px flex h-7 w-full items-center gap-1.5 pr-2" style={{ paddingLeft: indent(depth) }}>
+    <form
+      onSubmit={event => void submit(event)}
+      className="mb-px flex h-7 w-full items-center gap-1.5 pr-2"
+      style={{ paddingLeft: indent(depth) }}
+    >
       <span className="h-3.5 w-3.5 shrink-0" />
       <Mark className="h-3.5 w-3.5 shrink-0 text-fg-faint" />
       <input
@@ -477,7 +475,13 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
             return
           }
           useBrowser.getState().moveFilePaths(source, result.path)
-          if (parent && !useBrowser.getState().tabs.find(one => one.id === tab.id)?.open.includes(parent)) {
+          if (
+            parent &&
+            !useBrowser
+              .getState()
+              .tabs.find(one => one.id === tab.id)
+              ?.open.includes(parent)
+          ) {
             useBrowser.getState().toggleFolder(tab.id, parent)
           }
         })

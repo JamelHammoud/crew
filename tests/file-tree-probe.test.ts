@@ -82,8 +82,17 @@ beforeEach(() => {
   searchFiles.mockClear()
   useBrowser.setState({ tabs: [], activeTabId: null })
   Element.prototype.scrollIntoView = () => undefined
-  Range.prototype.getBoundingClientRect = () =>
-    ({ left: 0, right: 10, top: 0, bottom: 10, width: 10, height: 10, x: 0, y: 0, toJSON: () => ({}) })
+  Range.prototype.getBoundingClientRect = () => ({
+    left: 0,
+    right: 10,
+    top: 0,
+    bottom: 10,
+    width: 10,
+    height: 10,
+    x: 0,
+    y: 0,
+    toJSON: () => ({})
+  })
   window.crew = {
     readFile: async (path: string) => repo[path] ?? { kind: 'missing', path },
     listFiles: async () => listed,
@@ -323,8 +332,17 @@ describe('the file explorer', () => {
     })
     const target = document.querySelector('[data-folder="src"]') as HTMLElement
     const host = document.querySelector('[data-file-scroll]') as HTMLElement
-    host.getBoundingClientRect = () =>
-      ({ top: 100, bottom: 500, left: 0, right: 280, width: 280, height: 400, x: 0, y: 100, toJSON: () => ({}) })
+    host.getBoundingClientRect = () => ({
+      top: 100,
+      bottom: 500,
+      left: 0,
+      right: 280,
+      width: 280,
+      height: 400,
+      x: 0,
+      y: 100,
+      toJSON: () => ({})
+    })
     const frames: FrameRequestCallback[] = []
     const requestFrame = vi.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => {
       frames.push(callback)

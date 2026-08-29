@@ -12,13 +12,9 @@ export type RepoPathKind = 'file' | 'dir' | 'missing'
 
 export type RepoEntryKind = 'file' | 'folder'
 
-export type RepoEntryCreateResult =
-  | { ok: true; path: string }
-  | { ok: false; message: string }
+export type RepoEntryCreateResult = { ok: true; path: string } | { ok: false; message: string }
 
-export type RepoEntryMoveResult =
-  | { ok: true; path: string }
-  | { ok: false; message: string }
+export type RepoEntryMoveResult = { ok: true; path: string } | { ok: false; message: string }
 
 // Where a path an agent mentioned lives, from this machine's point of view.
 // 'repo' paths are shown relative to the project, 'local' paths are elsewhere
