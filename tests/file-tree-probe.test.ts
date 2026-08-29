@@ -102,7 +102,6 @@ beforeEach(() => {
 afterEach(() => {
   cleanup()
   vi.useRealTimers()
-  vi.restoreAllMocks()
 })
 
 const activeTab = () => {
@@ -327,11 +326,11 @@ describe('the file explorer', () => {
     host.getBoundingClientRect = () =>
       ({ top: 100, bottom: 500, left: 0, right: 280, width: 280, height: 400, x: 0, y: 100, toJSON: () => ({}) })
     const frames: FrameRequestCallback[] = []
-    vi.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => {
+    const requestFrame = vi.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => {
       frames.push(callback)
       return frames.length
     })
-    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => undefined)
+    const cancelFrame = vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => undefined)
     const dataTransfer = transfer()
 
     fireEvent.dragStart(source, { dataTransfer })
@@ -346,6 +345,8 @@ describe('the file explorer', () => {
     expect(host.scrollTop).toBeGreaterThan(first + 25)
     fireEvent.dragEnd(source, { dataTransfer })
     expect(window.cancelAnimationFrame).toHaveBeenCalled()
+    requestFrame.mockRestore()
+    cancelFrame.mockRestore()
   })
 
   it('keeps search options out of the default view', async () => {
