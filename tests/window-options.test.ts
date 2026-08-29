@@ -196,8 +196,8 @@ describe('Stickies window options', () => {
   it('lets one sticky shrink to a compact note', () => {
     const single = createStickiesWindowOptions('darwin', 'preload.mjs', true, true)
 
-    expect(single.width).toBe(100)
-    expect(single.height).toBe(80)
+    expect(single.width).toBe(160)
+    expect(single.height).toBe(120)
     expect(single.minWidth).toBe(100)
     expect(single.minHeight).toBe(80)
   })
