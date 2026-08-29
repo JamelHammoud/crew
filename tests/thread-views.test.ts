@@ -6,6 +6,8 @@ import {
   NEAR_RIGHT,
   nearRight,
   openBeside,
+  stickyIdInHash,
+  stickyWindowHash,
   threadIdInHash,
   threadMenuActions,
   threadWindowHash,
@@ -87,6 +89,20 @@ describe('a thread in a window of its own', () => {
     expect(threadIdInHash('')).toBeNull()
     expect(threadIdInHash('#thread=')).toBeNull()
     expect(threadIdInHash('#thread=%20')).toBeNull()
+  })
+})
+
+describe('a sticky in a window of its own', () => {
+  it('writes the sticky into the hash and reads it back', () => {
+    expect(stickyIdInHash(stickyWindowHash('sticky-1'))).toBe('sticky-1')
+    expect(stickyIdInHash(stickyWindowHash('a b/c#d'))).toBe('a b/c#d')
+  })
+
+  it('does not mistake the library or another window for a sticky', () => {
+    expect(stickyIdInHash('#stickies')).toBeNull()
+    expect(stickyIdInHash('#personal')).toBeNull()
+    expect(stickyIdInHash('#sticky=')).toBeNull()
+    expect(stickyIdInHash('#sticky=%20')).toBeNull()
   })
 })
 
