@@ -205,7 +205,8 @@ describe('the file explorer', () => {
     useBrowser.getState().openFiles()
     render(createElement(BrowserPanel))
     fireEvent.click(await screen.findByText('src'))
-    const source = await waitFor(() => rowFor('src/app.ts')!)
+    await waitFor(() => expect(rowFor('src/app.ts')).toBeTruthy())
+    const source = rowFor('src/app.ts')!
     fireEvent.click(source)
     const target = document.querySelector('[data-folder="tests"]') as HTMLElement
     const dataTransfer = transfer()
@@ -225,7 +226,8 @@ describe('the file explorer', () => {
     useBrowser.getState().openFile('src/renderer/panel.tsx')
     useBrowser.getState().toggleTree(activeTab().id)
     render(createElement(BrowserPanel))
-    const source = await waitFor(() => document.querySelector('[data-folder="src/renderer"]') as HTMLElement)
+    await waitFor(() => expect(document.querySelector('[data-folder="src/renderer"]')).toBeTruthy())
+    const source = document.querySelector('[data-folder="src/renderer"]') as HTMLElement
     const root = document.querySelector('[data-file-branch=""]') as HTMLElement
     const dataTransfer = transfer()
 
@@ -243,7 +245,8 @@ describe('the file explorer', () => {
     useBrowser.getState().openFiles()
     render(createElement(BrowserPanel))
     fireEvent.click(await screen.findByText('src'))
-    const source = await waitFor(() => rowFor('src/app.ts')!)
+    await waitFor(() => expect(rowFor('src/app.ts')).toBeTruthy())
+    const source = rowFor('src/app.ts')!
     const target = document.querySelector('[data-folder="src"]') as HTMLElement
     const dataTransfer = transfer()
 

@@ -297,7 +297,7 @@ export async function moveRepoEntry(root: string, source: string, parent: string
     if (same) return { ok: false, message: 'That item is already there' }
     if (await isThere(destination)) return { ok: false, message: 'That name is already in use there' }
     await fs.rename(from, destination)
-    return { ok: true, path: repoRelative(root, destination) }
+    return { ok: true, path: repoRelative(realRoot, destination) }
   } catch (error) {
     const code = (error as NodeJS.ErrnoException).code
     if (code === 'EEXIST' || code === 'ENOTEMPTY') return { ok: false, message: 'That name is already in use there' }
