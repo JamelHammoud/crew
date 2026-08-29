@@ -118,7 +118,9 @@ export default function StickiesWindow() {
     setFresh(next.id)
   }, [active, draft, individualId, stickies])
 
-  useWindowName(individualId ? (individual ? stickyLabel(individual) : 'Sticky') : current ? stickyLabel(current) : 'Stickies')
+  useWindowName(
+    individualId ? (individual ? stickyLabel(individual) : 'Sticky') : current ? stickyLabel(current) : 'Stickies'
+  )
 
   if (individualId) return <SingleSticky sticky={individual} loaded={loaded} />
 

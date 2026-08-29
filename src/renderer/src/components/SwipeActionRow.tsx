@@ -188,12 +188,14 @@ export default function SwipeActionRow({ children, className = '', onDelete }: S
           ignoreClick.current = false
         }}
         className={`relative z-10 min-w-0 ${moving ? '' : 'transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]'}`}
-        style={{
-          '--swipe-inset': `${6 + 6 * (1 - offset / ACTION_WIDTH)}px`,
-          '--swipe-progress': offset / ACTION_WIDTH,
-          touchAction: 'pan-y',
-          transform: `translateX(${-offset}px)`
-        } as CSSProperties}
+        style={
+          {
+            '--swipe-inset': `${6 + 6 * (1 - offset / ACTION_WIDTH)}px`,
+            '--swipe-progress': offset / ACTION_WIDTH,
+            touchAction: 'pan-y',
+            transform: `translateX(${-offset}px)`
+          } as CSSProperties
+        }
       >
         {children}
       </div>

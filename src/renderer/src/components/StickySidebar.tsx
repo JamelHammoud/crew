@@ -1,7 +1,16 @@
 import { useMemo, useRef, useState, type ReactNode } from 'react'
 import type { Sticky, StickyColor } from '../../../shared/stickies'
 import { STICKY_COLORS } from '../../../shared/stickies'
-import { CloseGlyph, PanelLeftGlyph, PinGlyph, PlusGlyph, PopOutGlyph, SearchGlyph, StickyGlyph, TrashGlyph } from '../icons'
+import {
+  CloseGlyph,
+  PanelLeftGlyph,
+  PinGlyph,
+  PlusGlyph,
+  PopOutGlyph,
+  SearchGlyph,
+  StickyGlyph,
+  TrashGlyph
+} from '../icons'
 import { usePrefs } from '../state/prefs'
 import { deleteSticky, updateSticky } from '../state/stickies'
 import { useFullScreen } from '../state/windowShape'
@@ -29,7 +38,12 @@ export function stickyLabel(sticky: Sticky): string {
   if (title) return title
   const line = sticky.body
     .split('\n')
-    .map(part => part.replace(/^\s*(?:#{1,6}|[-*+]>?|\d+\.)\s*/, '').replace(/[*_`~[\]]/g, '').trim())
+    .map(part =>
+      part
+        .replace(/^\s*(?:#{1,6}|[-*+]>?|\d+\.)\s*/, '')
+        .replace(/[*_`~[\]]/g, '')
+        .trim()
+    )
     .find(Boolean)
   return line || 'New sticky'
 }
@@ -37,7 +51,12 @@ export function stickyLabel(sticky: Sticky): string {
 export function stickyPreview(sticky: Sticky): string {
   return sticky.body
     .split('\n')
-    .map(part => part.replace(/^\s*(?:#{1,6}|[-*+]>?|\d+\.)\s*/, '').replace(/[*_`~[\]]/g, '').trim())
+    .map(part =>
+      part
+        .replace(/^\s*(?:#{1,6}|[-*+]>?|\d+\.)\s*/, '')
+        .replace(/[*_`~[\]]/g, '')
+        .trim()
+    )
     .filter(Boolean)
     .slice(sticky.title?.trim() ? 0 : 1)
     .join(' ')

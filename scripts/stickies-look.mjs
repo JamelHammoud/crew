@@ -112,9 +112,15 @@ app.whenReady().then(async () => {
 
 async function stage() {
   const dir = await realpath(await mkdtemp(path.join(tmpdir(), 'crew-stickies-look-')))
-  await writeFile(path.join(dir, 'index.html'), '<!doctype html><html><head><meta charset="utf-8"><script type="module" src="/probe.tsx"></script></head><body class="mac"><div id="root"></div></body></html>')
+  await writeFile(
+    path.join(dir, 'index.html'),
+    '<!doctype html><html><head><meta charset="utf-8"><script type="module" src="/probe.tsx"></script></head><body class="mac"><div id="root"></div></body></html>'
+  )
   await writeFile(path.join(dir, 'probe.tsx'), probeSource())
-  await writeFile(path.join(dir, 'probe.css'), `@import "${path.join(root, 'src/renderer/src/styles.css')}";\n@source "${path.join(root, 'src/renderer/src')}";\nhtml, body, #root { width: 100%; height: 100%; margin: 0; }\n`)
+  await writeFile(
+    path.join(dir, 'probe.css'),
+    `@import "${path.join(root, 'src/renderer/src/styles.css')}";\n@source "${path.join(root, 'src/renderer/src')}";\nhtml, body, #root { width: 100%; height: 100%; margin: 0; }\n`
+  )
   await writeFile(path.join(dir, 'main.cjs'), MAIN)
   return dir
 }
@@ -123,7 +129,13 @@ const dir = await stage()
 try {
   const { build } = await import('vite')
   const tailwind = (await import('@tailwindcss/vite')).default
-  await build({ root: dir, base: './', logLevel: 'silent', plugins: [tailwind()], build: { outDir: path.join(dir, 'dist'), emptyOutDir: true } })
+  await build({
+    root: dir,
+    base: './',
+    logLevel: 'silent',
+    plugins: [tailwind()],
+    build: { outDir: path.join(dir, 'dist'), emptyOutDir: true }
+  })
   const seen = await new Promise((accept, reject) => {
     const child = spawn(electron, [path.join(dir, 'main.cjs')], { stdio: ['ignore', 'pipe', 'pipe'] })
     let out = ''

@@ -12,14 +12,11 @@ afterEach(() => {
 
 function row(onDelete = vi.fn(), onPress = vi.fn()) {
   const view = render(
-    createElement(
-      SwipeActionRow,
-      {
-        onDelete,
-        className: 'rounded-xl',
-        children: createElement('button', { type: 'button', onClick: onPress }, 'One row')
-      }
-    )
+    createElement(SwipeActionRow, {
+      onDelete,
+      className: 'rounded-xl',
+      children: createElement('button', { type: 'button', onClick: onPress }, 'One row')
+    })
   )
   const root = view.container.querySelector('[data-swipe-action-row]') as HTMLDivElement
   const surface = view.container.querySelector('[data-swipe-surface]') as HTMLDivElement

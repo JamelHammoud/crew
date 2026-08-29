@@ -2,7 +2,12 @@ import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import type { Sticky } from '../src/shared/stickies'
 import { stickyCreateInput, stickyHasContent } from '../src/renderer/src/components/StickyEditor'
-import { stickyEditorBackground, stickyColorValue, stickyLabel, stickyPreview } from '../src/renderer/src/components/StickySidebar'
+import {
+  stickyEditorBackground,
+  stickyColorValue,
+  stickyLabel,
+  stickyPreview
+} from '../src/renderer/src/components/StickySidebar'
 
 const draft: Sticky = {
   id: 'draft:one',
@@ -39,14 +44,9 @@ describe('stickies window', () => {
   })
 
   it('keeps the shared color order and mixes the selected color into the page', () => {
-    expect(['default', 'yellow', 'pink', 'blue', 'green', 'purple'].map(color => stickyColorValue(color as Sticky['color']))).toEqual([
-      'var(--color-ink-700)',
-      '#e9c46a',
-      '#ef8f8f',
-      '#78aee8',
-      '#6fc7ad',
-      '#d394df'
-    ])
+    expect(
+      ['default', 'yellow', 'pink', 'blue', 'green', 'purple'].map(color => stickyColorValue(color as Sticky['color']))
+    ).toEqual(['var(--color-ink-700)', '#e9c46a', '#ef8f8f', '#78aee8', '#6fc7ad', '#d394df'])
     expect(stickyEditorBackground('default')).toBe('var(--color-ink-900)')
     expect(stickyEditorBackground('blue')).toBe('color-mix(in srgb, var(--color-ink-900) 94%, #78aee8)')
   })
