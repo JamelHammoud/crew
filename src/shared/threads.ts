@@ -48,6 +48,13 @@ export function activeThreads(events: SessionEvent[], working: (threadId: string
     switch (event.kind) {
       case 'message':
         messages.set(event.id, event)
+        if (event.threadId) {
+          const thread = open.get(event.threadId)
+          if (thread && !thread.asked) {
+            thread.preview = event.text.trim() || (event.attachments?.length ? 'Attachments' : thread.preview)
+            thread.asked = true
+          }
+        }
         break
       case 'thread.started':
         if (event.parentThreadId || event.aside) break

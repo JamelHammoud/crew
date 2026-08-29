@@ -66,6 +66,20 @@ const asked = (threadId: string, promptId: string, text: string): SessionEvent =
     threadId
   }) as SessionEvent
 
+const message = (threadId: string, text: string): SessionEvent =>
+  ({
+    id: `e${(n += 1)}`,
+    ts: n,
+    kind: 'message',
+    authorId: 'm',
+    authorName: 'Jamel',
+    text,
+    mentions: ['a'],
+    docMentions: [],
+    threadId,
+    attachments: []
+  }) as SessionEvent
+
 const answered = (threadId: string, promptId: string, text: string): SessionEvent =>
   ({
     id: `e${(n += 1)}`,
@@ -130,6 +144,13 @@ describe('the threads a place is showing', () => {
       asked('a', 'p2', 'Make the links quieter'),
       answered('a', 'p2', 'The links are quieter')
     ]
+
+    expect(activeThreads(events, none)[0]?.preview).toBe(opening)
+  })
+
+  it('keeps the opening message when no run record follows the shortened title', () => {
+    const opening = 'Add an Implement plan button below the plan message in thread chat, like the composer header'
+    const events = [started('a', 'Add an Implement plan button below the plan message in thread chat, like how t…'), message('a', opening)]
 
     expect(activeThreads(events, none)[0]?.preview).toBe(opening)
   })
