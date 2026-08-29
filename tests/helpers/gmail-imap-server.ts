@@ -178,7 +178,7 @@ function sequenceNumbers(set: string, max: number): number[] {
     const [left, right] = part.split(':')
     const resolve = (one: string | undefined): number => (one === '*' || one == null ? max : Number(one))
     const start = resolve(left)
-    const end = resolve(right)
+    const end = right === undefined ? start : resolve(right)
     if (!Number.isFinite(start) || !Number.isFinite(end)) continue
     const step = start <= end ? 1 : -1
     for (let one = start; one !== end + step; one += step) if (one >= 1 && one <= max) values.add(one)
