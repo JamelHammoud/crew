@@ -126,8 +126,8 @@ describe('SwipeActionRow', () => {
     expect(action.style.clipPath).toBe('inset(0 0 0 56px)')
     expect(action.tabIndex).toBe(-1)
     expect(action.className).toContain('rounded-full')
-    expect(action.className).toContain('h-10')
-    expect(action.className).toContain('w-10')
+    expect(action.className).toContain('h-9')
+    expect(action.className).toContain('w-9')
     expect(surface.style.getPropertyValue('--swipe-inset')).toBe('12px')
   })
 

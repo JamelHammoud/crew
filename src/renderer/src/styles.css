@@ -2138,6 +2138,31 @@ textarea:placeholder-shown {
   line-height: 1.7;
 }
 
+.sticky-editor-compact {
+  container-type: inline-size;
+}
+
+.sticky-editor-compact .sticky-editor-page {
+  --sticky-editor-inset: clamp(18px, 8.7cqw, 54px);
+  padding-top: clamp(24px, 6.45cqw, 40px);
+  padding-bottom: clamp(24px, 10.3cqw, 64px);
+}
+
+.sticky-editor-compact .sticky-editor-title {
+  padding-inline: var(--sticky-editor-inset);
+  padding-bottom: clamp(6px, 1.94cqw, 12px);
+}
+
+.sticky-editor-compact .sticky-editor-title-input {
+  font-size: clamp(18px, 5.16cqw, 32px);
+}
+
+.sticky-editor-compact .doc .bn-editor {
+  padding-inline: var(--sticky-editor-inset);
+  font-size: clamp(13px, 2.58cqw, 16px);
+  line-height: 1.6;
+}
+
 .doc .bn-editor .bn-trailing-block {
   height: var(--doc-tail);
 }

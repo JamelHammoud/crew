@@ -170,9 +170,9 @@ export default function SwipeActionRow({ children, className = '', onDelete }: S
         tabIndex={offset === 0 ? -1 : 0}
         onClick={deleteRow}
         style={{ clipPath: `inset(0 0 0 ${Math.max(0, ACTION_WIDTH - offset)}px)` }}
-        className="absolute right-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-danger text-white transition-[background-color,clip-path,transform] duration-150 hover:bg-danger/90 active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-fg/40"
+        className="absolute right-4 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-danger text-white transition-[background-color,clip-path,transform] duration-150 hover:bg-danger/90 active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-fg/40"
       >
-        <TrashGlyph className="h-4 w-4" />
+        <TrashGlyph className="h-3.5 w-3.5" />
       </button>
       <div
         data-swipe-surface=""

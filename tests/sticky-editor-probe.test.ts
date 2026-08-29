@@ -100,6 +100,14 @@ describe('a new sticky editor', () => {
 })
 
 describe('a saved sticky editor', () => {
+  it('marks a popped-out editor for fluid compact sizing', () => {
+    render(createElement(StickyEditor, { sticky: { ...draft(), id: 'saved' }, compact: true }))
+
+    const editor = document.querySelector('[data-sticky-editor]')
+    expect(editor).toHaveAttribute('data-compact', '')
+    expect(editor).toHaveClass('sticky-editor-compact')
+  })
+
   it('removes the title when the field is cleared', async () => {
     render(createElement(StickyEditor, { sticky: { ...draft(), id: 'saved', title: 'Shopping' } }))
 

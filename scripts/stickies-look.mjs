@@ -30,7 +30,7 @@ window.crew = {
   listStickies: async () => stickies,
   createSticky: async input => {
     createCalls += 1
-    const made = { id: 'made-' + createCalls, color: 'yellow', pinned: false, createdAt: now, updatedAt: now, ...input }
+    const made = { id: 'made-' + createCalls, color: 'default', pinned: false, createdAt: now, updatedAt: now, ...input }
     stickies = [made, ...stickies]
     listeners.forEach(listener => listener(stickies))
     return made

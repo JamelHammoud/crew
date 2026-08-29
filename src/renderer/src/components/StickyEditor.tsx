@@ -89,11 +89,12 @@ export default function StickyEditor({
   return (
     <div
       data-sticky-editor
+      data-compact={compact ? '' : undefined}
       style={{ background: stickyEditorBackground(sticky.color) }}
-      className="h-full overflow-y-auto overflow-x-hidden transition-[background-color] duration-200"
+      className={`h-full overflow-y-auto overflow-x-hidden transition-[background-color] duration-200 ${compact ? 'sticky-editor-compact' : ''}`}
     >
-      <div className={`mx-auto w-full max-w-[780px] pb-16 ${compact ? 'pt-16' : 'pt-[88px]'}`}>
-        <div className="px-[54px] pb-3">
+      <div className={`sticky-editor-page mx-auto w-full max-w-[780px] ${compact ? '' : 'pt-[88px] pb-16'}`}>
+        <div className="sticky-editor-title px-[54px] pb-3">
           <input
             ref={titleRef}
             value={title}
@@ -111,7 +112,7 @@ export default function StickyEditor({
             }}
             placeholder="Title"
             aria-label="Sticky title"
-            className="w-full bg-transparent text-[32px] leading-tight font-semibold tracking-[-0.02em] text-fg placeholder:text-fg/15 outline-none"
+            className="sticky-editor-title-input w-full bg-transparent text-[32px] leading-tight font-semibold tracking-[-0.02em] text-fg placeholder:text-fg/15 outline-none"
           />
         </div>
         <DocEditor
