@@ -127,7 +127,13 @@ export default function HoverCard({
   })()
 
   return (
-    <span className={`inline-block ${className}`} ref={anchorRef} onMouseEnter={enter} onMouseLeave={cancel}>
+    <span
+      className={`inline-block ${className}`}
+      ref={anchorRef}
+      onMouseEnter={enter}
+      onMouseLeave={cancel}
+      onPointerDown={hide}
+    >
       {children}
       {style &&
         createPortal(
