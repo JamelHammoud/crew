@@ -296,7 +296,14 @@ export async function moveRepoEntry(root: string, source: string, parent: string
     const destination = path.join(realParent, path.basename(from))
     const same = CASELESS ? from.toLowerCase() === destination.toLowerCase() : from === destination
     if (same) return { ok: false, message: 'That item is already there' }
-    if (await isThere(destination)) return { ok: false, message: 'That name is already in use there' }
+    const occupied = await fs
+      .lstat(destination)
+      .then(() => true)
+      .catch(error => {
+        if ((error as NodeJS.ErrnoException).code === 'ENOENT') return false
+        throw error
+      })
+    if (occupied) return { ok: false, message: 'That name is already in use there' }
     await fs.rename(from, destination)
     return { ok: true, path: repoRelative(realRoot, destination) }
   } catch (error) {

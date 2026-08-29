@@ -114,6 +114,19 @@ describe('moveRepoEntry', () => {
     expect(readFileSync(path.join(root, 'archive/notes.md'), 'utf8')).toBe('destination')
   })
 
+  it('keeps a broken link that already holds the destination name', async () => {
+    const root = tmpDir('move-link')
+    write(root, 'src/notes.md', 'source')
+    mkdirSync(path.join(root, 'archive'))
+    symlinkSync('missing.md', path.join(root, 'archive/notes.md'))
+
+    expect(await moveRepoEntry(root, 'src/notes.md', 'archive')).toEqual({
+      ok: false,
+      message: 'That name is already in use there'
+    })
+    expect(readFileSync(path.join(root, 'src/notes.md'), 'utf8')).toBe('source')
+  })
+
   it('refuses traversal, symlink escapes, and a folder moved into itself', async () => {
     const root = tmpDir('move-root')
     const outside = tmpDir('move-outside')
