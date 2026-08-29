@@ -18,7 +18,6 @@ import {
   type SnoozedMessage
 } from './scheduler'
 import {
-  registerMailScheme,
   serveMailScheme,
   type MailAttachment as SchemeAttachment
 } from './scheme'
@@ -757,7 +756,6 @@ export interface MailMainRegistration {
 }
 
 export function registerMailMain(options: MailMainOptions): MailMainRegistration {
-  registerMailScheme()
   const service = new MailService({
     ...options,
     onEvent: event => {

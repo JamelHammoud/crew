@@ -250,6 +250,14 @@ describe('Gmail transport over loopback', () => {
     })
 
     expect(replacement.uid).not.toBe(first.uid)
+    if (server.mailbox('personal', '[Gmail]/Drafts').length === 0) {
+      throw new Error(
+        JSON.stringify({
+          commands: server.imapCommands.slice(-12),
+          messages: server.accounts.get('personal')!.messages.map(one => ({ uid: one.uid, labels: [...one.labels], flags: [...one.flags] }))
+        })
+      )
+    }
     expect(
       server.mailbox('personal', '[Gmail]/Drafts').map(one => ({ uid: one.uid, flags: [...one.flags] }))
     ).toEqual([{ uid: replacement.uid, flags: ['\\Draft'] }])

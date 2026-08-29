@@ -19,13 +19,15 @@ function safeDocument(html: string, images: boolean): { html: string; blocked: n
   })
   parsed.querySelectorAll('img').forEach(image => {
     const src = image.getAttribute('src') ?? ''
-    if (REMOTE_IMAGE.test(src) && !images) {
+    if (REMOTE_IMAGE.test(src)) {
       blocked += 1
-      image.dataset.remoteSrc = src
-      image.removeAttribute('src')
-      image.removeAttribute('srcset')
-      image.alt = image.alt || 'Remote image'
-      image.style.display = 'none'
+      if (!images) {
+        image.dataset.remoteSrc = src
+        image.removeAttribute('src')
+        image.removeAttribute('srcset')
+        image.alt = image.alt || 'Remote image'
+        image.style.display = 'none'
+      }
     }
   })
   const imageSource = images ? 'data: blob: http: https:' : 'data: blob:'
