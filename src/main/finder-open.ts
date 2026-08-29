@@ -1,4 +1,4 @@
-import { stat } from 'node:fs/promises'
+import { realpath, stat } from 'node:fs/promises'
 import path from 'node:path'
 import type { OpenRequest } from '../shared/cli'
 import { runGit } from '../shared/git'
@@ -7,13 +7,14 @@ export async function finderOpenRequest(target: string): Promise<OpenRequest | n
   const absolute = path.resolve(target)
   const found = await stat(absolute).catch(() => null)
   if (!found) return null
-  if (found.isDirectory()) return { folder: absolute }
-  const parent = path.dirname(absolute)
+  const canonical = await realpath(absolute).catch(() => absolute)
+  if (found.isDirectory()) return { folder: canonical }
+  const parent = path.dirname(canonical)
   const git = await runGit(['rev-parse', '--show-toplevel'], parent)
   const root = git.code === 0 && git.stdout.trim() ? path.resolve(parent, git.stdout.trim()) : parent
-  const relative = path.relative(root, absolute)
+  const relative = path.relative(root, canonical)
   if (!relative || relative === '..' || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) {
-    return { folder: parent, file: path.basename(absolute) }
+    return { folder: parent, file: path.basename(canonical) }
   }
   return { folder: root, file: relative.split(path.sep).join('/') }
 }

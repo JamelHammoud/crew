@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process'
-import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises'
+import { mkdtemp, mkdir, realpath, rm, writeFile } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -20,7 +20,7 @@ afterEach(async () => {
 describe('opening from Finder', () => {
   it('opens a selected folder as the project', async () => {
     const folder = await temp()
-    expect(await finderOpenRequest(folder)).toEqual({ folder })
+    expect(await finderOpenRequest(folder)).toEqual({ folder: await realpath(folder) })
   })
 
   it('opens a file inside its Git project', async () => {
@@ -29,14 +29,14 @@ describe('opening from Finder', () => {
     await mkdir(path.join(root, 'src', 'views'), { recursive: true })
     const file = path.join(root, 'src', 'views', 'Home.tsx')
     await writeFile(file, '')
-    expect(await finderOpenRequest(file)).toEqual({ folder: root, file: 'src/views/Home.tsx' })
+    expect(await finderOpenRequest(file)).toEqual({ folder: await realpath(root), file: 'src/views/Home.tsx' })
   })
 
   it('opens a file outside Git from its containing folder', async () => {
     const folder = await temp()
     const file = path.join(folder, 'notes.txt')
     await writeFile(file, '')
-    expect(await finderOpenRequest(file)).toEqual({ folder, file: 'notes.txt' })
+    expect(await finderOpenRequest(file)).toEqual({ folder: await realpath(folder), file: 'notes.txt' })
   })
 
   it('ignores a target that is gone', async () => {
