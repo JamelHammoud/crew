@@ -291,15 +291,14 @@ describe('the file explorer', () => {
     })
     const target = document.querySelector('[data-folder="src"]') as HTMLElement
     const dataTransfer = transfer()
-    let expand: TimerHandler | null = null
-    const timer = vi.spyOn(window, 'setTimeout').mockImplementation((handler: TimerHandler) => {
-      expand = handler
-      return 1
-    })
+    const timer = vi.spyOn(window, 'setTimeout')
 
     fireEvent.dragStart(source, { dataTransfer })
     fireEvent.dragOver(target, { dataTransfer })
     expect(timer).toHaveBeenCalledWith(expect.any(Function), FILE_DROP_EXPAND_MS)
+    const call = timer.mock.calls.findIndex(([, delay]) => delay === FILE_DROP_EXPAND_MS)
+    const expand = timer.mock.calls[call]![0]
+    window.clearTimeout(timer.mock.results[call]!.value)
     expect(target.getAttribute('aria-expanded')).toBe('false')
     act(() => {
       if (typeof expand === 'function') expand()
@@ -319,17 +318,16 @@ describe('the file explorer', () => {
     const target = document.querySelector('[data-folder="src"]') as HTMLElement
     const elsewhere = document.querySelector('[data-folder="tests"]') as HTMLElement
     const dataTransfer = transfer()
-    let expand: TimerHandler | null = null
-    const timer = vi.spyOn(window, 'setTimeout').mockImplementation((handler: TimerHandler) => {
-      expand = handler
-      return 1
-    })
-    const clear = vi.spyOn(window, 'clearTimeout').mockImplementation(() => undefined)
+    const timer = vi.spyOn(window, 'setTimeout')
+    const clear = vi.spyOn(window, 'clearTimeout')
 
     fireEvent.dragStart(source, { dataTransfer })
     fireEvent.dragOver(target, { dataTransfer })
+    const call = timer.mock.calls.findIndex(([, delay]) => delay === FILE_DROP_EXPAND_MS)
+    const expand = timer.mock.calls[call]![0]
+    const handle = timer.mock.results[call]!.value
     fireEvent.dragLeave(target, { dataTransfer, relatedTarget: elsewhere })
-    expect(clear).toHaveBeenCalledWith(1)
+    expect(clear).toHaveBeenCalledWith(handle)
     act(() => {
       if (typeof expand === 'function') expand()
     })
