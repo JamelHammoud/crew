@@ -39,13 +39,19 @@ export interface DocEditorHandle {
   discard: () => void
 }
 
-export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: string) => void }>(function DocEditor(
-  { text, onChange },
-  ref
-) {
+export default forwardRef<
+  DocEditorHandle,
+  { text: string; onChange: (markdown: string) => void; uploadFile?: (file: File) => Promise<string> }
+>(function DocEditor({ text, onChange, uploadFile }, ref) {
   const httpBase = useCrew(s => s.httpBase)
   const httpBaseRef = useRef(httpBase)
   httpBaseRef.current = httpBase
+  const uploadFileRef = useRef(uploadFile)
+  uploadFileRef.current = uploadFile
+  const upload = useCallback(
+    (file: File) => uploadFileRef.current?.(file) ?? uploadImage(httpBaseRef.current, file),
+    []
+  )
   const editor = useCreateBlockNote({
     schema: docSchema,
     dictionary: docDictionary,
@@ -59,7 +65,7 @@ export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: 
         if (href) void window.crew?.openExternal(href)
       }
     },
-    uploadFile: (file: File) => uploadImage(httpBaseRef.current, file)
+    uploadFile: upload
   })
   const theme = useTheme()
   const containerRef = useRef<HTMLDivElement>(null)
@@ -141,7 +147,7 @@ export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: 
   const addImage = useCallback(() => fileRef.current?.click(), [])
 
   const onPick = async (file: File) => {
-    const url = await uploadImage(httpBaseRef.current, file)
+    const url = await upload(file)
     insertOrUpdateBlockForSlashMenu(editor, { type: 'image', props: { url } })
     editor.focus()
   }
