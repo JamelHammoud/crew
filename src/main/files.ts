@@ -317,6 +317,117 @@ export async function moveRepoEntry(root: string, source: string, parent: string
   }
 }
 
+interface TransferEntry {
+  source: string
+  from: string
+  destination: string
+  dir: boolean
+}
+
+function transferSources(sources: string[]): string[] {
+  const sorted = [...new Set(sources.map(trimPath).filter(Boolean))].sort((a, b) => {
+    const depth = a.split('/').length - b.split('/').length
+    return depth || a.localeCompare(b)
+  })
+  return sorted.filter(source => !sorted.some(parent => parent !== source && source.startsWith(`${parent}/`)))
+}
+
+export async function transferRepoEntries(
+  root: string,
+  sources: string[],
+  parent: string,
+  mode: RepoEntryTransferMode
+): Promise<RepoEntryTransferResult> {
+  const parentAbsolute = resolveRepoPath(root, trimPath(parent))
+  const wanted = transferSources(sources)
+  if (!parentAbsolute || wanted.length === 0 || (mode !== 'copy' && mode !== 'move')) {
+    return { ok: false, message: 'Choose a folder in this project' }
+  }
+
+  let stage = ''
+  const staged: Array<{ entry: TransferEntry; temporary: string; placed: boolean }> = []
+  try {
+    const realRoot = await fs.realpath(root)
+    const realParent = await fs.realpath(parentAbsolute)
+    if (insideRoot(realRoot, realParent) === null || !(await fs.stat(realParent)).isDirectory()) {
+      return { ok: false, message: 'Choose a folder in this project' }
+    }
+
+    const entries: TransferEntry[] = []
+    const destinations = new Set<string>()
+    for (const source of wanted) {
+      const sourceAbsolute = resolveRepoPath(root, source)
+      if (!sourceAbsolute) return { ok: false, message: 'That item is no longer there' }
+      const realSourceParent = await fs.realpath(path.dirname(sourceAbsolute))
+      if (insideRoot(realRoot, realSourceParent) === null) {
+        return { ok: false, message: 'Choose an item inside this project' }
+      }
+      const from = path.join(realSourceParent, path.basename(sourceAbsolute))
+      const stat = await fs.lstat(from)
+      const destination = path.join(realParent, path.basename(from))
+      const same = CASELESS ? from.toLowerCase() === destination.toLowerCase() : from === destination
+      if (same && mode === 'move') continue
+      if (stat.isDirectory()) {
+        const realSource = await fs.realpath(from)
+        if (insideRoot(realSource, realParent) !== null) {
+          return { ok: false, message: `A folder cannot be ${mode === 'copy' ? 'copied' : 'moved'} into itself` }
+        }
+      }
+      const key = CASELESS ? destination.toLowerCase() : destination
+      if (destinations.has(key) || (await isThere(destination))) {
+        return { ok: false, message: 'That name is already in use there' }
+      }
+      destinations.add(key)
+      entries.push({ source, from, destination, dir: stat.isDirectory() })
+    }
+
+    if (entries.length === 0) return { ok: false, message: 'Those items are already there' }
+    stage = await fs.mkdtemp(path.join(mode === 'copy' ? realParent : realRoot, `.crew-${mode}-`))
+    for (const [index, entry] of entries.entries()) {
+      const temporary = path.join(stage, String(index))
+      if (mode === 'copy') {
+        await fs.cp(entry.from, temporary, {
+          recursive: entry.dir,
+          errorOnExist: true,
+          force: false,
+          preserveTimestamps: true,
+          verbatimSymlinks: true
+        })
+      } else {
+        await fs.rename(entry.from, temporary)
+      }
+      staged.push({ entry, temporary, placed: false })
+    }
+    for (const item of staged) {
+      await fs.rename(item.temporary, item.entry.destination)
+      item.placed = true
+    }
+    await fs.rm(stage, { recursive: true, force: true })
+    stage = ''
+    return {
+      ok: true,
+      entries: entries.map(entry => ({ source: entry.source, path: repoRelative(realRoot, entry.destination) }))
+    }
+  } catch (error) {
+    for (const item of [...staged].reverse()) {
+      if (mode === 'copy') {
+        if (item.placed) await fs.rm(item.entry.destination, { recursive: true, force: true }).catch(() => undefined)
+      } else {
+        const held = item.placed ? item.entry.destination : item.temporary
+        if (await isThere(held)) await fs.rename(held, item.entry.from).catch(() => undefined)
+      }
+    }
+    if (stage) await fs.rm(stage, { recursive: true, force: true }).catch(() => undefined)
+    const code = (error as NodeJS.ErrnoException).code
+    if (code === 'EEXIST' || code === 'ENOTEMPTY') return { ok: false, message: 'That name is already in use there' }
+    if (code === 'ENOENT' || code === 'ENOTDIR') return { ok: false, message: 'That item is no longer there' }
+    if (code === 'EACCES' || code === 'EPERM') {
+      return { ok: false, message: `Those items could not be ${mode === 'copy' ? 'copied' : 'moved'}` }
+    }
+    return { ok: false, message: `Could not ${mode} those items` }
+  }
+}
+
 export async function importRepoEntries(
   root: string,
   sources: string[],
