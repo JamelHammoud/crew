@@ -75,7 +75,10 @@ function assertPinned(pinned: unknown): asserts pinned is boolean {
 export class StickyStore {
   readonly file: string
 
-  constructor(userData: string, private readonly clock: () => number = Date.now) {
+  constructor(
+    userData: string,
+    private readonly clock: () => number = Date.now
+  ) {
     this.file = path.join(userData, FILE)
   }
 

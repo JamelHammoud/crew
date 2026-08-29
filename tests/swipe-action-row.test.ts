@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 
 import { cleanup, createEvent, fireEvent, render, screen } from '@testing-library/react'
+import { createElement } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import SwipeActionRow from '../src/renderer/src/components/SwipeActionRow'
 
@@ -11,11 +12,11 @@ afterEach(() => {
 
 function row(onDelete = vi.fn(), onPress = vi.fn()) {
   const view = render(
-    <SwipeActionRow onDelete={onDelete} className="rounded-xl">
-      <button type="button" onClick={onPress}>
-        One row
-      </button>
-    </SwipeActionRow>
+    createElement(
+      SwipeActionRow,
+      { onDelete, className: 'rounded-xl' },
+      createElement('button', { type: 'button', onClick: onPress }, 'One row')
+    )
   )
   const root = view.container.querySelector('[data-swipe-action-row]') as HTMLDivElement
   const surface = view.container.querySelector('[data-swipe-surface]') as HTMLDivElement
