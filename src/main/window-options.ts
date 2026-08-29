@@ -164,8 +164,8 @@ export function createStickiesWindowOptions(
   single: boolean
 ): BrowserWindowConstructorOptions {
   return {
-    width: single ? 200 : 1080,
-    height: single ? 150 : 780,
+    width: single ? 300 : 1080,
+    height: single ? 250 : 780,
     minWidth: single ? 100 : 700,
     minHeight: single ? 80 : 500,
     show: false,
