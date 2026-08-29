@@ -315,6 +315,71 @@ export async function moveRepoEntry(root: string, source: string, parent: string
   }
 }
 
+export async function importRepoEntries(
+  root: string,
+  sources: string[],
+  parent: string
+): Promise<RepoEntryImportResult> {
+  const parentAbsolute = resolveRepoPath(root, trimPath(parent))
+  if (!parentAbsolute || sources.length === 0) return { ok: false, message: 'Choose a folder in this project' }
+  let stage = ''
+  try {
+    const realRoot = await fs.realpath(root)
+    const realParent = await fs.realpath(parentAbsolute)
+    if (insideRoot(realRoot, realParent) === null || !(await fs.stat(realParent)).isDirectory()) {
+      return { ok: false, message: 'Choose a folder in this project' }
+    }
+
+    const entries: Array<{ source: string; name: string; destination: string; dir: boolean }> = []
+    const destinations = new Set<string>()
+    for (const source of sources) {
+      if (!path.isAbsolute(source)) return { ok: false, message: 'That item is no longer there' }
+      const absolute = path.resolve(source)
+      const name = path.basename(absolute)
+      if (!name) return { ok: false, message: 'That item cannot be copied here' }
+      const destination = path.join(realParent, name)
+      const key = CASELESS ? destination.toLowerCase() : destination
+      if (destinations.has(key) || (await isThere(destination))) {
+        return { ok: false, message: 'That name is already in use there' }
+      }
+      const stat = await fs.lstat(absolute)
+      if (stat.isDirectory()) {
+        const realSource = await fs.realpath(absolute)
+        if (insideRoot(realSource, destination) !== null) {
+          return { ok: false, message: 'A folder cannot be copied into itself' }
+        }
+      }
+      destinations.add(key)
+      entries.push({ source: absolute, name, destination, dir: stat.isDirectory() })
+    }
+
+    stage = await fs.mkdtemp(path.join(realParent, '.crew-import-'))
+    for (const entry of entries) {
+      await fs.cp(entry.source, path.join(stage, entry.name), {
+        recursive: entry.dir,
+        errorOnExist: true,
+        force: false,
+        preserveTimestamps: true,
+        verbatimSymlinks: true
+      })
+    }
+    for (const entry of entries) {
+      if (await isThere(entry.destination)) throw Object.assign(new Error('destination exists'), { code: 'EEXIST' })
+    }
+    for (const entry of entries) await fs.rename(path.join(stage, entry.name), entry.destination)
+    await fs.rm(stage, { recursive: true, force: true })
+    stage = ''
+    return { ok: true, paths: entries.map(entry => repoRelative(realRoot, entry.destination)) }
+  } catch (error) {
+    if (stage) await fs.rm(stage, { recursive: true, force: true }).catch(() => undefined)
+    const code = (error as NodeJS.ErrnoException).code
+    if (code === 'EEXIST' || code === 'ENOTEMPTY') return { ok: false, message: 'That name is already in use there' }
+    if (code === 'ENOENT' || code === 'ENOTDIR') return { ok: false, message: 'That item is no longer there' }
+    if (code === 'EACCES' || code === 'EPERM') return { ok: false, message: 'That item could not be copied' }
+    return { ok: false, message: 'Could not copy that item' }
+  }
+}
+
 export async function writeLocalFile(target: string, text: string): Promise<RepoFile | null> {
   const absolute = expandHome(target)
   if (!path.isAbsolute(absolute)) return null
