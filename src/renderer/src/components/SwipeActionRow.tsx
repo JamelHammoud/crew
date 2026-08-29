@@ -1,10 +1,4 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-  type PointerEvent as ReactPointerEvent,
-  type ReactNode
-} from 'react'
+import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
 import { TrashGlyph } from '../icons'
 
 const ACTION_WIDTH = 64
