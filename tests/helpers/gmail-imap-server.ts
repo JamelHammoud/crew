@@ -605,7 +605,7 @@ export class GmailLoopbackServer {
         term = term.slice(1)
       }
       const [field, ...rest] = term.split(':')
-      const value = rest.join(':').toLowerCase()
+      const value = rest.join(':').replace(/^"|"$/g, '').toLowerCase()
       let matched: boolean
       if (!rest.length) matched = haystack.includes(field.toLowerCase())
       else if (field === 'from' || field === 'to' || field === 'cc' || field === 'subject') matched = headerValue(message.raw, field).toLowerCase().includes(value)

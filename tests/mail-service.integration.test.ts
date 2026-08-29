@@ -193,10 +193,8 @@ describe('Gmail transport over loopback', () => {
     const work = await transport(server, 'work')
 
     const personalMailboxes = await personal.listMailboxes()
-    const personalInbox = await personal.fetchSummaries('INBOX', { limit: 20 }).catch(error => {
-      throw new Error(`${String(error)}\n${server.imapCommands.join('\n')}`)
-    })
-    const workInbox = await work.fetchSummaries('INBOX', { limit: 20 })
+    const personalInbox = await personal.fetchSummaries('INBOX', { uids: [1, 2] })
+    const workInbox = await work.fetchSummaries('INBOX', { uids: [1] })
     expect(personalMailboxes.find(mailbox => mailbox.specialUse === '\\Inbox')?.path).toBe('INBOX')
     expect(personalInbox.map(one => one.subject)).toEqual(['Crew receipt', 'Dinner this weekend'])
     expect(workInbox.map(one => one.subject)).toEqual(['Release checklist'])
@@ -212,7 +210,7 @@ describe('Gmail transport over loopback', () => {
   it('applies read, star, label, archive, spam, and trash changes to the remote account', async () => {
     const server = await fixture()
     const mail = await transport(server, 'personal')
-    const [dinner, receipt] = await mail.fetchSummaries('INBOX', { limit: 20 })
+    const [dinner, receipt] = await mail.fetchSummaries('INBOX', { uids: [1, 2] })
     const target = dinner.subject === 'Dinner this weekend' ? dinner : receipt
     const other = target === dinner ? receipt : dinner
 

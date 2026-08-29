@@ -23,6 +23,13 @@ function inside(root: string, target: string): string {
   return target
 }
 
+function realDirectory(directory: string): void {
+  const stat = fs.lstatSync(directory)
+  if (!stat.isDirectory() || stat.isSymbolicLink() || fs.realpathSync(directory) !== directory) {
+    throw new Error('Mail attachment storage directory is unsafe')
+  }
+}
+
 export class MailFileStore {
   readonly directory: string
 
@@ -35,7 +42,10 @@ export class MailFileStore {
     if (!(contents instanceof Uint8Array)) throw new TypeError('Mail attachment contents must be bytes')
     const storageKey = randomUUID().replaceAll('-', '')
     const file = this.pathFor(account, storageKey)
-    fs.mkdirSync(path.dirname(file), { recursive: true, mode: DIRECTORY_MODE })
+    fs.mkdirSync(this.directory, { recursive: true, mode: DIRECTORY_MODE })
+    realDirectory(this.directory)
+    fs.mkdirSync(path.dirname(file), { mode: DIRECTORY_MODE })
+    realDirectory(path.dirname(file))
     fs.chmodSync(this.directory, DIRECTORY_MODE)
     fs.chmodSync(path.dirname(file), DIRECTORY_MODE)
     const temporary = inside(this.directory, `${file}.${process.pid}.tmp`)
@@ -53,16 +63,37 @@ export class MailFileStore {
   }
 
   read(account: string, storageKey: string): Buffer {
-    return fs.readFileSync(this.pathFor(account, storageKey))
+    const file = this.pathFor(account, storageKey)
+    realDirectory(this.directory)
+    realDirectory(path.dirname(file))
+    const descriptor = fs.openSync(file, fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW)
+    try {
+      return fs.readFileSync(descriptor)
+    } finally {
+      fs.closeSync(descriptor)
+    }
   }
 
   exists(account: string, storageKey: string): boolean {
-    return fs.existsSync(this.pathFor(account, storageKey))
+    const file = this.pathFor(account, storageKey)
+    try {
+      realDirectory(this.directory)
+      realDirectory(path.dirname(file))
+      const stat = fs.lstatSync(file)
+      return stat.isFile() && !stat.isSymbolicLink()
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') return false
+      throw error
+    }
   }
 
   delete(account: string, storageKey: string): boolean {
     const file = this.pathFor(account, storageKey)
     try {
+      realDirectory(this.directory)
+      realDirectory(path.dirname(file))
+      const stat = fs.lstatSync(file)
+      if (!stat.isFile() || stat.isSymbolicLink()) throw new Error('Mail attachment file is unsafe')
       fs.rmSync(file)
       return true
     } catch (error) {
