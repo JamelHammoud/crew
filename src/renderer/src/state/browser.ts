@@ -82,6 +82,7 @@ type BrowserState = {
   navigateFile(id: string, path: string, line?: number | null): void
   fileBack(id: string): void
   fileForward(id: string): void
+  moveFilePaths(source: string, target: string): void
   reloadTab(id: string): void
   updateTab(id: string, patch: Partial<BrowserTab>): void
 }
@@ -135,6 +136,11 @@ function reveal(open: string[], path: string): string[] {
   const parts = path.split('/').filter(Boolean).slice(0, -1)
   const folders = parts.map((_, index) => parts.slice(0, index + 1).join('/'))
   return [...open, ...folders.filter(folder => !open.includes(folder))]
+}
+
+function movedPath(current: string, source: string, target: string): string {
+  if (current === source) return target
+  return current.startsWith(`${source}/`) ? `${target}${current.slice(source.length)}` : current
 }
 
 const sameAddress = (a: string, b: string): boolean => Boolean(a) && a.replace(/\/+$/, '') === b.replace(/\/+$/, '')
@@ -741,6 +747,20 @@ export const useBrowser = create<BrowserState>((write, get) => {
           if (t.id !== id || t.forward.length === 0) return t
           const path = t.forward[0]
           return { ...t, path, line: null, diff: null, back: [...t.back, t.path], forward: t.forward.slice(1) }
+        })
+      })),
+    moveFilePaths: (source, target) =>
+      set(s => ({
+        tabs: s.tabs.map(tab => {
+          if (tab.kind !== 'file') return tab
+          return {
+            ...tab,
+            path: movedPath(tab.path, source, target),
+            open: [...new Set(tab.open.map(path => movedPath(path, source, target)))],
+            back: tab.back.map(path => movedPath(path, source, target)),
+            forward: tab.forward.map(path => movedPath(path, source, target)),
+            generation: tab.generation + 1
+          }
         })
       })),
     reloadTab: id => set(s => ({ tabs: s.tabs.map(t => (t.id === id ? { ...t, generation: t.generation + 1 } : t)) })),
