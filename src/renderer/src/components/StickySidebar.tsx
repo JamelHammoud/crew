@@ -94,7 +94,6 @@ function StickyRow({ sticky, active, onOpen }: { sticky: Sticky; active: boolean
   const [at, setAt] = useState<{ x: number; y: number } | null>(null)
   const label = stickyLabel(sticky)
   const preview = stickyPreview(sticky)
-  const compact = !sticky.title?.trim()
 
   return (
     <SwipeActionRow className="-ml-3 w-[calc(100%+24px)]" onDelete={() => void deleteSticky(sticky.id)}>
@@ -109,13 +108,11 @@ function StickyRow({ sticky, active, onOpen }: { sticky: Sticky; active: boolean
         <button
           onClick={onOpen}
           aria-current={active ? 'page' : undefined}
-          className={`w-full rounded-[15px] px-3 flex gap-3 text-left transition-colors duration-150 ${
-            compact ? 'min-h-14 py-2 items-center' : 'min-h-[72px] py-2.5 items-start'
-          } ${
+          className={`w-full min-h-14 rounded-[15px] px-3 py-2 flex items-center gap-3 text-left transition-colors duration-150 ${
             active ? 'bg-fg/[0.09]' : 'hover:bg-fg/[0.05]'
           }`}
         >
-          <span className={`${compact ? '' : 'mt-1'} shrink-0`}>
+          <span className="shrink-0">
             <ColorMark color={sticky.color} />
           </span>
           <span className="min-w-0 flex-1">
@@ -125,9 +122,7 @@ function StickyRow({ sticky, active, onOpen }: { sticky: Sticky; active: boolean
               {preview && <span className="truncate">{preview}</span>}
             </span>
           </span>
-          {sticky.pinned && (
-            <PinGlyph className={`w-3.5 h-3.5 shrink-0 text-fg/35 ${compact ? '' : 'mt-0.5'}`} />
-          )}
+          {sticky.pinned && <PinGlyph className="w-3.5 h-3.5 shrink-0 text-fg/35" />}
         </button>
         <Popover open={at !== null} onClose={() => setAt(null)} at={at ?? undefined} className="min-w-52">
           <StickyMenu sticky={sticky} close={() => setAt(null)} />
