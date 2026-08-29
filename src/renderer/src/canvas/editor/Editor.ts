@@ -1332,8 +1332,8 @@ export class Editor {
       scale: options.scale,
       background: options.background,
       darkMode: options.darkMode ?? this.getColorMode() === 'dark',
-      preserveAspectRatio: options.preserveAspectRatio
-      ,resolveAssetUrl: options.resolveAssetUrl ?? (source => this.resolveAssetUrl(source))
+      preserveAspectRatio: options.preserveAspectRatio,
+      resolveAssetUrl: options.resolveAssetUrl ?? (source => this.resolveAssetUrl(source))
     })
     if (!result) return undefined
     return { svg: result.svg, width: result.width, height: result.height }
