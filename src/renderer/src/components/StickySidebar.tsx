@@ -14,6 +14,7 @@ import {
 import { usePrefs } from '../state/prefs'
 import { deleteSticky, updateSticky } from '../state/stickies'
 import { useFullScreen } from '../state/windowShape'
+import { collapsibleSidebarClass } from './collapsibleSidebar'
 import { MenuDivider, MenuItem, Popover } from './Popover'
 import ScrollFade from './ScrollFade'
 import SwipeActionRow from './SwipeActionRow'
@@ -197,13 +198,7 @@ export default function StickySidebar({
     <aside
       data-sticky-sidebar
       aria-hidden={collapsed}
-      className={`shrink-0 overflow-hidden transition-[width,border-color] duration-200 ${
-        collapsed
-          ? 'w-0'
-          : glass
-            ? 'w-[300px] sidebar-pinned bg-ink-800 border-r border-[var(--glass-line)]'
-            : 'w-[300px] bg-ink-900 border-r border-ink-700'
-      }`}
+      className={collapsibleSidebarClass(collapsed, glass)}
     >
       <div className={`w-[300px] h-full flex flex-col ${collapsed ? 'hidden' : ''}`}>
         <header

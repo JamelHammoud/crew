@@ -155,14 +155,20 @@ describe('a personal chat window', () => {
   it('collapses and restores the chat list without remounting the conversation', () => {
     render(createElement(PersonalChatWindow))
     const composer = screen.getByPlaceholderText('Message')
+    const sidebar = document.querySelector('[data-personal-history]') as HTMLElement
 
     fireEvent.click(screen.getByRole('button', { name: 'Hide chat list' }))
-    expect(document.querySelector('[data-personal-history]')?.classList.contains('w-0')).toBe(true)
+    expect(sidebar.classList.contains('w-0')).toBe(true)
+    expect(sidebar.classList.contains('border-transparent')).toBe(true)
+    expect(sidebar.className).toContain('transition-[width]')
+    expect(sidebar.className).not.toContain('border-color')
     expect(screen.getByRole('button', { name: 'Show chat list' })).toBeTruthy()
     expect(screen.getByPlaceholderText('Message')).toBe(composer)
 
     fireEvent.click(screen.getByRole('button', { name: 'Show chat list' }))
-    expect(document.querySelector('[data-personal-history]')?.classList.contains('w-[300px]')).toBe(true)
+    expect(sidebar.classList.contains('w-[300px]')).toBe(true)
+    expect(sidebar.classList.contains('border-[var(--glass-line)]')).toBe(true)
+    expect(sidebar.classList.contains('border-transparent')).toBe(false)
     expect(screen.getByPlaceholderText('Message')).toBe(composer)
   })
 

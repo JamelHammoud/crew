@@ -62,6 +62,22 @@ describe('the Stickies library', () => {
     expect(view.container.querySelector('[data-editor-id]')?.getAttribute('data-editor-id')).toBe('second')
   })
 
+  it('restores the list with its real border already in place', () => {
+    const view = render(createElement(StickiesWindow))
+    const sidebar = view.container.querySelector('[data-sticky-sidebar]') as HTMLElement
+
+    fireEvent.click(screen.getByRole('button', { name: 'Hide sticky list' }))
+    expect(sidebar.classList.contains('w-0')).toBe(true)
+    expect(sidebar.classList.contains('border-transparent')).toBe(true)
+    expect(sidebar.className).toContain('transition-[width]')
+    expect(sidebar.className).not.toContain('border-color')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Show sticky list' }))
+    expect(sidebar.classList.contains('w-[300px]')).toBe(true)
+    expect(sidebar.classList.contains('border-ink-700')).toBe(true)
+    expect(sidebar.classList.contains('border-transparent')).toBe(false)
+  })
+
   it('opens the individual sticky actions from its background without a header', async () => {
     window.location.hash = '#sticky=first'
     const view = render(createElement(StickiesWindow))

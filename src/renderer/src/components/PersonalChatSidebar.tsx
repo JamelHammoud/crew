@@ -6,6 +6,7 @@ import { useCrew, type ThreadMeta } from '../state/store'
 import { useFullScreen } from '../state/windowShape'
 import { activityForStep, type AgentActivity } from './agentActivity'
 import AgentIcon from './AgentIcon'
+import { collapsibleSidebarClass } from './collapsibleSidebar'
 import ScrollFade from './ScrollFade'
 import { describeStep } from './thread'
 import Tooltip from './Tooltip'
@@ -94,13 +95,7 @@ export default function PersonalChatSidebar({
     <aside
       data-personal-history
       aria-hidden={collapsed}
-      className={`shrink-0 overflow-hidden transition-[width,border-color] duration-200 ${
-        collapsed
-          ? 'w-0'
-          : glass
-            ? 'w-[300px] sidebar-pinned bg-ink-800 border-r border-[var(--glass-line)]'
-            : 'w-[300px] bg-ink-900 border-r border-ink-700'
-      }`}
+      className={collapsibleSidebarClass(collapsed, glass)}
     >
       <div className={`w-[300px] h-full flex flex-col ${collapsed ? 'hidden' : ''}`}>
         <header
