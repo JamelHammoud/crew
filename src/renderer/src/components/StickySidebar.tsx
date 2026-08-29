@@ -1,12 +1,16 @@
-import { useMemo, useState, type ReactNode } from 'react'
+import { useMemo, useRef, useState, type ReactNode } from 'react'
 import type { Sticky, StickyColor } from '../../../shared/stickies'
 import { STICKY_COLORS } from '../../../shared/stickies'
-import { PanelLeftGlyph, PinGlyph, PlusGlyph, PopOutGlyph, TrashGlyph } from '../icons'
+import { CloseGlyph, PanelLeftGlyph, PinGlyph, PlusGlyph, PopOutGlyph, SearchGlyph, StickyGlyph, TrashGlyph } from '../icons'
+import { usePrefs } from '../state/prefs'
 import { deleteSticky, updateSticky } from '../state/stickies'
+import { useFullScreen } from '../state/windowShape'
 import { MenuDivider, MenuItem, Popover } from './Popover'
+import ScrollFade from './ScrollFade'
 import SwipeActionRow from './SwipeActionRow'
 import Tooltip from './Tooltip'
 import { formatShortDay } from './time'
+import useScrollEdges from './useScrollEdges'
 
 const COLOR_VALUES = ['#e9c46a', '#ef8f8f', '#78aee8', '#6fc7ad', '#d394df']
 
@@ -147,7 +151,20 @@ export default function StickySidebar({
   onNew: () => void
   onCollapse: () => void
 }) {
-  const ordered = useMemo(() => [...stickies].sort((a, b) => b.updatedAt - a.updatedAt), [stickies])
+  const [query, setQuery] = useState('')
+  const glass = usePrefs().glassSidebar
+  const full = useFullScreen()
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const { edges } = useScrollEdges(scrollRef)
+  const ordered = useMemo(() => {
+    const searched = query.trim().toLowerCase()
+    return [...stickies]
+      .filter(sticky => {
+        if (!searched) return true
+        return `${sticky.title ?? ''}\n${sticky.body}\n${stickyLabel(sticky)}`.toLowerCase().includes(searched)
+      })
+      .sort((a, b) => b.updatedAt - a.updatedAt)
+  }, [query, stickies])
   const pinned = ordered.filter(sticky => sticky.pinned)
   const others = ordered.filter(sticky => !sticky.pinned)
 
@@ -155,12 +172,20 @@ export default function StickySidebar({
     <aside
       data-sticky-sidebar
       aria-hidden={collapsed}
-      className={`shrink-0 overflow-hidden bg-ink-800 border-r border-ink-700 transition-[width,border-color] duration-200 ${
-        collapsed ? 'w-0 border-transparent' : 'w-[300px]'
+      className={`shrink-0 overflow-hidden transition-[width,border-color] duration-200 ${
+        collapsed
+          ? 'w-0'
+          : glass
+            ? 'w-[300px] sidebar-pinned bg-ink-800 border-r border-[var(--glass-line)]'
+            : 'w-[300px] bg-ink-900 border-r border-ink-700'
       }`}
     >
       <div className={`w-[300px] h-full flex flex-col ${collapsed ? 'hidden' : ''}`}>
-        <header className="group/header app-drag h-[70px] shrink-0 pl-[100px] pr-3 flex items-center gap-1">
+        <header
+          className={`group/header app-drag h-[70px] shrink-0 pl-4 pr-3 flex items-center gap-1 ${
+            full ? '' : 'mac:pl-[100px]'
+          }`}
+        >
           <h1 className="flex-1 text-lg font-bold text-fg">Stickies</h1>
           <Tooltip label="Hide sticky list">
             <button
@@ -173,7 +198,10 @@ export default function StickySidebar({
           </Tooltip>
           <Tooltip label="New sticky">
             <button
-              onClick={onNew}
+              onClick={() => {
+                setQuery('')
+                onNew()
+              }}
               aria-label="New sticky"
               className="app-no-drag w-9 h-9 rounded-full flex items-center justify-center text-fg-muted transition-[color,background-color,transform] duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
             >
@@ -181,24 +209,66 @@ export default function StickySidebar({
             </button>
           </Tooltip>
         </header>
-        <div className="flex-1 min-h-0 overflow-y-auto px-3 pb-6">
-          <div className="space-y-6">
-            {pinned.length > 0 && (
-              <Section label="Pinned">
-                {pinned.map(sticky => (
-                  <StickyRow key={sticky.id} sticky={sticky} active={sticky.id === active} onOpen={() => onOpen(sticky.id)} />
-                ))}
-              </Section>
+        <div className="px-3 pb-4">
+          <div className="h-10 rounded-full bg-ink-700 flex items-center gap-2 px-3 transition-shadow duration-150 focus-within:shadow-[inset_0_0_0_1px_rgb(255_255_255/0.10)] light:focus-within:shadow-[inset_0_0_0_1px_rgb(0_0_0/0.12)]">
+            <SearchGlyph className="w-4 h-4 shrink-0 text-fg/35" />
+            <input
+              value={query}
+              onChange={event => setQuery(event.target.value)}
+              placeholder="Search stickies"
+              aria-label="Search stickies"
+              spellCheck={false}
+              className="min-w-0 flex-1 bg-transparent text-sm text-fg outline-none placeholder:text-fg/35"
+            />
+            {query && (
+              <button
+                onClick={() => setQuery('')}
+                aria-label="Clear search"
+                className="w-7 h-7 rounded-full flex items-center justify-center text-fg/35 transition-colors hover:text-fg"
+              >
+                <CloseGlyph className="w-3.5 h-3.5" />
+              </button>
             )}
-            {others.length > 0 && (
-              <Section label={pinned.length ? 'Stickies' : 'Recent'}>
-                {others.map(sticky => (
-                  <StickyRow key={sticky.id} sticky={sticky} active={sticky.id === active} onOpen={() => onOpen(sticky.id)} />
-                ))}
-              </Section>
-            )}
-            {ordered.length === 0 && <p className="px-3 pt-8 text-sm text-fg/40 text-center">Keep a thought close.</p>}
           </div>
+        </div>
+        <div className="relative flex-1 min-h-0">
+          <div ref={scrollRef} data-sticky-sidebar-scroll className="h-full overflow-y-auto px-3 pb-6">
+            <div className="space-y-6">
+              {pinned.length > 0 && (
+                <Section label="Pinned">
+                  {pinned.map(sticky => (
+                    <StickyRow
+                      key={sticky.id}
+                      sticky={sticky}
+                      active={sticky.id === active}
+                      onOpen={() => onOpen(sticky.id)}
+                    />
+                  ))}
+                </Section>
+              )}
+              {others.length > 0 && (
+                <Section label={pinned.length ? 'Stickies' : 'Recent'}>
+                  {others.map(sticky => (
+                    <StickyRow
+                      key={sticky.id}
+                      sticky={sticky}
+                      active={sticky.id === active}
+                      onOpen={() => onOpen(sticky.id)}
+                    />
+                  ))}
+                </Section>
+              )}
+            </div>
+            {ordered.length === 0 && (
+              <div className="mt-20 flex flex-col items-center gap-4 text-center">
+                <span className="w-11 h-11 rounded-card bg-ink-800 flex items-center justify-center text-fg/45">
+                  {query ? <SearchGlyph className="w-5 h-5" /> : <StickyGlyph className="w-5 h-5" />}
+                </span>
+                <p className="text-sm text-fg-muted">{query ? 'No stickies found.' : 'No stickies yet.'}</p>
+              </div>
+            )}
+          </div>
+          <ScrollFade edges={edges} />
         </div>
       </div>
     </aside>

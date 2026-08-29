@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { Sticky, UpdateStickyInput } from '../../../shared/stickies'
 import { createSticky, updateSticky } from '../state/stickies'
 import DocEditor, { type DocEditorHandle } from './DocEditor'
+import { stickyColorValue } from './StickySidebar'
 
 export function stickyImageDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -79,7 +80,11 @@ export default function StickyEditor({
   }
 
   return (
-    <div data-sticky-editor className="h-full overflow-y-auto overflow-x-hidden">
+    <div
+      data-sticky-editor
+      style={{ background: stickyEditorBackground(sticky.color) }}
+      className="h-full overflow-y-auto overflow-x-hidden transition-[background-color] duration-200"
+    >
       <div className={`mx-auto w-full max-w-[780px] pb-16 ${compact ? 'pt-10' : 'pt-[88px]'}`}>
         <div className="px-[54px] pb-3">
           <input
