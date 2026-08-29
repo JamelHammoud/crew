@@ -525,6 +525,35 @@ function poppedOut(win: BrowserWindow): boolean {
   return false
 }
 
+function tellStickies(): void {
+  const list = stickies.list()
+  for (const win of stickiesWindows) {
+    if (!win.webContents.isDestroyed()) win.webContents.send('stickies:changed', list)
+  }
+}
+
+function openStickiesWindow(): boolean {
+  const win = createWindow(undefined, false, false, false, null)
+  loadWindow(win, undefined, false, false, null)
+  return true
+}
+
+function openStickyWindow(id: string): boolean {
+  const sticky = stickies.list().find(one => one.id === id)
+  if (!sticky) return false
+  const standing = stickyWindows.get(id)
+  if (standing && !standing.isDestroyed()) {
+    if (standing.isMinimized()) standing.restore()
+    standing.show()
+    standing.focus()
+    return true
+  }
+  const win = createWindow(undefined, false, false, false, id)
+  if (sticky.pinned) pinWindow(win, true)
+  loadWindow(win, undefined, false, false, id)
+  return true
+}
+
 function openWindow(place?: string | null): BrowserWindow {
   tray.hidePanel()
   const all = appWindows()
@@ -717,6 +746,33 @@ app.whenReady().then(async () => {
       win.destroy()
       throw error
     }
+  })
+  ipcMain.handle('window:open-stickies', () => openStickiesWindow())
+  ipcMain.handle('window:open-sticky', (_event, id: string) => openStickyWindow(id))
+  ipcMain.handle('stickies:list', () => stickies.list())
+  ipcMain.handle('stickies:create', (_event, input: CreateStickyInput) => {
+    const sticky = stickies.create(input)
+    tellStickies()
+    return sticky
+  })
+  ipcMain.handle('stickies:update', (_event, id: string, patch: UpdateStickyInput) => {
+    const sticky = stickies.update(id, patch)
+    if (!sticky) return null
+    const win = stickyWindows.get(id)
+    if (win && !win.isDestroyed()) {
+      pinWindow(win, sticky.pinned)
+      win.webContents.send('window:shape', windowShapeOf(win))
+    }
+    tellStickies()
+    return sticky
+  })
+  ipcMain.handle('stickies:delete', (_event, id: string) => {
+    const deleted = stickies.delete(id)
+    if (!deleted) return false
+    const win = stickyWindows.get(id)
+    if (win && !win.isDestroyed()) win.close()
+    tellStickies()
+    return true
   })
   ipcMain.handle('window:pin', (event, pinned: boolean) => {
     const win = BrowserWindow.fromWebContents(event.sender)
