@@ -1,6 +1,7 @@
 import { useState, type MouseEvent, type ReactNode } from 'react'
 import { CopyGlyph, FileGlyph, FolderGlyph, PopOutGlyph } from '../icons'
 import { makeFileTab, useBrowser } from '../state/browser'
+import { toast } from '../state/toast'
 import { MenuDivider, MenuItem, Popover } from './Popover'
 
 interface MenuAt {
@@ -67,6 +68,16 @@ export function FileMenu({
         onClick={() => {
           onClose()
           void window.crew.popOutBrowserTab(makeFileTab(path, line, diff))
+        }}
+      />
+      <MenuItem
+        icon={<FolderGlyph />}
+        label="Show in folder"
+        onClick={() => {
+          onClose()
+          void window.crew.revealFile(path).then(opened => {
+            if (!opened) toast.fail('That item is not there any more', { key: 'show-folder' })
+          })
         }}
       />
       <MenuDivider />

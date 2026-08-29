@@ -44,6 +44,7 @@ const repo: Record<string, RepoFile> = {
 
 const listed = ['readme.md', 'src/app.ts', 'src/renderer/panel.tsx', 'tests/app.test.ts']
 const popOutBrowserTab = vi.fn().mockResolvedValue(true)
+const revealFile = vi.fn().mockResolvedValue(true)
 const beginFileTabDrag = vi.fn(() => true)
 const dropBrowserTab = vi.fn().mockResolvedValue(true)
 const createEntry = vi.fn(async (path: string): Promise<RepoEntryCreateResult> => ({ ok: true, path }))
@@ -85,6 +86,8 @@ const searchFiles = vi.fn(async (options: FileSearchOptions) => ({
 
 beforeEach(() => {
   popOutBrowserTab.mockClear()
+  revealFile.mockClear()
+  revealFile.mockResolvedValue(true)
   beginFileTabDrag.mockClear()
   dropBrowserTab.mockClear()
   createEntry.mockClear()
@@ -132,7 +135,7 @@ beforeEach(() => {
     searchFiles,
     replaceFiles,
     writeFile: async () => null,
-    revealFile: async () => undefined,
+    revealFile,
     openExternal: async () => undefined,
     popOutBrowserTab,
     warmTerminal: () => undefined
@@ -974,6 +977,29 @@ describe('the file explorer', () => {
     expect(popOutBrowserTab).toHaveBeenCalledOnce()
     expect(popOutBrowserTab.mock.calls[0]![0]).toMatchObject({ kind: 'file', path: 'src/app.ts', line: null })
     expect(useBrowser.getState().tabs).toHaveLength(1)
+  })
+
+  it('shows a file from the tree in its folder', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    fireEvent.click(await screen.findByText('src'))
+    await waitFor(() => expect(rowFor('src/app.ts')).toBeTruthy())
+
+    fireEvent.contextMenu(rowFor('src/app.ts')!)
+    fireEvent.click(screen.getByText('Show in folder'))
+
+    await waitFor(() => expect(revealFile).toHaveBeenCalledWith('src/app.ts'))
+  })
+
+  it('shows a directory from the tree in its folder', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    await screen.findByText('src')
+
+    fireEvent.contextMenu(document.querySelector('[data-folder="src"]') as HTMLElement)
+    fireEvent.click(screen.getByText('Show in folder'))
+
+    await waitFor(() => expect(revealFile).toHaveBeenCalledWith('src'))
   })
 
   it('opens a file from the folder listing in a tab of its own', async () => {
