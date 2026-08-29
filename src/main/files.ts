@@ -366,7 +366,18 @@ export async function importRepoEntries(
     for (const entry of entries) {
       if (await isThere(entry.destination)) throw Object.assign(new Error('destination exists'), { code: 'EEXIST' })
     }
-    for (const entry of entries) await fs.rename(path.join(stage, entry.name), entry.destination)
+    const committed: typeof entries = []
+    try {
+      for (const entry of entries) {
+        await fs.rename(path.join(stage, entry.name), entry.destination)
+        committed.push(entry)
+      }
+    } catch (error) {
+      for (const entry of committed.reverse()) {
+        await fs.rename(entry.destination, path.join(stage, entry.name)).catch(() => undefined)
+      }
+      throw error
+    }
     await fs.rm(stage, { recursive: true, force: true })
     stage = ''
     return { ok: true, paths: entries.map(entry => repoRelative(realRoot, entry.destination)) }
