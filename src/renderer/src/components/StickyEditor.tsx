@@ -12,6 +12,10 @@ export function stickyImageDataUrl(file: File): Promise<string> {
   })
 }
 
+export function stickyEditorBackground(color: Sticky['color']): string {
+  return `color-mix(in srgb, var(--color-ink-900) 94%, ${stickyColorValue(color)})`
+}
+
 export default function StickyEditor({
   sticky,
   fresh = false,
