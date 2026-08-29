@@ -23,7 +23,7 @@ function ThreadRow({ thread, open, here, placeKey, onOpen, onOpenToRight }: Thre
         className="!block min-w-0 w-full"
         content={
           <span className="block max-h-[300px] overflow-y-auto overscroll-contain whitespace-pre-wrap break-words text-sm leading-[1.6] text-fg/70 select-text">
-            <EmojiText text={thread.preview} quiet />
+            <EmojiText text={thread.preview ?? thread.title} quiet />
           </span>
         }
       >

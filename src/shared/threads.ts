@@ -5,7 +5,7 @@ export interface LiveThread {
   id: string
   title: string
   working: boolean
-  preview: string
+  preview?: string
 }
 
 // Which events a thread is built from. Almost every one of them names the

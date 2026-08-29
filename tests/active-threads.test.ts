@@ -53,6 +53,32 @@ const stepped = (threadId: string): SessionEvent =>
     threadId
   }) as SessionEvent
 
+const asked = (threadId: string, promptId: string, text: string): SessionEvent =>
+  ({
+    id: `e${(n += 1)}`,
+    ts: n,
+    kind: 'agent.start',
+    promptId,
+    agentId: 'a',
+    agentLabel: 'Bubbles',
+    promptText: text,
+    byName: 'Jamel',
+    threadId
+  }) as SessionEvent
+
+const answered = (threadId: string, promptId: string, text: string): SessionEvent =>
+  ({
+    id: `e${(n += 1)}`,
+    ts: n,
+    kind: 'agent.end',
+    promptId,
+    agentId: 'a',
+    agentLabel: 'Bubbles',
+    ok: true,
+    text,
+    threadId
+  }) as SessionEvent
+
 const none = () => false
 
 describe('the threads a place is showing', () => {
@@ -93,6 +119,19 @@ describe('the threads a place is showing', () => {
 
   it('gives a mention-only thread a name', () => {
     expect(activeThreads([started('a', '@Bubbles')], none)[0]?.title).toBe('Untitled')
+  })
+
+  it('keeps the whole opening message as its preview', () => {
+    const opening = 'Draw the footer with the whole opening message, including the details that do not fit in the row'
+    const events = [
+      started('a', 'Draw the footer…'),
+      asked('a', 'p1', opening),
+      answered('a', 'p1', 'The footer is ready'),
+      asked('a', 'p2', 'Make the links quieter'),
+      answered('a', 'p2', 'The links are quieter')
+    ]
+
+    expect(activeThreads(events, none)[0]?.preview).toBe(opening)
   })
 
   it('leaves out a thread somebody has finished or put away', () => {
