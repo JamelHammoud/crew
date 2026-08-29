@@ -5,9 +5,9 @@
   </picture>
 </p>
 <h4>
-  <a href="https://github.com/JamelHammoud/crew/releases/download/v0.0.13/Crew-0.0.13-arm64.dmg">Download for Mac</a>
+  <a href="https://github.com/JamelHammoud/crew/releases/download/v0.0.15/Crew-0.0.15-arm64.dmg">Download for Mac</a>
   ·
-  <a href="https://github.com/JamelHammoud/crew/releases/download/v0.0.13/Crew-Setup-0.0.13.exe">Download for Windows</a>
+  <a href="https://github.com/JamelHammoud/crew/releases/download/v0.0.15/Crew-Setup-0.0.15.exe">Download for Windows</a>
 </h4>
 <hr/>
 
@@ -26,7 +26,7 @@ It's our playground, where we can move incredibly fast and experiment with new a
 
 If this sounds interesting to you, you can try Crew out yourself (it's incredibly easy!):
 
-1. Download either the [MacOS](https://github.com/JamelHammoud/crew/releases/download/v0.0.13/Crew-0.0.13-arm64.dmg) or [Windows](https://github.com/JamelHammoud/crew/releases/download/v0.0.13/Crew-Setup-0.0.13.exe) app from GitHub
+1. Download either the [MacOS](https://github.com/JamelHammoud/crew/releases/download/v0.0.15/Crew-0.0.15-arm64.dmg) or [Windows](https://github.com/JamelHammoud/crew/releases/download/v0.0.15/Crew-Setup-0.0.15.exe) app from GitHub
 2. Launch the app, and give yourself a name
     - There's no accounts and no server, everything's local (except what you chose to share)
 3. Choose a folder / repository
