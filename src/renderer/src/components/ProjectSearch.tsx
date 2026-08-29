@@ -133,7 +133,7 @@ function PathMatch({ tab, match, dir }: { tab: BrowserTab; match: FileMatch; dir
   const start = match.path.lastIndexOf('/') + 1
   const name = match.path.slice(start)
   const folder = start ? match.path.slice(0, start - 1) : ''
-  const { onContextMenu, menu } = useFileMenu(match.path)
+  const { onContextMenu, menu } = useFileMenu(match.path, null, null, undefined, true)
   return (
     <>
       <button
@@ -178,7 +178,7 @@ function ContentRow({
   replacing: boolean
   onReplace: (target: FileReplaceTarget) => void
 }) {
-  const { onContextMenu, menu } = useFileMenu(match.path)
+  const { onContextMenu, menu } = useFileMenu(match.path, null, null, undefined, true)
   return (
     <>
       <div className="group relative">

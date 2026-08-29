@@ -16,7 +16,8 @@ export function FileMenu({
   at,
   onClose,
   onNewFile,
-  onNewFolder
+  onNewFolder,
+  showInFolder = false
 }: {
   path: string
   line?: number | null
@@ -25,6 +26,7 @@ export function FileMenu({
   onClose: () => void
   onNewFile?: () => void
   onNewFolder?: () => void
+  showInFolder?: boolean
 }) {
   const copy = (kind: 'relative' | 'absolute'): void => {
     onClose()
@@ -70,16 +72,18 @@ export function FileMenu({
           void window.crew.popOutBrowserTab(makeFileTab(path, line, diff))
         }}
       />
-      <MenuItem
-        icon={<FolderGlyph />}
-        label="Show in folder"
-        onClick={() => {
-          onClose()
-          void window.crew.revealFile(path).then(opened => {
-            if (!opened) toast.fail('That item is not there any more', { key: 'show-folder' })
-          })
-        }}
-      />
+      {showInFolder && (
+        <MenuItem
+          icon={<FolderGlyph />}
+          label="Show in folder"
+          onClick={() => {
+            onClose()
+            void window.crew.revealFile(path).then(opened => {
+              if (!opened) toast.fail('That item is not there any more', { key: 'show-folder' })
+            })
+          }}
+        />
+      )}
       <MenuDivider />
       <MenuItem icon={<CopyGlyph />} label="Copy relative path" onClick={() => copy('relative')} />
       <MenuItem icon={<CopyGlyph />} label="Copy absolute path" onClick={() => copy('absolute')} />
@@ -95,7 +99,8 @@ export function useFileMenu(
   path: string,
   line: number | null = null,
   diff: string | null = null,
-  create?: { file: () => void; folder: () => void }
+  create?: { file: () => void; folder: () => void },
+  showInFolder = false
 ): {
   onContextMenu: (event: MouseEvent) => void
   menu: ReactNode
@@ -118,6 +123,7 @@ export function useFileMenu(
         onClose={() => setAt(null)}
         onNewFile={create?.file}
         onNewFolder={create?.folder}
+        showInFolder={showInFolder}
       />
     ),
     menuOpen: at !== null

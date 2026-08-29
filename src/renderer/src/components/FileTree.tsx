@@ -142,7 +142,7 @@ function Folder({
   const { onContextMenu, menu } = useFileMenu(path, null, null, {
     file: () => onCreate(path, 'file'),
     folder: () => onCreate(path, 'folder')
-  })
+  }, true)
   return (
     <div data-folder-branch={path}>
       <button
@@ -219,7 +219,7 @@ function Leaf({
 }) {
   const ref = useRef<HTMLButtonElement>(null)
   const showing = tab.path === path
-  const { onContextMenu, menu } = useFileMenu(path)
+  const { onContextMenu, menu } = useFileMenu(path, null, null, undefined, true)
 
   useEffect(() => {
     if (showing && ref.current) bringInto(ref.current)
