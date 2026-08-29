@@ -15,8 +15,7 @@ const saved: Sticky[] = [
   },
   {
     id: 'second',
-    title: 'Second sticky',
-    body: 'Two',
+    body: 'Second sticky\nTwo',
     color: 'blue',
     pinned: false,
     createdAt: 1,
@@ -56,7 +55,9 @@ describe('the Stickies library', () => {
     const view = render(createElement(StickiesWindow))
 
     expect(view.container.querySelector('[data-editor-id]')?.getAttribute('data-editor-id')).toBe('draft:draft-one')
-    fireEvent.click(screen.getByRole('button', { name: /Second sticky/ }))
+    const row = screen.getByRole('button', { name: /Second sticky/ })
+    expect(row.className).toContain('min-h-14')
+    fireEvent.click(row)
     expect(view.container.querySelector('[data-editor-id]')?.getAttribute('data-editor-id')).toBe('second')
   })
 })
