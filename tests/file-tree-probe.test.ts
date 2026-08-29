@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, createEvent, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { act, createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import BrowserPanel from '../src/renderer/src/components/BrowserPanel'
@@ -102,6 +102,7 @@ beforeEach(() => {
 afterEach(() => {
   cleanup()
   vi.useRealTimers()
+  vi.restoreAllMocks()
 })
 
 const activeTab = () => {
@@ -334,7 +335,9 @@ describe('the file explorer', () => {
     const dataTransfer = transfer()
 
     fireEvent.dragStart(source, { dataTransfer })
-    fireEvent.dragOver(target, { dataTransfer, clientY: 495 })
+    const nearBottom = createEvent.dragOver(target, { dataTransfer })
+    Object.defineProperty(nearBottom, 'clientY', { value: 495 })
+    fireEvent(target, nearBottom)
     expect(frames).toHaveLength(1)
     act(() => frames.shift()!(0))
     const first = host.scrollTop
