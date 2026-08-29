@@ -2143,14 +2143,18 @@ textarea:placeholder-shown {
 }
 
 .sticky-editor-compact .sticky-editor-page {
-  --sticky-editor-inset: clamp(18px, 8.7cqw, 54px);
-  padding-top: clamp(24px, 6.45cqw, 40px);
-  padding-bottom: clamp(24px, 10.3cqw, 64px);
+  --sticky-editor-inset: clamp(10px, 8.7cqw, 54px);
+  padding-top: clamp(14px, 6.45cqw, 40px);
+  padding-bottom: clamp(12px, 10.3cqw, 64px);
+}
+
+.mac .sticky-editor-compact .sticky-editor-page {
+  padding-top: clamp(64px, 12cqw, 76px);
 }
 
 .sticky-editor-compact .sticky-editor-title {
   padding-inline: var(--sticky-editor-inset);
-  padding-bottom: clamp(6px, 1.94cqw, 12px);
+  padding-bottom: clamp(4px, 1.94cqw, 12px);
 }
 
 .sticky-editor-compact .sticky-editor-title-input {

@@ -166,8 +166,8 @@ export function createStickiesWindowOptions(
   return {
     width: single ? 620 : 1080,
     height: single ? 720 : 780,
-    minWidth: single ? 240 : 700,
-    minHeight: single ? 200 : 500,
+    minWidth: single ? 160 : 700,
+    minHeight: single ? 120 : 500,
     show: false,
     ...windowShell(platform, preload, devTools)
   }

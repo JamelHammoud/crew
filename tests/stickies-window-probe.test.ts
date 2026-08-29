@@ -68,8 +68,10 @@ describe('stickies window', () => {
     const compact = styles.slice(start, styles.indexOf('.doc .bn-editor .bn-trailing-block', start))
 
     expect(compact).toContain('container-type: inline-size')
-    expect(compact).toContain('--sticky-editor-inset: clamp(18px, 8.7cqw, 54px)')
+    expect(compact).toContain('--sticky-editor-inset: clamp(10px, 8.7cqw, 54px)')
     expect(compact).toContain('font-size: clamp(18px, 5.16cqw, 32px)')
     expect(compact).toContain('font-size: clamp(13px, 2.58cqw, 16px)')
+    expect(compact).toContain('.mac .sticky-editor-compact .sticky-editor-page')
+    expect(compact).toContain('padding-top: clamp(64px, 12cqw, 76px)')
   })
 })
