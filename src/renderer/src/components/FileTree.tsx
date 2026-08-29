@@ -440,16 +440,21 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
     selected,
     cut: new Set(clipboard?.mode === 'move' ? clipboard.sources : []),
     pick: (event, path, activate) => {
-      if (event.shiftKey && anchor.current) {
-        const paths = visiblePaths()
-        const from = paths.indexOf(anchor.current)
-        const to = paths.indexOf(path)
-        if (from !== -1 && to !== -1) {
-          const first = Math.min(from, to)
-          const last = Math.max(from, to)
-          setSelected(new Set(paths.slice(first, last + 1)))
-          return
+      if (event.shiftKey) {
+        if (anchor.current) {
+          const paths = visiblePaths()
+          const from = paths.indexOf(anchor.current)
+          const to = paths.indexOf(path)
+          if (from !== -1 && to !== -1) {
+            const first = Math.min(from, to)
+            const last = Math.max(from, to)
+            setSelected(new Set(paths.slice(first, last + 1)))
+            return
+          }
         }
+        setSelected(new Set([path]))
+        anchor.current = path
+        return
       }
       if (event.metaKey || event.ctrlKey) {
         setSelected(current => {
