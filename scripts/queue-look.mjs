@@ -13,7 +13,7 @@ const shots = path.join(tmpdir(), 'crew-queue-look')
 
 function source() {
   const from = file => JSON.stringify(path.join(root, 'src/renderer/src', file))
-  return `import React from ${JSON.stringify(resolve('react'))}
+  return String.raw`import React from ${JSON.stringify(resolve('react'))}
 import { createRoot } from ${JSON.stringify(resolve('react-dom/client'))}
 import QueueBar from ${from('components/QueueBar.tsx')}
 import { useCrew } from ${from('state/store.ts')}
