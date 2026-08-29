@@ -25,7 +25,7 @@ export default function SidePanel() {
       data-browser-fullscreen={open && fullScreen ? '' : undefined}
       className={
         open && fullScreen
-          ? 'fixed inset-0 z-[60] overflow-hidden bg-ink-900'
+          ? 'app-no-drag fixed inset-0 z-[60] overflow-hidden bg-ink-900'
           : `relative shrink-0 overflow-hidden bg-ink-900 ${open ? 'border-l border-ink-700' : ''} ${
               dragging ? '' : 'transition-[width] duration-200'
             }`
