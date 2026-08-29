@@ -51,6 +51,7 @@ describe('sticky store', () => {
     const pinnedNew = store.create({ body: 'pinned new', pinned: true, color: 'purple' })
 
     expect(store.list().map(sticky => sticky.id)).toEqual([pinnedNew.id, pinnedOld.id, latest.id, first.id])
+    expect(first.color).toBe('default')
     store.update(first.id, { pinned: true })
     expect(store.list().map(sticky => sticky.id)).toEqual([first.id, pinnedNew.id, pinnedOld.id, latest.id])
   })

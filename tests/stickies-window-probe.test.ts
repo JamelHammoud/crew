@@ -47,6 +47,7 @@ describe('stickies window', () => {
       '#6fc7ad',
       '#d394df'
     ])
+    expect(stickyEditorBackground('default')).toBe('var(--color-ink-900)')
     expect(stickyEditorBackground('blue')).toBe('color-mix(in srgb, var(--color-ink-900) 94%, #78aee8)')
   })
 
