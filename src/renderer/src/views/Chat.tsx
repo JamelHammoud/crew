@@ -34,10 +34,12 @@ import { useMessagePlugin } from '../state/messagePlugin'
 
 export default function Chat({
   personal = false,
-  onStart
+  onStart,
+  focusRequest = 0
 }: {
   personal?: boolean
   onStart?: (threadId: string) => void
+  focusRequest?: number
 }) {
   const events = useCrew(s => s.events)
   const selfId = useCrew(s => s.selfId)
@@ -83,6 +85,9 @@ export default function Chat({
   useEffect(() => {
     if (personal && connection === 'online') inputRef.current?.focus({ preventScroll: true })
   }, [connection, inputRef, personal])
+  useEffect(() => {
+    if (focusRequest > 0) inputRef.current?.focus({ preventScroll: true })
+  }, [focusRequest, inputRef])
   const mention = useMentionAutocomplete(text, write, inputRef, { commands: offered })
   const slash = useSlashCommands(text, write, takeCommand, inputRef, offered)
   const scrollRef = useRef<HTMLDivElement>(null)

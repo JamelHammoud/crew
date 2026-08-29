@@ -105,6 +105,7 @@ declare global {
     onTrayTheme(listener: (theme: 'dark' | 'light') => void): () => void
     resizeTray(height: number): void
     openWindow(): void
+    openChat(): void
     openProjectWindow(key: string): Promise<boolean>
     openPersonalChat(name: string): Promise<boolean>
     openStickies(): Promise<boolean>
@@ -136,6 +137,7 @@ declare global {
     onTerminalRunning(listener: (id: string, command: string) => void): () => void
     onTerminalExit(listener: (id: string) => void): () => void
     onNotificationOpen(listener: (threadId: string, place: string | null) => void): () => void
+    onChatOpen(listener: () => void): () => void
     onOpenBrowserTab(listener: (tab: BrowserTab) => void): void
     onInsertBrowserTab(listener: (tab: BrowserTab, to: number) => void): void
     onRemoveBrowserTab(listener: (id: string) => void): void

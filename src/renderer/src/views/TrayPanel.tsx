@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactElement } from 'react'
 import { emptyPresence, type PresenceSnapshot } from '../../../shared/presence'
 import { MenuDivider, MenuItem } from '../components/Popover'
 import PresenceList from '../components/PresenceList'
-import { CheckCircleGlyph, StickyGlyph } from '../icons'
+import { ChatGlyph, CheckCircleGlyph, StickyGlyph } from '../icons'
 import { showTheme } from '../state/theme'
 
 const LIST = 388
@@ -50,6 +50,7 @@ export default function TrayPanel(): ReactElement {
       ref={boxRef}
       className="w-full max-w-full overflow-x-hidden p-1.5 [&_button]:focus-visible:bg-fg/5 [&_button]:focus-visible:text-fg [&_button]:focus-visible:outline-none"
     >
+      <MenuItem icon={<ChatGlyph />} label="Open chat" onClick={() => window.crew.openChat()} />
       {waiting > 0 && (
         <MenuItem
           icon={<CheckCircleGlyph />}

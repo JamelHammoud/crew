@@ -67,6 +67,7 @@ function Loading() {
 
 function Session() {
   const [tab, setTab] = useState<Tab>('chat')
+  const [chatFocus, setChatFocus] = useState(0)
   const closeTasks = useTasks(s => s.close)
   const pinned = useSidebar(s => s.pinned)
   const peeking = useSidebar(s => s.peeking)
@@ -108,6 +109,16 @@ function Session() {
     [openAlertThread]
   )
 
+  useEffect(
+    () =>
+      window.crew?.onChatOpen?.(() => {
+        closeThreads()
+        setTab('chat')
+        setChatFocus(current => current + 1)
+      }),
+    [closeThreads]
+  )
+
   useEffect(() => watchUpdates(), [])
 
   useEffect(() => window.crew?.onCrewTrouble?.(message => toast.fail(message, { key: 'crew-sync' })), [])
@@ -141,7 +152,8 @@ function Session() {
       </div>
       <div className="flex-1 min-w-0 relative isolate bg-ink-900">
         <main className="absolute inset-0">
-          {tab === 'chat' && (openThreadIds.length > 0 ? <ThreadColumns ids={openThreadIds} /> : <Chat />)}
+          {tab === 'chat' &&
+            (openThreadIds.length > 0 ? <ThreadColumns ids={openThreadIds} /> : <Chat focusRequest={chatFocus} />)}
           {tab === 'docs' && <Docs />}
           {tab === 'design' && (
             <Suspense fallback={<Loading />}>

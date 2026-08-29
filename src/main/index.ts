@@ -569,6 +569,15 @@ function openWindow(place?: string | null): BrowserWindow {
   return win
 }
 
+function openChat(): void {
+  const win = openWindow()
+  const send = () => {
+    if (!win.webContents.isDestroyed()) win.webContents.send('chat:open')
+  }
+  if (win.webContents.isLoading()) win.webContents.once('did-finish-load', send)
+  else send()
+}
+
 // The crew rides with the thread, so a window that has moved on to another
 // project since knows to go back to this one before it opens anything.
 function openThreadIn(win: BrowserWindow, threadId: string, place: string | null): void {
@@ -853,6 +862,7 @@ app.whenReady().then(async () => {
   ipcMain.on('presence:publish', (_event, here: Present[]) => tray.update({ here, known: true }))
   ipcMain.on('tray:size', (_event, height: number) => tray.resizePanel(height))
   ipcMain.on('tray:open', () => openWindow())
+  ipcMain.on('tray:chat', () => openChat())
   ipcMain.on('tray:hide', () => tray.hidePanel())
   // Everything about dictation is this machine's own, so the settings ride in
   // the window that holds them and are handed here to be acted on. Nothing about

@@ -141,6 +141,20 @@ beforeEach(() => {
 afterEach(cleanup)
 
 describe('several threads open side by side', () => {
+  it('returns to chat and focuses its composer when the menu bar asks', () => {
+    let openChat: (() => void) | undefined
+    window.crew.onChatOpen = listener => {
+      openChat = listener
+      return () => undefined
+    }
+    open(['thread-1'], 'thread-1')
+
+    act(() => openChat?.())
+
+    expect(useCrew.getState().openThreadIds).toEqual([])
+    expect(screen.getByPlaceholderText(CHAT_COMPOSER)).toBe(document.activeElement)
+  })
+
   it('replaces the row when a system notification is opened', () => {
     let openNotification: ((threadId: string, place: string | null) => void) | undefined
     window.crew.onNotificationOpen = listener => {

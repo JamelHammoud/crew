@@ -133,6 +133,7 @@ const bridge = {
   },
   resizeTray: (height: number): void => ipcRenderer.send('tray:size', height),
   openWindow: (): void => ipcRenderer.send('tray:open'),
+  openChat: (): void => ipcRenderer.send('tray:chat'),
   openProjectWindow: (key: string): Promise<boolean> => ipcRenderer.invoke('window:open-project', key),
   openPersonalChat: (name: string): Promise<boolean> => ipcRenderer.invoke('window:open-personal', name),
   openStickies: (): Promise<boolean> => ipcRenderer.invoke('window:open-stickies'),
@@ -171,6 +172,13 @@ const bridge = {
     ipcRenderer.on('notification:open', handler)
     return () => {
       ipcRenderer.off('notification:open', handler)
+    }
+  },
+  onChatOpen: (listener: () => void): (() => void) => {
+    const handler = () => listener()
+    ipcRenderer.on('chat:open', handler)
+    return () => {
+      ipcRenderer.off('chat:open', handler)
     }
   },
   openTerminal: (id: string, size: TerminalSize): void => ipcRenderer.send('terminal:open', id, size),

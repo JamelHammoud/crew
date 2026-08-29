@@ -17,6 +17,7 @@ const bridge = {
   onTrayTheme: vi.fn(() => () => {}),
   resizeTray: vi.fn(),
   openWindow: vi.fn(),
+  openChat: vi.fn(),
   openStickies: vi.fn(() => Promise.resolve(true)),
   closeTray: vi.fn()
 }
@@ -95,11 +96,14 @@ describe('tray panel', () => {
     expect(screen.getByText('Review 3 tasks')).toBeTruthy()
   })
 
-  it('puts a new sticky directly under review work and opens a blank sticky window', () => {
+  it('puts chat above review work and a new sticky directly below it', () => {
     show({ sharing: true, known: true, waiting: 3 })
 
     const rows = screen.getAllByRole('button')
-    expect(rows.slice(0, 2).map(row => row.textContent)).toEqual(['Review 3 tasks', 'New sticky'])
+    expect(rows.slice(0, 3).map(row => row.textContent)).toEqual(['Open chat', 'Review 3 tasks', 'New sticky'])
+
+    fireEvent.click(screen.getByRole('button', { name: 'Open chat' }))
+    expect(bridge.openChat).toHaveBeenCalledTimes(1)
 
     fireEvent.click(screen.getByRole('button', { name: 'New sticky' }))
     expect(bridge.openStickies).toHaveBeenCalledTimes(1)
