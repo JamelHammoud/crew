@@ -95,7 +95,7 @@ export function activeThreads(events: SessionEvent[], working: (threadId: string
       case 'message.route': {
         const thread = open.get(event.threadId)
         const message = messages.get(event.messageId)
-        if (thread && message && !thread.asked) {
+        if (thread && message && !thread.messaged) {
           thread.preview = message.text.trim() || (message.attachments?.length ? 'Attachments' : thread.preview)
           thread.asked = true
           thread.messaged = true
