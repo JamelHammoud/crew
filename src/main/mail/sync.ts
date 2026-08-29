@@ -1,4 +1,4 @@
-export type MailProvider = 'gmail' | 'imap'
+import type { MailProvider } from '../../shared/mail'
 
 export interface RemoteMailbox {
   id: string
@@ -28,6 +28,19 @@ export interface RemoteMailMessage {
   size?: number
   preview?: string
   body?: string
+  bodyHtml?: string
+  labelIds?: string[]
+  participants?: Array<{ role: 'from' | 'sender' | 'reply-to' | 'to' | 'cc' | 'bcc'; email: string; name?: string }>
+  attachments?: Array<{
+    id: string
+    filename: string
+    contentType: string
+    size: number
+    contentId?: string
+    inline?: boolean
+    checksum?: string
+    content?: Uint8Array
+  }>
   modSeq?: string
 }
 
