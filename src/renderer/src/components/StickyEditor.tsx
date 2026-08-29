@@ -92,7 +92,7 @@ export default function StickyEditor({
       style={{ background: stickyEditorBackground(sticky.color) }}
       className="h-full overflow-y-auto overflow-x-hidden transition-[background-color] duration-200"
     >
-      <div className={`mx-auto w-full max-w-[780px] pb-16 ${compact ? 'pt-10' : 'pt-[88px]'}`}>
+      <div className={`mx-auto w-full max-w-[780px] pb-16 ${compact ? 'pt-16' : 'pt-[88px]'}`}>
         <div className="px-[54px] pb-3">
           <input
             ref={titleRef}

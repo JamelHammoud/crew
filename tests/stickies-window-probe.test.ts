@@ -39,7 +39,8 @@ describe('stickies window', () => {
   })
 
   it('keeps the shared color order and mixes the selected color into the page', () => {
-    expect(['yellow', 'pink', 'blue', 'green', 'purple'].map(color => stickyColorValue(color as Sticky['color']))).toEqual([
+    expect(['default', 'yellow', 'pink', 'blue', 'green', 'purple'].map(color => stickyColorValue(color as Sticky['color']))).toEqual([
+      'var(--color-ink-700)',
       '#e9c46a',
       '#ef8f8f',
       '#78aee8',
