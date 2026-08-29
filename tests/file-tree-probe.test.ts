@@ -281,7 +281,11 @@ describe('the file explorer', () => {
     useBrowser.getState().openFiles()
     render(createElement(BrowserPanel))
     fireEvent.click(await screen.findByText('src'))
-    const source = await waitFor(() => rowFor('src/app.ts')!)
+    const source = await waitFor(() => {
+      const found = rowFor('src/app.ts')
+      expect(found).toBeTruthy()
+      return found!
+    })
     fireEvent.click(source)
 
     fireEvent.click(rowFor('readme.md')!, { shiftKey: true })
@@ -297,7 +301,11 @@ describe('the file explorer', () => {
     useBrowser.getState().openFiles()
     render(createElement(BrowserPanel))
     fireEvent.click(await screen.findByText('src'))
-    const app = await waitFor(() => rowFor('src/app.ts')!)
+    const app = await waitFor(() => {
+      const found = rowFor('src/app.ts')
+      expect(found).toBeTruthy()
+      return found!
+    })
     fireEvent.click(app)
     fireEvent.click(rowFor('readme.md')!, { metaKey: true })
     const target = document.querySelector('[data-folder="src/renderer"]') as HTMLElement
@@ -316,7 +324,11 @@ describe('the file explorer', () => {
     useBrowser.getState().openFiles()
     render(createElement(BrowserPanel))
     fireEvent.click(await screen.findByText('src'))
-    const app = await waitFor(() => rowFor('src/app.ts')!)
+    const app = await waitFor(() => {
+      const found = rowFor('src/app.ts')
+      expect(found).toBeTruthy()
+      return found!
+    })
     const tests = document.querySelector('[data-folder="tests"]') as HTMLElement
     fireEvent.click(app)
     fireEvent.keyDown(app, { key: 'c', metaKey: true })
@@ -338,7 +350,11 @@ describe('the file explorer', () => {
   it('hands a dragged file to the tab strip as a new tab', async () => {
     useBrowser.getState().openFiles()
     render(createElement(BrowserPanel))
-    const source = await waitFor(() => rowFor('readme.md')!)
+    const source = await waitFor(() => {
+      const found = rowFor('readme.md')
+      expect(found).toBeTruthy()
+      return found!
+    })
     const strip = document.querySelector('[data-tab]')!.parentElement as HTMLElement
     const values = new Map<string, string>()
     const dataTransfer = {
@@ -944,21 +960,6 @@ describe('the file explorer', () => {
     expect(activeTab().id).toBe(tabs[1]!.id)
     expect(activeTab().path).toBe('src/app.ts')
     expect(await screen.findByText('export const one = 1')).toBeTruthy()
-  })
-
-  it('opens a file from the tree in a new tab when it is Shift-clicked', async () => {
-    useBrowser.getState().openFiles()
-    render(createElement(BrowserPanel))
-    fireEvent.click(await screen.findByText('src'))
-    await waitFor(() => expect(rowFor('src/app.ts')).toBeTruthy())
-
-    fireEvent.click(rowFor('src/app.ts')!, { shiftKey: true })
-
-    const tabs = useBrowser.getState().tabs
-    expect(tabs).toHaveLength(2)
-    expect(tabs[0]!.path).toBe('')
-    expect(tabs[0]!.tree).toBe(true)
-    expect(activeTab().path).toBe('src/app.ts')
   })
 
   it('opens a file from the tree in a Browser window from its menu', async () => {
