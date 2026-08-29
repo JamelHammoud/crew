@@ -3,15 +3,16 @@ import type { MailAccount, MailboxId } from '../../state/mail'
 import {
   ArchiveGlyph,
   AtGlyph,
-  ChatGlyph,
   ClockGlyph,
   DocGlyph,
+  InboxGlyph,
+  MailGlyph,
   MoreGlyph,
   PlusGlyph,
   SendGlyph,
+  SpamGlyph,
   StarGlyph,
   TrashGlyph,
-  WarningGlyph
 } from '../../icons'
 import { AddAccount, AccountSettings } from './Accounts'
 import { AccountMark, IconButton } from './parts'
@@ -23,14 +24,14 @@ export interface MailLocation {
 }
 
 const MAILBOXES: Array<{ id: MailboxId; label: string; icon: ReactNode }> = [
-  { id: 'inbox', label: 'Inbox', icon: <ChatGlyph className="w-4 h-4" /> },
+  { id: 'inbox', label: 'Inbox', icon: <InboxGlyph className="w-4 h-4" /> },
   { id: 'starred', label: 'Starred', icon: <StarGlyph className="w-4 h-4" /> },
   { id: 'snoozed', label: 'Snoozed', icon: <ClockGlyph className="w-4 h-4" /> },
   { id: 'sent', label: 'Sent', icon: <SendGlyph className="w-4 h-4" /> },
   { id: 'drafts', label: 'Drafts', icon: <DocGlyph className="w-4 h-4" /> },
   { id: 'scheduled', label: 'Scheduled', icon: <ClockGlyph className="w-4 h-4" /> },
-  { id: 'all', label: 'All mail', icon: <ArchiveGlyph className="w-4 h-4" /> },
-  { id: 'spam', label: 'Spam', icon: <WarningGlyph className="w-4 h-4" /> },
+  { id: 'all', label: 'All mail', icon: <MailGlyph className="w-4 h-4" /> },
+  { id: 'spam', label: 'Spam', icon: <SpamGlyph className="w-4 h-4" /> },
   { id: 'trash', label: 'Trash', icon: <TrashGlyph className="w-4 h-4" /> }
 ]
 

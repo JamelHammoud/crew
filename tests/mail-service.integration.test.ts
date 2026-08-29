@@ -191,11 +191,11 @@ describe('Gmail transport over loopback', () => {
     const personal = await transport(server, 'personal')
     const work = await transport(server, 'work')
 
-    const [personalMailboxes, personalInbox, workInbox] = await Promise.all([
-      personal.listMailboxes(),
-      personal.fetchSummaries('INBOX', { limit: 20 }),
-      work.fetchSummaries('INBOX', { limit: 20 })
-    ])
+    const personalMailboxes = await personal.listMailboxes()
+    const personalInbox = await personal.fetchSummaries('INBOX', { limit: 20 }).catch(error => {
+      throw new Error(`${String(error)}\n${server.imapCommands.join('\n')}`)
+    })
+    const workInbox = await work.fetchSummaries('INBOX', { limit: 20 })
     expect(personalMailboxes.find(mailbox => mailbox.specialUse === '\\Inbox')?.path).toBe('INBOX')
     expect(personalInbox.map(one => one.subject)).toEqual(['Crew receipt', 'Dinner this weekend'])
     expect(workInbox.map(one => one.subject)).toEqual(['Release checklist'])
