@@ -41,7 +41,7 @@ const stirs = (event: SessionEvent): string | undefined => {
 export function activeThreads(events: SessionEvent[], working: (threadId: string) => boolean): LiveThread[] {
   const open = new Map<
     string,
-    { title: string; agentLabel: string; at: number; preview: string; asked: boolean }
+    { title: string; agentLabel: string; at: number; preview: string; asked: boolean; messaged: boolean }
   >()
   const messages = new Map<string, Extract<SessionEvent, { kind: 'message' }>>()
   for (const event of events) {
@@ -50,9 +50,10 @@ export function activeThreads(events: SessionEvent[], working: (threadId: string
         messages.set(event.id, event)
         if (event.threadId) {
           const thread = open.get(event.threadId)
-          if (thread && !thread.asked) {
+          if (thread && !thread.messaged) {
             thread.preview = event.text.trim() || (event.attachments?.length ? 'Attachments' : thread.preview)
             thread.asked = true
+            thread.messaged = true
           }
         }
         break
@@ -63,7 +64,8 @@ export function activeThreads(events: SessionEvent[], working: (threadId: string
           agentLabel: event.agentLabel,
           at: event.ts,
           preview: event.title,
-          asked: false
+          asked: false,
+          messaged: false
         })
         break
       case 'thread.archived':
@@ -96,6 +98,7 @@ export function activeThreads(events: SessionEvent[], working: (threadId: string
         if (thread && message && !thread.asked) {
           thread.preview = message.text.trim() || (message.attachments?.length ? 'Attachments' : thread.preview)
           thread.asked = true
+          thread.messaged = true
         }
         break
       }

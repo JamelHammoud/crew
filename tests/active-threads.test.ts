@@ -155,6 +155,17 @@ describe('the threads a place is showing', () => {
     expect(activeThreads(events, none)[0]?.preview).toBe(opening)
   })
 
+  it('keeps the opening message when a shortened run record reaches it first', () => {
+    const opening = 'Add an Implement plan button below the plan message in thread chat, like the composer header'
+    const events = [
+      started('a', 'Add an Implement plan button below the plan message in thread chat, like how t…'),
+      asked('a', 'p1', 'Add an Implement plan button below the plan message in thread chat, like how t…'),
+      message('a', opening)
+    ]
+
+    expect(activeThreads(events, none)[0]?.preview).toBe(opening)
+  })
+
   it('leaves out a thread somebody has finished or put away', () => {
     const events: SessionEvent[] = [
       started('a', 'Done with'),
