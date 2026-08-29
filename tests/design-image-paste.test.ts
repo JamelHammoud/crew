@@ -51,7 +51,10 @@ describe('images pasted into Design', () => {
 
   it('reads browser image dimensions and releases the bitmap', async () => {
     const close = vi.fn()
-    vi.stubGlobal('createImageBitmap', vi.fn(async () => ({ width: 144, height: 96, close })))
+    vi.stubGlobal(
+      'createImageBitmap',
+      vi.fn(async () => ({ width: 144, height: 96, close }))
+    )
     const file = new File(['pixels'], 'shot.png', { type: 'image/png' })
     await expect(readImageSize(file)).resolves.toEqual({ w: 144, h: 96 })
     expect(close).toHaveBeenCalledOnce()
