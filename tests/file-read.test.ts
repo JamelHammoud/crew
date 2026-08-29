@@ -9,6 +9,7 @@ import {
   repoPathOf,
   resolveRepoPath,
   statRepoFile,
+  transferRepoEntries,
   writeLocalFile,
   writeRepoFile
 } from '../src/main/files'
@@ -205,6 +206,70 @@ describe('copyPaths', () => {
       absolute: outside,
       relative: '../elsewhere/notes.md'
     })
+  })
+})
+
+describe('transferRepoEntries', () => {
+  it('copies a group into one folder', async () => {
+    const root = makeRepo()
+    mkdirSync(path.join(root, 'copies'))
+
+    const result = await transferRepoEntries(root, ['readme.md', 'src/app'], 'copies', 'copy')
+
+    expect(result).toEqual({
+      ok: true,
+      entries: [
+        { source: 'readme.md', path: 'copies/readme.md' },
+        { source: 'src/app', path: 'copies/app' }
+      ]
+    })
+    expect(readFileSync(path.join(root, 'readme.md'), 'utf8')).toBe('hello\nworld\n')
+    expect(readFileSync(path.join(root, 'copies', 'readme.md'), 'utf8')).toBe('hello\nworld\n')
+    expect(readFileSync(path.join(root, 'copies', 'app', 'main.ts'), 'utf8')).toBe('export const x = 1\n')
+  })
+
+  it('moves a group only after every destination passes validation', async () => {
+    const root = makeRepo()
+    mkdirSync(path.join(root, 'moved'))
+
+    const result = await transferRepoEntries(root, ['logo.png', 'readme.md'], 'moved', 'move')
+
+    expect(result).toEqual({
+      ok: true,
+      entries: [
+        { source: 'logo.png', path: 'moved/logo.png' },
+        { source: 'readme.md', path: 'moved/readme.md' }
+      ]
+    })
+    expect(existsSync(path.join(root, 'logo.png'))).toBe(false)
+    expect(existsSync(path.join(root, 'readme.md'))).toBe(false)
+    expect(existsSync(path.join(root, 'moved', 'logo.png'))).toBe(true)
+    expect(existsSync(path.join(root, 'moved', 'readme.md'))).toBe(true)
+  })
+
+  it('leaves the whole group in place when one destination is occupied', async () => {
+    const root = makeRepo()
+    mkdirSync(path.join(root, 'occupied'))
+    writeFileSync(path.join(root, 'occupied', 'readme.md'), 'held\n')
+
+    const result = await transferRepoEntries(root, ['logo.png', 'readme.md'], 'occupied', 'move')
+
+    expect(result).toEqual({ ok: false, message: 'That name is already in use there' })
+    expect(existsSync(path.join(root, 'logo.png'))).toBe(true)
+    expect(existsSync(path.join(root, 'readme.md'))).toBe(true)
+    expect(existsSync(path.join(root, 'occupied', 'logo.png'))).toBe(false)
+    expect(readFileSync(path.join(root, 'occupied', 'readme.md'), 'utf8')).toBe('held\n')
+  })
+
+  it('moves a selected folder once when its child is also named', async () => {
+    const root = makeRepo()
+    mkdirSync(path.join(root, 'target'))
+
+    const result = await transferRepoEntries(root, ['src/app/main.ts', 'src/app'], 'target', 'move')
+
+    expect(result).toEqual({ ok: true, entries: [{ source: 'src/app', path: 'target/app' }] })
+    expect(existsSync(path.join(root, 'src', 'app'))).toBe(false)
+    expect(readFileSync(path.join(root, 'target', 'app', 'main.ts'), 'utf8')).toBe('export const x = 1\n')
   })
 })
 

@@ -81,4 +81,29 @@ describe('Browser tab transfers', () => {
     expect(transfers.drop(source.value, 'move-one', 2)).toBe(true)
     expect(source.send).toHaveBeenCalledWith('browser:move-tab', tab.id, 2)
   })
+
+  it('opens a dragged file tab without removing anything from either window', () => {
+    const source = contents(1)
+    const target = contents(2)
+    const transfers = new BrowserTabTransfers(() => 'project-one')
+    const file = { ...tab, id: 'file-tab', kind: 'file' as const, path: 'src/app.ts' }
+
+    transfers.begin(source.value, 'open-one', file, true)
+
+    expect(transfers.drop(target.value, 'open-one', 1)).toBe(true)
+    expect(target.send).toHaveBeenCalledWith('browser:insert-tab', file, 1)
+    expect(source.send).not.toHaveBeenCalled()
+  })
+
+  it('opens a dragged file tab in its source window too', () => {
+    const source = contents(1)
+    const transfers = new BrowserTabTransfers(() => 'project-one')
+    const file = { ...tab, id: 'file-tab', kind: 'file' as const, path: 'src/app.ts' }
+
+    transfers.begin(source.value, 'open-one', file, true)
+
+    expect(transfers.drop(source.value, 'open-one', 2)).toBe(true)
+    expect(source.send).toHaveBeenCalledWith('browser:insert-tab', file, 2)
+    expect(source.send).not.toHaveBeenCalledWith('browser:move-tab', file.id, 2)
+  })
 })
