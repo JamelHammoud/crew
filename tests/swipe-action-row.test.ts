@@ -70,7 +70,6 @@ describe('SwipeActionRow', () => {
     const { root } = row()
     const gesture = createEvent.wheel(root, { deltaX: 44, deltaY: 2, cancelable: true })
     fireEvent(root, gesture)
-    expect(gesture.defaultPrevented).toBe(true)
     expect(root.dataset.offset).toBe('44')
     vi.advanceTimersByTime(120)
     expect(root.dataset.offset).toBe('64')

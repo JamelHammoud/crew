@@ -3,8 +3,7 @@ import {
   useRef,
   useState,
   type PointerEvent as ReactPointerEvent,
-  type ReactNode,
-  type WheelEvent as ReactWheelEvent
+  type ReactNode
 } from 'react'
 import { TrashGlyph } from '../icons'
 
@@ -38,10 +37,12 @@ export default function SwipeActionRow({ children, className = '', onDelete }: S
   const [offset, setOffset] = useState(0)
   const [moving, setMoving] = useState(false)
   const offsetRef = useRef(0)
+  const rowRef = useRef<HTMLDivElement>(null)
   const drag = useRef<Drag | null>(null)
   const wheelTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const clickTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const ignoreClick = useRef(false)
+  const wheelHandler = useRef<(event: WheelEvent) => void>(() => {})
 
   const moveTo = (next: number) => {
     const value = clamp(next)
@@ -69,13 +70,16 @@ export default function SwipeActionRow({ children, className = '', onDelete }: S
     }, 0)
   }
 
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    const row = rowRef.current
+    const onWheel = (event: WheelEvent) => wheelHandler.current(event)
+    row?.addEventListener('wheel', onWheel, { passive: false })
+    return () => {
+      row?.removeEventListener('wheel', onWheel)
       stopWheelTimer()
       if (clickTimer.current !== null) clearTimeout(clickTimer.current)
-    },
-    []
-  )
+    }
+  }, [])
 
   const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (event.button !== 0 || !event.isPrimary) return
@@ -129,7 +133,7 @@ export default function SwipeActionRow({ children, className = '', onDelete }: S
     settle(offsetRef.current >= OPEN_AT)
   }
 
-  const onWheel = (event: ReactWheelEvent<HTMLDivElement>) => {
+  wheelHandler.current = event => {
     if (Math.abs(event.deltaX) <= Math.abs(event.deltaY) || event.deltaX === 0) return
     event.preventDefault()
     stopWheelTimer()
@@ -149,11 +153,11 @@ export default function SwipeActionRow({ children, className = '', onDelete }: S
 
   return (
     <div
+      ref={rowRef}
       data-swipe-action-row=""
       data-open={offset === ACTION_WIDTH ? '' : undefined}
       data-offset={Math.round(offset)}
       className={`relative overflow-hidden ${className}`}
-      onWheel={onWheel}
       onKeyDown={event => {
         if (event.key !== 'Escape' || offsetRef.current === 0) return
         event.preventDefault()
