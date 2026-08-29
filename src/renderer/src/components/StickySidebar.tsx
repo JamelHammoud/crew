@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { useMemo, useRef, useState, type ReactNode } from 'react'
 import type { Sticky, StickyColor } from '../../../shared/stickies'
 import { STICKY_COLORS } from '../../../shared/stickies'
 import { CloseGlyph, PanelLeftGlyph, PinGlyph, PlusGlyph, PopOutGlyph, SearchGlyph, StickyGlyph, TrashGlyph } from '../icons'
@@ -102,7 +102,8 @@ function StickyRow({ sticky, active, onOpen }: { sticky: Sticky; active: boolean
           event.preventDefault()
           setAt({ x: event.clientX, y: event.clientY })
         }}
-        className="relative px-3"
+        style={{ paddingRight: 'var(--swipe-inset)' }}
+        className="relative pl-3"
       >
         <button
           onClick={onOpen}
@@ -176,11 +177,6 @@ export default function StickySidebar({
     <aside
       data-sticky-sidebar
       aria-hidden={collapsed}
-      style={
-        {
-          '--swipe-surface': glass ? 'var(--color-ink-800)' : 'var(--color-ink-900)'
-        } as CSSProperties
-      }
       className={`shrink-0 overflow-hidden transition-[width,border-color] duration-200 ${
         collapsed
           ? 'w-0'

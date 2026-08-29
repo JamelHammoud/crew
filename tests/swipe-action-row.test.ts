@@ -34,7 +34,7 @@ describe('SwipeActionRow', () => {
     expect(root.dataset.offset).toBe('48')
     expect(surface.dataset.moving).toBe('')
     fireEvent.pointerUp(surface, { pointerId: 1, clientX: 52, clientY: 12 })
-    expect(root.dataset.offset).toBe('64')
+    expect(root.dataset.offset).toBe('56')
     expect(root.dataset.open).toBe('')
   })
 
@@ -75,7 +75,7 @@ describe('SwipeActionRow', () => {
     fireEvent(root, gesture)
     expect(root.dataset.offset).toBe('44')
     act(() => vi.advanceTimersByTime(120))
-    expect(root.dataset.offset).toBe('64')
+    expect(root.dataset.offset).toBe('56')
     expect(root.dataset.open).toBe('')
   })
 
@@ -87,11 +87,19 @@ describe('SwipeActionRow', () => {
     expect(root.dataset.offset).toBe('0')
   })
 
+  it('leaves an ordinary row click intact', () => {
+    const { onPress } = row()
+
+    fireEvent.click(screen.getByRole('button', { name: 'One row' }))
+
+    expect(onPress).toHaveBeenCalledTimes(1)
+  })
+
   it('calls onDelete from the labelled Crew action after it is revealed', () => {
     const { onDelete, root } = row()
     const action = screen.getByRole('button', { name: 'Delete' })
     expect(action.querySelector('svg')).toBeTruthy()
-    fireEvent.wheel(root, { deltaX: 64, deltaY: 0 })
+    fireEvent.wheel(root, { deltaX: 56, deltaY: 0 })
     expect(root.dataset.open).toBe('')
     expect(action.tabIndex).toBe(0)
     fireEvent.click(action)
@@ -104,17 +112,17 @@ describe('SwipeActionRow', () => {
 
     const action = screen.getByRole('button', { name: 'Delete' })
     const surface = document.querySelector('[data-swipe-surface]') as HTMLDivElement
-    expect(action.style.opacity).toBe('0')
+    expect(action.style.clipPath).toBe('inset(0 0 0 56px)')
     expect(action.tabIndex).toBe(-1)
     expect(action.className).toContain('rounded-full')
     expect(action.className).toContain('h-10')
     expect(action.className).toContain('w-10')
-    expect(surface.style.background).toBe('var(--swipe-surface, var(--color-ink-900))')
+    expect(surface.style.getPropertyValue('--swipe-inset')).toBe('12px')
   })
 
   it('closes an open action with Escape', () => {
     const { root } = row()
-    fireEvent.wheel(root, { deltaX: 64, deltaY: 0 })
+    fireEvent.wheel(root, { deltaX: 56, deltaY: 0 })
     fireEvent.keyDown(root, { key: 'Escape' })
     expect(root.dataset.offset).toBe('0')
   })

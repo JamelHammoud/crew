@@ -111,7 +111,7 @@ export default function StickyEditor({
             }}
             placeholder="Title"
             aria-label="Sticky title"
-            className="w-full bg-transparent text-[32px] leading-tight font-semibold tracking-[-0.02em] text-fg placeholder:text-fg-faint outline-none"
+            className="w-full bg-transparent text-[32px] leading-tight font-semibold tracking-[-0.02em] text-fg placeholder:text-fg/15 outline-none"
           />
         </div>
         <DocEditor
