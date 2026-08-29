@@ -303,6 +303,7 @@
     "composer-look": "node scripts/composer-look.mjs",
     "queue-look": "node scripts/queue-look.mjs",
     "personal-chat-look": "node scripts/personal-chat-look.mjs",
+    "stickies-look": "node scripts/stickies-look.mjs",
     "board-perf": "node scripts/board-perf.mjs",
     "snap-check": "node scripts/snap-check.mjs",
     "scribe-check": "node scripts/scribe-check.mjs",
