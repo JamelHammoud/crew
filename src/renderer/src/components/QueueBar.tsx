@@ -167,7 +167,7 @@ function QueueRow({
             <Popover
               open={menu !== null}
               onClose={() => setMenu(null)}
-              at={typeof menu === 'object' ? menu : undefined}
+              at={menu && typeof menu === 'object' ? menu : undefined}
               side="top"
               className="min-w-44"
             >

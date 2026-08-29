@@ -4850,13 +4850,16 @@ export class CrewSession {
     const events = this.eventsOf(threadId)
     const ended = new Set(
       events
-        .filter(event => event.kind === 'agent.end' && event.threadId === threadId && event.ts <= until)
+        .filter(
+          (event): event is Extract<SessionEvent, { kind: 'agent.end' }> =>
+            event.kind === 'agent.end' && event.threadId === threadId && event.ts <= until
+        )
         .map(event => event.promptId)
     )
     const unfinished = new Set(
       events
         .filter(
-          event =>
+          (event): event is Extract<SessionEvent, { kind: 'agent.start' }> =>
             event.kind === 'agent.start' &&
             event.threadId === threadId &&
             event.ts <= until &&
@@ -4867,14 +4870,14 @@ export class CrewSession {
     const omitted = new Set(
       events
         .filter(
-          event =>
+          (event): event is Extract<SessionEvent, { kind: 'agent.start' | 'message.route' }> =>
             (event.kind === 'agent.start' && unfinished.has(event.promptId) && event.messageId !== undefined) ||
             (event.kind === 'message.route' &&
               event.threadId === threadId &&
               event.ts <= until &&
               unfinished.has(event.promptId))
         )
-        .map(event => (event.kind === 'agent.start' ? event.messageId : event.messageId))
+        .map(event => event.messageId)
         .filter((messageId): messageId is string => messageId !== undefined)
     )
     return this.threadContext(threadId, until).filter(event => event.kind !== 'message' || !omitted.has(event.id))
