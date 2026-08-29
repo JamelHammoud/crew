@@ -22,20 +22,6 @@ function upsert(sticky: Sticky): void {
   replace(at < 0 ? [sticky, ...snapshot] : snapshot.map(one => (one.id === sticky.id ? sticky : one)))
 }
 
-export function stickyCreateInput(sticky: Sticky, patch: UpdateStickyInput): CreateStickyInput {
-  const title = 'title' in patch ? patch.title : sticky.title
-  return {
-    title: title?.trim() || undefined,
-    body: 'body' in patch ? (patch.body ?? '') : sticky.body,
-    color: sticky.color,
-    pinned: sticky.pinned
-  }
-}
-
-export function stickyHasContent(input: CreateStickyInput): boolean {
-  return Boolean(input.title?.trim() || input.body.trim())
-}
-
 export async function refreshStickies(): Promise<void> {
   const next = await window.crew.listStickies()
   replace(next)

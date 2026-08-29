@@ -1,10 +1,24 @@
 import { useEffect, useRef, useState } from 'react'
-import type { Sticky, UpdateStickyInput } from '../../../shared/stickies'
-import { createSticky, stickyCreateInput, stickyHasContent, updateSticky } from '../state/stickies'
+import type { CreateStickyInput, Sticky, UpdateStickyInput } from '../../../shared/stickies'
+import { createSticky, updateSticky } from '../state/stickies'
 import DocEditor, { type DocEditorHandle } from './DocEditor'
 import { stickyEditorBackground } from './StickySidebar'
 
 export { stickyEditorBackground } from './StickySidebar'
+
+export function stickyCreateInput(sticky: Sticky, patch: UpdateStickyInput): CreateStickyInput {
+  const title = 'title' in patch ? patch.title : sticky.title
+  return {
+    title: title?.trim() || undefined,
+    body: 'body' in patch ? (patch.body ?? '') : sticky.body,
+    color: sticky.color,
+    pinned: sticky.pinned
+  }
+}
+
+export function stickyHasContent(input: CreateStickyInput): boolean {
+  return Boolean(input.title?.trim() || input.body.trim())
+}
 
 export function stickyImageDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {

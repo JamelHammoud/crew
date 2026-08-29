@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import type { Sticky } from '../src/shared/stickies'
+import { stickyCreateInput, stickyHasContent } from '../src/renderer/src/components/StickyEditor'
 import { stickyEditorBackground, stickyColorValue, stickyLabel, stickyPreview } from '../src/renderer/src/components/StickySidebar'
-import { stickyCreateInput, stickyHasContent } from '../src/renderer/src/state/stickies'
 
 const draft: Sticky = {
   id: 'draft:one',

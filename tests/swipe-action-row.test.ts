@@ -103,11 +103,13 @@ describe('SwipeActionRow', () => {
     row()
 
     const action = screen.getByRole('button', { name: 'Delete' })
+    const surface = document.querySelector('[data-swipe-surface]') as HTMLDivElement
     expect(action.style.opacity).toBe('0')
     expect(action.tabIndex).toBe(-1)
     expect(action.className).toContain('rounded-full')
     expect(action.className).toContain('h-10')
     expect(action.className).toContain('w-10')
+    expect(surface.style.background).toBe('var(--swipe-surface, var(--color-ink-900))')
   })
 
   it('closes an open action with Escape', () => {
