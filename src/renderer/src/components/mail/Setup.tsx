@@ -1,7 +1,8 @@
 import { useMemo, useState, type FormEvent } from 'react'
-import { AtGlyph, CheckGlyph, ExternalLinkGlyph, LockGlyph } from '../../icons'
+import { ExternalLinkGlyph, QuestionGlyph } from '../../icons'
 import Spinner from '../Spinner'
 import TextField from '../TextField'
+import Tooltip from '../Tooltip'
 import { useMail } from '../../state/mail'
 
 const APP_PASSWORDS = 'https://myaccount.google.com/apppasswords'
@@ -35,9 +36,6 @@ export default function MailSetup({ compact = false, onDone }: { compact?: boole
       <div className={`${compact ? '' : 'max-w-[440px] mx-auto pt-24 pb-24'}`}>
         {!compact && (
           <div className="mb-9">
-            <span className="w-12 h-12 rounded-2xl bg-fg text-ink-900 flex items-center justify-center mb-5">
-              <AtGlyph className="w-6 h-6" />
-            </span>
             <h1 className="text-2xl font-semibold text-fg">Mail</h1>
           </div>
         )}
@@ -67,7 +65,18 @@ export default function MailSetup({ compact = false, onDone }: { compact?: boole
 
           <label className="block">
             <span className="flex items-center justify-between gap-3 mb-2">
-              <span className="text-sm font-medium text-fg-secondary">App password</span>
+              <span className="flex items-center gap-1.5">
+                <span className="text-sm font-medium text-fg-secondary">App password</span>
+                <Tooltip label="Your password stays on this computer.">
+                  <button
+                    type="button"
+                    aria-label="About app passwords"
+                    className="flex text-fg-faint transition-colors hover:text-fg-secondary active:scale-[0.98]"
+                  >
+                    <QuestionGlyph className="w-3.5 h-3.5" />
+                  </button>
+                </Tooltip>
+              </span>
               <button
                 type="button"
                 onClick={() => void window.crew.openExternal(APP_PASSWORDS)}
@@ -98,14 +107,9 @@ export default function MailSetup({ compact = false, onDone }: { compact?: boole
             disabled={!valid || busy}
             className="w-full h-11 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center justify-center gap-2 transition-colors hover:bg-fg/90 active:scale-[0.99] disabled:opacity-40 disabled:pointer-events-none"
           >
-            {busy ? <Spinner size={16} /> : <CheckGlyph className="w-4 h-4" />}
+            {busy && <Spinner size={16} />}
             {busy ? 'Connecting' : 'Connect'}
           </button>
-
-          <div className="flex items-center justify-center gap-2 text-xs text-fg-faint">
-            <LockGlyph className="w-3.5 h-3.5" />
-            <span>Your password stays on this computer.</span>
-          </div>
         </form>
       </div>
     </div>

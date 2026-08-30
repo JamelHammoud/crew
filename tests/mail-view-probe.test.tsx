@@ -181,6 +181,21 @@ afterEach(() => {
 })
 
 describe('mail setup', () => {
+  it('keeps the password storage note in the app password help', async () => {
+    vi.useFakeTimers()
+    bridge.listAccounts.mockResolvedValue([])
+    bridge.listThreads.mockResolvedValue([])
+    render(createElement(Mail))
+
+    const help = await screen.findByRole('button', { name: 'About app passwords' })
+    expect(screen.queryByText('Your password stays on this computer.')).toBeNull()
+
+    fireEvent.mouseEnter(help)
+    await act(async () => vi.advanceTimersByTime(300))
+
+    expect(screen.getByText('Your password stays on this computer.')).toBeTruthy()
+  })
+
   it('validates and connects the first account', async () => {
     bridge.listAccounts.mockResolvedValue([])
     bridge.listThreads.mockResolvedValue([])
