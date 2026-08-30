@@ -16,7 +16,9 @@ function source() {
   return `import React from ${JSON.stringify(resolve('react'))}
 import { createRoot } from ${JSON.stringify(resolve('react-dom/client'))}
 import Mail from ${from('views/Mail.tsx')}
+import WindowCorner from ${from('components/WindowCorner.tsx')}
 import { useMail } from ${from('state/mail.ts')}
+import { useSidebar } from ${from('state/sidebar.ts')}
 import './probe.css'
 
 const personal = {
@@ -104,7 +106,10 @@ window.setMailScene = name => {
 }
 
 window.setMailScene('setup')
-createRoot(document.getElementById('root')).render(React.createElement(Mail))
+useSidebar.setState({ pinned: false, peeking: false, near: false, over: false })
+createRoot(document.getElementById('root')).render(
+  React.createElement('div', { className: 'h-full relative' }, React.createElement(Mail), React.createElement(WindowCorner))
+)
 `
 }
 
@@ -137,6 +142,7 @@ app.whenReady().then(async () => {
     seen.setup = await win.webContents.executeJavaScript("Boolean(document.querySelector('input[placeholder=\\"name@gmail.com\\"]'))")
     await scene(win, 'inbox')
     seen.inbox = await win.webContents.executeJavaScript("[...document.querySelectorAll('[role=button]')].filter(node => node.textContent.includes('checklist') || node.textContent.includes('Dinner')).length")
+    seen.chromeClear = await win.webContents.executeJavaScript("(() => { const projects = document.querySelector('button[aria-label=\\\"Projects\\\"]'); const write = [...document.querySelectorAll('button')].find(node => node.textContent.trim() === 'Write'); if (!projects || !write) return false; const corner = projects.getBoundingClientRect(); const compose = write.getBoundingClientRect(); return corner.bottom <= compose.top })()")
     await win.webContents.executeJavaScript("[...document.querySelectorAll('[role=button]')].find(node => node.textContent.includes('Dinner this weekend')).click()")
     await wait(260)
     seen.thread = await win.webContents.executeJavaScript("Boolean([...document.querySelectorAll('h1')].find(node => node.textContent === 'Dinner this weekend'))")
@@ -208,6 +214,7 @@ try {
   if (seen.failed) throw new Error(seen.failed)
   if (!seen.setup) throw new Error('setup did not show the Google email field')
   if (seen.inbox < 2) throw new Error(`the populated inbox showed ${seen.inbox} expected rows`)
+  if (!seen.chromeClear) throw new Error('the collapsed Crew control overlapped Write')
   if (!seen.thread) throw new Error('the conversation did not open')
   if (!seen.compose) throw new Error('the composer did not open')
   if (seen.loading < 1) throw new Error('the loading state had no skeletons')
@@ -215,6 +222,7 @@ try {
   if (!seen.reconnect) throw new Error('the reconnect state did not show its account and connection status')
   console.log(`setup            ${seen.setup ? 'yes' : 'no'}`)
   console.log(`inbox rows        ${seen.inbox}`)
+  console.log(`collapsed chrome  ${seen.chromeClear ? 'clear' : 'overlapping'}`)
   console.log(`thread            ${seen.thread ? 'yes' : 'no'}`)
   console.log(`compose           ${seen.compose ? 'yes' : 'no'}`)
   console.log(`loading skeletons ${seen.loading}`)
