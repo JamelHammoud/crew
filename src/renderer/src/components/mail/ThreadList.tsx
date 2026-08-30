@@ -8,6 +8,7 @@ import {
   ChevronLeftGlyph,
   MailGlyph,
   RefreshGlyph,
+  SpamGlyph,
   StarGlyph,
   TrashGlyph,
   UnreadGlyph
@@ -242,6 +243,9 @@ export default function ThreadList({
           </IconButton>
           <IconButton label="Archive" onClick={() => void apply({ mailboxId: 'all' })}>
             <ArchiveGlyph className="w-4 h-4" />
+          </IconButton>
+          <IconButton label="Move to spam" onClick={() => void apply({ mailboxId: 'spam' })}>
+            <SpamGlyph className="w-4 h-4" />
           </IconButton>
           <IconButton label="Move to trash" onClick={() => void apply({ mailboxId: 'trash' })}>
             <TrashGlyph className="w-4 h-4" />
