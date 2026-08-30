@@ -339,6 +339,22 @@ describe('mail list and reader', () => {
 })
 
 describe('mail composer', () => {
+  it('reveals optional recipients and exposes formatting as a toolbar', async () => {
+    render(createElement(Mail))
+    fireEvent.click(await screen.findByRole('button', { name: 'Compose' }))
+
+    expect(screen.queryByRole('textbox', { name: 'Cc' })).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Cc Bcc' }))
+    expect(screen.getByRole('textbox', { name: 'Cc' })).toBeTruthy()
+    expect(screen.getByRole('textbox', { name: 'Bcc' })).toBeTruthy()
+
+    const toolbar = screen.getByRole('toolbar', { name: 'Formatting' })
+    expect(toolbar).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Bold' }).getAttribute('aria-pressed')).toBe('false')
+    expect(screen.getByRole('button', { name: 'Italic' }).getAttribute('aria-pressed')).toBe('false')
+    expect(screen.getByRole('button', { name: 'Underline' }).getAttribute('aria-pressed')).toBe('false')
+  })
+
   it('commits recipients, autosaves changes, sends, and keeps errors in the card', async () => {
     render(createElement(Mail))
     fireEvent.click(await screen.findByRole('button', { name: 'Compose' }))
