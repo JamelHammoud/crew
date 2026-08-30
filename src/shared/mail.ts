@@ -447,11 +447,11 @@ export interface MailBridge {
   saveAttachment(accountId: string, messageId: string, attachmentId: string): Promise<void>
   printThread(accountId: string, threadId: string): Promise<void>
   snoozeThread(accountId: string, threadId: string, wakeAt: number): Promise<void>
-  onChanged(listener: () => void): () => void
-  onOnline(listener: (online: boolean) => void): () => void
+  onChanged(listener: (event: MailChangedEvent) => void): () => void
+  onOnline(listener: (event: MailOnlineEvent) => void): () => void
   onConnection(listener: (event: MailConnectionEvent) => void): () => void
   onUnread(listener: (event: MailUnreadEvent) => void): () => void
-  onNotification(listener: (notification: MailNotification) => void): () => void
+  onNotification(listener: (event: MailNotificationEvent) => void): () => void
 }
 
 function record(value: unknown, name: string): Record<string, unknown> {
