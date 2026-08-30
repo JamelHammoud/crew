@@ -295,6 +295,7 @@ describe('mail list and reader', () => {
     expect(fade.className).toContain('to-transparent')
     expect(fade.className).toContain('pointer-events-none')
     expect(fade.className).toContain('block')
+    expect(fade.className).toContain('h-6')
     expect(fade.className).not.toContain('absolute')
   })
 

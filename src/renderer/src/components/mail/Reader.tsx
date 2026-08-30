@@ -163,7 +163,7 @@ function Message({
           <div data-mail-actions className="sticky bottom-0 z-10 -mx-4 mt-2 sm:-mx-5 rounded-b-[19px]">
             <span
               aria-hidden
-              className="block h-10 bg-gradient-to-t from-ink-900 to-transparent pointer-events-none"
+              className="block h-6 bg-gradient-to-t from-ink-900 to-transparent pointer-events-none"
             />
             <div className="px-4 pb-5 pt-4 sm:px-5 sm:pb-6 flex items-center gap-2 flex-wrap rounded-b-[19px] bg-ink-900">
               <button
