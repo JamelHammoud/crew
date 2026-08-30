@@ -48,6 +48,7 @@ const release = {
 }
 const accounts = [personal, work]
 const threads = [release, dinner, receipt]
+const delayedHtml = '<body bgcolor="#fffef0"><table id="mail-sheet" width="600" style="width:600px;margin:0 auto;background:#fffef0;border:1px solid #004449;border-radius:7px"><tr><td style="padding:40px"><table role="presentation"><tr><td id="points-chip" style="border:1px solid #d7ffc2;background:#d7ffc2;padding:4px 12px;border-radius:32px">94k points</td></tr></table><table role="presentation" style="margin-top:48px"><tr><td id="benefit-cell" width="45" style="width:45px;padding:0 16px 16px 0"><img id="benefit-icon" src="https://mail-delay.test/icon.png" width="45" height="45" style="display:block;width:45px;height:45px;border:0"></td><td>Pick Premium or Elite membership and get 30 days of access on us</td></tr></table><div style="height:360px"></div></td></tr></table></body>'
 const full = {
   ...dinner,
   messages: [
@@ -61,7 +62,7 @@ const full = {
       id: 'dinner-two', threadId: 'dinner', accountId: 'personal', from: { name: 'Jamel', email: 'jamel@gmail.com' },
       to: [{ name: 'Ali', email: 'ali@example.com' }], cc: [], bcc: [], subject: dinner.subject,
       date: '2026-08-29T12:00:00.000Z', text: 'Saturday works for everyone. I attached the menu.', unread: true,
-      starred: false, attachments: [{ id: 'menu', name: 'menu.pdf', mime: 'application/pdf', size: 18420 }]
+      starred: false, html: delayedHtml, attachments: [{ id: 'menu', name: 'menu.pdf', mime: 'application/pdf', size: 18420 }]
     }
   ]
 }
@@ -113,7 +114,7 @@ createRoot(document.getElementById('root')).render(
 `
 }
 
-const main = `const { app, BrowserWindow } = require('electron')
+const main = `const { app, BrowserWindow, session } = require('electron')
 const fs = require('node:fs')
 const path = require('node:path')
 app.disableHardwareAcceleration()
@@ -133,6 +134,9 @@ async function scene(win, name, delay = 260) {
 
 app.whenReady().then(async () => {
   fs.mkdirSync(shots, { recursive: true })
+  session.defaultSession.webRequest.onBeforeRequest({ urls: ['https://mail-delay.test/*'] }, (_details, callback) => {
+    setTimeout(() => callback({ cancel: true }), 2000)
+  })
   const win = new BrowserWindow({ width: 1280, height: 780, show: true, backgroundColor: '#141414' })
   const seen = {}
   try {
@@ -146,6 +150,7 @@ app.whenReady().then(async () => {
     await win.webContents.executeJavaScript("[...document.querySelectorAll('[role=button]')].find(node => node.textContent.includes('Dinner this weekend')).click()")
     await wait(260)
     seen.thread = await win.webContents.executeJavaScript("Boolean([...document.querySelectorAll('h1')].find(node => node.textContent === 'Dinner this weekend'))")
+    seen.message = await win.webContents.executeJavaScript("(() => { const frame = document.querySelector('iframe[title=\\\"Message\\\"]'); const doc = frame && frame.contentDocument; const sheet = doc && doc.querySelector('#mail-sheet'); const chip = doc && doc.querySelector('#points-chip'); const icon = doc && doc.querySelector('#benefit-icon'); if (!frame || !sheet || !chip || !icon) return null; const iconBox = icon.getBoundingClientRect(); return { height: parseFloat(frame.style.height), collapse: getComputedStyle(sheet).borderCollapse, sheetRadius: getComputedStyle(sheet).borderTopLeftRadius, chipRadius: getComputedStyle(chip).borderTopLeftRadius, iconWidth: iconBox.width, iconHeight: iconBox.height } })()")
     await shoot(win, 'thread')
     await win.webContents.executeJavaScript("[...document.querySelectorAll('button')].find(node => node.textContent.trim() === 'Compose').click()")
     await wait(260)
@@ -216,6 +221,10 @@ try {
   if (seen.inbox < 2) throw new Error(`the populated inbox showed ${seen.inbox} expected rows`)
   if (!seen.chromeClear) throw new Error('the collapsed Crew control overlapped Compose')
   if (!seen.thread) throw new Error('the conversation did not open')
+  if (!seen.message || seen.message.height < 500) throw new Error(`the parsed message stayed at ${seen.message?.height ?? 0}px before its image loaded`)
+  if (seen.message.collapse !== 'separate') throw new Error(`the sender table collapsed as ${seen.message.collapse}`)
+  if (seen.message.sheetRadius !== '7px' || seen.message.chipRadius !== '32px') throw new Error(`the sender curves became ${seen.message.sheetRadius} and ${seen.message.chipRadius}`)
+  if (seen.message.iconWidth !== 45 || seen.message.iconHeight !== 45) throw new Error(`the sender artwork became ${seen.message.iconWidth} by ${seen.message.iconHeight}`)
   if (!seen.compose) throw new Error('the composer did not open')
   if (seen.loading < 1) throw new Error('the loading state had no skeletons')
   if (!seen.empty) throw new Error('the empty inbox did not say it was clear')
@@ -224,6 +233,9 @@ try {
   console.log(`inbox rows        ${seen.inbox}`)
   console.log(`collapsed chrome  ${seen.chromeClear ? 'clear' : 'overlapping'}`)
   console.log(`thread            ${seen.thread ? 'yes' : 'no'}`)
+  console.log(`early body        ${seen.message.height}px`)
+  console.log(`sender curves     ${seen.message.sheetRadius}, ${seen.message.chipRadius}`)
+  console.log(`sender artwork    ${seen.message.iconWidth} x ${seen.message.iconHeight}`)
   console.log(`compose           ${seen.compose ? 'yes' : 'no'}`)
   console.log(`loading skeletons ${seen.loading}`)
   console.log(`empty             ${seen.empty ? 'yes' : 'no'}`)
