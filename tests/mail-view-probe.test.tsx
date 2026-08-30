@@ -181,12 +181,16 @@ afterEach(() => {
 })
 
 describe('mail setup', () => {
-  it('keeps the password storage note in the app password help', async () => {
+  it('keeps the setup heading and action plain and puts the password storage note in help', async () => {
     bridge.listAccounts.mockResolvedValue([])
     bridge.listThreads.mockResolvedValue([])
     render(createElement(Mail))
 
+    const heading = await screen.findByRole('heading', { name: 'Mail' })
+    const connect = screen.getByRole('button', { name: 'Connect' })
     const help = await screen.findByRole('button', { name: 'About app passwords' })
+    expect(heading.parentElement?.querySelector('svg')).toBeNull()
+    expect(connect.querySelector('svg')).toBeNull()
     expect(screen.queryByText('Your password stays on this computer.')).toBeNull()
 
     fireEvent.mouseEnter(help)
