@@ -486,7 +486,7 @@ export class MailDatabase {
     return this.database.prepare('DELETE FROM drafts WHERE account_id = ? AND id = ?').run(this.accountId(accountId), requiredId(draftId, 'Mail draft id')).changes > 0
   }
 
-  scheduleSend(accountId: string, draftId: string, sendAt: number, id = randomUUID()): MailScheduledSend {
+  scheduleSend(accountId: string, draftId: string, sendAt: number, id: string = randomUUID()): MailScheduledSend {
     const account = this.accountId(accountId)
     const draft = requiredId(draftId, 'Mail draft id')
     const scheduleId = requiredId(id, 'Mail scheduled send id')
@@ -553,11 +553,11 @@ export class MailDatabase {
     return row ? this.scheduledSend(row) : null
   }
 
-  snoozeThread(accountId: string, threadId: string, wakeAt: number, id = randomUUID()): MailSnooze {
+  snoozeThread(accountId: string, threadId: string, wakeAt: number, id: string = randomUUID()): MailSnooze {
     return this.putSnooze(this.accountId(accountId), requiredId(id, 'Mail snooze id'), requiredId(threadId, 'Mail thread id'), null, wakeAt)
   }
 
-  snoozeMessage(accountId: string, messageId: string, wakeAt: number, id = randomUUID()): MailSnooze {
+  snoozeMessage(accountId: string, messageId: string, wakeAt: number, id: string = randomUUID()): MailSnooze {
     return this.putSnooze(this.accountId(accountId), requiredId(id, 'Mail snooze id'), null, requiredId(messageId, 'Mail message id'), wakeAt)
   }
 
