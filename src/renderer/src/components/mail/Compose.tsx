@@ -252,7 +252,7 @@ export default function DraftDeck({ narrow }: { narrow: boolean }) {
   if (drafts.length === 0) return null
 
   return (
-    <div className="mail-compose-shadow absolute z-50 inset-x-8 bottom-8 pointer-events-none">
+    <div className="mail-compose-shadow absolute z-50 inset-x-5 bottom-5 pointer-events-none">
       <div className="flex items-end justify-end gap-2 overflow-x-auto">
         {drafts.map(draft =>
           draft.minimized ? (

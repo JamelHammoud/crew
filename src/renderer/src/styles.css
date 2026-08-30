@@ -486,15 +486,15 @@ textarea:placeholder-shown {
 }
 
 .mail-compose-shadow {
-  filter: drop-shadow(0 10px 14px rgb(0 0 0 / 0.38)) drop-shadow(0 2px 5px rgb(0 0 0 / 0.24));
+  filter: drop-shadow(0 6px 9px rgb(0 0 0 / 0.38)) drop-shadow(0 1px 3px rgb(0 0 0 / 0.24));
 }
 
 .light .mail-compose-shadow {
-  filter: drop-shadow(0 10px 14px rgb(0 0 0 / 0.14)) drop-shadow(0 2px 5px rgb(0 0 0 / 0.08));
+  filter: drop-shadow(0 6px 9px rgb(0 0 0 / 0.14)) drop-shadow(0 1px 3px rgb(0 0 0 / 0.08));
 }
 
 .oled .mail-compose-shadow {
-  filter: drop-shadow(0 10px 14px rgb(0 0 0 / 0.5)) drop-shadow(0 2px 5px rgb(0 0 0 / 0.36));
+  filter: drop-shadow(0 6px 9px rgb(0 0 0 / 0.5)) drop-shadow(0 1px 3px rgb(0 0 0 / 0.36));
 }
 
 .glass {

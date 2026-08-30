@@ -390,8 +390,8 @@ describe('mail composer', () => {
     expect(scroller.className).toContain('overflow-x-auto')
     expect(deck.className).not.toContain('overflow')
     expect(deck.className).toContain('mail-compose-shadow')
-    expect(deck.className).toContain('inset-x-8')
-    expect(deck.className).toContain('bottom-8')
+    expect(deck.className).toContain('inset-x-5')
+    expect(deck.className).toContain('bottom-5')
     expect(container.contains(deck)).toBe(true)
   })
 

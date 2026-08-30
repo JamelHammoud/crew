@@ -1,7 +1,7 @@
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import HtmlMessage, { safeMailDocument } from '../src/renderer/src/components/mail/HtmlMessage'
+import HtmlMessage, { hasQuotedMail, safeMailDocument } from '../src/renderer/src/components/mail/HtmlMessage'
 import { useBrowser } from '../src/renderer/src/state/browser'
 import { useMail } from '../src/renderer/src/state/mail'
 
@@ -91,6 +91,48 @@ describe('mail message isolation', () => {
 
     expect(frame.parentElement?.className).toContain('overflow-hidden')
     expect(frame.parentElement?.className).toContain('rounded-xl')
+  })
+
+  it('collapses old HTML reply content until it is requested', async () => {
+    const view = render(createElement(HtmlMessage, {
+      html: `
+        <p id="current">No worries, keep me posted :)</p>
+        <div class="gmail_quote">
+          <div>On Fri, Aug 28, 2026 at 12:21 PM Allison Stevenson wrote:</div>
+          <blockquote><p id="old">Happy Friday and hope your week has gone well.</p></blockquote>
+        </div>
+      `,
+      text: ''
+    }))
+    const frame = view.container.querySelector('iframe') as HTMLIFrameElement
+    let source = new DOMParser().parseFromString(frame.getAttribute('srcdoc') ?? '', 'text/html')
+
+    expect(source.querySelector('#current')?.textContent).toContain('No worries')
+    expect(source.querySelector('#old')).toBeNull()
+    const show = screen.getByRole('button', { name: 'Show earlier mail' })
+    expect(show.getAttribute('aria-expanded')).toBe('false')
+
+    fireEvent.click(show)
+    source = new DOMParser().parseFromString(frame.getAttribute('srcdoc') ?? '', 'text/html')
+
+    expect(source.querySelector('#old')?.textContent).toContain('Happy Friday')
+    expect(screen.getByRole('button', { name: 'Hide earlier mail' }).getAttribute('aria-expanded')).toBe('true')
+  })
+
+  it('recognizes quoted replies from common mail clients', () => {
+    const samples = [
+      '<p>New</p><blockquote type="cite"><p>Old</p></blockquote>',
+      '<p>New</p><div class="yahoo_quoted"><p>Old</p></div>',
+      '<p>New</p><div class="protonmail_quote"><p>Old</p></div>',
+      '<p>New</p><div class="moz-cite-prefix">Someone wrote:</div><blockquote><p>Old</p></blockquote>',
+      '<p>New</p><div id="divRplyFwdMsg">From: Someone</div><div>Old</div>'
+    ]
+
+    for (const html of samples) {
+      expect(hasQuotedMail(html)).toBe(true)
+      const collapsed = new DOMParser().parseFromString(safeMailDocument(html, 'dark', false), 'text/html')
+      expect(collapsed.body.textContent).toBe('New')
+    }
   })
 
   it('keeps rounded email tables and fixed-size artwork intact', () => {
