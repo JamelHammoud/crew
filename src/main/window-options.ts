@@ -1,4 +1,9 @@
 import type { BrowserWindow, BrowserWindowConstructorOptions, MenuItemConstructorOptions } from 'electron'
+import {
+  EMPTY_APP_MENU_CONTEXT,
+  type AppMenuAction,
+  type AppMenuContext
+} from '../shared/appMenu'
 
 // The tray panel. Never `skipTaskbar`: on macOS that turns the app into an
 // accessory, and the icon leaves the dock and does not come back.
@@ -199,11 +204,79 @@ function editMenuItem(command: 'undo' | 'redo', isMac: boolean): MenuItemConstru
   }
 }
 
-export function appMenuTemplate(platform: NodeJS.Platform, devTools: boolean): MenuItemConstructorOptions[] {
+export interface AppMenuOptions {
+  context?: AppMenuContext
+  onAction?: (action: AppMenuAction) => void
+  recent?: Array<{ label: string; click: () => void }>
+}
+
+function action(
+  options: AppMenuOptions,
+  id: AppMenuAction,
+  item: Omit<MenuItemConstructorOptions, 'click'>
+): MenuItemConstructorOptions {
+  return { ...item, click: () => options.onAction?.(id) }
+}
+
+export function appMenuTemplate(
+  platform: NodeJS.Platform,
+  devTools: boolean,
+  options: AppMenuOptions = {}
+): MenuItemConstructorOptions[] {
   const isMac = platform === 'darwin'
+  const context = options.context ?? EMPTY_APP_MENU_CONTEXT
+  const session = context.session
+  const thread = session && Boolean(context.threadId)
+  const recent = options.recent?.length
+    ? options.recent.map(item => ({ label: item.label, click: item.click }))
+    : [{ label: 'No Recent Crews', enabled: false }]
+  const crewMenu: MenuItemConstructorOptions = {
+    label: 'Crew',
+    submenu: [
+      ...(isMac ? [{ role: 'about' as const }, { type: 'separator' as const }] : []),
+      action(options, 'settings', { label: 'Settings…', accelerator: isMac ? 'Cmd+,' : 'Ctrl+,' }),
+      action(options, 'check-updates', { label: 'Check for Updates…' }),
+      { type: 'separator' },
+      action(options, 'invite', { label: 'Invite Someone…', enabled: session }),
+      action(options, 'copy-invite-link', { label: 'Copy Invite Link', enabled: session }),
+      action(options, 'people', { label: 'People', enabled: session }),
+      action(options, 'agents', { label: 'Agents', enabled: session }),
+      ...(isMac
+        ? [
+            { type: 'separator' as const },
+            { role: 'services' as const },
+            { type: 'separator' as const },
+            { role: 'hide' as const },
+            { role: 'hideOthers' as const },
+            { role: 'unhide' as const },
+            { type: 'separator' as const },
+            { role: 'quit' as const }
+          ]
+        : [{ type: 'separator' as const }, { role: 'quit' as const }])
+    ]
+  }
   return [
-    ...(isMac ? [{ role: 'appMenu' as const }] : []),
-    { role: 'fileMenu' },
+    crewMenu,
+    {
+      label: 'File',
+      submenu: [
+        action(options, 'new-thread', { label: 'New Thread', accelerator: 'CmdOrCtrl+N', enabled: session }),
+        action(options, 'new-page', {
+          label: 'New Page',
+          accelerator: 'CmdOrCtrl+Shift+N',
+          enabled: session
+        }),
+        action(options, 'new-board', { label: 'New Board', enabled: session }),
+        action(options, 'new-sticky', { label: 'New Sticky', accelerator: 'CmdOrCtrl+Alt+N' }),
+        { type: 'separator' },
+        action(options, 'open-crew', { label: 'Open Crew…', accelerator: 'CmdOrCtrl+O' }),
+        action(options, 'join-crew', { label: 'Join Crew…' }),
+        { label: 'Open Recent', submenu: recent },
+        action(options, 'reveal-crew', { label: 'Reveal Crew in Finder', enabled: session }),
+        { type: 'separator' },
+        { role: 'close' }
+      ]
+    },
     {
       label: 'Edit',
       submenu: [
@@ -213,23 +286,94 @@ export function appMenuTemplate(platform: NodeJS.Platform, devTools: boolean): M
         { role: 'cut' },
         { role: 'copy' },
         { role: 'paste' },
-        { role: 'selectAll' }
+        { role: 'selectAll' },
+        { type: 'separator' },
+        { role: 'startSpeaking' },
+        { role: 'stopSpeaking' }
       ]
     },
     {
       label: 'View',
       submenu: [
-        { role: 'reload' },
-        { role: 'forceReload' },
-        ...(devTools ? [{ role: 'toggleDevTools' as const }] : []),
+        action(options, 'command-palette', {
+          label: 'Command Palette…',
+          accelerator: 'CmdOrCtrl+Shift+P',
+          enabled: session
+        }),
+        { type: 'separator' },
+        action(options, 'toggle-sidebar', { label: 'Show Sidebar', type: 'checkbox', checked: context.sidebar, enabled: session }),
+        action(options, 'toggle-panel', { label: 'Show Side Panel', type: 'checkbox', checked: context.panel, enabled: session }),
+        {
+          label: 'Open Panel',
+          enabled: session,
+          submenu: [
+            action(options, 'panel-review', { label: 'Review' }),
+            action(options, 'panel-terminal', { label: 'Terminal' }),
+            action(options, 'panel-files', { label: 'Files' }),
+            action(options, 'panel-web', { label: 'Web' }),
+            action(options, 'panel-music', { label: 'Music' }),
+            action(options, 'panel-games', { label: 'Games' })
+          ]
+        },
         { type: 'separator' },
         { role: 'resetZoom' },
         { role: 'zoomIn' },
         { role: 'zoomOut' },
         { type: 'separator' },
-        { role: 'togglefullscreen' }
+        { role: 'togglefullscreen' },
+        ...(devTools
+          ? [
+              { type: 'separator' as const },
+              { role: 'reload' as const },
+              { role: 'forceReload' as const },
+              { role: 'toggleDevTools' as const }
+            ]
+          : [])
       ]
     },
-    { role: 'windowMenu' }
+    {
+      label: 'Go',
+      submenu: [
+        action(options, 'go-back', { label: 'Back', accelerator: 'CmdOrCtrl+[' }),
+        action(options, 'go-forward', { label: 'Forward', accelerator: 'CmdOrCtrl+]' }),
+        { type: 'separator' },
+        action(options, 'go-chat', { label: 'Chat', accelerator: 'CmdOrCtrl+1', enabled: session }),
+        action(options, 'go-docs', { label: 'Docs', accelerator: 'CmdOrCtrl+2', enabled: session }),
+        action(options, 'go-design', { label: 'Design', accelerator: 'CmdOrCtrl+3', enabled: session }),
+        action(options, 'go-plugins', { label: 'Plugins', accelerator: 'CmdOrCtrl+4', enabled: session }),
+        action(options, 'go-scheduled', { label: 'Scheduled', accelerator: 'CmdOrCtrl+5', enabled: session }),
+        action(options, 'go-stickies', { label: 'Stickies', accelerator: 'CmdOrCtrl+6' }),
+        action(options, 'go-browser', { label: 'Browser', accelerator: 'CmdOrCtrl+7', enabled: session }),
+        action(options, 'go-mail', { label: 'Mail', accelerator: 'CmdOrCtrl+8', enabled: session })
+      ]
+    },
+    {
+      label: 'Thread',
+      enabled: thread,
+      submenu: [
+        action(options, 'thread-window', { label: 'Open in Window', enabled: thread }),
+        { type: 'separator' },
+        action(options, 'thread-status', {
+          label: context.threadStatus === 'done' ? 'Reopen' : 'Mark Done',
+          enabled: thread
+        }),
+        action(options, 'thread-archive', { label: 'Archive Thread', enabled: thread }),
+        action(options, 'thread-copy-id', { label: 'Copy Thread ID', enabled: thread }),
+        { type: 'separator' },
+        action(options, 'window-pin', {
+          label: context.pinned ? 'Stop Keeping Window on Top' : 'Keep Window on Top',
+          enabled: thread
+        })
+      ]
+    },
+    {
+      label: 'Window',
+      submenu: [
+        { role: 'minimize' },
+        { role: 'zoom' },
+        { type: 'separator' },
+        { role: 'front' }
+      ]
+    }
   ]
 }

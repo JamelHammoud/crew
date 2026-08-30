@@ -7,7 +7,7 @@ export default defineConfig({
       ['**/design-image-paste.test.ts', 'jsdom'],
       ['**/personal-chat-probe.test.ts', 'jsdom'],
       ['**/mail-security.test.ts', 'jsdom'],
-      ['**/mail-view-probe.test.ts', 'jsdom'],
+      ['**/mail-view-probe.test.tsx', 'jsdom'],
       ['**/sticky-editor-probe.test.ts', 'jsdom'],
       ['**/stickies-library-probe.test.ts', 'jsdom'],
       ['**/subagent-message-probe.test.ts', 'jsdom']
