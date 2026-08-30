@@ -296,12 +296,13 @@ describe('mail list and reader', () => {
     expect(screen.getByRole('button', { name: 'Copy Lee <lee@example.com>' })).toBeTruthy()
 
     const sender = screen.getAllByRole('button', { name: `Copy Jamel <${personal.email}>` }).at(-1)!
+    expect(sender.querySelector('svg')).toBeTruthy()
     fireEvent.mouseEnter(sender)
-    expect(await screen.findByText(`${personal.email} · Click to copy`)).toBeTruthy()
+    expect(await screen.findByText(personal.email)).toBeTruthy()
     fireEvent.click(sender)
 
     await waitFor(() => expect(writeClipboard).toHaveBeenCalledWith(personal.email))
-    expect(await screen.findByText(`Copied ${personal.email}`)).toBeTruthy()
+    expect(await screen.findByText('Copied')).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Collapse message' })).toBeTruthy()
   })
 

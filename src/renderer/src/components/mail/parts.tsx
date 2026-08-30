@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { toast } from '../../state/toast'
+import { CopyGlyph } from '../../icons'
 import Avatar from '../Avatar'
 import Tooltip from '../Tooltip'
 
@@ -79,14 +80,15 @@ export function MailAddressButton({
   }
 
   return (
-    <Tooltip label={copied ? `Copied ${email}` : `${email} · Click to copy`} className="min-w-0 max-w-full">
+    <Tooltip label={copied ? 'Copied' : email} className="min-w-0 max-w-full">
       <button
         type="button"
         aria-label={`Copy ${fullAddress(name, email)}`}
         onClick={() => void copy()}
-        className={`min-w-0 max-w-full truncate text-left underline decoration-transparent underline-offset-2 transition-[color,text-decoration-color] hover:text-fg hover:decoration-fg/25 focus-visible:outline-none focus-visible:text-fg focus-visible:decoration-fg/40 ${className}`}
+        className={`group min-w-0 max-w-full flex items-center gap-1 text-left transition-colors hover:text-fg focus-visible:outline-none focus-visible:text-fg ${className}`}
       >
-        {displayAddress(name, email)}
+        <span className="min-w-0 truncate">{displayAddress(name, email)}</span>
+        <CopyGlyph className="w-3 h-3 shrink-0 text-fg/25 transition-colors group-hover:text-fg/60 group-focus-visible:text-fg/60" />
       </button>
     </Tooltip>
   )
