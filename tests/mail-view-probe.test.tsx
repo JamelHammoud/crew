@@ -252,7 +252,7 @@ describe('mail list and reader', () => {
     const footer = account.parentElement?.parentElement as HTMLElement
     expect(footer.className).toContain('border-t')
     expect(footer.className).not.toMatch(/(?:^|\s)(?:m|mx)-/)
-    expect(footer.nextElementSibling?.getAttribute('data-testid')).toBe('mail-account-modals')
+    expect(footer).toBe(sidebar.lastElementChild)
   })
 
   it('opens a conversation by pointer and keyboard and offers reply actions', async () => {
