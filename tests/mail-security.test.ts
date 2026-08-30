@@ -109,11 +109,12 @@ describe('mail message isolation', () => {
     const frame = await draw('<a href="https://crew.test/read">Read</a><a href="mailto:ali@example.com">Write</a>')
     const document = frame.contentDocument!
     document.body.innerHTML = '<a id="web" href="https://crew.test/read">Read</a><a id="mail" href="mailto:ali@example.com">Write</a><a id="local" href="#inside">Inside</a>'
-    frame.dispatchEvent(new dom.window.Event('load'))
 
-    document.querySelector('#web')?.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true, cancelable: true }))
-    document.querySelector('#mail')?.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true, cancelable: true }))
-    document.querySelector('#local')?.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true, cancelable: true }))
+    await act(async () => {
+      document.querySelector('#web')?.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true, cancelable: true }))
+      document.querySelector('#mail')?.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true, cancelable: true }))
+      document.querySelector('#local')?.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true, cancelable: true }))
+    })
 
     expect(openExternal.mock.calls).toEqual([['https://crew.test/read'], ['mailto:ali@example.com']])
   })

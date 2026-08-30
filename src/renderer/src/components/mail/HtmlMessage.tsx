@@ -4,7 +4,7 @@ import { EyeGlyph, EyeOffGlyph } from '../../icons'
 const REMOTE_IMAGE = /^https?:/i
 const EXTERNAL_LINK = /^(https?|mailto):/i
 
-function safeDocument(html: string, images: boolean): { html: string; blocked: number } {
+export function safeMailDocument(html: string, images: boolean): { html: string; blocked: number } {
   const parsed = new DOMParser().parseFromString(html, 'text/html')
   let blocked = 0
   parsed.querySelectorAll('script, iframe, object, embed, form, input, button, meta, base, link').forEach(node => node.remove())
@@ -30,7 +30,7 @@ function safeDocument(html: string, images: boolean): { html: string; blocked: n
       }
     }
   })
-  const imageSource = images ? 'data: blob: http: https:' : 'data: blob:'
+  const imageSource = images ? 'data: blob: crew-mail: http: https:' : 'data: blob: crew-mail:'
   const csp = `default-src 'none'; img-src ${imageSource}; style-src 'unsafe-inline'; font-src 'none'; media-src 'none'; connect-src 'none'; frame-src 'none'`
   const style = `
     :root { color-scheme: dark; }
@@ -52,7 +52,16 @@ export default function HtmlMessage({ html, text }: { html?: string; text: strin
   const frame = useRef<HTMLIFrameElement>(null)
   const [images, setImages] = useState(false)
   const [height, setHeight] = useState(80)
-  const document = useMemo(() => safeDocument(html ?? text.replace(/\n/g, '<br>'), images), [html, text, images])
+  const document = useMemo(() => {
+    const plain = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+      .replace(/\n/g, '<br>')
+    return safeMailDocument(html ?? plain, images)
+  }, [html, text, images])
 
   useEffect(() => {
     const iframe = frame.current
