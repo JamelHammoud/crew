@@ -144,12 +144,12 @@ async function connectServiceAccounts(runtime: ServiceHarness) {
   const personalAccount = await runtime.service.connectAccount({
     email: 'jamel@gmail.com',
     displayName: 'Jamel',
-    appPassword: 'aaaa bbbb cccc dddd'
+    appPassword: 'aaaabbbbccccdddd'
   })
   const workAccount = await runtime.service.connectAccount({
     email: 'jamel@crew.test',
     displayName: 'Jamel at Crew',
-    appPassword: 'eeee ffff gggg hhhh'
+    appPassword: 'eeeeffffgggghhhh'
   })
   return { personalAccount, workAccount }
 }
