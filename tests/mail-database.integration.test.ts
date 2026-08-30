@@ -159,6 +159,7 @@ describe('mail database', () => {
     expect(() => database.upsertAccount({ id: 'bad', provider: 'gmail', email: 'not-an-email' })).toThrow(TypeError)
     expect(() => database.upsertMessage('first', { id: '', providerMessageId: 'remote', receivedAt: 1 })).toThrow(TypeError)
     expect(() => database.upsertMessage('missing', { id: 'id', providerMessageId: 'remote', receivedAt: 1 })).toThrow('Mail account was not found')
+    expect(() => database.upsertAttachment('first', { id: 'file', messageId: 'message', filename: 'file', size: 1, storageKey: '../outside' })).toThrow(TypeError)
     expect(database.listMessages('first').items).toEqual([])
     database.close()
   })
