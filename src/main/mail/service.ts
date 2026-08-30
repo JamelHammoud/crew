@@ -1004,10 +1004,26 @@ export class MailDatabaseServiceStore implements MailServiceStore {
         const labels = new Set(message.labels.map(label => label.id))
         if (patch.addLabelId) labels.add(patch.addLabelId)
         if (patch.removeLabelId) labels.delete(patch.removeLabelId)
+        const labelsByType = this.database.listLabels(accountId)
+        if (patch.mailboxId) {
+          for (const label of labelsByType) {
+            if (['inbox', 'spam', 'trash'].includes(label.type)) labels.delete(label.id)
+          }
+          const targetType = patch.mailboxId === 'inbox'
+            ? 'inbox'
+            : patch.mailboxId === 'spam'
+              ? 'spam'
+              : patch.mailboxId === 'trash'
+                ? 'trash'
+                : null
+          const target = targetType ? labelsByType.find(label => label.type === targetType) : null
+          if (target) labels.add(target.id)
+        }
         this.database.upsertMessage(accountId, {
           ...this.messageInput(message),
           ...(patch.read === undefined ? {} : { isRead: patch.read }),
           ...(patch.starred === undefined ? {} : { isStarred: patch.starred }),
+          ...(patch.mailboxId === undefined ? {} : { isTrashed: patch.mailboxId === 'trash' }),
           labelIds: [...labels]
         })
       }

@@ -15,6 +15,7 @@ import WindowCorner from './components/WindowCorner'
 import { lazy, Suspense } from 'react'
 import { reviewCount } from './state/alerts'
 import { onMac } from './state/platform'
+import { useMail } from './state/mail'
 import { PIN_MS, SIDEBAR_W, useSidebar } from './state/sidebar'
 import { useCrew } from './state/store'
 import { useTasks } from './state/tasks'
@@ -108,6 +109,15 @@ function Session() {
   useEffect(
     () => window.crew?.onNotificationOpen?.((threadId, place) => openAlertThread(threadId, place)),
     [openAlertThread]
+  )
+
+  useEffect(
+    () =>
+      window.mail?.onNotificationOpen?.(notification => {
+        setTab('mail')
+        void useMail.getState().showThread(notification.accountId, notification.threadId)
+      }),
+    []
   )
 
   useEffect(
