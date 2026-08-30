@@ -53,7 +53,7 @@ interface MailState {
   ready: boolean
   online: boolean
   issue: string | null
-  load: (query?: MailThreadQuery) => Promise<void>
+  load: (query?: MailThreadQuery, background?: boolean) => Promise<void>
   refresh: (query?: MailThreadQuery) => Promise<void>
   connect: (email: string, displayName: string, appPassword: string) => Promise<string | null>
   removeAccount: (accountId: string) => Promise<string | null>
@@ -82,7 +82,7 @@ const DRAFTS_KEY = 'crew.mail.drafts'
 const SETTLE_MS = 250
 let currentQuery: MailThreadQuery = {}
 let loading: Promise<void> | null = null
-let queued = false
+let queued: boolean | null = null
 
 type MailWindow = Window & { mail?: MailBridge }
 
@@ -172,7 +172,7 @@ export const useMail = create<MailState>((set, get) => ({
   online: navigator.onLine,
   issue: null,
 
-  load: async query => {
+  load: async (query, background = false) => {
     const mail = api()
     if (!mail) {
       set({ ready: true, loading: false, issue: 'Mail is unavailable. Restart Crew and try again.' })
@@ -180,26 +180,27 @@ export const useMail = create<MailState>((set, get) => ({
     }
     currentQuery = query ?? {}
     if (loading) {
-      queued = true
+      queued = queued === false ? false : background
       return loading
     }
-    set({ loading: true })
+    if (!background) set({ loading: true })
     loading = (async () => {
       try {
         const asked = currentQuery
         const [accounts, threads] = await Promise.all([mail.listAccounts(), mail.listThreads(asked)])
-        if (asked === currentQuery) set({ accounts, threads, ready: true, loading: false, issue: null })
+        if (asked === currentQuery) set({ accounts, threads, ready: true, issue: null })
       } catch (error) {
-        set({ ready: true, loading: false, issue: problem(error, 'Mail could not be loaded.') })
+        set({ ready: true, issue: problem(error, 'Mail could not be loaded.') })
       } finally {
         loading = null
-        set({ loading: false })
+        if (!background) set({ loading: false })
       }
     })()
     await loading
-    if (queued) {
-      queued = false
-      await get().load(currentQuery)
+    if (queued !== null) {
+      const queuedBackground = queued
+      queued = null
+      await get().load(currentQuery, queuedBackground)
     }
   },
 
@@ -476,7 +477,7 @@ export function watchMail(): () => void {
     if (settle) return
     settle = setTimeout(() => {
       settle = null
-      void useMail.getState().load(currentQuery)
+      void useMail.getState().load(currentQuery, true)
     }, SETTLE_MS)
   }
   const setOnline = () => useMail.getState().setOnline(navigator.onLine)

@@ -260,6 +260,30 @@ describe('mail list and reader', () => {
     expect(bridge.listThreads).toHaveBeenLastCalledWith(expect.objectContaining({ query: 'missing words' }))
   })
 
+  it('keeps the current rows and scroll position while live mail reloads', async () => {
+    let changed: (() => void) | undefined
+    let finish: ((value: MailThreadSummary[]) => void) | undefined
+    bridge.onChanged.mockImplementation(listener => {
+      changed = listener
+      return () => {}
+    })
+    render(createElement(Mail))
+
+    const row = await screen.findByRole('button', { name: /Sam.*Release checklist/ })
+    const scroller = row.closest('.overflow-y-auto') as HTMLDivElement
+    scroller.scrollTop = 180
+    bridge.listThreads.mockImplementationOnce(() => new Promise(resolve => (finish = resolve)))
+    changed?.()
+
+    await waitFor(() => expect(bridge.listThreads).toHaveBeenCalledTimes(2))
+    expect(screen.getByText('Release checklist')).toBeTruthy()
+    expect(document.querySelectorAll('.skeleton')).toHaveLength(0)
+    expect(scroller.scrollTop).toBe(180)
+
+    await act(async () => finish?.([release, dinner]))
+    expect(scroller.scrollTop).toBe(180)
+  })
+
   it('shows loading, empty, offline, and retry states without removing navigation', async () => {
     let finish: ((value: MailThreadSummary[]) => void) | undefined
     bridge.listThreads.mockImplementation(() => new Promise(resolve => (finish = resolve)))
