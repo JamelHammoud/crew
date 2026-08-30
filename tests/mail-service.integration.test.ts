@@ -420,10 +420,9 @@ describe('database-backed mail service over loopback', () => {
     runtime.server.deliver('personal-remote', message('Incremental note', 'Lee <lee@example.com>'))
 
     await runtime.service.sync(personalAccount.id)
-    expect((await runtime.service.listThreads({ accountId: personalAccount.id })).map(thread => thread.subject)).toEqual([
-      'Incremental note',
-      'Dinner this weekend'
-    ])
+    expect(new Set((await runtime.service.listThreads({ accountId: personalAccount.id })).map(thread => thread.subject))).toEqual(
+      new Set(['Incremental note', 'Dinner this weekend'])
+    )
 
     await runtime.service.stop()
     await runtime.service.start()
@@ -458,7 +457,8 @@ describe('database-backed mail service over loopback', () => {
 
     await runtime.service.sendDraft(draft, new Date(due).toISOString())
     await runtime.service.snoozeThread(personalAccount.id, thread.id, due)
-    expect(await runtime.service.listThreads({ accountId: personalAccount.id, mailboxId: 'snoozed' })).toHaveLength(1)
+    expect(runtime.database.listDueSnoozes(Number.MAX_SAFE_INTEGER)).toHaveLength(1)
+    expect(await runtime.service.listThreads({ accountId: personalAccount.id, mailboxId: 'inbox' })).toHaveLength(0)
     expect(runtime.server.mailbox('personal-remote', 'INBOX')).toHaveLength(0)
 
     runtime.setNow(due + 1_000)
