@@ -2,7 +2,7 @@ import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
-    include: ['tests/**/*.test.ts'],
+    include: ['tests/**/*.test.{ts,tsx}'],
     environmentMatchGlobs: [
       ['**/design-image-paste.test.ts', 'jsdom'],
       ['**/personal-chat-probe.test.ts', 'jsdom'],
