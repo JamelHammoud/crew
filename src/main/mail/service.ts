@@ -975,22 +975,11 @@ export class MailDatabaseServiceStore implements MailServiceStore {
   }
 
   getAttachmentByOpaqueId(attachmentId: string): StoredMailAttachment | null {
-    for (const account of this.database.listAccounts()) {
-      const found = this.getAttachment(account.id, attachmentId)
-      if (found) return found
-    }
-    return null
+    return this.storedAttachment(this.database.findAttachment(attachmentId))
   }
 
   listAttachmentStorageKeys(accountId: string): string[] {
-    const keys = new Set<string>()
-    for (const message of this.allMessages(accountId)) {
-      for (const attachment of message.attachments) if (attachment.storageKey) keys.add(attachment.storageKey)
-    }
-    for (const draft of this.database.listDrafts(accountId)) {
-      for (const attachment of draft.attachments) if (attachment.storageKey) keys.add(attachment.storageKey)
-    }
-    return [...keys]
+    return this.database.listAttachmentStorageKeys(accountId)
   }
 
   deleteAccountData(accountId: string): void {
@@ -1280,15 +1269,7 @@ export class MailDatabaseServiceStore implements MailServiceStore {
   }
 
   private findAttachment(accountId: string, attachmentId: string): MailAttachment | null {
-    for (const message of this.allMessages(accountId)) {
-      const found = message.attachments.find(attachment => attachment.id === attachmentId)
-      if (found) return found
-    }
-    for (const draft of this.database.listDrafts(accountId)) {
-      const found = draft.attachments.find(attachment => attachment.id === attachmentId)
-      if (found) return found
-    }
-    return null
+    return this.database.getAttachment(accountId, attachmentId)
   }
 
   private storedAttachment(attachment: MailAttachment | null): StoredMailAttachment | null {

@@ -448,6 +448,27 @@ export class MailDatabase {
     return this.attachment(this.database.prepare('SELECT * FROM attachments WHERE account_id = ? AND id = ?').get(account, input.id) as Row)
   }
 
+  getAttachment(accountId: string, attachmentId: string): MailAttachment | null {
+    const row = this.database.prepare('SELECT * FROM attachments WHERE account_id = ? AND id = ?').get(
+      this.accountId(accountId),
+      requiredId(attachmentId, 'Mail attachment id')
+    ) as Row | undefined
+    return row ? this.attachment(row) : null
+  }
+
+  findAttachment(attachmentId: string): MailAttachment | null {
+    const row = this.database.prepare('SELECT * FROM attachments WHERE id = ? ORDER BY account_id LIMIT 1').get(
+      requiredId(attachmentId, 'Mail attachment id')
+    ) as Row | undefined
+    return row ? this.attachment(row) : null
+  }
+
+  listAttachmentStorageKeys(accountId: string): string[] {
+    return (this.database.prepare(
+      'SELECT DISTINCT storage_key FROM attachments WHERE account_id = ? AND storage_key IS NOT NULL'
+    ).all(this.accountId(accountId)) as Row[]).map(row => String(row.storage_key))
+  }
+
   upsertDraft(accountId: string, value: MailDraftInput): MailDraft {
     const account = this.accountId(accountId)
     const input = parseMailDraftInput(value)
@@ -1019,6 +1040,12 @@ export class MailDatabase {
       CREATE INDEX IF NOT EXISTS thread_messages_thread ON thread_messages(account_id, thread_id, message_id);
       CREATE INDEX IF NOT EXISTS scheduled_sends_due ON scheduled_sends(status, send_at);
       CREATE INDEX IF NOT EXISTS snoozes_due ON snoozes(wake_at);
+      CREATE INDEX IF NOT EXISTS participants_message ON participants(account_id, message_id, sort_order, id);
+      CREATE INDEX IF NOT EXISTS message_labels_label ON message_labels(account_id, label_id);
+      CREATE INDEX IF NOT EXISTS attachments_message ON attachments(account_id, message_id);
+      CREATE INDEX IF NOT EXISTS attachments_draft ON attachments(account_id, draft_id);
+      CREATE INDEX IF NOT EXISTS attachments_id ON attachments(id);
+      CREATE INDEX IF NOT EXISTS draft_recipients_draft ON draft_recipients(account_id, draft_id, sort_order, id);
 
       CREATE TRIGGER IF NOT EXISTS messages_fts_delete AFTER DELETE ON messages BEGIN
         DELETE FROM messages_fts WHERE account_id = old.account_id AND message_id = old.id;
