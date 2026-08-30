@@ -125,8 +125,12 @@ function makeBridge() {
     addAttachment: vi.fn(async (_accountId, _draftId, file) => ({ id: 'upload', name: file.name, mime: file.type, size: file.size })),
     saveAttachment: vi.fn(async () => {}),
     printThread: vi.fn(async () => {}),
+    snoozeThread: vi.fn(async () => {}),
     onChanged: vi.fn(() => () => {}),
-    onOnline: vi.fn(() => () => {})
+    onOnline: vi.fn(() => () => {}),
+    onConnection: vi.fn(() => () => {}),
+    onUnread: vi.fn(() => () => {}),
+    onNotification: vi.fn(() => () => {})
   } satisfies MailBridge
 }
 

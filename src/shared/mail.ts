@@ -266,7 +266,8 @@ export const MAIL_RENDERER_EVENTS = {
   online: 'mail:online',
   connection: 'mail:connection',
   unread: 'mail:unread',
-  notification: 'mail:notification'
+  notification: 'mail:notification',
+  notificationOpen: 'mail:notification-open'
 } as const
 
 export type MailAccountStatus = 'connected' | 'syncing' | 'offline' | 'error'
@@ -452,6 +453,7 @@ export interface MailBridge {
   onConnection(listener: (event: MailConnectionEvent) => void): () => void
   onUnread(listener: (event: MailUnreadEvent) => void): () => void
   onNotification(listener: (notification: MailNotification) => void): () => void
+  onNotificationOpen(listener: (notification: MailNotification) => void): () => void
 }
 
 function record(value: unknown, name: string): Record<string, unknown> {
