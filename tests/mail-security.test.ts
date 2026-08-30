@@ -33,7 +33,7 @@ async function draw(html: string): Promise<HTMLIFrameElement> {
 }
 
 describe('mail message isolation', () => {
-  it('matches Crew light and dark themes without changing sender colors', () => {
+  it('matches a declared light email canvas without changing sender colors', () => {
     const html = '<body bgcolor="#FFFFFF" style="padding: 12px" onload="alert(1)"><p style="color: rebeccapurple">Words</p></body>'
     const light = safeMailDocument(html, 'light')
     const dark = safeMailDocument(html, 'dark')
@@ -44,7 +44,7 @@ describe('mail message isolation', () => {
     expect(light).toContain('color: rgba(20,20,20,.82)')
     expect(dark).toMatch(/:root \{ background: (?:#FFFFFF|rgb\(255, 255, 255\)); \}/)
     expect(dark).not.toContain('color-scheme')
-    expect(dark).toContain('color: rgba(255,255,255,.82)')
+    expect(dark).toContain('color: rgba(20,20,20,.82)')
     expect(light).toContain('style="color: rebeccapurple"')
     expect(dark).toContain('style="color: rebeccapurple"')
     expect(parsed.body.getAttribute('bgcolor')).toBe('#FFFFFF')
@@ -53,9 +53,31 @@ describe('mail message isolation', () => {
   })
 
   it('leaves the document canvas clear when the sender did not give it a background', () => {
-    const document = safeMailDocument('<p>Words</p>', 'dark')
+    const dark = safeMailDocument('<p>Words</p>', 'dark')
+    const light = safeMailDocument('<p>Words</p>', 'light')
 
-    expect(document).toContain(':root { background: transparent; }')
+    expect(dark).toContain(':root { background: transparent; }')
+    expect(dark).toContain('color: rgba(255,255,255,.82)')
+    expect(light).toContain('color: rgba(20,20,20,.82)')
+  })
+
+  it('keeps inherited LinkedIn copy dark on its light canvas', () => {
+    const document = safeMailDocument(`
+      <body style="background-color: #f3f2f0">
+        <table style="background-color: #ffffff">
+          <tr><td style="font-size: 14px">Director, Global Partnerships @ GBG Plc</td></tr>
+        </table>
+      </body>
+    `, 'dark')
+
+    expect(document).toContain(':root { background: rgb(243, 242, 240); }')
+    expect(document).toContain('color: rgba(20,20,20,.82)')
+  })
+
+  it('keeps inherited copy light on a dark sender canvas', () => {
+    const document = safeMailDocument('<body style="background-color: #111827"><p>Words</p></body>', 'light')
+
+    expect(document).toContain('color: rgba(255,255,255,.82)')
   })
 
   it('clips a sender background to the message curve', async () => {

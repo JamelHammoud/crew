@@ -4,6 +4,46 @@ import { useMail, type MailAddress, type MailDraftInput } from '../../state/mail
 import { useTheme, type Theme } from '../../state/theme'
 
 const EXTERNAL_LINK = /^(https?|mailto):/i
+const LIGHT_FOREGROUND = [20, 20, 20] as const
+const DARK_FOREGROUND = [255, 255, 255] as const
+
+type Rgb = readonly [number, number, number]
+
+function cssRgb(value: string): { rgb: Rgb; alpha: number } | undefined {
+  if (value === 'white') return { rgb: DARK_FOREGROUND, alpha: 1 }
+  if (value === 'black') return { rgb: [0, 0, 0], alpha: 1 }
+  const match = value.match(/^rgba?\(\s*([\d.]+)\s*[, ]\s*([\d.]+)\s*[, ]\s*([\d.]+)(?:\s*[,/]\s*([\d.]+%?))?\s*\)$/i)
+  if (!match) return undefined
+  const alpha = match[4]?.endsWith('%') ? Number.parseFloat(match[4]) / 100 : Number.parseFloat(match[4] ?? '1')
+  return {
+    rgb: [Number.parseFloat(match[1]), Number.parseFloat(match[2]), Number.parseFloat(match[3])],
+    alpha
+  }
+}
+
+function luminance(rgb: Rgb): number {
+  const channels = rgb.map(channel => {
+    const value = channel / 255
+    return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4
+  })
+  return channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722
+}
+
+function contrast(first: Rgb, second: Rgb): number {
+  const brightest = Math.max(luminance(first), luminance(second))
+  const darkest = Math.min(luminance(first), luminance(second))
+  return (brightest + 0.05) / (darkest + 0.05)
+}
+
+function foregroundFor(background: string, theme: Theme): Rgb {
+  const themeBackground = theme === 'light' ? DARK_FOREGROUND : LIGHT_FOREGROUND
+  const parsed = cssRgb(background)
+  if (!parsed || parsed.alpha <= 0) return theme === 'light' ? LIGHT_FOREGROUND : DARK_FOREGROUND
+  const canvas = parsed.rgb.map((channel, index) => channel * parsed.alpha + themeBackground[index] * (1 - parsed.alpha)) as unknown as Rgb
+  const dark = LIGHT_FOREGROUND.map((channel, index) => channel * 0.82 + canvas[index] * 0.18) as unknown as Rgb
+  const light = DARK_FOREGROUND.map((channel, index) => channel * 0.82 + canvas[index] * 0.18) as unknown as Rgb
+  return contrast(dark, canvas) >= contrast(light, canvas) ? LIGHT_FOREGROUND : DARK_FOREGROUND
+}
 
 const decoded = (value: string): string => {
   try {
@@ -62,11 +102,10 @@ export function safeMailDocument(html: string, theme: Theme): string {
     }
   })
   const csp = `default-src 'none'; img-src data: blob: crew-mail: http: https:; style-src 'unsafe-inline'; font-src 'none'; media-src 'none'; connect-src 'none'; frame-src 'none'`
-  const light = theme === 'light'
-  const foreground = light ? '20,20,20' : '255,255,255'
   const color = parsed.createElement('span')
   color.style.backgroundColor = parsed.body.getAttribute('bgcolor') ?? ''
   const background = parsed.body.style.backgroundColor || color.style.backgroundColor || 'transparent'
+  const foreground = foregroundFor(background, theme).join(',')
   const style = `
     :root { background: ${background}; }
     * { box-sizing: border-box; }
