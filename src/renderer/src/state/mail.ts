@@ -133,11 +133,12 @@ const replaceAccount = (accounts: MailAccount[], account: MailAccount): MailAcco
 
 const patchThreads = (
   threads: MailThreadSummary[],
+  accountId: string,
   ids: Set<string>,
   patch: MailThreadStatePatch
 ): MailThreadSummary[] =>
   threads.map(thread => {
-    if (!ids.has(thread.id)) return thread
+    if (thread.accountId !== accountId || !ids.has(thread.id)) return thread
     const mailboxIds = patch.mailboxId
       ? [...thread.mailboxIds.filter(id => !['inbox', 'spam', 'trash'].includes(id)), patch.mailboxId]
       : thread.mailboxIds
@@ -269,17 +270,17 @@ export const useMail = create<MailState>((set, get) => ({
     if (!mail) return 'Mail is unavailable. Restart Crew and try again.'
     const before = get().threads
     const selected = new Set(ids)
-    let nextThreads = patchThreads(before, selected, patch)
+    let nextThreads = patchThreads(before, accountId, selected, patch)
     if (patch.mailboxId && currentQuery.mailboxId && patch.mailboxId !== currentQuery.mailboxId) {
-      nextThreads = nextThreads.filter(thread => !selected.has(thread.id))
+      nextThreads = nextThreads.filter(thread => thread.accountId !== accountId || !selected.has(thread.id))
     }
     if (currentQuery.mailboxId === 'starred' && patch.starred === false) {
-      nextThreads = nextThreads.filter(thread => !selected.has(thread.id))
+      nextThreads = nextThreads.filter(thread => thread.accountId !== accountId || !selected.has(thread.id))
     }
     set({
       threads: nextThreads,
       openThread: get().openThread && selected.has(get().openThread!.id)
-        ? ({ ...patchThreads([get().openThread!], selected, patch)[0] } as MailThread)
+        ? ({ ...patchThreads([get().openThread!], accountId, selected, patch)[0] } as MailThread)
         : get().openThread
     })
     try {
