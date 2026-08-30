@@ -127,7 +127,7 @@ function makeBridge() {
     saveAttachment: vi.fn(async () => {}),
     printThread: vi.fn(async () => {}),
     snoozeThread: vi.fn(async () => {}),
-    onChanged: vi.fn(() => () => {}),
+    onChanged: vi.fn((_listener: () => void) => () => {}),
     onOnline: vi.fn(() => () => {}),
     onConnection: vi.fn(() => () => {}),
     onUnread: vi.fn(() => () => {}),
