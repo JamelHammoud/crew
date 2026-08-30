@@ -116,6 +116,7 @@ export interface MailThreadDigest {
   participants: MailParticipant[]
 }
 
+const SCHEMA_VERSION = 1
 const CHUNK = 400
 
 function chunked(values: string[]): string[][] {
@@ -144,12 +145,23 @@ export class MailDatabase {
     this.database.exec('PRAGMA foreign_keys = ON')
     this.database.exec('PRAGMA journal_mode = WAL')
     this.database.exec('PRAGMA synchronous = NORMAL')
+    this.database.exec('PRAGMA wal_autocheckpoint = 0')
     this.migrate()
   }
 
   close(): void {
+    this.settle()
     this.statements.clear()
     this.database.close()
+  }
+
+  settle(): void {
+    try {
+      this.database.exec('PRAGMA wal_checkpoint(PASSIVE)')
+      this.database.exec('PRAGMA optimize')
+    } catch {
+      return
+    }
   }
 
   upsertAccount(value: MailAccountInput): MailAccount {
@@ -363,6 +375,11 @@ export class MailDatabase {
   }
 
   upsertMessage(accountId: string, value: MailMessageInput): MailMessageWriteResult {
+    const written = this.writeMessage(accountId, value)
+    return { message: this.getMessage(written.accountId, written.id) as MailMessage, inserted: written.inserted }
+  }
+
+  writeMessage(accountId: string, value: MailMessageInput): { accountId: string; id: string; inserted: boolean } {
     const account = this.accountId(accountId)
     const input = parseMailMessageInput(value)
     const existing = this.sql('SELECT id FROM messages WHERE account_id = ? AND provider_message_id = ?').get(account, input.providerMessageId) as Row | undefined
@@ -416,7 +433,7 @@ export class MailDatabase {
       if (input.participants !== undefined) this.setParticipants(account, id, input.participants)
       if (input.attachments !== undefined) this.setMessageAttachments(account, id, input.attachments)
       this.indexMessage(account, id)
-      return { message: this.getMessage(account, id) as MailMessage, inserted: !existing }
+      return { accountId: account, id, inserted: !existing }
     })
   }
 
@@ -466,7 +483,7 @@ export class MailDatabase {
     }
     if (query.search !== undefined) {
       const search = requiredId(query.search, 'Mail search')
-      joins += ' JOIN messages_fts f ON f.account_id = m.account_id AND f.message_id = m.id'
+      joins += ' JOIN messages_fts f ON f.rowid = m.rowid'
       clauses.push('messages_fts MATCH ?')
       values.push(search)
     }
@@ -764,16 +781,19 @@ export class MailDatabase {
 
   private indexMessage(accountId: string, messageId: string): void {
     const row = this.sql(`
-      SELECT m.subject, m.body_text, COALESCE(GROUP_CONCAT(COALESCE(p.name, '') || ' ' || p.email, ' '), '') AS participant_text
+      SELECT m.rowid AS row_id, m.subject, m.body_text,
+        COALESCE(GROUP_CONCAT(COALESCE(p.name, '') || ' ' || p.email, ' '), '') AS participant_text
       FROM messages m
       LEFT JOIN participants p ON p.account_id = m.account_id AND p.message_id = m.id
       WHERE m.account_id = ? AND m.id = ?
       GROUP BY m.account_id, m.id
     `).get(accountId, messageId) as Row | undefined
-    this.sql('DELETE FROM messages_fts WHERE account_id = ? AND message_id = ?').run(accountId, messageId)
-    if (row) this.sql('INSERT INTO messages_fts (account_id, message_id, subject, body_text, participant_text) VALUES (?, ?, ?, ?, ?)').run(
-      accountId, messageId, String(row.subject), String(row.body_text), String(row.participant_text)
-    )
+    if (!row) return
+    this.sql('DELETE FROM messages_fts WHERE rowid = ?').run(number(row.row_id))
+    this.sql(`
+      INSERT INTO messages_fts (rowid, account_id, message_id, subject, body_text, participant_text)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(number(row.row_id), accountId, messageId, String(row.subject), String(row.body_text), String(row.participant_text))
   }
 
   private accountId(value: string): string {
@@ -1177,12 +1197,30 @@ export class MailDatabase {
       CREATE INDEX IF NOT EXISTS draft_recipients_draft ON draft_recipients(account_id, draft_id, sort_order, id);
 
       CREATE TRIGGER IF NOT EXISTS messages_fts_delete AFTER DELETE ON messages BEGIN
-        DELETE FROM messages_fts WHERE account_id = old.account_id AND message_id = old.id;
+        DELETE FROM messages_fts WHERE rowid = old.rowid;
       END;
     `)
     const columns = this.sql('PRAGMA table_info(accounts)').all() as Row[]
     if (!columns.some(column => String(column.name) === 'signature')) {
       this.database.exec("ALTER TABLE accounts ADD COLUMN signature TEXT NOT NULL DEFAULT ''")
     }
+    this.reindex()
+  }
+
+  private reindex(): void {
+    const version = number((this.sql('PRAGMA user_version').get() as Row).user_version)
+    if (version >= SCHEMA_VERSION) return
+    this.database.exec(`
+      DELETE FROM messages_fts;
+      INSERT INTO messages_fts (rowid, account_id, message_id, subject, body_text, participant_text)
+      SELECT m.rowid, m.account_id, m.id, m.subject, m.body_text,
+        COALESCE((
+          SELECT GROUP_CONCAT(COALESCE(p.name, '') || ' ' || p.email, ' ')
+          FROM participants p WHERE p.account_id = m.account_id AND p.message_id = m.id
+        ), '')
+      FROM messages m;
+      PRAGMA user_version = ${SCHEMA_VERSION};
+    `)
+    this.database.exec('ANALYZE')
   }
 }

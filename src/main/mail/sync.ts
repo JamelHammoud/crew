@@ -192,6 +192,7 @@ export class MailSynchronizer {
   private syncTail: Promise<void> = Promise.resolve()
   private idleTask: Promise<void> | null = null
   private stopped = false
+  private backfilled = 0
 
   constructor(options: MailSynchronizerOptions) {
     this.accountId = options.accountId
@@ -256,6 +257,7 @@ export class MailSynchronizer {
   private async syncNow(): Promise<void> {
     if (this.abort.signal.aborted) throw abortError()
     this.onEvent?.({ type: 'sync:start', accountId: this.accountId })
+    this.backfilled = 0
     const mailboxes = await this.transport.listMailboxes(this.abort.signal)
     await this.store.putMailboxes(this.accountId, mailboxes)
     for (const mailbox of mailboxes) {
@@ -406,8 +408,7 @@ export class MailSynchronizer {
     initial: MailboxSyncState
   ): Promise<void> {
     let state = initial
-    let taken = 0
-    while (!state.fullyHydrated && !this.abort.signal.aborted && taken < this.backfillLimit) {
+    while (!state.fullyHydrated && !this.abort.signal.aborted && this.backfilled < this.backfillLimit) {
       const beforeUid = state.hydratedFromUid
       const fetched = await this.transport.fetchMessages(
         mailbox.id,
@@ -420,7 +421,7 @@ export class MailSynchronizer {
         this.abort.signal
       )
       await this.applyFetch(mailbox.id, fetched)
-      taken += fetched.messages.length
+      this.backfilled += fetched.messages.length
       const hydratedFromUid = Math.min(earliestUid(fetched.messages, beforeUid), fetched.nextBeforeUid ?? beforeUid)
       const fullyHydrated = hydratedFromUid <= 1
       state = {

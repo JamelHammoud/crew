@@ -125,6 +125,7 @@ export interface MailServiceStore extends MailSyncStore, MailSchedulerStore<Sche
   listAttachmentStorageKeys(accountId: string): string[] | Promise<string[]>
   deleteAccountData(accountId: string): void | Promise<void>
   takeNotifications?(accountId: string): MailNotification[] | Promise<MailNotification[]>
+  settle?(): void | Promise<void>
 }
 
 export interface MailConnection extends MailSyncTransport {
@@ -557,6 +558,7 @@ export class MailService {
       await this.open(account, false)
       await this.syncers.get(account.id)?.sync()
       await this.store.updateAccount(account.id, { lastSyncedAt: this.clock() })
+      await this.store.settle?.()
       this.setConnection(account.id, 'connected')
       await this.emitAccountCounts(account.id)
       await this.emitNotifications(account.id)
@@ -810,7 +812,16 @@ function digestMailboxIds(parts: MailThreadDigest[]): MailboxId[] {
   return [...ids]
 }
 
+const WRITE_BATCH = 10
+const CHECKPOINT_EVERY = 2_000
+
+function breathe(): Promise<void> {
+  return new Promise(resolve => setImmediate(resolve))
+}
+
 export class MailDatabaseServiceStore implements MailServiceStore {
+  private written = 0
+
   constructor(
     readonly database: MailDatabase,
     private readonly files: Pick<MailFileStore, 'create'>,
@@ -940,7 +951,7 @@ export class MailDatabaseServiceStore implements MailServiceStore {
           const target = targetType ? labelsByType.find(label => label.type === targetType) : null
           if (target) labels.add(target.id)
         }
-        this.database.upsertMessage(accountId, {
+        this.database.writeMessage(accountId, {
           ...this.messageInput(message),
           ...(patch.read === undefined ? {} : { isRead: patch.read }),
           ...(patch.starred === undefined ? {} : { isStarred: patch.starred }),
@@ -1011,6 +1022,10 @@ export class MailDatabaseServiceStore implements MailServiceStore {
     this.database.deleteAccount(accountId)
   }
 
+  settle(): void {
+    this.database.settle()
+  }
+
   putMailboxes(accountId: string, mailboxes: RemoteMailbox[]): void {
     for (const mailbox of mailboxes) {
       this.database.upsertLabel(accountId, {
@@ -1034,8 +1049,16 @@ export class MailDatabaseServiceStore implements MailServiceStore {
     this.database.setCursor(accountId, `${CURSOR_SYNC}${cursorPart(mailboxId)}`, JSON.stringify(null))
   }
 
-  putMessages(accountId: string, messages: RemoteMailMessage[]): void {
-    this.database.batch(() => this.writeMessages(accountId, messages))
+  async putMessages(accountId: string, messages: RemoteMailMessage[]): Promise<void> {
+    for (let index = 0; index < messages.length; index += WRITE_BATCH) {
+      const batch = messages.slice(index, index + WRITE_BATCH)
+      this.database.batch(() => this.writeMessages(accountId, batch))
+      if (index + WRITE_BATCH < messages.length) await breathe()
+    }
+    this.written += messages.length
+    if (this.written < CHECKPOINT_EVERY) return
+    this.written = 0
+    this.settle()
   }
 
   private writeMessages(accountId: string, messages: RemoteMailMessage[]): void {
@@ -1072,7 +1095,7 @@ export class MailDatabaseServiceStore implements MailServiceStore {
           checksum: attachment.checksum ?? null
         }
       })
-      this.database.upsertMessage(accountId, {
+      this.database.writeMessage(accountId, {
         id,
         providerMessageId: message.gmailMessageId ?? message.id ?? id,
         threadId: message.threadId ?? null,
