@@ -26,9 +26,10 @@ async function draw(html: string): Promise<HTMLIFrameElement> {
 
 describe('mail message isolation', () => {
   it('matches Crew light and dark themes without changing sender colors', () => {
-    const html = '<p style="color: rebeccapurple">Words</p>'
+    const html = '<body bgcolor="#FFFFFF" style="padding: 12px" onload="alert(1)"><p style="color: rebeccapurple">Words</p></body>'
     const light = safeMailDocument(html, 'light')
     const dark = safeMailDocument(html, 'dark')
+    const parsed = new DOMParser().parseFromString(light, 'text/html')
 
     expect(light).toContain(':root { background: transparent; }')
     expect(light).not.toContain('color-scheme')
@@ -38,6 +39,9 @@ describe('mail message isolation', () => {
     expect(dark).toContain('color: rgba(255,255,255,.82)')
     expect(light).toContain('style="color: rebeccapurple"')
     expect(dark).toContain('style="color: rebeccapurple"')
+    expect(parsed.body.getAttribute('bgcolor')).toBe('#FFFFFF')
+    expect(parsed.body.getAttribute('style')).toBe('padding: 12px')
+    expect(parsed.body.hasAttribute('onload')).toBe(false)
   })
 
   it('removes executable elements, event handlers, embedded pages, and unsafe links', async () => {
