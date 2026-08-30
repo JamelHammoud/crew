@@ -35,13 +35,21 @@ function contrast(first: Rgb, second: Rgb): number {
   return (brightest + 0.05) / (darkest + 0.05)
 }
 
+function blend(foreground: Rgb, background: Rgb, alpha: number): Rgb {
+  return [
+    foreground[0] * alpha + background[0] * (1 - alpha),
+    foreground[1] * alpha + background[1] * (1 - alpha),
+    foreground[2] * alpha + background[2] * (1 - alpha)
+  ]
+}
+
 function foregroundFor(background: string, theme: Theme): Rgb {
   const themeBackground = theme === 'light' ? DARK_FOREGROUND : LIGHT_FOREGROUND
   const parsed = cssRgb(background)
   if (!parsed || parsed.alpha <= 0) return theme === 'light' ? LIGHT_FOREGROUND : DARK_FOREGROUND
-  const canvas = parsed.rgb.map((channel, index) => channel * parsed.alpha + themeBackground[index] * (1 - parsed.alpha)) as unknown as Rgb
-  const dark = LIGHT_FOREGROUND.map((channel, index) => channel * 0.82 + canvas[index] * 0.18) as unknown as Rgb
-  const light = DARK_FOREGROUND.map((channel, index) => channel * 0.82 + canvas[index] * 0.18) as unknown as Rgb
+  const canvas = blend(parsed.rgb, themeBackground, parsed.alpha)
+  const dark = blend(LIGHT_FOREGROUND, canvas, 0.82)
+  const light = blend(DARK_FOREGROUND, canvas, 0.82)
   return contrast(dark, canvas) >= contrast(light, canvas) ? LIGHT_FOREGROUND : DARK_FOREGROUND
 }
 

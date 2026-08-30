@@ -62,16 +62,22 @@ describe('mail message isolation', () => {
   })
 
   it('keeps inherited LinkedIn copy dark on its light canvas', () => {
-    const document = safeMailDocument(`
+    const source = safeMailDocument(`
       <body style="background-color: #f3f2f0">
         <table style="background-color: #ffffff">
-          <tr><td style="font-size: 14px">Director, Global Partnerships @ GBG Plc</td></tr>
+          <tr><td id="headline" style="font-size: 14px">Director, Global Partnerships @ GBG Plc</td></tr>
         </table>
       </body>
     `, 'dark')
+    const frame = window.document.createElement('iframe')
+    window.document.body.append(frame)
+    const document = frame.contentDocument!
+    document.open()
+    document.write(source)
+    document.close()
 
-    expect(document).toContain(':root { background: rgb(243, 242, 240); }')
-    expect(document).toContain('color: rgba(20,20,20,.82)')
+    expect(source).toContain(':root { background: rgb(243, 242, 240); }')
+    expect(document.defaultView?.getComputedStyle(document.querySelector('#headline')!).color).toBe('rgba(20, 20, 20, 0.82)')
   })
 
   it('keeps inherited copy light on a dark sender canvas', () => {
