@@ -405,6 +405,14 @@ describe('database-backed mail service over loopback', () => {
       'Release checklist'
     ])
 
+    const [personalThread] = await runtime.service.listThreads({ accountId: personalAccount.id, mailboxId: 'inbox' })
+    expect(runtime.database.listMessages(personalAccount.id).items[0]).toMatchObject({ bodyText: '', bodyHtml: null })
+    const opened = await runtime.service.getThread(personalAccount.id, personalThread.id)
+    expect(opened.messages[0]).toMatchObject({
+      text: 'Dinner this weekend in plain text',
+      html: '<p>Dinner this weekend in HTML</p>'
+    })
+
     await runtime.service.removeAccount(personalAccount.id)
     expect((await runtime.service.listAccounts()).map(account => account.id)).toEqual([workAccount.id])
     expect((await runtime.service.listThreads({})).map(thread => thread.subject)).toEqual(['Release checklist'])

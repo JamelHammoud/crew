@@ -111,6 +111,7 @@ export interface MailServiceStore extends MailSyncStore, MailSchedulerStore<Sche
   unreadCount(accountId: string): number | Promise<number>
   listThreads(query: MailThreadQueryView): MailThreadSummaryView[] | Promise<MailThreadSummaryView[]>
   getThread(accountId: string, threadId: string): MailThreadView | null | Promise<MailThreadView | null>
+  refsForThreads(accountId: string, threadIds: string[]): Array<{ mailboxId: string; uid: number }> | Promise<Array<{ mailboxId: string; uid: number }>>
   setThreadState(accountId: string, threadIds: string[], patch: MailThreadStatePatch): void | Promise<void>
   saveDraft(draft: MailDraftViewInput): SavedDraftResult | Promise<SavedDraftResult>
   getDraft(accountId: string, draftId: string): MailDraftViewInput | MailDraft | null | Promise<MailDraftViewInput | MailDraft | null>
@@ -350,8 +351,21 @@ export class MailService {
   async getThread(accountId: string, threadId: string): Promise<MailThreadView> {
     const account = cleanId(accountId, 'Mail account id')
     const thread = cleanId(threadId, 'Mail thread id')
-    const value = await this.store.getThread(account, thread)
+    let value = await this.store.getThread(account, thread)
     if (!value) throw new Error('Mail thread was not found')
+    const refs = await this.store.refsForThreads(account, [thread])
+    const missing: Array<{ mailboxId: string; uid: number }> = []
+    for (const ref of refs) {
+      if (!await this.store.getMessageBody(account, ref.mailboxId, ref.uid)) missing.push(ref)
+    }
+    if (missing.length) {
+      if (!this.syncers.has(account)) await this.connection(account)
+      const syncer = this.syncers.get(account)
+      if (!syncer) throw new Error('Mail account is unavailable')
+      for (const ref of missing) await syncer.fetchBody(ref.mailboxId, ref.uid)
+      value = await this.store.getThread(account, thread)
+      if (!value) throw new Error('Mail thread was not found')
+    }
     return value
   }
 
