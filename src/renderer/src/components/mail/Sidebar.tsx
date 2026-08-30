@@ -119,7 +119,7 @@ export default function MailSidebar({
                 onClick={() => onLocation({ accountId: account.id, mailboxId: 'inbox' })}
               />
               <span className="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
-                <IconButton label={`Settings for ${account.email}`} onClick={() => setSettings(account)}>
+                <IconButton label="Account settings" onClick={() => setSettings(account)}>
                   <MoreGlyph className="w-4 h-4" />
                 </IconButton>
               </span>

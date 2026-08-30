@@ -96,7 +96,17 @@ function ThreadRow({
         </button>
       </div>
 
-      <button type="button" onClick={onOpen} className="min-w-0 flex-1 text-left outline-none">
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={onOpen}
+        onKeyDown={event => {
+          if (event.key !== 'Enter' && event.key !== ' ') return
+          event.preventDefault()
+          onOpen()
+        }}
+        className="min-w-0 flex-1 text-left outline-none cursor-pointer"
+      >
         <div className="flex items-center gap-2">
           {unified && account && <AccountMark email={account.email} />}
           <span className={`min-w-0 flex-1 truncate text-sm ${thread.unread ? 'font-semibold text-fg' : 'text-fg/70'}`}>
@@ -114,7 +124,7 @@ function ThreadRow({
           {thread.hasAttachments && <AttachmentGlyph className="w-3.5 h-3.5 shrink-0" />}
           <span className="truncate">{thread.preview}</span>
         </div>
-      </button>
+      </div>
     </div>
   )
 }
