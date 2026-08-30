@@ -148,10 +148,12 @@ const awake = new KeepAwake()
 // The crew command opens one Crew per folder, so several are ordinary here and
 // none of them can see the others through electron.
 const instances = new OtherInstances(path.join(stateDir, 'live'))
+let mailRuntime: CrewMailRuntime | null = null
 // Whatever quitting puts down is put down once, whether the app is quitting or
 // being replaced under itself by an update.
 let settling: Promise<void> | null = null
-const settle = (): Promise<void> => (settling ??= crews.shutdownAll())
+const settle = (): Promise<void> =>
+  (settling ??= Promise.all([crews.shutdownAll(), mailRuntime?.stop()]).then(() => undefined))
 const updates = new Updates({
   windows: () => appWindows(),
   others: () => instances.count(),

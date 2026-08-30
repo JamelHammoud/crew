@@ -227,7 +227,7 @@ export default function Reader({
     if (mode === 'forward') {
       makeDraft(thread.accountId, {
         subject: replySubject(message.subject || thread.subject, 'Fwd'),
-        text: forwardText(message),
+        text: `${account?.signature ?? ''}${forwardText(message)}`,
         forwardOf: message.id,
         attachments: message.attachments
       })
