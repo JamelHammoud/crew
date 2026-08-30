@@ -276,6 +276,31 @@ describe('mail list and reader', () => {
     expect(screen.getByText('menu.pdf')).toBeTruthy()
   })
 
+  it('keeps stars off inbox rows and changes a conversation from its context menu', async () => {
+    render(createElement(Mail))
+    const dinnerRow = await screen.findByRole('button', { name: /Ali.*Dinner this weekend/ })
+
+    expect(screen.queryByRole('button', { name: 'Star' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Unstar' })).toBeNull()
+    fireEvent.contextMenu(dinnerRow, { clientX: 120, clientY: 80 })
+
+    expect(await screen.findByRole('button', { name: 'Mark read' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Star' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Archive' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Move to spam' })).toBeTruthy()
+    const trash = screen.getByRole('button', { name: 'Move to trash' })
+    expect(trash.className).toContain('text-danger')
+    fireEvent.click(screen.getByRole('button', { name: 'Mark read' }))
+
+    await waitFor(() => expect(bridge.setThreadState).toHaveBeenCalledWith('personal', ['dinner'], { read: true }))
+    expect(screen.queryByRole('button', { name: 'Archive' })).toBeNull()
+
+    fireEvent.contextMenu(dinnerRow, { clientX: 120, clientY: 80 })
+    fireEvent.click(await screen.findByRole('button', { name: 'Star' }))
+
+    await waitFor(() => expect(bridge.setThreadState).toHaveBeenCalledWith('personal', ['dinner'], { starred: true }))
+  })
+
   it('keeps the message actions at the bottom of the reader while its message scrolls', async () => {
     render(createElement(Mail))
     fireEvent.click(await screen.findByRole('button', { name: /Ali.*Dinner this weekend/ }))

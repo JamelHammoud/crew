@@ -14,6 +14,7 @@ import {
   UnreadGlyph
 } from '../../icons'
 import Empty from '../Empty'
+import { MenuDivider, MenuItem, Popover } from '../Popover'
 import SearchField from '../SearchField'
 import Skeleton from '../Skeleton'
 import { toast } from '../../state/toast'
@@ -59,7 +60,7 @@ function ThreadRow({
   open,
   onSelect,
   onOpen,
-  onStar
+  onChange
 }: {
   thread: MailThreadSummary
   account?: MailAccount
@@ -68,33 +69,28 @@ function ThreadRow({
   open: boolean
   onSelect: () => void
   onOpen: () => void
-  onStar: () => void
+  onChange: (patch: { read?: boolean; starred?: boolean; mailboxId?: MailboxId }) => void
 }) {
+  const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
   const people = thread.participants.map(person => displayAddress(person.name, person.email)).join(', ')
+  const change = (patch: { read?: boolean; starred?: boolean; mailboxId?: MailboxId }) => {
+    setMenuAt(null)
+    onChange(patch)
+  }
 
   return (
     <div
       aria-selected={open}
       data-open={open ? '' : undefined}
       data-unread={thread.unread ? '' : undefined}
+      onContextMenu={event => {
+        event.preventDefault()
+        setMenuAt({ x: event.clientX, y: event.clientY })
+      }}
       className="group min-w-0 px-3 py-3 rounded-xl flex gap-3 text-left transition-colors hover:bg-fg/[0.045] focus-within:bg-fg/[0.045] data-open:bg-fg/[0.08] data-unread:bg-fg/[0.025] data-unread:hover:bg-fg/[0.06]"
     >
-      <div className="pt-0.5 flex flex-col items-center gap-2.5">
+      <div className="pt-0.5">
         <SelectionButton selected={selected} onClick={onSelect} label={selected ? 'Clear selection' : 'Select'} />
-        <button
-          type="button"
-          aria-label={thread.starred ? 'Unstar' : 'Star'}
-          aria-pressed={thread.starred}
-          onClick={event => {
-            event.stopPropagation()
-            onStar()
-          }}
-          className={`w-5 h-5 flex items-center justify-center transition-[color,transform] active:scale-90 ${
-            thread.starred ? 'text-fg' : 'text-fg/20 hover:text-fg/60'
-          }`}
-        >
-          <StarGlyph className="w-4 h-4" />
-        </button>
       </div>
 
       <div
@@ -126,6 +122,27 @@ function ThreadRow({
           <span className="truncate">{thread.preview}</span>
         </div>
       </div>
+      <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined} className="min-w-48">
+        <MenuItem
+          icon={thread.unread ? <MailGlyph /> : <UnreadGlyph />}
+          label={thread.unread ? 'Mark read' : 'Mark unread'}
+          onClick={() => change({ read: thread.unread })}
+        />
+        <MenuItem
+          icon={<StarGlyph />}
+          label={thread.starred ? 'Unstar' : 'Star'}
+          onClick={() => change({ starred: !thread.starred })}
+        />
+        <MenuDivider />
+        <MenuItem icon={<ArchiveGlyph />} label="Archive" onClick={() => change({ mailboxId: 'all' })} />
+        <MenuItem icon={<SpamGlyph />} label="Move to spam" onClick={() => change({ mailboxId: 'spam' })} />
+        <MenuItem
+          icon={<TrashGlyph />}
+          label="Move to trash"
+          danger
+          onClick={() => change({ mailboxId: 'trash' })}
+        />
+      </Popover>
     </div>
   )
 }
@@ -275,7 +292,9 @@ export default function ThreadList({
                 open={activeId === `${thread.accountId}:${thread.id}`}
                 onSelect={() => toggle(`${thread.accountId}:${thread.id}`)}
                 onOpen={() => onOpen(thread)}
-                onStar={() => void setThreads(thread.accountId, [thread.id], { starred: !thread.starred })}
+                onChange={patch => {
+                  void setThreads(thread.accountId, [thread.id], patch).then(error => error && toast.fail(error))
+                }}
               />
             ))}
           </div>
