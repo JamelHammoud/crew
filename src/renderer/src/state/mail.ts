@@ -79,7 +79,10 @@ interface MailState {
 }
 
 const DRAFTS_KEY = 'crew.mail.drafts'
+const SETTLE_MS = 250
 let currentQuery: MailThreadQuery = {}
+let loading: Promise<void> | null = null
+let queued = false
 
 type MailWindow = Window & { mail?: MailBridge }
 
@@ -176,12 +179,27 @@ export const useMail = create<MailState>((set, get) => ({
       return
     }
     currentQuery = query ?? {}
+    if (loading) {
+      queued = true
+      return loading
+    }
     set({ loading: true })
-    try {
-      const [accounts, threads] = await Promise.all([mail.listAccounts(), mail.listThreads(query ?? {})])
-      set({ accounts, threads, ready: true, loading: false, issue: null })
-    } catch (error) {
-      set({ ready: true, loading: false, issue: problem(error, 'Mail could not be loaded.') })
+    loading = (async () => {
+      try {
+        const asked = currentQuery
+        const [accounts, threads] = await Promise.all([mail.listAccounts(), mail.listThreads(asked)])
+        if (asked === currentQuery) set({ accounts, threads, ready: true, loading: false, issue: null })
+      } catch (error) {
+        set({ ready: true, loading: false, issue: problem(error, 'Mail could not be loaded.') })
+      } finally {
+        loading = null
+        set({ loading: false })
+      }
+    })()
+    await loading
+    if (queued) {
+      queued = false
+      await get().load(currentQuery)
     }
   },
 
@@ -453,7 +471,14 @@ export function watchMail(): () => void {
   if (watching) return () => {}
   watching = true
   const mail = api()
-  const reload = () => void useMail.getState().load(currentQuery)
+  let settle: ReturnType<typeof setTimeout> | null = null
+  const reload = () => {
+    if (settle) return
+    settle = setTimeout(() => {
+      settle = null
+      void useMail.getState().load(currentQuery)
+    }, SETTLE_MS)
+  }
   const setOnline = () => useMail.getState().setOnline(navigator.onLine)
   const stopChanged = mail?.onChanged?.(reload)
   const stopOnline = mail?.onOnline?.(online => useMail.getState().setOnline(online))
@@ -475,6 +500,7 @@ export function watchMail(): () => void {
   window.addEventListener('offline', setOnline)
   return () => {
     watching = false
+    if (settle) clearTimeout(settle)
     stopChanged?.()
     stopOnline?.()
     stopConnection?.()

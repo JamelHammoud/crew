@@ -734,6 +734,17 @@ export class GmailTransport {
     })
   }
 
+  async listUids(mailbox: string): Promise<number[]> {
+    return await this.withMailbox(mailbox, async client => {
+      try {
+        const uids = await client.search({ all: true }, { uid: true })
+        return uids ? [...uids].sort((left, right) => left - right) : []
+      } catch {
+        throw new GmailTransportError('IMAP_OPERATION_FAILED', 'The mailbox could not be listed.')
+      }
+    })
+  }
+
   async fetchSummaries(mailbox: string, options: GmailFetchOptions = {}): Promise<GmailMessageSummary[]> {
     return await this.withMailbox(mailbox, async client => {
       let range: string | number[]

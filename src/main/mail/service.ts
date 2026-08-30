@@ -27,11 +27,12 @@ import type {
 } from '../../shared/mail'
 import { MAIL_IPC, MAIL_RENDERER_EVENTS, parseMailAccountInput } from '../../shared/mail'
 import { MailCredentialStore } from './credentials'
-import { MailDatabase } from './database'
+import { MailDatabase, type MailThreadDigest } from './database'
 import { MailFileStore } from './files'
 import {
   GmailTransport,
   type GmailAddress,
+  type GmailMailbox,
   type GmailMessageBody,
   type GmailMessageSummary,
   type GmailOutgoingMessage,
@@ -781,14 +782,24 @@ function participantAddress(message: MailMessage, role: MailParticipantInput['ro
     }))
 }
 
-function mailboxIds(messages: MailMessage[]): MailboxId[] {
+function digestAddress(part: MailThreadDigest, role: MailParticipantInput['role']): MailAddressView[] {
+  return part.participants
+    .filter(participant => participant.role === role)
+    .sort((left, right) => left.order - right.order)
+    .map(participant => ({
+      email: participant.email,
+      ...(participant.name ? { name: participant.name } : {})
+    }))
+}
+
+function digestMailboxIds(parts: MailThreadDigest[]): MailboxId[] {
   const ids = new Set<MailboxId>()
-  for (const message of messages) {
-    if (message.isStarred) ids.add('starred')
-    if (message.isDraft) ids.add('drafts')
-    if (message.isSent) ids.add('sent')
-    if (message.isTrashed) ids.add('trash')
-    for (const label of message.labels) {
+  for (const part of parts) {
+    if (part.isStarred) ids.add('starred')
+    if (part.isDraft) ids.add('drafts')
+    if (part.isSent) ids.add('sent')
+    if (part.isTrashed) ids.add('trash')
+    for (const label of part.labels) {
       if (label.type === 'inbox') ids.add('inbox')
       if (label.type === 'spam') ids.add('spam')
       if (label.type === 'archive') ids.add('all')
@@ -855,7 +866,7 @@ export class MailDatabaseServiceStore implements MailServiceStore {
   unreadCount(accountId: string): number {
     const inbox = this.database.listLabels(accountId).find(label => label.type === 'inbox')
     if (inbox) return inbox.unreadCount
-    return this.allMessages(accountId, { unread: true }).length
+    return this.database.countUnread(accountId)
   }
 
   listThreads(query: MailThreadQueryView): MailThreadSummaryView[] {
@@ -865,9 +876,19 @@ export class MailDatabaseServiceStore implements MailServiceStore {
     const queryText = query.query?.trim().toLocaleLowerCase()
     const summaries: MailThreadSummaryView[] = []
     for (const account of accounts) {
-      for (const thread of this.database.listThreads(account.id, 200)) {
-        const messages = this.allMessages(account.id, { threadId: thread.id })
-        const summary = this.threadSummary(thread.id, account.id, thread.subject, thread.snippet, thread.latestAt, messages)
+      const threads = this.database.listThreads(account.id, 200)
+      const digests = this.database.listThreadDigests(account.id, threads.map(thread => thread.id))
+      const snoozed = this.database.snoozedThreadIds(account.id)
+      for (const thread of threads) {
+        const summary = this.digestSummary(
+          thread.id,
+          account.id,
+          thread.subject,
+          thread.snippet,
+          thread.latestAt,
+          digests.get(thread.id) ?? [],
+          snoozed.has(thread.id)
+        )
         if (query.mailboxId && !summary.mailboxIds.includes(query.mailboxId)) continue
         if (query.labelId && !summary.labelIds.includes(query.labelId)) continue
         if (queryText) {
@@ -895,12 +916,16 @@ export class MailDatabaseServiceStore implements MailServiceStore {
   }
 
   setThreadState(accountId: string, threadIds: string[], patch: MailThreadStatePatch): void {
+    this.database.batch(() => this.writeThreadState(accountId, threadIds, patch))
+  }
+
+  private writeThreadState(accountId: string, threadIds: string[], patch: MailThreadStatePatch): void {
+    const labelsByType = this.database.listLabels(accountId)
     for (const threadId of threadIds) {
       for (const message of this.allMessages(accountId, { threadId })) {
         const labels = new Set(message.labels.map(label => label.id))
         if (patch.addLabelId) labels.add(patch.addLabelId)
         if (patch.removeLabelId) labels.delete(patch.removeLabelId)
-        const labelsByType = this.database.listLabels(accountId)
         if (patch.mailboxId) {
           for (const label of labelsByType) {
             if (['inbox', 'spam', 'trash'].includes(label.type)) labels.delete(label.id)
@@ -1010,23 +1035,27 @@ export class MailDatabaseServiceStore implements MailServiceStore {
   }
 
   putMessages(accountId: string, messages: RemoteMailMessage[]): void {
+    this.database.batch(() => this.writeMessages(accountId, messages))
+  }
+
+  private writeMessages(accountId: string, messages: RemoteMailMessage[]): void {
+    const known = new Map(this.database.listLabels(accountId).map(label => [label.id, label]))
+    const byType = new Map([...known.values()].map(label => [label.type, label.id]))
     for (const message of messages) {
       const id = message.id ?? message.gmailMessageId ?? `${cursorPart(message.mailboxId)}-${message.uid}`
-      const knownLabels = this.database.listLabels(accountId)
       const labelIds = (message.labelIds ?? []).map(labelId => {
         const escaped = labelId.toLowerCase()
-        if (escaped === '\\inbox') return knownLabels.find(label => label.type === 'inbox')?.id ?? message.mailboxId
-        if (escaped === '\\sent') return knownLabels.find(label => label.type === 'sent')?.id ?? labelId
-        if (escaped === '\\drafts') return knownLabels.find(label => label.type === 'drafts')?.id ?? labelId
-        if (escaped === '\\trash') return knownLabels.find(label => label.type === 'trash')?.id ?? labelId
-        if (escaped === '\\junk') return knownLabels.find(label => label.type === 'spam')?.id ?? labelId
-        if (escaped === '\\all') return knownLabels.find(label => label.type === 'archive')?.id ?? labelId
+        if (escaped === '\\inbox') return byType.get('inbox') ?? message.mailboxId
+        if (escaped === '\\sent') return byType.get('sent') ?? labelId
+        if (escaped === '\\drafts') return byType.get('drafts') ?? labelId
+        if (escaped === '\\trash') return byType.get('trash') ?? labelId
+        if (escaped === '\\junk') return byType.get('spam') ?? labelId
+        if (escaped === '\\all') return byType.get('archive') ?? labelId
         return labelId
       })
       for (const labelId of labelIds) {
-        if (!this.database.listLabels(accountId).some(label => label.id === labelId)) {
-          this.database.upsertLabel(accountId, { id: labelId, providerId: labelId, name: labelId })
-        }
+        if (known.has(labelId)) continue
+        known.set(labelId, this.database.upsertLabel(accountId, { id: labelId, providerId: labelId, name: labelId }))
       }
       const attachments = message.attachments?.map(attachment => {
         const existing = this.findAttachment(accountId, attachment.id)
@@ -1057,8 +1086,8 @@ export class MailDatabaseServiceStore implements MailServiceStore {
         isRead: message.flags.includes('\\Seen'),
         isStarred: message.flags.includes('\\Flagged'),
         isDraft: message.flags.includes('\\Draft'),
-        isSent: labelIds.some(labelId => this.database.listLabels(accountId).some(label => label.id === labelId && label.type === 'sent')),
-        isTrashed: labelIds.some(labelId => this.database.listLabels(accountId).some(label => label.id === labelId && label.type === 'trash')),
+        isSent: labelIds.some(labelId => known.get(labelId)?.type === 'sent'),
+        isTrashed: labelIds.some(labelId => known.get(labelId)?.type === 'trash'),
         size: message.size ?? 0,
         labelIds,
         participants: message.participants,
@@ -1180,18 +1209,45 @@ export class MailDatabaseServiceStore implements MailServiceStore {
     latestAt: number,
     messages: MailMessage[]
   ): MailThreadSummaryView {
+    return this.digestSummary(
+      id,
+      accountId,
+      subject,
+      snippet,
+      latestAt,
+      messages.map(message => ({
+        id: message.id,
+        threadId: id,
+        isRead: message.isRead,
+        isStarred: message.isStarred,
+        isDraft: message.isDraft,
+        isSent: message.isSent,
+        isTrashed: message.isTrashed,
+        attachments: message.attachments.length,
+        labels: message.labels.map(label => ({ id: label.id, type: label.type })),
+        participants: message.participants
+      })),
+      this.database.snoozedThreadIds(accountId).has(id)
+    )
+  }
+
+  private digestSummary(
+    id: string,
+    accountId: string,
+    subject: string,
+    snippet: string,
+    latestAt: number,
+    parts: MailThreadDigest[],
+    snoozed: boolean
+  ): MailThreadSummaryView {
     const people = new Map<string, MailAddressView>()
-    for (const message of messages) {
-      for (const participant of [...participantAddress(message, 'from'), ...participantAddress(message, 'to')]) {
+    for (const part of parts) {
+      for (const participant of [...digestAddress(part, 'from'), ...digestAddress(part, 'to')]) {
         people.set(participant.email, participant)
       }
     }
-    const threadMailboxes = mailboxIds(messages)
-    if (this.database.listDueSnoozes(Number.MAX_SAFE_INTEGER, 200).some(item =>
-      item.accountId === accountId && item.threadId === id
-    )) {
-      threadMailboxes.push('snoozed')
-    }
+    const threadMailboxes = digestMailboxIds(parts)
+    if (snoozed) threadMailboxes.push('snoozed')
     return {
       id,
       accountId,
@@ -1199,13 +1255,13 @@ export class MailDatabaseServiceStore implements MailServiceStore {
       participants: [...people.values()],
       preview: snippet,
       date: new Date(latestAt).toISOString(),
-      unread: messages.some(message => !message.isRead),
-      starred: messages.some(message => message.isStarred),
-      important: messages.some(message => message.labels.some(label => label.type === 'important')),
-      hasAttachments: messages.some(message => message.attachments.length > 0),
-      messageCount: messages.length,
+      unread: parts.some(part => !part.isRead),
+      starred: parts.some(part => part.isStarred),
+      important: parts.some(part => part.labels.some(label => label.type === 'important')),
+      hasAttachments: parts.some(part => part.attachments > 0),
+      messageCount: parts.length,
       mailboxIds: [...new Set(threadMailboxes)],
-      labelIds: [...new Set(messages.flatMap(message => message.labels.map(label => label.id)))]
+      labelIds: [...new Set(parts.flatMap(part => part.labels.map(label => label.id)))]
     }
   }
 
@@ -1382,6 +1438,8 @@ export class GmailMailConnection implements MailConnection {
   private readonly transport: GmailTransport
   private changeListener: (() => void) | null = null
   private disconnectListener: ((error: Error) => void) | null = null
+  private mailboxes: GmailMailbox[] | null = null
+  private readonly uids = new Map<string, number[]>()
 
   constructor(options: GmailMailConnectionOptions) {
     this.account = options.account
@@ -1409,7 +1467,9 @@ export class GmailMailConnection implements MailConnection {
 
   async listMailboxes(): Promise<RemoteMailbox[]> {
     await this.verify()
-    return (await this.transport.listMailboxes()).filter(mailbox => mailbox.selectable).map(mailbox => ({
+    this.mailboxes = null
+    this.uids.clear()
+    return (await this.knownMailboxes()).filter(mailbox => mailbox.selectable).map(mailbox => ({
       id: mailbox.path,
       name: mailbox.name,
       role: mailbox.specialUse
@@ -1417,8 +1477,7 @@ export class GmailMailConnection implements MailConnection {
   }
 
   async mailboxStatus(mailboxId: string): Promise<RemoteMailboxStatus> {
-    await this.verify()
-    const mailbox = (await this.transport.listMailboxes()).find(entry => entry.path === mailboxId)
+    const mailbox = (await this.knownMailboxes()).find(entry => entry.path === mailboxId)
     if (!mailbox) throw new Error('Mail mailbox was not found')
     return {
       uidValidity: mailbox.uidValidity ?? '0',
@@ -1435,14 +1494,16 @@ export class GmailMailConnection implements MailConnection {
     if (request.afterUid !== undefined) {
       const afterUid = request.afterUid
       const status = await this.mailboxStatus(mailboxId)
-      const end = Math.min(status.uidNext - 1, afterUid + request.limit)
-      uids = Array.from({ length: Math.max(0, end - afterUid) }, (_, index) => afterUid + index + 1)
-      scannedThroughUid = end
+      const above = (await this.mailboxUids(mailboxId)).filter(uid => uid > afterUid)
+      uids = above.slice(0, request.limit)
+      scannedThroughUid = above.length > request.limit
+        ? (uids.at(-1) ?? afterUid)
+        : Math.max(afterUid, status.uidNext - 1)
     } else if (request.beforeUid !== undefined) {
-      const end = Math.max(0, request.beforeUid - 1)
-      const start = Math.max(1, end - request.limit + 1)
-      uids = Array.from({ length: Math.max(0, end - start + 1) }, (_, index) => start + index)
-      nextBeforeUid = start
+      const beforeUid = request.beforeUid
+      const below = (await this.mailboxUids(mailboxId)).filter(uid => uid < beforeUid)
+      uids = below.slice(-request.limit)
+      nextBeforeUid = below.length > request.limit ? (uids[0] ?? 1) : 1
     }
     const summaries = await this.transport.fetchSummaries(mailboxId, { uids, limit: request.limit })
     return {
@@ -1450,6 +1511,20 @@ export class GmailMailConnection implements MailConnection {
       ...(scannedThroughUid === undefined ? {} : { scannedThroughUid }),
       ...(nextBeforeUid === undefined ? {} : { nextBeforeUid })
     }
+  }
+
+  private async knownMailboxes(): Promise<GmailMailbox[]> {
+    await this.verify()
+    if (!this.mailboxes) this.mailboxes = await this.transport.listMailboxes(true)
+    return this.mailboxes
+  }
+
+  private async mailboxUids(mailboxId: string): Promise<number[]> {
+    const known = this.uids.get(mailboxId)
+    if (known) return known
+    const uids = await this.transport.listUids(mailboxId)
+    this.uids.set(mailboxId, uids)
+    return uids
   }
 
   async fetchBody(mailboxId: string, uid: number): Promise<RemoteMailMessage> {

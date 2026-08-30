@@ -121,6 +121,7 @@ export interface MailSynchronizerOptions {
   clock?: () => number
   recentLimit?: number
   pageSize?: number
+  backfillLimit?: number
   maxIdleReconnects?: number
   reconnectBaseMs?: number
   reconnectMaxMs?: number
@@ -183,6 +184,7 @@ export class MailSynchronizer {
   private readonly clock: () => number
   private readonly recentLimit: number
   private readonly pageSize: number
+  private readonly backfillLimit: number
   private readonly maxIdleReconnects: number
   private readonly reconnectBaseMs: number
   private readonly reconnectMaxMs: number
@@ -199,6 +201,7 @@ export class MailSynchronizer {
     this.clock = options.clock ?? Date.now
     this.recentLimit = Math.max(1, options.recentLimit ?? 50)
     this.pageSize = Math.max(this.recentLimit, options.pageSize ?? 250)
+    this.backfillLimit = Math.max(this.pageSize, options.backfillLimit ?? 2_000)
     this.maxIdleReconnects = Math.max(0, options.maxIdleReconnects ?? 8)
     this.reconnectBaseMs = Math.max(100, options.reconnectBaseMs ?? 1_000)
     this.reconnectMaxMs = Math.max(this.reconnectBaseMs, options.reconnectMaxMs ?? 60_000)
@@ -403,7 +406,8 @@ export class MailSynchronizer {
     initial: MailboxSyncState
   ): Promise<void> {
     let state = initial
-    while (!state.fullyHydrated && !this.abort.signal.aborted) {
+    let taken = 0
+    while (!state.fullyHydrated && !this.abort.signal.aborted && taken < this.backfillLimit) {
       const beforeUid = state.hydratedFromUid
       const fetched = await this.transport.fetchMessages(
         mailbox.id,
@@ -416,6 +420,7 @@ export class MailSynchronizer {
         this.abort.signal
       )
       await this.applyFetch(mailbox.id, fetched)
+      taken += fetched.messages.length
       const hydratedFromUid = Math.min(earliestUid(fetched.messages, beforeUid), fetched.nextBeforeUid ?? beforeUid)
       const fullyHydrated = hydratedFromUid <= 1
       state = {

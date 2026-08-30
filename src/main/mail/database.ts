@@ -103,9 +103,36 @@ function decodeCursor(value: string | null | undefined, accountId: string): Page
   }
 }
 
+export interface MailThreadDigest {
+  id: string
+  threadId: string
+  isRead: boolean
+  isStarred: boolean
+  isDraft: boolean
+  isSent: boolean
+  isTrashed: boolean
+  attachments: number
+  labels: Array<{ id: string; type: MailLabel['type'] }>
+  participants: MailParticipant[]
+}
+
+const CHUNK = 400
+
+function chunked(values: string[]): string[][] {
+  const chunks: string[][] = []
+  for (let index = 0; index < values.length; index += CHUNK) chunks.push(values.slice(index, index + CHUNK))
+  return chunks
+}
+
+function holders(values: string[]): string {
+  return values.map(() => '?').join(', ')
+}
+
 export class MailDatabase {
   readonly file: string
   private readonly database: Database
+  private readonly statements = new Map<string, ReturnType<Database['prepare']>>()
+  private depth = 0
 
   constructor(stateDirectory: string, private readonly clock: () => number = Date.now) {
     const directory = path.resolve(stateDirectory)
@@ -121,6 +148,7 @@ export class MailDatabase {
   }
 
   close(): void {
+    this.statements.clear()
     this.database.close()
   }
 
@@ -128,7 +156,7 @@ export class MailDatabase {
     const input = parseMailAccountInput(value)
     const existing = this.getAccount(input.id)
     const now = this.clock()
-    this.database.prepare(`
+    this.sql(`
       INSERT INTO accounts (id, provider, email, display_name, signature, sync_enabled, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(id) DO UPDATE SET
@@ -152,22 +180,22 @@ export class MailDatabase {
   }
 
   getAccount(accountId: string): MailAccount | null {
-    const row = this.database.prepare('SELECT * FROM accounts WHERE id = ?').get(requiredId(accountId, 'Mail account id')) as Row | undefined
+    const row = this.sql('SELECT * FROM accounts WHERE id = ?').get(requiredId(accountId, 'Mail account id')) as Row | undefined
     return row ? this.account(row) : null
   }
 
   listAccounts(): MailAccount[] {
-    return (this.database.prepare('SELECT * FROM accounts ORDER BY email, id').all() as Row[]).map(row => this.account(row))
+    return (this.sql('SELECT * FROM accounts ORDER BY email, id').all() as Row[]).map(row => this.account(row))
   }
 
   deleteAccount(accountId: string): boolean {
-    return this.database.prepare('DELETE FROM accounts WHERE id = ?').run(requiredId(accountId, 'Mail account id')).changes > 0
+    return this.sql('DELETE FROM accounts WHERE id = ?').run(requiredId(accountId, 'Mail account id')).changes > 0
   }
 
   setAccountLastSyncedAt(accountId: string, syncedAt: number | null): MailAccount {
     const id = requiredId(accountId, 'Mail account id')
     const now = this.clock()
-    const result = this.database.prepare('UPDATE accounts SET last_synced_at = ?, updated_at = ? WHERE id = ?').run(
+    const result = this.sql('UPDATE accounts SET last_synced_at = ?, updated_at = ? WHERE id = ?').run(
       syncedAt === null ? null : time(syncedAt, 'Mail account sync time'), now, id
     )
     if (!result.changes) throw new Error('Mail account was not found')
@@ -178,7 +206,7 @@ export class MailDatabase {
     const account = this.accountId(accountId)
     const input = parseMailLabelInput(value)
     const now = this.clock()
-    this.database.prepare(`
+    this.sql(`
       INSERT INTO labels (account_id, id, provider_id, name, type, color, unread_count, total_count, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(account_id, id) DO UPDATE SET
@@ -190,23 +218,23 @@ export class MailDatabase {
         total_count = excluded.total_count,
         updated_at = excluded.updated_at
     `).run(account, input.id, input.providerId ?? null, input.name, input.type ?? 'user', input.color ?? null, input.unreadCount ?? 0, input.totalCount ?? 0, now, now)
-    return this.label(this.database.prepare('SELECT * FROM labels WHERE account_id = ? AND id = ?').get(account, input.id) as Row)
+    return this.label(this.sql('SELECT * FROM labels WHERE account_id = ? AND id = ?').get(account, input.id) as Row)
   }
 
   listLabels(accountId: string): MailLabel[] {
     const account = this.accountId(accountId)
-    return (this.database.prepare('SELECT * FROM labels WHERE account_id = ? ORDER BY type, name, id').all(account) as Row[]).map(row => this.label(row))
+    return (this.sql('SELECT * FROM labels WHERE account_id = ? ORDER BY type, name, id').all(account) as Row[]).map(row => this.label(row))
   }
 
   deleteLabel(accountId: string, labelId: string): boolean {
-    return this.database.prepare('DELETE FROM labels WHERE account_id = ? AND id = ?').run(this.accountId(accountId), requiredId(labelId, 'Mail label id')).changes > 0
+    return this.sql('DELETE FROM labels WHERE account_id = ? AND id = ?').run(this.accountId(accountId), requiredId(labelId, 'Mail label id')).changes > 0
   }
 
   upsertThread(accountId: string, value: MailThreadInput): MailThread {
     const account = this.accountId(accountId)
     const input = parseMailThreadInput(value)
     const now = this.clock()
-    this.database.prepare(`
+    this.sql(`
       INSERT INTO threads (account_id, id, provider_thread_id, subject, snippet, latest_at, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(account_id, id) DO UPDATE SET
@@ -221,7 +249,7 @@ export class MailDatabase {
 
   getThread(accountId: string, threadId: string): MailThread | null {
     const account = this.accountId(accountId)
-    const row = this.database.prepare(`
+    const row = this.sql(`
       SELECT t.*,
         COUNT(tm.message_id) AS message_count,
         COALESCE(SUM(CASE WHEN m.is_read = 0 THEN 1 ELSE 0 END), 0) AS unread_count
@@ -237,29 +265,112 @@ export class MailDatabase {
   listThreads(accountId: string, limit = 100): MailThread[] {
     const account = this.accountId(accountId)
     const size = Math.min(count(limit, 'Mail thread limit'), 200)
-    return (this.database.prepare(`
+    return (this.sql(`
       SELECT t.*,
-        COUNT(tm.message_id) AS message_count,
-        COALESCE(SUM(CASE WHEN m.is_read = 0 THEN 1 ELSE 0 END), 0) AS unread_count
+        (
+          SELECT COUNT(*) FROM thread_messages tm
+          WHERE tm.account_id = t.account_id AND tm.thread_id = t.id
+        ) AS message_count,
+        (
+          SELECT COUNT(*) FROM thread_messages tm
+          JOIN messages m ON m.account_id = tm.account_id AND m.id = tm.message_id
+          WHERE tm.account_id = t.account_id AND tm.thread_id = t.id AND m.is_read = 0
+        ) AS unread_count
       FROM threads t
-      LEFT JOIN thread_messages tm ON tm.account_id = t.account_id AND tm.thread_id = t.id
-      LEFT JOIN messages m ON m.account_id = tm.account_id AND m.id = tm.message_id
       WHERE t.account_id = ?
-      GROUP BY t.account_id, t.id
       ORDER BY t.latest_at DESC, t.id DESC
       LIMIT ?
     `).all(account, size) as Row[]).map(row => this.thread(row))
   }
 
+  countUnread(accountId: string): number {
+    const row = this.sql(
+      'SELECT COUNT(*) AS total FROM messages WHERE account_id = ? AND is_read = 0'
+    ).get(this.accountId(accountId)) as Row
+    return number(row.total)
+  }
+
+  snoozedThreadIds(accountId: string): Set<string> {
+    const rows = this.sql(
+      'SELECT thread_id FROM snoozes WHERE account_id = ? AND thread_id IS NOT NULL'
+    ).all(this.accountId(accountId)) as Row[]
+    return new Set(rows.map(row => String(row.thread_id)))
+  }
+
+  listThreadDigests(accountId: string, threadIds: string[]): Map<string, MailThreadDigest[]> {
+    const account = this.accountId(accountId)
+    const digests = new Map<string, MailThreadDigest[]>()
+    const byMessage = new Map<string, MailThreadDigest>()
+    for (const chunk of chunked(threadIds)) {
+      const rows = this.sql(`
+        SELECT tm.thread_id, m.id, m.is_read, m.is_starred, m.is_draft, m.is_sent, m.is_trashed
+        FROM thread_messages tm
+        JOIN messages m ON m.account_id = tm.account_id AND m.id = tm.message_id
+        WHERE tm.account_id = ? AND tm.thread_id IN (${holders(chunk)})
+      `).all(account, ...chunk) as Row[]
+      for (const row of rows) {
+        const digest: MailThreadDigest = {
+          id: String(row.id),
+          threadId: String(row.thread_id),
+          isRead: boolean(row.is_read),
+          isStarred: boolean(row.is_starred),
+          isDraft: boolean(row.is_draft),
+          isSent: boolean(row.is_sent),
+          isTrashed: boolean(row.is_trashed),
+          attachments: 0,
+          labels: [],
+          participants: []
+        }
+        byMessage.set(digest.id, digest)
+        const group = digests.get(digest.threadId)
+        if (group) group.push(digest)
+        else digests.set(digest.threadId, [digest])
+      }
+    }
+    const messageIds = [...byMessage.keys()]
+    for (const chunk of chunked(messageIds)) {
+      const labels = this.sql(`
+        SELECT ml.message_id, l.id, l.type
+        FROM message_labels ml
+        JOIN labels l ON l.account_id = ml.account_id AND l.id = ml.label_id
+        WHERE ml.account_id = ? AND ml.message_id IN (${holders(chunk)})
+      `).all(account, ...chunk) as Row[]
+      for (const row of labels) {
+        byMessage.get(String(row.message_id))?.labels.push({
+          id: String(row.id),
+          type: String(row.type) as MailLabel['type']
+        })
+      }
+      const people = this.sql(`
+        SELECT * FROM participants
+        WHERE account_id = ? AND role IN ('from', 'to') AND message_id IN (${holders(chunk)})
+        ORDER BY sort_order, id
+      `).all(account, ...chunk) as Row[]
+      for (const row of people) {
+        byMessage.get(String(row.message_id))?.participants.push(this.participant(row))
+      }
+      const attachments = this.sql(`
+        SELECT message_id, COUNT(*) AS total FROM attachments
+        WHERE account_id = ? AND message_id IN (${holders(chunk)})
+        GROUP BY message_id
+      `).all(account, ...chunk) as Row[]
+      for (const row of attachments) {
+        const digest = byMessage.get(String(row.message_id))
+        if (digest) digest.attachments = number(row.total)
+      }
+    }
+    return digests
+  }
+
   upsertMessage(accountId: string, value: MailMessageInput): MailMessageWriteResult {
     const account = this.accountId(accountId)
     const input = parseMailMessageInput(value)
-    const existing = this.database.prepare('SELECT id FROM messages WHERE account_id = ? AND provider_message_id = ?').get(account, input.providerMessageId) as Row | undefined
+    const existing = this.sql('SELECT id FROM messages WHERE account_id = ? AND provider_message_id = ?').get(account, input.providerMessageId) as Row | undefined
     const id = existing ? String(existing.id) : input.id
     const now = this.clock()
     return this.transaction(() => {
       if (input.threadId) {
-        this.database.prepare(`
+        this.sql(`
           INSERT INTO threads (account_id, id, provider_thread_id, subject, snippet, latest_at, created_at, updated_at)
           VALUES (?, ?, NULL, ?, ?, ?, ?, ?)
           ON CONFLICT(account_id, id) DO UPDATE SET
@@ -269,7 +380,7 @@ export class MailDatabase {
             updated_at = excluded.updated_at
         `).run(account, input.threadId, input.subject ?? '', input.snippet ?? '', input.receivedAt, now, now)
       }
-      this.database.prepare(`
+      this.sql(`
         INSERT INTO messages (
           account_id, id, provider_message_id, message_id_header, in_reply_to, subject, snippet,
           body_text, body_html, sent_at, received_at, is_read, is_starred, is_draft, is_sent,
@@ -298,8 +409,8 @@ export class MailDatabase {
         input.isDraft ? 1 : 0, input.isSent ? 1 : 0, input.isTrashed ? 1 : 0, input.size ?? 0, now, now
       )
       if (input.threadId !== undefined) {
-        this.database.prepare('DELETE FROM thread_messages WHERE account_id = ? AND message_id = ?').run(account, id)
-        if (input.threadId) this.database.prepare('INSERT INTO thread_messages (account_id, thread_id, message_id) VALUES (?, ?, ?)').run(account, input.threadId, id)
+        this.sql('DELETE FROM thread_messages WHERE account_id = ? AND message_id = ?').run(account, id)
+        if (input.threadId) this.sql('INSERT INTO thread_messages (account_id, thread_id, message_id) VALUES (?, ?, ?)').run(account, input.threadId, id)
       }
       if (input.labelIds !== undefined) this.setMessageLabels(account, id, input.labelIds)
       if (input.participants !== undefined) this.setParticipants(account, id, input.participants)
@@ -312,7 +423,7 @@ export class MailDatabase {
   getMessage(accountId: string, messageId: string): MailMessage | null {
     const account = this.accountId(accountId)
     const id = requiredId(messageId, 'Mail message id')
-    const row = this.database.prepare(`
+    const row = this.sql(`
       SELECT m.*, tm.thread_id
       FROM messages m
       LEFT JOIN thread_messages tm ON tm.account_id = m.account_id AND tm.message_id = m.id
@@ -323,7 +434,7 @@ export class MailDatabase {
 
   getMessageByProviderId(accountId: string, providerMessageId: string): MailMessage | null {
     const account = this.accountId(accountId)
-    const row = this.database.prepare(`
+    const row = this.sql(`
       SELECT m.*, tm.thread_id
       FROM messages m
       LEFT JOIN thread_messages tm ON tm.account_id = m.account_id AND tm.message_id = m.id
@@ -363,7 +474,7 @@ export class MailDatabase {
       clauses.push('(m.received_at < ? OR (m.received_at = ? AND m.id < ?))')
       values.push(cursor.receivedAt, cursor.receivedAt, cursor.id)
     }
-    const rows = this.database.prepare(`
+    const rows = this.sql(`
       SELECT m.*, tm.thread_id
       FROM messages m
       ${joins}
@@ -381,7 +492,7 @@ export class MailDatabase {
   }
 
   deleteMessage(accountId: string, messageId: string): boolean {
-    return this.database.prepare('DELETE FROM messages WHERE account_id = ? AND id = ?').run(this.accountId(accountId), requiredId(messageId, 'Mail message id')).changes > 0
+    return this.sql('DELETE FROM messages WHERE account_id = ? AND id = ?').run(this.accountId(accountId), requiredId(messageId, 'Mail message id')).changes > 0
   }
 
   setMessageLabels(accountId: string, messageId: string, labelIds: string[]): void {
@@ -389,8 +500,8 @@ export class MailDatabase {
     const message = requiredId(messageId, 'Mail message id')
     if (!Array.isArray(labelIds)) throw new TypeError('Mail message labels must be an array')
     const ids = [...new Set(labelIds.map(value => requiredId(value, 'Mail label id')))]
-    this.database.prepare('DELETE FROM message_labels WHERE account_id = ? AND message_id = ?').run(account, message)
-    const insert = this.database.prepare('INSERT INTO message_labels (account_id, message_id, label_id) VALUES (?, ?, ?)')
+    this.sql('DELETE FROM message_labels WHERE account_id = ? AND message_id = ?').run(account, message)
+    const insert = this.sql('INSERT INTO message_labels (account_id, message_id, label_id) VALUES (?, ?, ?)')
     for (const id of ids) insert.run(account, message, id)
   }
 
@@ -399,8 +510,8 @@ export class MailDatabase {
     const message = requiredId(messageId, 'Mail message id')
     if (!Array.isArray(values)) throw new TypeError('Mail participants must be an array')
     const participants = values.map(parseMailParticipantInput)
-    this.database.prepare('DELETE FROM participants WHERE account_id = ? AND message_id = ?').run(account, message)
-    const insert = this.database.prepare(`
+    this.sql('DELETE FROM participants WHERE account_id = ? AND message_id = ?').run(account, message)
+    const insert = this.sql(`
       INSERT INTO participants (account_id, id, message_id, role, email, name, sort_order)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `)
@@ -415,7 +526,7 @@ export class MailDatabase {
     const account = this.accountId(accountId)
     const message = requiredId(messageId, 'Mail message id')
     if (!Array.isArray(values)) throw new TypeError('Mail attachments must be an array')
-    this.database.prepare('DELETE FROM attachments WHERE account_id = ? AND message_id = ?').run(account, message)
+    this.sql('DELETE FROM attachments WHERE account_id = ? AND message_id = ?').run(account, message)
     for (const value of values) this.upsertAttachment(account, { ...parseMailAttachmentInput(value), messageId: message, draftId: null })
   }
 
@@ -426,7 +537,7 @@ export class MailDatabase {
     const draftId = input.draftId ?? null
     if ((messageId === null) === (draftId === null)) throw new TypeError('Mail attachment must belong to one message or draft')
     const now = this.clock()
-    this.database.prepare(`
+    this.sql(`
       INSERT INTO attachments (
         account_id, id, message_id, draft_id, filename, mime_type, size, content_id,
         is_inline, storage_key, checksum, created_at
@@ -445,11 +556,11 @@ export class MailDatabase {
       account, input.id, messageId, draftId, input.filename, input.mimeType ?? 'application/octet-stream',
       input.size, input.contentId ?? null, input.inline ? 1 : 0, input.storageKey ?? null, input.checksum ?? null, now
     )
-    return this.attachment(this.database.prepare('SELECT * FROM attachments WHERE account_id = ? AND id = ?').get(account, input.id) as Row)
+    return this.attachment(this.sql('SELECT * FROM attachments WHERE account_id = ? AND id = ?').get(account, input.id) as Row)
   }
 
   getAttachment(accountId: string, attachmentId: string): MailAttachment | null {
-    const row = this.database.prepare('SELECT * FROM attachments WHERE account_id = ? AND id = ?').get(
+    const row = this.sql('SELECT * FROM attachments WHERE account_id = ? AND id = ?').get(
       this.accountId(accountId),
       requiredId(attachmentId, 'Mail attachment id')
     ) as Row | undefined
@@ -457,14 +568,14 @@ export class MailDatabase {
   }
 
   findAttachment(attachmentId: string): MailAttachment | null {
-    const row = this.database.prepare('SELECT * FROM attachments WHERE id = ? ORDER BY account_id LIMIT 1').get(
+    const row = this.sql('SELECT * FROM attachments WHERE id = ? ORDER BY account_id LIMIT 1').get(
       requiredId(attachmentId, 'Mail attachment id')
     ) as Row | undefined
     return row ? this.attachment(row) : null
   }
 
   listAttachmentStorageKeys(accountId: string): string[] {
-    return (this.database.prepare(
+    return (this.sql(
       'SELECT DISTINCT storage_key FROM attachments WHERE account_id = ? AND storage_key IS NOT NULL'
     ).all(this.accountId(accountId)) as Row[]).map(row => String(row.storage_key))
   }
@@ -474,7 +585,7 @@ export class MailDatabase {
     const input = parseMailDraftInput(value)
     const now = this.clock()
     return this.transaction(() => {
-      this.database.prepare(`
+      this.sql(`
         INSERT INTO drafts (
           account_id, id, provider_draft_id, reply_to_message_id, subject, body_text, body_html,
           version, created_at, updated_at
@@ -493,7 +604,7 @@ export class MailDatabase {
       )
       if (input.recipients !== undefined) this.setDraftRecipients(account, input.id, input.recipients)
       if (input.attachments !== undefined) {
-        this.database.prepare('DELETE FROM attachments WHERE account_id = ? AND draft_id = ?').run(account, input.id)
+        this.sql('DELETE FROM attachments WHERE account_id = ? AND draft_id = ?').run(account, input.id)
         for (const attachment of input.attachments) {
           this.upsertAttachment(account, { ...attachment, messageId: null, draftId: input.id })
         }
@@ -504,17 +615,17 @@ export class MailDatabase {
 
   getDraft(accountId: string, draftId: string): MailDraft | null {
     const account = this.accountId(accountId)
-    const row = this.database.prepare('SELECT * FROM drafts WHERE account_id = ? AND id = ?').get(account, requiredId(draftId, 'Mail draft id')) as Row | undefined
+    const row = this.sql('SELECT * FROM drafts WHERE account_id = ? AND id = ?').get(account, requiredId(draftId, 'Mail draft id')) as Row | undefined
     return row ? this.draft(row) : null
   }
 
   listDrafts(accountId: string): MailDraft[] {
     const account = this.accountId(accountId)
-    return (this.database.prepare('SELECT * FROM drafts WHERE account_id = ? ORDER BY updated_at DESC, id DESC').all(account) as Row[]).map(row => this.draft(row))
+    return (this.sql('SELECT * FROM drafts WHERE account_id = ? ORDER BY updated_at DESC, id DESC').all(account) as Row[]).map(row => this.draft(row))
   }
 
   deleteDraft(accountId: string, draftId: string): boolean {
-    return this.database.prepare('DELETE FROM drafts WHERE account_id = ? AND id = ?').run(this.accountId(accountId), requiredId(draftId, 'Mail draft id')).changes > 0
+    return this.sql('DELETE FROM drafts WHERE account_id = ? AND id = ?').run(this.accountId(accountId), requiredId(draftId, 'Mail draft id')).changes > 0
   }
 
   scheduleSend(accountId: string, draftId: string, sendAt: number, id: string = randomUUID()): MailScheduledSend {
@@ -523,7 +634,7 @@ export class MailDatabase {
     const scheduleId = requiredId(id, 'Mail scheduled send id')
     const scheduledAt = time(sendAt, 'Mail scheduled send time')
     const now = this.clock()
-    this.database.prepare(`
+    this.sql(`
       INSERT INTO scheduled_sends (
         account_id, id, draft_id, send_at, status, attempt_count, last_error,
         provider_request_id, created_at, updated_at
@@ -550,7 +661,7 @@ export class MailDatabase {
     const scheduleId = requiredId(id, 'Mail scheduled send id')
     if (!MAIL_SCHEDULE_STATUSES.includes(status)) throw new TypeError('Mail scheduled send status is not supported')
     const now = this.clock()
-    const result = this.database.prepare(`
+    const result = this.sql(`
       UPDATE scheduled_sends SET
         status = ?,
         attempt_count = attempt_count + ?,
@@ -569,7 +680,7 @@ export class MailDatabase {
   listDueScheduledSends(now: number, limit = 100): MailScheduledSend[] {
     const due = time(now, 'Mail scheduled send due time')
     const size = Math.min(count(limit, 'Mail scheduled send limit'), 200)
-    return (this.database.prepare(`
+    return (this.sql(`
       SELECT * FROM scheduled_sends
       WHERE status = 'pending' AND send_at <= ?
       ORDER BY send_at, account_id, id
@@ -578,7 +689,7 @@ export class MailDatabase {
   }
 
   getScheduledSend(accountId: string, id: string): MailScheduledSend | null {
-    const row = this.database.prepare('SELECT * FROM scheduled_sends WHERE account_id = ? AND id = ?').get(
+    const row = this.sql('SELECT * FROM scheduled_sends WHERE account_id = ? AND id = ?').get(
       this.accountId(accountId), requiredId(id, 'Mail scheduled send id')
     ) as Row | undefined
     return row ? this.scheduledSend(row) : null
@@ -595,18 +706,18 @@ export class MailDatabase {
   listDueSnoozes(now: number, limit = 100): MailSnooze[] {
     const due = time(now, 'Mail snooze due time')
     const size = Math.min(count(limit, 'Mail snooze limit'), 200)
-    return (this.database.prepare('SELECT * FROM snoozes WHERE wake_at <= ? ORDER BY wake_at, account_id, id LIMIT ?').all(due, size) as Row[]).map(row => this.snooze(row))
+    return (this.sql('SELECT * FROM snoozes WHERE wake_at <= ? ORDER BY wake_at, account_id, id LIMIT ?').all(due, size) as Row[]).map(row => this.snooze(row))
   }
 
   deleteSnooze(accountId: string, id: string): boolean {
-    return this.database.prepare('DELETE FROM snoozes WHERE account_id = ? AND id = ?').run(this.accountId(accountId), requiredId(id, 'Mail snooze id')).changes > 0
+    return this.sql('DELETE FROM snoozes WHERE account_id = ? AND id = ?').run(this.accountId(accountId), requiredId(id, 'Mail snooze id')).changes > 0
   }
 
   setCursor(accountId: string, resource: string, cursor: string): void {
     const account = this.accountId(accountId)
     const key = requiredId(resource, 'Mail cursor resource')
     const value = requiredId(cursor, 'Mail cursor value')
-    this.database.prepare(`
+    this.sql(`
       INSERT INTO sync_cursors (account_id, resource, cursor, updated_at)
       VALUES (?, ?, ?, ?)
       ON CONFLICT(account_id, resource) DO UPDATE SET cursor = excluded.cursor, updated_at = excluded.updated_at
@@ -614,20 +725,20 @@ export class MailDatabase {
   }
 
   getCursor(accountId: string, resource: string): string | null {
-    const row = this.database.prepare('SELECT cursor FROM sync_cursors WHERE account_id = ? AND resource = ?').get(
+    const row = this.sql('SELECT cursor FROM sync_cursors WHERE account_id = ? AND resource = ?').get(
       this.accountId(accountId), requiredId(resource, 'Mail cursor resource')
     ) as Row | undefined
     return row ? String(row.cursor) : null
   }
 
   private getScheduledSendForDraft(accountId: string, draftId: string): MailScheduledSend | null {
-    const row = this.database.prepare('SELECT * FROM scheduled_sends WHERE account_id = ? AND draft_id = ?').get(accountId, draftId) as Row | undefined
+    const row = this.sql('SELECT * FROM scheduled_sends WHERE account_id = ? AND draft_id = ?').get(accountId, draftId) as Row | undefined
     return row ? this.scheduledSend(row) : null
   }
 
   private putSnooze(accountId: string, id: string, threadId: string | null, messageId: string | null, wakeAt: number): MailSnooze {
     const now = this.clock()
-    this.database.prepare(`
+    this.sql(`
       INSERT INTO snoozes (account_id, id, thread_id, message_id, wake_at, created_at)
       VALUES (?, ?, ?, ?, ?, ?)
       ON CONFLICT(account_id, id) DO UPDATE SET
@@ -635,13 +746,13 @@ export class MailDatabase {
         message_id = excluded.message_id,
         wake_at = excluded.wake_at
     `).run(accountId, id, threadId, messageId, time(wakeAt, 'Mail snooze wake time'), now)
-    return this.snooze(this.database.prepare('SELECT * FROM snoozes WHERE account_id = ? AND id = ?').get(accountId, id) as Row)
+    return this.snooze(this.sql('SELECT * FROM snoozes WHERE account_id = ? AND id = ?').get(accountId, id) as Row)
   }
 
   private setDraftRecipients(accountId: string, draftId: string, values: MailParticipantInput[]): void {
     const recipients = values.map(parseMailParticipantInput)
-    this.database.prepare('DELETE FROM draft_recipients WHERE account_id = ? AND draft_id = ?').run(accountId, draftId)
-    const insert = this.database.prepare(`
+    this.sql('DELETE FROM draft_recipients WHERE account_id = ? AND draft_id = ?').run(accountId, draftId)
+    const insert = this.sql(`
       INSERT INTO draft_recipients (account_id, id, draft_id, role, email, name, sort_order)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `)
@@ -652,22 +763,22 @@ export class MailDatabase {
   }
 
   private indexMessage(accountId: string, messageId: string): void {
-    const row = this.database.prepare(`
+    const row = this.sql(`
       SELECT m.subject, m.body_text, COALESCE(GROUP_CONCAT(COALESCE(p.name, '') || ' ' || p.email, ' '), '') AS participant_text
       FROM messages m
       LEFT JOIN participants p ON p.account_id = m.account_id AND p.message_id = m.id
       WHERE m.account_id = ? AND m.id = ?
       GROUP BY m.account_id, m.id
     `).get(accountId, messageId) as Row | undefined
-    this.database.prepare('DELETE FROM messages_fts WHERE account_id = ? AND message_id = ?').run(accountId, messageId)
-    if (row) this.database.prepare('INSERT INTO messages_fts (account_id, message_id, subject, body_text, participant_text) VALUES (?, ?, ?, ?, ?)').run(
+    this.sql('DELETE FROM messages_fts WHERE account_id = ? AND message_id = ?').run(accountId, messageId)
+    if (row) this.sql('INSERT INTO messages_fts (account_id, message_id, subject, body_text, participant_text) VALUES (?, ?, ?, ?, ?)').run(
       accountId, messageId, String(row.subject), String(row.body_text), String(row.participant_text)
     )
   }
 
   private accountId(value: string): string {
     const id = requiredId(value, 'Mail account id')
-    if (!this.database.prepare('SELECT 1 FROM accounts WHERE id = ?').get(id)) throw new Error('Mail account was not found')
+    if (!this.sql('SELECT 1 FROM accounts WHERE id = ?').get(id)) throw new Error('Mail account was not found')
     return id
   }
 
@@ -718,14 +829,14 @@ export class MailDatabase {
   private message(row: Row): MailMessage {
     const accountId = String(row.account_id)
     const id = String(row.id)
-    const labels = (this.database.prepare(`
+    const labels = (this.sql(`
       SELECT l.* FROM labels l
       JOIN message_labels ml ON ml.account_id = l.account_id AND ml.label_id = l.id
       WHERE ml.account_id = ? AND ml.message_id = ?
       ORDER BY l.type, l.name, l.id
     `).all(accountId, id) as Row[]).map(item => this.label(item))
-    const participants = (this.database.prepare('SELECT * FROM participants WHERE account_id = ? AND message_id = ? ORDER BY sort_order, id').all(accountId, id) as Row[]).map(item => this.participant(item))
-    const attachments = (this.database.prepare('SELECT * FROM attachments WHERE account_id = ? AND message_id = ? ORDER BY id').all(accountId, id) as Row[]).map(item => this.attachment(item))
+    const participants = (this.sql('SELECT * FROM participants WHERE account_id = ? AND message_id = ? ORDER BY sort_order, id').all(accountId, id) as Row[]).map(item => this.participant(item))
+    const attachments = (this.sql('SELECT * FROM attachments WHERE account_id = ? AND message_id = ? ORDER BY id').all(accountId, id) as Row[]).map(item => this.attachment(item))
     return {
       accountId,
       id,
@@ -784,8 +895,8 @@ export class MailDatabase {
   private draft(row: Row): MailDraft {
     const accountId = String(row.account_id)
     const id = String(row.id)
-    const recipients = (this.database.prepare('SELECT * FROM draft_recipients WHERE account_id = ? AND draft_id = ? ORDER BY sort_order, id').all(accountId, id) as Row[]).map(item => this.participant(item))
-    const attachments = (this.database.prepare('SELECT * FROM attachments WHERE account_id = ? AND draft_id = ? ORDER BY id').all(accountId, id) as Row[]).map(item => this.attachment(item))
+    const recipients = (this.sql('SELECT * FROM draft_recipients WHERE account_id = ? AND draft_id = ? ORDER BY sort_order, id').all(accountId, id) as Row[]).map(item => this.participant(item))
+    const attachments = (this.sql('SELECT * FROM attachments WHERE account_id = ? AND draft_id = ? ORDER BY id').all(accountId, id) as Row[]).map(item => this.attachment(item))
     return {
       accountId,
       id,
@@ -828,13 +939,29 @@ export class MailDatabase {
     }
   }
 
+  private sql(text: string): ReturnType<Database['prepare']> {
+    const cached = this.statements.get(text)
+    if (cached) return cached
+    const statement = this.database.prepare(text)
+    this.statements.set(text, statement)
+    return statement
+  }
+
+  batch<T>(work: () => T): T {
+    return this.transaction(work)
+  }
+
   private transaction<T>(work: () => T): T {
+    if (this.depth > 0) return work()
     this.database.exec('BEGIN IMMEDIATE')
+    this.depth += 1
     try {
       const result = work()
+      this.depth -= 1
       this.database.exec('COMMIT')
       return result
     } catch (error) {
+      this.depth -= 1
       this.database.exec('ROLLBACK')
       throw error
     }
@@ -1040,6 +1167,8 @@ export class MailDatabase {
       CREATE INDEX IF NOT EXISTS thread_messages_thread ON thread_messages(account_id, thread_id, message_id);
       CREATE INDEX IF NOT EXISTS scheduled_sends_due ON scheduled_sends(status, send_at);
       CREATE INDEX IF NOT EXISTS snoozes_due ON snoozes(wake_at);
+      CREATE INDEX IF NOT EXISTS threads_latest ON threads(account_id, latest_at DESC, id DESC);
+      CREATE INDEX IF NOT EXISTS messages_unread ON messages(account_id, is_read);
       CREATE INDEX IF NOT EXISTS participants_message ON participants(account_id, message_id, sort_order, id);
       CREATE INDEX IF NOT EXISTS message_labels_label ON message_labels(account_id, label_id);
       CREATE INDEX IF NOT EXISTS attachments_message ON attachments(account_id, message_id);
@@ -1051,7 +1180,7 @@ export class MailDatabase {
         DELETE FROM messages_fts WHERE account_id = old.account_id AND message_id = old.id;
       END;
     `)
-    const columns = this.database.prepare('PRAGMA table_info(accounts)').all() as Row[]
+    const columns = this.sql('PRAGMA table_info(accounts)').all() as Row[]
     if (!columns.some(column => String(column.name) === 'signature')) {
       this.database.exec("ALTER TABLE accounts ADD COLUMN signature TEXT NOT NULL DEFAULT ''")
     }
