@@ -518,6 +518,7 @@ function createWindow(
           ? createThreadWindowOptions(process.platform, preload, inspectable)
           : createWindowOptions(process.platform, preload, inspectable)
   )
+  win.on('focus', installMenu)
   if (personal || stickyId !== undefined) showWhenReady(win)
   if (process.platform !== 'darwin') win.setIcon(appIcon(iconTheme, chosenIcon))
   const isAppUrl = (url: string) => url.startsWith('file://') || (devUrl ? url.startsWith(devUrl) : false)
@@ -544,6 +545,8 @@ function createWindow(
   win.webContents.once('destroyed', () => {
     awake.forget(asked)
     crews.forget(asked)
+    menuContexts.delete(asked)
+    installMenu()
   })
   win.webContents.on('did-finish-load', syncWindowShape)
   win.webContents.once('did-finish-load', () => {
@@ -785,6 +788,10 @@ app.whenReady().then(async () => {
     const asked = openingWindows.get(event.sender.id) ?? null
     openingWindows.delete(event.sender.id)
     return asked
+  })
+  ipcMain.on('menu:context', (event, context: AppMenuContext) => {
+    menuContexts.set(event.sender.id, context)
+    if (BrowserWindow.getFocusedWindow()?.webContents.id === event.sender.id) installMenu()
   })
   ipcMain.handle('folder:pick', async () => {
     const result = await dialog.showOpenDialog({ properties: ['openDirectory', 'createDirectory'] })

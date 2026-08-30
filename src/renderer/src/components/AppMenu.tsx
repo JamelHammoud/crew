@@ -103,6 +103,15 @@ export default function AppMenu({
 
   useEffect(() => {
     window.crew.setMenuContext({ session, threadId, threadStatus, sidebar, panel, pinned })
+    return () =>
+      window.crew.setMenuContext({
+        session: false,
+        threadId: null,
+        threadStatus: null,
+        sidebar: false,
+        panel: false,
+        pinned: false
+      })
   }, [panel, pinned, session, sidebar, threadId, threadStatus])
 
   const openCrew = useCallback(async () => {

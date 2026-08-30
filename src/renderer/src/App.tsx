@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import AppMenu from './components/AppMenu'
 import HuddlePanel from './components/huddle/HuddlePanel'
 import Settings from './components/settings/Settings'
 import Sidebar from './components/Sidebar'
@@ -55,6 +56,7 @@ export default function App() {
     <>
       {connection === 'home' ? <Home /> : <Session />}
       <Toaster />
+      <Settings />
     </>
   )
 }
@@ -69,6 +71,8 @@ function Loading() {
 
 function Session() {
   const [tab, setTab] = useState<Tab>('chat')
+  const history = useRef<Tab[]>(['chat'])
+  const historyAt = useRef(0)
   const [chatFocus, setChatFocus] = useState(0)
   const closeTasks = useTasks(s => s.close)
   const pinned = useSidebar(s => s.pinned)
@@ -86,19 +90,42 @@ function Session() {
 
   useWindowName((tab === 'chat' && focused ? threadName(focused, agents) : '') || tabLabel(tab))
 
-  useEffect(() => {
-    if (docsTarget) setTab('docs')
-  }, [docsTarget])
+  const showTab = useCallback((next: Tab) => {
+    setTab(current => {
+      if (current === next) return current
+      const held = history.current.slice(0, historyAt.current + 1)
+      held.push(next)
+      history.current = held
+      historyAt.current = held.length - 1
+      return next
+    })
+  }, [])
+
+  const historyBack = useCallback(() => {
+    if (historyAt.current <= 0) return
+    historyAt.current -= 1
+    setTab(history.current[historyAt.current])
+  }, [])
+
+  const historyForward = useCallback(() => {
+    if (historyAt.current >= history.current.length - 1) return
+    historyAt.current += 1
+    setTab(history.current[historyAt.current])
+  }, [])
 
   useEffect(() => {
-    if (designTarget) setTab('design')
-  }, [designTarget])
+    if (docsTarget) showTab('docs')
+  }, [docsTarget, showTab])
+
+  useEffect(() => {
+    if (designTarget) showTab('design')
+  }, [designTarget, showTab])
 
   // A thread lives in the chat, so opening one from anywhere goes there: a
   // banner, a toast, a call, a task.
   useEffect(() => {
-    if (openThreadIds.length > 0) setTab('chat')
-  }, [openThreadIds])
+    if (openThreadIds.length > 0) showTab('chat')
+  }, [openThreadIds, showTab])
 
   useEffect(() => {
     const root = document.getElementById('root')
@@ -124,10 +151,10 @@ function Session() {
     () =>
       window.crew?.onChatOpen?.(() => {
         closeThreads()
-        setTab('chat')
+        showTab('chat')
         setChatFocus(current => current + 1)
       }),
-    [closeThreads]
+    [closeThreads, showTab]
   )
 
   useEffect(() => watchUpdates(), [])
@@ -136,17 +163,23 @@ function Session() {
 
   const switchTab = (next: Tab) => {
     if (next === 'chat') closeThreads()
-    setTab(next)
+    showTab(next)
   }
 
+  const newThread = useCallback(() => {
+    closeThreads()
+    showTab('chat')
+    setChatFocus(current => current + 1)
+  }, [closeThreads, showTab])
+
   const openFromTasks = (threadId: string) => {
-    setTab('chat')
+    showTab('chat')
     openThreadAlone(threadId)
     closeTasks()
   }
 
   const openFromTasksBeside = (threadId: string) => {
-    setTab('chat')
+    showTab('chat')
     openThread(threadId)
     closeTasks()
   }
@@ -210,8 +243,14 @@ function Session() {
       <WindowCorner />
       <HuddlePanel />
       <VoiceScreen />
-      <Settings />
       <ToolBuilder />
+      <AppMenu
+        tab={tab}
+        onTab={switchTab}
+        onNewThread={newThread}
+        onBack={historyBack}
+        onForward={historyForward}
+      />
     </div>
   )
 }
