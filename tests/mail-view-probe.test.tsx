@@ -411,7 +411,9 @@ describe('mail composer', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Compose' }))
 
     expect(screen.queryByRole('textbox', { name: 'Cc' })).toBeNull()
-    fireEvent.click(screen.getByRole('button', { name: 'Cc Bcc' }))
+    const optionalRecipients = screen.getByRole('button', { name: 'Cc Bcc' })
+    expect(optionalRecipients.tabIndex).toBe(-1)
+    fireEvent.click(optionalRecipients)
     expect(screen.getByRole('textbox', { name: 'Cc' })).toBeTruthy()
     expect(screen.getByRole('textbox', { name: 'Bcc' })).toBeTruthy()
 

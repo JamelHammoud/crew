@@ -108,6 +108,7 @@ function ComposeCard({ draft, suggestions, narrow }: { draft: MailDraft; suggest
         {!more && (
           <button
             type="button"
+            tabIndex={-1}
             onClick={() => setMore(true)}
             className="absolute right-3 -top-10 h-8 px-2.5 rounded-full text-xs text-fg/40 transition-[background-color,color,transform] hover:bg-fg/[0.06] hover:text-fg/75 active:scale-95"
           >
