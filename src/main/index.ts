@@ -12,6 +12,7 @@ import {
 } from 'electron'
 import os from 'node:os'
 import path from 'node:path'
+import { writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import {
   connectPlugin as connectCatalogPlugin,
@@ -59,6 +60,14 @@ import { Previews } from './preview'
 import { Media } from './media-file'
 import { registerMediaScheme, serveMediaScheme } from './media-scheme'
 import { registerMailScheme } from './mail/scheme'
+import {
+  createCrewMailRuntime,
+  type CrewMailRuntime,
+  type MailNotification,
+  type MailThreadView,
+  type StoredMailAttachment
+} from './mail/service'
+import { MAIL_RENDERER_EVENTS } from '../shared/mail'
 import { OtherInstances } from './instances'
 import { Crews } from './crews'
 import { cloneRepository } from './repository-clone'
