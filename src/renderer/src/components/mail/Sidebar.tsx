@@ -3,6 +3,7 @@ import type { MailAccount, MailboxId } from '../../state/mail'
 import {
   ArchiveGlyph,
   AtGlyph,
+  ChevronLeftGlyph,
   ClockGlyph,
   DocGlyph,
   InboxGlyph,
@@ -66,12 +67,14 @@ export default function MailSidebar({
   accounts,
   location,
   onLocation,
-  onCompose
+  onCompose,
+  onBack
 }: {
   accounts: MailAccount[]
   location: MailLocation
   onLocation: (location: MailLocation) => void
   onCompose: () => void
+  onBack?: () => void
 }) {
   const [adding, setAdding] = useState(false)
   const [settings, setSettings] = useState<MailAccount | null>(null)
@@ -81,7 +84,7 @@ export default function MailSidebar({
 
   return (
     <aside className="h-full min-h-0 flex flex-col bg-ink-800/70 border-r border-fg/[0.06]">
-      <div className="h-16 shrink-0 px-4 flex items-end pb-2.5">
+      <div className="h-16 shrink-0 px-4 flex items-end gap-2 pb-2.5">
         <button
           type="button"
           onClick={onCompose}
@@ -90,6 +93,11 @@ export default function MailSidebar({
           <PlusGlyph className="w-4 h-4" />
           Write
         </button>
+        {onBack && (
+          <IconButton label="Back to mail" onClick={onBack}>
+            <ChevronLeftGlyph className="w-4 h-4" />
+          </IconButton>
+        )}
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-2.5 pb-4">

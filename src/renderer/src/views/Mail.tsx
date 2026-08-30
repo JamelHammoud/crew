@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { MailThreadQuery, MailThreadSummary } from '../state/mail'
 import { mailApiAvailable, useMail, watchMail } from '../state/mail'
-import { ChevronLeftGlyph, RefreshGlyph, SignalGlyph } from '../icons'
+import { RefreshGlyph, SignalGlyph } from '../icons'
 import Empty from '../components/Empty'
 import Spinner from '../components/Spinner'
 import MailSidebar, { type MailLocation } from '../components/mail/Sidebar'
@@ -9,7 +9,6 @@ import ThreadList from '../components/mail/ThreadList'
 import Reader from '../components/mail/Reader'
 import DraftDeck from '../components/mail/Compose'
 import MailSetup from '../components/mail/Setup'
-import { IconButton } from '../components/mail/parts'
 
 type Layout = 'wide' | 'middle' | 'narrow'
 type NarrowScreen = 'mailboxes' | 'list' | 'reader'
@@ -163,12 +162,13 @@ export default function Mail() {
         <div className="h-full relative">
           {screen === 'mailboxes' && (
             <div className="absolute inset-0">
-              <div className="absolute z-10 top-5 right-3">
-                <IconButton label="Back to mail" onClick={() => setScreen('list')}>
-                  <ChevronLeftGlyph className="w-4 h-4" />
-                </IconButton>
-              </div>
-              <MailSidebar accounts={accounts} location={location} onLocation={locate} onCompose={compose} />
+              <MailSidebar
+                accounts={accounts}
+                location={location}
+                onLocation={locate}
+                onCompose={compose}
+                onBack={() => setScreen('list')}
+              />
             </div>
           )}
           {screen === 'list' && list(true, () => setScreen('mailboxes'))}
