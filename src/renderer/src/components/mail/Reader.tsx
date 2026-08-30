@@ -160,12 +160,8 @@ function Message({
 
           <MailAttachments attachments={message.attachments} onSave={attachment => void save(attachment.id)} />
 
-          <div data-mail-actions className="sticky bottom-0 z-10 -mx-4 mt-2 sm:-mx-5 rounded-b-[19px]">
-            <span
-              aria-hidden
-              className="block h-6 bg-gradient-to-t from-ink-900 to-transparent pointer-events-none"
-            />
-            <div className="px-4 pb-5 pt-4 sm:px-5 sm:pb-6 flex items-center gap-2 flex-wrap rounded-b-[19px] bg-ink-900">
+          <div data-mail-actions className="sticky bottom-0 z-10 -mx-4 -mb-5 mt-2 border-t border-fg/[0.075] bg-ink-900 sm:-mx-5 sm:-mb-6 rounded-b-[19px]">
+            <div className="px-4 pb-5 pt-4 sm:px-5 sm:pb-6 flex items-center gap-2 flex-wrap rounded-b-[19px]">
               <button
                 type="button"
                 onClick={() => onDraft('reply')}

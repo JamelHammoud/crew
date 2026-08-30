@@ -312,15 +312,13 @@ describe('mail list and reader', () => {
 
     expect(actions.className).toContain('sticky')
     expect(actions.className).toContain('bottom-0')
-    expect(screen.getByRole('button', { name: 'Reply' }).parentElement?.className).toContain('bg-ink-900')
+    expect(actions.className).toContain('border-t')
+    expect(actions.className).toContain('bg-ink-900')
+    expect(actions.className).toContain('-mb-5')
+    expect(actions.className).toContain('sm:-mb-6')
     expect(message.className).not.toContain('overflow-hidden')
     expect(reader).toBeTruthy()
-    const fade = actions.querySelector('.bg-gradient-to-t') as HTMLElement
-    expect(fade.className).toContain('to-transparent')
-    expect(fade.className).toContain('pointer-events-none')
-    expect(fade.className).toContain('block')
-    expect(fade.className).toContain('h-6')
-    expect(fade.className).not.toContain('absolute')
+    expect(actions.querySelector('.bg-gradient-to-t')).toBeNull()
   })
 
   it('shows every message address and its copy control on hover', async () => {
