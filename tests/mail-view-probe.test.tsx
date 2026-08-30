@@ -2,7 +2,8 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-libra
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Mail from '../src/renderer/src/views/Mail'
-import { useMail, type MailAccount, type MailBridge, type MailThread, type MailThreadSummary } from '../src/renderer/src/state/mail'
+import type { MailBridge } from '../src/shared/mail'
+import { useMail, type MailAccount, type MailThread, type MailThreadSummary } from '../src/renderer/src/state/mail'
 
 let observedWidth = 1200
 const observers = new Set<(entries: Array<{ contentRect: { width: number } }>) => void>()
@@ -184,12 +185,12 @@ describe('mail setup', () => {
     const name = screen.getByPlaceholderText('Name on sent mail')
     const password = screen.getByPlaceholderText('16 characters')
     const connect = screen.getByRole('button', { name: 'Connect' })
-    expect(connect).toBeDisabled()
+    expect((connect as HTMLButtonElement).disabled).toBe(true)
 
     fireEvent.change(email, { target: { value: 'new@gmail.com' } })
     fireEvent.change(name, { target: { value: 'New Person' } })
     fireEvent.change(password, { target: { value: 'aaaa bbbb cccc dddd' } })
-    expect(connect).toBeEnabled()
+    expect((connect as HTMLButtonElement).disabled).toBe(false)
     fireEvent.click(connect)
 
     await waitFor(() => expect(bridge.connectAccount).toHaveBeenCalledWith({

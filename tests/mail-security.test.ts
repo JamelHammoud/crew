@@ -76,7 +76,7 @@ describe('mail message isolation', () => {
   })
 
   it('routes web and mail links through the main-process bridge', async () => {
-    const openExternal = vi.fn(async () => true)
+    const openExternal = vi.fn(async (_url: string) => true)
     Object.assign(window, { crew: { openExternal } })
     const frame = await draw('<a href="https://crew.test/read">Read</a><a href="mailto:ali@example.com">Write</a>')
     const document = frame.contentDocument!
