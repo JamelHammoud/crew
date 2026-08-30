@@ -51,9 +51,13 @@ export default function HtmlMessage({ html, text }: { html?: string; text: strin
     const iframe = frame.current
     if (!iframe) return
     let observer: ResizeObserver | undefined
+    let loadedDocument: Document | undefined
+    let linkHandler: ((event: MouseEvent) => void) | undefined
     const loaded = () => {
       const doc = iframe.contentDocument
       if (!doc) return
+      observer?.disconnect()
+      if (loadedDocument && linkHandler) loadedDocument.removeEventListener('click', linkHandler)
       const size = () => setHeight(Math.max(24, doc.documentElement.scrollHeight, doc.body.scrollHeight))
       const links = (event: MouseEvent) => {
         const link = (event.target as Element | null)?.closest('a')
@@ -64,6 +68,8 @@ export default function HtmlMessage({ html, text }: { html?: string; text: strin
         if (/^https?:/i.test(href)) useBrowser.getState().openUrl(href)
         else void window.crew.openExternal(href)
       }
+      loadedDocument = doc
+      linkHandler = links
       doc.addEventListener('click', links)
       size()
       if (typeof ResizeObserver !== 'undefined') {
@@ -75,6 +81,7 @@ export default function HtmlMessage({ html, text }: { html?: string; text: strin
     return () => {
       iframe.removeEventListener('load', loaded)
       observer?.disconnect()
+      if (loadedDocument && linkHandler) loadedDocument.removeEventListener('click', linkHandler)
     }
   }, [document])
 

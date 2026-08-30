@@ -107,7 +107,7 @@ describe('mail message isolation', () => {
       open: true,
       tabs: [{ kind: 'web', url: 'https://crew.test/read' }]
     })
-    expect(openExternal).toHaveBeenCalledTimes(2)
+    expect(openExternal).toHaveBeenCalledTimes(1)
     expect(openExternal).toHaveBeenCalledWith('mailto:ali@example.com')
   })
 })
