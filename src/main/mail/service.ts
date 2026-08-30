@@ -1404,7 +1404,7 @@ function gmailAddress(address: GmailAddress): { email: string; name?: string } |
 }
 
 function gmailParticipants(summary: GmailMessageSummary): RemoteMailMessage['participants'] {
-  const groups: Array<[RemoteMailMessage['participants'][number]['role'], GmailAddress[]]> = [
+  const groups: Array<[NonNullable<RemoteMailMessage['participants']>[number]['role'], GmailAddress[]]> = [
     ['from', summary.from],
     ['sender', summary.sender],
     ['reply-to', summary.replyTo],
@@ -1527,9 +1527,10 @@ export class GmailMailConnection implements MailConnection {
     if (request.changedSince) throw new Error('Gmail transport does not expose changed-since fetches')
     let uids: number[] | undefined
     if (request.afterUid !== undefined) {
+      const afterUid = request.afterUid
       const status = await this.mailboxStatus(mailboxId)
-      const end = Math.min(status.uidNext - 1, request.afterUid + request.limit)
-      uids = Array.from({ length: Math.max(0, end - request.afterUid) }, (_, index) => request.afterUid + index + 1)
+      const end = Math.min(status.uidNext - 1, afterUid + request.limit)
+      uids = Array.from({ length: Math.max(0, end - afterUid) }, (_, index) => afterUid + index + 1)
     } else if (request.beforeUid !== undefined) {
       const end = Math.max(0, request.beforeUid - 1)
       const start = Math.max(1, end - request.limit + 1)
