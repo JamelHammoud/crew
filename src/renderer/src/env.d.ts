@@ -20,6 +20,7 @@ import type {
 } from '../../shared/files'
 import type { FileReplaceRequest, FileReplaceResult, FileSearchOptions } from '../../shared/fileSearch'
 import type { MachineDir } from '../../shared/machinePath'
+import type { MailBridge } from '../../shared/mail'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../../shared/llm'
 import type { MediaAccess, MediaKind, ScreenSource } from '../../shared/media'
 import type { ModelServer } from '../../shared/modelServers'
@@ -190,5 +191,6 @@ declare global {
 
   interface Window {
     crew: CrewBridge
+    mail: MailBridge
   }
 }
