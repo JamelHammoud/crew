@@ -157,7 +157,16 @@ export function safeMailDocument(html: string, theme: Theme, showQuoted = true):
       }
     }
   })
-  if (!showQuoted) quotedMailNodes(parsed).forEach(node => node.parentNode?.removeChild(node))
+  quotedMailNodes(parsed).forEach(node => {
+    if (node instanceof Element) {
+      node.setAttribute('data-crew-old-mail', '')
+      return
+    }
+    const wrapper = parsed.createElement('span')
+    wrapper.setAttribute('data-crew-old-mail', '')
+    node.parentNode?.insertBefore(wrapper, node)
+    wrapper.append(node)
+  })
   const csp = `default-src 'none'; img-src data: blob: crew-mail: http: https:; style-src 'unsafe-inline'; font-src 'none'; media-src 'none'; connect-src 'none'; frame-src 'none'`
   const color = parsed.createElement('span')
   color.style.backgroundColor = parsed.body.getAttribute('bgcolor') ?? ''
@@ -167,12 +176,13 @@ export function safeMailDocument(html: string, theme: Theme, showQuoted = true):
     :root { background: ${background}; }
     * { box-sizing: border-box; }
     body { margin: 0; color: rgba(${foreground},.82); font: 14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; overflow-wrap: anywhere; }
+    html:not([data-crew-show-old-mail]) [data-crew-old-mail] { display: none !important; }
     a { color: rgba(${foreground},.95); text-decoration: underline; text-underline-offset: 2px; }
     blockquote { margin-left: 0; padding-left: 14px; border-left: 2px solid rgba(${foreground},.12); color: rgba(${foreground},.55); }
     pre { white-space: pre-wrap; }
     img { max-width: 100vw; }
   `
-  return `<!doctype html><html><head><meta http-equiv="Content-Security-Policy" content="${csp}"><style>${style}</style></head>${parsed.body.outerHTML}</html>`
+  return `<!doctype html><html${showQuoted ? ' data-crew-show-old-mail' : ''}><head><meta http-equiv="Content-Security-Policy" content="${csp}"><style>${style}</style></head>${parsed.body.outerHTML}</html>`
 }
 
 export default function HtmlMessage({ html, text, accountId }: { html?: string; text: string; accountId?: string }) {
@@ -189,10 +199,12 @@ export default function HtmlMessage({ html, text, accountId }: { html?: string; 
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;')
       .replace(/\n/g, '<br>')
-    return safeMailDocument(html ?? plain, theme, quote)
-  }, [html, quote, text, theme])
+    return safeMailDocument(html ?? plain, theme, false)
+  }, [html, text, theme])
   const currentDocument = useRef(document)
   currentDocument.current = document
+  const currentQuote = useRef(quote)
+  currentQuote.current = quote
 
   useEffect(() => {
     const iframe = frame.current
@@ -204,6 +216,7 @@ export default function HtmlMessage({ html, text, accountId }: { html?: string; 
     const loaded = (doc = iframe.contentDocument) => {
       if (currentDocument.current !== document) return
       if (!doc?.body) return
+      doc.documentElement.toggleAttribute('data-crew-show-old-mail', currentQuote.current)
       window.clearInterval(scan)
       observer?.disconnect()
       if (loadedDocument && linkHandler) loadedDocument.removeEventListener('click', linkHandler)
@@ -270,7 +283,9 @@ export default function HtmlMessage({ html, text, accountId }: { html?: string; 
           onClick={() => {
             if (frame.current) frame.current.style.height = '24px'
             setHeight(24)
-            setQuote(value => !value)
+            const next = !quote
+            frame.current?.contentDocument?.documentElement.toggleAttribute('data-crew-show-old-mail', next)
+            setQuote(next)
           }}
           className="mt-4 h-7 px-2.5 rounded-full bg-fg/[0.05] text-xs font-medium text-fg/40 transition-colors hover:bg-fg/[0.09] hover:text-fg/70 active:scale-95"
         >
