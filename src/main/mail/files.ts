@@ -74,6 +74,11 @@ export class MailFileStore {
     identifier(account, 'Mail account id')
     const source = path.resolve(identifier(sourcePath, 'Mail attachment source'))
     const sourceFile = await fs.promises.open(source, fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW)
+    const stat = await sourceFile.stat()
+    if (!stat.isFile()) {
+      await sourceFile.close()
+      throw new Error('Mail attachment source is not a file')
+    }
     const storageKey = randomUUID().replaceAll('-', '')
     const file = this.pathFor(account, storageKey)
     fs.mkdirSync(this.directory, { recursive: true, mode: DIRECTORY_MODE })
@@ -88,8 +93,6 @@ export class MailFileStore {
     fs.chmodSync(path.dirname(file), DIRECTORY_MODE)
     const temporary = inside(this.directory, `${file}.${process.pid}.tmp`)
     try {
-      const stat = await sourceFile.stat()
-      if (!stat.isFile()) throw new Error('Mail attachment source is not a file')
       await pipeline(
         sourceFile.createReadStream({ autoClose: false }),
         fs.createWriteStream(temporary, { mode: FILE_MODE, flags: 'wx' })
