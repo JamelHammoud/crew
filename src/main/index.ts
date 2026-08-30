@@ -670,6 +670,15 @@ function showMailNotification(notification: MailNotification): void {
 
 app.whenReady().then(async () => {
   serveMediaScheme()
+  mailRuntime = createCrewMailRuntime({
+    stateDirectory: path.join(stateDir, 'mail'),
+    ipcMain,
+    emit: emitMail,
+    saveAttachment: saveMailAttachment,
+    printThread: printMailThread,
+    notify: showMailNotification
+  })
+  void mailRuntime.start().catch(() => emitMail(MAIL_RENDERER_EVENTS.online, false))
   applyIcon(iconTheme, chosenIcon)
   installMenu()
   tray.install()
