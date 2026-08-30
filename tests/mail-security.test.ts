@@ -52,6 +52,13 @@ describe('mail message isolation', () => {
     expect(document).toContain(':root { background: transparent; }')
   })
 
+  it('clips a sender background to the message curve', async () => {
+    const frame = await draw('<body bgcolor="#FFFFFF">Words</body>')
+
+    expect(frame.parentElement?.className).toContain('overflow-hidden')
+    expect(frame.parentElement?.className).toContain('rounded-xl')
+  })
+
   it('removes executable elements, event handlers, embedded pages, and unsafe links', async () => {
     const frame = await draw(`
       <script>window.stolen = true</script>

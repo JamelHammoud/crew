@@ -89,7 +89,7 @@ export default function HtmlMessage({ html, text }: { html?: string; text: strin
   }, [document])
 
   return (
-    <div>
+    <div className="overflow-hidden rounded-xl">
       <iframe
         ref={frame}
         title="Message"
