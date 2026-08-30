@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type KeyboardEvent } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { MailAccount, MailThreadSummary, MailboxId } from '../../state/mail'
 import { useMail } from '../../state/mail'
 import {
@@ -70,22 +70,13 @@ function ThreadRow({
   onStar: () => void
 }) {
   const people = thread.participants.map(person => displayAddress(person.name, person.email)).join(', ')
-  const key = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key !== 'Enter' && event.key !== ' ') return
-    event.preventDefault()
-    onOpen()
-  }
 
   return (
     <div
-      role="button"
-      tabIndex={0}
       aria-selected={open}
-      onClick={onOpen}
-      onKeyDown={key}
       data-open={open ? '' : undefined}
       data-unread={thread.unread ? '' : undefined}
-      className="group min-w-0 px-3 py-3 rounded-xl flex gap-3 cursor-pointer text-left transition-colors hover:bg-fg/[0.045] focus:outline-none focus:bg-fg/[0.045] data-open:bg-fg/[0.08] data-unread:bg-fg/[0.025] data-unread:hover:bg-fg/[0.06]"
+      className="group min-w-0 px-3 py-3 rounded-xl flex gap-3 text-left transition-colors hover:bg-fg/[0.045] focus-within:bg-fg/[0.045] data-open:bg-fg/[0.08] data-unread:bg-fg/[0.025] data-unread:hover:bg-fg/[0.06]"
     >
       <div className="pt-0.5 flex flex-col items-center gap-2.5">
         <SelectionButton selected={selected} onClick={onSelect} label={selected ? 'Clear selection' : 'Select'} />
@@ -105,7 +96,7 @@ function ThreadRow({
         </button>
       </div>
 
-      <div className="min-w-0 flex-1">
+      <button type="button" onClick={onOpen} className="min-w-0 flex-1 text-left outline-none">
         <div className="flex items-center gap-2">
           {unified && account && <AccountMark email={account.email} />}
           <span className={`min-w-0 flex-1 truncate text-sm ${thread.unread ? 'font-semibold text-fg' : 'text-fg/70'}`}>
@@ -123,7 +114,7 @@ function ThreadRow({
           {thread.hasAttachments && <AttachmentGlyph className="w-3.5 h-3.5 shrink-0" />}
           <span className="truncate">{thread.preview}</span>
         </div>
-      </div>
+      </button>
     </div>
   )
 }
@@ -180,7 +171,10 @@ export default function ThreadList({
 
   useEffect(() => setSelected(new Set()), [location.accountId, location.labelId, location.mailboxId, query])
 
-  const selectedThreads = useMemo(() => threads.filter(thread => selected.has(thread.id)), [selected, threads])
+  const selectedThreads = useMemo(
+    () => threads.filter(thread => selected.has(`${thread.accountId}:${thread.id}`)),
+    [selected, threads]
+  )
 
   const apply = async (patch: { read?: boolean; starred?: boolean; mailboxId?: MailboxId }) => {
     const groups = new Map<string, string[]>()
@@ -220,7 +214,13 @@ export default function ThreadList({
         <div className="h-12 shrink-0 px-3 border-y border-fg/[0.06] flex items-center gap-1">
           <SelectionButton
             selected={selected.size === threads.length}
-            onClick={() => setSelected(selected.size === threads.length ? new Set() : new Set(threads.map(one => one.id)))}
+            onClick={() =>
+              setSelected(
+                selected.size === threads.length
+                  ? new Set()
+                  : new Set(threads.map(one => `${one.accountId}:${one.id}`))
+              )
+            }
             label={selected.size === threads.length ? 'Clear selection' : 'Select all'}
           />
           <span className="ml-2 mr-auto text-xs font-medium text-fg/50 tabular-nums">{selected.size} selected</span>
@@ -257,9 +257,9 @@ export default function ThreadList({
                 thread={thread}
                 account={accounts.find(account => account.id === thread.accountId)}
                 unified={!location.accountId}
-                selected={selected.has(thread.id)}
-                open={activeId === thread.id}
-                onSelect={() => toggle(thread.id)}
+                selected={selected.has(`${thread.accountId}:${thread.id}`)}
+                open={activeId === `${thread.accountId}:${thread.id}`}
+                onSelect={() => toggle(`${thread.accountId}:${thread.id}`)}
                 onOpen={() => onOpen(thread)}
                 onStar={() => void setThreads(thread.accountId, [thread.id], { starred: !thread.starred })}
               />

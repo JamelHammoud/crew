@@ -92,7 +92,7 @@ export default function Mail() {
       query={query}
       loading={loading}
       syncing={syncing}
-      activeId={thread?.id}
+      activeId={thread ? `${thread.accountId}:${thread.id}` : undefined}
       narrow={narrow}
       onQuery={setQuery}
       onOpen={open}
