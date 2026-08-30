@@ -55,9 +55,10 @@ export default function HtmlMessage({ html, text }: { html?: string; text: strin
     let observer: ResizeObserver | undefined
     let loadedDocument: Document | undefined
     let linkHandler: ((event: MouseEvent) => void) | undefined
-    const loaded = () => {
-      const doc = iframe.contentDocument
-      if (!doc) return
+    let scan = 0
+    const loaded = (doc = iframe.contentDocument) => {
+      if (!doc?.body) return
+      window.clearInterval(scan)
       observer?.disconnect()
       if (loadedDocument && linkHandler) loadedDocument.removeEventListener('click', linkHandler)
       const size = () => setHeight(Math.max(24, doc.documentElement.scrollHeight, doc.body.scrollHeight))
@@ -79,9 +80,18 @@ export default function HtmlMessage({ html, text }: { html?: string; text: strin
         observer.observe(doc.body)
       }
     }
-    iframe.addEventListener('load', loaded)
+    const ready = () => {
+      const doc = iframe.contentDocument
+      if (!doc?.body || doc.URL === 'about:blank') return
+      loaded(doc)
+    }
+    const complete = () => loaded()
+    iframe.addEventListener('load', complete)
+    ready()
+    scan = window.setInterval(ready, 16)
     return () => {
-      iframe.removeEventListener('load', loaded)
+      iframe.removeEventListener('load', complete)
+      window.clearInterval(scan)
       observer?.disconnect()
       if (loadedDocument && linkHandler) loadedDocument.removeEventListener('click', linkHandler)
     }

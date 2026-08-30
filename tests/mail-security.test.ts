@@ -83,6 +83,27 @@ describe('mail message isolation', () => {
     expect(parsed.querySelector('#chip')?.getAttribute('style')).toContain('border-radius:32px')
   })
 
+  it('measures parsed mail before remote resources finish loading', async () => {
+    let scan: TimerHandler | undefined
+    vi.spyOn(window, 'setInterval').mockImplementation(handler => {
+      scan = handler
+      return 1
+    })
+    vi.spyOn(window, 'clearInterval').mockImplementation(() => undefined)
+    const view = render(createElement(HtmlMessage, { html: '<p>Long message</p>', text: '' }))
+    const frame = view.container.querySelector('iframe') as HTMLIFrameElement
+    const document = frame.contentDocument!
+    Object.defineProperty(document, 'URL', { configurable: true, value: 'about:srcdoc' })
+    Object.defineProperty(document.documentElement, 'scrollHeight', { configurable: true, value: 640 })
+    Object.defineProperty(document.body, 'scrollHeight', { configurable: true, value: 620 })
+
+    await act(async () => {
+      if (typeof scan === 'function') scan()
+    })
+
+    expect(frame.style.height).toBe('640px')
+  })
+
   it('removes executable elements, event handlers, embedded pages, and unsafe links', async () => {
     const frame = await draw(`
       <script>window.stolen = true</script>
