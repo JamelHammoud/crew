@@ -160,37 +160,39 @@ function Message({
 
           <MailAttachments attachments={message.attachments} onSave={attachment => void save(attachment.id)} />
 
-          <div className="sticky bottom-0 z-10 -mx-4 mt-2 px-4 pb-5 pt-4 sm:-mx-5 sm:px-5 sm:pb-6 flex items-center gap-2 flex-wrap rounded-b-[19px] bg-ink-900">
+          <div data-mail-actions className="sticky bottom-0 z-10 -mx-4 mt-2 sm:-mx-5 rounded-b-[19px]">
             <span
               aria-hidden
-              className="absolute inset-x-0 -top-10 h-10 bg-gradient-to-t from-ink-900 to-transparent pointer-events-none"
+              className="block h-10 bg-gradient-to-t from-ink-900 to-transparent pointer-events-none"
             />
-            <button
-              type="button"
-              onClick={() => onDraft('reply')}
-              className="h-9 px-4 rounded-full border border-fg/[0.09] flex items-center gap-2 text-sm font-medium text-fg/65 transition-colors hover:border-fg/20 hover:bg-fg/[0.035] hover:text-fg active:scale-95"
-            >
-              <ReplyGlyph className="w-4 h-4" />
-              Reply
-            </button>
-            {others.length > 1 && (
+            <div className="px-4 pb-5 pt-4 sm:px-5 sm:pb-6 flex items-center gap-2 flex-wrap rounded-b-[19px] bg-ink-900">
               <button
                 type="button"
-                onClick={() => onDraft('reply-all')}
+                onClick={() => onDraft('reply')}
                 className="h-9 px-4 rounded-full border border-fg/[0.09] flex items-center gap-2 text-sm font-medium text-fg/65 transition-colors hover:border-fg/20 hover:bg-fg/[0.035] hover:text-fg active:scale-95"
               >
-                <ReplyAllGlyph className="w-4 h-4" />
-                Reply all
+                <ReplyGlyph className="w-4 h-4" />
+                Reply
               </button>
-            )}
-            <button
-              type="button"
-              onClick={() => onDraft('forward')}
-              className="h-9 px-4 rounded-full border border-fg/[0.09] flex items-center gap-2 text-sm font-medium text-fg/65 transition-colors hover:border-fg/20 hover:bg-fg/[0.035] hover:text-fg active:scale-95"
-            >
-              <ForwardGlyph className="w-4 h-4" />
-              Forward
-            </button>
+              {others.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => onDraft('reply-all')}
+                  className="h-9 px-4 rounded-full border border-fg/[0.09] flex items-center gap-2 text-sm font-medium text-fg/65 transition-colors hover:border-fg/20 hover:bg-fg/[0.035] hover:text-fg active:scale-95"
+                >
+                  <ReplyAllGlyph className="w-4 h-4" />
+                  Reply all
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => onDraft('forward')}
+                className="h-9 px-4 rounded-full border border-fg/[0.09] flex items-center gap-2 text-sm font-medium text-fg/65 transition-colors hover:border-fg/20 hover:bg-fg/[0.035] hover:text-fg active:scale-95"
+              >
+                <ForwardGlyph className="w-4 h-4" />
+                Forward
+              </button>
+            </div>
           </div>
         </div>
       )}

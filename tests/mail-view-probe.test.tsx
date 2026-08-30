@@ -282,18 +282,20 @@ describe('mail list and reader', () => {
     fireEvent.click(await screen.findByRole('button', { name: /Ali.*Dinner this weekend/ }))
     await screen.findByRole('heading', { name: 'Dinner this weekend' })
 
-    const actions = screen.getByRole('button', { name: 'Reply' }).parentElement as HTMLElement
+    const actions = screen.getByRole('button', { name: 'Reply' }).closest('[data-mail-actions]') as HTMLElement
     const message = actions.closest('article') as HTMLElement
     const reader = message.closest('.overflow-y-auto') as HTMLElement
 
     expect(actions.className).toContain('sticky')
     expect(actions.className).toContain('bottom-0')
-    expect(actions.className).toContain('bg-ink-900')
+    expect(screen.getByRole('button', { name: 'Reply' }).parentElement?.className).toContain('bg-ink-900')
     expect(message.className).not.toContain('overflow-hidden')
     expect(reader).toBeTruthy()
     const fade = actions.querySelector('.bg-gradient-to-t') as HTMLElement
     expect(fade.className).toContain('to-transparent')
     expect(fade.className).toContain('pointer-events-none')
+    expect(fade.className).toContain('block')
+    expect(fade.className).not.toContain('absolute')
   })
 
   it('shows every message address and its copy control on hover', async () => {
