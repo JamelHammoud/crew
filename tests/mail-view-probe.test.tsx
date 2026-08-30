@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Mail from '../src/renderer/src/views/Mail'
 import type { MailBridge } from '../src/shared/mail'
 import { useMail, type MailAccount, type MailThread, type MailThreadSummary } from '../src/renderer/src/state/mail'
+import { installLocalStorage } from './helpers/local-storage'
 
 let observedWidth = 1200
 const observers = new Set<(entries: Array<{ contentRect: { width: number } }>) => void>()
@@ -169,7 +170,7 @@ beforeEach(() => {
   })
   Element.prototype.getAnimations ??= () => []
   document.execCommand = vi.fn(() => true)
-  localStorage.clear()
+  installLocalStorage().clear()
   resetMail()
 })
 
