@@ -36,11 +36,13 @@ export default function RichEditor({
   draftId,
   html,
   text,
+  autoFocus,
   onChange
 }: {
   draftId: string
   html?: string
   text: string
+  autoFocus?: boolean
   onChange: (value: { html: string; text: string }) => void
 }) {
   const editor = useRef<HTMLDivElement>(null)
@@ -52,7 +54,8 @@ export default function RichEditor({
     if (!node) return
     node.innerHTML = html ?? text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\n/g, '<br>')
     setEmpty(!node.textContent?.trim())
-  }, [draftId])
+    if (autoFocus) node.focus()
+  }, [draftId, autoFocus])
 
   const change = () => {
     const node = editor.current

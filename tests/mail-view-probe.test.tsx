@@ -339,6 +339,17 @@ describe('mail list and reader', () => {
 })
 
 describe('mail composer', () => {
+  it('focuses the message field when replying', async () => {
+    render(createElement(Mail))
+    fireEvent.click(await screen.findByRole('button', { name: /Ali.*Dinner this weekend/ }))
+    await screen.findByRole('heading', { name: 'Dinner this weekend' })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Reply' }))
+
+    const message = await screen.findByRole('textbox', { name: 'Message' })
+    expect(document.activeElement).toBe(message)
+  })
+
   it('reveals optional recipients and exposes formatting as a toolbar', async () => {
     render(createElement(Mail))
     fireEvent.click(await screen.findByRole('button', { name: 'Compose' }))

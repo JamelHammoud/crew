@@ -136,6 +136,7 @@ function ComposeCard({ draft, suggestions, narrow }: { draft: MailDraft; suggest
         draftId={draft.id}
         html={draft.html}
         text={draft.text}
+        autoFocus={Boolean(draft.replyTo)}
         onChange={value => changeDraft(draft.id, value)}
       />
 
