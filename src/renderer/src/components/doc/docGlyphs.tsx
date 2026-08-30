@@ -220,8 +220,8 @@ export const ItalicGlyph = mark(
 // the rule's own stroke closes the gap between them.
 export const UnderlineGlyph = mark(
   <>
-    <path d={`M6.9 ${CAP}v4.6a5.1 5.1 0 0 0 10.2 0V${CAP}`} />
-    <path d={`M6 ${BASE}h12`} />
+    <path d={`M6.5 ${CAP}v5.6a5.5 5.5 0 0 0 11 0V${CAP}`} />
+    <path d="M5 19.25h14" />
   </>
 )
 
