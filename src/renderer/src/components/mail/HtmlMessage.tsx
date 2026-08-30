@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useTheme, type Theme } from '../../state/theme'
 
 const EXTERNAL_LINK = /^(https?|mailto):/i
 
-export function safeMailDocument(html: string): string {
+export function safeMailDocument(html: string, theme: Theme): string {
   const parsed = new DOMParser().parseFromString(html, 'text/html')
   parsed.querySelectorAll('script, iframe, object, embed, form, input, button, meta, base, link').forEach(node => node.remove())
   parsed.querySelectorAll('*').forEach(node => {
@@ -15,12 +16,14 @@ export function safeMailDocument(html: string): string {
     }
   })
   const csp = `default-src 'none'; img-src data: blob: crew-mail: http: https:; style-src 'unsafe-inline'; font-src 'none'; media-src 'none'; connect-src 'none'; frame-src 'none'`
+  const light = theme === 'light'
+  const foreground = light ? '20,20,20' : '255,255,255'
   const style = `
-    :root { color-scheme: dark; }
+    :root { color-scheme: ${light ? 'light' : 'dark'}; }
     * { box-sizing: border-box; max-width: 100%; }
-    body { margin: 0; color: rgba(255,255,255,.82); background: transparent; font: 14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; overflow-wrap: anywhere; }
-    a { color: rgba(255,255,255,.95); text-decoration: underline; text-underline-offset: 2px; }
-    blockquote { margin-left: 0; padding-left: 14px; border-left: 2px solid rgba(255,255,255,.12); color: rgba(255,255,255,.55); }
+    body { margin: 0; color: rgba(${foreground},.82); background: transparent; font: 14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; overflow-wrap: anywhere; }
+    a { color: rgba(${foreground},.95); text-decoration: underline; text-underline-offset: 2px; }
+    blockquote { margin-left: 0; padding-left: 14px; border-left: 2px solid rgba(${foreground},.12); color: rgba(${foreground},.55); }
     pre { white-space: pre-wrap; }
     img { height: auto; }
     table { border-collapse: collapse; }
@@ -31,6 +34,7 @@ export function safeMailDocument(html: string): string {
 export default function HtmlMessage({ html, text }: { html?: string; text: string }) {
   const frame = useRef<HTMLIFrameElement>(null)
   const [height, setHeight] = useState(80)
+  const theme = useTheme()
   const document = useMemo(() => {
     const plain = text
       .replace(/&/g, '&amp;')
@@ -39,8 +43,8 @@ export default function HtmlMessage({ html, text }: { html?: string; text: strin
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;')
       .replace(/\n/g, '<br>')
-    return safeMailDocument(html ?? plain)
-  }, [html, text])
+    return safeMailDocument(html ?? plain, theme)
+  }, [html, text, theme])
 
   useEffect(() => {
     const iframe = frame.current

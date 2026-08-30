@@ -1,7 +1,7 @@
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import HtmlMessage from '../src/renderer/src/components/mail/HtmlMessage'
+import HtmlMessage, { safeMailDocument } from '../src/renderer/src/components/mail/HtmlMessage'
 
 class Observer {
   observe(): void {}
@@ -25,6 +25,19 @@ async function draw(html: string): Promise<HTMLIFrameElement> {
 }
 
 describe('mail message isolation', () => {
+  it('matches Crew light and dark themes without changing sender colors', () => {
+    const html = '<p style="color: rebeccapurple">Words</p>'
+    const light = safeMailDocument(html, 'light')
+    const dark = safeMailDocument(html, 'dark')
+
+    expect(light).toContain(':root { color-scheme: light; }')
+    expect(light).toContain('color: rgba(20,20,20,.82)')
+    expect(dark).toContain(':root { color-scheme: dark; }')
+    expect(dark).toContain('color: rgba(255,255,255,.82)')
+    expect(light).toContain('style="color: rebeccapurple"')
+    expect(dark).toContain('style="color: rebeccapurple"')
+  })
+
   it('removes executable elements, event handlers, embedded pages, and unsafe links', async () => {
     const frame = await draw(`
       <script>window.stolen = true</script>

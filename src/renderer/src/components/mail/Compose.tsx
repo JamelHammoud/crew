@@ -54,28 +54,28 @@ function ComposeCard({ draft, suggestions, narrow }: { draft: MailDraft; suggest
     if (error) toast.fail(error)
   }
 
-  const width = narrow ? 'w-[calc(100vw-24px)] max-h-[calc(100vh-88px)]' : 'w-[520px] max-h-[min(620px,calc(100vh-88px))]'
+  const width = narrow ? 'w-[calc(100vw-24px)]' : 'w-[560px]'
 
   return (
-    <section className={`${width} h-[min(620px,calc(100vh-88px))] glass glass-strong rounded-card overflow-hidden flex flex-col shadow-2xl animate-rise`}>
-      <header className="h-11 shrink-0 px-3 flex items-center gap-2 border-b border-fg/[0.06]">
+    <section className={`${width} h-[min(640px,calc(100vh-88px))] max-h-[calc(100vh-88px)] glass glass-strong rounded-card overflow-hidden flex flex-col shadow-2xl animate-rise`}>
+      <header className="h-12 shrink-0 pl-4 pr-2.5 flex items-center gap-1.5 border-b border-fg/[0.06]">
         <span className="min-w-0 flex-1 truncate text-sm font-semibold text-fg">
           {draft.replyTo ? 'Reply' : draft.forwardOf ? 'Forward' : 'New message'}
         </span>
-        <span className="text-[11px] text-fg/35">
+        <span className="mr-1 text-[11px] text-fg/40">
           {draft.saving ? 'Saving' : draft.saved ? 'Saved' : draft.problem ? 'Not saved' : ''}
         </span>
         <IconButton label="Minimize" onClick={() => changeDraft(draft.id, { minimized: true })}>
-          <MinusGlyph className="w-4 h-4" />
+          <MinusGlyph className="w-[15px] h-[15px]" />
         </IconButton>
         <IconButton label="Discard" onClick={() => void discardDraft(draft.id)}>
-          <TrashGlyph className="w-4 h-4" />
+          <TrashGlyph className="w-[15px] h-[15px]" />
         </IconButton>
       </header>
 
       {accounts.length > 1 && (
-        <div className="h-11 shrink-0 px-3 border-b border-fg/[0.06] flex items-center gap-2">
-          <span className="w-7 text-xs text-fg/35">From</span>
+        <div className="min-h-12 shrink-0 px-4 py-2 border-b border-fg/[0.06] flex items-center gap-2">
+          <span className="w-11 shrink-0 text-xs text-fg/40">From</span>
           {draft.attachments.length > 0 ? (
             <Tooltip label="Remove attachments to change accounts." className="min-w-0 flex-1">
               <button
@@ -109,9 +109,9 @@ function ComposeCard({ draft, suggestions, narrow }: { draft: MailDraft; suggest
           <button
             type="button"
             onClick={() => setMore(true)}
-            className="absolute right-3 -top-9 h-7 px-2 text-xs text-fg/35 transition-colors hover:text-fg/70"
+            className="absolute right-3 -top-10 h-8 px-2.5 rounded-full text-xs text-fg/40 transition-[background-color,color,transform] hover:bg-fg/[0.06] hover:text-fg/75 active:scale-95"
           >
-            Cc · Bcc
+            Cc&nbsp;&nbsp;Bcc
           </button>
         )}
       </div>
@@ -122,13 +122,13 @@ function ComposeCard({ draft, suggestions, narrow }: { draft: MailDraft; suggest
         </>
       )}
 
-      <div className="h-11 shrink-0 px-3 border-b border-fg/[0.06] flex items-center gap-2">
-        <span className="w-7 text-xs text-fg/35">Subject</span>
+      <div className="h-12 shrink-0 px-4 border-b border-fg/[0.06] flex items-center gap-2">
+        <span className="w-11 shrink-0 text-xs text-fg/40">Subject</span>
         <input
           value={draft.subject}
           onChange={event => changeDraft(draft.id, { subject: event.target.value })}
           aria-label="Subject"
-          className="min-w-0 flex-1 h-9 bg-transparent text-sm text-fg outline-none"
+          className="min-w-0 flex-1 h-10 bg-transparent text-sm text-fg outline-none"
         />
       </div>
 
@@ -140,7 +140,7 @@ function ComposeCard({ draft, suggestions, narrow }: { draft: MailDraft; suggest
       />
 
       {draft.attachments.length > 0 && (
-        <div className="shrink-0 max-h-24 overflow-y-auto px-3 py-2 border-t border-fg/[0.06] flex flex-wrap gap-1.5">
+        <div className="shrink-0 max-h-24 overflow-y-auto px-4 py-2.5 border-t border-fg/[0.06] flex flex-wrap gap-1.5">
           {draft.attachments.map(attachment => (
             <span
               key={attachment.id}
@@ -166,13 +166,13 @@ function ComposeCard({ draft, suggestions, narrow }: { draft: MailDraft; suggest
 
       {draft.problem && <div className="shrink-0 px-4 py-2 text-xs text-danger bg-danger/10">{draft.problem} Try again.</div>}
 
-      <footer className="h-13 shrink-0 px-3 py-2 border-t border-fg/[0.06] flex items-center gap-2">
+      <footer className="h-14 shrink-0 px-3.5 py-2.5 border-t border-fg/[0.06] flex items-center gap-2">
         <div className="relative flex items-center">
           <button
             type="button"
             onClick={() => void send()}
             disabled={draft.sending}
-            className="h-9 pl-4 pr-3 rounded-l-full bg-fg text-ink-900 flex items-center gap-2 text-sm font-semibold transition-colors hover:bg-fg/90 active:scale-[0.98] disabled:opacity-40"
+            className="h-9 pl-4 pr-3.5 rounded-l-full bg-fg text-ink-900 flex items-center gap-2 text-sm font-semibold transition-colors hover:bg-fg/90 active:scale-[0.98] disabled:opacity-40"
           >
             {draft.sending ? <Spinner size={15} /> : <SendGlyph className="w-4 h-4" />}
             Send
@@ -221,10 +221,10 @@ function ComposeCard({ draft, suggestions, narrow }: { draft: MailDraft; suggest
           }}
         />
         <IconButton label="Attach files" onClick={() => file.current?.click()}>
-          <AttachmentGlyph className="w-4 h-4" />
+          <AttachmentGlyph className="w-[17px] h-[17px]" />
         </IconButton>
         <span className="flex-1" />
-        {account && <span className="max-w-40 truncate text-[11px] text-fg/30">{account.email}</span>}
+        {account && <span className="max-w-48 truncate text-[11px] text-fg/35">{account.email}</span>}
       </footer>
     </section>
   )
