@@ -2,6 +2,7 @@ import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import HtmlMessage, { safeMailDocument } from '../src/renderer/src/components/mail/HtmlMessage'
+import { useBrowser } from '../src/renderer/src/state/browser'
 
 class Observer {
   observe(): void {}
@@ -10,6 +11,7 @@ class Observer {
 
 beforeEach(() => {
   Object.assign(globalThis, { ResizeObserver: Observer, IS_REACT_ACT_ENVIRONMENT: true })
+  useBrowser.setState({ open: false, tabs: [], activeTabId: null })
 })
 
 afterEach(() => {
@@ -86,7 +88,7 @@ describe('mail message isolation', () => {
     expect(document.querySelector('button')).toBeNull()
   })
 
-  it('routes web and mail links through the main-process bridge', async () => {
+  it('opens web links in Browser and mail links through the main-process bridge', async () => {
     const openExternal = vi.fn(async (_url: string) => true)
     Object.assign(window, { crew: { openExternal } })
     const frame = await draw('<a href="https://crew.test/read">Read</a><a href="mailto:ali@example.com">Write</a>')
@@ -101,8 +103,11 @@ describe('mail message isolation', () => {
       document.querySelector('#local')?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
     })
 
-    expect(new Set(openExternal.mock.calls.map(call => call[0]))).toEqual(
-      new Set(['https://crew.test/read', 'mailto:ali@example.com'])
-    )
+    expect(useBrowser.getState()).toMatchObject({
+      open: true,
+      tabs: [{ kind: 'web', url: 'https://crew.test/read' }]
+    })
+    expect(openExternal).toHaveBeenCalledTimes(2)
+    expect(openExternal).toHaveBeenCalledWith('mailto:ali@example.com')
   })
 })

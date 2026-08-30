@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useBrowser } from '../../state/browser'
 import { useTheme, type Theme } from '../../state/theme'
 
 const EXTERNAL_LINK = /^(https?|mailto):/i
@@ -60,7 +61,8 @@ export default function HtmlMessage({ html, text }: { html?: string; text: strin
         if (!href || !EXTERNAL_LINK.test(href)) return
         event.preventDefault()
         event.stopPropagation()
-        void window.crew.openExternal(href)
+        if (/^https?:/i.test(href)) useBrowser.getState().openUrl(href)
+        else void window.crew.openExternal(href)
       }
       doc.addEventListener('click', links)
       size()
