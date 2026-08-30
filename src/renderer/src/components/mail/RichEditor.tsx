@@ -1,53 +1,84 @@
-import { useEffect, useRef, useState } from 'react'
-import type { Glyph } from '../glyph'
-import Tooltip from '../Tooltip'
-import { BoldGlyph, ItalicGlyph, UnderlineGlyph } from '../doc/docGlyphs'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 
-function FormatButton({
-  label,
-  mark: Mark,
-  active,
-  onPress
-}: {
-  label: string
-  mark: Glyph
-  active: boolean
-  onPress: () => void
-}) {
-  return (
-    <Tooltip label={label}>
-      <button
-        type="button"
-        aria-label={label}
-        aria-pressed={active}
-        onMouseDown={event => event.preventDefault()}
-        onClick={onPress}
-        className={`w-8 h-8 rounded-full flex items-center justify-center transition-[background-color,color,transform] active:scale-90 ${
-          active ? 'bg-fg/[0.11] text-fg' : 'text-fg/45 hover:bg-fg/[0.07] hover:text-fg'
-        }`}
-      >
-        <Mark className="w-4 h-4" />
-      </button>
-    </Tooltip>
-  )
+export type MailFormatCommand =
+  | 'bold'
+  | 'italic'
+  | 'underline'
+  | 'strikeThrough'
+  | 'justifyLeft'
+  | 'justifyCenter'
+  | 'justifyRight'
+  | 'insertOrderedList'
+  | 'insertUnorderedList'
+  | 'formatBlock'
+
+export interface MailFormatState {
+  bold: boolean
+  italic: boolean
+  underline: boolean
+  strike: boolean
+  ordered: boolean
+  unordered: boolean
+  align: 'left' | 'center' | 'right'
+  block: 'p' | 'h1' | 'h2' | 'blockquote'
 }
 
-export default function RichEditor({
-  draftId,
-  html,
-  text,
-  autoFocus,
-  onChange
-}: {
+export interface RichEditorHandle {
+  focus: () => void
+  format: (command: MailFormatCommand, value?: string) => void
+}
+
+export const EMPTY_MAIL_FORMATS: MailFormatState = {
+  bold: false,
+  italic: false,
+  underline: false,
+  strike: false,
+  ordered: false,
+  unordered: false,
+  align: 'left',
+  block: 'p'
+}
+
+function currentBlock(): MailFormatState['block'] {
+  const value = document.queryCommandValue('formatBlock').toString().toLowerCase().replace(/[<>]/g, '')
+  return value === 'h1' || value === 'h2' || value === 'blockquote' ? value : 'p'
+}
+
+function currentFormats(): MailFormatState {
+  return {
+    bold: document.queryCommandState('bold'),
+    italic: document.queryCommandState('italic'),
+    underline: document.queryCommandState('underline'),
+    strike: document.queryCommandState('strikeThrough'),
+    ordered: document.queryCommandState('insertOrderedList'),
+    unordered: document.queryCommandState('insertUnorderedList'),
+    align: document.queryCommandState('justifyCenter')
+      ? 'center'
+      : document.queryCommandState('justifyRight')
+        ? 'right'
+        : 'left',
+    block: currentBlock()
+  }
+}
+
+const RichEditor = forwardRef<RichEditorHandle, {
   draftId: string
   html?: string
   text: string
   autoFocus?: boolean
   onChange: (value: { html: string; text: string }) => void
-}) {
+  onFormatsChange: (value: MailFormatState) => void
+}>(function RichEditor({
+  draftId,
+  html,
+  text,
+  autoFocus,
+  onChange,
+  onFormatsChange
+}, handle) {
   const editor = useRef<HTMLDivElement>(null)
+  const selection = useRef<Range | null>(null)
   const [empty, setEmpty] = useState(!text.trim())
-  const [active, setActive] = useState({ bold: false, italic: false, underline: false })
 
   useEffect(() => {
     const node = editor.current
@@ -66,42 +97,49 @@ export default function RichEditor({
   }
 
   const readFormats = () => {
-    setActive({
-      bold: document.queryCommandState('bold'),
-      italic: document.queryCommandState('italic'),
-      underline: document.queryCommandState('underline')
-    })
+    const found = window.getSelection()
+    if (found?.rangeCount && editor.current?.contains(found.anchorNode)) selection.current = found.getRangeAt(0).cloneRange()
+    onFormatsChange(currentFormats())
   }
 
-  const format = (command: 'bold' | 'italic' | 'underline') => {
-    editor.current?.focus()
-    document.execCommand(command)
+  useImperativeHandle(handle, () => ({
+    focus: () => editor.current?.focus(),
+    format: (command, value) => {
+      editor.current?.focus()
+      const found = window.getSelection()
+      if (selection.current && found) {
+        found.removeAllRanges()
+        found.addRange(selection.current)
+      }
+      document.execCommand(command, false, value)
+      change()
+      readFormats()
+    }
+  }))
+
+  const input = () => {
     change()
     readFormats()
   }
 
   return (
-    <div className="min-h-0 flex-1 flex flex-col">
-      <div role="toolbar" aria-label="Formatting" className="h-11 shrink-0 px-3.5 border-b border-fg/[0.06] flex items-center gap-0.5">
-        <FormatButton label="Bold" mark={BoldGlyph} active={active.bold} onPress={() => format('bold')} />
-        <FormatButton label="Italic" mark={ItalicGlyph} active={active.italic} onPress={() => format('italic')} />
-        <FormatButton label="Underline" mark={UnderlineGlyph} active={active.underline} onPress={() => format('underline')} />
-      </div>
-      <div className="min-h-0 flex-1 relative">
-        {empty && <span className="absolute left-[18px] top-4 text-sm text-fg/30 pointer-events-none">Write a message</span>}
-        <div
-          ref={editor}
-          contentEditable
-          suppressContentEditableWarning
-          role="textbox"
-          aria-multiline
-          aria-label="Message"
-          onInput={change}
-          onKeyUp={readFormats}
-          onPointerUp={readFormats}
-          className="select-text h-full min-h-[190px] overflow-y-auto px-[18px] py-4 text-sm leading-6 text-fg/80 outline-none whitespace-pre-wrap"
-        />
-      </div>
+    <div className="min-h-0 flex-1 relative">
+      {empty && <span className="absolute left-[18px] top-4 text-sm text-fg/30 pointer-events-none">Write a message</span>}
+      <div
+        ref={editor}
+        contentEditable
+        suppressContentEditableWarning
+        role="textbox"
+        aria-multiline
+        aria-label="Message"
+        onInput={input}
+        onKeyUp={readFormats}
+        onPointerUp={readFormats}
+        onFocus={readFormats}
+        className="select-text h-full min-h-[190px] overflow-y-auto px-[18px] py-4 text-sm leading-6 text-fg/80 outline-none whitespace-pre-wrap"
+      />
     </div>
   )
-}
+})
+
+export default RichEditor
