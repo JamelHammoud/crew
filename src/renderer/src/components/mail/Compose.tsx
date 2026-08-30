@@ -54,10 +54,10 @@ function ComposeCard({ draft, suggestions, narrow }: { draft: MailDraft; suggest
     if (error) toast.fail(error)
   }
 
-  const width = narrow ? 'w-[calc(100vw-24px)]' : 'w-[560px]'
+  const width = narrow ? 'w-full' : 'w-[560px]'
 
   return (
-    <section className={`${width} h-[min(640px,calc(100vh-88px))] max-h-[calc(100vh-88px)] glass glass-strong rounded-card overflow-hidden flex flex-col animate-rise`}>
+    <section className={`${width} mail-compose-surface h-[min(640px,calc(100vh-88px))] max-h-[calc(100vh-88px)] glass glass-strong rounded-card overflow-hidden flex flex-col animate-rise`}>
       <header className="h-12 shrink-0 pl-4 pr-2.5 flex items-center gap-1.5 border-b border-fg/[0.06]">
         <span className="min-w-0 flex-1 truncate text-sm font-semibold text-fg">
           {draft.replyTo ? 'Reply' : draft.forwardOf ? 'Forward' : 'New message'}
@@ -252,7 +252,7 @@ export default function DraftDeck({ narrow }: { narrow: boolean }) {
   if (drafts.length === 0) return null
 
   return (
-    <div className="absolute z-50 right-3 bottom-3 max-w-[calc(100%-24px)] pointer-events-none drop-shadow-[0_24px_24px_rgb(0_0_0/0.25)]">
+    <div className="mail-compose-shadow absolute z-50 inset-x-8 bottom-8 pointer-events-none">
       <div className="flex items-end justify-end gap-2 overflow-x-auto">
         {drafts.map(draft =>
           draft.minimized ? (
@@ -260,13 +260,13 @@ export default function DraftDeck({ narrow }: { narrow: boolean }) {
               key={draft.id}
               type="button"
               onClick={() => changeDraft(draft.id, { minimized: false })}
-              className="pointer-events-auto w-56 h-11 px-4 rounded-full glass glass-strong shadow-xl flex items-center gap-2 text-sm font-medium text-fg/75 transition-colors hover:text-fg active:scale-[0.98]"
+              className="mail-compose-surface pointer-events-auto w-56 h-11 px-4 rounded-full glass glass-strong flex items-center gap-2 text-sm font-medium text-fg/75 transition-colors hover:text-fg active:scale-[0.98]"
             >
               <span className="min-w-0 flex-1 truncate text-left">{draft.subject || 'New message'}</span>
               {draft.sending && <Spinner size={14} />}
             </button>
           ) : (
-            <div key={draft.id} className="pointer-events-auto shrink-0">
+            <div key={draft.id} className="pointer-events-auto shrink-0 max-w-full">
               <ComposeCard draft={draft} suggestions={suggestions} narrow={narrow} />
             </div>
           )

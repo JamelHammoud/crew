@@ -481,6 +481,22 @@ textarea:placeholder-shown {
   --glass-shadow: 0 16px 48px rgb(0 0 0 / 0.72), 0 2px 8px rgb(0 0 0 / 0.5);
 }
 
+.mail-compose-surface {
+  --glass-shadow: none;
+}
+
+.mail-compose-shadow {
+  filter: drop-shadow(0 10px 14px rgb(0 0 0 / 0.38)) drop-shadow(0 2px 5px rgb(0 0 0 / 0.24));
+}
+
+.light .mail-compose-shadow {
+  filter: drop-shadow(0 10px 14px rgb(0 0 0 / 0.14)) drop-shadow(0 2px 5px rgb(0 0 0 / 0.08));
+}
+
+.oled .mail-compose-shadow {
+  filter: drop-shadow(0 10px 14px rgb(0 0 0 / 0.5)) drop-shadow(0 2px 5px rgb(0 0 0 / 0.36));
+}
+
 .glass {
   background: var(--glass-bg);
   /* No -webkit- fallback: Electron's Chromium only honors the standard property,
