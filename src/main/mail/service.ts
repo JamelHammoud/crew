@@ -838,3 +838,562 @@ export function registerMailMain(options: MailMainOptions): MailMainRegistration
     }
   }
 }
+
+const CURSOR_SYNC = 'mail:sync:'
+const CURSOR_UID = 'mail:uid:'
+const CURSOR_BODY = 'mail:body:'
+const CURSOR_SIGNATURE = 'mail:signature'
+const CURSOR_SCHEDULE = 'mail:schedule:'
+
+function cursorPart(value: string): string {
+  return Buffer.from(value, 'utf8').toString('base64url')
+}
+
+function parseCursor<T>(value: string | null): T | null {
+  if (!value) return null
+  try {
+    return JSON.parse(value) as T
+  } catch {
+    return null
+  }
+}
+
+function mailboxType(specialUse?: string): MailLabel['type'] {
+  const value = specialUse?.toLowerCase()
+  if (value === '\\inbox') return 'inbox'
+  if (value === '\\sent') return 'sent'
+  if (value === '\\drafts') return 'drafts'
+  if (value === '\\trash') return 'trash'
+  if (value === '\\junk') return 'spam'
+  if (value === '\\all' || value === '\\archive') return 'archive'
+  if (value === '\\flagged') return 'starred'
+  if (value === '\\important') return 'important'
+  return 'user'
+}
+
+function attachmentView(attachment: MailAttachment): MailAttachmentView {
+  return {
+    id: attachment.id,
+    name: attachment.filename,
+    mime: attachment.mimeType,
+    size: attachment.size,
+    ...(attachment.storageKey ? { url: mailAttachmentUrl(attachment.id) } : {})
+  }
+}
+
+function participantAddress(message: MailMessage, role: MailParticipantInput['role']): MailAddressView[] {
+  return message.participants
+    .filter(participant => participant.role === role)
+    .sort((left, right) => left.order - right.order)
+    .map(participant => ({
+      email: participant.email,
+      ...(participant.name ? { name: participant.name } : {})
+    }))
+}
+
+function mailboxIds(messages: MailMessage[]): MailboxId[] {
+  const ids = new Set<MailboxId>()
+  for (const message of messages) {
+    if (message.isStarred) ids.add('starred')
+    if (message.isDraft) ids.add('drafts')
+    if (message.isSent) ids.add('sent')
+    if (message.isTrashed) ids.add('trash')
+    for (const label of message.labels) {
+      if (label.type === 'inbox') ids.add('inbox')
+      if (label.type === 'spam') ids.add('spam')
+      if (label.type === 'archive') ids.add('all')
+      if (label.type === 'important') ids.add('all')
+    }
+  }
+  if (!ids.size) ids.add('all')
+  return [...ids]
+}
+
+export class MailDatabaseServiceStore implements MailServiceStore {
+  constructor(
+    readonly database: MailDatabase,
+    private readonly files: Pick<MailFileStore, 'create'>,
+    private readonly clock: () => number = Date.now
+  ) {}
+
+  listAccounts(): MailAccount[] {
+    return this.database.listAccounts()
+  }
+
+  putAccount(input: MailAccountInput): MailAccount {
+    return this.database.upsertAccount(input)
+  }
+
+  updateAccount(
+    accountId: string,
+    patch: { displayName?: string; signature?: string; lastSyncedAt?: number | null }
+  ): MailAccount {
+    const account = this.database.getAccount(accountId)
+    if (!account) throw new Error('Mail account was not found')
+    let updated = account
+    if (patch.displayName !== undefined) {
+      updated = this.database.upsertAccount({
+        id: account.id,
+        provider: account.provider,
+        email: account.email,
+        displayName: patch.displayName,
+        syncEnabled: account.syncEnabled
+      })
+    }
+    if (patch.signature !== undefined) {
+      this.database.setCursor(accountId, CURSOR_SIGNATURE, JSON.stringify({ value: patch.signature }))
+    }
+    if (patch.lastSyncedAt !== undefined) updated = this.database.setAccountLastSyncedAt(accountId, patch.lastSyncedAt)
+    return updated
+  }
+
+  accountSignature(accountId: string): string | undefined {
+    return parseCursor<{ value?: string }>(this.database.getCursor(accountId, CURSOR_SIGNATURE))?.value || undefined
+  }
+
+  listLabels(accountId: string): MailLabel[] {
+    return this.database.listLabels(accountId)
+  }
+
+  unreadCount(accountId: string): number {
+    const inbox = this.database.listLabels(accountId).find(label => label.type === 'inbox')
+    if (inbox) return inbox.unreadCount
+    return this.allMessages(accountId, { unread: true }).length
+  }
+
+  listThreads(query: MailThreadQueryView): MailThreadSummaryView[] {
+    const accounts = query.accountId
+      ? [this.database.getAccount(query.accountId)].filter((value): value is MailAccount => Boolean(value))
+      : this.database.listAccounts()
+    const queryText = query.query?.trim().toLocaleLowerCase()
+    const summaries: MailThreadSummaryView[] = []
+    for (const account of accounts) {
+      for (const thread of this.database.listThreads(account.id, 200)) {
+        const messages = this.allMessages(account.id, { threadId: thread.id })
+        const summary = this.threadSummary(thread.id, account.id, thread.subject, thread.snippet, thread.latestAt, messages)
+        if (query.mailboxId && !summary.mailboxIds.includes(query.mailboxId)) continue
+        if (query.labelId && !summary.labelIds.includes(query.labelId)) continue
+        if (queryText) {
+          const words = [summary.subject, summary.preview, ...summary.participants.map(one => `${one.name ?? ''} ${one.email}`)]
+            .join(' ')
+            .toLocaleLowerCase()
+          if (!words.includes(queryText)) continue
+        }
+        summaries.push(summary)
+      }
+    }
+    return summaries.sort((left, right) => Date.parse(right.date) - Date.parse(left.date) || left.id.localeCompare(right.id))
+  }
+
+  getThread(accountId: string, threadId: string): MailThreadView | null {
+    const thread = this.database.getThread(accountId, threadId)
+    if (!thread) return null
+    const messages = this.allMessages(accountId, { threadId })
+    return {
+      ...this.threadSummary(thread.id, accountId, thread.subject, thread.snippet, thread.latestAt, messages),
+      messages: messages
+        .sort((left, right) => left.receivedAt - right.receivedAt || left.id.localeCompare(right.id))
+        .map(message => this.messageView(message, threadId))
+    }
+  }
+
+  setThreadState(accountId: string, threadIds: string[], patch: MailThreadStatePatch): void {
+    for (const threadId of threadIds) {
+      for (const message of this.allMessages(accountId, { threadId })) {
+        const labels = new Set(message.labels.map(label => label.id))
+        if (patch.addLabelId) labels.add(patch.addLabelId)
+        if (patch.removeLabelId) labels.delete(patch.removeLabelId)
+        this.database.upsertMessage(accountId, {
+          ...this.messageInput(message),
+          ...(patch.read === undefined ? {} : { isRead: patch.read }),
+          ...(patch.starred === undefined ? {} : { isStarred: patch.starred }),
+          labelIds: [...labels]
+        })
+      }
+    }
+  }
+
+  saveDraft(draft: MailDraftViewInput): SavedDraftResult {
+    const saved = this.database.upsertDraft(draft.accountId, {
+      id: draft.id,
+      replyToMessageId: draft.replyTo ?? null,
+      subject: draft.subject,
+      bodyText: draft.text,
+      bodyHtml: draft.html ?? null,
+      recipients: participantsFor(draft),
+      attachments: draft.attachments.map(attachment => ({
+        id: attachment.id,
+        draftId: draft.id,
+        filename: attachment.name,
+        mimeType: attachment.mime,
+        size: attachment.size,
+        storageKey: this.findAttachment(draft.accountId, attachment.id)?.storageKey ?? null
+      }))
+    })
+    return { id: saved.id, updatedAt: new Date(saved.updatedAt).toISOString() }
+  }
+
+  getDraft(accountId: string, draftId: string): MailDraft | null {
+    return this.database.getDraft(accountId, draftId)
+  }
+
+  discardDraft(accountId: string, draftId: string): void {
+    this.database.deleteDraft(accountId, draftId)
+  }
+
+  addDraftAttachment(
+    accountId: string,
+    draftId: string,
+    attachment: StoredMailAttachment
+  ): MailAttachmentView {
+    return attachmentView(this.database.upsertAttachment(accountId, {
+      id: attachment.id,
+      draftId,
+      messageId: null,
+      filename: attachment.filename,
+      mimeType: attachment.mimeType,
+      size: attachment.size,
+      storageKey: attachment.storageKey
+    }))
+  }
+
+  getAttachment(accountId: string, attachmentId: string): StoredMailAttachment | null {
+    return this.storedAttachment(this.findAttachment(accountId, attachmentId))
+  }
+
+  getAttachmentByOpaqueId(attachmentId: string): StoredMailAttachment | null {
+    for (const account of this.database.listAccounts()) {
+      const found = this.getAttachment(account.id, attachmentId)
+      if (found) return found
+    }
+    return null
+  }
+
+  listAttachmentStorageKeys(accountId: string): string[] {
+    const keys = new Set<string>()
+    for (const message of this.allMessages(accountId)) {
+      for (const attachment of message.attachments) if (attachment.storageKey) keys.add(attachment.storageKey)
+    }
+    for (const draft of this.database.listDrafts(accountId)) {
+      for (const attachment of draft.attachments) if (attachment.storageKey) keys.add(attachment.storageKey)
+    }
+    return [...keys]
+  }
+
+  deleteAccountData(accountId: string): void {
+    this.database.deleteAccount(accountId)
+  }
+
+  putMailboxes(accountId: string, mailboxes: RemoteMailbox[]): void {
+    for (const mailbox of mailboxes) {
+      this.database.upsertLabel(accountId, {
+        id: mailbox.id,
+        providerId: mailbox.id,
+        name: mailbox.name,
+        type: mailboxType(mailbox.role)
+      })
+    }
+  }
+
+  getSyncState(accountId: string, mailboxId: string): MailboxSyncState | null {
+    return parseCursor<MailboxSyncState>(this.database.getCursor(accountId, `${CURSOR_SYNC}${cursorPart(mailboxId)}`))
+  }
+
+  putSyncState(state: MailboxSyncState): void {
+    this.database.setCursor(state.accountId, `${CURSOR_SYNC}${cursorPart(state.mailboxId)}`, JSON.stringify(state))
+  }
+
+  resetMailbox(accountId: string, mailboxId: string): void {
+    this.database.setCursor(accountId, `${CURSOR_SYNC}${cursorPart(mailboxId)}`, JSON.stringify(null))
+  }
+
+  putMessages(accountId: string, messages: RemoteMailMessage[]): void {
+    for (const message of messages) {
+      const id = message.id ?? message.gmailMessageId ?? `${cursorPart(message.mailboxId)}-${message.uid}`
+      for (const labelId of message.labelIds ?? []) {
+        if (!this.database.listLabels(accountId).some(label => label.id === labelId)) {
+          this.database.upsertLabel(accountId, { id: labelId, providerId: labelId, name: labelId })
+        }
+      }
+      const attachments = message.attachments?.map(attachment => {
+        const existing = this.findAttachment(accountId, attachment.id)
+        const storageKey = existing?.storageKey ?? (attachment.content ? this.files.create(accountId, attachment.content) : null)
+        return {
+          id: attachment.id,
+          messageId: id,
+          filename: attachment.filename,
+          mimeType: attachment.contentType,
+          size: attachment.size,
+          contentId: attachment.contentId ?? null,
+          inline: attachment.inline ?? false,
+          storageKey,
+          checksum: attachment.checksum ?? null
+        }
+      })
+      this.database.upsertMessage(accountId, {
+        id,
+        providerMessageId: message.gmailMessageId ?? message.id ?? id,
+        threadId: message.threadId ?? null,
+        messageIdHeader: message.messageId ?? null,
+        subject: message.subject ?? '',
+        snippet: message.preview ?? '',
+        bodyText: message.body ?? '',
+        bodyHtml: message.bodyHtml ?? null,
+        receivedAt: message.internalDate,
+        sentAt: message.internalDate,
+        isRead: message.flags.includes('\\Seen'),
+        isStarred: message.flags.includes('\\Flagged'),
+        isDraft: message.flags.includes('\\Draft'),
+        isSent: (message.labelIds ?? []).some(label => mailboxType(label) === 'sent'),
+        isTrashed: (message.labelIds ?? []).some(label => mailboxType(label) === 'trash'),
+        size: message.size ?? 0,
+        labelIds: message.labelIds ?? [],
+        participants: message.participants,
+        attachments
+      })
+      const ref = { id, mailboxId: message.mailboxId, uid: message.uid }
+      this.database.setCursor(accountId, this.uidKey(message.mailboxId, message.uid), JSON.stringify(ref))
+      if (message.body !== undefined) {
+        this.database.setCursor(accountId, this.bodyKey(message.mailboxId, message.uid), JSON.stringify({ loaded: true }))
+      }
+    }
+  }
+
+  removeMessagesByUid(accountId: string, mailboxId: string, uids: number[]): void {
+    for (const uid of uids) {
+      const ref = this.remoteRef(accountId, mailboxId, uid)
+      if (ref) this.database.deleteMessage(accountId, ref.id)
+    }
+  }
+
+  getMessageBody(accountId: string, mailboxId: string, uid: number): { body: string } | null {
+    if (!this.database.getCursor(accountId, this.bodyKey(mailboxId, uid))) return null
+    const ref = this.remoteRef(accountId, mailboxId, uid)
+    if (!ref) return null
+    const message = this.database.getMessage(accountId, ref.id)
+    return message ? { body: message.bodyText } : null
+  }
+
+  listScheduledSends(): ScheduledSend<ScheduledDraftPayload>[] {
+    return this.database.listDueScheduledSends(Number.MAX_SAFE_INTEGER, 200).map(item => {
+      const metadata = parseCursor<Partial<ScheduledSend<ScheduledDraftPayload>>>(
+        this.database.getCursor(item.accountId, `${CURSOR_SCHEDULE}${cursorPart(item.id)}`)
+      )
+      return {
+        id: item.id,
+        accountId: item.accountId,
+        payload: { draftId: item.draftId },
+        sendAt: item.sendAt,
+        createdAt: item.createdAt,
+        attempts: item.attemptCount,
+        ...metadata
+      }
+    })
+  }
+
+  putScheduledSend(item: ScheduledSend<ScheduledDraftPayload>): void {
+    const existing = this.database.getScheduledSend(item.accountId, item.id)
+    if (!existing) this.database.scheduleSend(item.accountId, item.payload.draftId, item.sendAt, item.id)
+    else if (item.failedAt !== undefined) {
+      this.database.updateScheduledSend(item.accountId, item.id, 'failed', {
+        lastError: item.lastError ?? null,
+        incrementAttempt: item.attempts > existing.attemptCount
+      })
+    } else if (item.attempts > existing.attemptCount) {
+      this.database.updateScheduledSend(item.accountId, item.id, 'pending', {
+        lastError: item.lastError ?? null,
+        incrementAttempt: true
+      })
+    }
+    this.database.setCursor(item.accountId, `${CURSOR_SCHEDULE}${cursorPart(item.id)}`, JSON.stringify({
+      ...(item.retryAt === undefined ? {} : { retryAt: item.retryAt }),
+      ...(item.failedAt === undefined ? {} : { failedAt: item.failedAt }),
+      ...(item.lastError === undefined ? {} : { lastError: item.lastError })
+    }))
+  }
+
+  removeScheduledSend(id: string): void {
+    const item = this.database.listDueScheduledSends(Number.MAX_SAFE_INTEGER, 200).find(entry => entry.id === id)
+    if (item) this.database.updateScheduledSend(item.accountId, item.id, 'sent')
+  }
+
+  listSnoozedMessages(): SnoozedMessage[] {
+    return this.database.listDueSnoozes(Number.MAX_SAFE_INTEGER, 200).map(item => ({
+      id: item.id,
+      accountId: item.accountId,
+      messageId: item.threadId ?? item.messageId ?? '',
+      wakeAt: item.wakeAt,
+      createdAt: item.createdAt
+    })).filter(item => Boolean(item.messageId))
+  }
+
+  putSnoozedMessage(item: SnoozedMessage): void {
+    this.database.snoozeThread(item.accountId, item.messageId, item.wakeAt, item.id)
+  }
+
+  removeSnoozedMessage(id: string): void {
+    const item = this.database.listDueSnoozes(Number.MAX_SAFE_INTEGER, 200).find(entry => entry.id === id)
+    if (item) this.database.deleteSnooze(item.accountId, id)
+  }
+
+  refsForThreads(accountId: string, threadIds: string[]): Array<{ mailboxId: string; uid: number }> {
+    const refs: Array<{ mailboxId: string; uid: number }> = []
+    for (const threadId of threadIds) {
+      for (const message of this.allMessages(accountId, { threadId })) {
+        const ref = this.providerRef(accountId, message.id)
+        if (ref) refs.push(ref)
+      }
+    }
+    return refs
+  }
+
+  private allMessages(accountId: string, query: { threadId?: string; unread?: boolean } = {}): MailMessage[] {
+    const messages: MailMessage[] = []
+    let cursor: string | null = null
+    do {
+      const page = this.database.listMessages(accountId, { ...query, cursor, limit: 200 })
+      messages.push(...page.items)
+      cursor = page.nextCursor
+    } while (cursor)
+    return messages
+  }
+
+  private threadSummary(
+    id: string,
+    accountId: string,
+    subject: string,
+    snippet: string,
+    latestAt: number,
+    messages: MailMessage[]
+  ): MailThreadSummaryView {
+    const people = new Map<string, MailAddressView>()
+    for (const message of messages) {
+      for (const participant of [...participantAddress(message, 'from'), ...participantAddress(message, 'to')]) {
+        people.set(participant.email, participant)
+      }
+    }
+    return {
+      id,
+      accountId,
+      subject,
+      participants: [...people.values()],
+      preview: snippet,
+      date: new Date(latestAt).toISOString(),
+      unread: messages.some(message => !message.isRead),
+      starred: messages.some(message => message.isStarred),
+      important: messages.some(message => message.labels.some(label => label.type === 'important')),
+      hasAttachments: messages.some(message => message.attachments.length > 0),
+      messageCount: messages.length,
+      mailboxIds: mailboxIds(messages),
+      labelIds: [...new Set(messages.flatMap(message => message.labels.map(label => label.id)))]
+    }
+  }
+
+  private messageView(message: MailMessage, threadId: string): MailMessageView {
+    return {
+      id: message.id,
+      threadId,
+      accountId: message.accountId,
+      from: participantAddress(message, 'from')[0] ?? { email: '' },
+      to: participantAddress(message, 'to'),
+      cc: participantAddress(message, 'cc'),
+      bcc: participantAddress(message, 'bcc'),
+      subject: message.subject,
+      date: new Date(message.sentAt ?? message.receivedAt).toISOString(),
+      text: message.bodyText,
+      ...(message.bodyHtml ? { html: message.bodyHtml } : {}),
+      unread: !message.isRead,
+      starred: message.isStarred,
+      attachments: message.attachments.map(attachmentView)
+    }
+  }
+
+  private messageInput(message: MailMessage) {
+    return {
+      id: message.id,
+      providerMessageId: message.providerMessageId,
+      threadId: message.threadId,
+      messageIdHeader: message.messageIdHeader,
+      inReplyTo: message.inReplyTo,
+      subject: message.subject,
+      snippet: message.snippet,
+      bodyText: message.bodyText,
+      bodyHtml: message.bodyHtml,
+      sentAt: message.sentAt,
+      receivedAt: message.receivedAt,
+      isRead: message.isRead,
+      isStarred: message.isStarred,
+      isDraft: message.isDraft,
+      isSent: message.isSent,
+      isTrashed: message.isTrashed,
+      size: message.size,
+      participants: message.participants.map(participant => ({
+        id: participant.id,
+        role: participant.role,
+        email: participant.email,
+        name: participant.name,
+        order: participant.order
+      })),
+      attachments: message.attachments.map(attachment => ({
+        id: attachment.id,
+        messageId: message.id,
+        filename: attachment.filename,
+        mimeType: attachment.mimeType,
+        size: attachment.size,
+        contentId: attachment.contentId,
+        inline: attachment.inline,
+        storageKey: attachment.storageKey,
+        checksum: attachment.checksum
+      }))
+    }
+  }
+
+  private findAttachment(accountId: string, attachmentId: string): MailAttachment | null {
+    for (const message of this.allMessages(accountId)) {
+      const found = message.attachments.find(attachment => attachment.id === attachmentId)
+      if (found) return found
+    }
+    for (const draft of this.database.listDrafts(accountId)) {
+      const found = draft.attachments.find(attachment => attachment.id === attachmentId)
+      if (found) return found
+    }
+    return null
+  }
+
+  private storedAttachment(attachment: MailAttachment | null): StoredMailAttachment | null {
+    if (!attachment?.storageKey) return null
+    return {
+      id: attachment.id,
+      accountId: attachment.accountId,
+      messageId: attachment.messageId,
+      storageKey: attachment.storageKey,
+      filename: attachment.filename,
+      mimeType: attachment.mimeType,
+      size: attachment.size
+    }
+  }
+
+  private uidKey(mailboxId: string, uid: number): string {
+    return `${CURSOR_UID}${cursorPart(mailboxId)}:${uid}`
+  }
+
+  private bodyKey(mailboxId: string, uid: number): string {
+    return `${CURSOR_BODY}${cursorPart(mailboxId)}:${uid}`
+  }
+
+  private remoteRef(accountId: string, mailboxId: string, uid: number): { id: string; mailboxId: string; uid: number } | null {
+    return parseCursor(this.database.getCursor(accountId, this.uidKey(mailboxId, uid)))
+  }
+
+  private providerRef(accountId: string, messageId: string): { mailboxId: string; uid: number } | null {
+    for (const label of this.database.listLabels(accountId)) {
+      const state = this.getSyncState(accountId, label.id)
+      if (!state) continue
+      for (let uid = state.hydratedFromUid; uid <= state.lastUid; uid += 1) {
+        const ref = this.remoteRef(accountId, label.id, uid)
+        if (ref?.id === messageId) return { mailboxId: ref.mailboxId, uid: ref.uid }
+      }
+    }
+    return null
+  }
+}
