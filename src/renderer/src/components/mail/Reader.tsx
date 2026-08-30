@@ -161,6 +161,10 @@ function Message({
           <MailAttachments attachments={message.attachments} onSave={attachment => void save(attachment.id)} />
 
           <div className="sticky bottom-0 z-10 -mx-4 mt-2 px-4 pb-5 pt-4 sm:-mx-5 sm:px-5 sm:pb-6 flex items-center gap-2 flex-wrap rounded-b-[19px] bg-ink-900">
+            <span
+              aria-hidden
+              className="absolute inset-x-0 -top-10 h-10 bg-gradient-to-t from-ink-900 to-transparent pointer-events-none"
+            />
             <button
               type="button"
               onClick={() => onDraft('reply')}

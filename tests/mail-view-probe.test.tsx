@@ -290,6 +290,9 @@ describe('mail list and reader', () => {
     expect(actions.className).toContain('bg-ink-900')
     expect(message.className).not.toContain('overflow-hidden')
     expect(reader).toBeTruthy()
+    const fade = actions.querySelector('.bg-gradient-to-t') as HTMLElement
+    expect(fade.className).toContain('to-transparent')
+    expect(fade.className).toContain('pointer-events-none')
   })
 
   it('shows every message address and its copy control on hover', async () => {
