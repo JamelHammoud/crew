@@ -474,6 +474,13 @@ function optionalNullableText(value: unknown, name: string): string | null | und
   return value === undefined || value === null ? value : text(value, name, false)
 }
 
+function optionalStorageKey(value: unknown): string | null | undefined {
+  if (value === undefined || value === null) return value
+  const result = text(value, 'Mail attachment storage key')
+  if (!/^[0-9a-f]{32}$/.test(result)) throw new TypeError('Mail attachment storage key is invalid')
+  return result
+}
+
 function finiteTime(value: unknown, name: string): number {
   if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) throw new TypeError(`${name} must be a non-negative number`)
   return value
@@ -545,6 +552,7 @@ export function parseMailParticipantInput(value: unknown): MailParticipantInput 
 export function parseMailAttachmentInput(value: unknown): MailAttachmentInput {
   const input = record(value, 'Mail attachment')
   const inline = optionalBoolean(input.inline, 'Mail attachment inline')
+  const storageKey = optionalStorageKey(input.storageKey)
   return {
     id: text(input.id, 'Mail attachment id'),
     ...(optionalNullableText(input.messageId, 'Mail attachment message id') !== undefined ? { messageId: optionalNullableText(input.messageId, 'Mail attachment message id') } : {}),
@@ -554,7 +562,7 @@ export function parseMailAttachmentInput(value: unknown): MailAttachmentInput {
     size: count(input.size, 'Mail attachment size'),
     ...(optionalNullableText(input.contentId, 'Mail attachment content id') !== undefined ? { contentId: optionalNullableText(input.contentId, 'Mail attachment content id') } : {}),
     ...(inline === undefined ? {} : { inline }),
-    ...(optionalNullableText(input.storageKey, 'Mail attachment storage key') !== undefined ? { storageKey: optionalNullableText(input.storageKey, 'Mail attachment storage key') } : {}),
+    ...(storageKey !== undefined ? { storageKey } : {}),
     ...(optionalNullableText(input.checksum, 'Mail attachment checksum') !== undefined ? { checksum: optionalNullableText(input.checksum, 'Mail attachment checksum') } : {})
   }
 }

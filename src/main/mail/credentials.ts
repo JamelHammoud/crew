@@ -63,7 +63,7 @@ export class MailCredentialStore {
   }
 
   private assertEncryption(): void {
-    if (!this.storage.isEncryptionAvailable()) throw new Error('Secure credential storage is unavailable')
+    if (!this.storage || !this.storage.isEncryptionAvailable()) throw new Error('Secure credential storage is unavailable')
     if (this.storage.getSelectedStorageBackend?.() === 'basic_text') throw new Error('Secure credential storage is unavailable')
   }
 
