@@ -111,7 +111,10 @@ export interface MailServiceStore extends MailSyncStore, MailSchedulerStore<Sche
   unreadCount(accountId: string): number | Promise<number>
   listThreads(query: MailThreadQueryView): MailThreadSummaryView[] | Promise<MailThreadSummaryView[]>
   getThread(accountId: string, threadId: string): MailThreadView | null | Promise<MailThreadView | null>
-  refsForThreads(accountId: string, threadIds: string[]): Array<{ mailboxId: string; uid: number }> | Promise<Array<{ mailboxId: string; uid: number }>>
+  refsForThreads(
+    accountId: string,
+    threadIds: string[]
+  ): Array<{ mailboxId: string; uid: number }> | Promise<Array<{ mailboxId: string; uid: number }>>
   setThreadState(accountId: string, threadIds: string[], patch: MailThreadStatePatch): void | Promise<void>
   saveDraft(draft: MailDraftViewInput): SavedDraftResult | Promise<SavedDraftResult>
   getDraft(accountId: string, draftId: string): MailDraftViewInput | MailDraft | null | Promise<MailDraftViewInput | MailDraft | null>
