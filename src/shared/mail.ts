@@ -453,7 +453,7 @@ export interface MailBridge {
   onConnection(listener: (event: MailConnectionEvent) => void): () => void
   onUnread(listener: (event: MailUnreadEvent) => void): () => void
   onNotification(listener: (notification: MailNotification) => void): () => void
-  onNotificationOpen(listener: (notification: MailNotification) => void): () => void
+  onNotificationOpen?(listener: (notification: MailNotification) => void): () => void
 }
 
 function record(value: unknown, name: string): Record<string, unknown> {
