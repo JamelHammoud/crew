@@ -44,6 +44,15 @@ function setup(checkForUpdates?: () => Promise<unknown>): {
 }
 
 describe('the updater quit handoff', () => {
+  it('checks again when the menu asks', async () => {
+    const { updates, updater } = setup()
+
+    await vi.waitFor(() => expect(updater.checkForUpdates).toHaveBeenCalledOnce())
+    updates.checkNow()
+    await vi.waitFor(() => expect(updater.checkForUpdates).toHaveBeenCalledTimes(2))
+    updates.close()
+  })
+
   it('handles a rejected background download promise', async () => {
     const caught = vi.fn(() => Promise.resolve())
     const { updates } = setup(() =>
