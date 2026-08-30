@@ -19,6 +19,16 @@ import type {
 } from '../shared/files'
 import type { FileReplaceRequest, FileReplaceResult, FileSearchOptions } from '../shared/fileSearch'
 import type { MachineDir } from '../shared/machinePath'
+import {
+  MAIL_IPC,
+  MAIL_RENDERER_EVENTS,
+  type MailBridge,
+  type MailChangedEvent,
+  type MailConnectionEvent,
+  type MailNotificationEvent,
+  type MailOnlineEvent,
+  type MailUnreadEvent
+} from '../shared/mail'
 import type { MediaAccess, MediaKind, ScreenSource } from '../shared/media'
 import type { ModelServer } from '../shared/modelServers'
 import type { PluginConnectionInput, PluginConnectionResult } from '../shared/plugins'
@@ -33,6 +43,60 @@ import type { CreateStickyInput, Sticky, UpdateStickyInput } from '../shared/sti
 import type { UpdateState } from '../shared/update'
 import type { CurrentSession, OpenOptions, ProjectPlan } from './session'
 import type { TerminalSize } from './terminal'
+
+const mailBridge: MailBridge = {
+  listAccounts: () => ipcRenderer.invoke(MAIL_IPC.listAccounts),
+  connectAccount: input => ipcRenderer.invoke(MAIL_IPC.connectAccount, input),
+  removeAccount: accountId => ipcRenderer.invoke(MAIL_IPC.removeAccount, accountId),
+  reconnectAccount: (accountId, appPassword) => ipcRenderer.invoke(MAIL_IPC.reconnectAccount, accountId, appPassword),
+  updateAccount: (accountId, patch) => ipcRenderer.invoke(MAIL_IPC.updateAccount, accountId, patch),
+  listThreads: query => ipcRenderer.invoke(MAIL_IPC.listThreads, query),
+  getThread: (accountId, threadId) => ipcRenderer.invoke(MAIL_IPC.getThread, accountId, threadId),
+  sync: accountId => ipcRenderer.invoke(MAIL_IPC.sync, accountId),
+  setThreadState: (accountId, threadIds, patch) =>
+    ipcRenderer.invoke(MAIL_IPC.setThreadState, accountId, threadIds, patch),
+  saveDraft: draft => ipcRenderer.invoke(MAIL_IPC.saveDraft, draft),
+  discardDraft: (accountId, draftId) => ipcRenderer.invoke(MAIL_IPC.discardDraft, accountId, draftId),
+  sendDraft: (draft, sendAt) => ipcRenderer.invoke(MAIL_IPC.sendDraft, draft, sendAt),
+  addAttachment: async (accountId, draftId, file) =>
+    ipcRenderer.invoke(MAIL_IPC.addAttachment, accountId, draftId, {
+      name: file.name,
+      mime: file.type,
+      bytes: new Uint8Array(await file.arrayBuffer())
+    }),
+  saveAttachment: (accountId, messageId, attachmentId) =>
+    ipcRenderer.invoke(MAIL_IPC.saveAttachment, accountId, messageId, attachmentId),
+  printThread: (accountId, threadId) => ipcRenderer.invoke(MAIL_IPC.printThread, accountId, threadId),
+  snoozeThread: (accountId, threadId, wakeAt) =>
+    ipcRenderer.invoke(MAIL_IPC.snoozeThread, accountId, threadId, wakeAt),
+  onChanged: listener => {
+    const handler = (_event: unknown): void => listener({ type: 'changed' } satisfies MailChangedEvent)
+    ipcRenderer.on(MAIL_RENDERER_EVENTS.changed, handler)
+    return () => ipcRenderer.off(MAIL_RENDERER_EVENTS.changed, handler)
+  },
+  onOnline: listener => {
+    const handler = (_event: unknown, online: boolean): void =>
+      listener({ type: 'online', online } satisfies MailOnlineEvent)
+    ipcRenderer.on(MAIL_RENDERER_EVENTS.online, handler)
+    return () => ipcRenderer.off(MAIL_RENDERER_EVENTS.online, handler)
+  },
+  onConnection: listener => {
+    const handler = (_event: unknown, value: MailConnectionEvent): void => listener(value)
+    ipcRenderer.on(MAIL_RENDERER_EVENTS.connection, handler)
+    return () => ipcRenderer.off(MAIL_RENDERER_EVENTS.connection, handler)
+  },
+  onUnread: listener => {
+    const handler = (_event: unknown, value: MailUnreadEvent): void => listener(value)
+    ipcRenderer.on(MAIL_RENDERER_EVENTS.unread, handler)
+    return () => ipcRenderer.off(MAIL_RENDERER_EVENTS.unread, handler)
+  },
+  onNotification: listener => {
+    const handler = (_event: unknown, notification: MailNotificationEvent['notification']): void =>
+      listener({ type: 'notification', notification })
+    ipcRenderer.on(MAIL_RENDERER_EVENTS.notification, handler)
+    return () => ipcRenderer.off(MAIL_RENDERER_EVENTS.notification, handler)
+  }
+}
 
 const bridge = {
   pickFolder: (): Promise<string | null> => ipcRenderer.invoke('folder:pick'),
@@ -315,3 +379,4 @@ const bridge = {
 export type CrewBridge = typeof bridge
 
 contextBridge.exposeInMainWorld('crew', bridge)
+contextBridge.exposeInMainWorld('mail', mailBridge)

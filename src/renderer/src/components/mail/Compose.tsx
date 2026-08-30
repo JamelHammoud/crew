@@ -12,6 +12,7 @@ import {
 import { Popover } from '../Popover'
 import Select from '../Select'
 import Spinner from '../Spinner'
+import Tooltip from '../Tooltip'
 import { toast } from '../../state/toast'
 import RecipientField from './Recipients'
 import RichEditor from './RichEditor'
@@ -75,12 +76,24 @@ function ComposeCard({ draft, suggestions, narrow }: { draft: MailDraft; suggest
       {accounts.length > 1 && (
         <div className="h-11 shrink-0 px-3 border-b border-fg/[0.06] flex items-center gap-2">
           <span className="w-7 text-xs text-fg/35">From</span>
-          <Select
-            value={draft.accountId}
-            options={accounts.map(one => ({ value: one.id, label: `${one.displayName} · ${one.email}` }))}
-            onChange={accountId => changeDraft(draft.id, { accountId })}
-            full
-          />
+          {draft.attachments.length > 0 ? (
+            <Tooltip label="Remove attachments to change accounts." className="min-w-0 flex-1">
+              <button
+                type="button"
+                aria-label={`From ${account?.displayName ?? ''} ${account?.email ?? ''}. Remove attachments to change accounts.`}
+                className="w-full min-w-0 h-8 px-3 rounded-full bg-fg/[0.07] text-sm font-medium text-fg/45 truncate text-left"
+              >
+                {account?.displayName} · {account?.email}
+              </button>
+            </Tooltip>
+          ) : (
+            <Select
+              value={draft.accountId}
+              options={accounts.map(one => ({ value: one.id, label: `${one.displayName} · ${one.email}` }))}
+              onChange={accountId => changeDraft(draft.id, { accountId })}
+              full
+            />
+          )}
         </div>
       )}
 
@@ -175,6 +188,7 @@ function ComposeCard({ draft, suggestions, narrow }: { draft: MailDraft; suggest
           <Popover open={sendLater} onClose={() => setSendLater(false)} side="top" align="start" className="w-72">
             <div className="p-2">
               <label className="block px-1 pb-2 text-xs font-medium text-fg/45">Send on</label>
+              <p className="px-1 pb-2 text-xs text-fg/45">Crew must be open then.</p>
               <input
                 type="datetime-local"
                 value={when}

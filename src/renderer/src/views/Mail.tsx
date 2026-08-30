@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { MailThreadQuery, MailThreadSummary } from '../state/mail'
 import { mailApiAvailable, useMail, watchMail } from '../state/mail'
-import { ChevronLeftGlyph, MenuGlyph, RefreshGlyph, SignalGlyph } from '../icons'
+import { ChevronLeftGlyph, RefreshGlyph, SignalGlyph } from '../icons'
 import Empty from '../components/Empty'
 import Spinner from '../components/Spinner'
 import MailSidebar, { type MailLocation } from '../components/mail/Sidebar'
@@ -101,15 +101,13 @@ export default function Mail() {
     />
   )
 
-  if (!ready && loading) {
+  if (!ready) {
     return (
       <div ref={root} className="h-full flex items-center justify-center text-fg-muted">
         <Spinner size={20} />
       </div>
     )
   }
-
-  if (ready && accounts.length === 0) return <MailSetup />
 
   if (ready && !mailApiAvailable() && accounts.length === 0) {
     return (
@@ -122,6 +120,8 @@ export default function Mail() {
       </div>
     )
   }
+
+  if (ready && accounts.length === 0) return <MailSetup />
 
   return (
     <div ref={root} className="h-full min-w-0 relative overflow-hidden bg-ink-900">

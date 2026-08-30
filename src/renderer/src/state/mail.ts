@@ -169,7 +169,7 @@ export const useMail = create<MailState>((set, get) => ({
   load: async query => {
     const mail = api()
     if (!mail) {
-      set({ ready: true, loading: false, issue: 'Mail is not available in this build.' })
+      set({ ready: true, loading: false, issue: 'Mail is unavailable. Restart Crew and try again.' })
       return
     }
     set({ loading: true, issue: null })
@@ -196,7 +196,7 @@ export const useMail = create<MailState>((set, get) => ({
 
   connect: async (email, displayName, appPassword) => {
     const mail = api()
-    if (!mail) return 'Mail is not available in this build.'
+    if (!mail) return 'Mail is unavailable. Restart Crew and try again.'
     try {
       const account = await mail.connectAccount({ email, displayName, appPassword })
       set(state => ({ accounts: replaceAccount(state.accounts, account), issue: null }))
@@ -208,7 +208,7 @@ export const useMail = create<MailState>((set, get) => ({
 
   removeAccount: async accountId => {
     const mail = api()
-    if (!mail) return 'Mail is not available in this build.'
+    if (!mail) return 'Mail is unavailable. Restart Crew and try again.'
     try {
       await mail.removeAccount(accountId)
       set(state => ({
@@ -224,7 +224,7 @@ export const useMail = create<MailState>((set, get) => ({
 
   reconnect: async (accountId, appPassword) => {
     const mail = api()
-    if (!mail) return 'Mail is not available in this build.'
+    if (!mail) return 'Mail is unavailable. Restart Crew and try again.'
     try {
       const account = await mail.reconnectAccount(accountId, appPassword)
       set(state => ({ accounts: replaceAccount(state.accounts, account) }))
@@ -236,7 +236,7 @@ export const useMail = create<MailState>((set, get) => ({
 
   updateAccount: async (accountId, patch) => {
     const mail = api()
-    if (!mail) return 'Mail is not available in this build.'
+    if (!mail) return 'Mail is unavailable. Restart Crew and try again.'
     try {
       const account = await mail.updateAccount(accountId, patch)
       set(state => ({ accounts: replaceAccount(state.accounts, account) }))
@@ -263,7 +263,7 @@ export const useMail = create<MailState>((set, get) => ({
 
   setThreads: async (accountId, ids, patch) => {
     const mail = api()
-    if (!mail) return 'Mail is not available in this build.'
+    if (!mail) return 'Mail is unavailable. Restart Crew and try again.'
     const before = get().threads
     const selected = new Set(ids)
     set({
@@ -358,7 +358,7 @@ export const useMail = create<MailState>((set, get) => ({
   sendDraft: async (id, sendAt) => {
     const mail = api()
     const draft = get().drafts.find(one => one.id === id)
-    if (!draft || !mail) return 'Mail is not available in this build.'
+    if (!draft || !mail) return 'Mail is unavailable. Restart Crew and try again.'
     if (draft.to.length + draft.cc.length + draft.bcc.length === 0) return 'Add at least one recipient.'
     set(state => ({ drafts: state.drafts.map(one => (one.id === id ? { ...one, sending: true } : one)) }))
     try {
@@ -425,7 +425,7 @@ export function watchMail(): () => void {
   const reload = () => void useMail.getState().load()
   const setOnline = () => useMail.getState().setOnline(navigator.onLine)
   const stopChanged = mail?.onChanged?.(reload)
-  const stopOnline = mail?.onOnline?.(online => useMail.getState().setOnline(online))
+  const stopOnline = mail?.onOnline?.(event => useMail.getState().setOnline(event.online))
   window.addEventListener('online', setOnline)
   window.addEventListener('offline', setOnline)
   return () => {
