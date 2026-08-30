@@ -87,7 +87,7 @@ export const LinkGlyph = glyph(
 )
 
 export const AttachmentGlyph = glyph(
-  <path d="m9.2 12.8 6.9-6.9a3.35 3.35 0 0 1 4.75 4.75L11.7 19.8a5.15 5.15 0 0 1-7.3-7.3l8.7-8.7" />
+  <path d="M17 7v9.5q0 5-5 5t-5-5V6q0-4 4-4t4 4v10.5q0 3-3 3t-3-3V8" />
 )
 
 export const SpamGlyph = glyph(
