@@ -450,8 +450,15 @@ export class MailService {
     })
   }
 
-  listThreads(query: MailThreadQueryView = {}): Promise<MailThreadSummaryView[]> {
-    return Promise.resolve(this.store.listThreads({ ...query }))
+  async listThreads(query: MailThreadQueryView = {}): Promise<MailThreadSummaryView[]> {
+    const search = query.query?.trim()
+    if (search) {
+      const syncers = query.accountId
+        ? [this.syncers.get(query.accountId)].filter((value): value is MailSynchronizer => Boolean(value))
+        : [...this.syncers.values()]
+      await Promise.all(syncers.map(syncer => syncer.searchGmail(search).catch(() => [])))
+    }
+    return this.store.listThreads({ ...query })
   }
 
   async getThread(accountId: string, threadId: string): Promise<MailThreadView> {
