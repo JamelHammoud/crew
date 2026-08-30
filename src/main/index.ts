@@ -58,6 +58,7 @@ import { CrewCommand } from './crew-command'
 import { Previews } from './preview'
 import { Media } from './media-file'
 import { registerMediaScheme, serveMediaScheme } from './media-scheme'
+import { registerMailScheme } from './mail/scheme'
 import { OtherInstances } from './instances'
 import { Crews } from './crews'
 import { cloneRepository } from './repository-clone'
@@ -97,6 +98,7 @@ app.commandLine.appendSwitch('disable-renderer-backgrounding')
 // by default.
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 registerMediaScheme()
+registerMailScheme()
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const devUrl = process.env['ELECTRON_RENDERER_URL']

@@ -428,7 +428,7 @@ export function watchMail(): () => void {
   const reload = () => void useMail.getState().load(currentQuery)
   const setOnline = () => useMail.getState().setOnline(navigator.onLine)
   const stopChanged = mail?.onChanged?.(reload)
-  const stopOnline = mail?.onOnline?.(event => useMail.getState().setOnline(event.online))
+  const stopOnline = mail?.onOnline?.(online => useMail.getState().setOnline(online))
   const stopConnection = mail?.onConnection?.(event => {
     useMail.setState(state => ({
       accounts: state.accounts.map(account =>

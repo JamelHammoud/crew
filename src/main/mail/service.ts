@@ -1526,18 +1526,26 @@ export class GmailMailConnection implements MailConnection {
     await this.verify()
     if (request.changedSince) throw new Error('Gmail transport does not expose changed-since fetches')
     let uids: number[] | undefined
+    let scannedThroughUid: number | undefined
+    let nextBeforeUid: number | undefined
     if (request.afterUid !== undefined) {
       const afterUid = request.afterUid
       const status = await this.mailboxStatus(mailboxId)
       const end = Math.min(status.uidNext - 1, afterUid + request.limit)
       uids = Array.from({ length: Math.max(0, end - afterUid) }, (_, index) => afterUid + index + 1)
+      scannedThroughUid = end
     } else if (request.beforeUid !== undefined) {
       const end = Math.max(0, request.beforeUid - 1)
       const start = Math.max(1, end - request.limit + 1)
       uids = Array.from({ length: Math.max(0, end - start + 1) }, (_, index) => start + index)
+      nextBeforeUid = start
     }
     const summaries = await this.transport.fetchSummaries(mailboxId, { uids, limit: request.limit })
-    return { messages: summaries.map(summary => remoteSummary(mailboxId, summary)) }
+    return {
+      messages: summaries.map(summary => remoteSummary(mailboxId, summary)),
+      ...(scannedThroughUid === undefined ? {} : { scannedThroughUid }),
+      ...(nextBeforeUid === undefined ? {} : { nextBeforeUid })
+    }
   }
 
   async fetchBody(mailboxId: string, uid: number): Promise<RemoteMailMessage> {
