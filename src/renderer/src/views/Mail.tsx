@@ -57,7 +57,11 @@ export default function Mail() {
   useEffect(() => watchMail(), [])
 
   useEffect(() => {
-    const timer = window.setTimeout(() => void load(request), query ? 180 : 0)
+    if (!query) {
+      void load(request)
+      return
+    }
+    const timer = window.setTimeout(() => void load(request), 180)
     return () => window.clearTimeout(timer)
   }, [load, request, query])
 

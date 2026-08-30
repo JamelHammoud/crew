@@ -384,3 +384,92 @@ describe('Gmail transport over loopback', () => {
     expect(summaries.map(one => one.subject)).toEqual(['Live service mail'])
   })
 })
+
+describe('database-backed mail service over loopback', () => {
+  it('connects two accounts, serves unified and account views, and removes one without touching the other', async () => {
+    const runtime = await serviceHarness()
+    const { personalAccount, workAccount } = await connectServiceAccounts(runtime)
+
+    const accounts = await runtime.service.listAccounts()
+    expect(accounts.map(account => account.email)).toEqual(['jamel@crew.test', 'jamel@gmail.com'])
+    expect(JSON.stringify(accounts)).not.toContain('aaaabbbbccccdddd')
+    expect(JSON.stringify(accounts)).not.toContain('eeeeffffgggghhhh')
+
+    const unified = await runtime.service.listThreads({ mailboxId: 'inbox' })
+    expect(unified.map(thread => thread.subject)).toEqual(['Release checklist', 'Dinner this weekend'])
+    expect(new Set(unified.map(thread => thread.accountId))).toEqual(new Set([personalAccount.id, workAccount.id]))
+    expect((await runtime.service.listThreads({ accountId: personalAccount.id, mailboxId: 'inbox' })).map(one => one.subject)).toEqual([
+      'Dinner this weekend'
+    ])
+    expect((await runtime.service.listThreads({ accountId: workAccount.id, mailboxId: 'inbox' })).map(one => one.subject)).toEqual([
+      'Release checklist'
+    ])
+
+    await runtime.service.removeAccount(personalAccount.id)
+    expect((await runtime.service.listAccounts()).map(account => account.id)).toEqual([workAccount.id])
+    expect((await runtime.service.listThreads({})).map(thread => thread.subject)).toEqual(['Release checklist'])
+    expect(runtime.credentials.has(personalAccount.id)).toBe(false)
+    expect(runtime.credentials.has(workAccount.id)).toBe(true)
+    expect(runtime.server.mailbox('personal-remote', 'INBOX')).toHaveLength(1)
+    expect(runtime.server.mailbox('work-remote', 'INBOX')).toHaveLength(1)
+  })
+
+  it('syncs incrementally, consumes live delivery, and reconnects a dropped account', async () => {
+    const runtime = await serviceHarness()
+    const { personalAccount } = await connectServiceAccounts(runtime)
+    runtime.server.deliver('personal-remote', message('Incremental note', 'Lee <lee@example.com>'))
+
+    await runtime.service.sync(personalAccount.id)
+    expect((await runtime.service.listThreads({ accountId: personalAccount.id })).map(thread => thread.subject)).toEqual([
+      'Incremental note',
+      'Dinner this weekend'
+    ])
+
+    await runtime.service.stop()
+    await runtime.service.start()
+    runtime.server.deliver('personal-remote', message('Live service delivery', 'Ari <ari@example.com>'))
+    await expect.poll(async () =>
+      (await runtime.service.listThreads({ accountId: personalAccount.id })).some(thread => thread.subject === 'Live service delivery')
+    ).toBe(true)
+
+    runtime.server.disconnectImap('personal-remote')
+    await expect.poll(async () =>
+      (await runtime.service.listAccounts()).find(account => account.id === personalAccount.id)?.status
+    ).toBe('offline')
+    const reconnected = await runtime.service.reconnectAccount(personalAccount.id)
+    expect(reconnected.status).toBe('connected')
+  })
+
+  it('sends a scheduled draft and restores a snoozed thread at their due times', async () => {
+    const runtime = await serviceHarness()
+    const { personalAccount } = await connectServiceAccounts(runtime)
+    const [thread] = await runtime.service.listThreads({ accountId: personalAccount.id, mailboxId: 'inbox' })
+    const draft = {
+      id: 'scheduled-draft',
+      accountId: personalAccount.id,
+      to: [{ email: 'ali@example.com' }],
+      cc: [],
+      bcc: [],
+      subject: 'Dinner reminder',
+      text: 'See you Saturday.',
+      attachments: []
+    }
+    const due = Date.now() + 60
+
+    await runtime.service.sendDraft(draft, new Date(due).toISOString())
+    await runtime.service.snoozeThread(personalAccount.id, thread.id, due)
+    expect(await runtime.service.listThreads({ accountId: personalAccount.id, mailboxId: 'snoozed' })).toHaveLength(1)
+    expect(runtime.server.mailbox('personal-remote', 'INBOX')).toHaveLength(0)
+
+    runtime.setNow(due + 1_000)
+    await expect.poll(() => runtime.server.smtpMessages.length).toBe(1)
+    await expect.poll(async () =>
+      (await runtime.service.listThreads({ accountId: personalAccount.id, mailboxId: 'inbox' })).some(one => one.id === thread.id)
+    ).toBe(true)
+    const sent = await simpleParser(runtime.server.smtpMessages[0].raw)
+    expect(sent.subject).toBe('Dinner reminder')
+    expect(sent.text).toContain('See you Saturday.')
+    expect(runtime.database.listDrafts(personalAccount.id)).toHaveLength(0)
+    expect(runtime.server.mailbox('personal-remote', 'INBOX')).toHaveLength(1)
+  })
+})
