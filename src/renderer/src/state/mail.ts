@@ -451,9 +451,6 @@ export function watchMail(): () => void {
       )
     }))
   })
-  const stopNotificationOpen = mail?.onNotificationOpen?.(notification => {
-    void useMail.getState().showThread(notification.accountId, notification.threadId)
-  })
   window.addEventListener('online', setOnline)
   window.addEventListener('offline', setOnline)
   return () => {
@@ -462,7 +459,6 @@ export function watchMail(): () => void {
     stopOnline?.()
     stopConnection?.()
     stopUnread?.()
-    stopNotificationOpen?.()
     window.removeEventListener('online', setOnline)
     window.removeEventListener('offline', setOnline)
   }
