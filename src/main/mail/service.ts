@@ -1397,3 +1397,318 @@ export class MailDatabaseServiceStore implements MailServiceStore {
     return null
   }
 }
+
+function gmailAddress(address: GmailAddress): { email: string; name?: string } | null {
+  if (!address.address) return null
+  return { email: address.address, ...(address.name ? { name: address.name } : {}) }
+}
+
+function gmailParticipants(summary: GmailMessageSummary): RemoteMailMessage['participants'] {
+  const groups: Array<[RemoteMailMessage['participants'][number]['role'], GmailAddress[]]> = [
+    ['from', summary.from],
+    ['sender', summary.sender],
+    ['reply-to', summary.replyTo],
+    ['to', summary.to],
+    ['cc', summary.cc],
+    ['bcc', summary.bcc]
+  ]
+  return groups.flatMap(([role, addresses]) =>
+    addresses.flatMap(address => {
+      const parsed = gmailAddress(address)
+      return parsed ? [{ role, ...parsed }] : []
+    })
+  )
+}
+
+function remoteSummary(mailboxId: string, summary: GmailMessageSummary): RemoteMailMessage {
+  return {
+    id: summary.gmailMessageId,
+    mailboxId,
+    uid: summary.uid,
+    internalDate: (summary.date ?? summary.internalDate ?? new Date(0)).getTime(),
+    flags: [...summary.flags],
+    subject: summary.subject,
+    from: gmailAddress(summary.from[0] ?? {})?.email,
+    to: summary.to.flatMap(address => address.address ? [address.address] : []),
+    cc: summary.cc.flatMap(address => address.address ? [address.address] : []),
+    messageId: summary.messageId,
+    gmailMessageId: summary.gmailMessageId,
+    threadId: summary.gmailThreadId,
+    size: summary.size,
+    labelIds: [...new Set([mailboxId, ...summary.labels])],
+    participants: gmailParticipants(summary)
+  }
+}
+
+function remoteBody(mailboxId: string, body: GmailMessageBody): RemoteMailMessage {
+  return {
+    ...remoteSummary(mailboxId, body),
+    body: body.text,
+    bodyHtml: body.html,
+    attachments: body.attachments.map((attachment, index) => ({
+      id: attachment.checksum || `${body.gmailMessageId ?? body.uid}-${index}`,
+      filename: attachment.filename ?? 'Attachment',
+      contentType: attachment.contentType,
+      size: attachment.size,
+      ...(attachment.contentId ? { contentId: attachment.contentId } : {}),
+      inline: attachment.contentDisposition === 'inline',
+      ...(attachment.checksum ? { checksum: attachment.checksum } : {}),
+      content: attachment.content
+    }))
+  }
+}
+
+function outgoingAddress(address: MailAddressView): GmailAddress {
+  return { address: address.email, ...(address.name ? { name: address.name } : {}) }
+}
+
+export interface GmailMailConnectionOptions {
+  account: MailAccount
+  credentials: MailCredentials
+  store: MailDatabaseServiceStore
+  files: Pick<MailFileStore, 'read'>
+  transport?: Omit<GmailTransportOptions, 'auth' | 'onChange' | 'onDisconnect' | 'reconnect'>
+}
+
+export class GmailMailConnection implements MailConnection {
+  readonly provider = 'gmail' as const
+  private readonly account: MailAccount
+  private readonly store: MailDatabaseServiceStore
+  private readonly files: Pick<MailFileStore, 'read'>
+  private readonly transport: GmailTransport
+  private changeListener: (() => void) | null = null
+  private disconnectListener: ((error: Error) => void) | null = null
+
+  constructor(options: GmailMailConnectionOptions) {
+    this.account = options.account
+    this.store = options.store
+    this.files = options.files
+    const password = options.credentials.password
+    const accessToken = options.credentials.accessToken
+    if (!password && !accessToken) throw new Error('Gmail credentials were not found')
+    this.transport = new GmailTransport({
+      ...options.transport,
+      auth: {
+        user: options.credentials.username ?? options.account.email,
+        ...(password ? { pass: password } : {}),
+        ...(accessToken ? { accessToken } : {})
+      },
+      reconnect: false,
+      onChange: () => this.changeListener?.(),
+      onDisconnect: () => this.disconnectListener?.(new Error('Gmail disconnected'))
+    })
+  }
+
+  async verify(): Promise<void> {
+    if (!this.transport.connected) await this.transport.connect()
+  }
+
+  async listMailboxes(): Promise<RemoteMailbox[]> {
+    await this.verify()
+    return (await this.transport.listMailboxes()).filter(mailbox => mailbox.selectable).map(mailbox => ({
+      id: mailbox.path,
+      name: mailbox.name,
+      role: mailbox.specialUse
+    }))
+  }
+
+  async mailboxStatus(mailboxId: string): Promise<RemoteMailboxStatus> {
+    await this.verify()
+    const mailbox = (await this.transport.listMailboxes()).find(entry => entry.path === mailboxId)
+    if (!mailbox) throw new Error('Mail mailbox was not found')
+    return {
+      uidValidity: mailbox.uidValidity ?? '0',
+      uidNext: mailbox.uidNext ?? 1
+    }
+  }
+
+  async fetchMessages(mailboxId: string, request: MailboxFetchRequest): Promise<MailboxFetchResult> {
+    await this.verify()
+    if (request.changedSince) throw new Error('Gmail transport does not expose changed-since fetches')
+    let uids: number[] | undefined
+    if (request.afterUid !== undefined) {
+      const status = await this.mailboxStatus(mailboxId)
+      const end = Math.min(status.uidNext - 1, request.afterUid + request.limit)
+      uids = Array.from({ length: Math.max(0, end - request.afterUid) }, (_, index) => request.afterUid + index + 1)
+    } else if (request.beforeUid !== undefined) {
+      const end = Math.max(0, request.beforeUid - 1)
+      const start = Math.max(1, end - request.limit + 1)
+      uids = Array.from({ length: Math.max(0, end - start + 1) }, (_, index) => start + index)
+    }
+    const summaries = await this.transport.fetchSummaries(mailboxId, { uids, limit: request.limit })
+    return { messages: summaries.map(summary => remoteSummary(mailboxId, summary)) }
+  }
+
+  async fetchBody(mailboxId: string, uid: number): Promise<RemoteMailMessage> {
+    await this.verify()
+    return remoteBody(mailboxId, await this.transport.fetchBody(mailboxId, uid))
+  }
+
+  async searchGmail(query: string): Promise<RemoteMailMessage[]> {
+    await this.verify()
+    const mailboxes = await this.transport.listMailboxes(false)
+    const mailbox = mailboxes.find(entry => entry.specialUse?.toLowerCase() === '\\all')
+      ?? mailboxes.find(entry => entry.path === 'INBOX')
+    if (!mailbox) return []
+    const uids = await this.transport.search(mailbox.path, query)
+    return (await this.transport.fetchSummaries(mailbox.path, { uids, limit: 200 }))
+      .map(summary => remoteSummary(mailbox.path, summary))
+  }
+
+  async idle(signal: AbortSignal, changed: () => void): Promise<void> {
+    if (signal.aborted) throw abortErrorForService()
+    await this.verify()
+    if (this.changeListener || this.disconnectListener) throw new Error('Gmail IDLE is already active')
+    await this.transport.watch('INBOX')
+    return new Promise((resolve, reject) => {
+      const cleanup = () => {
+        signal.removeEventListener('abort', stop)
+        this.changeListener = null
+        this.disconnectListener = null
+      }
+      const stop = () => {
+        cleanup()
+        resolve()
+      }
+      this.changeListener = () => {
+        changed()
+        cleanup()
+        resolve()
+      }
+      this.disconnectListener = error => {
+        cleanup()
+        reject(error)
+      }
+      signal.addEventListener('abort', stop, { once: true })
+    })
+  }
+
+  close(): Promise<void> {
+    this.changeListener = null
+    this.disconnectListener = null
+    return this.transport.close()
+  }
+
+  async setThreadState(threadIds: string[], patch: MailThreadStatePatch): Promise<void> {
+    await this.verify()
+    const refs = this.store.refsForThreads(this.account.id, threadIds)
+    for (const ref of refs) {
+      if (patch.read !== undefined) await this.transport.setRead(ref.mailboxId, ref.uid, patch.read)
+      if (patch.starred !== undefined) await this.transport.setStarred(ref.mailboxId, ref.uid, patch.starred)
+      if (patch.addLabelId) await this.transport.addLabels(ref.mailboxId, ref.uid, [patch.addLabelId])
+      if (patch.removeLabelId) await this.transport.removeLabels(ref.mailboxId, ref.uid, [patch.removeLabelId])
+      if (patch.mailboxId === 'all' || patch.mailboxId === 'snoozed') await this.transport.archive(ref.mailboxId, ref.uid)
+      if (patch.mailboxId === 'spam') await this.transport.spam(ref.mailboxId, ref.uid)
+      if (patch.mailboxId === 'trash') await this.transport.trash(ref.mailboxId, ref.uid)
+      if (patch.mailboxId === 'inbox') await this.transport.addLabels(ref.mailboxId, ref.uid, ['\\Inbox'])
+    }
+  }
+
+  async sendDraft(draft: MailDraftViewInput | MailDraft, providerRequestId: string): Promise<void> {
+    await this.verify()
+    const outgoing = this.outgoing(draft, providerRequestId)
+    await this.transport.send(outgoing)
+  }
+
+  private outgoing(draft: MailDraftViewInput | MailDraft, providerRequestId: string): GmailOutgoingMessage {
+    if ('bodyText' in draft) {
+      const recipients = (role: MailParticipantInput['role']) => draft.recipients
+        .filter(participant => participant.role === role)
+        .map(participant => outgoingAddress({ email: participant.email, ...(participant.name ? { name: participant.name } : {}) }))
+      return {
+        to: recipients('to'),
+        cc: recipients('cc'),
+        bcc: recipients('bcc'),
+        subject: draft.subject,
+        text: draft.bodyText,
+        ...(draft.bodyHtml ? { html: draft.bodyHtml } : {}),
+        ...(draft.replyToMessageId ? { inReplyTo: draft.replyToMessageId } : {}),
+        messageId: `<${providerRequestId}@crew.local>`,
+        attachments: draft.attachments.flatMap(attachment => attachment.storageKey ? [{
+          filename: attachment.filename,
+          contentType: attachment.mimeType,
+          content: this.files.read(draft.accountId, attachment.storageKey)
+        }] : [])
+      }
+    }
+    return {
+      to: draft.to.map(outgoingAddress),
+      cc: draft.cc.map(outgoingAddress),
+      bcc: draft.bcc.map(outgoingAddress),
+      subject: draft.subject,
+      text: draft.text,
+      ...(draft.html ? { html: draft.html } : {}),
+      ...(draft.replyTo ? { inReplyTo: draft.replyTo } : {}),
+      messageId: `<${providerRequestId}@crew.local>`,
+      attachments: draft.attachments.flatMap(attachment => {
+        const stored = this.store.getAttachment(draft.accountId, attachment.id)
+        return stored ? [{
+          filename: stored.filename,
+          contentType: stored.mimeType,
+          content: this.files.read(draft.accountId, stored.storageKey)
+        }] : []
+      })
+    }
+  }
+}
+
+function abortErrorForService(): Error {
+  const error = new Error('Mail connection stopped')
+  error.name = 'AbortError'
+  return error
+}
+
+export interface CrewMailRuntimeOptions {
+  stateDirectory: string
+  ipcMain: MailIpcMain
+  emit(channel: string, ...args: unknown[]): void
+  saveAttachment(accountId: string, messageId: string, attachment: StoredMailAttachment, bytes: Uint8Array): void | Promise<void>
+  printThread(accountId: string, threadId: string, thread: MailThreadView): void | Promise<void>
+  notify?: (notification: MailNotification) => void | Promise<void>
+  gmail?: Omit<GmailTransportOptions, 'auth' | 'onChange' | 'onDisconnect' | 'reconnect'>
+  clock?: () => number
+}
+
+export interface CrewMailRuntime extends MailMainRegistration {
+  database: MailDatabase
+  credentials: MailCredentialStore
+  files: MailFileStore
+  store: MailDatabaseServiceStore
+}
+
+export function createCrewMailRuntime(options: CrewMailRuntimeOptions): CrewMailRuntime {
+  const clock = options.clock ?? Date.now
+  const database = new MailDatabase(options.stateDirectory, clock)
+  const credentials = new MailCredentialStore(options.stateDirectory)
+  const files = new MailFileStore(options.stateDirectory)
+  const store = new MailDatabaseServiceStore(database, files, clock)
+  const registration = registerMailMain({
+    store,
+    credentials,
+    files,
+    ipcMain: options.ipcMain,
+    emit: options.emit,
+    saveAttachment: options.saveAttachment,
+    printThread: options.printThread,
+    notify: options.notify,
+    clock,
+    connect: (account, mailCredentials) => new GmailMailConnection({
+      account,
+      credentials: mailCredentials,
+      store,
+      files,
+      transport: options.gmail
+    })
+  })
+  return {
+    ...registration,
+    database,
+    credentials,
+    files,
+    store,
+    async stop() {
+      await registration.stop()
+      database.close()
+    }
+  }
+}
