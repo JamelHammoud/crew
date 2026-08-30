@@ -30,9 +30,11 @@ describe('mail message isolation', () => {
     const light = safeMailDocument(html, 'light')
     const dark = safeMailDocument(html, 'dark')
 
-    expect(light).toContain(':root { color-scheme: light; background: transparent; }')
+    expect(light).toContain(':root { background: transparent; }')
+    expect(light).not.toContain('color-scheme')
     expect(light).toContain('color: rgba(20,20,20,.82)')
-    expect(dark).toContain(':root { color-scheme: dark; background: transparent; }')
+    expect(dark).toContain(':root { background: transparent; }')
+    expect(dark).not.toContain('color-scheme')
     expect(dark).toContain('color: rgba(255,255,255,.82)')
     expect(light).toContain('style="color: rebeccapurple"')
     expect(dark).toContain('style="color: rebeccapurple"')
