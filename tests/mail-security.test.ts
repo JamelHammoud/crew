@@ -116,7 +116,17 @@ describe('mail message isolation', () => {
     source = new DOMParser().parseFromString(frame.getAttribute('srcdoc') ?? '', 'text/html')
 
     expect(source.querySelector('#old')?.textContent).toContain('Happy Friday')
-    expect(view.getByRole('button', { name: 'Hide earlier mail' }).getAttribute('aria-expanded')).toBe('true')
+    const hide = view.getByRole('button', { name: 'Hide earlier mail' })
+    expect(hide.getAttribute('aria-expanded')).toBe('true')
+
+    Object.defineProperty(frame.contentDocument?.documentElement, 'scrollHeight', { configurable: true, value: 520 })
+    Object.defineProperty(frame.contentDocument?.body, 'scrollHeight', { configurable: true, value: 500 })
+    await act(async () => fireEvent.load(frame))
+    expect(frame.style.height).toBe('520px')
+
+    fireEvent.click(hide)
+    expect(frame.style.height).toBe('24px')
+    expect(view.getByRole('button', { name: 'Show earlier mail' })).toBeTruthy()
   })
 
   it('recognizes quoted replies from common mail clients', () => {

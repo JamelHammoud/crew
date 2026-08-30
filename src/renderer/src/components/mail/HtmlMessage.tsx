@@ -261,7 +261,10 @@ export default function HtmlMessage({ html, text, accountId }: { html?: string; 
         <button
           type="button"
           aria-expanded={quote}
-          onClick={() => setQuote(value => !value)}
+          onClick={() => {
+            setHeight(24)
+            setQuote(value => !value)
+          }}
           className="mt-4 h-7 px-2.5 rounded-full bg-fg/[0.05] text-xs font-medium text-fg/40 transition-colors hover:bg-fg/[0.09] hover:text-fg/70 active:scale-95"
         >
           {quote ? 'Hide earlier mail' : 'Show earlier mail'}
