@@ -1,15 +1,30 @@
 import { randomUUID } from 'node:crypto'
 import type {
   MailAccount,
+  MailAccountStatus,
   MailAccountInput,
+  MailAddressView,
   MailAttachment,
+  MailAttachmentUpload,
+  MailAttachmentView,
   MailCredentials,
   MailDraft,
+  MailDraftViewInput,
   MailLabel,
+  MailLabelView,
+  MailMessageView,
   MailMessage,
+  MailNotification,
   MailParticipantInput
+  ,MailSavedDraftResult,
+  MailServiceEvent,
+  MailThreadQueryView,
+  MailThreadStatePatch,
+  MailThreadSummaryView,
+  MailThreadView,
+  MailboxId
 } from '../../shared/mail'
-import { parseMailAccountInput } from '../../shared/mail'
+import { MAIL_IPC, MAIL_RENDERER_EVENTS, parseMailAccountInput } from '../../shared/mail'
 import { MailCredentialStore } from './credentials'
 import { MailDatabase } from './database'
 import { MailFileStore } from './files'
@@ -47,145 +62,25 @@ import {
   type MailboxSyncState
 } from './sync'
 
-export const MAIL_IPC = {
-  listAccounts: 'mail:list-accounts',
-  connectAccount: 'mail:connect-account',
-  removeAccount: 'mail:remove-account',
-  reconnectAccount: 'mail:reconnect-account',
-  updateAccount: 'mail:update-account',
-  listThreads: 'mail:list-threads',
-  getThread: 'mail:get-thread',
-  sync: 'mail:sync',
-  setThreadState: 'mail:set-thread-state',
-  saveDraft: 'mail:save-draft',
-  discardDraft: 'mail:discard-draft',
-  sendDraft: 'mail:send-draft',
-  addAttachment: 'mail:add-attachment',
-  saveAttachment: 'mail:save-attachment',
-  printThread: 'mail:print-thread',
-  snoozeThread: 'mail:snooze-thread'
-} as const
+export { MAIL_IPC, MAIL_RENDERER_EVENTS }
+export type {
+  MailAccountStatus,
+  MailAddressView,
+  MailAttachmentUpload,
+  MailAttachmentView,
+  MailDraftViewInput,
+  MailLabelView,
+  MailMessageView,
+  MailNotification,
+  MailServiceEvent,
+  MailThreadQueryView,
+  MailThreadStatePatch,
+  MailThreadSummaryView,
+  MailThreadView,
+  MailboxId
+} from '../../shared/mail'
 
-export const MAIL_RENDERER_EVENTS = {
-  changed: 'mail:changed',
-  online: 'mail:online',
-  connection: 'mail:connection',
-  unread: 'mail:unread',
-  notification: 'mail:notification'
-} as const
-
-export type MailAccountStatus = 'connected' | 'syncing' | 'offline' | 'error'
-export type MailboxId = 'inbox' | 'starred' | 'snoozed' | 'sent' | 'drafts' | 'scheduled' | 'all' | 'spam' | 'trash'
-
-export interface MailAddressView {
-  name?: string
-  email: string
-}
-
-export interface MailLabelView {
-  id: string
-  name: string
-  color?: string
-  unread?: number
-}
-
-export interface MailAccountView {
-  id: string
-  email: string
-  displayName: string
-  status: MailAccountStatus
-  unread: number
-  signature?: string
-  labels: MailLabelView[]
-  problem?: string
-}
-
-export interface MailAttachmentView {
-  id: string
-  name: string
-  mime: string
-  size: number
-  url?: string
-  data?: string
-}
-
-export interface MailThreadSummaryView {
-  id: string
-  accountId: string
-  subject: string
-  participants: MailAddressView[]
-  preview: string
-  date: string
-  unread: boolean
-  starred: boolean
-  important?: boolean
-  hasAttachments?: boolean
-  messageCount: number
-  mailboxIds: MailboxId[]
-  labelIds: string[]
-}
-
-export interface MailMessageView {
-  id: string
-  threadId: string
-  accountId: string
-  from: MailAddressView
-  to: MailAddressView[]
-  cc: MailAddressView[]
-  bcc: MailAddressView[]
-  subject: string
-  date: string
-  text: string
-  html?: string
-  quotedText?: string
-  unread: boolean
-  starred: boolean
-  attachments: MailAttachmentView[]
-}
-
-export interface MailThreadView extends MailThreadSummaryView {
-  messages: MailMessageView[]
-}
-
-export interface MailThreadQueryView {
-  accountId?: string
-  mailboxId?: MailboxId
-  labelId?: string
-  query?: string
-}
-
-export interface MailDraftViewInput {
-  id: string
-  accountId: string
-  to: MailAddressView[]
-  cc: MailAddressView[]
-  bcc: MailAddressView[]
-  subject: string
-  text: string
-  html?: string
-  attachments: MailAttachmentView[]
-  replyTo?: string
-  forwardOf?: string
-}
-
-export interface SavedDraftResult {
-  id: string
-  updatedAt: string
-}
-
-export interface MailThreadStatePatch {
-  read?: boolean
-  starred?: boolean
-  mailboxId?: MailboxId
-  addLabelId?: string
-  removeLabelId?: string
-}
-
-export interface MailAttachmentUpload {
-  name: string
-  mime: string
-  bytes: Uint8Array
-}
+export type SavedDraftResult = MailSavedDraftResult
 
 export interface StoredMailAttachment {
   id: string
@@ -234,21 +129,6 @@ export interface MailConnection extends MailSyncTransport {
   setThreadState(threadIds: string[], patch: MailThreadStatePatch): void | Promise<void>
   sendDraft(draft: MailDraftViewInput | MailDraft, providerRequestId: string): void | Promise<void>
 }
-
-export interface MailNotification {
-  accountId: string
-  threadId: string
-  messageId: string
-  title: string
-  body: string
-}
-
-export type MailServiceEvent =
-  | { type: 'changed'; accountId?: string }
-  | { type: 'online'; online: boolean }
-  | { type: 'connection'; accountId: string; status: MailAccountStatus; problem?: string }
-  | { type: 'unread'; accountId: string; unread: number }
-  | { type: 'notification'; notification: MailNotification }
 
 export interface MailServiceOptions {
   store: MailServiceStore
