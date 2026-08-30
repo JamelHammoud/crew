@@ -88,7 +88,7 @@ export default function MailSidebar({
         <button
           type="button"
           onClick={onCompose}
-          className="w-full h-10 rounded-full bg-fg text-ink-900 flex items-center justify-center gap-2 text-sm font-semibold transition-colors hover:bg-fg/90 active:scale-[0.98]"
+          className="min-w-0 flex-1 h-10 rounded-full bg-fg text-ink-900 flex items-center justify-center gap-2 text-sm font-semibold transition-colors hover:bg-fg/90 active:scale-[0.98]"
         >
           <PlusGlyph className="w-4 h-4" />
           Write
