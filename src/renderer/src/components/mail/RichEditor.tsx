@@ -40,21 +40,27 @@ export const EMPTY_MAIL_FORMATS: MailFormatState = {
 }
 
 function currentBlock(): MailFormatState['block'] {
-  const value = document.queryCommandValue('formatBlock').toString().toLowerCase().replace(/[<>]/g, '')
+  const value = typeof document.queryCommandValue === 'function'
+    ? document.queryCommandValue('formatBlock').toString().toLowerCase().replace(/[<>]/g, '')
+    : 'p'
   return value === 'h1' || value === 'h2' || value === 'blockquote' ? value : 'p'
+}
+
+function commandState(command: string): boolean {
+  return typeof document.queryCommandState === 'function' && document.queryCommandState(command)
 }
 
 function currentFormats(): MailFormatState {
   return {
-    bold: document.queryCommandState('bold'),
-    italic: document.queryCommandState('italic'),
-    underline: document.queryCommandState('underline'),
-    strike: document.queryCommandState('strikeThrough'),
-    ordered: document.queryCommandState('insertOrderedList'),
-    unordered: document.queryCommandState('insertUnorderedList'),
-    align: document.queryCommandState('justifyCenter')
+    bold: commandState('bold'),
+    italic: commandState('italic'),
+    underline: commandState('underline'),
+    strike: commandState('strikeThrough'),
+    ordered: commandState('insertOrderedList'),
+    unordered: commandState('insertUnorderedList'),
+    align: commandState('justifyCenter')
       ? 'center'
-      : document.queryCommandState('justifyRight')
+      : commandState('justifyRight')
         ? 'right'
         : 'left',
     block: currentBlock()
@@ -111,7 +117,7 @@ const RichEditor = forwardRef<RichEditorHandle, {
         found.removeAllRanges()
         found.addRange(selection.current)
       }
-      document.execCommand(command, false, value)
+      if (typeof document.execCommand === 'function') document.execCommand(command, false, value)
       change()
       readFormats()
     }

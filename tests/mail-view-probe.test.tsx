@@ -425,7 +425,19 @@ describe('mail composer', () => {
     expect(document.activeElement).toBe(message)
   })
 
-  it('reveals optional recipients and exposes formatting as a toolbar', async () => {
+  it('tabs from subject to the message field', async () => {
+    render(createElement(Mail))
+    fireEvent.click(await screen.findByRole('button', { name: 'Compose' }))
+
+    const subject = screen.getByRole('textbox', { name: 'Subject' })
+    const message = screen.getByRole('textbox', { name: 'Message' })
+    subject.focus()
+    fireEvent.keyDown(subject, { key: 'Tab' })
+
+    expect(document.activeElement).toBe(message)
+  })
+
+  it('reveals optional recipients and keeps formatting collapsed until requested', async () => {
     render(createElement(Mail))
     fireEvent.click(await screen.findByRole('button', { name: 'Compose' }))
 
@@ -436,11 +448,36 @@ describe('mail composer', () => {
     expect(screen.getByRole('textbox', { name: 'Cc' })).toBeTruthy()
     expect(screen.getByRole('textbox', { name: 'Bcc' })).toBeTruthy()
 
+    expect(screen.queryByRole('toolbar', { name: 'Formatting' })).toBeNull()
+    const formatting = screen.getByRole('button', { name: 'Formatting options' })
+    expect(formatting.getAttribute('aria-expanded')).toBe('false')
+    fireEvent.click(formatting)
+
     const toolbar = screen.getByRole('toolbar', { name: 'Formatting' })
     expect(toolbar).toBeTruthy()
+    expect(formatting.getAttribute('aria-expanded')).toBe('true')
+    expect(screen.getByRole('button', { name: 'Text style' })).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Bold' }).getAttribute('aria-pressed')).toBe('false')
     expect(screen.getByRole('button', { name: 'Italic' }).getAttribute('aria-pressed')).toBe('false')
     expect(screen.getByRole('button', { name: 'Underline' }).getAttribute('aria-pressed')).toBe('false')
+    expect(screen.getByRole('button', { name: 'Strikethrough' }).getAttribute('aria-pressed')).toBe('false')
+    expect(screen.getByRole('button', { name: 'Align left' }).getAttribute('aria-pressed')).toBe('true')
+    expect(screen.getByRole('button', { name: 'Align center' }).getAttribute('aria-pressed')).toBe('false')
+    expect(screen.getByRole('button', { name: 'Align right' }).getAttribute('aria-pressed')).toBe('false')
+    expect(screen.getByRole('button', { name: 'Numbered list' }).getAttribute('aria-pressed')).toBe('false')
+    expect(screen.getByRole('button', { name: 'Bulleted list' }).getAttribute('aria-pressed')).toBe('false')
+  })
+
+  it('routes formatting controls to the message editor', async () => {
+    const execCommand = vi.fn(() => true)
+    Object.defineProperty(document, 'execCommand', { value: execCommand, configurable: true })
+    render(createElement(Mail))
+    fireEvent.click(await screen.findByRole('button', { name: 'Compose' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Formatting options' }))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Bold' }))
+    expect(execCommand).toHaveBeenCalledWith('bold', false, undefined)
+    expect(document.activeElement).toBe(screen.getByRole('textbox', { name: 'Message' }))
   })
 
   it('commits recipients, autosaves changes, sends, and keeps errors in the card', async () => {
