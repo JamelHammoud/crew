@@ -298,7 +298,9 @@ describe('mail list and reader', () => {
     const sender = screen.getAllByRole('button', { name: `Copy Jamel <${personal.email}>` }).at(-1)!
     expect(sender.querySelector('svg')).toBeNull()
     fireEvent.mouseEnter(sender)
-    expect(await screen.findByText(personal.email)).toBeTruthy()
+    const address = await screen.findByText(personal.email)
+    expect(address.className).toContain('whitespace-nowrap')
+    expect(address.closest('.glass')?.getAttribute('style')).toContain('max-width: 320px')
     const copy = screen.getByRole('button', { name: 'Copy email address' })
     expect(copy.querySelector('svg')).toBeTruthy()
     fireEvent.click(copy)

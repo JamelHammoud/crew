@@ -83,10 +83,11 @@ export function MailAddressButton({
   return (
     <HoverCard
       hug
+      width={320}
       className="min-w-0 max-w-full"
       content={
         <span className="flex items-center gap-2 pl-1 text-xs text-fg/70">
-          <span className="select-text">{email}</span>
+          <span className="whitespace-nowrap select-text">{email}</span>
           <button
             type="button"
             aria-label={copied ? 'Email copied' : 'Copy email address'}
