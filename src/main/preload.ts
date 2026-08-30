@@ -91,6 +91,11 @@ const mailBridge: MailBridge = {
     const handler = (_event: unknown, notification: MailNotification): void => listener(notification)
     ipcRenderer.on(MAIL_RENDERER_EVENTS.notification, handler)
     return () => ipcRenderer.off(MAIL_RENDERER_EVENTS.notification, handler)
+  },
+  onNotificationOpen: listener => {
+    const handler = (_event: unknown, notification: MailNotification): void => listener(notification)
+    ipcRenderer.on(MAIL_RENDERER_EVENTS.notificationOpen, handler)
+    return () => ipcRenderer.off(MAIL_RENDERER_EVENTS.notificationOpen, handler)
   }
 }
 

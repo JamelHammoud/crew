@@ -841,6 +841,7 @@ export function registerMailMain(options: MailMainOptions): MailMainRegistration
 
 const CURSOR_SYNC = 'mail:sync:'
 const CURSOR_UID = 'mail:uid:'
+const CURSOR_MESSAGE_REF = 'mail:message-ref:'
 const CURSOR_BODY = 'mail:body:'
 const CURSOR_SIGNATURE = 'mail:signature'
 const CURSOR_SCHEDULE = 'mail:schedule:'
@@ -1110,7 +1111,18 @@ export class MailDatabaseServiceStore implements MailServiceStore {
   putMessages(accountId: string, messages: RemoteMailMessage[]): void {
     for (const message of messages) {
       const id = message.id ?? message.gmailMessageId ?? `${cursorPart(message.mailboxId)}-${message.uid}`
-      for (const labelId of message.labelIds ?? []) {
+      const knownLabels = this.database.listLabels(accountId)
+      const labelIds = (message.labelIds ?? []).map(labelId => {
+        const escaped = labelId.toLowerCase()
+        if (escaped === '\\inbox') return knownLabels.find(label => label.type === 'inbox')?.id ?? message.mailboxId
+        if (escaped === '\\sent') return knownLabels.find(label => label.type === 'sent')?.id ?? labelId
+        if (escaped === '\\drafts') return knownLabels.find(label => label.type === 'drafts')?.id ?? labelId
+        if (escaped === '\\trash') return knownLabels.find(label => label.type === 'trash')?.id ?? labelId
+        if (escaped === '\\junk') return knownLabels.find(label => label.type === 'spam')?.id ?? labelId
+        if (escaped === '\\all') return knownLabels.find(label => label.type === 'archive')?.id ?? labelId
+        return labelId
+      })
+      for (const labelId of labelIds) {
         if (!this.database.listLabels(accountId).some(label => label.id === labelId)) {
           this.database.upsertLabel(accountId, { id: labelId, providerId: labelId, name: labelId })
         }
@@ -1144,15 +1156,16 @@ export class MailDatabaseServiceStore implements MailServiceStore {
         isRead: message.flags.includes('\\Seen'),
         isStarred: message.flags.includes('\\Flagged'),
         isDraft: message.flags.includes('\\Draft'),
-        isSent: (message.labelIds ?? []).some(label => mailboxType(label) === 'sent'),
-        isTrashed: (message.labelIds ?? []).some(label => mailboxType(label) === 'trash'),
+        isSent: labelIds.some(labelId => this.database.listLabels(accountId).some(label => label.id === labelId && label.type === 'sent')),
+        isTrashed: labelIds.some(labelId => this.database.listLabels(accountId).some(label => label.id === labelId && label.type === 'trash')),
         size: message.size ?? 0,
-        labelIds: message.labelIds ?? [],
+        labelIds,
         participants: message.participants,
         attachments
       })
       const ref = { id, mailboxId: message.mailboxId, uid: message.uid }
       this.database.setCursor(accountId, this.uidKey(message.mailboxId, message.uid), JSON.stringify(ref))
+      this.database.setCursor(accountId, `${CURSOR_MESSAGE_REF}${cursorPart(id)}`, JSON.stringify(ref))
       if (message.body !== undefined) {
         this.database.setCursor(accountId, this.bodyKey(message.mailboxId, message.uid), JSON.stringify({ loaded: true }))
       }
@@ -1386,15 +1399,7 @@ export class MailDatabaseServiceStore implements MailServiceStore {
   }
 
   private providerRef(accountId: string, messageId: string): { mailboxId: string; uid: number } | null {
-    for (const label of this.database.listLabels(accountId)) {
-      const state = this.getSyncState(accountId, label.id)
-      if (!state) continue
-      for (let uid = state.hydratedFromUid; uid <= state.lastUid; uid += 1) {
-        const ref = this.remoteRef(accountId, label.id, uid)
-        if (ref?.id === messageId) return { mailboxId: ref.mailboxId, uid: ref.uid }
-      }
-    }
-    return null
+    return parseCursor(this.database.getCursor(accountId, `${CURSOR_MESSAGE_REF}${cursorPart(messageId)}`))
   }
 }
 
