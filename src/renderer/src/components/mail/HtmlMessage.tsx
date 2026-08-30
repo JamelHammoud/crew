@@ -19,7 +19,7 @@ export function safeMailDocument(html: string, theme: Theme): string {
   const light = theme === 'light'
   const foreground = light ? '20,20,20' : '255,255,255'
   const style = `
-    :root { color-scheme: ${light ? 'light' : 'dark'}; }
+    :root { color-scheme: ${light ? 'light' : 'dark'}; background: transparent; }
     * { box-sizing: border-box; max-width: 100%; }
     body { margin: 0; color: rgba(${foreground},.82); background: transparent; font: 14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; overflow-wrap: anywhere; }
     a { color: rgba(${foreground},.95); text-decoration: underline; text-underline-offset: 2px; }
