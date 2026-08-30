@@ -269,8 +269,15 @@ export const useMail = create<MailState>((set, get) => ({
     if (!mail) return 'Mail is unavailable. Restart Crew and try again.'
     const before = get().threads
     const selected = new Set(ids)
+    let nextThreads = patchThreads(before, selected, patch)
+    if (patch.mailboxId && currentQuery.mailboxId && patch.mailboxId !== currentQuery.mailboxId) {
+      nextThreads = nextThreads.filter(thread => !selected.has(thread.id))
+    }
+    if (currentQuery.mailboxId === 'starred' && patch.starred === false) {
+      nextThreads = nextThreads.filter(thread => !selected.has(thread.id))
+    }
     set({
-      threads: patchThreads(before, selected, patch),
+      threads: nextThreads,
       openThread: get().openThread && selected.has(get().openThread!.id)
         ? ({ ...patchThreads([get().openThread!], selected, patch)[0] } as MailThread)
         : get().openThread
