@@ -387,11 +387,15 @@ export interface MailThreadStatePatch {
   removeLabelId?: string
 }
 
-export interface MailAttachmentUpload {
+interface MailAttachmentUploadBase {
   name: string
   mime: string
-  bytes: Uint8Array
 }
+
+export type MailAttachmentUpload = MailAttachmentUploadBase & (
+  | { sourcePath: string; bytes?: never }
+  | { bytes: Uint8Array; sourcePath?: never }
+)
 
 export interface MailNotification {
   accountId: string

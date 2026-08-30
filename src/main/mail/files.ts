@@ -1,6 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
+import { pipeline } from 'node:stream/promises'
 
 const KEY = /^[0-9a-f]{32}$/
 const DIRECTORY_MODE = 0o700
@@ -66,6 +67,43 @@ export class MailFileStore {
         fs.rmSync(temporary, { force: true })
       } catch {}
       throw error
+    }
+  }
+
+  async createFromPath(account: string, sourcePath: string): Promise<{ storageKey: string; size: number }> {
+    identifier(account, 'Mail account id')
+    const source = path.resolve(identifier(sourcePath, 'Mail attachment source'))
+    const sourceFile = await fs.promises.open(source, fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW)
+    const storageKey = randomUUID().replaceAll('-', '')
+    const file = this.pathFor(account, storageKey)
+    fs.mkdirSync(this.directory, { recursive: true, mode: DIRECTORY_MODE })
+    realDirectory(this.directory)
+    try {
+      fs.mkdirSync(path.dirname(file), { mode: DIRECTORY_MODE })
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error
+    }
+    realDirectory(path.dirname(file))
+    fs.chmodSync(this.directory, DIRECTORY_MODE)
+    fs.chmodSync(path.dirname(file), DIRECTORY_MODE)
+    const temporary = inside(this.directory, `${file}.${process.pid}.tmp`)
+    try {
+      const stat = await sourceFile.stat()
+      if (!stat.isFile()) throw new Error('Mail attachment source is not a file')
+      await pipeline(
+        sourceFile.createReadStream({ autoClose: false }),
+        fs.createWriteStream(temporary, { mode: FILE_MODE, flags: 'wx' })
+      )
+      fs.chmodSync(temporary, FILE_MODE)
+      fs.renameSync(temporary, file)
+      return { storageKey, size: stat.size }
+    } catch (error) {
+      try {
+        fs.rmSync(temporary, { force: true })
+      } catch {}
+      throw error
+    } finally {
+      await sourceFile.close()
     }
   }
 

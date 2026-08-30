@@ -87,6 +87,21 @@ describe('mail attachment storage', () => {
     expect(files.delete('../../first@example.com', storageKey)).toBe(false)
   })
 
+  it('streams a selected file into private storage', async () => {
+    const directory = stateDirectory()
+    const sourceDirectory = stateDirectory('crew-mail-source-')
+    const source = path.join(sourceDirectory, 'large.bin')
+    const contents = Buffer.alloc(2 * 1024 * 1024, 37)
+    fs.writeFileSync(source, contents)
+    const files = new MailFileStore(directory)
+
+    const stored = await files.createFromPath('account', source)
+
+    expect(stored.size).toBe(contents.byteLength)
+    expect(files.read('account', stored.storageKey)).toEqual(contents)
+    expect(fs.statSync(files.pathFor('account', stored.storageKey)).mode & 0o777).toBe(0o600)
+  })
+
   it('rejects traversal, absolute paths, and symlink escapes', () => {
     const directory = stateDirectory()
     const outside = stateDirectory('crew-mail-outside-')

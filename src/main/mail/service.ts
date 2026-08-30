@@ -135,7 +135,7 @@ export interface MailConnection extends MailSyncTransport {
 export interface MailServiceOptions {
   store: MailServiceStore
   credentials: Pick<MailCredentialStore, 'get' | 'set' | 'delete'>
-  files: Pick<MailFileStore, 'create' | 'read' | 'delete'>
+  files: Pick<MailFileStore, 'create' | 'read' | 'delete'> & Partial<Pick<MailFileStore, 'createFromPath'>>
   connect(account: MailAccount, credentials: MailCredentials): MailConnection | Promise<MailConnection>
   onEvent?: (event: MailServiceEvent) => void
   notify?: (notification: MailNotification) => void | Promise<void>
@@ -423,24 +423,30 @@ export class MailService {
     if (!upload || typeof upload !== 'object') return Promise.reject(new TypeError('Mail attachment must be a file'))
     const name = cleanId(upload.name, 'Mail attachment name')
     const mime = cleanOptional(upload.mime, 'Mail attachment MIME type') || 'application/octet-stream'
-    if (!(upload.bytes instanceof Uint8Array)) return Promise.reject(new TypeError('Mail attachment contents must be bytes'))
     return this.mutate(account, async () => {
       const id = randomUUID()
-      const storageKey = this.files.create(account, upload.bytes)
+      const sourcePath = 'sourcePath' in upload && typeof upload.sourcePath === 'string' ? upload.sourcePath : ''
+      const bytes = 'bytes' in upload ? upload.bytes : undefined
+      const stored = sourcePath && this.files.createFromPath
+        ? await this.files.createFromPath(account, sourcePath)
+        : bytes instanceof Uint8Array
+          ? { storageKey: this.files.create(account, bytes), size: bytes.byteLength }
+          : null
+      if (!stored) throw new TypeError('Mail attachment contents must be a file or bytes')
       try {
         const attachment = await this.store.addDraftAttachment(account, draft, {
           id,
           accountId: account,
           messageId: null,
-          storageKey,
+          storageKey: stored.storageKey,
           filename: name,
           mimeType: mime,
-          size: upload.bytes.byteLength
+          size: stored.size
         })
         this.onEvent?.({ type: 'changed', accountId: account })
         return attachment
       } catch (error) {
-        this.files.delete(account, storageKey)
+        this.files.delete(account, stored.storageKey)
         throw error
       }
     })

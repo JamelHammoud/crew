@@ -57,12 +57,17 @@ const mailBridge: MailBridge = {
   saveDraft: draft => ipcRenderer.invoke(MAIL_IPC.saveDraft, draft),
   discardDraft: (accountId, draftId) => ipcRenderer.invoke(MAIL_IPC.discardDraft, accountId, draftId),
   sendDraft: (draft, sendAt) => ipcRenderer.invoke(MAIL_IPC.sendDraft, draft, sendAt),
-  addAttachment: async (accountId, draftId, file) =>
-    ipcRenderer.invoke(MAIL_IPC.addAttachment, accountId, draftId, {
-      name: file.name,
-      mime: file.type,
-      bytes: new Uint8Array(await file.arrayBuffer())
-    }),
+  addAttachment: async (accountId, draftId, file) => {
+    const sourcePath = webUtils.getPathForFile(file)
+    return ipcRenderer.invoke(
+      MAIL_IPC.addAttachment,
+      accountId,
+      draftId,
+      sourcePath
+        ? { name: file.name, mime: file.type, sourcePath }
+        : { name: file.name, mime: file.type, bytes: new Uint8Array(await file.arrayBuffer()) }
+    )
+  },
   saveAttachment: (accountId, messageId, attachmentId) =>
     ipcRenderer.invoke(MAIL_IPC.saveAttachment, accountId, messageId, attachmentId),
   printThread: (accountId, threadId) => ipcRenderer.invoke(MAIL_IPC.printThread, accountId, threadId),
