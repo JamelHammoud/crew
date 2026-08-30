@@ -506,6 +506,13 @@ describe('mail composer', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Bold' }))
     expect(execCommand).toHaveBeenCalledWith('bold', false, undefined)
     expect(document.activeElement).toBe(screen.getByRole('textbox', { name: 'Message' }))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Text style' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Heading 1' }))
+    expect(execCommand).toHaveBeenCalledWith('formatBlock', false, 'h1')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Bulleted list' }))
+    expect(execCommand).toHaveBeenCalledWith('insertUnorderedList', false, undefined)
     Reflect.deleteProperty(document, 'execCommand')
   })
 
