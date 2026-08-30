@@ -57,6 +57,15 @@ export default function App() {
       {connection === 'home' ? <Home /> : <Session />}
       <Toaster />
       <Settings />
+      {connection === 'home' && (
+        <AppMenu
+          tab="chat"
+          onTab={() => undefined}
+          onNewThread={() => undefined}
+          onBack={() => undefined}
+          onForward={() => undefined}
+        />
+      )}
     </>
   )
 }
