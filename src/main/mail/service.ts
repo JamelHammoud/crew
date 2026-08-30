@@ -31,6 +31,7 @@ import {
 import {
   mailAttachmentUrl,
   serveMailScheme,
+  stopMailScheme,
   type MailAttachment as SchemeAttachment
 } from './scheme'
 import {
@@ -833,6 +834,7 @@ export function registerMailMain(options: MailMainOptions): MailMainRegistration
       await service.stop()
       if (registered) {
         for (const channel of Object.keys(handlers)) options.ipcMain.removeHandler(channel)
+        stopMailScheme()
         registered = false
       }
     }

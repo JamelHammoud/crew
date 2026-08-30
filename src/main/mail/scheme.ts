@@ -87,3 +87,7 @@ export function mailAttachmentResponse(
 export function serveMailScheme(resolve: MailAttachmentResolver): void {
   protocol.handle(MAIL_SCHEME, request => mailAttachmentResponse(request.url, resolve))
 }
+
+export function stopMailScheme(): void {
+  protocol.unhandle(MAIL_SCHEME)
+}
