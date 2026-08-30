@@ -276,6 +276,22 @@ describe('mail list and reader', () => {
     expect(screen.getByText('menu.pdf')).toBeTruthy()
   })
 
+  it('keeps the message actions at the bottom of the reader while its message scrolls', async () => {
+    render(createElement(Mail))
+    fireEvent.click(await screen.findByRole('button', { name: /Ali.*Dinner this weekend/ }))
+    await screen.findByRole('heading', { name: 'Dinner this weekend' })
+
+    const actions = screen.getByRole('button', { name: 'Reply' }).parentElement as HTMLElement
+    const message = actions.closest('article') as HTMLElement
+    const reader = message.closest('.overflow-y-auto') as HTMLElement
+
+    expect(actions.className).toContain('sticky')
+    expect(actions.className).toContain('bottom-0')
+    expect(actions.className).toContain('bg-ink-900')
+    expect(message.className).not.toContain('overflow-hidden')
+    expect(reader).toBeTruthy()
+  })
+
   it('shows every message address and its copy control on hover', async () => {
     bridge.getThread.mockResolvedValue({
       ...dinnerThread,

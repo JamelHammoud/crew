@@ -96,8 +96,12 @@ function Message({
   }
 
   return (
-    <article className="rounded-card border border-fg/[0.075] overflow-hidden">
-      <div className="w-full px-4 py-3.5 flex items-start gap-3 text-left transition-colors hover:bg-fg/[0.025]">
+    <article className="rounded-card border border-fg/[0.075]">
+      <div
+        className={`w-full px-4 py-3.5 flex items-start gap-3 rounded-t-[19px] text-left transition-colors hover:bg-fg/[0.025] ${
+          expanded ? '' : 'rounded-b-[19px]'
+        }`}
+      >
         <button
           type="button"
           aria-label={`${expanded ? 'Collapse' : 'Expand'} message from ${displayAddress(message.from.name, message.from.email)}`}
@@ -156,7 +160,7 @@ function Message({
 
           <MailAttachments attachments={message.attachments} onSave={attachment => void save(attachment.id)} />
 
-          <div className="mt-6 flex items-center gap-2 flex-wrap">
+          <div className="sticky bottom-0 z-10 -mx-4 mt-2 px-4 pb-5 pt-4 sm:-mx-5 sm:px-5 sm:pb-6 flex items-center gap-2 flex-wrap rounded-b-[19px] bg-ink-900">
             <button
               type="button"
               onClick={() => onDraft('reply')}
