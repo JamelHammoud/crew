@@ -252,24 +252,26 @@ export default function DraftDeck({ narrow }: { narrow: boolean }) {
   if (drafts.length === 0) return null
 
   return (
-    <div className="absolute z-50 right-3 bottom-3 max-w-[calc(100%-24px)] flex items-end justify-end gap-2 overflow-x-auto pointer-events-none drop-shadow-[0_24px_24px_rgb(0_0_0/0.25)]">
-      {drafts.map(draft =>
-        draft.minimized ? (
-          <button
-            key={draft.id}
-            type="button"
-            onClick={() => changeDraft(draft.id, { minimized: false })}
-            className="pointer-events-auto w-56 h-11 px-4 rounded-full glass glass-strong shadow-xl flex items-center gap-2 text-sm font-medium text-fg/75 transition-colors hover:text-fg active:scale-[0.98]"
-          >
-            <span className="min-w-0 flex-1 truncate text-left">{draft.subject || 'New message'}</span>
-            {draft.sending && <Spinner size={14} />}
-          </button>
-        ) : (
-          <div key={draft.id} className="pointer-events-auto shrink-0">
-            <ComposeCard draft={draft} suggestions={suggestions} narrow={narrow} />
-          </div>
-        )
-      )}
+    <div className="absolute z-50 right-3 bottom-3 max-w-[calc(100%-24px)] pointer-events-none drop-shadow-[0_24px_24px_rgb(0_0_0/0.25)]">
+      <div className="flex items-end justify-end gap-2 overflow-x-auto">
+        {drafts.map(draft =>
+          draft.minimized ? (
+            <button
+              key={draft.id}
+              type="button"
+              onClick={() => changeDraft(draft.id, { minimized: false })}
+              className="pointer-events-auto w-56 h-11 px-4 rounded-full glass glass-strong shadow-xl flex items-center gap-2 text-sm font-medium text-fg/75 transition-colors hover:text-fg active:scale-[0.98]"
+            >
+              <span className="min-w-0 flex-1 truncate text-left">{draft.subject || 'New message'}</span>
+              {draft.sending && <Spinner size={14} />}
+            </button>
+          ) : (
+            <div key={draft.id} className="pointer-events-auto shrink-0">
+              <ComposeCard draft={draft} suggestions={suggestions} narrow={narrow} />
+            </div>
+          )
+        )}
+      </div>
     </div>
   )
 }

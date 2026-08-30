@@ -382,9 +382,11 @@ describe('mail composer', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Compose' }))
 
     const card = screen.getByRole('textbox', { name: 'Subject' }).closest('section') as HTMLElement
-    const deck = card.parentElement?.parentElement as HTMLElement
+    const scroller = card.parentElement?.parentElement as HTMLElement
+    const deck = scroller.parentElement as HTMLElement
     expect(card.className).not.toContain('shadow-2xl')
-    expect(deck.className).toContain('overflow-x-auto')
+    expect(scroller.className).toContain('overflow-x-auto')
+    expect(deck.className).not.toContain('overflow')
     expect(deck.className).toContain('drop-shadow-[')
     expect(container.contains(deck)).toBe(true)
   })
