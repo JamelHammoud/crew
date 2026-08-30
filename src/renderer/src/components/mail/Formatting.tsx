@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { ChevronDownGlyph } from '../../icons'
 import type { Glyph } from '../glyph'
 import { MenuItem, Popover } from '../Popover'
@@ -17,7 +18,6 @@ import {
   StrikeGlyph,
   UnderlineGlyph
 } from '../doc/docGlyphs'
-import { useState } from 'react'
 import type { MailFormatCommand, MailFormatState } from './RichEditor'
 
 const BLOCKS: Array<{ value: MailFormatState['block']; label: string; mark: Glyph }> = [
@@ -93,7 +93,7 @@ export default function MailFormatting({
               key={option.value}
               icon={<option.mark className="w-4 h-4" />}
               label={option.label}
-              selected={state.block === option.value}
+              checked={state.block === option.value}
               onClick={() => {
                 setBlocksOpen(false)
                 onFormat('formatBlock', option.value)

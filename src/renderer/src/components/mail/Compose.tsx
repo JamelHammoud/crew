@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
 import type { MailAddress, MailDraft } from '../../state/mail'
 import { useMail } from '../../state/mail'
 import {
@@ -15,7 +15,8 @@ import Spinner from '../Spinner'
 import Tooltip from '../Tooltip'
 import { toast } from '../../state/toast'
 import RecipientField from './Recipients'
-import RichEditor from './RichEditor'
+import MailFormatting from './Formatting'
+import RichEditor, { EMPTY_MAIL_FORMATS, type RichEditorHandle } from './RichEditor'
 import { fileSize, IconButton } from './parts'
 
 function ComposeCard({ draft, suggestions, narrow }: { draft: MailDraft; suggestions: MailAddress[]; narrow: boolean }) {
@@ -26,7 +27,10 @@ function ComposeCard({ draft, suggestions, narrow }: { draft: MailDraft; suggest
   const sendDraft = useMail(state => state.sendDraft)
   const attach = useMail(state => state.attach)
   const file = useRef<HTMLInputElement>(null)
+  const editor = useRef<RichEditorHandle>(null)
   const [more, setMore] = useState(draft.cc.length > 0 || draft.bcc.length > 0)
+  const [formatting, setFormatting] = useState(false)
+  const [formats, setFormats] = useState(EMPTY_MAIL_FORMATS)
   const [sendLater, setSendLater] = useState(false)
   const [when, setWhen] = useState(() => {
     const date = new Date(Date.now() + 24 * 60 * 60 * 1000)
@@ -52,6 +56,12 @@ function ComposeCard({ draft, suggestions, narrow }: { draft: MailDraft; suggest
   const addFile = async (picked: File) => {
     const error = await attach(draft.id, picked)
     if (error) toast.fail(error)
+  }
+
+  const subjectKey = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== 'Tab' || event.shiftKey || event.metaKey || event.ctrlKey || event.altKey) return
+    event.preventDefault()
+    editor.current?.focus()
   }
 
   const width = narrow ? 'w-full' : 'w-[560px]'
@@ -128,17 +138,20 @@ function ComposeCard({ draft, suggestions, narrow }: { draft: MailDraft; suggest
         <input
           value={draft.subject}
           onChange={event => changeDraft(draft.id, { subject: event.target.value })}
+          onKeyDown={subjectKey}
           aria-label="Subject"
           className="min-w-0 flex-1 h-10 bg-transparent text-sm text-fg outline-none"
         />
       </div>
 
       <RichEditor
+        ref={editor}
         draftId={draft.id}
         html={draft.html}
         text={draft.text}
         autoFocus={Boolean(draft.replyTo)}
         onChange={value => changeDraft(draft.id, value)}
+        onFormatsChange={setFormats}
       />
 
       {draft.attachments.length > 0 && (
@@ -167,6 +180,8 @@ function ComposeCard({ draft, suggestions, narrow }: { draft: MailDraft; suggest
       )}
 
       {draft.problem && <div className="shrink-0 px-4 py-2 text-xs text-danger bg-danger/10">{draft.problem} Try again.</div>}
+
+      {formatting && <MailFormatting state={formats} onFormat={(command, value) => editor.current?.format(command, value)} />}
 
       <footer className="h-14 shrink-0 px-3.5 py-2.5 border-t border-fg/[0.06] flex items-center gap-2">
         <div className="relative flex items-center">
@@ -222,6 +237,15 @@ function ComposeCard({ draft, suggestions, narrow }: { draft: MailDraft; suggest
             event.target.value = ''
           }}
         />
+        <IconButton
+          label="Formatting options"
+          aria-expanded={formatting}
+          aria-controls="mail-formatting"
+          onClick={() => setFormatting(open => !open)}
+          className={formatting ? 'bg-fg/[0.11] text-fg' : ''}
+        >
+          <span aria-hidden className="text-[15px] font-semibold tracking-[-0.8px]">Aa</span>
+        </IconButton>
         <IconButton label="Attach files" onClick={() => file.current?.click()}>
           <AttachmentGlyph className="w-[17px] h-[17px]" />
         </IconButton>
