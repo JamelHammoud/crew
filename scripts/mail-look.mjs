@@ -48,7 +48,7 @@ const release = {
 }
 const accounts = [personal, work]
 const threads = [release, dinner, receipt]
-const delayedHtml = '<body bgcolor="#fffef0"><table id="mail-sheet" width="600" style="width:600px;margin:0 auto;background:#fffef0;border:1px solid #004449;border-radius:7px"><tr><td style="padding:40px"><table role="presentation"><tr><td id="points-chip" style="border:1px solid #d7ffc2;background:#d7ffc2;padding:4px 12px;border-radius:32px">94k points</td></tr></table><table role="presentation" style="margin-top:48px"><tr><td id="benefit-cell" width="45" style="width:45px;padding:0 16px 16px 0"><img id="benefit-icon" src="https://mail-delay.test/icon.png" width="45" height="45" style="display:block;width:45px;height:45px;border:0"></td><td>Pick Premium or Elite membership and get 30 days of access on us</td></tr></table><div style="height:360px"></div></td></tr></table></body>'
+const delayedHtml = '<body bgcolor="#fffef0"><table id="mail-sheet" width="600" style="width:600px;margin:0 auto;background:#fffef0;border:1px solid #004449;border-radius:7px"><tr><td style="padding:40px"><table role="presentation"><tr><td id="points-chip" style="border:1px solid #d7ffc2;background:#d7ffc2;padding:4px 12px;border-radius:32px">94k points</td></tr></table><table role="presentation" style="margin-top:48px"><tr><td id="benefit-cell" width="45" style="width:45px;padding:0 16px 16px 0"><img id="benefit-icon" src="https://mail-delay.test/icon.png" width="45" height="45" style="display:block;width:45px;height:45px;border:0"></td><td>Pick Premium or Elite membership and get 30 days of access on us</td></tr></table><div style="height:360px"></div></td></tr></table><p id="current-reply">No worries, keep me posted :)</p><div class="gmail_quote"><div>On Fri, Aug 28, 2026 at 12:21 PM Allison Stevenson wrote:</div><blockquote><div id="old-reply" style="height:340px">Happy Friday and hope your week has gone well.</div></blockquote></div></body>'
 const full = {
   ...dinner,
   messages: [
@@ -151,7 +151,16 @@ app.whenReady().then(async () => {
     await wait(260)
     seen.thread = await win.webContents.executeJavaScript("Boolean([...document.querySelectorAll('h1')].find(node => node.textContent === 'Dinner this weekend'))")
     seen.message = await win.webContents.executeJavaScript("(() => { const frame = document.querySelector('iframe[title=\\\"Message\\\"]'); const doc = frame && frame.contentDocument; const sheet = doc && doc.querySelector('#mail-sheet'); const chip = doc && doc.querySelector('#points-chip'); const icon = doc && doc.querySelector('#benefit-icon'); if (!frame || !sheet || !chip || !icon) return null; const iconBox = icon.getBoundingClientRect(); return { height: parseFloat(frame.style.height), collapse: getComputedStyle(sheet).borderCollapse, sheetRadius: getComputedStyle(sheet).borderTopLeftRadius, chipRadius: getComputedStyle(chip).borderTopLeftRadius, iconWidth: iconBox.width, iconHeight: iconBox.height } })()")
+    seen.quoteCollapsed = await win.webContents.executeJavaScript("(() => { const frame = document.querySelector('iframe[title=\\\"Message\\\"]'); const show = [...document.querySelectorAll('button')].find(node => node.textContent.trim() === 'Show earlier mail'); return Boolean(frame && show && !frame.contentDocument.querySelector('#old-reply')) })()")
     await shoot(win, 'thread')
+    seen.quoteOpenHeight = await win.webContents.executeJavaScript("(() => { const show = [...document.querySelectorAll('button')].find(node => node.textContent.trim() === 'Show earlier mail'); show.click(); return true })()")
+    await wait(260)
+    seen.quoteOpenHeight = await win.webContents.executeJavaScript("parseFloat(document.querySelector('iframe[title=\\\"Message\\\"]').style.height)")
+    await shoot(win, 'thread-quote-open')
+    await win.webContents.executeJavaScript("[...document.querySelectorAll('button')].find(node => node.textContent.trim() === 'Hide earlier mail').click()")
+    await wait(260)
+    seen.quoteClosed = await win.webContents.executeJavaScript("(() => { const frame = document.querySelector('iframe[title=\\\"Message\\\"]'); const show = [...document.querySelectorAll('button')].find(node => node.textContent.trim() === 'Show earlier mail'); const gap = show.getBoundingClientRect().top - frame.getBoundingClientRect().bottom; return { height: parseFloat(frame.style.height), gap, hidden: !frame.contentDocument.querySelector('#old-reply') } })()")
+    await shoot(win, 'thread-quote-closed')
     await win.webContents.executeJavaScript("[...document.querySelectorAll('button')].find(node => node.textContent.trim() === 'Compose').click()")
     await wait(260)
     seen.compose = await win.webContents.executeJavaScript("Boolean(document.querySelector('[aria-label=\\"Subject\\"]'))")
@@ -222,6 +231,10 @@ try {
   if (!seen.chromeClear) throw new Error('the collapsed Crew control overlapped Compose')
   if (!seen.thread) throw new Error('the conversation did not open')
   if (!seen.message || seen.message.height < 500) throw new Error(`the parsed message stayed at ${seen.message?.height ?? 0}px before its image loaded`)
+  if (!seen.quoteCollapsed) throw new Error('the old reply was visible by default')
+  if (seen.quoteOpenHeight < seen.message.height + 300) throw new Error(`the old reply only grew the message from ${seen.message.height}px to ${seen.quoteOpenHeight}px`)
+  if (!seen.quoteClosed.hidden || Math.abs(seen.quoteClosed.height - seen.message.height) > 2) throw new Error(`the old reply closed to ${seen.quoteClosed.height}px instead of ${seen.message.height}px`)
+  if (seen.quoteClosed.gap < 14 || seen.quoteClosed.gap > 18) throw new Error(`the closed reply button stood ${seen.quoteClosed.gap}px from the message`)
   if (seen.message.collapse !== 'separate') throw new Error(`the sender table collapsed as ${seen.message.collapse}`)
   if (seen.message.sheetRadius !== '7px' || seen.message.chipRadius !== '32px') throw new Error(`the sender curves became ${seen.message.sheetRadius} and ${seen.message.chipRadius}`)
   if (seen.message.iconWidth !== 45 || seen.message.iconHeight !== 45) throw new Error(`the sender artwork became ${seen.message.iconWidth} by ${seen.message.iconHeight}`)
@@ -234,6 +247,8 @@ try {
   console.log(`collapsed chrome  ${seen.chromeClear ? 'clear' : 'overlapping'}`)
   console.log(`thread            ${seen.thread ? 'yes' : 'no'}`)
   console.log(`early body        ${seen.message.height}px`)
+  console.log(`quoted reply      ${seen.message.height}px → ${seen.quoteOpenHeight}px → ${seen.quoteClosed.height}px`)
+  console.log(`reply button gap  ${seen.quoteClosed.gap}px`)
   console.log(`sender curves     ${seen.message.sheetRadius}, ${seen.message.chipRadius}`)
   console.log(`sender artwork    ${seen.message.iconWidth} x ${seen.message.iconHeight}`)
   console.log(`compose           ${seen.compose ? 'yes' : 'no'}`)
