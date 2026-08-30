@@ -45,7 +45,10 @@ export const UnreadGlyph = glyph(
 )
 
 export const InboxGlyph = glyph(
-  <path d="M5 4.5h14a2.5 2.5 0 0 1 2.5 2.5v10a2.5 2.5 0 0 1-2.5 2.5h-3.25l-1.5-2.75h-4.5l-1.5 2.75H5A2.5 2.5 0 0 1 2.5 17V7A2.5 2.5 0 0 1 5 4.5Z" />
+  <>
+    <path d="M5.25 4.5h13.5l2.75 9v3.75a2.25 2.25 0 0 1-2.25 2.25H4.75a2.25 2.25 0 0 1-2.25-2.25V13.5Z" />
+    <path d="M3 13.5h5.25L10 16.25h4l1.75-2.75H21" />
+  </>
 )
 
 const CRATE_LID = { x: 3.5, y: 4, width: 17, height: 4.5, rx: 1.75 }
