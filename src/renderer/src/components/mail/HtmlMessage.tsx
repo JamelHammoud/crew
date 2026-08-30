@@ -191,6 +191,8 @@ export default function HtmlMessage({ html, text, accountId }: { html?: string; 
       .replace(/\n/g, '<br>')
     return safeMailDocument(html ?? plain, theme, quote)
   }, [html, quote, text, theme])
+  const currentDocument = useRef(document)
+  currentDocument.current = document
 
   useEffect(() => {
     const iframe = frame.current
@@ -200,11 +202,15 @@ export default function HtmlMessage({ html, text, accountId }: { html?: string; 
     let linkHandler: ((event: MouseEvent) => void) | undefined
     let scan = 0
     const loaded = (doc = iframe.contentDocument) => {
+      if (currentDocument.current !== document) return
       if (!doc?.body) return
       window.clearInterval(scan)
       observer?.disconnect()
       if (loadedDocument && linkHandler) loadedDocument.removeEventListener('click', linkHandler)
-      const size = () => setHeight(Math.max(24, doc.documentElement.scrollHeight, doc.body.scrollHeight))
+      const size = () => {
+        if (currentDocument.current !== document) return
+        setHeight(Math.max(24, doc.documentElement.scrollHeight, doc.body.scrollHeight))
+      }
       const links = (event: MouseEvent) => {
         const link = (event.target as Element | null)?.closest('a')
         const href = link?.getAttribute('href')
@@ -262,6 +268,7 @@ export default function HtmlMessage({ html, text, accountId }: { html?: string; 
           type="button"
           aria-expanded={quote}
           onClick={() => {
+            if (frame.current) frame.current.style.height = '24px'
             setHeight(24)
             setQuote(value => !value)
           }}
