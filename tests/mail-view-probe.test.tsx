@@ -176,6 +176,7 @@ beforeEach(() => {
   })
   Element.prototype.getAnimations ??= () => []
   document.execCommand = vi.fn(() => true)
+  document.queryCommandState = vi.fn(() => false)
   installLocalStorage().clear()
   resetMail()
 })
