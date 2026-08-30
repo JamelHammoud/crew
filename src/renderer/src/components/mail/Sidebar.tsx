@@ -1,7 +1,6 @@
 import { useMemo, useState, type ReactNode } from 'react'
 import type { MailAccount, MailboxId } from '../../state/mail'
 import {
-  ArchiveGlyph,
   AtGlyph,
   ChevronLeftGlyph,
   ClockGlyph,
@@ -17,6 +16,7 @@ import {
 } from '../../icons'
 import { AddAccount, AccountSettings } from './Accounts'
 import { AccountMark, IconButton } from './parts'
+import Select from '../Select'
 
 export interface MailLocation {
   accountId?: string
@@ -81,10 +81,26 @@ export default function MailSidebar({
   const chosen = location.accountId ? accounts.find(account => account.id === location.accountId) : undefined
   const unread = useMemo(() => accounts.reduce((sum, account) => sum + account.unread, 0), [accounts])
   const labels = chosen?.labels ?? []
+  const accountOptions = [
+    {
+      value: '',
+      label: 'All accounts',
+      hint: unread || undefined,
+      mark: <AtGlyph className="w-4 h-4" />
+    },
+    ...accounts.map(account => ({
+      value: account.id,
+      label: account.email,
+      hint: account.unread || undefined,
+      mark: <AccountMark email={account.email} />
+    }))
+  ]
 
   return (
-    <aside className="h-full min-h-0 flex flex-col bg-ink-800/70 border-r border-fg/[0.06]">
-      <div className="h-16 shrink-0 px-4 flex items-end gap-2 pb-2.5">
+    <aside className="h-full min-h-0 flex flex-col bg-ink-900 border-r border-fg/[0.06]">
+      <div aria-hidden className="app-drag h-[70px] shrink-0" />
+
+      <div className="shrink-0 px-3 pb-3 flex items-center gap-2">
         <button
           type="button"
           onClick={onCompose}
@@ -100,40 +116,27 @@ export default function MailSidebar({
         )}
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-2.5 pb-4">
-        <section className="space-y-0.5">
-          <NavRow
-            label="All accounts"
-            icon={<AtGlyph className="w-4 h-4" />}
-            count={unread}
-            selected={!location.accountId}
-            onClick={() => onLocation({ mailboxId: 'inbox' })}
-          />
-          {accounts.map(account => (
-            <div key={account.id} className="relative group">
-              <NavRow
-                label={account.email}
-                icon={<AccountMark email={account.email} />}
-                count={account.unread}
-                selected={location.accountId === account.id}
-                onClick={() => onLocation({ accountId: account.id, mailboxId: 'inbox' })}
-              />
-              <span className="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
-                <IconButton label="Account settings" onClick={() => setSettings(account)}>
-                  <MoreGlyph className="w-4 h-4" />
-                </IconButton>
-              </span>
-            </div>
-          ))}
-          <NavRow
-            label="Add account"
-            icon={<PlusGlyph className="w-4 h-4" />}
-            onClick={() => setAdding(true)}
-          />
-        </section>
+      <div className="shrink-0 px-2.5 pb-3 flex items-center gap-1">
+        <Select
+          name="Mail account"
+          value={location.accountId ?? ''}
+          options={accountOptions}
+          onChange={accountId =>
+            onLocation(accountId ? { accountId, mailboxId: 'inbox' } : { mailboxId: 'inbox' })
+          }
+          add={{ label: 'Add account', onPick: () => setAdding(true) }}
+          full
+        />
+        {chosen && (
+          <IconButton label="Account settings" onClick={() => setSettings(chosen)}>
+            <MoreGlyph className="w-4 h-4" />
+          </IconButton>
+        )}
+      </div>
 
-        <div className="h-px bg-fg/[0.06] my-3 mx-2" />
+      <div className="h-px shrink-0 bg-fg/[0.06] mx-4" />
 
+      <div className="min-h-0 flex-1 overflow-y-auto px-2.5 pt-3 pb-4">
         <section className="space-y-0.5">
           {MAILBOXES.map(mailbox => (
             <NavRow

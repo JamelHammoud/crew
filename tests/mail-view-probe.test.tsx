@@ -212,13 +212,28 @@ describe('mail list and reader', () => {
     expect(await screen.findByText('Release checklist')).toBeTruthy()
     expect(screen.getByText('Dinner this weekend')).toBeTruthy()
 
+    fireEvent.click(screen.getByRole('button', { name: 'Mail account' }))
     fireEvent.click(screen.getByRole('button', { name: /^jamel@gmail\.com/ }))
     await waitFor(() => expect(bridge.listThreads).toHaveBeenLastCalledWith(expect.objectContaining({ accountId: 'personal' })))
     expect(await screen.findByText('Dinner this weekend')).toBeTruthy()
     expect(screen.queryByText('Release checklist')).toBeNull()
 
+    fireEvent.click(screen.getByRole('button', { name: 'Mail account' }))
     fireEvent.click(screen.getByRole('button', { name: /All accounts/ }))
     await waitFor(() => expect(screen.getByText('Release checklist')).toBeTruthy())
+  })
+
+  it('keeps window chrome above the controls and one mailbox row selected', async () => {
+    const { container } = render(createElement(Mail))
+    const write = await screen.findByRole('button', { name: 'Write' })
+    const sidebar = write.closest('aside') as HTMLElement
+    const chrome = sidebar.firstElementChild as HTMLElement
+
+    expect(chrome.className).toContain('h-[70px]')
+    expect(chrome.className).toContain('app-drag')
+    expect(sidebar.className).toContain('bg-ink-900')
+    expect(sidebar.className).not.toContain('bg-ink-800')
+    expect(container.querySelectorAll('aside [data-selected]')).toHaveLength(1)
   })
 
   it('opens a conversation by pointer and keyboard and offers reply actions', async () => {
@@ -296,7 +311,7 @@ describe('mail list and reader', () => {
     expect(document.querySelectorAll('.skeleton').length).toBeGreaterThan(0)
     await act(async () => finish?.([]))
     expect(await screen.findByText('Inbox is clear')).toBeTruthy()
-    expect(screen.getByRole('button', { name: /All accounts/ })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Mail account' })).toBeTruthy()
   })
 })
 
