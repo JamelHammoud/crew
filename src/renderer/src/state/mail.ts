@@ -1,143 +1,29 @@
 import { create } from 'zustand'
+import type {
+  MailAccountView,
+  MailAddressView,
+  MailAttachmentView,
+  MailBridge,
+  MailDraftView,
+  MailDraftViewInput,
+  MailMessageView,
+  MailThreadQueryView,
+  MailThreadStatePatch,
+  MailThreadSummaryView,
+  MailThreadView,
+  MailboxId
+} from '../../../shared/mail'
 
-export type MailAccountStatus = 'connected' | 'syncing' | 'offline' | 'error'
-export type MailboxId = 'inbox' | 'starred' | 'snoozed' | 'sent' | 'drafts' | 'scheduled' | 'all' | 'spam' | 'trash'
-
-export interface MailAddress {
-  name?: string
-  email: string
-}
-
-export interface MailLabel {
-  id: string
-  name: string
-  color?: string
-  unread?: number
-}
-
-export interface MailAccount {
-  id: string
-  email: string
-  displayName: string
-  status: MailAccountStatus
-  unread: number
-  signature?: string
-  labels: MailLabel[]
-  problem?: string
-}
-
-export interface MailAttachment {
-  id: string
-  name: string
-  mime: string
-  size: number
-  url?: string
-  data?: string
-}
-
-export interface MailThreadSummary {
-  id: string
-  accountId: string
-  subject: string
-  participants: MailAddress[]
-  preview: string
-  date: string
-  unread: boolean
-  starred: boolean
-  important?: boolean
-  hasAttachments?: boolean
-  messageCount: number
-  mailboxIds: MailboxId[]
-  labelIds: string[]
-}
-
-export interface MailMessage {
-  id: string
-  threadId: string
-  accountId: string
-  from: MailAddress
-  to: MailAddress[]
-  cc: MailAddress[]
-  bcc: MailAddress[]
-  subject: string
-  date: string
-  text: string
-  html?: string
-  quotedText?: string
-  unread: boolean
-  starred: boolean
-  attachments: MailAttachment[]
-}
-
-export interface MailThread extends MailThreadSummary {
-  messages: MailMessage[]
-}
-
-export interface MailDraft {
-  id: string
-  accountId: string
-  to: MailAddress[]
-  cc: MailAddress[]
-  bcc: MailAddress[]
-  subject: string
-  text: string
-  html?: string
-  attachments: MailAttachment[]
-  replyTo?: string
-  forwardOf?: string
-  updatedAt: string
-  minimized: boolean
-  saving: boolean
-  saved: boolean
-  sending: boolean
-  scheduledFor?: string
-  problem?: string
-}
-
-export interface MailThreadQuery {
-  accountId?: string
-  mailboxId?: MailboxId
-  labelId?: string
-  query?: string
-}
-
-export interface MailDraftInput {
-  id: string
-  accountId: string
-  to: MailAddress[]
-  cc: MailAddress[]
-  bcc: MailAddress[]
-  subject: string
-  text: string
-  html?: string
-  attachments: MailAttachment[]
-  replyTo?: string
-  forwardOf?: string
-}
-
-export interface MailBridge {
-  listAccounts(): Promise<MailAccount[]>
-  connectAccount(input: { email: string; displayName: string; appPassword: string }): Promise<MailAccount>
-  removeAccount(accountId: string): Promise<void>
-  reconnectAccount(accountId: string, appPassword?: string): Promise<MailAccount>
-  updateAccount(accountId: string, patch: { displayName?: string; signature?: string }): Promise<MailAccount>
-  listThreads(query: MailThreadQuery): Promise<MailThreadSummary[]>
-  getThread(accountId: string, threadId: string): Promise<MailThread>
-  sync(accountId?: string): Promise<{ accounts: MailAccount[]; threads: MailThreadSummary[] }>
-  setThreadState(
-    accountId: string,
-    threadIds: string[],
-    patch: { read?: boolean; starred?: boolean; mailboxId?: MailboxId; addLabelId?: string; removeLabelId?: string }
-  ): Promise<void>
-  saveDraft(draft: MailDraftInput): Promise<{ id: string; updatedAt: string }>
-  discardDraft(accountId: string, draftId: string): Promise<void>
-  sendDraft(draft: MailDraftInput, sendAt?: string): Promise<void>
-  addAttachment(accountId: string, draftId: string, file: File): Promise<MailAttachment>
-  saveAttachment(accountId: string, messageId: string, attachmentId: string): Promise<void>
-  printThread(accountId: string, threadId: string): Promise<void>
-  onChanged?(listener: () => void): () => void
-  onOnline?(listener: (online: boolean) => void): () => void
-}
+export type MailAccount = MailAccountView
+export type MailAddress = MailAddressView
+export type MailAttachment = MailAttachmentView
+export type MailDraft = MailDraftView
+export type MailDraftInput = MailDraftViewInput
+export type MailMessage = MailMessageView
+export type MailThread = MailThreadView
+export type MailThreadQuery = MailThreadQueryView
+export type MailThreadSummary = MailThreadSummaryView
+export type { MailboxId }
 
 interface StoredDraft {
   id: string
@@ -178,7 +64,7 @@ interface MailState {
   setThreads: (
     accountId: string,
     ids: string[],
-    patch: { read?: boolean; starred?: boolean; mailboxId?: MailboxId; addLabelId?: string; removeLabelId?: string }
+    patch: MailThreadStatePatch
   ) => Promise<string | null>
   makeDraft: (accountId: string, seed?: Partial<MailDraftInput>) => string
   changeDraft: (id: string, patch: Partial<MailDraft>) => void
@@ -247,7 +133,7 @@ const replaceAccount = (accounts: MailAccount[], account: MailAccount): MailAcco
 const patchThreads = (
   threads: MailThreadSummary[],
   ids: Set<string>,
-  patch: { read?: boolean; starred?: boolean; mailboxId?: MailboxId; addLabelId?: string; removeLabelId?: string }
+  patch: MailThreadStatePatch
 ): MailThreadSummary[] =>
   threads.map(thread => {
     if (!ids.has(thread.id)) return thread
