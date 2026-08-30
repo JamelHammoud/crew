@@ -412,6 +412,9 @@ describe('database-backed mail service over loopback', () => {
       text: 'Dinner this weekend in plain text',
       html: '<p>Dinner this weekend in HTML</p>'
     })
+    const bodyFetches = runtime.server.imapCommands.filter(command => /BODY\.PEEK\[\]/i.test(command)).length
+    await runtime.service.getThread(personalAccount.id, personalThread.id)
+    expect(runtime.server.imapCommands.filter(command => /BODY\.PEEK\[\]/i.test(command))).toHaveLength(bodyFetches)
 
     await runtime.service.removeAccount(personalAccount.id)
     expect((await runtime.service.listAccounts()).map(account => account.id)).toEqual([workAccount.id])
