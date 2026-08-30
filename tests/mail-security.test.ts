@@ -59,6 +59,30 @@ describe('mail message isolation', () => {
     expect(frame.parentElement?.className).toContain('rounded-xl')
   })
 
+  it('keeps rounded email tables and fixed-size artwork intact', () => {
+    const html = `
+      <table id="sheet" style="border:1px solid #004449;border-radius:7px" width="600">
+        <tr>
+          <td id="icon-cell" width="45" style="width:45px;padding-right:16px">
+            <img id="icon" width="45" height="45" style="display:block;width:45px;height:45px">
+          </td>
+          <td id="chip" style="border:1px solid #d7ffc2;border-radius:32px">94k points</td>
+        </tr>
+      </table>
+    `
+    const document = safeMailDocument(html, 'light')
+    const parsed = new DOMParser().parseFromString(document, 'text/html')
+    const styles = parsed.head.querySelector('style')?.textContent ?? ''
+
+    expect(styles).not.toContain('max-width: 100%;')
+    expect(styles).not.toContain('border-collapse: collapse;')
+    expect(styles).not.toContain('height: auto;')
+    expect(styles).toContain('img { max-width: 100vw; }')
+    expect(parsed.querySelector('#sheet')?.getAttribute('style')).toContain('border-radius:7px')
+    expect(parsed.querySelector('#icon')?.getAttribute('style')).toContain('width:45px;height:45px')
+    expect(parsed.querySelector('#chip')?.getAttribute('style')).toContain('border-radius:32px')
+  })
+
   it('removes executable elements, event handlers, embedded pages, and unsafe links', async () => {
     const frame = await draw(`
       <script>window.stolen = true</script>

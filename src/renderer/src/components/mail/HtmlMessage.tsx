@@ -24,13 +24,12 @@ export function safeMailDocument(html: string, theme: Theme): string {
   const background = parsed.body.style.backgroundColor || color.style.backgroundColor || 'transparent'
   const style = `
     :root { background: ${background}; }
-    * { box-sizing: border-box; max-width: 100%; }
+    * { box-sizing: border-box; }
     body { margin: 0; color: rgba(${foreground},.82); font: 14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; overflow-wrap: anywhere; }
     a { color: rgba(${foreground},.95); text-decoration: underline; text-underline-offset: 2px; }
     blockquote { margin-left: 0; padding-left: 14px; border-left: 2px solid rgba(${foreground},.12); color: rgba(${foreground},.55); }
     pre { white-space: pre-wrap; }
-    img { height: auto; }
-    table { border-collapse: collapse; }
+    img { max-width: 100vw; }
   `
   return `<!doctype html><html><head><meta http-equiv="Content-Security-Policy" content="${csp}"><style>${style}</style></head>${parsed.body.outerHTML}</html>`
 }
