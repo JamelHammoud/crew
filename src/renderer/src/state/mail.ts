@@ -23,7 +23,7 @@ export type MailMessage = MailMessageView
 export type MailThread = MailThreadView
 export type MailThreadQuery = MailThreadQueryView
 export type MailThreadSummary = MailThreadSummaryView
-export type { MailboxId }
+export type { MailBridge, MailboxId }
 
 interface StoredDraft {
   id: string
@@ -78,6 +78,7 @@ interface MailState {
 }
 
 const DRAFTS_KEY = 'crew.mail.drafts'
+let currentQuery: MailThreadQuery = {}
 
 type MailWindow = Window & { mail?: MailBridge }
 
@@ -172,10 +173,11 @@ export const useMail = create<MailState>((set, get) => ({
       set({ ready: true, loading: false, issue: 'Mail is unavailable. Restart Crew and try again.' })
       return
     }
-    set({ loading: true, issue: null })
+    currentQuery = query ?? {}
+    set({ loading: true })
     try {
       const [accounts, threads] = await Promise.all([mail.listAccounts(), mail.listThreads(query ?? {})])
-      set({ accounts, threads, ready: true, loading: false })
+      set({ accounts, threads, ready: true, loading: false, issue: null })
     } catch (error) {
       set({ ready: true, loading: false, issue: problem(error, 'Mail could not be loaded.') })
     }
@@ -185,6 +187,7 @@ export const useMail = create<MailState>((set, get) => ({
     const mail = api()
     if (!mail) return
     set({ syncing: true, issue: null })
+    currentQuery = query ?? currentQuery
     try {
       const synced = await mail.sync(query?.accountId)
       const threads = query ? await mail.listThreads(query) : synced.threads
@@ -422,16 +425,32 @@ export function watchMail(): () => void {
   if (watching) return () => {}
   watching = true
   const mail = api()
-  const reload = () => void useMail.getState().load()
+  const reload = () => void useMail.getState().load(currentQuery)
   const setOnline = () => useMail.getState().setOnline(navigator.onLine)
   const stopChanged = mail?.onChanged?.(reload)
   const stopOnline = mail?.onOnline?.(event => useMail.getState().setOnline(event.online))
+  const stopConnection = mail?.onConnection?.(event => {
+    useMail.setState(state => ({
+      accounts: state.accounts.map(account =>
+        account.id === event.accountId ? { ...account, status: event.status, problem: event.problem } : account
+      )
+    }))
+  })
+  const stopUnread = mail?.onUnread?.(event => {
+    useMail.setState(state => ({
+      accounts: state.accounts.map(account =>
+        account.id === event.accountId ? { ...account, unread: event.unread } : account
+      )
+    }))
+  })
   window.addEventListener('online', setOnline)
   window.addEventListener('offline', setOnline)
   return () => {
     watching = false
     stopChanged?.()
     stopOnline?.()
+    stopConnection?.()
+    stopUnread?.()
     window.removeEventListener('online', setOnline)
     window.removeEventListener('offline', setOnline)
   }
