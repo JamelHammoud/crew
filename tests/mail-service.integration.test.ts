@@ -1,13 +1,21 @@
+import fs from 'node:fs'
+import os from 'node:os'
+import path from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 import { ImapFlow } from 'imapflow'
 import nodemailer from 'nodemailer'
 import { simpleParser } from 'mailparser'
 import { GmailTransport } from '../src/main/mail/gmail'
+import { MailDatabase } from '../src/main/mail/database'
+import { MailFileStore } from '../src/main/mail/files'
+import { GmailMailConnection, MailDatabaseServiceStore, MailService } from '../src/main/mail/service'
+import type { MailCredentials } from '../src/shared/mail'
 import { startGmailImapServer, type GmailLoopbackServer } from './helpers/gmail-imap-server'
 
 const openServers: GmailLoopbackServer[] = []
 const openClients: ImapFlow[] = []
 const openTransports: GmailTransport[] = []
+const runtimes: ServiceHarness[] = []
 
 const message = (subject: string, from: string, labels = ['INBOX']) => ({
   from,
@@ -51,12 +59,100 @@ async function connect(server: GmailLoopbackServer, accountId: string): Promise<
 }
 
 afterEach(async () => {
+  for (const runtime of runtimes.splice(0)) await runtime.close()
   for (const transport of openTransports.splice(0)) await transport.close().catch(() => {})
   for (const client of openClients.splice(0)) {
     if (client.usable) await client.logout().catch(() => {})
   }
   for (const server of openServers.splice(0)) await server.close()
 })
+
+type ServiceHarness = {
+  service: MailService
+  database: MailDatabase
+  credentials: Map<string, MailCredentials>
+  server: GmailLoopbackServer
+  setNow(value: number): void
+  close(): Promise<void>
+}
+
+async function serviceHarness(): Promise<ServiceHarness> {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'crew-mail-service-'))
+  const server = await startGmailImapServer([
+    {
+      id: 'personal-remote',
+      email: 'jamel@gmail.com',
+      password: 'aaaabbbbccccdddd',
+      messages: [message('Dinner this weekend', 'Ali <ali@example.com>')]
+    },
+    {
+      id: 'work-remote',
+      email: 'jamel@crew.test',
+      password: 'eeeeffffgggghhhh',
+      messages: [message('Release checklist', 'Sam <sam@crew.test>')]
+    }
+  ])
+  const database = new MailDatabase(directory)
+  const files = new MailFileStore(directory)
+  const store = new MailDatabaseServiceStore(database, files)
+  const credentials = new Map<string, MailCredentials>()
+  let now = Date.now()
+  const service = new MailService({
+    store,
+    files,
+    credentials: {
+      get: accountId => credentials.get(accountId) ?? null,
+      set: (accountId, value) => credentials.set(accountId, value as MailCredentials),
+      delete: accountId => credentials.delete(accountId)
+    },
+    connect: (account, secret) => new GmailMailConnection({
+      account,
+      credentials: secret,
+      store,
+      files,
+      transport: {
+        imap: { host: '127.0.0.1', port: server.imapPort, secure: false, startTLS: false },
+        smtp: { host: '127.0.0.1', port: server.smtpPort, secure: false, startTLS: false },
+        connectionTimeoutMs: 2_000,
+        reconnectDelayMs: 5,
+        reconnectMaxDelayMs: 10
+      }
+    }),
+    clock: () => now
+  })
+  await service.start()
+  const harness: ServiceHarness = {
+    service,
+    database,
+    credentials,
+    server,
+    setNow: value => {
+      now = value
+    },
+    async close() {
+      await service.stop().catch(() => {})
+      database.close()
+      await server.close()
+      fs.rmSync(directory, { recursive: true, force: true })
+    }
+  }
+  runtimes.push(harness)
+  return harness
+}
+
+async function connectServiceAccounts(runtime: ServiceHarness) {
+  const personalAccount = await runtime.service.connectAccount({
+    email: 'jamel@gmail.com',
+    displayName: 'Jamel',
+    appPassword: 'aaaa bbbb cccc dddd'
+  })
+  const workAccount = await runtime.service.connectAccount({
+    email: 'jamel@crew.test',
+    displayName: 'Jamel at Crew',
+    appPassword: 'eeee ffff gggg hhhh'
+  })
+  return { personalAccount, workAccount }
+}
 
 async function transport(server: GmailLoopbackServer, accountId: string, overrides: Record<string, unknown> = {}) {
   const account = server.accounts.get(accountId)!
