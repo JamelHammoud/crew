@@ -29,6 +29,7 @@ import Docs from './views/Docs'
 import Home from './views/Home'
 
 const Design = lazy(() => import('./views/Design'))
+const Mail = lazy(() => import('./views/Mail'))
 const Plugins = lazy(() => import('./views/Plugins'))
 const Scheduled = lazy(() => import('./views/Scheduled'))
 
@@ -163,6 +164,11 @@ function Session() {
           {tab === 'plugins' && (
             <Suspense fallback={<Loading />}>
               <Plugins />
+            </Suspense>
+          )}
+          {tab === 'mail' && (
+            <Suspense fallback={<Loading />}>
+              <Mail />
             </Suspense>
           )}
           {tab === 'scheduled' && (
