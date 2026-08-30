@@ -26,19 +26,26 @@ const mailAddresses = (values: string[]): MailAddress[] =>
     })
 
 export function draftFromMailto(href: string): Partial<MailDraftInput> {
-  const link = new URL(href)
+  let link: URL
+  try {
+    link = new URL(href)
+  } catch {
+    return {}
+  }
   if (link.protocol.toLowerCase() !== 'mailto:') return {}
   const headers = new Map<string, string[]>()
   link.searchParams.forEach((value, key) => {
     const name = key.toLowerCase()
     headers.set(name, [...(headers.get(name) ?? []), value])
   })
+  const subject = headers.get('subject')?.[0]
+  const body = headers.get('body')?.[0]
   return {
     to: mailAddresses([link.pathname, ...(headers.get('to') ?? [])]),
     cc: mailAddresses(headers.get('cc') ?? []),
     bcc: mailAddresses(headers.get('bcc') ?? []),
-    subject: headers.get('subject')?.[0] ?? '',
-    text: headers.get('body')?.[0] ?? ''
+    ...(subject === undefined ? {} : { subject }),
+    ...(body === undefined ? {} : { text: body })
   }
 }
 

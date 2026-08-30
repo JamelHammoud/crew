@@ -981,25 +981,22 @@ describe('a page an agent shows', () => {
     expect(container.querySelector('webview')?.getAttribute('partition')).toBe('persist:crew-plugin-raylight')
   })
 
-  it('waits for a new web view before asking it to navigate', () => {
-    let ready = false
+  it('lets a new web view load its initial address once', () => {
     const loadURL = vi.fn(async () => undefined)
     Object.defineProperty(HTMLElement.prototype, 'getURL', {
       configurable: true,
-      value: () => {
-        if (!ready) throw new Error('The WebView must be attached to the DOM and the dom-ready event emitted')
-        return ''
-      }
+      value: () => 'https://example.com/plugin'
     })
     Object.defineProperty(HTMLElement.prototype, 'loadURL', { configurable: true, value: loadURL })
 
     useBrowser.getState().openUrl('https://example.com/plugin')
     const { container } = render(createElement(BrowserPanel))
+    const view = container.querySelector('webview')!
 
+    expect(view.getAttribute('src')).toBe('https://example.com/plugin')
     expect(loadURL).not.toHaveBeenCalled()
-    ready = true
-    fireEvent(container.querySelector('webview')!, new Event('dom-ready'))
-    expect(loadURL).toHaveBeenCalledWith('https://example.com/plugin')
+    fireEvent(view, new Event('dom-ready'))
+    expect(loadURL).not.toHaveBeenCalled()
   })
 
   it('does not restart an initial address after the page redirects', () => {
