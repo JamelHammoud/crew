@@ -249,6 +249,12 @@ describe('mail list and reader', () => {
     expect(sidebar.className).toContain('bg-ink-900')
     expect(sidebar.className).not.toContain('bg-ink-800')
     expect(container.querySelectorAll('aside [data-selected]')).toHaveLength(1)
+
+    const account = screen.getByRole('button', { name: 'Mail account' })
+    const footer = account.parentElement?.parentElement as HTMLElement
+    expect(footer.className).toContain('border-t')
+    expect(footer.className).not.toMatch(/(?:^|\s)(?:m|mx)-/)
+    expect(footer.nextElementSibling?.getAttribute('data-testid')).toBe('mail-account-modals')
   })
 
   it('opens a conversation by pointer and keyboard and offers reply actions', async () => {

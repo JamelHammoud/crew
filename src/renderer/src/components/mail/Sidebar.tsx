@@ -188,8 +188,10 @@ export default function MailSidebar({
         )}
       </div>
 
-      <AddAccount open={adding} onClose={() => setAdding(false)} />
-      <AccountSettings account={settings} open={Boolean(settings)} onClose={() => setSettings(null)} />
+      <div data-testid="mail-account-modals" className="contents">
+        <AddAccount open={adding} onClose={() => setAdding(false)} />
+        <AccountSettings account={settings} open={Boolean(settings)} onClose={() => setSettings(null)} />
+      </div>
     </aside>
   )
 }
