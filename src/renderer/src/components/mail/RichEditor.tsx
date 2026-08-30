@@ -97,7 +97,7 @@ const RichEditor = forwardRef<RichEditorHandle, {
   const change = () => {
     const node = editor.current
     if (!node) return
-    const plain = node.innerText.replace(/\n{3,}/g, '\n\n')
+    const plain = (node.innerText ?? node.textContent ?? '').replace(/\n{3,}/g, '\n\n')
     setEmpty(!plain.trim())
     onChange({ html: node.innerHTML, text: plain })
   }

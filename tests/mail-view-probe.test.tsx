@@ -479,6 +479,7 @@ describe('mail composer', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Bold' }))
     expect(execCommand).toHaveBeenCalledWith('bold', false, undefined)
     expect(document.activeElement).toBe(screen.getByRole('textbox', { name: 'Message' }))
+    Reflect.deleteProperty(document, 'execCommand')
   })
 
   it('commits recipients, autosaves changes, sends, and keeps errors in the card', async () => {
