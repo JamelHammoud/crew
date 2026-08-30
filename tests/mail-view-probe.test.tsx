@@ -280,7 +280,7 @@ describe('mail composer', () => {
     render(createElement(Mail))
     fireEvent.click(await screen.findByRole('button', { name: 'Write' }))
     const draftId = useMail.getState().drafts[0].id
-    useMail.getState().changeDraft(draftId, { to: [{ email: 'ali@example.com' }] })
+    act(() => useMail.getState().changeDraft(draftId, { to: [{ email: 'ali@example.com' }] }))
     fireEvent.click(screen.getByRole('button', { name: 'Send later' }))
     const schedule = await screen.findByRole('button', { name: 'Schedule' })
     fireEvent.click(schedule)
