@@ -107,7 +107,7 @@ export default function MailSidebar({
           className="min-w-0 flex-1 h-10 rounded-full bg-fg text-ink-900 flex items-center justify-center gap-2 text-sm font-semibold transition-colors hover:bg-fg/90 active:scale-[0.98]"
         >
           <PlusGlyph className="w-4 h-4" />
-          Write
+          Compose
         </button>
         {onBack && (
           <IconButton label="Back to mail" onClick={onBack}>
@@ -116,27 +116,7 @@ export default function MailSidebar({
         )}
       </div>
 
-      <div className="shrink-0 px-2.5 pb-3 flex items-center gap-1">
-        <Select
-          name="Mail account"
-          value={location.accountId ?? ''}
-          options={accountOptions}
-          onChange={accountId =>
-            onLocation(accountId ? { accountId, mailboxId: 'inbox' } : { mailboxId: 'inbox' })
-          }
-          add={{ label: 'Add account', onPick: () => setAdding(true) }}
-          full
-        />
-        {chosen && (
-          <IconButton label="Account settings" onClick={() => setSettings(chosen)}>
-            <MoreGlyph className="w-4 h-4" />
-          </IconButton>
-        )}
-      </div>
-
-      <div className="h-px shrink-0 bg-fg/[0.06] mx-4" />
-
-      <div className="min-h-0 flex-1 overflow-y-auto px-2.5 pt-3 pb-4">
+      <div className="min-h-0 flex-1 overflow-y-auto px-2.5 pt-1 pb-4">
         <section className="space-y-0.5">
           {MAILBOXES.map(mailbox => (
             <NavRow
@@ -189,6 +169,24 @@ export default function MailSidebar({
             ))}
         </div>
       )}
+
+      <div className="shrink-0 border-t border-fg/[0.06] p-2.5 flex items-center gap-1">
+        <Select
+          name="Mail account"
+          value={location.accountId ?? ''}
+          options={accountOptions}
+          onChange={accountId =>
+            onLocation(accountId ? { accountId, mailboxId: 'inbox' } : { mailboxId: 'inbox' })
+          }
+          add={{ label: 'Add account', onPick: () => setAdding(true) }}
+          full
+        />
+        {chosen && (
+          <IconButton label="Account settings" onClick={() => setSettings(chosen)}>
+            <MoreGlyph className="w-4 h-4" />
+          </IconButton>
+        )}
+      </div>
 
       <AddAccount open={adding} onClose={() => setAdding(false)} />
       <AccountSettings account={settings} open={Boolean(settings)} onClose={() => setSettings(null)} />

@@ -240,8 +240,8 @@ describe('mail list and reader', () => {
 
   it('keeps window chrome above the controls and one mailbox row selected', async () => {
     const { container } = render(createElement(Mail))
-    const write = await screen.findByRole('button', { name: 'Write' })
-    const sidebar = write.closest('aside') as HTMLElement
+    const compose = await screen.findByRole('button', { name: 'Compose' })
+    const sidebar = compose.closest('aside') as HTMLElement
     const chrome = sidebar.firstElementChild as HTMLElement
 
     expect(chrome.className).toContain('h-[70px]')
@@ -333,7 +333,7 @@ describe('mail list and reader', () => {
 describe('mail composer', () => {
   it('commits recipients, autosaves changes, sends, and keeps errors in the card', async () => {
     render(createElement(Mail))
-    fireEvent.click(await screen.findByRole('button', { name: 'Write' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Compose' }))
     const to = screen.getByRole('textbox', { name: 'To' })
     fireEvent.change(to, { target: { value: 'ali@example.com' } })
     fireEvent.keyDown(to, { key: 'Enter' })
@@ -351,7 +351,7 @@ describe('mail composer', () => {
 
   it('opens send later and submits an explicit schedule time', async () => {
     render(createElement(Mail))
-    fireEvent.click(await screen.findByRole('button', { name: 'Write' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Compose' }))
     const draftId = useMail.getState().drafts[0].id
     act(() => useMail.getState().changeDraft(draftId, { to: [{ email: 'ali@example.com' }] }))
     fireEvent.click(screen.getByRole('button', { name: 'Send later' }))
@@ -370,10 +370,10 @@ describe('responsive mail', () => {
     observedWidth = 560
     render(createElement(Mail))
     expect(await screen.findByRole('button', { name: 'Mailboxes' })).toBeTruthy()
-    expect(screen.queryByRole('button', { name: 'Write' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Compose' })).toBeNull()
 
     fireEvent.click(screen.getByRole('button', { name: 'Mailboxes' }))
-    expect(await screen.findByRole('button', { name: 'Write' })).toBeTruthy()
+    expect(await screen.findByRole('button', { name: 'Compose' })).toBeTruthy()
     fireEvent.click(screen.getByRole('button', { name: 'Back to mail' }))
     const row = await screen.findByRole('button', { name: /Ali.*Dinner this weekend/ })
     fireEvent.click(row)
@@ -383,6 +383,6 @@ describe('responsive mail', () => {
     expect(screen.getByRole('button', { name: 'Back' })).toBeTruthy()
     await resize(1100)
     expect(screen.queryByRole('button', { name: 'Back' })).toBeNull()
-    expect(screen.getByRole('button', { name: 'Write' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Compose' })).toBeTruthy()
   })
 })
