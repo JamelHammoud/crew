@@ -1,119 +1,159 @@
-import { createHash } from 'node:crypto'
-import fs from 'node:fs'
-import os from 'node:os'
-import path from 'node:path'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { JSDOM } from 'jsdom'
+import { createElement, act } from 'react'
+import { createRoot, type Root } from 'react-dom/client'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { GmailTransport } from '../src/main/mail/gmail'
+import HtmlMessage from '../src/renderer/src/components/mail/HtmlMessage'
+import { startGmailImapServer, type GmailLoopbackServer } from './helpers/gmail-imap-server'
 
-vi.mock('electron', () => ({ safeStorage: undefined }))
-
-import { MailCredentialStore, type MailSafeStorage } from '../src/main/mail/credentials'
-import { MailFileStore } from '../src/main/mail/files'
-
-const directories: string[] = []
-
-function stateDirectory(name = 'crew-mail-security-'): string {
-  const directory = fs.mkdtempSync(path.join(os.tmpdir(), name))
-  directories.push(directory)
-  return directory
+class Observer {
+  observe(): void {}
+  disconnect(): void {}
 }
 
-function encryptedStorage(available = true, backend: ReturnType<NonNullable<MailSafeStorage['getSelectedStorageBackend']>> = 'unknown'): MailSafeStorage {
-  return {
-    isEncryptionAvailable: () => available,
-    getSelectedStorageBackend: () => backend,
-    encryptString: value => Buffer.from(value, 'utf8').map(byte => byte ^ 0xa5),
-    decryptString: value => Buffer.from(value).map(byte => byte ^ 0xa5).toString('utf8')
-  }
-}
+let dom: JSDOM
+let root: Root
+let container: HTMLDivElement
+let server: GmailLoopbackServer | null
+let transport: GmailTransport | null
 
-afterEach(() => {
-  for (const directory of directories.splice(0)) fs.rmSync(directory, { recursive: true, force: true })
+beforeEach(() => {
+  dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>', { url: 'https://crew.test' })
+  Object.assign(globalThis, {
+    window: dom.window,
+    document: dom.window.document,
+    navigator: dom.window.navigator,
+    DOMParser: dom.window.DOMParser,
+    Element: dom.window.Element,
+    HTMLElement: dom.window.HTMLElement,
+    HTMLIFrameElement: dom.window.HTMLIFrameElement,
+    MouseEvent: dom.window.MouseEvent,
+    ResizeObserver: Observer,
+    IS_REACT_ACT_ENVIRONMENT: true
+  })
+  container = dom.window.document.querySelector('#root') as HTMLDivElement
+  root = createRoot(container)
+  server = null
+  transport = null
 })
 
-describe('mail credential storage', () => {
-  it('encrypts credentials at rest in a private file', () => {
-    const directory = stateDirectory()
-    const store = new MailCredentialStore(directory, encryptedStorage())
-    store.set('account', { username: 'me@example.com', password: 'plain-secret', accessToken: 'token-secret' })
+afterEach(async () => {
+  await act(async () => root.unmount())
+  if (transport) await transport.close().catch(() => {})
+  if (server) await server.close()
+  dom.window.close()
+  vi.restoreAllMocks()
+})
 
-    const bytes = fs.readFileSync(store.file)
-    expect(bytes.toString('utf8')).not.toContain('plain-secret')
-    expect(bytes.toString('utf8')).not.toContain('token-secret')
-    expect(fs.statSync(store.file).mode & 0o777).toBe(0o600)
-    expect(fs.statSync(directory).mode & 0o777).toBe(0o700)
-    expect(new MailCredentialStore(directory, encryptedStorage()).get('account')).toEqual({
-      username: 'me@example.com', password: 'plain-secret', accessToken: 'token-secret'
+async function draw(html: string): Promise<HTMLIFrameElement> {
+  await act(async () => root.render(createElement(HtmlMessage, { html, text: '' })))
+  return container.querySelector('iframe') as HTMLIFrameElement
+}
+
+describe('mail message isolation', () => {
+  it('removes executable elements, event handlers, embedded pages, and unsafe links', async () => {
+    const frame = await draw(`
+      <script>window.stolen = true</script>
+      <iframe src="https://attacker.test"></iframe>
+      <object data="https://attacker.test/file"></object>
+      <form action="https://attacker.test"><input name="secret"><button>Send</button></form>
+      <a id="script" href="javascript:alert(1)" onclick="alert(2)">Bad</a>
+      <a id="file" href="file:///etc/passwd">File</a>
+      <p id="copy" onmouseover="alert(3)" srcdoc="bad">Safe words</p>
+    `)
+    const source = frame.getAttribute('srcdoc') ?? ''
+    const parsed = new JSDOM(source).window.document
+
+    expect(parsed.querySelector('script, iframe, object, form, input, button')).toBeNull()
+    expect(parsed.querySelector('#script')?.hasAttribute('href')).toBe(false)
+    expect(parsed.querySelector('#file')?.hasAttribute('href')).toBe(false)
+    expect(parsed.querySelector('#copy')?.hasAttribute('onmouseover')).toBe(false)
+    expect(parsed.querySelector('#copy')?.hasAttribute('srcdoc')).toBe(false)
+    expect(parsed.body.textContent).toContain('Safe words')
+    expect(source).toContain(`default-src 'none'`)
+    expect(source).toContain(`connect-src 'none'`)
+    expect(source).toContain(`frame-src 'none'`)
+  })
+
+  it('blocks remote images until the reader asks to show them', async () => {
+    const frame = await draw(`
+      <img src="https://track.example/pixel.gif" srcset="https://track.example/large.gif 2x">
+      <img src="http://images.example/photo.jpg">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==">
+    `)
+    const blocked = frame.getAttribute('srcdoc') ?? ''
+    const hidden = new JSDOM(blocked).window.document
+    const images = [...hidden.querySelectorAll('img')]
+
+    expect(images[0].hasAttribute('src')).toBe(false)
+    expect(images[0].hasAttribute('srcset')).toBe(false)
+    expect(images[0].dataset.remoteSrc).toBe('https://track.example/pixel.gif')
+    expect(images[1].hasAttribute('src')).toBe(false)
+    expect(images[2].getAttribute('src')).toMatch(/^data:/)
+    expect(blocked).toContain(`img-src data: blob:`)
+    expect(blocked).not.toContain(`img-src data: blob: http: https:`)
+    expect(container.querySelector('button')?.textContent).toContain('Show 2 images')
+
+    await act(async () => container.querySelector('button')?.click())
+    const shown = frame.getAttribute('srcdoc') ?? ''
+    expect(shown).toContain(`img-src data: blob: http: https:`)
+    expect(shown).toContain('src="https://track.example/pixel.gif"')
+    expect(container.querySelector('button')?.textContent).toContain('Hide images')
+  })
+
+  it('routes web and mail links through the main-process bridge', async () => {
+    const openExternal = vi.fn(async () => true)
+    Object.assign(dom.window, { crew: { openExternal } })
+    const frame = await draw('<a href="https://crew.test/read">Read</a><a href="mailto:ali@example.com">Write</a>')
+    const document = frame.contentDocument!
+    document.body.innerHTML = '<a id="web" href="https://crew.test/read">Read</a><a id="mail" href="mailto:ali@example.com">Write</a><a id="local" href="#inside">Inside</a>'
+    frame.dispatchEvent(new dom.window.Event('load'))
+
+    document.querySelector('#web')?.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true, cancelable: true }))
+    document.querySelector('#mail')?.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true, cancelable: true }))
+    document.querySelector('#local')?.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true, cancelable: true }))
+
+    expect(openExternal.mock.calls).toEqual([['https://crew.test/read'], ['mailto:ali@example.com']])
+  })
+})
+
+describe('mail credential secrecy', () => {
+  it('keeps app passwords out of protocol histories and returned mail data', async () => {
+    const password = 'secret app pass 1'
+    server = await startGmailImapServer({
+      id: 'private',
+      email: 'private@gmail.com',
+      password,
+      messages: [
+        {
+          from: 'Ali <ali@example.com>',
+          to: 'private@gmail.com',
+          subject: 'Private note',
+          text: 'Only the message belongs in this result.'
+        }
+      ]
     })
-    expect(store.delete('account')).toBe(true)
-    expect(fs.existsSync(store.file)).toBe(false)
-  })
+    transport = new GmailTransport({
+      auth: { user: 'private@gmail.com', pass: password },
+      imap: { host: '127.0.0.1', port: server.imapPort, secure: false, startTLS: false },
+      smtp: { host: '127.0.0.1', port: server.smtpPort, secure: false, startTLS: false },
+      connectionTimeoutMs: 2_000
+    })
+    await transport.connect()
+    const mailboxes = await transport.listMailboxes()
+    const messages = await transport.fetchSummaries('INBOX', { uids: [1] })
+    await transport.send({ to: 'ali@example.com', subject: 'Reply', text: 'Safe' })
 
-  it('refuses unavailable or plaintext safe storage', () => {
-    const unavailable = new MailCredentialStore(stateDirectory(), encryptedStorage(false))
-    expect(() => unavailable.set('account', { password: 'secret' })).toThrow('Secure credential storage is unavailable')
-    expect(fs.existsSync(unavailable.file)).toBe(false)
-
-    const plaintext = new MailCredentialStore(stateDirectory(), encryptedStorage(true, 'basic_text'))
-    expect(() => plaintext.set('account', { password: 'secret' })).toThrow('Secure credential storage is unavailable')
-    expect(fs.existsSync(plaintext.file)).toBe(false)
-  })
-
-  it('does not replace an unreadable encrypted file', () => {
-    const directory = stateDirectory()
-    const store = new MailCredentialStore(directory, encryptedStorage())
-    fs.writeFileSync(store.file, Buffer.from('damaged'), { mode: 0o600 })
-    const before = fs.readFileSync(store.file)
-    expect(() => store.set('account', { password: 'new-secret' })).toThrow('Mail credentials could not be decrypted')
-    expect(fs.readFileSync(store.file)).toEqual(before)
-  })
-})
-
-describe('mail attachment storage', () => {
-  it('uses opaque private paths scoped by account', () => {
-    const directory = stateDirectory()
-    const files = new MailFileStore(directory)
-    const storageKey = files.create('../../first@example.com', Buffer.from('attachment bytes'))
-    const accountDirectory = createHash('sha256').update('../../first@example.com').digest('hex')
-    const storedPath = files.pathFor('../../first@example.com', storageKey)
-
-    expect(storageKey).toMatch(/^[0-9a-f]{32}$/)
-    expect(path.relative(files.directory, storedPath)).toBe(path.join(accountDirectory, storageKey))
-    expect(path.basename(storedPath)).not.toContain('attachment')
-    expect(files.read('../../first@example.com', storageKey).toString()).toBe('attachment bytes')
-    expect(fs.statSync(storedPath).mode & 0o777).toBe(0o600)
-    expect(fs.statSync(path.dirname(storedPath)).mode & 0o777).toBe(0o700)
-    expect(files.exists('another@example.com', storageKey)).toBe(false)
-    expect(files.delete('../../first@example.com', storageKey)).toBe(true)
-    expect(files.delete('../../first@example.com', storageKey)).toBe(false)
-  })
-
-  it('rejects traversal, absolute paths, and symlink escapes', () => {
-    const directory = stateDirectory()
-    const outside = stateDirectory('crew-mail-outside-')
-    const files = new MailFileStore(directory)
-    expect(() => files.pathFor('account', '../secret')).toThrow(TypeError)
-    expect(() => files.pathFor('account', '/tmp/secret')).toThrow(TypeError)
-
-    fs.mkdirSync(files.directory, { mode: 0o700 })
-    const accountDirectory = createHash('sha256').update('account').digest('hex')
-    fs.symlinkSync(outside, path.join(files.directory, accountDirectory))
-    expect(() => files.create('account', Buffer.from('secret'))).toThrow('Mail attachment storage directory is unsafe')
-    expect(fs.readdirSync(outside)).toEqual([])
-  })
-
-  it('refuses a symlink in place of an attachment', () => {
-    const directory = stateDirectory()
-    const outside = stateDirectory('crew-mail-outside-file-')
-    const files = new MailFileStore(directory)
-    const storageKey = files.create('account', Buffer.from('safe'))
-    const storedPath = files.pathFor('account', storageKey)
-    const outsideFile = path.join(outside, 'secret')
-    fs.writeFileSync(outsideFile, 'outside')
-    fs.rmSync(storedPath)
-    fs.symlinkSync(outsideFile, storedPath)
-
-    expect(() => files.read('account', storageKey)).toThrow()
-    expect(() => files.exists('account', storageKey)).toThrow('Mail attachment file is unsafe')
-    expect(fs.readFileSync(outsideFile, 'utf8')).toBe('outside')
+    const observable = JSON.stringify({
+      mailboxes,
+      messages,
+      imapCommands: server.imapCommands,
+      smtpCommands: server.smtpCommands,
+      smtpMessages: server.smtpMessages
+    })
+    expect(observable).not.toContain(password)
+    expect(observable).not.toContain(Buffer.from(`\0private@gmail.com\0${password}`).toString('base64'))
+    expect(server.imapCommands.some(command => command.includes('[redacted]'))).toBe(true)
+    expect(server.smtpCommands.some(command => command.includes('[redacted]'))).toBe(true)
   })
 })

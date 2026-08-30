@@ -2,14 +2,25 @@ import { randomUUID } from 'node:crypto'
 import type {
   MailAccount,
   MailAccountInput,
+  MailAttachment,
   MailCredentials,
   MailDraft,
   MailLabel,
+  MailMessage,
   MailParticipantInput
 } from '../../shared/mail'
 import { parseMailAccountInput } from '../../shared/mail'
-import type { MailCredentialStore } from './credentials'
-import type { MailFileStore } from './files'
+import { MailCredentialStore } from './credentials'
+import { MailDatabase } from './database'
+import { MailFileStore } from './files'
+import {
+  GmailTransport,
+  type GmailAddress,
+  type GmailMessageBody,
+  type GmailMessageSummary,
+  type GmailOutgoingMessage,
+  type GmailTransportOptions
+} from './gmail'
 import {
   MailScheduler,
   type MailSchedulerEvent,
@@ -25,7 +36,13 @@ import {
   MailSynchronizer,
   type MailSyncEvent,
   type MailSyncStore,
-  type MailSyncTransport
+  type MailSyncTransport,
+  type MailboxFetchRequest,
+  type MailboxFetchResult,
+  type RemoteMailMessage,
+  type RemoteMailbox,
+  type RemoteMailboxStatus,
+  type MailboxSyncState
 } from './sync'
 
 export const MAIL_IPC = {
