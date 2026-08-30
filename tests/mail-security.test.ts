@@ -108,7 +108,8 @@ describe('mail message isolation', () => {
     let source = new DOMParser().parseFromString(frame.getAttribute('srcdoc') ?? '', 'text/html')
 
     expect(source.querySelector('#current')?.textContent).toContain('No worries')
-    expect(source.querySelector('#old')).toBeNull()
+    expect(source.querySelector('#old')?.closest('[data-crew-old-mail]')).toBeTruthy()
+    expect(source.documentElement.hasAttribute('data-crew-show-old-mail')).toBe(false)
     const show = view.getByRole('button', { name: 'Show earlier mail' })
     expect(show.getAttribute('aria-expanded')).toBe('false')
 
@@ -116,6 +117,7 @@ describe('mail message isolation', () => {
     source = new DOMParser().parseFromString(frame.getAttribute('srcdoc') ?? '', 'text/html')
 
     expect(source.querySelector('#old')?.textContent).toContain('Happy Friday')
+    expect(frame.contentDocument?.documentElement.hasAttribute('data-crew-show-old-mail')).toBe(true)
     const hide = view.getByRole('button', { name: 'Hide earlier mail' })
     expect(hide.getAttribute('aria-expanded')).toBe('true')
 
@@ -126,6 +128,7 @@ describe('mail message isolation', () => {
 
     fireEvent.click(hide)
     expect(frame.style.height).toBe('24px')
+    expect(frame.contentDocument?.documentElement.hasAttribute('data-crew-show-old-mail')).toBe(false)
     expect(view.getByRole('button', { name: 'Show earlier mail' })).toBeTruthy()
   })
 
@@ -141,7 +144,8 @@ describe('mail message isolation', () => {
     for (const html of samples) {
       expect(hasQuotedMail(html)).toBe(true)
       const collapsed = new DOMParser().parseFromString(safeMailDocument(html, 'dark', false), 'text/html')
-      expect(collapsed.body.textContent).toBe('New')
+      expect(collapsed.documentElement.hasAttribute('data-crew-show-old-mail')).toBe(false)
+      expect(collapsed.querySelectorAll('[data-crew-old-mail]').length).toBeGreaterThan(0)
     }
   })
 
