@@ -34,6 +34,7 @@ import type { Said } from '../../shared/scribeSaid'
 import type { CreateStickyInput, Sticky, UpdateStickyInput } from '../../shared/stickies'
 import type { CurrentSession, OpenOptions, ProjectPlan } from '../../shared/session'
 import type { UpdateState } from '../../shared/update'
+import type { AppMenuAction, AppMenuContext } from '../../shared/appMenu'
 
 declare global {
   interface CrewBridge {
@@ -172,6 +173,8 @@ declare global {
     onFindInPage(listener: () => void): () => void
     registerBrowserView(id: number): void
     onCrewTrouble(listener: (message: string) => void): () => void
+    setMenuContext(context: AppMenuContext): void
+    onMenuAction(listener: (action: AppMenuAction) => void): () => void
   }
 
   interface WebviewElement extends HTMLElement {

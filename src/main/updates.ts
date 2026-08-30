@@ -82,6 +82,10 @@ export class Updates {
     return this.state
   }
 
+  checkNow(): void {
+    if (this.live) this.check()
+  }
+
   press(): void {
     if (!this.live || this.going || !this.landed) return
     void this.install()

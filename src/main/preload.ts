@@ -39,6 +39,7 @@ import type { ScribeKeyState, ScribeSettings } from '../shared/scribe'
 import type { Said } from '../shared/scribeSaid'
 import type { CreateStickyInput, Sticky, UpdateStickyInput } from '../shared/stickies'
 import type { UpdateState } from '../shared/update'
+import type { AppMenuAction, AppMenuContext } from '../shared/appMenu'
 import type { CurrentSession, OpenOptions, ProjectPlan } from './session'
 import type { TerminalSize } from './terminal'
 
@@ -373,6 +374,14 @@ const bridge = {
     ipcRenderer.on('crew:trouble', handler)
     return () => {
       ipcRenderer.removeListener('crew:trouble', handler)
+    }
+  },
+  setMenuContext: (context: AppMenuContext): void => ipcRenderer.send('menu:context', context),
+  onMenuAction: (listener: (action: AppMenuAction) => void): (() => void) => {
+    const handler = (_event: unknown, action: AppMenuAction): void => listener(action)
+    ipcRenderer.on('menu:action', handler)
+    return () => {
+      ipcRenderer.removeListener('menu:action', handler)
     }
   }
 }

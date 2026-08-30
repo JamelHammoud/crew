@@ -72,6 +72,12 @@ import { OtherInstances } from './instances'
 import { Crews } from './crews'
 import { cloneRepository } from './repository-clone'
 import type { LivePlace } from '../shared/places'
+import { joinPlace, projectPlace } from '../shared/places'
+import {
+  EMPTY_APP_MENU_CONTEXT,
+  type AppMenuAction,
+  type AppMenuContext
+} from '../shared/appMenu'
 import { popOutTarget, poppedKey } from '../shared/popOut'
 import { type NewAgent, type OpenOptions } from './session'
 import { Terminals, type TerminalSize } from './terminal'
@@ -120,6 +126,7 @@ const playing = new Map<number, Media>()
 const stickies = new StickyStore(stateDir)
 const stickiesWindows = new Set<BrowserWindow>()
 const stickyWindows = new Map<string, BrowserWindow>()
+const menuContexts = new Map<number, AppMenuContext>()
 // One window a thread. Asked for a thread that already has one, the window that
 // is standing is brought forward rather than a second one opened onto the same
 // conversation.
@@ -328,8 +335,65 @@ function applyIcon(theme: IconTheme, icon: AppIconId): void {
   for (const win of appWindows()) win.setIcon(appIcon(theme, icon))
 }
 
+function menuWindow(): BrowserWindow | null {
+  const focused = BrowserWindow.getFocusedWindow()
+  if (focused && !tray.owns(focused) && !scribe.owns(focused)) return focused
+  return appWindows().find(win => win.isVisible()) ?? appWindows()[0] ?? null
+}
+
+function menuAction(action: AppMenuAction): void {
+  if (action === 'check-updates') {
+    updates.checkNow()
+    return
+  }
+  const win = menuWindow()
+  if (win && !win.webContents.isDestroyed()) win.webContents.send('menu:action', action)
+}
+
+async function openProjectWindow(key: string): Promise<boolean> {
+  const win = createWindow(undefined, false)
+  try {
+    const opened = await crews.openIn(win.webContents.id, key)
+    if (!opened) {
+      win.destroy()
+      return false
+    }
+    loadWindow(win)
+    warmTerminals()
+    return true
+  } catch (error) {
+    win.destroy()
+    throw error
+  }
+}
+
 function installMenu(): void {
-  Menu.setApplicationMenu(Menu.buildFromTemplate(appMenuTemplate(process.platform, inspectable)))
+  const win = menuWindow()
+  const context = win ? menuContexts.get(win.webContents.id) : null
+  const recent = [
+    ...crews.recentProjects().map(project => ({
+      label: path.basename(project.folder),
+      key: projectPlace(project.folder),
+      at: project.openedAt
+    })),
+    ...crews.recentJoins().map(join => ({
+      label: path.basename(join.folder),
+      key: joinPlace(join.link),
+      at: join.joinedAt
+    }))
+  ]
+    .sort((a, b) => b.at - a.at)
+    .slice(0, 10)
+    .map(item => ({ label: item.label, click: () => void openProjectWindow(item.key) }))
+  Menu.setApplicationMenu(
+    Menu.buildFromTemplate(
+      appMenuTemplate(process.platform, inspectable, {
+        context: context ?? EMPTY_APP_MENU_CONTEXT,
+        onAction: menuAction,
+        recent
+      })
+    )
+  )
 }
 
 app.on('web-contents-created', (_event, contents) => {
@@ -680,7 +744,6 @@ app.whenReady().then(async () => {
   })
   void mailRuntime.start().catch(() => emitMail(MAIL_RENDERER_EVENTS.online, false))
   applyIcon(iconTheme, chosenIcon)
-  installMenu()
   tray.install()
   // An installed Crew is the only kind an installer replaces, so it is the only
   // kind an update waits for. A run from source stands nowhere the installer will
@@ -703,6 +766,7 @@ app.whenReady().then(async () => {
   crews.setProjectsPath(path.join(stateDir, 'projects'))
   crews.setPersonalPath(path.join(stateDir, 'personal'))
   crews.setServersPath(path.join(stateDir, 'model-servers.json'))
+  installMenu()
   setPluginOauthPath(path.join(stateDir, 'plugin-oauth.json'))
   crews.onTrouble = message => {
     for (const win of appWindows()) win.webContents.send('crew:trouble', message)
@@ -818,22 +882,7 @@ app.whenReady().then(async () => {
     const win = BrowserWindow.fromWebContents(event.sender)
     if (win && standaloneBrowsers.has(win)) win.close()
   })
-  ipcMain.handle('window:open-project', async (_event, key: string) => {
-    const win = createWindow(undefined, false)
-    try {
-      const opened = await crews.openIn(win.webContents.id, key)
-      if (!opened) {
-        win.destroy()
-        return false
-      }
-      loadWindow(win)
-      warmTerminals()
-      return true
-    } catch (error) {
-      win.destroy()
-      throw error
-    }
-  })
+  ipcMain.handle('window:open-project', (_event, key: string) => openProjectWindow(key))
   ipcMain.handle('window:open-personal', async (_event, name: string) => {
     const win = createWindow(undefined, false, true)
     try {
