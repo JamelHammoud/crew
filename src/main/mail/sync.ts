@@ -293,7 +293,10 @@ export class MailSynchronizer {
     )
     await this.applyFetch(mailbox.id, fetched)
     const lastUid = latestUid(fetched.messages, Math.max(0, status.uidNext - 1))
-    const hydratedFromUid = earliestUid(fetched.messages, status.uidNext)
+    const hydratedFromUid = Math.min(
+      earliestUid(fetched.messages, status.uidNext),
+      fetched.nextBeforeUid ?? status.uidNext
+    )
     const state: MailboxSyncState = {
       accountId: this.accountId,
       mailboxId: mailbox.id,
@@ -301,7 +304,9 @@ export class MailSynchronizer {
       lastUid,
       hydratedFromUid,
       highestModSeq: fetched.highestModSeq ?? status.highestModSeq,
-      fullyHydrated: fetched.messages.length < this.recentLimit || hydratedFromUid <= 1,
+      fullyHydrated: fetched.nextBeforeUid === undefined
+        ? fetched.messages.length < this.recentLimit || hydratedFromUid <= 1
+        : hydratedFromUid <= 1,
       syncedAt: this.clock()
     }
     await this.store.putSyncState(state)
