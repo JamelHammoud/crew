@@ -276,7 +276,7 @@ describe('mail list and reader', () => {
     expect(screen.getByText('menu.pdf')).toBeTruthy()
   })
 
-  it('shows every message address on hover and copies it from the name', async () => {
+  it('shows every message address and its copy control on hover', async () => {
     bridge.getThread.mockResolvedValue({
       ...dinnerThread,
       messages: dinnerThread.messages.map(message => message.id === 'dinner-two'
@@ -296,13 +296,15 @@ describe('mail list and reader', () => {
     expect(screen.getByRole('button', { name: 'Copy Lee <lee@example.com>' })).toBeTruthy()
 
     const sender = screen.getAllByRole('button', { name: `Copy Jamel <${personal.email}>` }).at(-1)!
-    expect(sender.querySelector('svg')).toBeTruthy()
+    expect(sender.querySelector('svg')).toBeNull()
     fireEvent.mouseEnter(sender)
     expect(await screen.findByText(personal.email)).toBeTruthy()
-    fireEvent.click(sender)
+    const copy = screen.getByRole('button', { name: 'Copy email address' })
+    expect(copy.querySelector('svg')).toBeTruthy()
+    fireEvent.click(copy)
 
     await waitFor(() => expect(writeClipboard).toHaveBeenCalledWith(personal.email))
-    expect(await screen.findByText('Copied')).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Email copied' })).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Collapse message' })).toBeTruthy()
   })
 

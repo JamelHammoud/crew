@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { toast } from '../../state/toast'
-import { CopyGlyph } from '../../icons'
+import { CheckGlyph, CopyGlyph } from '../../icons'
 import Avatar from '../Avatar'
+import HoverCard from '../HoverCard'
 import Tooltip from '../Tooltip'
 
 export const iconButtonClass =
@@ -80,17 +81,32 @@ export function MailAddressButton({
   }
 
   return (
-    <Tooltip label={copied ? 'Copied' : email} className="min-w-0 max-w-full">
+    <HoverCard
+      hug
+      className="min-w-0 max-w-full"
+      content={
+        <span className="flex items-center gap-2 pl-1 text-xs text-fg/70">
+          <span className="select-text">{email}</span>
+          <button
+            type="button"
+            aria-label={copied ? 'Email copied' : 'Copy email address'}
+            onClick={() => void copy()}
+            className="w-7 h-7 shrink-0 rounded-full flex items-center justify-center text-fg/45 transition-[background-color,color,transform] hover:bg-fg/[0.07] hover:text-fg active:scale-90"
+          >
+            {copied ? <CheckGlyph className="w-3.5 h-3.5" /> : <CopyGlyph className="w-3.5 h-3.5" />}
+          </button>
+        </span>
+      }
+    >
       <button
         type="button"
         aria-label={`Copy ${fullAddress(name, email)}`}
         onClick={() => void copy()}
-        className={`group min-w-0 max-w-full flex items-center gap-1 text-left transition-colors hover:text-fg focus-visible:outline-none focus-visible:text-fg ${className}`}
+        className={`min-w-0 max-w-full truncate text-left transition-colors hover:text-fg focus-visible:outline-none focus-visible:text-fg ${className}`}
       >
-        <span className="min-w-0 truncate">{displayAddress(name, email)}</span>
-        <CopyGlyph className="w-3 h-3 shrink-0 text-fg/25 transition-colors group-hover:text-fg/60 group-focus-visible:text-fg/60" />
+        {displayAddress(name, email)}
       </button>
-    </Tooltip>
+    </HoverCard>
   )
 }
 
