@@ -212,7 +212,7 @@ describe('mail list and reader', () => {
     expect(await screen.findByText('Release checklist')).toBeTruthy()
     expect(screen.getByText('Dinner this weekend')).toBeTruthy()
 
-    fireEvent.click(screen.getByRole('button', { name: 'jamel@gmail.com' }))
+    fireEvent.click(screen.getByRole('button', { name: /^jamel@gmail\.com/ }))
     await waitFor(() => expect(bridge.listThreads).toHaveBeenLastCalledWith(expect.objectContaining({ accountId: 'personal' })))
     expect(await screen.findByText('Dinner this weekend')).toBeTruthy()
     expect(screen.queryByText('Release checklist')).toBeNull()

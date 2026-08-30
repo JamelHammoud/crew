@@ -424,12 +424,14 @@ describe('database-backed mail service over loopback', () => {
       new Set(['Incremental note', 'Dinner this weekend'])
     )
 
+    const selects = runtime.server.imapCommands.filter(command => /SELECT INBOX$/i.test(command)).length
     await runtime.service.stop()
     await runtime.service.start()
+    await expect.poll(() => runtime.server.imapCommands.filter(command => /SELECT INBOX$/i.test(command)).length).toBeGreaterThan(selects)
     runtime.server.deliver('personal-remote', message('Live service delivery', 'Ari <ari@example.com>'))
     await expect.poll(async () =>
       (await runtime.service.listThreads({ accountId: personalAccount.id })).some(thread => thread.subject === 'Live service delivery')
-    ).toBe(true)
+    , { timeout: 3_000 }).toBe(true)
 
     runtime.server.disconnectImap('personal-remote')
     await expect.poll(async () =>
