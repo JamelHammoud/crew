@@ -23,10 +23,8 @@ import {
   MAIL_IPC,
   MAIL_RENDERER_EVENTS,
   type MailBridge,
-  type MailChangedEvent,
   type MailConnectionEvent,
-  type MailNotificationEvent,
-  type MailOnlineEvent,
+  type MailNotification,
   type MailUnreadEvent
 } from '../shared/mail'
 import type { MediaAccess, MediaKind, ScreenSource } from '../shared/media'
@@ -70,13 +68,12 @@ const mailBridge: MailBridge = {
   snoozeThread: (accountId, threadId, wakeAt) =>
     ipcRenderer.invoke(MAIL_IPC.snoozeThread, accountId, threadId, wakeAt),
   onChanged: listener => {
-    const handler = (_event: unknown): void => listener({ type: 'changed' } satisfies MailChangedEvent)
+    const handler = (): void => listener()
     ipcRenderer.on(MAIL_RENDERER_EVENTS.changed, handler)
     return () => ipcRenderer.off(MAIL_RENDERER_EVENTS.changed, handler)
   },
   onOnline: listener => {
-    const handler = (_event: unknown, online: boolean): void =>
-      listener({ type: 'online', online } satisfies MailOnlineEvent)
+    const handler = (_event: unknown, online: boolean): void => listener(online)
     ipcRenderer.on(MAIL_RENDERER_EVENTS.online, handler)
     return () => ipcRenderer.off(MAIL_RENDERER_EVENTS.online, handler)
   },
@@ -91,8 +88,7 @@ const mailBridge: MailBridge = {
     return () => ipcRenderer.off(MAIL_RENDERER_EVENTS.unread, handler)
   },
   onNotification: listener => {
-    const handler = (_event: unknown, notification: MailNotificationEvent['notification']): void =>
-      listener({ type: 'notification', notification })
+    const handler = (_event: unknown, notification: MailNotification): void => listener(notification)
     ipcRenderer.on(MAIL_RENDERER_EVENTS.notification, handler)
     return () => ipcRenderer.off(MAIL_RENDERER_EVENTS.notification, handler)
   }
