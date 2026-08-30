@@ -25,7 +25,7 @@ import Skeleton from '../Skeleton'
 import { toast } from '../../state/toast'
 import MailAttachments from './Attachments'
 import HtmlMessage from './HtmlMessage'
-import { ContactMark, displayAddress, fullAddress, IconButton, mailDate, RecipientLine } from './parts'
+import { ContactMark, displayAddress, fullAddress, IconButton, MailAddressButton, mailDate } from './parts'
 
 function unique(addresses: MailAddress[]): MailAddress[] {
   const seen = new Set<string>()
@@ -46,6 +46,29 @@ function forwardText(message: MailMessage): string {
   return `\n\nFrom: ${fullAddress(message.from.name, message.from.email)}\nDate: ${mailDate(message.date, true)}\nSubject: ${message.subject}\nTo: ${to}\n\n${message.text}`
 }
 
+function AddressList({ addresses }: { addresses: MailAddress[] }) {
+  return (
+    <span className="min-w-0 flex items-baseline overflow-hidden">
+      {addresses.map((address, index) => (
+        <span key={address.email.toLowerCase()} className="min-w-0 flex items-baseline">
+          {index > 0 && <span className="mr-1">,</span>}
+          <MailAddressButton name={address.name} email={address.email} />
+        </span>
+      ))}
+    </span>
+  )
+}
+
+function AddressLine({ label, addresses }: { label: string; addresses: MailAddress[] }) {
+  if (addresses.length === 0) return null
+  return (
+    <span className="flex min-w-0 items-baseline gap-1 text-xs leading-4 text-fg/40">
+      <span className="shrink-0">{label}</span>
+      <AddressList addresses={addresses} />
+    </span>
+  )
+}
+
 function Message({
   message,
   accountEmail,
@@ -60,7 +83,6 @@ function Message({
   onDraft: (mode: 'reply' | 'reply-all' | 'forward') => void
 }) {
   const saveAttachment = useMail(state => state.saveAttachment)
-  const [details, setDetails] = useState(false)
   const [quote, setQuote] = useState(false)
   const others = unique([message.from, ...message.to, ...message.cc]).filter(
     address => address.email.toLowerCase() !== accountEmail.toLowerCase()
@@ -73,53 +95,42 @@ function Message({
 
   return (
     <article className="rounded-card border border-fg/[0.075] overflow-hidden">
-      <button
-        type="button"
-        onClick={onToggle}
-        className="w-full px-4 py-3.5 flex items-center gap-3 text-left transition-colors hover:bg-fg/[0.035] active:scale-[0.997]"
-      >
-        <ContactMark name={message.from.name} email={message.from.email} size="md" />
+      <div className="w-full px-4 py-3.5 flex items-start gap-3 text-left transition-colors hover:bg-fg/[0.025]">
+        <button
+          type="button"
+          aria-label={`${expanded ? 'Collapse' : 'Expand'} message from ${displayAddress(message.from.name, message.from.email)}`}
+          onClick={onToggle}
+          className="shrink-0 rounded-full transition-opacity hover:opacity-80 active:scale-95"
+        >
+          <ContactMark name={message.from.name} email={message.from.email} size="md" />
+        </button>
         <span className="min-w-0 flex-1">
           <span className="flex items-center gap-2">
-            <span className="min-w-0 flex-1 truncate text-sm font-semibold text-fg">
-              {displayAddress(message.from.name, message.from.email)}
-            </span>
-            <time className="text-xs text-fg/35 tabular-nums shrink-0">{mailDate(message.date, true)}</time>
+            <MailAddressButton
+              name={message.from.name}
+              email={message.from.email}
+              className="text-sm font-semibold text-fg"
+            />
+            <time className="ml-auto text-xs text-fg/35 tabular-nums shrink-0">{mailDate(message.date, true)}</time>
           </span>
-          <span className="block mt-0.5 truncate text-xs text-fg/40">
-            to {message.to.map(address => displayAddress(address.name, address.email)).join(', ') || 'me'}
+          <span className="mt-0.5 block space-y-0.5">
+            <AddressLine label="to" addresses={message.to} />
+            <AddressLine label="cc" addresses={message.cc} />
+            <AddressLine label="bcc" addresses={message.bcc} />
           </span>
         </span>
-        {expanded ? (
-          <ChevronUpGlyph className="w-4 h-4 shrink-0 text-fg/30" />
-        ) : (
-          <ChevronDownGlyph className="w-4 h-4 shrink-0 text-fg/30" />
-        )}
-      </button>
+        <button
+          type="button"
+          aria-label={expanded ? 'Collapse message' : 'Expand message'}
+          onClick={onToggle}
+          className="mt-0.5 w-7 h-7 shrink-0 rounded-full flex items-center justify-center text-fg/30 transition-colors hover:bg-fg/[0.07] hover:text-fg active:scale-90"
+        >
+          {expanded ? <ChevronUpGlyph className="w-4 h-4" /> : <ChevronDownGlyph className="w-4 h-4" />}
+        </button>
+      </div>
 
       {expanded && (
         <div className="px-4 pb-5 sm:px-5 sm:pb-6">
-          <button
-            type="button"
-            onClick={() => setDetails(value => !value)}
-            className="mb-5 text-xs text-fg/35 transition-colors hover:text-fg/70"
-          >
-            {details ? 'Hide details' : 'Message details'}
-          </button>
-          {details && (
-            <div className="mb-5 rounded-xl bg-fg/[0.035] px-3 py-2.5 space-y-0.5">
-              <RecipientLine label="From">{fullAddress(message.from.name, message.from.email)}</RecipientLine>
-              <RecipientLine label="To">
-                {message.to.map(address => fullAddress(address.name, address.email)).join(', ')}
-              </RecipientLine>
-              {message.cc.length > 0 && (
-                <RecipientLine label="Cc">
-                  {message.cc.map(address => fullAddress(address.name, address.email)).join(', ')}
-                </RecipientLine>
-              )}
-            </div>
-          )}
-
           <div className="select-text">
             <HtmlMessage html={message.html} text={message.text} />
           </div>

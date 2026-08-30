@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react'
+import { useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import Avatar from '../Avatar'
 import Tooltip from '../Tooltip'
 
@@ -50,6 +50,43 @@ export function fullAddress(name: string | undefined, email: string): string {
   return name?.trim() ? `${name.trim()} <${email}>` : email
 }
 
+export function MailAddressButton({
+  name,
+  email,
+  className = ''
+}: {
+  name?: string
+  email: string
+  className?: string
+}) {
+  const [copied, setCopied] = useState(false)
+  const reset = useRef<number | null>(null)
+
+  useEffect(() => () => {
+    if (reset.current !== null) window.clearTimeout(reset.current)
+  }, [])
+
+  const copy = async () => {
+    await navigator.clipboard.writeText(email)
+    setCopied(true)
+    if (reset.current !== null) window.clearTimeout(reset.current)
+    reset.current = window.setTimeout(() => setCopied(false), 1200)
+  }
+
+  return (
+    <Tooltip label={copied ? `Copied ${email}` : `${email} · Click to copy`} className="min-w-0 max-w-full">
+      <button
+        type="button"
+        aria-label={`Copy ${fullAddress(name, email)}`}
+        onClick={() => void copy()}
+        className={`min-w-0 max-w-full truncate text-left underline decoration-transparent underline-offset-2 transition-[color,text-decoration-color] hover:text-fg hover:decoration-fg/25 focus-visible:outline-none focus-visible:text-fg focus-visible:decoration-fg/40 ${className}`}
+      >
+        {displayAddress(name, email)}
+      </button>
+    </Tooltip>
+  )
+}
+
 export function mailDate(value: string, long = false): string {
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return value
@@ -81,13 +118,4 @@ export function fileSize(bytes: number): string {
 export function initials(value: string): string {
   const words = value.trim().split(/\s+/)
   return (words.length > 1 ? `${words[0][0]}${words.at(-1)?.[0] ?? ''}` : words[0]?.slice(0, 2) || '?').toUpperCase()
-}
-
-export function RecipientLine({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <div className="flex gap-2 text-xs leading-5">
-      <span className="w-7 shrink-0 text-fg/35">{label}</span>
-      <span className="min-w-0 text-fg/60 break-words">{children}</span>
-    </div>
-  )
 }
