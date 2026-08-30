@@ -89,7 +89,7 @@ export default function MailSetup({ compact = false, onDone }: { compact?: boole
 
           {trouble && (
             <div role="alert" className="rounded-xl bg-danger/10 px-4 py-3 text-sm text-danger">
-              {trouble} Check the address and app password, then try again.
+              {trouble} Turn on 2-Step Verification and create a new 16-character app password. Managed Google accounts may block app passwords.
             </div>
           )}
 

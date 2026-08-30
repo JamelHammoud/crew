@@ -102,6 +102,20 @@ describe('mail attachment storage', () => {
     expect(fs.statSync(files.pathFor('account', stored.storageKey)).mode & 0o777).toBe(0o600)
   })
 
+  it('refuses streamed directories and symbolic links', async () => {
+    const directory = stateDirectory()
+    const sourceDirectory = stateDirectory('crew-mail-source-')
+    const source = path.join(sourceDirectory, 'source.txt')
+    const link = path.join(sourceDirectory, 'link.txt')
+    fs.writeFileSync(source, 'private')
+    fs.symlinkSync(source, link)
+    const files = new MailFileStore(directory)
+
+    await expect(files.createFromPath('account', sourceDirectory)).rejects.toThrow('Mail attachment source is not a file')
+    await expect(files.createFromPath('account', link)).rejects.toThrow()
+    expect(fs.existsSync(files.directory) ? fs.readdirSync(files.directory) : []).toEqual([])
+  })
+
   it('rejects traversal, absolute paths, and symlink escapes', () => {
     const directory = stateDirectory()
     const outside = stateDirectory('crew-mail-outside-')
