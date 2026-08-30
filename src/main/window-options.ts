@@ -287,9 +287,26 @@ export function appMenuTemplate(
         { role: 'copy' },
         { role: 'paste' },
         { role: 'selectAll' },
-        { type: 'separator' },
-        { role: 'startSpeaking' },
-        { role: 'stopSpeaking' }
+        ...(isMac
+          ? [
+              { type: 'separator' as const },
+              { role: 'toggleSpellChecker' as const },
+              {
+                label: 'Substitutions',
+                submenu: [
+                  { role: 'showSubstitutions' as const },
+                  { type: 'separator' as const },
+                  { role: 'toggleSmartQuotes' as const },
+                  { role: 'toggleSmartDashes' as const },
+                  { role: 'toggleTextReplacement' as const }
+                ]
+              },
+              {
+                label: 'Speech',
+                submenu: [{ role: 'startSpeaking' as const }, { role: 'stopSpeaking' as const }]
+              }
+            ]
+          : [])
       ]
     },
     {
