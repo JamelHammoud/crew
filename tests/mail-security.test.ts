@@ -1,6 +1,5 @@
-import { JSDOM } from 'jsdom'
-import { createElement, act } from 'react'
-import { createRoot, type Root } from 'react-dom/client'
+import { act, cleanup, render } from '@testing-library/react'
+import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { GmailTransport } from '../src/main/mail/gmail'
 import HtmlMessage from '../src/renderer/src/components/mail/HtmlMessage'
@@ -11,45 +10,25 @@ class Observer {
   disconnect(): void {}
 }
 
-let dom: JSDOM
-let root: Root
-let container: HTMLDivElement
 let server: GmailLoopbackServer | null
 let transport: GmailTransport | null
 
-function expose(name: string, value: unknown): void {
-  Object.defineProperty(globalThis, name, { configurable: true, writable: true, value })
-}
-
 beforeEach(() => {
-  dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>', { url: 'https://crew.test' })
-  expose('window', dom.window)
-  expose('document', dom.window.document)
-  expose('navigator', dom.window.navigator)
-  expose('DOMParser', dom.window.DOMParser)
-  expose('Element', dom.window.Element)
-  expose('HTMLElement', dom.window.HTMLElement)
-  expose('HTMLIFrameElement', dom.window.HTMLIFrameElement)
-  expose('MouseEvent', dom.window.MouseEvent)
-  expose('ResizeObserver', Observer)
-  expose('IS_REACT_ACT_ENVIRONMENT', true)
-  container = dom.window.document.querySelector('#root') as HTMLDivElement
-  root = createRoot(container)
+  Object.assign(globalThis, { ResizeObserver: Observer, IS_REACT_ACT_ENVIRONMENT: true })
   server = null
   transport = null
 })
 
 afterEach(async () => {
-  if (root) await act(async () => root.unmount())
+  cleanup()
   if (transport) await transport.close().catch(() => {})
   if (server) await server.close()
-  dom.window.close()
   vi.restoreAllMocks()
 })
 
 async function draw(html: string): Promise<HTMLIFrameElement> {
-  await act(async () => root.render(createElement(HtmlMessage, { html, text: '' })))
-  return container.querySelector('iframe') as HTMLIFrameElement
+  const view = render(createElement(HtmlMessage, { html, text: '' }))
+  return view.container.querySelector('iframe') as HTMLIFrameElement
 }
 
 describe('mail message isolation', () => {
@@ -64,7 +43,7 @@ describe('mail message isolation', () => {
       <p id="copy" onmouseover="alert(3)" srcdoc="bad">Safe words</p>
     `)
     const source = frame.getAttribute('srcdoc') ?? ''
-    const parsed = new JSDOM(source).window.document
+    const parsed = new DOMParser().parseFromString(source, 'text/html')
 
     expect(parsed.querySelector('script, iframe, object, form, input, button')).toBeNull()
     expect(parsed.querySelector('#script')?.hasAttribute('href')).toBe(false)
@@ -84,7 +63,7 @@ describe('mail message isolation', () => {
       <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==">
     `)
     const blocked = frame.getAttribute('srcdoc') ?? ''
-    const hidden = new JSDOM(blocked).window.document
+    const hidden = new DOMParser().parseFromString(blocked, 'text/html')
     const images = [...hidden.querySelectorAll('img')]
 
     expect(images[0].hasAttribute('src')).toBe(false)
@@ -94,26 +73,26 @@ describe('mail message isolation', () => {
     expect(images[2].getAttribute('src')).toMatch(/^data:/)
     expect(blocked).toContain(`img-src data: blob:`)
     expect(blocked).not.toContain(`img-src data: blob: http: https:`)
-    expect(container.querySelector('button')?.textContent).toContain('Show 2 images')
+    expect(document.querySelector('button')?.textContent).toContain('Show 2 images')
 
-    await act(async () => container.querySelector('button')?.click())
+    await act(async () => document.querySelector('button')?.click())
     const shown = frame.getAttribute('srcdoc') ?? ''
     expect(shown).toMatch(/img-src [^;]*http: https:/)
     expect(shown).toContain('src="https://track.example/pixel.gif"')
-    expect(container.querySelector('button')?.textContent).toContain('Hide images')
+    expect(document.querySelector('button')?.textContent).toContain('Hide images')
   })
 
   it('routes web and mail links through the main-process bridge', async () => {
     const openExternal = vi.fn(async () => true)
-    Object.assign(dom.window, { crew: { openExternal } })
+    Object.assign(window, { crew: { openExternal } })
     const frame = await draw('<a href="https://crew.test/read">Read</a><a href="mailto:ali@example.com">Write</a>')
     const document = frame.contentDocument!
     document.body.innerHTML = '<a id="web" href="https://crew.test/read">Read</a><a id="mail" href="mailto:ali@example.com">Write</a><a id="local" href="#inside">Inside</a>'
 
     await act(async () => {
-      document.querySelector('#web')?.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true, cancelable: true }))
-      document.querySelector('#mail')?.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true, cancelable: true }))
-      document.querySelector('#local')?.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true, cancelable: true }))
+      document.querySelector('#web')?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+      document.querySelector('#mail')?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+      document.querySelector('#local')?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
     })
 
     expect(openExternal.mock.calls).toEqual([['https://crew.test/read'], ['mailto:ali@example.com']])
