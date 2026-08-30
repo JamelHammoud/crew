@@ -17,20 +17,22 @@ let container: HTMLDivElement
 let server: GmailLoopbackServer | null
 let transport: GmailTransport | null
 
+function expose(name: string, value: unknown): void {
+  Object.defineProperty(globalThis, name, { configurable: true, writable: true, value })
+}
+
 beforeEach(() => {
   dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>', { url: 'https://crew.test' })
-  Object.assign(globalThis, {
-    window: dom.window,
-    document: dom.window.document,
-    navigator: dom.window.navigator,
-    DOMParser: dom.window.DOMParser,
-    Element: dom.window.Element,
-    HTMLElement: dom.window.HTMLElement,
-    HTMLIFrameElement: dom.window.HTMLIFrameElement,
-    MouseEvent: dom.window.MouseEvent,
-    ResizeObserver: Observer,
-    IS_REACT_ACT_ENVIRONMENT: true
-  })
+  expose('window', dom.window)
+  expose('document', dom.window.document)
+  expose('navigator', dom.window.navigator)
+  expose('DOMParser', dom.window.DOMParser)
+  expose('Element', dom.window.Element)
+  expose('HTMLElement', dom.window.HTMLElement)
+  expose('HTMLIFrameElement', dom.window.HTMLIFrameElement)
+  expose('MouseEvent', dom.window.MouseEvent)
+  expose('ResizeObserver', Observer)
+  expose('IS_REACT_ACT_ENVIRONMENT', true)
   container = dom.window.document.querySelector('#root') as HTMLDivElement
   root = createRoot(container)
   server = null
@@ -38,7 +40,7 @@ beforeEach(() => {
 })
 
 afterEach(async () => {
-  await act(async () => root.unmount())
+  if (root) await act(async () => root.unmount())
   if (transport) await transport.close().catch(() => {})
   if (server) await server.close()
   dom.window.close()

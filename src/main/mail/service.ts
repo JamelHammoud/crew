@@ -29,6 +29,7 @@ import {
   type SnoozedMessage
 } from './scheduler'
 import {
+  mailAttachmentUrl,
   serveMailScheme,
   type MailAttachment as SchemeAttachment
 } from './scheme'
