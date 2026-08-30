@@ -1191,6 +1191,12 @@ export class MailDatabaseServiceStore implements MailServiceStore {
         people.set(participant.email, participant)
       }
     }
+    const threadMailboxes = mailboxIds(messages)
+    if (this.database.listDueSnoozes(Number.MAX_SAFE_INTEGER, 200).some(item =>
+      item.accountId === accountId && item.threadId === id
+    )) {
+      threadMailboxes.push('snoozed')
+    }
     return {
       id,
       accountId,
@@ -1203,7 +1209,7 @@ export class MailDatabaseServiceStore implements MailServiceStore {
       important: messages.some(message => message.labels.some(label => label.type === 'important')),
       hasAttachments: messages.some(message => message.attachments.length > 0),
       messageCount: messages.length,
-      mailboxIds: mailboxIds(messages),
+      mailboxIds: [...new Set(threadMailboxes)],
       labelIds: [...new Set(messages.flatMap(message => message.labels.map(label => label.id)))]
     }
   }
