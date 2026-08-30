@@ -242,6 +242,218 @@ export interface MailCredentials {
   expiresAt?: number
 }
 
+export const MAIL_IPC = {
+  listAccounts: 'mail:list-accounts',
+  connectAccount: 'mail:connect-account',
+  removeAccount: 'mail:remove-account',
+  reconnectAccount: 'mail:reconnect-account',
+  updateAccount: 'mail:update-account',
+  listThreads: 'mail:list-threads',
+  getThread: 'mail:get-thread',
+  sync: 'mail:sync',
+  setThreadState: 'mail:set-thread-state',
+  saveDraft: 'mail:save-draft',
+  discardDraft: 'mail:discard-draft',
+  sendDraft: 'mail:send-draft',
+  addAttachment: 'mail:add-attachment',
+  saveAttachment: 'mail:save-attachment',
+  printThread: 'mail:print-thread',
+  snoozeThread: 'mail:snooze-thread'
+} as const
+
+export const MAIL_RENDERER_EVENTS = {
+  changed: 'mail:changed',
+  online: 'mail:online',
+  connection: 'mail:connection',
+  unread: 'mail:unread',
+  notification: 'mail:notification'
+} as const
+
+export type MailAccountStatus = 'connected' | 'syncing' | 'offline' | 'error'
+export type MailboxId = 'inbox' | 'starred' | 'snoozed' | 'sent' | 'drafts' | 'scheduled' | 'all' | 'spam' | 'trash'
+
+export interface MailAddressView {
+  name?: string
+  email: string
+}
+
+export interface MailLabelView {
+  id: string
+  name: string
+  color?: string
+  unread?: number
+}
+
+export interface MailAccountView {
+  id: string
+  email: string
+  displayName: string
+  status: MailAccountStatus
+  unread: number
+  signature?: string
+  labels: MailLabelView[]
+  problem?: string
+}
+
+export interface MailAttachmentView {
+  id: string
+  name: string
+  mime: string
+  size: number
+  url?: string
+  data?: string
+}
+
+export interface MailThreadSummaryView {
+  id: string
+  accountId: string
+  subject: string
+  participants: MailAddressView[]
+  preview: string
+  date: string
+  unread: boolean
+  starred: boolean
+  important?: boolean
+  hasAttachments?: boolean
+  messageCount: number
+  mailboxIds: MailboxId[]
+  labelIds: string[]
+}
+
+export interface MailMessageView {
+  id: string
+  threadId: string
+  accountId: string
+  from: MailAddressView
+  to: MailAddressView[]
+  cc: MailAddressView[]
+  bcc: MailAddressView[]
+  subject: string
+  date: string
+  text: string
+  html?: string
+  quotedText?: string
+  unread: boolean
+  starred: boolean
+  attachments: MailAttachmentView[]
+}
+
+export interface MailThreadView extends MailThreadSummaryView {
+  messages: MailMessageView[]
+}
+
+export interface MailThreadQueryView {
+  accountId?: string
+  mailboxId?: MailboxId
+  labelId?: string
+  query?: string
+}
+
+export interface MailDraftViewInput {
+  id: string
+  accountId: string
+  to: MailAddressView[]
+  cc: MailAddressView[]
+  bcc: MailAddressView[]
+  subject: string
+  text: string
+  html?: string
+  attachments: MailAttachmentView[]
+  replyTo?: string
+  forwardOf?: string
+}
+
+export interface MailDraftView extends MailDraftViewInput {
+  updatedAt: string
+  minimized: boolean
+  saving: boolean
+  saved: boolean
+  sending: boolean
+  scheduledFor?: string
+  problem?: string
+}
+
+export interface MailSavedDraftResult {
+  id: string
+  updatedAt: string
+}
+
+export interface MailThreadStatePatch {
+  read?: boolean
+  starred?: boolean
+  mailboxId?: MailboxId
+  addLabelId?: string
+  removeLabelId?: string
+}
+
+export interface MailAttachmentUpload {
+  name: string
+  mime: string
+  bytes: Uint8Array
+}
+
+export interface MailNotification {
+  accountId: string
+  threadId: string
+  messageId: string
+  title: string
+  body: string
+}
+
+export interface MailChangedEvent {
+  type: 'changed'
+  accountId?: string
+}
+
+export interface MailOnlineEvent {
+  type: 'online'
+  online: boolean
+}
+
+export interface MailConnectionEvent {
+  type: 'connection'
+  accountId: string
+  status: MailAccountStatus
+  problem?: string
+}
+
+export interface MailUnreadEvent {
+  type: 'unread'
+  accountId: string
+  unread: number
+}
+
+export interface MailNotificationEvent {
+  type: 'notification'
+  notification: MailNotification
+}
+
+export type MailServiceEvent = MailChangedEvent | MailOnlineEvent | MailConnectionEvent | MailUnreadEvent | MailNotificationEvent
+
+export interface MailBridge {
+  listAccounts(): Promise<MailAccountView[]>
+  connectAccount(input: { email: string; displayName: string; appPassword: string }): Promise<MailAccountView>
+  removeAccount(accountId: string): Promise<void>
+  reconnectAccount(accountId: string, appPassword?: string): Promise<MailAccountView>
+  updateAccount(accountId: string, patch: { displayName?: string; signature?: string }): Promise<MailAccountView>
+  listThreads(query: MailThreadQueryView): Promise<MailThreadSummaryView[]>
+  getThread(accountId: string, threadId: string): Promise<MailThreadView>
+  sync(accountId?: string): Promise<{ accounts: MailAccountView[]; threads: MailThreadSummaryView[] }>
+  setThreadState(accountId: string, threadIds: string[], patch: MailThreadStatePatch): Promise<void>
+  saveDraft(draft: MailDraftViewInput): Promise<MailSavedDraftResult>
+  discardDraft(accountId: string, draftId: string): Promise<void>
+  sendDraft(draft: MailDraftViewInput, sendAt?: string): Promise<void>
+  addAttachment(accountId: string, draftId: string, file: File): Promise<MailAttachmentView>
+  saveAttachment(accountId: string, messageId: string, attachmentId: string): Promise<void>
+  printThread(accountId: string, threadId: string): Promise<void>
+  snoozeThread(accountId: string, threadId: string, wakeAt: number): Promise<void>
+  onChanged(listener: (event: MailChangedEvent) => void): () => void
+  onOnline(listener: (event: MailOnlineEvent) => void): () => void
+  onConnection(listener: (event: MailConnectionEvent) => void): () => void
+  onUnread(listener: (event: MailUnreadEvent) => void): () => void
+  onNotification(listener: (event: MailNotificationEvent) => void): () => void
+}
+
 function record(value: unknown, name: string): Record<string, unknown> {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) throw new TypeError(`${name} must be an object`)
   return value as Record<string, unknown>
