@@ -15,8 +15,8 @@ import type {
   MailMessageView,
   MailMessage,
   MailNotification,
-  MailParticipantInput
-  ,MailSavedDraftResult,
+  MailParticipantInput,
+  MailSavedDraftResult,
   MailServiceEvent,
   MailThreadQueryView,
   MailThreadStatePatch,
