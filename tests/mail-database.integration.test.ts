@@ -162,4 +162,35 @@ describe('mail database', () => {
     expect(database.listMessages('first').items).toEqual([])
     database.close()
   })
+
+  it('persists signatures and migrates account databases created before signatures', async () => {
+    const directory = stateDirectory()
+    const file = path.join(directory, 'mail.sqlite')
+    const { createRequire } = await import('node:module')
+    const { DatabaseSync } = createRequire(import.meta.url)('node:sqlite') as typeof import('node:sqlite')
+    const legacy = new DatabaseSync(file)
+    legacy.exec(`
+      CREATE TABLE accounts (
+        id TEXT PRIMARY KEY,
+        provider TEXT NOT NULL,
+        email TEXT NOT NULL,
+        display_name TEXT NOT NULL,
+        sync_enabled INTEGER NOT NULL,
+        last_synced_at INTEGER,
+        created_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL,
+        UNIQUE(provider, email)
+      ) STRICT;
+      INSERT INTO accounts VALUES ('first', 'gmail', 'first@example.com', 'First', 1, NULL, 1, 1);
+    `)
+    legacy.close()
+
+    const database = new MailDatabase(directory, () => 20)
+    expect(database.getAccount('first')).toMatchObject({ signature: '' })
+    database.upsertAccount({ id: 'first', provider: 'gmail', email: 'first@example.com', signature: 'Kind regards' })
+    expect(database.getAccount('first')).toMatchObject({ displayName: 'First', signature: 'Kind regards' })
+    database.upsertAccount({ id: 'first', provider: 'gmail', email: 'first@example.com', displayName: 'One' })
+    expect(database.getAccount('first')).toMatchObject({ displayName: 'One', signature: 'Kind regards' })
+    database.close()
+  })
 })

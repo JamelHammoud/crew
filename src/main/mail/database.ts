@@ -126,6 +126,7 @@ export class MailDatabase {
 
   upsertAccount(value: MailAccountInput): MailAccount {
     const input = parseMailAccountInput(value)
+    const existing = this.getAccount(input.id)
     const now = this.clock()
     this.database.prepare(`
       INSERT INTO accounts (id, provider, email, display_name, signature, sync_enabled, created_at, updated_at)
@@ -137,7 +138,16 @@ export class MailDatabase {
         signature = excluded.signature,
         sync_enabled = excluded.sync_enabled,
         updated_at = excluded.updated_at
-    `).run(input.id, input.provider, input.email, input.displayName ?? '', input.signature ?? '', input.syncEnabled === false ? 0 : 1, now, now)
+    `).run(
+      input.id,
+      input.provider,
+      input.email,
+      input.displayName ?? existing?.displayName ?? '',
+      input.signature ?? existing?.signature ?? '',
+      input.syncEnabled === undefined ? (existing?.syncEnabled === false ? 0 : 1) : (input.syncEnabled ? 1 : 0),
+      now,
+      now
+    )
     return this.getAccount(input.id) as MailAccount
   }
 
@@ -622,7 +632,7 @@ export class MailDatabase {
 
   private indexMessage(accountId: string, messageId: string): void {
     const row = this.database.prepare(`
-      SELECT m.subject, m.body_text, COALESCE(GROUP_CONCAT(p.name || ' ' || p.email, ' '), '') AS participant_text
+      SELECT m.subject, m.body_text, COALESCE(GROUP_CONCAT(COALESCE(p.name, '') || ' ' || p.email, ' '), '') AS participant_text
       FROM messages m
       LEFT JOIN participants p ON p.account_id = m.account_id AND p.message_id = m.id
       WHERE m.account_id = ? AND m.id = ?
