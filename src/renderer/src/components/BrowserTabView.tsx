@@ -16,6 +16,7 @@ export function viewFor(id: string): WebviewElement | null {
 
 export default function BrowserTabView({ tab, active }: { tab: BrowserTab; active: boolean }) {
   const ref = useRef<WebviewElement>(null)
+  const requested = useRef(tab.initialUrl)
 
   useEffect(() => {
     const view = ref.current
@@ -78,8 +79,9 @@ export default function BrowserTabView({ tab, active }: { tab: BrowserTab; activ
     const view = ref.current
     if (!view || typeof view.getURL !== 'function' || typeof view.loadURL !== 'function' || !tab.initialUrl) return
     const load = () => {
+      if (requested.current === tab.initialUrl) return
       try {
-        if (view.getURL() === tab.initialUrl) return
+        requested.current = tab.initialUrl
         void view.loadURL(tab.initialUrl).catch(() => undefined)
       } catch {}
     }

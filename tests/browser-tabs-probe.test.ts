@@ -1002,6 +1002,23 @@ describe('a page an agent shows', () => {
     expect(loadURL).toHaveBeenCalledWith('https://example.com/plugin')
   })
 
+  it('does not restart an initial address after the page redirects', () => {
+    const loadURL = vi.fn(async () => undefined)
+    Object.defineProperty(HTMLElement.prototype, 'getURL', {
+      configurable: true,
+      value: () => 'https://example.com/landing?utm_source=mail'
+    })
+    Object.defineProperty(HTMLElement.prototype, 'loadURL', { configurable: true, value: loadURL })
+
+    useBrowser.getState().openUrl('https://example.com/campaign')
+    const { container } = render(createElement(BrowserPanel))
+    const view = container.querySelector('webview')!
+    fireEvent(view, new Event('dom-ready'))
+    fireEvent(view, new Event('dom-ready'))
+
+    expect(loadURL).not.toHaveBeenCalled()
+  })
+
   it('shows a useful failure instead of an empty plugin page', () => {
     useBrowser.getState().openPlugin({ name: 'raylight' })
     const { container, getByText, getByRole } = render(createElement(BrowserPanel))

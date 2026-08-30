@@ -71,12 +71,14 @@ function AddressLine({ label, addresses }: { label: string; addresses: MailAddre
 
 function Message({
   message,
+  accountId,
   accountEmail,
   expanded,
   onToggle,
   onDraft
 }: {
   message: MailMessage
+  accountId: string
   accountEmail: string
   expanded: boolean
   onToggle: () => void
@@ -132,7 +134,7 @@ function Message({
       {expanded && (
         <div className="px-4 pb-5 sm:px-5 sm:pb-6">
           <div className="select-text">
-            <HtmlMessage html={message.html} text={message.text} />
+            <HtmlMessage html={message.html} text={message.text} accountId={accountId} />
           </div>
 
           {message.quotedText && (
@@ -390,6 +392,7 @@ export default function Reader({
               <Message
                 key={message.id}
                 message={message}
+                accountId={thread.accountId}
                 accountEmail={account?.email ?? ''}
                 expanded={expanded.has(message.id)}
                 onToggle={() =>

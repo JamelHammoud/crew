@@ -3,6 +3,7 @@ import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import HtmlMessage, { safeMailDocument } from '../src/renderer/src/components/mail/HtmlMessage'
 import { useBrowser } from '../src/renderer/src/state/browser'
+import { useMail } from '../src/renderer/src/state/mail'
 
 class Observer {
   observe(): void {}
@@ -12,6 +13,10 @@ class Observer {
 beforeEach(() => {
   Object.assign(globalThis, { ResizeObserver: Observer, IS_REACT_ACT_ENVIRONMENT: true })
   useBrowser.setState({ open: false, tabs: [], activeTabId: null })
+  useMail.setState({
+    accounts: [{ id: 'account-one', email: 'me@example.com', displayName: 'Me', provider: 'gmail', status: 'connected' }],
+    drafts: []
+  })
 })
 
 afterEach(() => {
@@ -146,7 +151,7 @@ describe('mail message isolation', () => {
     expect(document.querySelector('button')).toBeNull()
   })
 
-  it('opens web links in Browser and mail links through the main-process bridge', async () => {
+  it('opens web links in Browser and mail links in a Crew composer', async () => {
     const openExternal = vi.fn(async (_url: string) => true)
     Object.assign(window, { crew: { openExternal } })
     const frame = await draw('<a href="https://crew.test/read">Read</a><a href="mailto:ali@example.com">Write</a>')
@@ -165,7 +170,42 @@ describe('mail message isolation', () => {
       open: true,
       tabs: [{ kind: 'web', url: 'https://crew.test/read' }]
     })
-    expect(openExternal).toHaveBeenCalledTimes(1)
-    expect(openExternal).toHaveBeenCalledWith('mailto:ali@example.com')
+    expect(openExternal).not.toHaveBeenCalled()
+    expect(useMail.getState().drafts).toEqual([
+      expect.objectContaining({ accountId: 'account-one', to: [{ email: 'ali@example.com' }] })
+    ])
+  })
+
+  it('fills a Crew draft from mail link fields using the message account', async () => {
+    useMail.setState({
+      accounts: [
+        { id: 'account-one', email: 'one@example.com', displayName: 'One', provider: 'gmail', status: 'connected' },
+        { id: 'account-two', email: 'two@example.com', displayName: 'Two', provider: 'gmail', status: 'connected' }
+      ],
+      drafts: []
+    })
+    const view = render(createElement(HtmlMessage, {
+      html: '<a href="mailto:Ali%20Hammoud%20%3Cali%40example.com%3E?cc=crew%40example.com&bcc=quiet%40example.com&subject=Hello%20Crew&body=First%20line%0ASecond%20line">Write</a>',
+      text: '',
+      accountId: 'account-two'
+    }))
+    const frame = view.container.querySelector('iframe') as HTMLIFrameElement
+    await act(async () => fireEvent.load(frame))
+    const document = frame.contentDocument!
+    document.body.innerHTML = '<a id="mail" href="mailto:Ali%20Hammoud%20%3Cali%40example.com%3E?cc=crew%40example.com&bcc=quiet%40example.com&subject=Hello%20Crew&body=First%20line%0ASecond%20line">Write</a>'
+    await act(async () => fireEvent.load(frame))
+
+    document.querySelector('#mail')?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+
+    expect(useMail.getState().drafts).toEqual([
+      expect.objectContaining({
+        accountId: 'account-two',
+        to: [{ name: 'Ali Hammoud', email: 'ali@example.com' }],
+        cc: [{ email: 'crew@example.com' }],
+        bcc: [{ email: 'quiet@example.com' }],
+        subject: 'Hello Crew',
+        text: 'First line\nSecond line'
+      })
+    ])
   })
 })

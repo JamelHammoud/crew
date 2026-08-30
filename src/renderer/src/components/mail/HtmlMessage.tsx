@@ -1,8 +1,46 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useBrowser } from '../../state/browser'
+import { useMail, type MailAddress, type MailDraftInput } from '../../state/mail'
 import { useTheme, type Theme } from '../../state/theme'
 
 const EXTERNAL_LINK = /^(https?|mailto):/i
+
+const decoded = (value: string): string => {
+  try {
+    return decodeURIComponent(value)
+  } catch {
+    return value
+  }
+}
+
+const mailAddresses = (values: string[]): MailAddress[] =>
+  values
+    .flatMap(value => value.split(','))
+    .map(value => decoded(value).trim())
+    .filter(Boolean)
+    .map(value => {
+      const named = value.match(/^\s*([^<]*)<([^>]+)>\s*$/)
+      return named
+        ? { name: named[1].trim().replace(/^['"]|['"]$/g, '') || undefined, email: named[2].trim() }
+        : { email: value }
+    })
+
+export function draftFromMailto(href: string): Partial<MailDraftInput> {
+  const link = new URL(href)
+  if (link.protocol.toLowerCase() !== 'mailto:') return {}
+  const headers = new Map<string, string[]>()
+  link.searchParams.forEach((value, key) => {
+    const name = key.toLowerCase()
+    headers.set(name, [...(headers.get(name) ?? []), value])
+  })
+  return {
+    to: mailAddresses([link.pathname, ...(headers.get('to') ?? [])]),
+    cc: mailAddresses(headers.get('cc') ?? []),
+    bcc: mailAddresses(headers.get('bcc') ?? []),
+    subject: headers.get('subject')?.[0] ?? '',
+    text: headers.get('body')?.[0] ?? ''
+  }
+}
 
 export function safeMailDocument(html: string, theme: Theme): string {
   const parsed = new DOMParser().parseFromString(html, 'text/html')
@@ -34,7 +72,7 @@ export function safeMailDocument(html: string, theme: Theme): string {
   return `<!doctype html><html><head><meta http-equiv="Content-Security-Policy" content="${csp}"><style>${style}</style></head>${parsed.body.outerHTML}</html>`
 }
 
-export default function HtmlMessage({ html, text }: { html?: string; text: string }) {
+export default function HtmlMessage({ html, text, accountId }: { html?: string; text: string; accountId?: string }) {
   const frame = useRef<HTMLIFrameElement>(null)
   const [height, setHeight] = useState(80)
   const theme = useTheme()
@@ -68,8 +106,12 @@ export default function HtmlMessage({ html, text }: { html?: string; text: strin
         if (!href || !EXTERNAL_LINK.test(href)) return
         event.preventDefault()
         event.stopPropagation()
-        if (/^https?:/i.test(href)) useBrowser.getState().openUrl(href)
-        else void window.crew.openExternal(href)
+        if (/^https?:/i.test(href)) {
+          useBrowser.getState().openUrl(href)
+          return
+        }
+        const account = accountId ?? useMail.getState().accounts[0]?.id
+        if (account) useMail.getState().makeDraft(account, draftFromMailto(href))
       }
       loadedDocument = doc
       linkHandler = links
@@ -95,7 +137,7 @@ export default function HtmlMessage({ html, text }: { html?: string; text: strin
       observer?.disconnect()
       if (loadedDocument && linkHandler) loadedDocument.removeEventListener('click', linkHandler)
     }
-  }, [document])
+  }, [accountId, document])
 
   return (
     <div className="overflow-hidden rounded-xl">
