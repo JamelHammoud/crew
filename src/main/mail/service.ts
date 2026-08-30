@@ -725,7 +725,6 @@ const CURSOR_SYNC = 'mail:sync:'
 const CURSOR_UID = 'mail:uid:'
 const CURSOR_MESSAGE_REF = 'mail:message-ref:'
 const CURSOR_BODY = 'mail:body:'
-const CURSOR_SIGNATURE = 'mail:signature'
 const CURSOR_SCHEDULE = 'mail:schedule:'
 
 function cursorPart(value: string): string {
@@ -820,18 +819,25 @@ export class MailDatabaseServiceStore implements MailServiceStore {
         provider: account.provider,
         email: account.email,
         displayName: patch.displayName,
+        signature: patch.signature ?? account.signature,
         syncEnabled: account.syncEnabled
       })
-    }
-    if (patch.signature !== undefined) {
-      this.database.setCursor(accountId, CURSOR_SIGNATURE, JSON.stringify({ value: patch.signature }))
+    } else if (patch.signature !== undefined) {
+      updated = this.database.upsertAccount({
+        id: account.id,
+        provider: account.provider,
+        email: account.email,
+        displayName: account.displayName,
+        signature: patch.signature,
+        syncEnabled: account.syncEnabled
+      })
     }
     if (patch.lastSyncedAt !== undefined) updated = this.database.setAccountLastSyncedAt(accountId, patch.lastSyncedAt)
     return updated
   }
 
   accountSignature(accountId: string): string | undefined {
-    return parseCursor<{ value?: string }>(this.database.getCursor(accountId, CURSOR_SIGNATURE))?.value || undefined
+    return this.database.getAccount(accountId)?.signature || undefined
   }
 
   listLabels(accountId: string): MailLabel[] {
