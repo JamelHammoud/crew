@@ -57,6 +57,8 @@ export interface MailboxFetchResult {
   messages: RemoteMailMessage[]
   vanishedUids?: number[]
   highestModSeq?: string
+  scannedThroughUid?: number
+  nextBeforeUid?: number
 }
 
 export interface MailSyncTransport {
@@ -371,7 +373,7 @@ export class MailSynchronizer {
       )
       await this.applyFetch(mailbox.id, fetched)
       count += fetched.messages.length
-      const nextUid = latestUid(fetched.messages, afterUid)
+      const nextUid = Math.max(latestUid(fetched.messages, afterUid), fetched.scannedThroughUid ?? afterUid)
       state = {
         ...state,
         lastUid: nextUid,
@@ -379,7 +381,7 @@ export class MailSynchronizer {
         syncedAt: this.clock()
       }
       await this.store.putSyncState(state)
-      if (!fetched.messages.length || nextUid <= afterUid || fetched.messages.length < this.pageSize) break
+      if (nextUid <= afterUid) break
       afterUid = nextUid
     }
     if (afterUid >= status.uidNext - 1 && state.lastUid !== afterUid) {
@@ -409,8 +411,8 @@ export class MailSynchronizer {
         this.abort.signal
       )
       await this.applyFetch(mailbox.id, fetched)
-      const hydratedFromUid = earliestUid(fetched.messages, beforeUid)
-      const fullyHydrated = fetched.messages.length < this.pageSize || hydratedFromUid <= 1
+      const hydratedFromUid = Math.min(earliestUid(fetched.messages, beforeUid), fetched.nextBeforeUid ?? beforeUid)
+      const fullyHydrated = hydratedFromUid <= 1
       state = {
         ...state,
         uidValidity: status.uidValidity,
