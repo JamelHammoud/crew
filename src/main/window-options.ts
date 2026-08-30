@@ -234,6 +234,7 @@ export function appMenuTemplate(
     label: 'Crew',
     submenu: [
       ...(isMac ? [{ role: 'about' as const }, { type: 'separator' as const }] : []),
+      ...(!isMac ? [action(options, 'about', { label: 'About Crew' }), { type: 'separator' as const }] : []),
       action(options, 'settings', { label: 'Settings…', accelerator: isMac ? 'Cmd+,' : 'Ctrl+,' }),
       action(options, 'check-updates', { label: 'Check for Updates…' }),
       { type: 'separator' },
@@ -287,6 +288,11 @@ export function appMenuTemplate(
         { role: 'copy' },
         { role: 'paste' },
         { role: 'selectAll' },
+        { type: 'separator' },
+        action(options, 'find', { label: 'Find…', accelerator: 'CmdOrCtrl+F' }),
+        action(options, 'find-next', { label: 'Find Next', accelerator: 'CmdOrCtrl+G' }),
+        action(options, 'find-previous', { label: 'Find Previous', accelerator: 'CmdOrCtrl+Shift+G' }),
+        action(options, 'find-in-files', { label: 'Find in Files', accelerator: 'CmdOrCtrl+Shift+F', enabled: session }),
         ...(isMac
           ? [
               { type: 'separator' as const },

@@ -2,6 +2,7 @@ import type { ThreadStatus } from './events'
 
 export type AppMenuAction =
   | 'settings'
+  | 'about'
   | 'check-updates'
   | 'invite'
   | 'copy-invite-link'
@@ -14,6 +15,10 @@ export type AppMenuAction =
   | 'open-crew'
   | 'join-crew'
   | 'reveal-crew'
+  | 'find'
+  | 'find-next'
+  | 'find-previous'
+  | 'find-in-files'
   | 'command-palette'
   | 'toggle-sidebar'
   | 'toggle-panel'

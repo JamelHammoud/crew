@@ -13,6 +13,7 @@ import { useCrew } from '../state/store'
 import { setWindowPinned, useWindowPinned } from '../state/windowShape'
 import { toast } from '../state/toast'
 import { said } from '../api/said'
+import { onMac } from '../state/platform'
 
 type MenuCommand = {
   id: AppMenuAction
@@ -24,6 +25,7 @@ type MenuCommand = {
 
 const COMMANDS: MenuCommand[] = [
   { id: 'settings', label: 'Settings', group: 'Crew' },
+  { id: 'about', label: 'About Crew', group: 'Crew' },
   { id: 'invite', label: 'Invite someone', group: 'Crew', session: true },
   { id: 'copy-invite-link', label: 'Copy invite link', group: 'Crew', session: true },
   { id: 'people', label: 'People', group: 'Crew', session: true },
@@ -35,6 +37,10 @@ const COMMANDS: MenuCommand[] = [
   { id: 'open-crew', label: 'Open Crew', group: 'Crew' },
   { id: 'join-crew', label: 'Join Crew', group: 'Crew' },
   { id: 'reveal-crew', label: 'Reveal Crew in Finder', group: 'Crew', session: true },
+  { id: 'find', label: 'Find', group: 'Edit', session: true },
+  { id: 'find-next', label: 'Find next', group: 'Edit', session: true },
+  { id: 'find-previous', label: 'Find previous', group: 'Edit', session: true },
+  { id: 'find-in-files', label: 'Find in files', group: 'Edit', session: true },
   { id: 'toggle-sidebar', label: 'Show or hide sidebar', group: 'View', session: true },
   { id: 'toggle-panel', label: 'Show or hide side panel', group: 'View', session: true },
   { id: 'panel-review', label: 'Open Review', group: 'Panel', session: true },
@@ -147,6 +153,7 @@ export default function AppMenu({
       const crew = useCrew.getState()
       const browser = useBrowser.getState()
       if (action === 'settings') return openSettings()
+      if (action === 'about') return openSettings('about')
       if (action === 'invite' || action === 'people') return openSettings('people')
       if (action === 'agents') return openSettings('agents')
       if (action === 'copy-invite-link') return void copyInvite()
@@ -169,6 +176,18 @@ export default function AppMenu({
         return
       }
       if (action === 'reveal-crew') return void window.crew.revealFile(crew.folder)
+      if (action === 'find-in-files') return browser.openFiles()
+      if (action === 'find' || action === 'find-next' || action === 'find-previous') {
+        window.dispatchEvent(
+          new KeyboardEvent('keydown', {
+            key: action === 'find' ? 'f' : 'g',
+            metaKey: onMac(),
+            ctrlKey: !onMac(),
+            shiftKey: action === 'find-previous'
+          })
+        )
+        return
+      }
       if (action === 'command-palette') {
         setQuery('')
         setPalette(true)
