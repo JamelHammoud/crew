@@ -210,7 +210,7 @@ function scheduledTime(value: string): number {
 export class MailService {
   private readonly store: MailServiceStore
   private readonly credentials: Pick<MailCredentialStore, 'get' | 'set' | 'delete'>
-  private readonly files: Pick<MailFileStore, 'create' | 'read' | 'delete'>
+  private readonly files: MailServiceOptions['files']
   private readonly connectTransport: MailServiceOptions['connect']
   private readonly onEvent?: (event: MailServiceEvent) => void
   private readonly notify?: (notification: MailNotification) => void | Promise<void>
