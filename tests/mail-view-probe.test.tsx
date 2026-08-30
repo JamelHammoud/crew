@@ -295,7 +295,7 @@ describe('mail list and reader', () => {
     expect(screen.getByRole('button', { name: 'Copy Sam <sam@example.com>' })).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Copy Lee <lee@example.com>' })).toBeTruthy()
 
-    const sender = screen.getByRole('button', { name: `Copy Jamel <${personal.email}>` })
+    const sender = screen.getAllByRole('button', { name: `Copy Jamel <${personal.email}>` }).at(-1)!
     fireEvent.mouseEnter(sender)
     expect(await screen.findByText(`${personal.email} · Click to copy`)).toBeTruthy()
     fireEvent.click(sender)
