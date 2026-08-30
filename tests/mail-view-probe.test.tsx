@@ -232,6 +232,25 @@ describe('mail list and reader', () => {
     expect(screen.getByText('menu.pdf')).toBeTruthy()
   })
 
+  it('moves a conversation to spam, changes labels, and snoozes it', async () => {
+    render(createElement(Mail))
+    fireEvent.click(await screen.findByRole('button', { name: /Ali.*Dinner this weekend/ }))
+    await screen.findByRole('heading', { name: 'Dinner this weekend' })
+
+    fireEvent.click(screen.getByRole('button', { name: 'More' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Move to spam' }))
+    await waitFor(() => expect(bridge.setThreadState).toHaveBeenCalledWith('personal', ['dinner'], { mailboxId: 'spam' }))
+
+    fireEvent.click(screen.getByText('Labels').parentElement!)
+    fireEvent.click(await screen.findByRole('button', { name: 'Travel' }))
+    await waitFor(() => expect(bridge.setThreadState).toHaveBeenCalledWith('personal', ['dinner'], { removeLabelId: 'travel' }))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Snooze' }))
+    expect(await screen.findByLabelText('Snooze until')).toBeTruthy()
+    fireEvent.click(screen.getAllByRole('button', { name: 'Snooze' }).at(-1)!)
+    await waitFor(() => expect(bridge.snoozeThread).toHaveBeenCalledWith('personal', 'dinner', expect.any(Number)))
+  })
+
   it('searches after typing and reports an empty result', async () => {
     render(createElement(Mail))
     const search = await screen.findByPlaceholderText('Search mail')
