@@ -14,7 +14,7 @@ beforeEach(() => {
   Object.assign(globalThis, { ResizeObserver: Observer, IS_REACT_ACT_ENVIRONMENT: true })
   useBrowser.setState({ open: false, tabs: [], activeTabId: null })
   useMail.setState({
-    accounts: [{ id: 'account-one', email: 'me@example.com', displayName: 'Me', status: 'connected' }],
+    accounts: [{ id: 'account-one', email: 'me@example.com', displayName: 'Me', status: 'connected', unread: 0, labels: [] }],
     drafts: []
   })
 })
@@ -175,8 +175,8 @@ describe('mail message isolation', () => {
   it('fills a Crew draft from mail link fields using the message account', async () => {
     useMail.setState({
       accounts: [
-        { id: 'account-one', email: 'one@example.com', displayName: 'One', status: 'connected' },
-        { id: 'account-two', email: 'two@example.com', displayName: 'Two', status: 'connected' }
+        { id: 'account-one', email: 'one@example.com', displayName: 'One', status: 'connected', unread: 0, labels: [] },
+        { id: 'account-two', email: 'two@example.com', displayName: 'Two', status: 'connected', unread: 0, labels: [] }
       ],
       drafts: []
     })
