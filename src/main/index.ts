@@ -601,6 +601,73 @@ function openThreadIn(win: BrowserWindow, threadId: string, place: string | null
   else send()
 }
 
+function mailPrintText(value: string): string {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
+}
+
+function mailPrintDocument(thread: MailThreadView): string {
+  const messages = thread.messages
+    .map(message => {
+      const sender = message.from.name || message.from.email
+      const recipients = message.to.map(one => one.name || one.email).join(', ')
+      const attachments = message.attachments.length
+        ? `<p class="attachments">${mailPrintText(message.attachments.map(one => one.name).join(', '))}</p>`
+        : ''
+      return `<article><h2>${mailPrintText(sender)}</h2><p class="meta">${mailPrintText(message.date)} · ${mailPrintText(recipients)}</p><pre>${mailPrintText(message.text)}</pre>${attachments}</article>`
+    })
+    .join('')
+  return `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'"><title>${mailPrintText(thread.subject)}</title><style>body{font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#181818;margin:40px}h1{font-size:22px;margin:0 0 28px}article{break-inside:avoid;border-top:1px solid #ddd;padding:20px 0}h2{font-size:14px;margin:0}.meta,.attachments{color:#666;font-size:12px}pre{font:inherit;white-space:pre-wrap;overflow-wrap:anywhere}</style></head><body><h1>${mailPrintText(thread.subject)}</h1>${messages}</body></html>`
+}
+
+async function saveMailAttachment(
+  _accountId: string,
+  _messageId: string,
+  attachment: StoredMailAttachment,
+  bytes: Uint8Array
+): Promise<void> {
+  const result = await dialog.showSaveDialog({ defaultPath: path.basename(attachment.filename) })
+  if (result.canceled || !result.filePath) return
+  await writeFile(result.filePath, bytes)
+}
+
+async function printMailThread(_accountId: string, _threadId: string, thread: MailThreadView): Promise<void> {
+  const win = new BrowserWindow({ show: false, webPreferences: { sandbox: true } })
+  try {
+    await win.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(mailPrintDocument(thread))}`)
+    await new Promise<void>((resolve, reject) => {
+      win.webContents.print({ silent: false, printBackground: true }, (printed, failure) => {
+        if (printed || failure === 'cancelled') resolve()
+        else reject(new Error(failure || 'The conversation could not be printed'))
+      })
+    })
+  } finally {
+    if (!win.isDestroyed()) win.destroy()
+  }
+}
+
+function emitMail(channel: string, ...args: unknown[]): void {
+  for (const win of appWindows()) {
+    if (!win.webContents.isDestroyed()) win.webContents.send(channel, ...args)
+  }
+}
+
+function showMailNotification(notification: MailNotification): void {
+  showAlert({ title: notification.title, body: notification.body }, () => {
+    const win = openWindow()
+    app.focus({ steal: true })
+    const send = () => {
+      if (!win.webContents.isDestroyed()) win.webContents.send(MAIL_RENDERER_EVENTS.notificationOpen, notification)
+    }
+    if (win.webContents.isLoading()) win.webContents.once('did-finish-load', send)
+    else send()
+  })
+}
+
 app.whenReady().then(async () => {
   serveMediaScheme()
   applyIcon(iconTheme, chosenIcon)
