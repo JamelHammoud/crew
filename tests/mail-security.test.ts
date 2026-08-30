@@ -14,13 +14,14 @@ beforeEach(() => {
   Object.assign(globalThis, { ResizeObserver: Observer, IS_REACT_ACT_ENVIRONMENT: true })
   useBrowser.setState({ open: false, tabs: [], activeTabId: null })
   useMail.setState({
-    accounts: [{ id: 'account-one', email: 'me@example.com', displayName: 'Me', provider: 'gmail', status: 'connected' }],
+    accounts: [{ id: 'account-one', email: 'me@example.com', displayName: 'Me', status: 'connected' }],
     drafts: []
   })
 })
 
 afterEach(() => {
   cleanup()
+  vi.useRealTimers()
   vi.restoreAllMocks()
 })
 
@@ -89,12 +90,7 @@ describe('mail message isolation', () => {
   })
 
   it('measures parsed mail before remote resources finish loading', async () => {
-    let scan: TimerHandler | undefined
-    vi.spyOn(window, 'setInterval').mockImplementation(handler => {
-      scan = handler
-      return 1
-    })
-    vi.spyOn(window, 'clearInterval').mockImplementation(() => undefined)
+    vi.useFakeTimers()
     const view = render(createElement(HtmlMessage, { html: '<p>Long message</p>', text: '' }))
     const frame = view.container.querySelector('iframe') as HTMLIFrameElement
     const document = frame.contentDocument!
@@ -103,7 +99,7 @@ describe('mail message isolation', () => {
     Object.defineProperty(document.body, 'scrollHeight', { configurable: true, value: 620 })
 
     await act(async () => {
-      if (typeof scan === 'function') scan()
+      vi.advanceTimersByTime(16)
     })
 
     expect(frame.style.height).toBe('640px')
@@ -179,8 +175,8 @@ describe('mail message isolation', () => {
   it('fills a Crew draft from mail link fields using the message account', async () => {
     useMail.setState({
       accounts: [
-        { id: 'account-one', email: 'one@example.com', displayName: 'One', provider: 'gmail', status: 'connected' },
-        { id: 'account-two', email: 'two@example.com', displayName: 'Two', provider: 'gmail', status: 'connected' }
+        { id: 'account-one', email: 'one@example.com', displayName: 'One', status: 'connected' },
+        { id: 'account-two', email: 'two@example.com', displayName: 'Two', status: 'connected' }
       ],
       drafts: []
     })
