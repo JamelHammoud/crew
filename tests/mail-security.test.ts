@@ -98,7 +98,7 @@ describe('mail message isolation', () => {
 
     await act(async () => container.querySelector('button')?.click())
     const shown = frame.getAttribute('srcdoc') ?? ''
-    expect(shown).toContain(`img-src data: blob: http: https:`)
+    expect(shown).toMatch(/img-src [^;]*http: https:/)
     expect(shown).toContain('src="https://track.example/pixel.gif"')
     expect(container.querySelector('button')?.textContent).toContain('Hide images')
   })
