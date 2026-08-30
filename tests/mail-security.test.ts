@@ -49,30 +49,22 @@ describe('mail message isolation', () => {
     expect(source).toContain(`frame-src 'none'`)
   })
 
-  it('blocks remote images until the reader asks to show them', async () => {
+  it('shows remote images without a separate action', async () => {
     const frame = await draw(`
       <img src="https://track.example/pixel.gif" srcset="https://track.example/large.gif 2x">
       <img src="http://images.example/photo.jpg">
       <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==">
     `)
-    const blocked = frame.getAttribute('srcdoc') ?? ''
-    const hidden = new DOMParser().parseFromString(blocked, 'text/html')
-    const images = [...hidden.querySelectorAll('img')]
+    const source = frame.getAttribute('srcdoc') ?? ''
+    const parsed = new DOMParser().parseFromString(source, 'text/html')
+    const images = [...parsed.querySelectorAll('img')]
 
-    expect(images[0].hasAttribute('src')).toBe(false)
-    expect(images[0].hasAttribute('srcset')).toBe(false)
-    expect(images[0].dataset.remoteSrc).toBe('https://track.example/pixel.gif')
-    expect(images[1].hasAttribute('src')).toBe(false)
+    expect(images[0].getAttribute('src')).toBe('https://track.example/pixel.gif')
+    expect(images[0].getAttribute('srcset')).toBe('https://track.example/large.gif 2x')
+    expect(images[1].getAttribute('src')).toBe('http://images.example/photo.jpg')
     expect(images[2].getAttribute('src')).toMatch(/^data:/)
-    expect(blocked).toContain(`img-src data: blob:`)
-    expect(blocked).not.toContain(`img-src data: blob: http: https:`)
-    expect(document.querySelector('button')?.textContent).toContain('Show 2 images')
-
-    await act(async () => document.querySelector('button')?.click())
-    const shown = frame.getAttribute('srcdoc') ?? ''
-    expect(shown).toMatch(/img-src [^;]*http: https:/)
-    expect(shown).toContain('src="https://track.example/pixel.gif"')
-    expect(document.querySelector('button')?.textContent).toContain('Hide images')
+    expect(source).toMatch(/img-src [^;]*http: https:/)
+    expect(document.querySelector('button')).toBeNull()
   })
 
   it('routes web and mail links through the main-process bridge', async () => {

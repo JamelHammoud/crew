@@ -1,12 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { EyeGlyph, EyeOffGlyph } from '../../icons'
 
-const REMOTE_IMAGE = /^https?:/i
 const EXTERNAL_LINK = /^(https?|mailto):/i
 
-export function safeMailDocument(html: string, images: boolean): { html: string; blocked: number } {
+export function safeMailDocument(html: string): string {
   const parsed = new DOMParser().parseFromString(html, 'text/html')
-  let blocked = 0
   parsed.querySelectorAll('script, iframe, object, embed, form, input, button, meta, base, link').forEach(node => node.remove())
   parsed.querySelectorAll('*').forEach(node => {
     for (const attribute of [...node.attributes]) {
@@ -17,21 +14,7 @@ export function safeMailDocument(html: string, images: boolean): { html: string;
       }
     }
   })
-  parsed.querySelectorAll('img').forEach(image => {
-    const src = image.getAttribute('src') ?? ''
-    if (REMOTE_IMAGE.test(src)) {
-      blocked += 1
-      if (!images) {
-        image.dataset.remoteSrc = src
-        image.removeAttribute('src')
-        image.removeAttribute('srcset')
-        image.alt = image.alt || 'Remote image'
-        image.style.display = 'none'
-      }
-    }
-  })
-  const imageSource = images ? 'data: blob: crew-mail: http: https:' : 'data: blob: crew-mail:'
-  const csp = `default-src 'none'; img-src ${imageSource}; style-src 'unsafe-inline'; font-src 'none'; media-src 'none'; connect-src 'none'; frame-src 'none'`
+  const csp = `default-src 'none'; img-src data: blob: crew-mail: http: https:; style-src 'unsafe-inline'; font-src 'none'; media-src 'none'; connect-src 'none'; frame-src 'none'`
   const style = `
     :root { color-scheme: dark; }
     * { box-sizing: border-box; max-width: 100%; }
@@ -42,15 +25,11 @@ export function safeMailDocument(html: string, images: boolean): { html: string;
     img { height: auto; }
     table { border-collapse: collapse; }
   `
-  return {
-    blocked,
-    html: `<!doctype html><html><head><meta http-equiv="Content-Security-Policy" content="${csp}"><style>${style}</style></head><body>${parsed.body.innerHTML}</body></html>`
-  }
+  return `<!doctype html><html><head><meta http-equiv="Content-Security-Policy" content="${csp}"><style>${style}</style></head><body>${parsed.body.innerHTML}</body></html>`
 }
 
 export default function HtmlMessage({ html, text }: { html?: string; text: string }) {
   const frame = useRef<HTMLIFrameElement>(null)
-  const [images, setImages] = useState(false)
   const [height, setHeight] = useState(80)
   const document = useMemo(() => {
     const plain = text
@@ -60,8 +39,8 @@ export default function HtmlMessage({ html, text }: { html?: string; text: strin
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;')
       .replace(/\n/g, '<br>')
-    return safeMailDocument(html ?? plain, images)
-  }, [html, text, images])
+    return safeMailDocument(html ?? plain)
+  }, [html, text])
 
   useEffect(() => {
     const iframe = frame.current
@@ -91,25 +70,15 @@ export default function HtmlMessage({ html, text }: { html?: string; text: strin
       iframe.removeEventListener('load', loaded)
       observer?.disconnect()
     }
-  }, [document.html])
+  }, [document])
 
   return (
     <div>
-      {document.blocked > 0 && (
-        <button
-          type="button"
-          onClick={() => setImages(value => !value)}
-          className="mb-4 h-8 px-3 rounded-full bg-fg/[0.06] flex items-center gap-2 text-xs font-medium text-fg/55 transition-colors hover:bg-fg/[0.1] hover:text-fg active:scale-95"
-        >
-          {images ? <EyeOffGlyph className="w-4 h-4" /> : <EyeGlyph className="w-4 h-4" />}
-          {images ? 'Hide images' : `Show ${document.blocked === 1 ? 'image' : `${document.blocked} images`}`}
-        </button>
-      )}
       <iframe
         ref={frame}
         title="Message"
         sandbox="allow-same-origin"
-        srcDoc={document.html}
+        srcDoc={document}
         scrolling="no"
         className="block w-full border-0 bg-transparent"
         style={{ height }}
