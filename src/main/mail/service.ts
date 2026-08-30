@@ -1480,6 +1480,7 @@ export class GmailMailConnection implements MailConnection {
     await this.verify()
     if (this.changeListener || this.disconnectListener) throw new Error('Gmail IDLE is already active')
     await this.transport.watch('INBOX')
+    if (signal.aborted) throw abortErrorForService()
     return new Promise((resolve, reject) => {
       const cleanup = () => {
         signal.removeEventListener('abort', stop)
