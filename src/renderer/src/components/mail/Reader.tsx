@@ -1,23 +1,26 @@
 import { useEffect, useState } from 'react'
-import type { MailAddress, MailMessage, MailThread } from '../../state/mail'
+import type { MailAddress, MailMessage, MailThread, MailThreadStatePatch } from '../../state/mail'
 import { useMail } from '../../state/mail'
 import {
   ArchiveGlyph,
+  ClockGlyph,
   ChevronDownGlyph,
   ChevronLeftGlyph,
   ChevronUpGlyph,
   FileGlyph,
   ForwardGlyph,
+  LabelGlyph,
   MailGlyph,
   MoreGlyph,
   ReplyAllGlyph,
   ReplyGlyph,
   StarGlyph,
+  SpamGlyph,
   TrashGlyph,
   UnreadGlyph
 } from '../../icons'
 import Empty from '../Empty'
-import { MenuDivider, MenuItem, Popover } from '../Popover'
+import { MenuDivider, MenuItem, Popover, SubMenu } from '../Popover'
 import Skeleton from '../Skeleton'
 import { toast } from '../../state/toast'
 import MailAttachments from './Attachments'
@@ -203,8 +206,15 @@ export default function Reader({
   const setThreads = useMail(state => state.setThreads)
   const makeDraft = useMail(state => state.makeDraft)
   const print = useMail(state => state.print)
+  const snooze = useMail(state => state.snooze)
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
   const [menu, setMenu] = useState(false)
+  const [menuScreen, setMenuScreen] = useState<'main' | 'snooze'>('main')
+  const [snoozeAt, setSnoozeAt] = useState(() => {
+    const date = new Date(Date.now() + 24 * 60 * 60 * 1000)
+    date.setMinutes(0, 0, 0)
+    return date.toISOString().slice(0, 16)
+  })
 
   useEffect(() => {
     setExpanded(new Set(thread?.messages.at(-1)?.id ? [thread.messages.at(-1)!.id] : []))
@@ -218,9 +228,19 @@ export default function Reader({
   const account = accounts.find(one => one.id === thread.accountId)
   const latest = thread.messages.at(-1)
 
-  const change = async (patch: { read?: boolean; starred?: boolean; mailboxId?: 'all' | 'trash' }) => {
+  const change = async (patch: MailThreadStatePatch) => {
     const error = await setThreads(thread.accountId, [thread.id], patch)
     if (error) toast.fail(error)
+  }
+
+  const snoozeNow = async () => {
+    const error = await snooze(thread.accountId, thread.id, new Date(snoozeAt).getTime())
+    if (error) toast.fail(error)
+    else {
+      setMenu(false)
+      setMenuScreen('main')
+      toast.done('Conversation snoozed.')
+    }
   }
 
   const draft = (message: MailMessage, mode: 'reply' | 'reply-all' | 'forward') => {
@@ -271,24 +291,79 @@ export default function Reader({
             <StarGlyph className="w-4 h-4" />
           </IconButton>
           <span className="relative">
-            <IconButton label="More" onClick={() => setMenu(value => !value)}>
+            <IconButton
+              label="More"
+              onClick={() => {
+                setMenuScreen('main')
+                setMenu(value => !value)
+              }}
+            >
               <MoreGlyph className="w-4 h-4" />
             </IconButton>
-            <Popover open={menu} onClose={() => setMenu(false)}>
-              <MenuItem
-                icon={<FileGlyph />}
-                label="Print"
-                onClick={() => {
-                  setMenu(false)
-                  void print().then(error => error && toast.fail(error))
-                }}
-              />
-              {latest && (
+            <Popover open={menu} onClose={() => setMenu(false)} className={menuScreen === 'snooze' ? 'w-72' : ''}>
+              {menuScreen === 'snooze' ? (
+                <div className="p-2">
+                  <button
+                    type="button"
+                    onClick={() => setMenuScreen('main')}
+                    className="mb-2 flex items-center gap-1.5 text-xs font-medium text-fg/50 transition-colors hover:text-fg"
+                  >
+                    <ChevronLeftGlyph className="w-3.5 h-3.5" />
+                    Snooze
+                  </button>
+                  <input
+                    type="datetime-local"
+                    aria-label="Snooze until"
+                    value={snoozeAt}
+                    min={new Date().toISOString().slice(0, 16)}
+                    onChange={event => setSnoozeAt(event.target.value)}
+                    className="w-full h-9 px-3 rounded-xl bg-fg/[0.07] text-sm text-fg outline-none focus:bg-fg/[0.11]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => void snoozeNow()}
+                    disabled={!snoozeAt || new Date(snoozeAt).getTime() <= Date.now()}
+                    className="w-full h-9 mt-2 rounded-full bg-fg text-ink-900 text-sm font-semibold transition-colors hover:bg-fg/90 active:scale-[0.98] disabled:opacity-40"
+                  >
+                    Snooze
+                  </button>
+                </div>
+              ) : (
                 <>
+                  <MenuItem icon={<SpamGlyph />} label="Move to spam" onClick={() => void change({ mailboxId: 'spam' })} />
+                  <MenuItem icon={<ClockGlyph />} label="Snooze" into onClick={() => setMenuScreen('snooze')} />
+                  {account && account.labels.length > 0 && (
+                    <SubMenu icon={<LabelGlyph />} label="Labels">
+                      {account.labels.map(label => {
+                        const checked = thread.labelIds.includes(label.id)
+                        return (
+                          <MenuItem
+                            key={label.id}
+                            label={label.name}
+                            checked={checked}
+                            onClick={() => void change(checked ? { removeLabelId: label.id } : { addLabelId: label.id })}
+                          />
+                        )
+                      })}
+                    </SubMenu>
+                  )}
                   <MenuDivider />
-                  <MenuItem icon={<ReplyGlyph />} label="Reply" onClick={() => draft(latest, 'reply')} />
-                  <MenuItem icon={<ReplyAllGlyph />} label="Reply all" onClick={() => draft(latest, 'reply-all')} />
-                  <MenuItem icon={<ForwardGlyph />} label="Forward" onClick={() => draft(latest, 'forward')} />
+                  <MenuItem
+                    icon={<FileGlyph />}
+                    label="Print"
+                    onClick={() => {
+                      setMenu(false)
+                      void print().then(error => error && toast.fail(error))
+                    }}
+                  />
+                  {latest && (
+                    <>
+                      <MenuDivider />
+                      <MenuItem icon={<ReplyGlyph />} label="Reply" onClick={() => draft(latest, 'reply')} />
+                      <MenuItem icon={<ReplyAllGlyph />} label="Reply all" onClick={() => draft(latest, 'reply-all')} />
+                      <MenuItem icon={<ForwardGlyph />} label="Forward" onClick={() => draft(latest, 'forward')} />
+                    </>
+                  )}
                 </>
               )}
             </Popover>

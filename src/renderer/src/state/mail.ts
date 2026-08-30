@@ -23,7 +23,7 @@ export type MailMessage = MailMessageView
 export type MailThread = MailThreadView
 export type MailThreadQuery = MailThreadQueryView
 export type MailThreadSummary = MailThreadSummaryView
-export type { MailBridge, MailboxId }
+export type { MailBridge, MailboxId, MailThreadStatePatch }
 
 interface StoredDraft {
   id: string
@@ -74,6 +74,7 @@ interface MailState {
   attach: (id: string, file: File) => Promise<string | null>
   saveAttachment: (messageId: string, attachmentId: string) => Promise<string | null>
   print: () => Promise<string | null>
+  snooze: (accountId: string, threadId: string, wakeAt: number) => Promise<string | null>
   setOnline: (online: boolean) => void
 }
 
@@ -421,6 +422,25 @@ export const useMail = create<MailState>((set, get) => ({
       return null
     } catch (error) {
       return problem(error, 'This conversation could not be printed.')
+    }
+  },
+
+  snooze: async (accountId, threadId, wakeAt) => {
+    const mail = api()
+    if (!mail) return 'Mail is unavailable. Restart Crew and try again.'
+    try {
+      await mail.snoozeThread(accountId, threadId, wakeAt)
+      set(state => ({
+        threads: currentQuery.mailboxId === 'inbox'
+          ? state.threads.filter(thread => thread.accountId !== accountId || thread.id !== threadId)
+          : state.threads,
+        openThread: currentQuery.mailboxId === 'inbox' && state.openThread?.accountId === accountId && state.openThread.id === threadId
+          ? null
+          : state.openThread
+      }))
+      return null
+    } catch (error) {
+      return problem(error, 'This conversation could not be snoozed.')
     }
   },
 
