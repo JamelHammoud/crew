@@ -374,6 +374,18 @@ describe('mail list and reader', () => {
 })
 
 describe('mail composer', () => {
+  it('casts the composer shadow outside its scrolling deck', async () => {
+    const { container } = render(createElement(Mail))
+    fireEvent.click(await screen.findByRole('button', { name: 'Compose' }))
+
+    const card = screen.getByRole('textbox', { name: 'Subject' }).closest('section') as HTMLElement
+    const deck = card.parentElement?.parentElement as HTMLElement
+    expect(card.className).not.toContain('shadow-2xl')
+    expect(deck.className).toContain('overflow-x-auto')
+    expect(deck.className).toContain('drop-shadow-[')
+    expect(container.contains(deck)).toBe(true)
+  })
+
   it('focuses the message field when replying', async () => {
     render(createElement(Mail))
     fireEvent.click(await screen.findByRole('button', { name: /Ali.*Dinner this weekend/ }))

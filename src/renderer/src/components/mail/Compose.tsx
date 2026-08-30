@@ -57,7 +57,7 @@ function ComposeCard({ draft, suggestions, narrow }: { draft: MailDraft; suggest
   const width = narrow ? 'w-[calc(100vw-24px)]' : 'w-[560px]'
 
   return (
-    <section className={`${width} h-[min(640px,calc(100vh-88px))] max-h-[calc(100vh-88px)] glass glass-strong rounded-card overflow-hidden flex flex-col shadow-2xl animate-rise`}>
+    <section className={`${width} h-[min(640px,calc(100vh-88px))] max-h-[calc(100vh-88px)] glass glass-strong rounded-card overflow-hidden flex flex-col animate-rise`}>
       <header className="h-12 shrink-0 pl-4 pr-2.5 flex items-center gap-1.5 border-b border-fg/[0.06]">
         <span className="min-w-0 flex-1 truncate text-sm font-semibold text-fg">
           {draft.replyTo ? 'Reply' : draft.forwardOf ? 'Forward' : 'New message'}
@@ -252,7 +252,7 @@ export default function DraftDeck({ narrow }: { narrow: boolean }) {
   if (drafts.length === 0) return null
 
   return (
-    <div className="absolute z-50 right-3 bottom-3 max-w-[calc(100%-24px)] flex items-end justify-end gap-2 overflow-x-auto pointer-events-none">
+    <div className="absolute z-50 right-3 bottom-3 max-w-[calc(100%-24px)] flex items-end justify-end gap-2 overflow-x-auto pointer-events-none drop-shadow-[0_24px_24px_rgb(0_0_0/0.25)]">
       {drafts.map(draft =>
         draft.minimized ? (
           <button

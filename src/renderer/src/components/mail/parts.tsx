@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
+import { toast } from '../../state/toast'
 import Avatar from '../Avatar'
 import Tooltip from '../Tooltip'
 
@@ -67,10 +68,14 @@ export function MailAddressButton({
   }, [])
 
   const copy = async () => {
-    await navigator.clipboard.writeText(email)
-    setCopied(true)
-    if (reset.current !== null) window.clearTimeout(reset.current)
-    reset.current = window.setTimeout(() => setCopied(false), 1200)
+    try {
+      await navigator.clipboard.writeText(email)
+      setCopied(true)
+      if (reset.current !== null) window.clearTimeout(reset.current)
+      reset.current = window.setTimeout(() => setCopied(false), 1200)
+    } catch {
+      toast.fail('Email address could not be copied.')
+    }
   }
 
   return (
