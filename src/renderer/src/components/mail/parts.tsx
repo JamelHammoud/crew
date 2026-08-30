@@ -3,6 +3,7 @@ import { toast } from '../../state/toast'
 import { CheckGlyph, CopyGlyph } from '../../icons'
 import Avatar from '../Avatar'
 import HoverCard from '../HoverCard'
+import InsetRing from '../InsetRing'
 import Tooltip from '../Tooltip'
 
 export const iconButtonClass =
@@ -23,8 +24,78 @@ export function IconButton({
   )
 }
 
+const PERSONAL_MAIL_DOMAINS = new Set([
+  'aol.com',
+  'fastmail.com',
+  'gmail.com',
+  'googlemail.com',
+  'hey.com',
+  'hotmail.com',
+  'icloud.com',
+  'live.com',
+  'mac.com',
+  'me.com',
+  'msn.com',
+  'outlook.com',
+  'pm.me',
+  'proton.me',
+  'protonmail.com',
+  'yahoo.com'
+])
+
+function mailDomain(email: string): string | undefined {
+  const domain = email.trim().toLowerCase().slice(email.lastIndexOf('@') + 1).replace(/\.$/, '')
+  if (!email.includes('@') || !domain.includes('.') || domain.endsWith('.test') || domain.endsWith('.local')) return
+  if (!domain.split('.').every(label => /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(label))) return
+  if ([...PERSONAL_MAIL_DOMAINS].some(personal => domain === personal || domain.endsWith(`.${personal}`))) return
+  return domain
+}
+
+export function companyLogoUrls(email: string): string[] {
+  const domain = mailDomain(email)
+  if (!domain) return []
+  const labels = domain.split('.')
+  const domains = labels.map((_, index) => labels.slice(index).join('.')).filter(one => one.split('.').length >= 2)
+  return domains.map(one =>
+    `https://www.google.com/s2/favicons?domain_url=${encodeURIComponent(`https://${one}`)}&sz=128`
+  )
+}
+
+function CompanyLogo({ email }: { email: string }) {
+  const urls = companyLogoUrls(email)
+  const [index, setIndex] = useState(0)
+  const [ready, setReady] = useState(false)
+  const src = urls[index]
+  if (!src) return null
+  return (
+    <span
+      data-company-logo={ready ? '' : undefined}
+      className={`absolute inset-0 overflow-hidden rounded-full bg-white transition-opacity duration-150 ${ready ? 'opacity-100' : 'opacity-0'}`}
+    >
+      <img
+        src={src}
+        alt=""
+        draggable={false}
+        onLoad={() => setReady(true)}
+        onError={() => {
+          setReady(false)
+          setIndex(value => value + 1)
+        }}
+        className="block w-full h-full object-contain"
+      />
+      <InsetRing className="ring-1 ring-inset ring-fg/5" />
+    </span>
+  )
+}
+
 export function ContactMark({ name, email, size = 'sm' }: { name?: string; email: string; size?: 'xs' | 'sm' | 'md' }) {
-  return <Avatar name={name?.trim() || email} size={size} />
+  const label = name?.trim() || email
+  return (
+    <span className="relative inline-flex shrink-0">
+      <Avatar name={label} size={size} />
+      <CompanyLogo key={email.trim().toLowerCase()} email={email} />
+    </span>
+  )
 }
 
 export function AccountMark({ email, color }: { email: string; color?: string }) {
