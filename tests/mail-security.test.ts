@@ -109,14 +109,14 @@ describe('mail message isolation', () => {
 
     expect(source.querySelector('#current')?.textContent).toContain('No worries')
     expect(source.querySelector('#old')).toBeNull()
-    const show = screen.getByRole('button', { name: 'Show earlier mail' })
+    const show = view.getByRole('button', { name: 'Show earlier mail' })
     expect(show.getAttribute('aria-expanded')).toBe('false')
 
     fireEvent.click(show)
     source = new DOMParser().parseFromString(frame.getAttribute('srcdoc') ?? '', 'text/html')
 
     expect(source.querySelector('#old')?.textContent).toContain('Happy Friday')
-    expect(screen.getByRole('button', { name: 'Hide earlier mail' }).getAttribute('aria-expanded')).toBe('true')
+    expect(view.getByRole('button', { name: 'Hide earlier mail' }).getAttribute('aria-expanded')).toBe('true')
   })
 
   it('recognizes quoted replies from common mail clients', () => {

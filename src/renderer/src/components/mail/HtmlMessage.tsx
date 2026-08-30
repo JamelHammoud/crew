@@ -157,7 +157,7 @@ export function safeMailDocument(html: string, theme: Theme, showQuoted = true):
       }
     }
   })
-  if (!showQuoted) quotedMailNodes(parsed).forEach(node => node.remove())
+  if (!showQuoted) quotedMailNodes(parsed).forEach(node => node.parentNode?.removeChild(node))
   const csp = `default-src 'none'; img-src data: blob: crew-mail: http: https:; style-src 'unsafe-inline'; font-src 'none'; media-src 'none'; connect-src 'none'; frame-src 'none'`
   const color = parsed.createElement('span')
   color.style.backgroundColor = parsed.body.getAttribute('bgcolor') ?? ''
