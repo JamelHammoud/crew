@@ -3,6 +3,7 @@ import type {
   MailAccount,
   MailAccountStatus,
   MailAccountInput,
+  MailAccountView,
   MailAddressView,
   MailAttachment,
   MailAttachmentUpload,
@@ -65,6 +66,7 @@ import {
 export { MAIL_IPC, MAIL_RENDERER_EVENTS }
 export type {
   MailAccountStatus,
+  MailAccountView,
   MailAddressView,
   MailAttachmentUpload,
   MailAttachmentView,
