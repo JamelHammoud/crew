@@ -10,7 +10,7 @@ export interface MailAttachment {
 
 export type MailAttachmentResolver = (id: string) => MailAttachment | null | Promise<MailAttachment | null>
 
-const OPAQUE_ID = /^[A-Za-z0-9_-]{16,256}$/
+const OPAQUE_ID = /^[A-Za-z0-9_-]{1,256}$/
 
 export function mailAttachmentUrl(id: string): string {
   if (!OPAQUE_ID.test(id)) throw new TypeError('Invalid attachment id')
