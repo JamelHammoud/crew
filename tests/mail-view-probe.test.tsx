@@ -136,6 +136,7 @@ function makeBridge() {
 }
 
 let bridge: ReturnType<typeof makeBridge>
+let writeClipboard: ReturnType<typeof vi.fn>
 
 function resetMail(): void {
   useMail.setState({
@@ -167,6 +168,11 @@ beforeEach(() => {
   Object.assign(window, {
     mail: bridge,
     crew: { openExternal: vi.fn(async () => true) }
+  })
+  writeClipboard = vi.fn(async () => {})
+  Object.defineProperty(navigator, 'clipboard', {
+    configurable: true,
+    value: { writeText: writeClipboard }
   })
   Element.prototype.getAnimations ??= () => []
   document.execCommand = vi.fn(() => true)
@@ -268,6 +274,35 @@ describe('mail list and reader', () => {
     expect(await screen.findByRole('heading', { name: 'Dinner this weekend' })).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Reply' })).toBeTruthy()
     expect(screen.getByText('menu.pdf')).toBeTruthy()
+  })
+
+  it('shows every message address on hover and copies it from the name', async () => {
+    bridge.getThread.mockResolvedValue({
+      ...dinnerThread,
+      messages: dinnerThread.messages.map(message => message.id === 'dinner-two'
+        ? {
+            ...message,
+            cc: [{ name: 'Sam', email: 'sam@example.com' }],
+            bcc: [{ name: 'Lee', email: 'lee@example.com' }]
+          }
+        : message)
+    })
+    render(createElement(Mail))
+    fireEvent.click(await screen.findByRole('button', { name: /Ali.*Dinner this weekend/ }))
+    await screen.findByRole('heading', { name: 'Dinner this weekend' })
+
+    expect(screen.queryByRole('button', { name: 'Message details' })).toBeNull()
+    expect(screen.getByRole('button', { name: 'Copy Sam <sam@example.com>' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Copy Lee <lee@example.com>' })).toBeTruthy()
+
+    const sender = screen.getByRole('button', { name: `Copy Jamel <${personal.email}>` })
+    fireEvent.mouseEnter(sender)
+    expect(await screen.findByText(`${personal.email} · Click to copy`)).toBeTruthy()
+    fireEvent.click(sender)
+
+    await waitFor(() => expect(writeClipboard).toHaveBeenCalledWith(personal.email))
+    expect(await screen.findByText(`Copied ${personal.email}`)).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Collapse message' })).toBeTruthy()
   })
 
   it('moves a conversation to spam, changes labels, and snoozes it', async () => {

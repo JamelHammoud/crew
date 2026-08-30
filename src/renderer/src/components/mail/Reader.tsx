@@ -50,7 +50,7 @@ function AddressList({ addresses }: { addresses: MailAddress[] }) {
   return (
     <span className="min-w-0 flex items-baseline overflow-hidden">
       {addresses.map((address, index) => (
-        <span key={address.email.toLowerCase()} className="min-w-0 flex items-baseline">
+        <span key={`${address.email.toLowerCase()}-${index}`} className="min-w-0 flex items-baseline">
           {index > 0 && <span className="mr-1">,</span>}
           <MailAddressButton name={address.name} email={address.email} />
         </span>
