@@ -27,11 +27,15 @@ function everyRole(template: MenuItemConstructorOptions[]): string[] {
 }
 
 function viewRows(template: MenuItemConstructorOptions[]): MenuItemConstructorOptions[] {
-  const view = everyItem(template).find(
-    item => Array.isArray(item.submenu) && item.submenu.some(row => row.role === 'reload')
-  )
+  const view = template.find(item => item.label === 'View')
   const submenu = view?.submenu
   return Array.isArray(submenu) ? submenu : []
+}
+
+function labeled(template: MenuItemConstructorOptions[], label: string): MenuItemConstructorOptions {
+  const found = everyItem(template).find(item => item.label === label)
+  if (!found) throw new Error(`Missing menu item: ${label}`)
+  return found
 }
 
 describe('tray panel options', () => {
@@ -244,8 +248,8 @@ describe('the application menu', () => {
     expect(everyRole(appMenuTemplate('win32', false))).not.toContain('toggleDevTools')
   })
 
-  it('keeps reloading, zooming and full screen either way', () => {
-    const kept = ['reload', 'forceReload', 'resetZoom', 'zoomIn', 'zoomOut', 'togglefullscreen']
+  it('keeps zooming and full screen in every build', () => {
+    const kept = ['resetZoom', 'zoomIn', 'zoomOut', 'togglefullscreen']
 
     for (const platform of ['darwin', 'win32'] as const) {
       for (const devTools of [true, false]) {
@@ -253,6 +257,18 @@ describe('the application menu', () => {
 
         for (const role of kept) expect(rows).toContain(role)
       }
+    }
+  })
+
+  it('keeps reload commands in development builds only', () => {
+    for (const platform of ['darwin', 'win32'] as const) {
+      const development = viewRows(appMenuTemplate(platform, true)).map(row => row.role)
+      const shipped = viewRows(appMenuTemplate(platform, false)).map(row => row.role)
+
+      expect(development).toContain('reload')
+      expect(development).toContain('forceReload')
+      expect(shipped).not.toContain('reload')
+      expect(shipped).not.toContain('forceReload')
     }
   })
 
@@ -269,15 +285,87 @@ describe('the application menu', () => {
     }
   })
 
-  it('opens with the app menu on macOS', () => {
-    expect(appMenuTemplate('darwin', true)[0]?.role).toBe('appMenu')
-    expect(appMenuTemplate('darwin', false)[0]?.role).toBe('appMenu')
+  it('opens with Crew on macOS', () => {
+    expect(appMenuTemplate('darwin', true)[0]?.label).toBe('Crew')
+    expect(appMenuTemplate('darwin', false)[0]?.label).toBe('Crew')
+    expect(everyRole(appMenuTemplate('darwin', true))).toContain('about')
+    expect(everyRole(appMenuTemplate('darwin', true))).toContain('quit')
   })
 
-  it('has no app menu to open with on Windows', () => {
-    expect(appMenuTemplate('win32', true)[0]?.role).not.toBe('appMenu')
-    expect(appMenuTemplate('win32', false)[0]?.role).not.toBe('appMenu')
+  it('uses the same named Crew menu on Windows without macOS-only roles', () => {
+    expect(appMenuTemplate('win32', true)[0]?.label).toBe('Crew')
+    expect(appMenuTemplate('win32', false)[0]?.label).toBe('Crew')
     expect(everyRole(appMenuTemplate('win32', true))).not.toContain('appMenu')
+    expect(everyRole(appMenuTemplate('win32', true))).not.toContain('about')
+    expect(everyRole(appMenuTemplate('win32', true))).toContain('quit')
+  })
+
+  it('restores the macOS spelling, substitutions and speech rows', () => {
+    const roles = everyRole(appMenuTemplate('darwin', false))
+
+    for (const role of [
+      'toggleSpellChecker',
+      'showSubstitutions',
+      'toggleSmartQuotes',
+      'toggleSmartDashes',
+      'toggleTextReplacement',
+      'startSpeaking',
+      'stopSpeaking'
+    ]) {
+      expect(roles).toContain(role)
+    }
+  })
+
+  it('dispatches Crew actions from native rows', () => {
+    const pressed: string[] = []
+    const template = appMenuTemplate('darwin', false, {
+      context: {
+        session: true,
+        threadId: 'thread-1',
+        threadStatus: 'open',
+        sidebar: false,
+        panel: false,
+        pinned: false
+      },
+      onAction: action => pressed.push(action)
+    })
+
+    labeled(template, 'New Page').click?.({} as never, undefined, {} as never)
+    labeled(template, 'Open in Window').click?.({} as never, undefined, {} as never)
+
+    expect(pressed).toEqual(['new-page', 'thread-window'])
+  })
+
+  it('holds session and thread rows until their context exists', () => {
+    const home = appMenuTemplate('darwin', false)
+    const thread = appMenuTemplate('darwin', false, {
+      context: {
+        session: true,
+        threadId: 'thread-1',
+        threadStatus: 'done',
+        sidebar: true,
+        panel: true,
+        pinned: true
+      }
+    })
+
+    expect(labeled(home, 'New Thread').enabled).toBe(false)
+    expect(labeled(home, 'Thread').enabled).toBe(false)
+    expect(labeled(thread, 'Thread').enabled).toBe(true)
+    expect(labeled(thread, 'Reopen').enabled).toBe(true)
+    expect(labeled(thread, 'Show Sidebar').checked).toBe(true)
+    expect(labeled(thread, 'Show Side Panel').checked).toBe(true)
+    expect(labeled(thread, 'Stop Keeping Window on Top').enabled).toBe(true)
+  })
+
+  it('shows real recent Crews and an empty row when there are none', () => {
+    const open = () => undefined
+    const withRecent = appMenuTemplate('darwin', false, {
+      recent: [{ label: 'crew', click: open }]
+    })
+
+    expect(labeled(withRecent, 'crew').click).toBe(open)
+    expect(labeled(appMenuTemplate('darwin', false), 'No Recent Crews').enabled).toBe(false)
   })
 })
 
