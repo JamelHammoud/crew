@@ -67,6 +67,10 @@ function CompanyLogo({ email }: { email: string }) {
   const [ready, setReady] = useState(false)
   const src = urls[index]
   if (!src) return null
+  const next = () => {
+    setReady(false)
+    setIndex(value => value + 1)
+  }
   return (
     <span
       data-company-logo={ready ? '' : undefined}
@@ -76,11 +80,14 @@ function CompanyLogo({ email }: { email: string }) {
         src={src}
         alt=""
         draggable={false}
-        onLoad={() => setReady(true)}
-        onError={() => {
-          setReady(false)
-          setIndex(value => value + 1)
+        onLoad={event => {
+          if (event.currentTarget.naturalWidth <= 16 && event.currentTarget.naturalHeight <= 16) {
+            next()
+            return
+          }
+          setReady(true)
         }}
+        onError={next}
         className="block w-full h-full object-contain"
       />
       <InsetRing className="ring-1 ring-inset ring-fg/5" />

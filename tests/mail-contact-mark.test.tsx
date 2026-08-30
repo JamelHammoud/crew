@@ -10,6 +10,14 @@ beforeEach(() => {
 
 afterEach(cleanup)
 
+function loaded(image: HTMLImageElement, width = 128, height = width): void {
+  Object.defineProperties(image, {
+    naturalWidth: { configurable: true, value: width },
+    naturalHeight: { configurable: true, value: height }
+  })
+  fireEvent.load(image)
+}
+
 describe('company marks in mail', () => {
   it('asks for the sender domain and then each parent domain', () => {
     expect(companyLogoUrls('news@e.linkedin.com')).toEqual([
@@ -34,7 +42,7 @@ describe('company marks in mail', () => {
     expect(logo.dataset.companyLogo).toBeUndefined()
     expect(logo.className).toContain('opacity-0')
 
-    fireEvent.load(image)
+    loaded(image)
 
     expect(logo.dataset.companyLogo).toBe('')
     expect(logo.className).toContain('opacity-100')
@@ -54,5 +62,16 @@ describe('company marks in mail', () => {
     fireEvent.error(image)
     expect(container.querySelector('img')).toBeNull()
     expect(container.textContent).toBe('L')
+  })
+
+  it('rejects the small globe placeholder and leaves the initials visible', () => {
+    const { container } = render(createElement(ContactMark, { name: 'Missing', email: 'hello@missing-company.com' }))
+    const image = container.querySelector('img') as HTMLImageElement
+
+    loaded(image, 16)
+
+    expect(container.querySelector('img')).toBeNull()
+    expect(container.querySelector('[data-company-logo]')).toBeNull()
+    expect(container.textContent).toBe('M')
   })
 })
