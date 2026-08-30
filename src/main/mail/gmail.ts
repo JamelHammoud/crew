@@ -1,4 +1,6 @@
-import { createRequire } from 'node:module'
+import { ImapFlow } from 'imapflow'
+import { simpleParser } from 'mailparser'
+import nodemailer from 'nodemailer'
 
 export const GMAIL_IMAP_ENDPOINT = Object.freeze({
   host: 'imap.gmail.com',
@@ -414,21 +416,11 @@ export interface GmailTransportDependencies {
   composeMime(message: Record<string, unknown>): Promise<Buffer>
 }
 
-const require = createRequire(import.meta.url)
-
 function defaultDependencies(): GmailTransportDependencies {
-  const imapflow = require('imapflow') as { ImapFlow: new (options: GmailImapConnectionOptions) => ImapClient }
-  const nodemailer = require('nodemailer') as {
-    createTransport(options: Record<string, unknown>): SmtpClient
-  }
-  const mailparser = require('mailparser') as {
-    simpleParser(source: Buffer): Promise<ParsedMessage>
-  }
-
   return {
-    createImap: options => new imapflow.ImapFlow(options),
-    createSmtp: options => nodemailer.createTransport(options as unknown as Record<string, unknown>),
-    parseMime: source => mailparser.simpleParser(source),
+    createImap: options => new ImapFlow(options) as unknown as ImapClient,
+    createSmtp: options => nodemailer.createTransport(options) as unknown as SmtpClient,
+    parseMime: async source => (await simpleParser(source)) as unknown as ParsedMessage,
     composeMime: async message => {
       const transport = nodemailer.createTransport({
         streamTransport: true,

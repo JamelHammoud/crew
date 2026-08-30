@@ -47,7 +47,11 @@ export class MailFileStore {
     const file = this.pathFor(account, storageKey)
     fs.mkdirSync(this.directory, { recursive: true, mode: DIRECTORY_MODE })
     realDirectory(this.directory)
-    fs.mkdirSync(path.dirname(file), { mode: DIRECTORY_MODE })
+    try {
+      fs.mkdirSync(path.dirname(file), { mode: DIRECTORY_MODE })
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error
+    }
     realDirectory(path.dirname(file))
     fs.chmodSync(this.directory, DIRECTORY_MODE)
     fs.chmodSync(path.dirname(file), DIRECTORY_MODE)
