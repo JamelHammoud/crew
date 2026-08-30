@@ -33,10 +33,10 @@ describe('mail message isolation', () => {
     const dark = safeMailDocument(html, 'dark')
     const parsed = new DOMParser().parseFromString(light, 'text/html')
 
-    expect(light).toContain(':root { background: transparent; }')
+    expect(light).toMatch(/:root \{ background: (?:#FFFFFF|rgb\(255, 255, 255\)); \}/)
     expect(light).not.toContain('color-scheme')
     expect(light).toContain('color: rgba(20,20,20,.82)')
-    expect(dark).toContain(':root { background: transparent; }')
+    expect(dark).toMatch(/:root \{ background: (?:#FFFFFF|rgb\(255, 255, 255\)); \}/)
     expect(dark).not.toContain('color-scheme')
     expect(dark).toContain('color: rgba(255,255,255,.82)')
     expect(light).toContain('style="color: rebeccapurple"')
@@ -44,6 +44,12 @@ describe('mail message isolation', () => {
     expect(parsed.body.getAttribute('bgcolor')).toBe('#FFFFFF')
     expect(parsed.body.getAttribute('style')).toBe('padding: 12px')
     expect(parsed.body.hasAttribute('onload')).toBe(false)
+  })
+
+  it('leaves the document canvas clear when the sender did not give it a background', () => {
+    const document = safeMailDocument('<p>Words</p>', 'dark')
+
+    expect(document).toContain(':root { background: transparent; }')
   })
 
   it('removes executable elements, event handlers, embedded pages, and unsafe links', async () => {

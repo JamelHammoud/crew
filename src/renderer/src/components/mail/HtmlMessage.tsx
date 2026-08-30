@@ -19,8 +19,11 @@ export function safeMailDocument(html: string, theme: Theme): string {
   const csp = `default-src 'none'; img-src data: blob: crew-mail: http: https:; style-src 'unsafe-inline'; font-src 'none'; media-src 'none'; connect-src 'none'; frame-src 'none'`
   const light = theme === 'light'
   const foreground = light ? '20,20,20' : '255,255,255'
+  const color = parsed.createElement('span')
+  color.style.backgroundColor = parsed.body.getAttribute('bgcolor') ?? ''
+  const background = parsed.body.style.backgroundColor || color.style.backgroundColor || 'transparent'
   const style = `
-    :root { background: transparent; }
+    :root { background: ${background}; }
     * { box-sizing: border-box; max-width: 100%; }
     body { margin: 0; color: rgba(${foreground},.82); font: 14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; overflow-wrap: anywhere; }
     a { color: rgba(${foreground},.95); text-decoration: underline; text-underline-offset: 2px; }
