@@ -73,11 +73,7 @@ import { Crews } from './crews'
 import { cloneRepository } from './repository-clone'
 import type { LivePlace } from '../shared/places'
 import { joinPlace, projectPlace } from '../shared/places'
-import {
-  EMPTY_APP_MENU_CONTEXT,
-  type AppMenuAction,
-  type AppMenuContext
-} from '../shared/appMenu'
+import { EMPTY_APP_MENU_CONTEXT, type AppMenuAction, type AppMenuContext } from '../shared/appMenu'
 import { popOutTarget, poppedKey } from '../shared/popOut'
 import { type NewAgent, type OpenOptions } from './session'
 import { Terminals, type TerminalSize } from './terminal'
@@ -105,6 +101,10 @@ import { pinWindow, windowShapeOf } from './window-pin'
 import type { FileReplaceRequest, FileSearchOptions } from '../shared/fileSearch'
 import type { CreateStickyInput, UpdateStickyInput } from '../shared/stickies'
 import { StickyStore } from './stickies-store'
+import type { IosCreateRequest, IosRunRequest } from '../shared/ios'
+import { hasIosProject, IosDevelopment } from './ios-development'
+import { IosLive, type IosStartRequest } from './ios-live'
+import { finishIosSetup, readIosSetup } from './ios-setup'
 
 app.setName('Crew')
 app.commandLine.appendSwitch('disable-backgrounding-occluded-windows')
@@ -124,6 +124,8 @@ const terminals = new Map<number, Terminals>()
 const previews = new Map<number, Previews>()
 const playing = new Map<number, Media>()
 const stickies = new StickyStore(stateDir)
+const iosDevelopment = new IosDevelopment()
+const iosLive = new IosLive()
 const stickiesWindows = new Set<BrowserWindow>()
 const stickyWindows = new Map<string, BrowserWindow>()
 const menuContexts = new Map<number, AppMenuContext>()
@@ -544,6 +546,8 @@ function createWindow(
   const asked = win.webContents.id
   win.webContents.once('destroyed', () => {
     awake.forget(asked)
+    iosDevelopment.close(asked)
+    iosLive.close(asked)
     crews.forget(asked)
     menuContexts.delete(asked)
     installMenu()
@@ -977,6 +981,49 @@ app.whenReady().then(async () => {
   ipcMain.handle('repo:push', event => crews.inView(event.sender.id).pushRepo())
   ipcMain.handle('repo:work', event => crews.inView(event.sender.id).repoWork())
   ipcMain.handle('repo:run', (event, command: RepoCommand) => crews.inView(event.sender.id).runRepo(command))
+  ipcMain.handle('ios:inspect', (event, xcodePath?: string) =>
+    iosDevelopment.inspect(crews.folderInView(event.sender.id) ?? '', xcodePath)
+  )
+  ipcMain.handle('ios:run', (event, request: IosRunRequest) =>
+    iosDevelopment.run(event.sender.id, crews.folderInView(event.sender.id) ?? '', request, output => {
+      if (!event.sender.isDestroyed()) event.sender.send('ios:output', output)
+    })
+  )
+  ipcMain.handle('ios:stop', event => iosDevelopment.stop(event.sender.id))
+  ipcMain.handle('ios:screenshot', (event, deviceId: string, xcodePath?: string) =>
+    iosDevelopment.screenshot(crews.folderInView(event.sender.id) ?? '', deviceId, xcodePath)
+  )
+  ipcMain.handle('ios:open-project', (event, projectPath: string, xcodePath?: string) =>
+    iosDevelopment.openProject(crews.folderInView(event.sender.id) ?? '', projectPath, xcodePath)
+  )
+  ipcMain.handle('ios:open-simulator', (_event, deviceId: string) => iosDevelopment.openSimulator(deviceId))
+  ipcMain.handle('ios:open-xcode', (_event, xcodePath?: string) => iosDevelopment.openXcode(xcodePath))
+  ipcMain.handle('ios:create', (event, input: IosCreateRequest) =>
+    iosDevelopment.create(crews.folderInView(event.sender.id) ?? '', input)
+  )
+  ipcMain.handle('ios:setup', () => readIosSetup())
+  ipcMain.handle('ios:finish', () => finishIosSetup())
+  ipcMain.handle('ios:project', event => hasIosProject(crews.folderInView(event.sender.id) ?? ''))
+  ipcMain.handle('ios:devices', () => iosLive.devices())
+  ipcMain.handle('ios:live', event => iosLive.stateFor(event.sender.id, crews.folderInView(event.sender.id) ?? ''))
+  ipcMain.handle('ios:start', (event, request: IosStartRequest) =>
+    iosLive.start(event.sender.id, crews.folderInView(event.sender.id) ?? '', request, {
+      state: state => {
+        if (!event.sender.isDestroyed()) event.sender.send('ios:state', state)
+      },
+      output: output => {
+        if (!event.sender.isDestroyed()) event.sender.send('ios:output', output)
+      },
+      frame: frame => {
+        if (!event.sender.isDestroyed()) event.sender.send('ios:frame', frame)
+      }
+    })
+  )
+  ipcMain.handle('ios:rebuild', event => iosLive.rebuild(event.sender.id))
+  ipcMain.handle('ios:end', event => {
+    iosLive.close(event.sender.id)
+    return true
+  })
   ipcMain.handle('media:access', (_event, kind: MediaKind) => mediaAccess(kind))
   ipcMain.handle('media:ask', (_event, kind: 'microphone' | 'camera') => askForMedia(kind))
   ipcMain.handle('media:settings', (_event, kind: MediaKind) => openMediaSettings(kind))

@@ -9,10 +9,12 @@ const withOutput = process.env.FAKE_CLI_OUTPUT === '1'
 // Lines of `USAGE`/`TOTAL`, one per newline, for a run that has to report what
 // its tokens came to.
 const usage = process.env.FAKE_CLI_USAGE ?? ''
+const echoPrompt = process.env.FAKE_CLI_ECHO_PROMPT === '1'
 
 const rest = process.argv.slice(3).join(' ')
 
 const lines = []
+if (echoPrompt) lines.push(`TEXT prompt: ${prompt}`)
 if (rest) lines.push(`TEXT flags: ${rest}`)
 if (withThinking) lines.push('THINK weighing the options')
 if (withStreamedThinking) {

@@ -10,6 +10,7 @@ import {
   GlobeGlyph,
   GroupGlyph,
   MusicGlyph,
+  PhoneGlyph,
   PhotoGlyph,
   QuestionGlyph,
   TerminalGlyph,
@@ -37,6 +38,7 @@ export function browserTabLabel(tab: BrowserTab): string {
   if (tab.kind === 'agent')
     return tab.threadId ? (useCrew.getState().threads[tab.threadId]?.helper ?? 'Helper') : 'Helpers'
   if (tab.kind === 'review') return 'Review'
+  if (tab.kind === 'ios') return 'Simulator'
   if (tab.kind === 'music') return 'Music'
   if (tab.kind === 'game') return gameFor(tab.game ?? '')?.name ?? 'Games'
   if (tab.kind === 'terminal') return terminalLabel(tab)
@@ -108,6 +110,7 @@ export default function BrowserTabMark({ tab }: { tab: BrowserTab }) {
   if (tab.kind === 'work') return <TicketGlyph className="w-4 h-4 shrink-0" />
   if (tab.kind === 'aside') return <QuestionGlyph className="w-4 h-4 shrink-0" />
   if (tab.kind === 'review') return <BranchGlyph className="w-4 h-4 shrink-0" />
+  if (tab.kind === 'ios') return <PhoneGlyph className="w-4 h-4 shrink-0" />
   if (tab.kind === 'music') return <MusicGlyph className="w-4 h-4 shrink-0" />
   if (tab.kind === 'game') return <GameGlyph className="w-4 h-4 shrink-0" />
   if (tab.kind === 'terminal') return <TerminalGlyph className="w-4 h-4 shrink-0" />

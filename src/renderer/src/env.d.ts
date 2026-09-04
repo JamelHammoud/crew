@@ -35,6 +35,20 @@ import type { CreateStickyInput, Sticky, UpdateStickyInput } from '../../shared/
 import type { CurrentSession, OpenOptions, ProjectPlan } from '../../shared/session'
 import type { UpdateState } from '../../shared/update'
 import type { AppMenuAction, AppMenuContext } from '../../shared/appMenu'
+import type { IosFrame, IosLiveState } from '../../shared/iosLive'
+import type { IosSetup } from '../../shared/iosSetup'
+import type { IosSetupDone } from '../../main/ios-setup'
+import type { IosStartRequest } from '../../main/ios-live'
+import type {
+  IosCreateRequest,
+  IosCreateResult,
+  IosDevice,
+  IosEnvironment,
+  IosOutput,
+  IosRunRequest,
+  IosRunResult,
+  IosScreenshot
+} from '../../shared/ios'
 
 declare global {
   interface CrewBridge {
@@ -69,6 +83,25 @@ declare global {
     repoChanges(): Promise<RepoChange[]>
     repoWork(): Promise<RepoWork>
     runRepo(command: RepoCommand): Promise<RepoActionResult>
+    inspectIos(xcodePath?: string): Promise<IosEnvironment>
+    runIos(request: IosRunRequest): Promise<IosRunResult>
+    stopIos(): Promise<boolean>
+    captureIos(deviceId: string, xcodePath?: string): Promise<IosScreenshot | null>
+    openIosProject(projectPath: string, xcodePath?: string): Promise<boolean>
+    openIosSimulator(deviceId: string): Promise<boolean>
+    openXcode(xcodePath?: string): Promise<boolean>
+    createIosProject(input: IosCreateRequest): Promise<IosCreateResult>
+    onIosOutput(listener: (output: IosOutput) => void): () => void
+    iosSetup(): Promise<IosSetup>
+    finishIosSetup(): Promise<IosSetupDone>
+    hasIosProject(): Promise<boolean>
+    iosDevices(): Promise<IosDevice[]>
+    iosLive(): Promise<IosLiveState>
+    startIos(request: IosStartRequest): Promise<IosLiveState>
+    rebuildIos(): Promise<void>
+    endIos(): Promise<boolean>
+    onIosState(listener: (state: IosLiveState) => void): () => void
+    onIosFrame(listener: (frame: IosFrame) => void): () => void
     pullRepo(): Promise<RepoActionResult>
     pushRepo(): Promise<RepoActionResult>
     mediaAccess(kind: MediaKind): Promise<MediaAccess>
@@ -85,11 +118,7 @@ declare global {
     listFiles(): Promise<string[]>
     createEntry(path: string, kind: RepoEntryKind): Promise<RepoEntryCreateResult>
     moveEntry(source: string, parent: string): Promise<RepoEntryMoveResult>
-    transferEntries(
-      sources: string[],
-      parent: string,
-      mode: RepoEntryTransferMode
-    ): Promise<RepoEntryTransferResult>
+    transferEntries(sources: string[], parent: string, mode: RepoEntryTransferMode): Promise<RepoEntryTransferResult>
     filePath(file: File): string
     importEntries(sources: string[], parent: string): Promise<RepoEntryImportResult>
     searchFiles(options: FileSearchOptions): Promise<FileContentSearch>

@@ -8,6 +8,8 @@ import { memoryPreamble, type CrewMemory } from '../shared/memory'
 import { pluginKey, type CrewPlugin } from '../shared/plugins'
 import { pluginPreamble } from '../shared/pluginPreamble'
 import { ticketPreamble } from '../shared/tickets'
+import { iosPreamble } from '../shared/iosAgent'
+import { hasIosProject } from '../shared/iosProject'
 import { MAX_FRAME_BYTES } from '../shared/protocol'
 import type { ClientMessage, RegisteredLlm, ServerMessage } from '../shared/protocol'
 import { serverProviderNamed } from './providers/local'
@@ -58,6 +60,11 @@ export type RunnerStatus = 'connecting' | 'online' | 'offline'
 
 const MAX_DELAY_MS = 10000
 const SILENCE_TIMEOUT_MS = 45000
+
+// How long the answer to whether this folder builds an iPhone app is kept while
+// it is still no. A project made mid-session is worth catching, and a walk on
+// every prompt is a folder read nobody asked for.
+const IOS_LOOK_MS = 60_000
 const USAGE_POLL_MS = 60000
 const OUTBOX_LIMIT = 5000
 
@@ -82,6 +89,8 @@ export class Runner {
   private pollingUsage = false
   private attachments: AttachmentCache
   private httpBase = ''
+  private iosApp = false
+  private iosLookedAt = 0
   private lastSeen = 0
   private outbox: ClientMessage[] = []
   onStatus: ((status: RunnerStatus) => void) | null = null
@@ -92,6 +101,7 @@ export class Runner {
     this.attachments = new AttachmentCache(opts.crewBase ?? null)
     this.baseDelay = opts.reconnectDelayMs ?? 1000
     this.silenceTimeout = opts.silenceTimeoutMs ?? SILENCE_TIMEOUT_MS
+    this.lookForIosApp()
   }
 
   addAgent(def: AgentDef): void {
@@ -400,6 +410,20 @@ export class Runner {
     this.send({ type: 'agent.steered', promptId, ok: live === run && run.steer(body) })
   }
 
+  // Whether this folder builds an iPhone app decides whether an agent hears
+  // about the simulator at all, so nobody has to say so with a command. The
+  // walk is a folder read, so it is answered once and only asked again while
+  // the answer is still no.
+  private lookForIosApp(): void {
+    if (this.iosApp || Date.now() - this.iosLookedAt < IOS_LOOK_MS) return
+    this.iosLookedAt = Date.now()
+    void hasIosProject(this.opts.repoPath)
+      .then(found => {
+        this.iosApp = found
+      })
+      .catch(() => undefined)
+  }
+
   private runPrompt(
     promptId: string,
     forAgentId: string,
@@ -441,6 +465,7 @@ export class Runner {
     }
     if (this.accepted.has(promptId)) return
     this.accepted.add(promptId)
+    this.lookForIosApp()
     const held = plugins ?? []
     const reachable = !agent.provider.mcp ? [] : this.opts.authorizePlugins ? held : held.filter(pluginAvailable)
     const preambles = [
@@ -449,7 +474,8 @@ export class Runner {
       subagentPreamble(this.httpBase, promptId, spawnRoom, spawnProviders, helpers),
       pagePreamble(this.httpBase, promptId),
       pluginPreamble(this.httpBase, promptId, plugins ?? [], Boolean(agent.provider.mcp), usePlugin),
-      tickets ? ticketPreamble(this.httpBase, promptId) : ''
+      tickets ? ticketPreamble(this.httpBase, promptId) : '',
+      this.iosApp ? iosPreamble(this.httpBase, promptId, this.opts.repoPath) : ''
     ].filter(Boolean)
     const body = [text, ...preambles].join('\n\n')
     const tail = this.tails.get(threadId) ?? Promise.resolve()

@@ -358,6 +358,17 @@ function servePage(session: CrewSession, raw: string, req: http.IncomingMessage,
   return true
 }
 
+// The app an agent wants on the simulator. It names the promptId of the run
+// asking, the same credential the page and the board are reached on.
+function serveIos(session: CrewSession, raw: string, req: http.IncomingMessage, res: http.ServerResponse): boolean {
+  if (req.method !== 'POST' || raw.split('?')[0] !== '/ios') return false
+  readJson(req, res, MAX_AGENT_BODY, body => {
+    const result = session.runIos(said(body, 'promptId'))
+    sendJson(res, 'error' in result ? 400 : 200, result)
+  })
+  return true
+}
+
 // Every address into a crew names it, so what reaches here is the rest of the
 // path with the code already read off it.
 export function routeCrew(
@@ -389,6 +400,7 @@ export function routeCrew(
   if (serveTickets(session, raw, req, res)) return true
   if (serveMemory(session, raw, req, res)) return true
   if (servePage(session, raw, req, res)) return true
+  if (serveIos(session, raw, req, res)) return true
   const designOps = /^\/design\/([a-z0-9][a-z0-9-]*)\/ops$/.exec(raw)
   if (req.method === 'POST' && designOps) {
     receiveDesignOps(session, designOps[1], req, res)

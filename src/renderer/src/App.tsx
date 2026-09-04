@@ -16,6 +16,7 @@ import WindowCorner from './components/WindowCorner'
 import { lazy, Suspense } from 'react'
 import { reviewCount } from './state/alerts'
 import { onMac } from './state/platform'
+import { useIos } from './state/ios'
 import { useMail } from './state/mail'
 import { PIN_MS, SIDEBAR_W, useSidebar } from './state/sidebar'
 import { useCrew } from './state/store'
@@ -166,6 +167,11 @@ function Session() {
     [closeThreads, showTab]
   )
 
+  const place = useCrew(s => s.place)
+  useEffect(() => {
+    if (onMac()) useIos.getState().arrive(place)
+  }, [place])
+
   useEffect(() => watchUpdates(), [])
 
   useEffect(() => window.crew?.onCrewTrouble?.(message => toast.fail(message, { key: 'crew-sync' })), [])
@@ -253,13 +259,7 @@ function Session() {
       <HuddlePanel />
       <VoiceScreen />
       <ToolBuilder />
-      <AppMenu
-        tab={tab}
-        onTab={switchTab}
-        onNewThread={newThread}
-        onBack={historyBack}
-        onForward={historyForward}
-      />
+      <AppMenu tab={tab} onTab={switchTab} onNewThread={newThread} onBack={historyBack} onForward={historyForward} />
     </div>
   )
 }

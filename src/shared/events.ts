@@ -291,6 +291,18 @@ export type SessionEvent =
   | {
       id: string
       ts: number
+      // An agent putting the app it is working on onto the simulator beside the
+      // chat. It is one event on the thread rather than state the host holds, so
+      // the row stands there afterwards and it replays for free.
+      kind: 'ios.ran'
+      threadId: string
+      promptId?: string
+      agentId?: string
+      agentLabel?: string
+    }
+  | {
+      id: string
+      ts: number
       kind: 'page.shown'
       // Everything the call named, in the order it named it: a file url for
       // one on the disk, an address for a page.

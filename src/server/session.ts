@@ -556,7 +556,12 @@ export class CrewSession {
             e.kind !== 'message.deleted' &&
             e.kind !== 'message.edited' &&
             e.kind !== 'huddle.deleted' &&
-            !('threadId' in e && typeof e.threadId === 'string' && deletedThreads.has(e.threadId) && e.kind !== 'thread.deleted') &&
+            !(
+              'threadId' in e &&
+              typeof e.threadId === 'string' &&
+              deletedThreads.has(e.threadId) &&
+              e.kind !== 'thread.deleted'
+            ) &&
             !(e.kind === 'message' && deleted.has(e.id)) &&
             !(e.kind === 'message.reaction' && deletedTargets.has(e.targetId)) &&
             !inDeletedHuddle(e)
@@ -1638,7 +1643,7 @@ export class CrewSession {
     const boardId = opts.boardId
     const sent = opts.subagent
     const helperModel = sent
-      ? sent.settings?.model ?? agent.settings.model ?? agent.fields.find(field => field.key === 'model')?.default
+      ? (sent.settings?.model ?? agent.settings.model ?? agent.fields.find(field => field.key === 'model')?.default)
       : undefined
     const thread: Thread = {
       id: threadId,
@@ -2405,6 +2410,24 @@ export class CrewSession {
       promptId,
       pages,
       title: pageTitle(rawTitle) || (pages.length === 1 ? pageName(pages[0]) : ''),
+      agentId: thread.agentId,
+      agentLabel: thread.agentLabel
+    })
+    return { ok: true }
+  }
+
+  // The app onto the simulator, asked for from a run. Nothing about it is state
+  // the host holds: the window that is reading this thread is what starts the
+  // simulator on its own machine, the way a page shown opens the panel.
+  runIos(promptId: string): Done {
+    const thread = this.askingThread(promptId)
+    if (!thread) return { error: NOT_RUNNING }
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'ios.ran',
+      threadId: thread.id,
+      promptId,
       agentId: thread.agentId,
       agentLabel: thread.agentLabel
     })
@@ -3305,9 +3328,19 @@ export class CrewSession {
       return
     }
     this.docs.set(page, doc)
-    if (doc.scope === undefined && this.docTitles.delete(page)) this.store.saveTitles(Object.fromEntries(this.docTitles))
+    if (doc.scope === undefined && this.docTitles.delete(page))
+      this.store.saveTitles(Object.fromEntries(this.docTitles))
     this.sendDocEvent(
-      { id: randomUUID(), ts: Date.now(), kind: 'doc', page, text: doc.text, title, scope: doc.scope, byName: member.name },
+      {
+        id: randomUUID(),
+        ts: Date.now(),
+        kind: 'doc',
+        page,
+        text: doc.text,
+        title,
+        scope: doc.scope,
+        byName: member.name
+      },
       page,
       doc.scope
     )
@@ -4972,7 +5005,9 @@ export class CrewSession {
       const output = step.output?.trim()
       if (output) parts.push(`[Output: ${output.slice(-UNFINISHED_OUTPUT_LIMIT)}]`)
       if (step.files?.length) {
-        parts.push(`[Files touched: ${step.files.map(file => `${file.path} (+${file.added} -${file.removed})`).join(', ')}]`)
+        parts.push(
+          `[Files touched: ${step.files.map(file => `${file.path} (+${file.added} -${file.removed})`).join(', ')}]`
+        )
       }
       if (step.todos?.length) {
         parts.push(`[Tasks: ${step.todos.map(todo => `${todo.status}: ${todo.text}`).join(' | ')}]`)

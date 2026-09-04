@@ -70,6 +70,8 @@ import { alertToast } from '../components/alertToast'
 import { holdCustomEmoji } from '../components/customEmojiSheet'
 import { filesFrom, imagesFrom, keepPreviews, readFiles, type PendingAttachment } from '../components/images'
 import { openShown } from '../components/openShown'
+import { useIos } from './ios'
+import { onMac } from './platform'
 import { playSound, soundFor } from '../media/sounds'
 import { finishedAlert, memberMentionAlert, memberReplyAlert, questionAlert } from './alerts'
 import { helperPrefs, onHelperPrefs } from './helpers'
@@ -663,6 +665,11 @@ export const useCrew = create<CrewState>((set, get) => {
     // they are not watching.
     if (event.kind === 'page.shown' && get().openThreadIds.includes(event.threadId)) {
       void openShown(shownPages(event))
+    }
+    // The same rule for the app an agent put on the simulator. It runs on this
+    // machine, so a window that cannot run one is a window that does nothing.
+    if (event.kind === 'ios.ran' && get().openThreadIds.includes(event.threadId) && onMac()) {
+      useIos.getState().open()
     }
     if (event.kind === 'message.deleted') {
       set(state => ({

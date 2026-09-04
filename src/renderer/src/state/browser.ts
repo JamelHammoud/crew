@@ -53,6 +53,8 @@ type BrowserState = {
   openMusic(): void
   openGame(): void
   openReview(): void
+  openSimulator(): void
+  addSimulator(): void
   openAside(threadId: string, title: string): void
   openSubagent(threadId: string, parentThreadId: string): void
   showSubagents(parentThreadId: string): void
@@ -446,6 +448,28 @@ export const useBrowser = create<BrowserState>((write, get) => {
       }
       const tab = { ...makeTab(), kind: 'review' as const }
       set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
+    },
+    // The tab arrives and waits. Nothing about it stands the panel up, which is
+    // the rule a plan and a board already hold.
+    addSimulator: () => {
+      if (get().tabs.some(t => t.kind === 'ios')) return
+      const tab = { ...makeTab(), kind: 'ios' as const }
+      set(s => ({ tabs: [...s.tabs, tab] }))
+    },
+    openSimulator: () => {
+      const { tabs, activeTabId } = get()
+      const existing = tabs.find(t => t.kind === 'ios')
+      if (existing) {
+        set({ activeTabId: existing.id, open: true })
+        return
+      }
+      const active = tabs.find(t => t.id === activeTabId)
+      if (active && active.kind === 'web' && !active.initialUrl) {
+        set(s => ({ tabs: s.tabs.map(t => (t.id === active.id ? { ...t, kind: 'ios' as const } : t)), open: true }))
+        return
+      }
+      const tab = { ...makeTab(), kind: 'ios' as const }
+      set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id, open: true }))
     },
     // A helper opens in a tab of its own, and opening one that is already in a
     // tab brings that tab to the front rather than opening a second copy of it.

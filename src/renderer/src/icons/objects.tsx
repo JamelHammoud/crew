@@ -343,6 +343,13 @@ export const DesktopGlyph = glyph(
   <path d="M5.5 4.5H18.5A3 3 0 0 1 21.5 7.5V14.5A3 3 0 0 1 18.5 17.5H5.5A3 3 0 0 1 2.5 14.5V7.5A3 3 0 0 1 5.5 4.5ZM12 17.5v3M8 20.5h8" />
 )
 
+export const PhoneGlyph = glyph(
+  <>
+    <rect x="6" y="2.5" width="12" height="19" rx="3" />
+    <path d="M10 18.5h4" />
+  </>
+)
+
 export const ComputerGlyph = glyph(
   <path d="M7.75 3.5H16.25A4.25 4.25 0 0 1 20.5 7.75V16.25A4.25 4.25 0 0 1 16.25 20.5H7.75A4.25 4.25 0 0 1 3.5 16.25V7.75A4.25 4.25 0 0 1 7.75 3.5ZM8.5 12A3.5 3.5 0 0 1 15.5 12A3.5 3.5 0 0 1 8.5 12Z" />
 )

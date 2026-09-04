@@ -42,6 +42,20 @@ import type { UpdateState } from '../shared/update'
 import type { AppMenuAction, AppMenuContext } from '../shared/appMenu'
 import type { CurrentSession, OpenOptions, ProjectPlan } from './session'
 import type { TerminalSize } from './terminal'
+import type { IosFrame, IosLiveState } from '../shared/iosLive'
+import type { IosSetup } from '../shared/iosSetup'
+import type { IosSetupDone } from './ios-setup'
+import type { IosStartRequest } from './ios-live'
+import type {
+  IosCreateRequest,
+  IosCreateResult,
+  IosDevice,
+  IosEnvironment,
+  IosOutput,
+  IosRunRequest,
+  IosRunResult,
+  IosScreenshot
+} from '../shared/ios'
 
 const mailBridge: MailBridge = {
   listAccounts: () => ipcRenderer.invoke(MAIL_IPC.listAccounts),
@@ -71,8 +85,7 @@ const mailBridge: MailBridge = {
   saveAttachment: (accountId, messageId, attachmentId) =>
     ipcRenderer.invoke(MAIL_IPC.saveAttachment, accountId, messageId, attachmentId),
   printThread: (accountId, threadId) => ipcRenderer.invoke(MAIL_IPC.printThread, accountId, threadId),
-  snoozeThread: (accountId, threadId, wakeAt) =>
-    ipcRenderer.invoke(MAIL_IPC.snoozeThread, accountId, threadId, wakeAt),
+  snoozeThread: (accountId, threadId, wakeAt) => ipcRenderer.invoke(MAIL_IPC.snoozeThread, accountId, threadId, wakeAt),
   onChanged: listener => {
     const handler = (): void => listener()
     ipcRenderer.on(MAIL_RENDERER_EVENTS.changed, handler)
@@ -150,6 +163,39 @@ const bridge = {
   pushRepo: (): Promise<RepoActionResult> => ipcRenderer.invoke('repo:push'),
   repoWork: (): Promise<RepoWork> => ipcRenderer.invoke('repo:work'),
   runRepo: (command: RepoCommand): Promise<RepoActionResult> => ipcRenderer.invoke('repo:run', command),
+  inspectIos: (xcodePath?: string): Promise<IosEnvironment> => ipcRenderer.invoke('ios:inspect', xcodePath),
+  runIos: (request: IosRunRequest): Promise<IosRunResult> => ipcRenderer.invoke('ios:run', request),
+  stopIos: (): Promise<boolean> => ipcRenderer.invoke('ios:stop'),
+  captureIos: (deviceId: string, xcodePath?: string): Promise<IosScreenshot | null> =>
+    ipcRenderer.invoke('ios:screenshot', deviceId, xcodePath),
+  openIosProject: (projectPath: string, xcodePath?: string): Promise<boolean> =>
+    ipcRenderer.invoke('ios:open-project', projectPath, xcodePath),
+  openIosSimulator: (deviceId: string): Promise<boolean> => ipcRenderer.invoke('ios:open-simulator', deviceId),
+  openXcode: (xcodePath?: string): Promise<boolean> => ipcRenderer.invoke('ios:open-xcode', xcodePath),
+  createIosProject: (input: IosCreateRequest): Promise<IosCreateResult> => ipcRenderer.invoke('ios:create', input),
+  iosSetup: (): Promise<IosSetup> => ipcRenderer.invoke('ios:setup'),
+  finishIosSetup: (): Promise<IosSetupDone> => ipcRenderer.invoke('ios:finish'),
+  hasIosProject: (): Promise<boolean> => ipcRenderer.invoke('ios:project'),
+  iosDevices: (): Promise<IosDevice[]> => ipcRenderer.invoke('ios:devices'),
+  iosLive: (): Promise<IosLiveState> => ipcRenderer.invoke('ios:live'),
+  startIos: (request: IosStartRequest): Promise<IosLiveState> => ipcRenderer.invoke('ios:start', request),
+  rebuildIos: (): Promise<void> => ipcRenderer.invoke('ios:rebuild'),
+  endIos: (): Promise<boolean> => ipcRenderer.invoke('ios:end'),
+  onIosState: (listener: (state: IosLiveState) => void): (() => void) => {
+    const handler = (_event: unknown, state: IosLiveState) => listener(state)
+    ipcRenderer.on('ios:state', handler)
+    return () => ipcRenderer.off('ios:state', handler)
+  },
+  onIosFrame: (listener: (frame: IosFrame) => void): (() => void) => {
+    const handler = (_event: unknown, frame: IosFrame) => listener(frame)
+    ipcRenderer.on('ios:frame', handler)
+    return () => ipcRenderer.off('ios:frame', handler)
+  },
+  onIosOutput: (listener: (output: IosOutput) => void): (() => void) => {
+    const handler = (_event: unknown, output: IosOutput) => listener(output)
+    ipcRenderer.on('ios:output', handler)
+    return () => ipcRenderer.off('ios:output', handler)
+  },
   mediaAccess: (kind: MediaKind): Promise<MediaAccess> => ipcRenderer.invoke('media:access', kind),
   askForMedia: (kind: 'microphone' | 'camera'): Promise<boolean> => ipcRenderer.invoke('media:ask', kind),
   openMediaSettings: (kind: MediaKind): Promise<void> => ipcRenderer.invoke('media:settings', kind),
@@ -167,11 +213,8 @@ const bridge = {
     ipcRenderer.invoke('file:create', path, kind),
   moveEntry: (source: string, parent: string): Promise<RepoEntryMoveResult> =>
     ipcRenderer.invoke('file:move', source, parent),
-  transferEntries: (
-    sources: string[],
-    parent: string,
-    mode: RepoEntryTransferMode
-  ): Promise<RepoEntryTransferResult> => ipcRenderer.invoke('file:transfer', sources, parent, mode),
+  transferEntries: (sources: string[], parent: string, mode: RepoEntryTransferMode): Promise<RepoEntryTransferResult> =>
+    ipcRenderer.invoke('file:transfer', sources, parent, mode),
   filePath: (file: File): string => webUtils.getPathForFile(file),
   importEntries: (sources: string[], parent: string): Promise<RepoEntryImportResult> =>
     ipcRenderer.invoke('file:import', sources, parent),
