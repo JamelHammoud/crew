@@ -2,7 +2,7 @@ import type { AgentSettingField } from '../../shared/llm'
 import { mcpHeaderEnv, type McpServer } from '../../shared/plugins'
 import { choices, makeCliProvider, type SettingReader } from './cli'
 import { codexDialog } from './codex-app'
-import { codexModels } from './codex-models'
+import { codexModels, refreshCodexModels } from './codex-models'
 import { itemActivity } from './codex-items'
 import { activityDetail, stepTodos } from './detail'
 import { usageFrom } from './tokens'
@@ -178,8 +178,8 @@ const PERSONALITY = [
 export const codexFields = (): AgentSettingField[] => {
   const { models, efforts } = codexModels()
   return [
-    { key: 'model', label: 'Model', options: choices(['', ...models]), default: '' },
-    { key: 'effort', label: 'Thinking', options: choices(['', ...efforts]), default: '' },
+    { key: 'model', label: 'Model', options: choices(['', ...models]), default: '', free: true },
+    { key: 'effort', label: 'Thinking', options: choices(['', ...efforts]), default: '', free: true },
     {
       key: 'instructions',
       label: 'Instructions',
@@ -242,7 +242,7 @@ export const codexArgs = (_prompt?: string, get?: SettingReader, run: RunOptions
 // Codex has no standalone installer script; npm is its documented install path.
 const INSTALL_NPM = 'npm install -g @openai/codex'
 
-export const codexProvider: Provider = makeCliProvider({
+const cliProvider = makeCliProvider({
   name: 'codex',
   label: 'Codex',
   command: 'codex',
@@ -254,3 +254,12 @@ export const codexProvider: Provider = makeCliProvider({
   usage: codexUsage,
   install: { darwin: INSTALL_NPM, linux: INSTALL_NPM, win32: INSTALL_NPM }
 })
+
+export const codexProvider: Provider = {
+  ...cliProvider,
+  detect: async () => {
+    const installed = await cliProvider.detect()
+    if (installed) await refreshCodexModels()
+    return installed
+  }
+}
