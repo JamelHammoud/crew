@@ -6,25 +6,10 @@ import { taskCall } from './tasks'
 import { usageFrom } from './tokens'
 import { claudeUsage } from './usage'
 import { CLAUDE_ACCOUNT_KEY, claudeConfigDir } from './claude-profile'
+import { claudeModels, refreshClaudeModels } from './claude-models'
 import type { Dialog, OutputParser, ParsedOutput, Provider, RunOptions } from './types'
 
 const SUBAGENT_TOOLS = new Set(['Task'])
-const CLAUDE_MODELS = [
-  { value: '', label: 'Default' },
-  { value: 'opus', label: 'Opus' },
-  { value: 'sonnet', label: 'Sonnet' },
-  { value: 'haiku', label: 'Haiku' },
-  { value: 'fable', label: 'Fable' }
-]
-const OPUS_MODELS = [
-  { value: 'claude-opus-5', label: 'Opus 5' },
-  { value: 'claude-opus-4-8', label: 'Opus 4.8' },
-  { value: 'claude-opus-4-7', label: 'Opus 4.7' },
-  { value: 'claude-opus-4-6', label: 'Opus 4.6' },
-  { value: 'claude-opus-4-5-20251101', label: 'Opus 4.5' },
-  { value: 'opus', label: 'Latest' }
-]
-
 // A failure that has no message of its own still has a reason, and these are
 // the ones the CLI names rather than describes.
 const FAILURES: Record<string, string> = {
@@ -156,10 +141,10 @@ export const NO_THINKING = 'off'
 
 const EFFORTS = [...choices(['low', 'medium', 'high', 'xhigh', 'max']), { value: NO_THINKING, label: 'Off' }]
 
-const FALLBACKS = [{ value: '', label: 'None' }, ...CLAUDE_MODELS.slice(1)]
-
-export const claudeFields = (): AgentSettingField[] => [
-  {
+export const claudeFields = (): AgentSettingField[] => {
+  const models = claudeModels()
+  return [
+    {
     key: CLAUDE_ACCOUNT_KEY,
     label: 'Account',
     kind: 'text',
@@ -167,14 +152,14 @@ export const claudeFields = (): AgentSettingField[] => [
     placeholder: 'Default',
     action: 'claude-login'
   },
-  { key: 'model', label: 'Model', options: CLAUDE_MODELS, default: 'opus' },
-  {
-    key: 'opusModel',
-    label: 'Version',
-    options: OPUS_MODELS,
-    default: 'claude-opus-5',
-    visibleWhen: { key: 'model', value: 'opus' }
-  },
+    { key: 'model', label: 'Model', options: [{ value: '', label: 'Default' }, ...models], default: '', free: true },
+    {
+      key: 'opusModel',
+      label: 'Version',
+      kind: 'text',
+      default: '',
+      visibleWhen: { key: 'model', value: '__legacy_opus_version__' }
+    },
   { key: 'effort', label: 'Thinking', options: EFFORTS, default: 'high' },
   {
     key: 'instructions',
@@ -188,8 +173,9 @@ export const claudeFields = (): AgentSettingField[] => [
   {
     key: 'fallbackModel',
     label: 'If the model is busy',
-    options: FALLBACKS,
+    options: [{ value: '', label: 'None' }, ...models],
     default: '',
+    free: true,
     advanced: true,
     section: 'Model'
   },
@@ -222,8 +208,9 @@ export const claudeFields = (): AgentSettingField[] => [
     min: 1,
     max: 3600,
     unit: 'seconds'
-  }
-]
+    }
+  ]
+}
 
 const list = (value: string): string[] =>
   value
@@ -302,6 +289,7 @@ export const claudeProvider: Provider = makeCliProvider({
   args: claudeArgs,
   env: claudeEnv,
   parser: parseClaudeLine,
+  discover: refreshClaudeModels,
   dialog: (prompt, _cwd, _get, run) => claudeDialog(prompt, run.goal),
   goalCommand: true,
   mcp: 'file',
