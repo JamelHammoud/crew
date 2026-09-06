@@ -1,5 +1,5 @@
 import type { AgentSettingField } from '../../shared/llm'
-import { choices, makeCliProvider } from './cli'
+import { makeCliProvider } from './cli'
 import { geminiDialog, geminiParser } from './gemini-acp'
 import { acpModels, refreshAcpModels } from './acp-models'
 import type { Provider } from './types'

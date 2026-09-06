@@ -14,7 +14,6 @@ import { commandOutput, resultText } from '../src/runner/providers/output'
 import { crewPath, resolveCommand, searchDirs } from '../src/runner/providers/path'
 import type { Provider } from '../src/runner/providers/types'
 import { Crews } from '../src/main/crews'
-import { resolveSettings, settingOptions } from '../src/shared/llm'
 
 describe('fake provider contract', () => {
   const repo = tmpDir('providers')
