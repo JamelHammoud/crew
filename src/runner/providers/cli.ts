@@ -118,7 +118,11 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
     fields,
     detect: async () => {
       const installed = commandExists(opts.command)
-      if (installed) await opts.discover?.()
+      if (installed) {
+        try {
+          await opts.discover?.()
+        } catch {}
+      }
       return installed
     },
     usage: opts.usage ? settings => opts.usage!(resolveSettings(fields(), settings ?? {})) : undefined,
