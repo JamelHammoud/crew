@@ -98,6 +98,7 @@ export function refreshCodexModels(options: RefreshOptions = {}): Promise<boolea
     const timer = setTimeout(() => done(false), timeoutMs)
     child.on('error', () => done(false))
     child.on('close', () => done(false))
+    child.stdin.on('error', () => done(false))
     child.stdout.setEncoding('utf8')
     child.stdout.on('data', chunk => {
       buffer += chunk

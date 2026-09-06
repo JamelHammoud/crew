@@ -92,6 +92,7 @@ interface CliProviderOptions {
   steerable?: boolean
   mcp?: McpHandover
   usage?: (settings: AgentSettings) => Promise<AgentUsage | null>
+  discover?: () => Promise<unknown>
 }
 
 // A run is killed only after this long with no output at all. Reasoning models
@@ -115,7 +116,11 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
     steerable: opts.steerable ?? opts.dialog !== undefined,
     mcp: opts.mcp,
     fields,
-    detect: async () => commandExists(opts.command),
+    detect: async () => {
+      const installed = commandExists(opts.command)
+      if (installed) await opts.discover?.()
+      return installed
+    },
     usage: opts.usage ? settings => opts.usage!(resolveSettings(fields(), settings ?? {})) : undefined,
     start: (prompt, cwd, hooks, settings = {}, options = {}): RunningPrompt => {
       const resolved = resolveSettings(fields(), settings)

@@ -242,7 +242,7 @@ export const codexArgs = (_prompt?: string, get?: SettingReader, run: RunOptions
 // Codex has no standalone installer script; npm is its documented install path.
 const INSTALL_NPM = 'npm install -g @openai/codex'
 
-const cliProvider = makeCliProvider({
+export const codexProvider: Provider = makeCliProvider({
   name: 'codex',
   label: 'Codex',
   command: 'codex',
@@ -252,14 +252,6 @@ const cliProvider = makeCliProvider({
   dialog: codexDialog,
   mcp: 'inline',
   usage: codexUsage,
+  discover: refreshCodexModels,
   install: { darwin: INSTALL_NPM, linux: INSTALL_NPM, win32: INSTALL_NPM }
 })
-
-export const codexProvider: Provider = {
-  ...cliProvider,
-  detect: async () => {
-    const installed = await cliProvider.detect()
-    if (installed) await refreshCodexModels()
-    return installed
-  }
-}
