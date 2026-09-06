@@ -88,7 +88,8 @@ export function refreshAcpModels(options: AcpRefreshOptions): Promise<boolean> {
         } catch {
           continue
         }
-        const models = listFrom(message?.result) || listFrom(message?.params)
+        const resultModels = listFrom(message?.result)
+        const models = resultModels.length ? resultModels : listFrom(message?.params)
         if (models.length) {
           done(models)
           continue

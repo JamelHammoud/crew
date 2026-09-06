@@ -2,6 +2,7 @@ import type { AgentSettingField } from '../../shared/llm'
 import { choices, makeCliProvider } from './cli'
 import { kimiDialog, kimiParser } from './kimi-acp'
 import { kimiModels } from './kimi-models'
+import { acpModels, refreshAcpModels } from './acp-models'
 import type { Provider } from './types'
 
 export const KIMI_MODES = [
@@ -18,7 +19,16 @@ export const KIMI_THINKING = [
 ]
 
 export const kimiFields = (): AgentSettingField[] => [
-  { key: 'model', label: 'Model', options: choices(['', ...kimiModels()]), default: '' },
+  {
+    key: 'model',
+    label: 'Model',
+    options: [
+      { value: '', label: 'Default' },
+      ...(acpModels('kimi').length ? acpModels('kimi') : choices(kimiModels()))
+    ],
+    default: '',
+    free: true
+  },
   {
     key: 'thinking',
     label: 'Thinking',
@@ -57,6 +67,7 @@ export const kimiProvider: Provider = makeCliProvider({
   dialog: (prompt, cwd, get, run) => kimiDialog(prompt, cwd, get, run),
   steerable: true,
   mcp: 'inline',
+  discover: () => refreshAcpModels({ provider: 'kimi', args: ['acp'] }),
   install: {
     darwin: INSTALL_SH,
     linux: INSTALL_SH,

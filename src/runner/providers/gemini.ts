@@ -1,17 +1,8 @@
 import type { AgentSettingField } from '../../shared/llm'
 import { choices, makeCliProvider } from './cli'
 import { geminiDialog, geminiParser } from './gemini-acp'
+import { acpModels, refreshAcpModels } from './acp-models'
 import type { Provider } from './types'
-
-const MODELS = [
-  'gemini-3.1-pro-preview',
-  'gemini-3.5-flash',
-  'gemini-3-flash-preview',
-  'gemini-3.1-flash-lite',
-  'gemini-2.5-pro',
-  'gemini-2.5-flash',
-  'gemini-2.5-flash-lite'
-]
 
 export const GEMINI_MODES = [
   { value: '', label: 'Anything' },
@@ -21,7 +12,13 @@ export const GEMINI_MODES = [
 ]
 
 export const geminiFields = (): AgentSettingField[] => [
-  { key: 'model', label: 'Model', options: choices(['', ...MODELS]), default: '' },
+  {
+    key: 'model',
+    label: 'Model',
+    options: [{ value: '', label: 'Default' }, ...acpModels('gemini')],
+    default: '',
+    free: true
+  },
   {
     key: 'mode',
     label: 'What it may do',
@@ -66,5 +63,6 @@ export const geminiProvider: Provider = makeCliProvider({
   dialog: (prompt, cwd, get, run) => geminiDialog(prompt, cwd, get, run),
   steerable: true,
   mcp: 'inline',
+  discover: () => refreshAcpModels({ provider: 'gemini', args: ['--acp', '--yolo'] }),
   install: { darwin: INSTALL, linux: INSTALL, win32: INSTALL }
 })

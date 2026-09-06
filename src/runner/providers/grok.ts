@@ -1,6 +1,7 @@
 import { ON, isOn, type AgentSettingField } from '../../shared/llm'
 import { acpDialog, CANCELLED, chunkText, makeLanes, str } from './acp'
 import { choices, flag, makeCliProvider, type SettingReader } from './cli'
+import { acpModels, refreshAcpModels } from './acp-models'
 import { activityDetail, fileChanges, stepTodos } from './detail'
 import { resultText } from './output'
 import { taskCall } from './tasks'
@@ -125,16 +126,6 @@ export function grokParser(): RunParser {
   return { parse }
 }
 
-const EFFORTS = [
-  { value: '', label: 'Default' },
-  { value: 'low', label: 'Low' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'high', label: 'High' },
-  { value: 'xhigh', label: 'Extra high' }
-]
-
-const EFFORTS_45 = EFFORTS.filter(option => option.value !== 'xhigh')
-
 const MODES = [
   { value: 'anything', label: 'Anything' },
   { value: 'safe', label: 'Safe changes' },
@@ -155,15 +146,32 @@ const SANDBOXES = [
   { value: 'strict', label: 'Strict' }
 ]
 
-export const grokFields = (): AgentSettingField[] => [
-  { key: 'model', label: 'Model', options: choices(['', 'grok-4.6', 'grok-4.5']), default: '' },
-  {
-    key: 'effort',
-    label: 'Thinking',
-    options: EFFORTS,
-    optionsWhen: [{ key: 'model', value: 'grok-4.5', options: EFFORTS_45 }],
-    default: ''
-  },
+export const grokFields = (): AgentSettingField[] => {
+  const models = acpModels('grok')
+  const efforts = models.flatMap(model => model.efforts)
+  const uniqueEfforts = efforts.filter((effort, index) => efforts.findIndex(one => one.value === effort.value) === index)
+  return [
+    {
+      key: 'model',
+      label: 'Model',
+      options: [{ value: '', label: 'Default' }, ...models],
+      default: '',
+      free: true
+    },
+    {
+      key: 'effort',
+      label: 'Thinking',
+      options: [{ value: '', label: 'Default' }, ...uniqueEfforts],
+      optionsWhen: models
+        .filter(model => model.efforts.length > 0)
+        .map(model => ({
+          key: 'model',
+          value: model.value,
+          options: [{ value: '', label: 'Default' }, ...model.efforts]
+        })),
+      default: '',
+      free: true
+    },
   {
     key: 'instructions',
     label: 'Instructions',
@@ -250,8 +258,9 @@ export const grokFields = (): AgentSettingField[] => [
     section: 'Limits',
     min: 1,
     unit: 'turns'
-  }
-]
+    }
+  ]
+}
 
 const permissionArgs = (mode: string): string[] => {
   if (mode === 'plan') return ['--permission-mode', 'plan']
@@ -297,5 +306,6 @@ export const grokProvider: Provider = makeCliProvider({
   dialog: (prompt, cwd, get, run) => grokDialog(prompt, cwd, get, run),
   steerable: true,
   mcp: 'inline',
+  discover: () => refreshAcpModels({ provider: 'grok', args: ['agent', '--always-approve', 'stdio'] }),
   install: { darwin: INSTALL_SH, linux: INSTALL_SH, win32: 'irm https://x.ai/cli/install.ps1 | iex' }
 })
