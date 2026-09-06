@@ -7,7 +7,7 @@ import { tmpDir } from './helpers/session'
 describe('Claude model discovery', () => {
   it('reads aliases advertised by the installed CLI', async () => {
     const home = tmpDir('claude-help-home')
-    const help = `Options:\n  --model <model>  Use an alias such as 'newest', 'quick' or a full model such as 'claude-new-1'.\n  --name <name>`
+    const help = `Options:\n  --model <model>  Use an alias such as 'newest' or 'quick'. A model's full name can also be used,\n                   such as 'claude-new-1'.\n  --name <name>`
     expect(
       await refreshClaudeModels({
         command: process.execPath,

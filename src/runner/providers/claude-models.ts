@@ -59,8 +59,8 @@ const fromHelp = (output: string): AgentSettingOption[] => {
   const start = lines.findIndex(line => /--model\s+<[^>]+>/i.test(line))
   if (start < 0) return []
   const block = lines.slice(start, start + 8).join('\n')
-  return [...block.matchAll(/['"]([^'"]+)['"]/g)]
-    .map(match => match[1])
+  return [...block.matchAll(/'([^'\n]+)'|"([^"\n]+)"/g)]
+    .map(match => match[1] ?? match[2])
     .filter(value => value.length > 0 && !/\s/.test(value))
     .map(value => ({ value, label: value }))
 }
