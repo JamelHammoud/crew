@@ -27,8 +27,6 @@ const CLAUDE_TODAY = [
   '--include-partial-messages',
   '--thinking-display',
   'summarized',
-  '--model',
-  'claude-opus-5',
   '--effort',
   'high',
   '--permission-mode',
