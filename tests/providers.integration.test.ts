@@ -18,6 +18,24 @@ import { Crews } from '../src/main/crews'
 describe('fake provider contract', () => {
   const repo = tmpDir('providers')
 
+  it('discovers provider choices before fields are read', async () => {
+    let models: string[] = []
+    const provider = makeCliProvider({
+      name: 'discovering',
+      label: 'Discovering',
+      command: process.execPath,
+      fields: () => [
+        { key: 'model', label: 'Model', options: models.map(value => ({ value, label: value })), default: '' }
+      ],
+      args: () => [],
+      discover: async () => {
+        models = ['from-cli']
+      }
+    })
+    expect(await provider.detect()).toBe(true)
+    expect(provider.fields()[0].options?.map(option => option.value)).toEqual(['from-cli'])
+  })
+
   it('detects and runs, streaming chunks in order', async () => {
     const provider = makeFakeProvider()
     expect(await provider.detect()).toBe(true)
