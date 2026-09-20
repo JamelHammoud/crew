@@ -7,13 +7,10 @@ import {
   GlobeGlyph,
   GroupGlyph,
   MusicGlyph,
-  PhoneGlyph,
   TerminalGlyph,
   TicketGlyph
 } from '../icons'
 import { useBrowser } from '../state/browser'
-import { useIos } from '../state/ios'
-import { onMac } from '../state/platform'
 import { useCrew } from '../state/store'
 import { eventIndex } from './eventIndex'
 
@@ -75,17 +72,6 @@ export function usePanelOpens(): PanelOpen[] {
       })
     rows.push(
       { id: 'review', label: 'Review', mark: <BranchGlyph />, scope: 'panel', open: () => browser().openReview() },
-      ...(onMac()
-        ? [
-            {
-              id: 'ios',
-              label: 'Simulator',
-              mark: <PhoneGlyph />,
-              scope: 'panel' as const,
-              open: () => useIos.getState().open()
-            }
-          ]
-        : []),
       {
         id: 'terminal',
         label: 'Terminal',

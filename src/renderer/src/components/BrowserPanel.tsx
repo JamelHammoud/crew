@@ -33,7 +33,6 @@ import BrowserTabMark, { browserTabCard, browserTabLabel, showsImage } from './B
 import BrowserTabSwitcher from './BrowserTabSwitcher'
 import BrowserTabView, { viewFor } from './BrowserTabView'
 import BrowserFind, { BrowserFindButton } from './BrowserFind'
-import SimulatorView from '../views/ios/SimulatorView'
 import FileView, { FileCrumbs } from './FileView'
 import GameView from './game/GameView'
 import HoverCard from './HoverCard'
@@ -442,7 +441,6 @@ export default function BrowserPanel({ standalone = false }: { standalone?: bool
         {active && active.kind === 'plan' && <PlanView threadId={active.threadId} />}
         {active && active.kind === 'work' && <WorkView threadId={active.threadId} />}
         {active && active.kind === 'review' && <ReviewView />}
-        {active && active.kind === 'ios' && <SimulatorView />}
         {active && active.kind === 'music' && <MusicView />}
         {active && active.kind === 'game' && <GameView tabId={active.id} />}
         {active && active.kind === 'web' && !active.initialUrl && (

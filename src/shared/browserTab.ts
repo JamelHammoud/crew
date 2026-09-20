@@ -13,7 +13,6 @@ export type BrowserTab = {
     | 'aside'
     | 'agent'
     | 'review'
-    | 'ios'
   initialUrl: string
   url: string
   title: string
