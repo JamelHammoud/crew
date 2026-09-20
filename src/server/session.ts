@@ -2416,24 +2416,6 @@ export class CrewSession {
     return { ok: true }
   }
 
-  // The app onto the simulator, asked for from a run. Nothing about it is state
-  // the host holds: the window that is reading this thread is what starts the
-  // simulator on its own machine, the way a page shown opens the panel.
-  runIos(promptId: string): Done {
-    const thread = this.askingThread(promptId)
-    if (!thread) return { error: NOT_RUNNING }
-    this.emit({
-      id: randomUUID(),
-      ts: Date.now(),
-      kind: 'ios.ran',
-      threadId: thread.id,
-      promptId,
-      agentId: thread.agentId,
-      agentLabel: thread.agentLabel
-    })
-    return { ok: true }
-  }
-
   private subagentThreads(parentThreadId: string): Thread[] {
     return [...this.threads.values()].filter(thread => thread.parentThreadId === parentThreadId)
   }
